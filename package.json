@@ -1,0 +1,28 @@
+{
+  "name": "scout",
+  "version": "1.0.0",
+  "description": "VCF visualizer.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Clinical-Genomics/scout.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Clinical-Genomics/scout/issues"
+  },
+  "private": true,
+  "main": "Gulpfile.js",
+  "scripts": {
+    "start": "gulp"
+  },
+  "homepage": "https://github.com/Clinical-Genomics/scout",
+  "author": "Robin Andeer <robin.andeer@scilifelab.se>",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp-autoprefixer": "^1.0.1",
+    "browser-sync": "^1.5.2",
+    "gulp": "^3.8.8",
+    "gulp-sass": "^1.0.0",
+    "node-bourbon": "^1.2.3"
+  }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>
+    {% block title %}
+      {{ page_title | default(_('Project')) }}
+    {% endblock %}
+  </title>
+
+  <meta name="description"
+        content="Flask App is a Flask template/bootstrap/ application.">
+  <meta name="author" content="Robin Andeer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
+  <link rel="Shortcut Icon"
+        href="{{ url_for('static', filename='favicon.png') }}"
+        type="image/x-icon">
+
+  {% block css %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/main.css') }}">
+  {% endblock %}
+
+  {% block css_style %}{% endblock %}
+
+  {% block js_top %}{% endblock %}
+</head>
+<body>
+  {% include "macros/_ask_user_to_update_ie.html" %}
+
+  {% block body %}{% endblock %}
+
+  {% block js_btm %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js">
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% endblock %}
+
+  {% block ga %}
+    {% include "macros/_google_analytics.html" %}
+  {% endblock %}
+</body>
+</html>
+

@@ -1,0 +1,26 @@
+@import 'bourbon';
+@import 'normalize';
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+
+  overflow: auto;
+}
+
+body {
+  background: #444;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  color: white;
+  font-weight: normal;
+  font-size: 5ex;
+  text-align: center;
+}

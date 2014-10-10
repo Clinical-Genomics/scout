@@ -1,0 +1,21 @@
+---
+- name: install basic packages
+  apt: name= state=latest
+  with_items:
+    - python-dev
+    - python-pip
+    - python-virtualenv
+
+- name: install global pip packages
+  pip: name=virtualenvwrapper state=latest
+
+- name: install basic pip packages
+  pip: name=""
+       state=latest
+       virtualenv=~/.virtualenvs/develop
+       virtualenv_command=/usr/local/bin/virtualenv
+  with_items:
+    - tox
+    - pytest
+    - ipython
+    - ipdb

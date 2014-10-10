@@ -1,0 +1,43 @@
+# Everything needed in production
+
+# Flask
+Flask==0.10.1
+MarkupSafe==0.23
+Werkzeug==0.9.6
+Jinja2==2.7.3
+itsdangerous==0.24
+
+# Admin
+Flask-Admin==1.0.8
+
+# Database
+Flask-MongoEngine==0.7.1
+
+# Migrations
+#Flask-Migrate==1.2.0
+
+# Forms
+Flask-WTF==0.10.2
+WTForms==1.0.5
+
+# Deployment
+gunicorn>=17.5
+
+# Assets
+#Flask-Assets==0.10
+#cssmin>=0.1.4
+#jsmin>=2.0.4
+
+# Auth
+Flask-Login==0.2.11
+#Flask-Bcrypt==0.6.0
+Flask-OAuthlib==0.7.0
+
+# Caching
+#Flask-Cache>=0.12
+
+# Translations
+Flask-Babel
+
+# utils
+path.py

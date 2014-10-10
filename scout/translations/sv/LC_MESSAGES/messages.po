@@ -1,0 +1,22 @@
+
+
+# Swedish translations for PROJECT.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+
+msgid "Project"
+msgstr "Flask App"
+
+# use {{ _("home") }} in templates.
+# or _("Home") in python codes.
+msgid "Home"
+msgstr "Hem"
+
+msgid "Page not found"
+msgstr "Sidan kunde inte hittas"
+
+msgid "Flask App Template"
+msgstr "Flask-applikationsmall"
+
