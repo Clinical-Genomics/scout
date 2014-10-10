@@ -1,0 +1,4 @@
+scout
+=====
+
+VCF visualization interface
