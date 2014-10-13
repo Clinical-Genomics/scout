@@ -15,8 +15,8 @@ from flask.ext.login import (
   confirm_login, login_required, login_user, logout_user)
 from flask_oauthlib.client import OAuthException
 
-from ...database import User
-from ...extensions import google
+from .extensions import google
+from ..admin import User
 from ...utils import get_current_time
 
 
