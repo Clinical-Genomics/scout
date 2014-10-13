@@ -10,7 +10,7 @@
   pip: name=virtualenvwrapper state=latest
 
 - name: install basic pip packages
-  pip: name=""
+  pip: name={{ item }}
        state=latest
        virtualenv=~/.virtualenvs/develop
        virtualenv_command=/usr/local/bin/virtualenv
