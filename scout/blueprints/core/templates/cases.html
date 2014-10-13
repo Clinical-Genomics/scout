@@ -3,5 +3,11 @@
 {% block body %}
   
   <h1>Welcome to Cases</h1>
+
+  <ul>
+  	{% for variant in variants %}
+  		<li>{{ variant._id }}</li>
+  	{% endfor %}
+  </ul>
   
 {% endblock %}

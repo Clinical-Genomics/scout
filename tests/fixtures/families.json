@@ -1,0 +1,50 @@
+[
+	{
+		"_id": "54325ccbec3a4838edbef441",
+		"id": "1",
+		"instance_id": "CMMS",
+		"sample_ids": ["1-1-3A", "1-1-4A"],
+
+		"gene_list_ids": ["IEM", "EP", "MIT", ""],
+
+		"inheritance_models": ["AD", "AR_comp", "AR_hom", "XD", "", "XR"],
+		"gene_annotations": [
+			"exonic",
+			"upstream",
+			"splicing",
+			"3UTR",
+			"intronic",
+			"ncRNA",
+			"downstream",
+			"ncRNA_exonic",
+			"5UTR"
+		],
+		"functional_annotations": [
+			"missense_variant",
+			"upstream_gene_variant",
+			"splice_region_variant",
+			"3_prime_UTR_variant",
+			"intron_variant",
+			"synonymous_variant",
+			"nc_transcript_variant",
+			"downstream_gene_variant",
+			"stop_gained",
+			"frameshift_variant",
+			"non_coding_exon_variant",
+			"inframe_deletion",
+			"5_prime_UTR_variant",
+			"stop_retained_variant",
+			"splice_donor_variant",
+			"inframe_insertion",
+			"stop_lost"
+		],
+
+		"updated_at": 1412600328,
+		"qc_metrics": {},
+		"bam_files": [
+			"/mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/GATK/1-1-3A.hiSeq20100624.0_sorted_pmd_rreal_brecal.bam",
+			"/mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/GATK/1-1-4A.hiSeq20100624.0_sorted_pmd_rreal_brecal.bam"
+		],
+		"ethical_approval": false
+	}
+]

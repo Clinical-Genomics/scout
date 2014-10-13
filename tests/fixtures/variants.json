@@ -1,0 +1,19 @@
+[
+  {
+    "_id": "54325acbec3a4838edbecacf",
+    "md5_key": "72925ed9255accf0a8bf144550a0ecc4",
+
+    "CHROM": "5",
+    "POS": 177035488,
+    "REF": "GCCC",
+    "ALT": "[G]",
+    "RS" : 142034531,
+
+    "gene_ids": [{
+    	"ensembl": "ENSG00000027847",
+    	"hgnc_symbol": "B4GALT7"
+    }],
+
+    "set": "Intersection"
+  }
+]
