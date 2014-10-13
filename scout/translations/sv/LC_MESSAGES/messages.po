@@ -19,4 +19,3 @@ msgstr "Sidan kunde inte hittas"
 
 msgid "Flask App Template"
 msgstr "Flask-applikationsmall"
-

@@ -42,6 +42,8 @@ Usage
 Roadmap & Wish list
 ---------------------
 
+- Access rights connected with cases/families. "Admin" users should be able to view any case.
+
 Goals
 ~~~~~~
 There are 3 main goals stated for the project.
