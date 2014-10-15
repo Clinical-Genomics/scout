@@ -15,8 +15,8 @@ Run the following commands to bootstrap your development environment.
 
     $ git clone https://github.com/Clinical-Genomics/scout.git
     $ cd scout
-    $ pip install -e .requirements/dev.txt
-    $ python manage.py runserver
+    $ pip install -r requirements/dev.txt
+    $ python manage.py vagrant
 
 This doesn't mean that everything will work just like that. You also need some Google OAuth keys and other secret stuff. The config should be stored in a config file:
 
@@ -26,6 +26,12 @@ This doesn't mean that everything will work just like that. You also need some G
     /instance
       scout-dev.cfg  <-- put config here!
     /scout
+
+When you have the instance folder in place you can start Flask like so:
+
+.. code-block:: bash
+
+  $ python manage.py -c "$(pwd)/instance/scout.cfg" vagrant
 
 
 Running Tests
