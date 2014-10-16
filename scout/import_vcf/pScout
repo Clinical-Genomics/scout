@@ -1,0 +1,208 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+pScout.py
+
+Command line script for running pScout
+
+Created by Måns Magnusson, Henrik Stranneheim,
+Robin Andeer, Mats Dahlberg on 2014-06-11.
+Copyright (c) 2014 __MyCompanyName__. All rights reserved.
+"""
+
+import sys
+import os
+import click
+# For opening files with 2.7 and 3.x
+from codecs import open
+
+from datetime import datetime
+
+# Import third party library
+# https://github.com/mitsuhiko/logbook
+from logbook import Logger, StderrHandler
+log = Logger('Logbook')
+log_handler = StderrHandler()
+
+import vcf  # https://github.com/jamescasbon/PyVCF
+
+
+class Config(object):
+    """Store variables that are used across all subprograms"""
+    def __init__(self):
+        super(Config, self).__init__()
+        self.verbose = False
+
+pass_config = click.make_pass_decorator(Config, ensure=True)
+
+
+###         This is the main script         ###
+
+# Version parameter
+Version = '0.0.3'
+
+
+def check_plugin(vcf_reader, plugin):
+        """Evaluate plugin and vcf compatibility
+
+        Args:
+            vcf_reader  (object) : VCF reader object
+            plugin      (tuple) : plugin cmd option
+
+        Returns:
+            list:   List of plug-in(s)
+        """
+        # Always use core plug-in
+        plugins = ['core']
+        # Collect supplied plugin(s)
+        [plugins.append(item) for item in plugin]
+        # Create set
+        plugins = list(set(plugins))
+        # Evaluate vcf and plugin compatibility
+        for plugin in plugins:
+
+            if plugin == "core":
+                from pScout.plugin.plugin_reader import core
+                ret = core(vcf_reader, "pScout/plugin/get_core.ini")
+
+                if ret is 1:  # Not compatible
+                    exit()
+
+        return plugins
+
+
+def print_version(ctx, param, value):
+    """Callback function for printing version and exiting
+
+    Args:
+        ctx   (object)    : Current context
+        param (object)    : Click parameter(s)
+        value (boolean)   : Click parameter was supplied or not
+
+    Returns:
+        None:
+    """
+    if not value or ctx.resilient_parsing:
+        return
+    log.info('pScout Version: ' + Version)
+    ctx.exit()
+
+
+@click.group()
+@click.option('-v', '--verbose',
+              is_flag=True,
+              help='Increase output verbosity.'
+              )
+@click.option('--version',
+              is_flag=True,
+              callback=print_version,
+              expose_value=False,
+              is_eager=True
+              )
+@pass_config
+def pScout(config, verbose):
+    """Visualize and annotate variants in variant file"""
+    config.verbose = verbose
+    #print('Running main script ...')
+    log.info('Running main script ...')
+
+
+### This is for building databases ###
+
+
+@click.command()
+@click.option('-db_name', '--database_name',
+              nargs=1,
+              default='vcf',
+              help="The database name",
+              )
+@click.option('-dia', '--dialect',
+              nargs=1,
+              default='mongo',
+              type=click.Choice(['mongo', 'sqlite', 'gemini']),
+              help="The database dialect",
+              )
+@click.option('-h', '--hostname',
+              nargs=1,
+              default='localhost',
+              help="The database host name",
+              )
+@click.option('-p', '--port',
+              nargs=1,
+              type=int,
+              default='27017',
+              help="The database port",
+              )
+@click.argument('variant_file',
+                nargs=1,
+                type=click.File('r'),
+                metavar='<vcf_file> or "-"',
+                )
+@click.option('-pi', '--plugin',
+              multiple=True,
+              help="The plug-in(s)",
+              )
+@pass_config
+def build(config, variant_file, dialect, hostname,
+          port, database_name, plugin):
+    """Loads variant file data into database"""
+
+    # Add version to stderr for traceability
+    log.info('Version ' + Version + '\n')
+
+    if config.verbose:
+        log.info('Reading variant file!' + '\n')
+
+    # Create read iter object using stream or file
+    vcf_reader = vcf.Reader(fsock=variant_file)
+
+    # Evaluate plugins
+    plugins = check_plugin(vcf_reader, plugin)
+
+    # Use mongo database
+    if dialect == 'mongo':
+
+        # Import function to use mongodb
+        from pScout.mongo.core import Database
+
+    # Use sqlite database
+    elif dialect == 'sqlite':
+
+        # Import function to use sqlitedb
+        from pScout.sqlite.core import Database
+
+    # Use gemini database
+    elif dialect == 'gemini':
+
+        # Import function to use sqlitedb
+        from pScout.gemini.core import Database
+
+    db = Database(hostname, port, config.verbose)
+
+    if config.verbose:
+            log.info('Building database!' + '\n')
+
+    # Create database
+    db.build_db(vcf_reader, database_name, plugins)
+
+
+############# For visualizing variants ############
+
+
+@click.command()
+@click.option('-pi', '--plugin',
+              multiple=True,
+              help="The plug-in(s)",
+              )
+@pass_config
+def serve(config, plugin):
+    """Visualize the variants in variant file"""
+
+    if config.verbose:
+        sys.stderr.write('Serving the variants!')
+
+pScout.add_command(build)
+pScout.add_command(serve)
+
+if __name__ == '__main__':
+    pScout()
