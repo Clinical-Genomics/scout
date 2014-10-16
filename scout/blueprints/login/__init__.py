@@ -1,3 +1,6 @@
 # -*- coding: utf-8 -*-
+"""
+Depends on "admin"
+"""
 
-from .views import login
+from .core import init_blueprint

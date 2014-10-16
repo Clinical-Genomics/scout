@@ -51,6 +51,9 @@ class DefaultConfig(BaseConfig):
   # Flask-DebugToolbar
   DEBUG_TB_ENABLED = True
 
+  # Session lifespan
+  SESSION_DAYS = 30
+
 
 class TestConfig(BaseConfig):
   """docstring for TestConfig"""

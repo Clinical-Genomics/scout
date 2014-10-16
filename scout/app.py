@@ -1,24 +1,19 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 from __future__ import absolute_import, unicode_literals
+from datetime import timedelta
 import os
 
-from bson import ObjectId
 from flask import Flask, render_template, request
 from flask.ext.babel import Babel
-from flask.ext.admin.contrib.mongoengine import ModelView
 from path import path
 
-from .admin import UserView
-from .blueprints.core import core
-from .blueprints.frontend import frontend
-from .blueprints.login import login
+from .blueprints import admin, core, frontend, login
 from .config import DefaultConfig
-from .database import User, Institute, Role
-from .extensions import admin, db, debug_toolbar, login_manager, oauth
+from .extensions import debug_toolbar
 from .utils import pretty_date
 
-DEFAULT_BLUEPRINTS = (frontend, login, core)
+DEFAULT_BLUEPRINTS = (admin, core, frontend, login)
 
 
 def create_app(config=None, app_name=None, blueprints=None):
@@ -52,45 +47,14 @@ def configure_app(app, config=None):
   default_config = os.path.join(app.instance_path, "%s.cfg" % app.name)
   app.config.from_pyfile(config or default_config, silent=True)
 
+  # set timeout for session - lost after X days with no user interaction
+  # +INFO: http://flask.pocoo.org/docs/api/#flask.Flask.permanent_session_lifetime
+  app.permanent_session_lifetime = timedelta(days=app.config['SESSION_DAYS'])
+
 
 def configure_extensions(app):
-  # Flask-Admin
-  admin.init_app(app)
-
-  admin.add_view(UserView(User, category='Users'))
-  admin.add_view(ModelView(Institute, category='Users'))
-  admin.add_view(ModelView(Role, category='Users'))
-
-  # Flask-MongoEngine
-  db.init_app(app)
-
-  # Flask-OAuthlib
-  oauth.init_app(app)
-
   # Flask-DebugToolsbar
   debug_toolbar.init_app(app)
-
-  # Flask-Login
-  # create user loader function
-  @login_manager.user_loader
-  def load_user(user_id):
-    """Returns the currently active user as an object.
-
-    ============ LEGACY ==================
-    Since this app doesn't handle passwords etc. there isn't as much
-    incentive to keep pinging the database for every request protected
-    by 'login_required'.
-
-    Instead I set the expiration for the session cookie to expire at
-    regular intervals.
-    """
-    return User.objects.get(id=ObjectId(user_id))
-
-  login_manager.login_view = 'login.index'
-  login_manager.login_message = 'Please log in to access this page.'
-  login_manager.refresh_view = 'login.reauth'
-
-  login_manager.init_app(app)
 
   # Flask-babel
   babel = Babel(app)
@@ -105,10 +69,15 @@ def configure_extensions(app):
     return request.accept_languages.best_match(accept_languages)
 
 
-def configure_blueprints(app, blueprints):
+def configure_blueprints(app, blueprint_modules):
   """Configure blueprints in views."""
+  # initialize blueprint dependencies like extensions
+  blueprints = (module.init_blueprint(app) for module in blueprint_modules)
 
-  for blueprint in blueprints:
+  # filter out blueprints that don't requrie registration
+  only_blueprints = (bp for bp in blueprints if bp is not None)
+
+  for blueprint in only_blueprints:
     app.register_blueprint(blueprint)
 
 

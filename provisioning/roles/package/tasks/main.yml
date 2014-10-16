@@ -1,0 +1,6 @@
+---
+- name: install basic pip packages
+  pip: requirements=requirements/dev.txt
+       state=latest
+       virtualenv=~/.virtualenvs/develop
+       virtualenv_command=/usr/local/bin/virtualenv

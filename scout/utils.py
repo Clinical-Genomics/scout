@@ -10,7 +10,7 @@ def get_current_time():
   return datetime.utcnow()
 
 
-def pretty_date(dt, default=None):
+def pretty_date(date, default=None):
   """Return string representing "time since": 3 days ago, 5 hours ago.
 
   Ref: https://bitbucket.org/danjac/newsmeme/src/a281babb9ca3/newsmeme/
@@ -19,7 +19,7 @@ def pretty_date(dt, default=None):
     default = 'just now'
 
   now = datetime.utcnow()
-  diff = now - dt
+  diff = now - date
 
   periods = (
     (diff.days / 365, 'year', 'years'),
