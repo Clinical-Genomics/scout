@@ -1,43 +1,34 @@
 # -*- coding: utf-8 -*-
-"""Defines fixtures available to all tests."""
 import pytest
-from webtest import TestApp
 
-from scout.settings import TestConfig
 from scout.app import create_app
-from scout.database import db as _db
 
-from .factories import UserFactory
-
-
-@pytest.yield_fixture(scope='function')
-def app():
-  _app = create_app(TestConfig)
-  ctx = _app.test_request_context()
-  ctx.push()
-
-  yield _app
-
-  ctx.pop()
 
 @pytest.fixture(scope='session')
-def testapp(app):
-  """A Webtest app."""
-  return TestApp(app)
+def app(request):
+  """Session-wide test `Flask` application."""
+  settings_override = {
+    'TESTING': True,
+  }
+  app = create_app(__name__, settings_override)
 
-@pytest.yield_fixture(scope='function')
-def db(app):
-  _db.app = app
-  with app.app_context():
-      _db.create_all()
+  # Establish an application context before running the tests.
+  ctx = app.app_context()
+  ctx.push()
 
-  yield _db
+  def teardown():
+    ctx.pop()
 
-  _db.drop_all()
+  request.addfinalizer(teardown)
+  return app
 
 
-@pytest.fixture
-def user(db):
-  user = UserFactory(password='myprecious')
-  db.session.commit()
-  return user
+@pytest.fixture(scope='function')
+def session(request):
+  """Creates a new database session for a test."""
+
+  def teardown():
+    session.remove()
+
+  request.addfinalizer(teardown)
+  return session

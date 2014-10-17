@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
+import pytest
+
 from scout.app import create_app
-from scout.settings import ProdConfig, DevConfig
+from scout.config import BaseConfig, DefaultConfig
 
 
 def test_production_config():
-  app = create_app(ProdConfig)
-  assert app.config['ENV'] == 'prod'
-  assert app.config['DEBUG'] is False
-  assert app.config['DEBUG_TB_ENABLED'] is False
-  assert app.config['ASSETS_DEBUG'] is False
-
-
-def test_dev_config():
-  app = create_app(DevConfig)
-  assert app.config['ENV'] == 'dev'
-  assert app.config['DEBUG'] is True
-  assert app.config['ASSETS_DEBUG'] is True
+  assert BaseConfig.PROJECT == 'prod'
