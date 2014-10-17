@@ -12,6 +12,9 @@ recursive-include /templates *
 recursive-include /static *
 # translations
 recursive-include /translations *
+# configs
+recursive-include /configs *.ini
+
 
 # excluding
 recursive-exclude  *.pyc
