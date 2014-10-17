@@ -2,11 +2,11 @@
 
 {% block body %}
   
-  <h1>Welcome to Cases</h1>
+  <h1>Welcome to Families</h1>
 
   <ul>
-  	{% for variant in variants %}
-  		<li>{{ variant.id }}</li>
+  	{% for family in families %}
+  		<li>{{ family._id }}</li>
   	{% endfor %}
   </ul>
   

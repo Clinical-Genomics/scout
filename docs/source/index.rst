@@ -19,7 +19,7 @@ DNA sequencing is quickly entering the clinical setting. As such we need tools t
 
 
 Installation
---------------
+------------
 Scout is not currently on *pip* but we intend on registering it once we work out more specifically the scope of the package.
 
 For now, install as:
