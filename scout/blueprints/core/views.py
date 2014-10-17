@@ -8,9 +8,9 @@ from ...decorators import templated
 core = Blueprint('core', __name__, template_folder='templates')
 
 
-@core.route('/cases')
-@templated('cases.html')
-def cases():
-  """View all cases."""
-  # fetch variants from the data store
-  return dict(variants=current_app.db.find_all())
+@core.route('/families')
+@templated('families.html')
+def families():
+  """View all families."""
+  # fetch families from the data store
+  return dict(families=current_app.db.families())
