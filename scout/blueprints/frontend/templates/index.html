@@ -6,30 +6,5 @@
   <h1>{{ _('Flask App Template') }}</h1>
   <p>Flask App is a Flask template/bootstrap application.</p>
 
-  {% if current_user.is_authenticated() %}
-
-    <p>You are logged in as {{ current_user.name }}</p>
-
-    <p>
-      Visit <a href="{{ url_for('core.cases') }}">all cases</a>
-      {% if current_user.has_role('admin') %}
-        or the <a href="{{ url_for('admin.index') }}">admin interface</a>
-      {% endif %}
-    </p>
-    
-    <form accept-charset="UTF-8" method="post"
-          action="{{ url_for('login.logout') }}">
-      <button>Sign out</button>
-    </form>
-
-  {% else %}
-
-    <form accept-charset="UTF-8" method="post"
-          action="{{ url_for('login.signin') }}">
-      <button>Sign in</button>
-    </form>
-
-  {% endif %}
-
   {% include 'footer.html' %}
 {% endblock %}

@@ -8,12 +8,12 @@ from flask import Flask, render_template, request
 from flask.ext.babel import Babel
 from path import path
 
-from .blueprints import admin, core, frontend, login
+from .blueprints import core, frontend
 from .config import DefaultConfig
 from .extensions import debug_toolbar
 from .utils import pretty_date
 
-DEFAULT_BLUEPRINTS = (admin, core, frontend, login)
+DEFAULT_BLUEPRINTS = (core, frontend)
 
 
 def create_app(config=None, app_name=None, blueprints=None):
