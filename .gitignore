@@ -57,3 +57,5 @@ instance
 
 # Node.js
 node_modules
+
+instance/
