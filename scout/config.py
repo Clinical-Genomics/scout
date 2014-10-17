@@ -2,6 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 import os
 
+from .ext.backend import FixtureAdapter
+
 
 class BaseConfig(object):
   """docstring for BaseConfig"""
@@ -53,6 +55,8 @@ class DefaultConfig(BaseConfig):
 
   # Session lifespan
   SESSION_DAYS = 30
+
+  DB = FixtureAdapter
 
 
 class TestConfig(BaseConfig):
