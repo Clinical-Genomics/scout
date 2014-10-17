@@ -23,6 +23,15 @@ class FixtureAdapter(BaseAdapter):
     with io.open(families_path, encoding='utf-8') as handle:
       self._families = json.load(handle)
 
+  def families(self):
+    return self._families
+
+  def family(self, family_id):
+    for family in self._families:
+      if family['id'] == int(family_id):
+        return family
+
+    return None
 
   def variants(self, query=None, variant_ids=None):
     if variant_ids:
