@@ -1,7 +1,24 @@
 #!/usr/bin/env python
 # coding: utf-8
+"""
+write_mip_plugin.py
+
+Write a config file with the mip plugin settings
+
+Created by Måns Magnusson on 2014-10-17.
+Copyright (c) 2014 __MoonsoInc__. All rights reserved.
+"""
+
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import sys
+import os
+import click
 
 import configparser
+
+from codecs import open
 
 config = configparser.ConfigParser(allow_no_value=True)
 
@@ -254,5 +271,17 @@ config['Disease_associated_transcript'] = {'vcf_line': 'meta_information',
                                            'category': 'disease_description',
                                            }
 
-with open('plugin_mip.v0.0.0.ini', 'w') as configfile:
-    config.write(configfile)
+@click.command()
+@click.argument('outfile',
+                default='./plugin_mip.v0.0.0.ini',
+                type=click.Path()
+)
+def write_mip_plugin(outfile):
+    """Write a mip config file to 'outfile'."""
+    
+    with open(outfile, mode='w', encoding='utf-8') as configfile:
+        config.write(configfile)
+    
+
+if __name__ == '__main__':
+    write_mip_plugin()
