@@ -23,10 +23,13 @@ class FixtureAdapter(BaseAdapter):
 
     self.fixtures = (fixtures or [])
 
-  def find_all(self):
+  def variants(self, query=None, variant_ids=None):
+    if variant_ids:
+      return self._many_variants(variant_ids)
+
     return self.fixtures
 
-  def find_many(self, variant_ids):
+  def _many_variants(self, variant_ids):
     variants = []
 
     for variant in self.fixtures:
@@ -35,14 +38,14 @@ class FixtureAdapter(BaseAdapter):
 
     return variants
 
-  def find(self, variant_id):
+  def variant(self, variant_id):
     for variant in self.fixtures:
       if variant['id'] == int(variant_id):
         return variant
 
     return None
 
-  def create(self, variant):
+  def create_variant(self, variant):
     # Find out last ID
     try:
       last_id = self.fixtures[-1]['id']

@@ -4,7 +4,15 @@ from __future__ import absolute_import, unicode_literals
 
 class BaseAdapter(object):
 
-  """Base class skeleton for a backend adapter."""
+  """Base class skeleton for a backend adapter.
+
+  A fully featured (read-only) adapter should be able to fetch:
+
+  - All families (VCF files)
+  - A single family (including samples metadata)
+  - All variants (in a family/VCF)
+  - A single variant
+  """
 
   def __init__(self, app=None):
     super(BaseAdapter, self).__init__()
@@ -16,63 +24,54 @@ class BaseAdapter(object):
     """Lazy initialize extensions post-instansiation."""
     self.app = app
 
-  def find_all(self):
+  def families(self):
+    """Fetches all families from the backend.
+
+    This should include metadata about samples. One family is in most
+    cases the same as a single VCF file along with metadata (pedigree.)
+
+    Yields:
+      dict: the next family of samples
+    """
+    raise NotImplementedError
+
+  def family(self, family_id):
+    """Fetches a single family based on the unique family ID.
+
+    Args:
+      family_id (str): unique family ID
+
+    Returns:
+      dict: a single family of samples
+    """
+    raise NotImplementedError
+
+  def variants(self, query=None, variant_ids=None):
     """Yields all variants (or the first 100) from the data store.
+
     Generators are encouraged.
+
+    Args:
+      query (dict, optional): query object with filter criteria
+      variant_ids (list, optional): list of IDs to match against
 
     Yields:
       dict: the next variant (at most 100)
 
     Examples:
 
-      >>> adapter.find_all()
-      [{'id': 1, 'CHROM': '2', ...}, ...]
+      >>> adapter.find_query(query={'RS': 'rs78426951'})
+        [{'id': 12, 'RS': 'rs78426951', ...}, ...]
 
     """
     raise NotImplementedError
 
-  def find_query(self, query):
-      """Yields all variants (or the first 100) from the data store
-      that matches the filter criteria in the ``query`` attribute.
-
-      Args:
-        query (dict): key-value filters to match the variants against
-
-      Yields:
-        dict: the next matching variant (at most 100)
-
-      Examples:
-
-        >>> adapter.find_query({'RS': 'rs78426951'})
-        [{'id': 12, 'RS': 'rs78426951', ...}, ...]
-
-      """
-      raise NotImplementedError
-
-  def find_many(self, variant_ids):
-      """Yields multiple variants matching a list of variant ids.
-      Ignores non-matching ids, don't raise exceptions in this case.
-
-      Args:
-        variant_ids (list): list of variant ids
-
-      Yields:
-        dict: the next matching variant
-
-      Examples:
-
-        >>> adapter.find_many([1, 2, 5])
-        [{'id': 1, ...}, {'id': 5, ...}]
-
-      """
-      raise NotImplementedError
-
-  def find(self, variant_id):
-      """Returns a single variant defined by it's unique id. Returns
+  def variant(self, variant_id):
+      """Returns a single variant defined by it's unique ID. Returns
       ``None`` if it can't find the requested variant.
 
       Args:
-        variant_id (str): unique variant id
+        variant_id (str): unique variant ID
 
       Returns:
         dict or None: variant from the data store or ``None``
@@ -85,15 +84,15 @@ class BaseAdapter(object):
       """
       raise NotImplementedError
 
-  def create(self, variant):
+  def create_variant(self, variant):
       """Creates a new variant in the database and returns it with
-      new unique id.
+      new unique ID.
 
       Args:
         variant (dict): content to be stored in the data store
 
       Returns:
-        dict: the content + the new unique id
+        dict: the content + the new unique ID
 
       Examples:
 
@@ -104,7 +103,7 @@ class BaseAdapter(object):
       """
       raise NotImplementedError
 
-  def update(self, variant):
+  def update_variant(self, variant):
       """Updates a variant uniquely matching the 'id' value in the
       ``variant`` attribute (used like in ``.find_query``. Should
       return updated attributes that might've changed.
@@ -117,7 +116,7 @@ class BaseAdapter(object):
       """
       raise NotImplementedError
 
-  def delete(self, variant):
+  def delete_variant(self, variant):
       """Removes a variant from the data store based on the 'id' value
       in the ``variant`` attribute.
 

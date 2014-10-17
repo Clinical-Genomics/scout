@@ -13,4 +13,4 @@ core = Blueprint('core', __name__, template_folder='templates')
 def cases():
   """View all cases."""
   # fetch variants from the data store
-  return dict(variants=current_app.db.find_all())
+  return dict(variants=current_app.db.variants())
