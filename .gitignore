@@ -20,6 +20,9 @@ lib64
 # Installer logs
 pip-log.txt
 
+# Mac OSX
+.DS_Store
+
 # Unit test / coverage reports
 .coverage
 .tox
