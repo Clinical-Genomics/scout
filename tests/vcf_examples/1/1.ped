@@ -1,0 +1,4 @@
+#FamilyID	SampleID	Father	Mother	Sex	Phenotype
+1	proband	father	mother	1	2
+1	mother	0	0	2	1
+1	father	0	0	1	1

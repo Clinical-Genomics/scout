@@ -15,6 +15,10 @@ recursive-include /translations *
 # configs
 recursive-include /configs *.ini
 
+# tests
+# example data
+recursive-include /tests/vcf_examples/* *.ped
+recursive-include /tests/vcf_examples/* *.vcf
 
 # excluding
 recursive-exclude  *.pyc
