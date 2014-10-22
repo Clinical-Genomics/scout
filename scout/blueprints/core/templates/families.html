@@ -6,7 +6,7 @@
 
   <ul>
   	{% for family in families %}
-  		<li>{{ family._id }}</li>
+  		<li>{{ family._id }} | {{ family.sample_ids | join(',') }}</li>
   	{% endfor %}
   </ul>
   

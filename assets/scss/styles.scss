@@ -1,26 +1,78 @@
-@import 'bourbon';
-@import 'normalize';
+// Scout Global Styles
 
-html,
-body {
-  height: 100%;
-  width: 100%;
+// Make sure the charset is set appropriately
+@charset "utf-8";
 
-  overflow: auto;
+// Libraries
+@import "bourbon";
+@import "vendor/normalize";
+
+// Global Styles
+@import "global";
+
+// Components
+@import "components/menu-bar";
+
+.menu-bar {
+	padding: 1em;
+
+	// position
+	position: fixed;
+	top: 0px;
+	bottom: auto;
+	left: 0px;
+	right: 0px;
+	float: none;
+
+	z-index: 1;
+
+	// styles
+	box-shadow: 0px 1px 4px rgba(#000, .3);
+	background: $primary-color;
+	color: #fff;
+	font-weight: 500;
+
+	// debug
 }
 
-body {
-  background: #444;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+// clear the fixed nav-bar
+.menu-bar__padding {
+	height: 4em;
 }
 
-h1 {
-  color: white;
-  font-weight: normal;
-  font-size: 5ex;
-  text-align: center;
+.homescreen {}
+
+.homescreen__container {
+	height: 100%;
+	margin: 0 auto;
+	position: relative;
+	width: 80%;
+}
+
+.list {}
+
+.list__header {
+	padding: 1em;
+
+	color: rgba(#000, .6);
+}
+
+.list__item {
+	// position
+	padding: 1em;
+
+	// styles
+	background: $body-fg;
+	border-bottom: 1px solid #c4c4c4;
+	border-left: 1px solid #d3d3d3;
+	border-right: 1px solid #d3d3d3;
+	border-top: 1px solid #d3d3d3;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.07);
+
+	// interactions
+	cursor: pointer;
+
+	&:hover {
+		background: rgba($primary-color, .03);
+	}
 }

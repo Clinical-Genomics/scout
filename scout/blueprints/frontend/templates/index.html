@@ -3,8 +3,24 @@
 {% set page_title = _('Home') %}
 
 {% block body %}
-  <h1>{{ _('Flask App Template') }}</h1>
-  <p>Flask App is a Flask template/bootstrap application.</p>
+
+	<div class="homescreen">
+		<div class="menu-bar">
+			Scout
+		</div>
+
+		<div class="menu-bar__padding"></div>
+
+		<div class="homescreen__container">
+
+			<div class="list">
+				<div class="list__header">Family</div>
+
+				<div class="list__item">VCF 1</div>
+			</div>
+
+		</div>
+	</div>
 
   {% include 'footer.html' %}
 {% endblock %}

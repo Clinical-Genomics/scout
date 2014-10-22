@@ -10,10 +10,13 @@ var sass         = require('gulp-sass');
 var bourbon      = require('node-bourbon');
 var autoprefixer = require('gulp-autoprefixer');
 
+// Base target directory
+base_dir = 'scout/static'
+
 // Browser-sync task, only cares about compiled CSS
 gulp.task('browser-sync', function() {
   browserSync({
-    files: 'public/css/*.css',
+    files: base_dir + '/css/*.css',
     proxy: {
       port: 5000,
     },
@@ -23,7 +26,7 @@ gulp.task('browser-sync', function() {
 // Copy static assets
 gulp.task('bs-reload', function () {
   gulp.src('assets/*.html')
-    .pipe(gulp.dest('public/'))
+    .pipe(gulp.dest(base_dir))
     .pipe(reload({stream: true}))
 });
 
@@ -35,7 +38,7 @@ gulp.task('sass', function () {
       errLogToConsole: true
     }))
     .pipe(autoprefixer())
-    .pipe(gulp.dest('public/css/'))
+    .pipe(gulp.dest(base_dir + '/css/'))
     .pipe(reload({stream: true}));
 });
 
