@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 
 from .ext.backend import FixtureAdapter
+from .ext.backend import VcfAdapter
 
 
 class BaseConfig(object):
@@ -56,7 +57,7 @@ class DefaultConfig(BaseConfig):
   # Session lifespan
   SESSION_DAYS = 30
 
-  DB = FixtureAdapter
+  DB = VcfAdapter
 
 
 class TestConfig(BaseConfig):

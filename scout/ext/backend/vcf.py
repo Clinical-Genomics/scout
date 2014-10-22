@@ -10,43 +10,45 @@ import click
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
 
-class VcfAdapter():
+from . import BaseAdapter
+
+class VcfAdapter(BaseAdapter):
   """docstring for API"""
   # , app
   # init_app
-  def __init__(self):
+  def __init__(self, app=None):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
-    
+
     # combine path to the local development fixtures
     project_root = '/vagrant/scout'
     families_path = os.path.join(project_root, 'tests/vcf_examples')
-    
+
     self._families = []
     self._variants = {} # Dict like {family_id: variant_parser}
     ################################### TEMPORARY SOLUTION #######################################
     # We should loop over the files in the vcf directory later
     family_1_path = os.path.join(project_root, 'tests/vcf_examples/1/1.ped')
     family_2_path = os.path.join(project_root, 'tests/vcf_examples/2/2.ped')
-    
+
     variants_1_path = os.path.join(project_root, 'tests/vcf_examples/1/test_vcf.vcf')
     variants_2_path = os.path.join(project_root, 'tests/vcf_examples/2/test_vcf.vcf')
-    
+
     ##############################################################################################
-    
+
     self._families.append(self.get_family(family_1_path))
     self._families.append(self.get_family(family_2_path))
-    
-    self._variants['1'] = vcf_parser.VCFParser(infile = variants_1_path) 
-    self._variants['2'] = vcf_parser.VCFParser(infile = variants_2_path) 
-    
-    
+
+    self._variants['1'] = vcf_parser.VCFParser(infile = variants_1_path)
+    self._variants['2'] = vcf_parser.VCFParser(infile = variants_2_path)
+
+
   def get_family(self, family_file):
     """Take a family file and return the family on the specified format."""
     family_parser = ped_parser.FamilyParser(family_file)
     return family_parser.get_json()[0]
-    
-  
+
+
   def families(self):
     return self._families
 
@@ -54,17 +56,17 @@ class VcfAdapter():
     for family in self._families:
       if family['id'] == family_id:
         return family
-    
+
     return None
-  
+
   def variants(self, family, query=None, variant_ids=None, nr_of_variants = 100):
-    
+
     # if variant_ids:
     #   return self._many_variants(variant_ids)
     def format_variant(variant):
       """Return the variant in a format specified for scout."""
       return variant
-    
+
     variants = []
     i = 0
     for variant in self._variants[family]:
@@ -73,21 +75,21 @@ class VcfAdapter():
         i += 1
       else:
         return
-  
+
   def _many_variants(self, variant_ids):
     variants = []
-    
+
     for variant in self._variants:
       if variant['id'] in variant_ids:
         variants.append(variant)
-    
+
     return variants
 
   def variant(self, variant_id):
     for variant in self._variants:
       if variant['id'] == int(variant_id):
         return variant
-    
+
     return None
 
   def create_variant(self, variant):
@@ -96,12 +98,12 @@ class VcfAdapter():
       last_id = self._variants[-1]['id']
     except IndexError:
       last_id = 0
-    
+
     next_id = last_id + 1
-    
+
     # Assign id to the new variant
     variant['id'] = next_id
-    
+
     # Add new variant to the list
     self._variants.append(variant)
 
@@ -130,6 +132,6 @@ def cli():
     print(my_vcf._families)
     for variant in my_vcf.variants('1'):
       print(variant)
-    
+
 if __name__ == '__main__':
     cli()
