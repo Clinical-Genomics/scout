@@ -13,7 +13,7 @@
 	"gene_ids": [{
 		"ensembl": "ENSG00000027847",
 		"hgnc_symbol": "B4GALT7"
-	}],
+	  }],
 
 	"set": "Intersection"
   },

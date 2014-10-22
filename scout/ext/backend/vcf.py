@@ -6,22 +6,17 @@ import json
 import os
 import click
 
-# from .base import BaseAdapter
+from .base import BaseAdapter
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
 
-class VcfAdapter():
+class VcfAdapter(BaseAdapter):
   """docstring for API"""
-  # , app
-  # init_app
-  def __init__(self):
+  
+  def init_app(self, app):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
-    
-    # combine path to the local development fixtures
     project_root = '/vagrant/scout'
-    families_path = os.path.join(project_root, 'tests/vcf_examples')
-    
     self._families = []
     self._variants = {} # Dict like {family_id: variant_parser}
     ################################### TEMPORARY SOLUTION #######################################
@@ -33,6 +28,18 @@ class VcfAdapter():
     variants_2_path = os.path.join(project_root, 'tests/vcf_examples/2/test_vcf.vcf')
     
     ##############################################################################################
+    families_path = os.path.join(project_root, 'tests/vcf_examples')
+    for root, dirs, files in os.walk(families_path):
+        for file in files:
+          print('root: %s, dirs: %s , files: %s , file: %s' % (str(root), str(dirs), str(files), str(file)))
+          print(os.path.splitext(file))
+          if os.path.splitext(file)[-1] == '.ped':
+            print('PED file! %s' % file)
+          if os.path.splitext(file)[-1] == '.vcf':
+              print('VCF file! %s' % file)
+          if os.path.splitext(file)[-1] == '.gz':
+            if os.path.splitext(file)[0][-1] == '.gz':
+              print('Zipped VCF file! %s' % file)
     
     self._families.append(self.get_family(family_1_path))
     self._families.append(self.get_family(family_2_path))
@@ -127,6 +134,7 @@ class VcfAdapter():
 def cli():
     """Test the vcf class."""
     my_vcf = VcfAdapter()
+    my_vcf.init_app('app')
     print(my_vcf._families)
     for variant in my_vcf.variants('1'):
       print(variant)
