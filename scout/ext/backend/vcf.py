@@ -6,11 +6,10 @@ import json
 import os
 import click
 
-# from .base import BaseAdapter
+from . import BaseAdapter
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
 
-from . import BaseAdapter
 
 class VcfAdapter(BaseAdapter):
   """docstring for API"""
@@ -19,11 +18,11 @@ class VcfAdapter(BaseAdapter):
   def __init__(self, app=None):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
-
+    
     # combine path to the local development fixtures
     project_root = '/vagrant/scout'
     cases_path = os.path.join(project_root, 'tests/vcf_examples')
-
+    
     self._cases = []
     self._variants = {} # Dict like {case_id: variant_parser}
     ################################### TEMPORARY SOLUTION #######################################
@@ -35,6 +34,18 @@ class VcfAdapter(BaseAdapter):
     variants_2_path = os.path.join(project_root, 'tests/vcf_examples/2/test_vcf.vcf')
 
     ##############################################################################################
+    cases_path = os.path.join(project_root, 'tests/vcf_examples')
+    for root, dirs, files in os.walk(cases_path):
+        for file in files:
+          print('root: %s, dirs: %s , files: %s , file: %s' % (str(root), str(dirs), str(files), str(file)))
+          print(os.path.splitext(file))
+          if os.path.splitext(file)[-1] == '.ped':
+            print('PED file! %s' % file)
+          if os.path.splitext(file)[-1] == '.vcf':
+              print('VCF file! %s' % file)
+          if os.path.splitext(file)[-1] == '.gz':
+            if os.path.splitext(file)[0][-1] == '.gz':
+              print('Zipped VCF file! %s' % file)
 
     self._cases.append(self.get_case(case_1_path))
     self._cases.append(self.get_case(case_2_path))
@@ -47,8 +58,8 @@ class VcfAdapter(BaseAdapter):
     """Take a case file and return the case on the specified format."""
     case_parser = ped_parser.FamilyParser(case_file)
     return case_parser.get_json()[0]
-
-
+  
+  
   def cases(self):
     return self._cases
 
@@ -56,11 +67,9 @@ class VcfAdapter(BaseAdapter):
     for case in self._cases:
       if case['id'] == case_id:
         return case
-
-    return None
-
+  
   def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100):
-
+  
     # if variant_ids:
     #   return self._many_variants(variant_ids)
     def format_variant(variant):
@@ -129,7 +138,12 @@ class VcfAdapter(BaseAdapter):
 def cli():
     """Test the vcf class."""
     my_vcf = VcfAdapter()
+<<<<<<< HEAD
     print(my_vcf._cases)
+=======
+    my_vcf.init_app('app')
+    print(my_vcf._families)
+>>>>>>> feature/check_configs
     for variant in my_vcf.variants('1'):
       print(variant)
 
