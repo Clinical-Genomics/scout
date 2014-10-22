@@ -8,9 +8,9 @@ class BaseAdapter(object):
 
   A fully featured (read-only) adapter should be able to fetch:
 
-  - All families (VCF files)
-  - A single family (including samples metadata)
-  - All variants (in a family/VCF)
+  - All cases (VCF files)
+  - A single case (including samples metadata)
+  - All variants (in a case/VCF)
   - A single variant
   """
 
@@ -24,25 +24,25 @@ class BaseAdapter(object):
     """Lazy initialize extensions post-instansiation."""
     self.app = app
 
-  def families(self):
-    """Fetches all families from the backend.
+  def cases(self):
+    """Fetches all cases from the backend.
 
-    This should include metadata about samples. One family is in most
+    This should include metadata about samples. One case is in most
     cases the same as a single VCF file along with metadata (pedigree.)
 
     Yields:
-      dict: the next family of samples
+      dict: the next case of samples
     """
     raise NotImplementedError
 
-  def family(self, family_id):
-    """Fetches a single family based on the unique family ID.
+  def case(self, case_id):
+    """Fetches a single case based on the unique case ID.
 
     Args:
-      family_id (str): unique family ID
+      case_id (str): unique case ID
 
     Returns:
-      dict: a single family of samples
+      dict: a single case of samples
     """
     raise NotImplementedError
 

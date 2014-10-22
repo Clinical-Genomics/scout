@@ -22,44 +22,44 @@ class VcfAdapter(BaseAdapter):
 
     # combine path to the local development fixtures
     project_root = '/vagrant/scout'
-    families_path = os.path.join(project_root, 'tests/vcf_examples')
+    cases_path = os.path.join(project_root, 'tests/vcf_examples')
 
-    self._families = []
-    self._variants = {} # Dict like {family_id: variant_parser}
+    self._cases = []
+    self._variants = {} # Dict like {case_id: variant_parser}
     ################################### TEMPORARY SOLUTION #######################################
     # We should loop over the files in the vcf directory later
-    family_1_path = os.path.join(project_root, 'tests/vcf_examples/1/1.ped')
-    family_2_path = os.path.join(project_root, 'tests/vcf_examples/2/2.ped')
+    case_1_path = os.path.join(project_root, 'tests/vcf_examples/1/1.ped')
+    case_2_path = os.path.join(project_root, 'tests/vcf_examples/2/2.ped')
 
     variants_1_path = os.path.join(project_root, 'tests/vcf_examples/1/test_vcf.vcf')
     variants_2_path = os.path.join(project_root, 'tests/vcf_examples/2/test_vcf.vcf')
 
     ##############################################################################################
 
-    self._families.append(self.get_family(family_1_path))
-    self._families.append(self.get_family(family_2_path))
+    self._cases.append(self.get_case(case_1_path))
+    self._cases.append(self.get_case(case_2_path))
 
     self._variants['1'] = vcf_parser.VCFParser(infile = variants_1_path)
     self._variants['2'] = vcf_parser.VCFParser(infile = variants_2_path)
 
 
-  def get_family(self, family_file):
-    """Take a family file and return the family on the specified format."""
-    family_parser = ped_parser.FamilyParser(family_file)
-    return family_parser.get_json()[0]
+  def get_case(self, case_file):
+    """Take a case file and return the case on the specified format."""
+    case_parser = ped_parser.FamilyParser(case_file)
+    return case_parser.get_json()[0]
 
 
-  def families(self):
-    return self._families
+  def cases(self):
+    return self._cases
 
-  def family(self, family_id):
-    for family in self._families:
-      if family['id'] == family_id:
-        return family
+  def case(self, case_id):
+    for case in self._cases:
+      if case['id'] == case_id:
+        return case
 
     return None
 
-  def variants(self, family, query=None, variant_ids=None, nr_of_variants = 100):
+  def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100):
 
     # if variant_ids:
     #   return self._many_variants(variant_ids)
@@ -69,7 +69,7 @@ class VcfAdapter(BaseAdapter):
 
     variants = []
     i = 0
-    for variant in self._variants[family]:
+    for variant in self._variants[case]:
       if i < nr_of_variants:
         yield format_variant(variant)
         i += 1
@@ -129,7 +129,7 @@ class VcfAdapter(BaseAdapter):
 def cli():
     """Test the vcf class."""
     my_vcf = VcfAdapter()
-    print(my_vcf._families)
+    print(my_vcf._cases)
     for variant in my_vcf.variants('1'):
       print(variant)
 

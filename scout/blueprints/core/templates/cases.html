@@ -1,0 +1,13 @@
+{% extends 'layouts/base.html' %}
+
+{% block body %}
+  
+  <h1>Welcome to Cases</h1>
+
+  <ul>
+  	{% for case in cases %}
+  		<li>{{ case._id }} | {{ case.sample_ids | join(',') }}</li>
+  	{% endfor %}
+  </ul>
+  
+{% endblock %}
