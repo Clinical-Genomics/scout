@@ -16,6 +16,10 @@
 .menu-bar {
 	padding: 1em;
 
+	// flex
+	display: flex;
+	justify-content: space-between;
+
 	// position
 	position: fixed;
 	top: 0px;
@@ -49,7 +53,10 @@
 	width: 80%;
 }
 
-.list {}
+.list {
+	border-bottom: 1px solid #c4c4c4;
+	box-shadow: 0 1px 0 rgba(#000, .07);
+}
 
 .list__header {
 	padding: 1em;
@@ -63,14 +70,9 @@
 
 	// styles
 	background: $body-fg;
-	border-bottom: 1px solid #c4c4c4;
 	border-left: 1px solid #d3d3d3;
 	border-right: 1px solid #d3d3d3;
 	border-top: 1px solid #d3d3d3;
-	box-shadow: 0 1px 0 rgba(0,0,0,0.07);
-
-	// interactions
-	cursor: pointer;
 
 	&:hover {
 		background: rgba($primary-color, .03);
