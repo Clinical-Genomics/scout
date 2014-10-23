@@ -1,0 +1,26 @@
+{% extends 'layouts/base.html' %}
+
+{% set page_title = _('Case') %}
+
+{% block body %}
+
+	<div class="homescreen">
+		<div class="menu-bar">
+			<div>Scout</div>
+			<div><a href="{{ url_for('core.cases') }}">All cases</a></div>
+		</div>
+
+		<div class="menu-bar__padding"></div>
+
+		<div class="homescreen__container">
+
+			<h1>{{ case.id }}</h1>
+			<p>{{ case }}</p>
+
+			<p><a href="{{ url_for('core.variants', case_id=case.id) }}">All variants</a></p>
+
+		</div>
+	</div>
+
+  {% include 'footer.html' %}
+{% endblock %}

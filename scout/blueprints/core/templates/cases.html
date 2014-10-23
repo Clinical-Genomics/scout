@@ -1,12 +1,12 @@
 {% extends 'layouts/base.html' %}
 
-{% set page_title = _('Home') %}
+{% set page_title = _('Cases') %}
 
 {% block body %}
 
 	<div class="homescreen">
 		<div class="menu-bar">
-			<div></div>Scout
+			<div><i class="fa fa-bars fa-fw"></i> Scout</div>
 			<div>Cases</div>
 		</div>
 
@@ -15,12 +15,19 @@
 		<div class="homescreen__container">
 
 			<div class="list">
+
 				<div class="list__header">Case</div>
 
-
 				{% for case in cases %}
-		  		<div class="list__item">{{ case.id }}</div>
+		  		<div class="list__item">
+
+		  			<a href="{{ url_for('core.case', case_id=case.id) }}">
+		  				{{ case.id }}
+		  			</a>
+
+		  		</div>
 		  	{% endfor %}
+
 			</div>
 
 		</div>
