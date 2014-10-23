@@ -1,13 +1,30 @@
 {% extends 'layouts/base.html' %}
 
-{% block body %}
-  
-  <h1>Welcome to Cases</h1>
+{% set page_title = _('Home') %}
 
-  <ul>
-  	{% for case in cases %}
-  		<li>{{ case._id }} | {{ case.sample_ids | join(',') }}</li>
-  	{% endfor %}
-  </ul>
-  
+{% block body %}
+
+	<div class="homescreen">
+		<div class="menu-bar">
+			<div></div>Scout
+			<div>Cases</div>
+		</div>
+
+		<div class="menu-bar__padding"></div>
+
+		<div class="homescreen__container">
+
+			<div class="list">
+				<div class="list__header">Case</div>
+
+
+				{% for case in cases %}
+		  		<div class="list__item">{{ case.id }}</div>
+		  	{% endfor %}
+			</div>
+
+		</div>
+	</div>
+
+  {% include 'footer.html' %}
 {% endblock %}
