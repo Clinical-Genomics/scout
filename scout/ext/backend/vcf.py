@@ -138,12 +138,8 @@ class VcfAdapter(BaseAdapter):
 def cli():
     """Test the vcf class."""
     my_vcf = VcfAdapter()
-<<<<<<< HEAD
     print(my_vcf._cases)
-=======
     my_vcf.init_app('app')
-    print(my_vcf._families)
->>>>>>> feature/check_configs
     for variant in my_vcf.variants('1'):
       print(variant)
 
