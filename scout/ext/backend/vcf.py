@@ -16,9 +16,8 @@ from pprint import pprint as pp
 
 class VcfAdapter(BaseAdapter):
   """docstring for API"""
-  # , app
-  # init_app
-  def __init__(self,vcf_directory, config_file, app=None):
+  
+  def init_app(self, app, vcf_directory=None, config_file=None):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
     
@@ -34,7 +33,7 @@ class VcfAdapter(BaseAdapter):
     self.get_cases(cases_path) 
     
     for case in self._cases:
-      self._variants[case['id']] = vcf_parser.VCFParser(infile = case['id'])
+      self._variants[case['id']] = vcf_parser.VCFParser(infile = case['vcf_path'])
 
 
   def get_cases(self, cases_path):
@@ -67,7 +66,8 @@ class VcfAdapter(BaseAdapter):
                             'Could not find ped and/or vcf files. '
                               'See documentation.')
         # Store the path to variants as case id:s:
-        case['id'] = vcf_file
+        case['id'] = case['family_id']
+        case['vcf_path'] = vcf_file
         self._cases.append(case)
     
     return
@@ -179,11 +179,12 @@ class VcfAdapter(BaseAdapter):
 # )
 def cli(vcf_dir, config_file):
     """Test the vcf class."""
-    my_vcf = VcfAdapter(vcf_dir, config_file)
+    my_vcf = VcfAdapter()
+    my_vcf.init_app('app', vcf_dir, config_file)
+    
     print(my_vcf.cases())
     print('')
     
-    # my_vcf.init_app('app')
     for case in my_vcf._cases:
       for variant in my_vcf.variants(case['id']):
         pp(variant)

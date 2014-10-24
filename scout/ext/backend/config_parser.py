@@ -66,7 +66,7 @@ vcf_data_field_separator = string
 class ConfigParser(ConfigObj):
   """Class for holding information from config file"""
   def __init__(self, config_file, indent_type='  ', encoding='utf-8'):
-    super(ConfigParser, self).__init__(infile=config_file, indent_type=indent_type, encoding=encoding, configspec=SPEC)
+    super(ConfigParser, self).__init__(infile=config_file, indent_type=indent_type, encoding=encoding)
     # validator = Validator()
     # result = self.validate(validator)
     # if result != True:
