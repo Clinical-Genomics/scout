@@ -23,6 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Flask development port
   config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
 
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false

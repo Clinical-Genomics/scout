@@ -18,7 +18,7 @@ $font-weight-bold: bold !default;
 $body-bg: #eee !default;
 $body-fg: #fff !default;
 $body-font-color: #222 !default;
-$body-font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !default;
+$body-font-family: Roboto, "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !default;
 $body-font-weight: $font-weight-normal !default;
 $body-font-style: normal !default;
 
@@ -26,8 +26,8 @@ $body-font-style: normal !default;
 $font-smoothing: antialiased !default;
 
 // Application Colors
-$primary-color: #4285f4 !default;
-$secondary-color: #E7E7E7 !default;
+$primary-color: #00bcd4 !default;
+$secondary-color: #0097a7 !default;
 $alert-color: #F04124 !default;
 $info-color: #A0D3E8 !default;
 $success-color: #43AC6A !default;
