@@ -666,12 +666,27 @@ select {
     font-weight: 400; }
 
 .case-status {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center; }
+
+.case-status-icon {
   height: 1em;
   width: 1em;
   background-color: #4dd0e1;
   border-radius: 1em;
   margin-left: 1em;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3); }
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+  margin-right: 0.3em; }
+
+.case-status-text {
+  font-size: 0.6em;
+  text-transform: uppercase; }
 
 .case-header-lead:not(:last-child), .case-header-variants:not(:last-child) {
   margin-bottom: 0.5em; }

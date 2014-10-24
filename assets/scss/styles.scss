@@ -198,12 +198,24 @@
 	}
 
 	.case-status {
+		display: flex;
+		align-items: center;
+	}
+
+	.case-status-icon {
 		height: 1em;
 		width: 1em;
 		background-color: #4dd0e1;
 		border-radius: 1em;
 		margin-left: 1em;
 		box-shadow: 0px 1px 4px rgba(#000, .3);
+
+		margin-right: .3em;
+	}
+
+	.case-status-text {
+		font-size: .6em;
+		text-transform: uppercase;
 	}
 
 	.case-header-item {}

@@ -11,20 +11,40 @@
 		<div class="display-list">
 
 			<div class="display-list-header">
+				<div class="display-list-header-item">Rank score</div>
+
+				<div class="display-list-header-item">HGNC</div>
+
+				<div class="display-list-header-item">1000 Genomes</div>
+
+				<div class="display-list-header-item">PolyPhen</div>
+
 				<div class="display-list-header-item">Chromosome</div>
 
-				<div class="display-list-header-item">Position</div>
-
-				<div class="display-list-header-item">ID</div>
+				<div class="display-list-header-item">dbSNP ID</div>
 
 				<div class="display-list-header-item">Alleles</div>
 			</div>
 
 			{% for variant in variants %}
 				<a class="display-list-row" href="{{ url_for('core.variant', variant_id=variant.variant_id) }}">
-					<div class="display-list-row-item">Chr{{ variant.CHROM }}</div>
+					<div class="display-list-row-item">
+						{{ variant.rank_score or 23 }}
+					</div>
 
-					<div class="display-list-row-item">{{ variant.POS }}</div>
+					<div class="display-list-row-item">
+						{{ variant.hgnc_symbol or 'NCF2' }}
+					</div>
+
+					<div class="display-list-row-item">
+						{{ variant.thusand_genomes or 0.003 }}
+					</div>
+
+					<div class="display-list-row-item">
+						{{ variant.poly_phen or 0.999 }}
+					</div>
+
+					<div class="display-list-row-item">Chr{{ variant.CHROM }}</div>
 
 					<div class="display-list-row-item">{{ variant.ID }}</div>
 
