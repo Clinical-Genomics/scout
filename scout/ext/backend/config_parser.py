@@ -25,12 +25,14 @@ from pprint import pprint as pp
 
 class ConfigParser(ConfigObj):
   """Class for holding information from config file"""
-  def __init__(self, config_file):
-    super(ConfigParser, self).__init__(infile=config_file, indent_type='  ', encoding='utf-8')
+  def __init__(self, config_file, indent_type='  ', encoding='utf-8'):
+    super(ConfigParser, self).__init__(infile=config_file, indent_type=indent_type, encoding=encoding)
+    
     self.collections = {'core':[],
                         'common':[],
                         'case':[],
                         'config_info':[],
+                        'specific':[]
                 }
     self.categories = {'variant_position':[],
                       'variant_id':[],

@@ -7,6 +7,8 @@ import os
 import click
 
 from . import BaseAdapter
+from .config_parser import ConfigParser
+
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
 
@@ -15,49 +17,59 @@ class VcfAdapter(BaseAdapter):
   """docstring for API"""
   # , app
   # init_app
-  def __init__(self, app=None):
+  def __init__(self,vcf_directory, config_file, app=None):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
     
     # combine path to the local development fixtures
     project_root = '/vagrant/scout'
-    cases_path = os.path.join(project_root, 'tests/vcf_examples')
+    cases_path = os.path.join(project_root,vcf_directory)
+    
+    self.config_object = ConfigParser(config_file)
     
     self._cases = []
     self._variants = {} # Dict like {case_id: variant_parser}
-    ################################### TEMPORARY SOLUTION #######################################
-    # We should loop over the files in the vcf directory later
-    case_1_path = os.path.join(project_root, 'tests/vcf_examples/1/1.ped')
-    case_2_path = os.path.join(project_root, 'tests/vcf_examples/2/2.ped')
+    
+    self.get_cases(cases_path) 
+    
+    for case in self._cases:
+      self._variants[case['id']] = vcf_parser.VCFParser(infile = case['id'])
 
-    variants_1_path = os.path.join(project_root, 'tests/vcf_examples/1/test_vcf.vcf')
-    variants_2_path = os.path.join(project_root, 'tests/vcf_examples/2/test_vcf.vcf')
 
-    ##############################################################################################
-    cases_path = os.path.join(project_root, 'tests/vcf_examples')
+  def get_cases(self, cases_path):
+    """Take a case file and return the case on the specified format."""
+    
+    ########### Loop over the case folders. Structure is described in documentation ###########
+    
     for root, dirs, files in os.walk(cases_path):
+      if files:
+        ped_file = None
+        vcf_file = None
+        zipped_vcf_file = None
+        case = None
         for file in files:
-          print('root: %s, dirs: %s , files: %s , file: %s' % (str(root), str(dirs), str(files), str(file)))
-          print(os.path.splitext(file))
           if os.path.splitext(file)[-1] == '.ped':
-            print('PED file! %s' % file)
+            ped_file = os.path.join(root, file)
+            case_parser = ped_parser.FamilyParser(ped_file)
+            case = case_parser.get_json()[0]
           if os.path.splitext(file)[-1] == '.vcf':
-              print('VCF file! %s' % file)
+            vcf_file = os.path.join(root, file)
           if os.path.splitext(file)[-1] == '.gz':
             if os.path.splitext(file)[0][-1] == '.gz':
-              print('Zipped VCF file! %s' % file)
-
-    self._cases.append(self.get_case(case_1_path))
-    self._cases.append(self.get_case(case_2_path))
-
-    self._variants['1'] = vcf_parser.VCFParser(infile = variants_1_path)
-    self._variants['2'] = vcf_parser.VCFParser(infile = variants_2_path)
-
-
-  def get_case(self, case_file):
-    """Take a case file and return the case on the specified format."""
-    case_parser = ped_parser.FamilyParser(case_file)
-    return case_parser.get_json()[0]
+              zipped_vcf_file = os.path.join(root, file)
+        # If no vcf we search for zipped files
+        if not vcf_file:
+          vcf_file = zipped_vcf_file
+        # If ped and vcf are not found exit:
+        if not (ped_file and vcf_file):
+          raise SyntaxError('Wrong folder structure in vcf directories. '
+                            'Could not find ped and/or vcf files. '
+                              'See documentation.')
+        # Store the path to variants as case id:s:
+        case['id'] = vcf_file
+        self._cases.append(case)
+    
+    return
   
   
   def cases(self):
@@ -68,19 +80,38 @@ class VcfAdapter(BaseAdapter):
       if case['id'] == case_id:
         return case
   
+  
+  def format_variant(self, variant):
+    """Return the variant in a format specified for scout."""
+    
+    def get_value(variant, category, member):
+      """Return the correct value from the variant according to rules in config parser.
+          vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
+      # If information is on the core we can access it directly through the vcf key
+      value = None
+      if self.config_object[member]['vcf_field'] not in ['INFO', 'FORMAT', 'other', 'individual']:
+        value = variant[self.config_object[member]['vcf_field']]
+      
+      return value
+      
+    formated_variant = {}
+    for category in self.config_object.categories:
+      for member in self.config_object.categories[category]:
+        print('Member: %s, Value: %s' % (member, get_value(variant, category, member)))
+      print('')
+    return variant
+  
+  
   def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100):
   
     # if variant_ids:
     #   return self._many_variants(variant_ids)
-    def format_variant(variant):
-      """Return the variant in a format specified for scout."""
-      return variant
 
     variants = []
     i = 0
     for variant in self._variants[case]:
       if i < nr_of_variants:
-        yield format_variant(variant)
+        yield self.format_variant(variant)
         i += 1
       else:
         return
@@ -119,29 +150,34 @@ class VcfAdapter(BaseAdapter):
     return variant
 
 @click.command()
-# @click.argument('vcf_file',
-#                 nargs=1,
-#                 type=click.Path(exists=True)
-# )
+@click.argument('vcf_dir',
+                nargs=1,
+                type=click.Path(exists=True)
+)
 # @click.argument('ped_file',
 #                 nargs=1,
 #                 type=click.Path(exists=True)
 # )
-# @click.argument('config_file',
-#                 nargs=1,
-#                 type=click.Path(exists=True)
-# )
+@click.argument('config_file',
+                nargs=1,
+                type=click.Path(exists=True)
+)
 # @click.argument('outfile',
 #                 nargs=1,
 #                 type=click.File('w')
 # )
-def cli():
+def cli(vcf_dir, config_file):
     """Test the vcf class."""
-    my_vcf = VcfAdapter()
-    print(my_vcf._cases)
-    my_vcf.init_app('app')
-    for variant in my_vcf.variants('1'):
-      print(variant)
+    my_vcf = VcfAdapter(vcf_dir, config_file)
+    print(my_vcf.cases())
+    print('')
+    
+    # my_vcf.init_app('app')
+    for case in my_vcf._cases:
+      for variant in my_vcf.variants(case['id']):
+        pass
+    #     print(variant)
+    #   print('')
 
 if __name__ == '__main__':
     cli()

@@ -1,0 +1,65 @@
+[
+  {
+    "id" : "54367692ec3a4838edbf5626",
+    "CHROM" : "3",
+    "POS" : 98300354,
+    "REF" : "A",
+    "ALT" : "[C]",
+     "GeneticModels" : [
+         "AR_comp", 
+         "AD"
+     ],
+     "HGNC_symbol" : [
+         "CPOX"
+     ],
+     "1000GMAF" : 0.01,
+     "CADD" : [
+         22.6
+     ],
+    "FILTER" : [ 
+                "VQSRTrancheBOTH99.90to100.00"
+            ],
+    "QUAL" : 164.83,
+    "GeneticModels" : [ 
+          "AR_comp", 
+          "AD"
+        ],
+    "samples" : [ 
+            {
+            "GT" : "0/1",
+             "AD" : [ 
+                     39, 
+                     12
+                  ],
+             "GQ" : 73,
+             "sample_id" : "1-1-3A",
+             "PL" : [
+                     73, 
+                     0, 
+                     977
+                  ],
+            "DP" : ""
+            }, 
+            {
+            "GT" : "0/1",
+            "AD" : [ 
+                    38, 
+                    15
+                  ],
+            "GQ" : 99,
+            "sample_id" : "1-1-4A",
+            "PL" : [ 
+                    143, 
+                    0, 
+                    1293
+                  ],
+            "DP" : ""
+            }
+            ],
+    "family_id" : "1",
+    "compounds" : [ 
+            "14_86db84a7a6aeabcf53a7408488bede6f", 
+            "8_196142d47dc2eb7885afc914792a496b"
+            ],
+  }
+]

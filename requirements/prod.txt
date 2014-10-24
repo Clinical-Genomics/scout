@@ -43,3 +43,5 @@ Flask-Babel
 path.py
 configparser
 click
+ped_parser>=8.1
+vcf_parser
