@@ -12,6 +12,7 @@ from .config_parser import ConfigParser
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
 
+from pprint import pprint as pp
 
 class VcfAdapter(BaseAdapter):
   """docstring for API"""
@@ -89,17 +90,27 @@ class VcfAdapter(BaseAdapter):
           vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
       # If information is on the core we can access it directly through the vcf key
       value = None
+      # In this case we read straight from the vcf line
       if self.config_object[member]['vcf_field'] not in ['INFO', 'FORMAT', 'other', 'individual']:
         value = variant[self.config_object[member]['vcf_field']]
       
+      # In this case we need to check the info dictionary:
+      elif self.config_object[member]['vcf_field'] == 'INFO':
+        value = variant['info_dict'].get(self.config_object[member]['vcf_info_key'], None)
+      
+      # Check if we should return a list:
+      if value and self.config_object[member]['vcf_data_field_number'] != '1':
+        value = value.split(self.config_object[member]['vcf_data_field_separator'])
       return value
       
     formated_variant = {}
+    formated_variant['id'] = variant['variant_id']
     for category in self.config_object.categories:
       for member in self.config_object.categories[category]:
-        print('Member: %s, Value: %s' % (member, get_value(variant, category, member)))
-      print('')
-    return variant
+        if category != 'config_info':
+          formated_variant[self.config_object[member]['internal_record_key']] = get_value(variant, category, member)
+    
+    return formated_variant
   
   
   def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100):
@@ -175,8 +186,7 @@ def cli(vcf_dir, config_file):
     # my_vcf.init_app('app')
     for case in my_vcf._cases:
       for variant in my_vcf.variants(case['id']):
-        pass
-    #     print(variant)
+        pp(variant)
     #   print('')
 
 if __name__ == '__main__':
