@@ -23,30 +23,29 @@ from vcf_parser import parser as vcf_parser
 
 from pprint import pprint as pp
 
-class ConfigParser(object):
+class ConfigParser(ConfigObj):
   """Class for holding information from config file"""
   def __init__(self, config_file):
-    super(ConfigParser, self).__init__()
-    self._cfg = ConfigObj(infile=config_file, indent_type='    ', encoding='utf-8')
-    self.collections = {'core':[], 
-                    'common':[], 
-                    'case':[], 
-                    'config_info':[], 
+    super(ConfigParser, self).__init__(infile=config_file, indent_type='  ', encoding='utf-8')
+    self.collections = {'core':[],
+                        'common':[],
+                        'case':[],
+                        'config_info':[],
                 }
-    self.categories = {'variant_position':[], 
-                    'variant_id':[], 
-                    'variant_information':[],
-                    'allele_frequency':[],
-                    'deleteriousness':[],
-                    'inheritance_models':[],
-                    'config_info':[], 
-                    'gene_identifier':[]
+    self.categories = {'variant_position':[],
+                      'variant_id':[],
+                      'variant_information':[],
+                      'allele_frequency':[],
+                      'deleteriousness':[],
+                      'inheritance_models':[],
+                      'config_info':[],
+                      'gene_identifier':[]
                 }
-    
-    self.plugins = [plugin for plugin in self._cfg.keys()]
+
+    self.plugins = [plugin for plugin in self.keys()]
     for plugin in self.plugins:
-        self.collections[self._cfg[plugin]['collection']].append(plugin)
-        self.categories[self._cfg[plugin]['category']].append(plugin)
+      self.collections[self[plugin]['collection']].append(plugin)
+      self.categories[self[plugin]['category']].append(plugin)
     
   def write_config(self, outfile):
     """Write the config file to a new file"""
@@ -74,8 +73,8 @@ def read_config(config_file, outfile):
     my_config_reader = ConfigParser(config_file)
     pp(my_config_reader.collections)
     pp(my_config_reader.categories)
-    if outfile:
-        my_config_reader.write_config(outfile)
+    # if outfile:
+    #     my_config_reader.write_config(outfile)
     
     
 if __name__ == '__main__':
