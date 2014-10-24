@@ -1,29 +1,27 @@
 [
   {
     "id" : "54367692ec3a4838edbf5626",
-    "CHROM" : "3",
-    "POS" : 98300354,
-    "REF" : "A",
-    "ALT" : "[C]",
-     "GeneticModels" : [
+    "chrom" : "3",
+    "position" : 98300354,
+    "reference" : "A",
+    "alternative" : [
+                    "C"
+                  ],
+     "genetic_models" : [
          "AR_comp", 
          "AD"
      ],
-     "HGNC_symbol" : [
+     "hgnc_symbol" : [
          "CPOX"
      ],
-     "1000GMAF" : 0.01,
-     "CADD" : [
+     "thousand_genomes_frequency" : 0.01,
+     "cadd_score" : [
          22.6
      ],
-    "FILTER" : [ 
+    "filter" : [ 
                 "VQSRTrancheBOTH99.90to100.00"
             ],
-    "QUAL" : 164.83,
-    "GeneticModels" : [ 
-          "AR_comp", 
-          "AD"
-        ],
+    "quality" : 164.83,
     "samples" : [ 
             {
             "GT" : "0/1",
