@@ -21,18 +21,15 @@
 			{% for case in cases %}
 	  		<div class="display-list-row">
 
-	  			<div class="display-list-row-title">
-	  				<a href="{{ url_for('core.case', case_id=case.id) }}">
-		  				{{ case.id }}
-		  			</a>
-	  			</div>
+	  			<a href="{{ url_for('core.case', case_id=case.id) }}"
+	  				 class="display-list-row-title">
+	  				{{ case.id }}
+	  			</a>
 
-	  			<div class="display-list-row-item">
-	  				8 days ago
-	  			</div>
+	  			<div class="display-list-row-item">8 days ago</div>
 
-	  			<a  class="display-list-row-item"
-	  					href="{{ url_for('core.variants', case_id=case.id) }}">
+	  			<a href="{{ url_for('core.variants', case_id=case.id) }}"
+	  					 class="display-list-row-item">
 	  				Variants
 	  			</a>
 

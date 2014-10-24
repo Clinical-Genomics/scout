@@ -112,11 +112,11 @@
 
 .display-list-row {
 	// position
-	padding: .8em;
 
 	// flex
 	display: flex;
 	justify-content: space-between;
+	align-items: stretch;
 
 	// styles
 	background: $body-fg;
@@ -133,6 +133,7 @@
 .display-list-row-title {
 	font-weight: bold;
 	width: 50%;
+	padding: .8em;
 
 	> a {
 		text-decoration: none;
@@ -141,6 +142,7 @@
 
 .display-list-row-item {
 	flex: 1;
+	padding: .8em;
 	color: rgba(#000, .5);
 }
 
@@ -148,8 +150,7 @@
 	display: inline-block;
 	float: right;
 	margin-left: -1.5em;
-	margin-top: -.8em;
-	padding: 1em;
+	margin-top: .8em;
 	position: absolute;
 
 	// styles
