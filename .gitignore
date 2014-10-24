@@ -43,8 +43,9 @@ dev
 output/*.html
 output/*/index.html
 
-# Sphinx
+# Sphinx/MkDocs
 docs/_build
+site/
 
 # Cookiecutter
 output/
