@@ -1,31 +1,38 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base-core.html' %}
 
 {% set page_title = _('Variants') %}
 
-{% block body %}
+{% block menu_title %}
+	<a href="{{ url_for('core.case', case_id=case_id) }}">Case {{ case_id }}</a>
+{% endblock %}
 
-	<div class="homescreen">
-		<div class="menu-bar">
-			<div>Scout</div>
-		</div>
+{% block core_container %}
+	<div class="display-list-container">
+		<div class="display-list">
 
-		<div class="menu-bar__padding"></div>
+			<div class="display-list-header">
+				<div class="display-list-header-item">Chromosome</div>
 
-		<div class="homescreen__container">
+				<div class="display-list-header-item">Position</div>
+
+				<div class="display-list-header-item">ID</div>
+
+				<div class="display-list-header-item">Alleles</div>
+			</div>
 
 			{% for variant in variants %}
+				<a class="display-list-row" href="{{ url_for('core.variant', variant_id=variant.variant_id) }}">
+					<div class="display-list-row-item">Chr{{ variant.CHROM }}</div>
 
-	  		<div class="list__item">
-	  			{{ variant }}
-	  			<a href="{{ url_for('core.variant', variant_id=variant.id) }}">
-	  				{{ variant.id }}
-	  			</a>
+					<div class="display-list-row-item">{{ variant.POS }}</div>
 
-	  		</div>
-	  	{% endfor %}
+					<div class="display-list-row-item">{{ variant.ID }}</div>
 
+					<div class="display-list-row-item">
+						{{ variant.REF }} / {{ variant.ALT }}
+					</div>
+				</a>
+			{% endfor %}
 		</div>
 	</div>
-
-  {% include 'footer.html' %}
 {% endblock %}

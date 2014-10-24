@@ -1,37 +1,48 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base-core.html' %}
 
 {% set page_title = _('Cases') %}
 
-{% block body %}
+{% block menu_title %}
+	Cases
+{% endblock %}
 
-	<div class="homescreen">
-		<div class="menu-bar">
-			<div><i class="fa fa-bars fa-fw"></i> Scout</div>
-			<div>Cases</div>
-		</div>
+{% block core_container %}
+	<div class="display-list-container">
+		<div class="display-list">
 
-		<div class="menu-bar__padding"></div>
+			<div class="display-list-header">
+				<div class="display-list-header-title">Case</div>
 
-		<div class="homescreen__container">
+				<div class="display-list-header-item">Last updated</div>
 
-			<div class="list">
+				<div class="display-list-header-item">Variants</div>
+			</div>
 
-				<div class="list__header">Case</div>
+			{% for case in cases %}
+	  		<div class="display-list-row">
 
-				{% for case in cases %}
-		  		<div class="list__item">
-
-		  			<a href="{{ url_for('core.case', case_id=case.id) }}">
+	  			<div class="display-list-row-title">
+	  				<a href="{{ url_for('core.case', case_id=case.id) }}">
 		  				{{ case.id }}
 		  			</a>
+	  			</div>
 
-		  		</div>
-		  	{% endfor %}
+	  			<div class="display-list-row-item">
+	  				8 days ago
+	  			</div>
 
-			</div>
+	  			<a  class="display-list-row-item"
+	  					href="{{ url_for('core.variants', case_id=case.id) }}">
+	  				Variants
+	  			</a>
+
+	  			<div class="display-list-row-overflow">
+	  				<span class="fa fa-ellipsis-v fa-lg"></span>
+	  			</div>
+
+	  		</div>
+	  	{% endfor %}
 
 		</div>
 	</div>
-
-  {% include 'footer.html' %}
 {% endblock %}

@@ -1,22 +1,18 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base-frontend.html' %}
 
 {% set page_title = _('Home') %}
 
-{% block body %}
+{% block menu_title %}
+	<a href="{{ url_for('core.cases') }}">Cases</a>
+{% endblock %}
 
-	<div class="homescreen">
-		<div class="menu-bar">
-			<div>Scout</div>
-		</div>
+{% block core_container %}
 
-		<div class="menu-bar__padding"></div>
-
-		<div class="homescreen__container">
-
-			<a href="{{ url_for('core.cases') }}">Cases</a>
-
-		</div>
-	</div>
-
-  {% include 'footer.html' %}
+	{#{% if current_user %}
+		pass
+	{% else %}
+		<form accept-charset="UTF-8" action="/login" method="POST">
+			<button>Sign in</button>
+		</form>
+	{% endif %} #}
 {% endblock %}

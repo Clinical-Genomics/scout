@@ -1,25 +1,13 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base-core.html' %}
 
 {% set page_title = _('Variant') %}
 
-{% block body %}
+{% block menu_title %}
+	<a href="{{ url_for('core.variants') }}">All variants</a>
+{% endblock %}
 
-	<div class="homescreen">
-		<div class="menu-bar">
-			<div>Scout</div>
-			<div><a href="{{ url_for('core.variants') }}">All variants</a></div>
-		</div>
+{% block core_container %}
+	<h1>{{ variant.id }}</h1>
 
-		<div class="menu-bar__padding"></div>
-
-		<div class="homescreen__container">
-
-			<h1>{{ variant.id }}</h1>
-
-			<p>{{ variant }}</p>
-
-		</div>
-	</div>
-
-  {% include 'footer.html' %}
+	<p>{{ variant }}</p>
 {% endblock %}

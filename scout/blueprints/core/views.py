@@ -29,7 +29,7 @@ def case(case_id):
 def variants(case_id):
   """View all variants for a single case."""
   # fetch all variants for a specific case
-  return dict(variants=current_app.db.variants(case_id))
+  return dict(variants=current_app.db.variants(case_id), case_id=case_id)
 
 
 @core.route('/variants/<variant_id>')
