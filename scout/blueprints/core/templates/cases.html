@@ -1,13 +1,45 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base-core.html' %}
 
-{% block body %}
-  
-  <h1>Welcome to Cases</h1>
+{% set page_title = _('Cases') %}
 
-  <ul>
-  	{% for case in cases %}
-  		<li>{{ case._id }} | {{ case.sample_ids | join(',') }}</li>
-  	{% endfor %}
-  </ul>
-  
+{% block menu_title %}
+	Cases
+{% endblock %}
+
+{% block core_container %}
+	<div class="display-list-container">
+		<div class="display-list">
+
+			<div class="display-list-header">
+				<div class="display-list-header-title">Case</div>
+
+				<div class="display-list-header-item">Last updated</div>
+
+				<div class="display-list-header-item">Variants</div>
+			</div>
+
+			{% for case in cases %}
+	  		<div class="display-list-row">
+
+	  			<a href="{{ url_for('core.case', case_id=case.id) }}"
+	  				 class="display-list-row-title">
+	  				{{ case.id }}
+	  			</a>
+
+	  			<div class="display-list-row-item">8 days ago</div>
+
+	  			<a href="{{ url_for('core.variants', case_id=case.id) }}"
+	  					 class="display-list-row-item">
+	  				Variants
+	  			</a>
+
+	  			<div class="display-list-row-overflow">
+	  				<span class="fa fa-ellipsis-v fa-lg"></span>
+	  			</div>
+
+	  		</div>
+	  	{% endfor %}
+
+		</div>
+	</div>
 {% endblock %}

@@ -4,3 +4,7 @@
   roles:
     - common
     - python
+
+# node.js
+# https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-an-ubuntu-14-04-server
+# -g gulp coffee-script

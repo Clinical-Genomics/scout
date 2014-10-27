@@ -1,0 +1,13 @@
+{% extends 'layouts/base-core.html' %}
+
+{% set page_title = _('Variant') %}
+
+{% block menu_title %}
+	<a href="{{ url_for('core.variants') }}">All variants</a>
+{% endblock %}
+
+{% block core_container %}
+	<h1>{{ variant.id }}</h1>
+
+	<p>{{ variant }}</p>
+{% endblock %}

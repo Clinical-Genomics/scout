@@ -1,0 +1,90 @@
+{% extends 'layouts/base-core.html' %}
+
+{% set page_title = _('Case') %}
+
+{% block menu_title %}
+	<a href="{{ url_for('core.cases') }}">All cases</a>
+{% endblock %}
+
+{% block core_container %}
+
+	<div class="case-container">
+
+		<div class="case-header">
+			<div class="case-header-container">
+				<div class="case-header-title">
+					<h2>Case {{ case.id }}</h2>
+
+					<div class="case-status">
+						<div class="case-status-icon"></div>
+						<div class="case-status-text">Open</div>
+					</div>
+				</div>
+
+				<div class="case-header-item">
+					<div class="case-header-lead">
+						<span class="fa fa-user-md fa-fw"></span>
+						<a href="/profile/annawedell">Anna Wedell</a>
+					</div>
+
+					<div class="case-header-variants">
+						<span class="fa fa-link fa-fw"></span>
+						<a href="{{ url_for('core.variants', case_id=case.id) }}">
+							All variants
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="case-content">
+
+			<div id="case-complete" class="case-section">
+				<h3 class="case-section-header">Disease causing mutation</h3>
+				<form method="POST" class="case-complete-container">
+					<input class="case-complete-variant-box" placeholder="Disease causing variant...">
+					<button class="case-complete-report-btn" disabled="disabled">
+						<span class="fa fa-fw fa-check-circle"></span> Solved
+					</button>
+				</form>
+			</div>
+
+			<div id="case-brief" class="case-section">
+				<h3 class="case-section-header">Breifing area</h3>
+
+				<div class="case-brief-layout">
+					<div class="case-brief-main">
+						<textarea class="case-brief-textarea">I saw this on the news last night!</textarea>
+					</div>
+
+					<div class="case-brief-sidebar">
+						{% for sample in case.individuals %}
+							<div class="case-brief-sidebar-item">
+								<div>
+									<span class="fa fa-fw fa-barcode"></span>
+									{{ sample.id }} <br>
+								</div>
+
+								<div>
+									<span class="fa fa-fw fa-plus-square"></span>
+									{{ sample.phenotype }} <br>
+								</div>
+
+								<div>
+									<span class="fa fa-fw fa-user"></span>
+									{{ sample['sex:'] }} <br>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<div id="case-activity" class="case-section">
+				<h3 class="case-section-header">Activity</h3>
+				<div class="case-activity-container"></div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}

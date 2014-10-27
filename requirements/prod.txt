@@ -45,3 +45,4 @@ configparser
 click
 ped_parser>=8.1
 vcf_parser
+configobj
