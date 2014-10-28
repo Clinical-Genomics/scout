@@ -1,0 +1,44 @@
+{% extends 'layouts/base.html' %}
+
+{% block js_top %}
+
+	<script src="{{ url_for('static', filename='js/vendor/platform/platform.js') }}"></script>
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/polymer/polymer.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/core-toolbar/core-toolbar.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/core-scroll-header-panel/core-scroll-header-panel.html') }}">
+
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/core-icon-button/core-icon-button.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-icon-button/paper-icon-button.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-shadow/paper-shadow.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/core-tooltip/core-tooltip.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-ripple/paper-ripple.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-input/paper-input.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-button/paper-button.html') }}">
+
+
+{% endblock %}
+
+{% block body %}
+
+	<core-scroll-header-panel flex condenses keepCondensedHeader>
+
+		<core-toolbar class="tall">
+			<paper-icon-button icon="menu"></paper-icon-button>
+			<div flex></div>
+			{% block menu_right %}{% endblock %}
+
+			<div class="toolbar-bottom bottom indent">
+				{% block menu_bottom %}{% endblock %}
+			</div>
+		</core-toolbar>
+
+		<div content>
+			{% block content %}
+			{% endblock %}
+		</div>
+	</core-scroll-header-panel>
+
+	<!-- include browserify script tag -->
+	{% include 'footer.html' %}
+
+{% endblock %}

@@ -30,7 +30,8 @@
 
   {% block js_top %}{% endblock %}
 </head>
-<body>
+
+<body fullbleed layout vertical>
   {% include "macros/_ask_user_to_update_ie.html" %}
 
   {% block body %}{% endblock %}
@@ -45,5 +46,5 @@
     {% include "macros/_google_analytics.html" %}
   {% endblock %}
 </body>
-</html>
 
+</html>

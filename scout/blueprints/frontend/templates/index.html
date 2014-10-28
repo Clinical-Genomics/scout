@@ -1,14 +1,22 @@
-{% extends 'layouts/base-frontend.html' %}
+{% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = _('Home') %}
 
-{% block menu_title %}
-	<a href="{{ url_for('core.cases') }}">Cases</a>
+{% block menu_right %}
+	<a href="{{ url_for('frontend.index') }}">
+		<paper-icon-button icon="account-circle"></paper-icon-button>
+	</a>
 {% endblock %}
 
-{% block core_container %}
+{% block menu_bottom %}
+	Scout
+{% endblock %}
 
-	{#{% if current_user %}
+{% block content %}
+
+	<a href="{{ url_for('core.cases') }}">Cases</a>
+
+	{# {% if current_user %}
 		pass
 	{% else %}
 		<form accept-charset="UTF-8" action="/login" method="POST">
