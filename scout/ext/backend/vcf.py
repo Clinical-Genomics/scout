@@ -33,7 +33,7 @@ class VcfAdapter(BaseAdapter):
     self.get_cases(cases_path) 
     
     for case in self._cases:
-      self._variants[case['id']] = vcf_parser.VCFParser(infile = case['vcf_path'])
+      self._variants[case['id']] = case['vcf_path']
 
 
   def get_cases(self, cases_path):
@@ -113,19 +113,22 @@ class VcfAdapter(BaseAdapter):
     return formated_variant
   
   
-  def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100):
+  def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100, skip = 0):
   
     # if variant_ids:
     #   return self._many_variants(variant_ids)
 
     variants = []
+    nr_of_variants = skip + nr_of_variants
     i = 0
-    for variant in self._variants[case]:
-      if i < nr_of_variants:
-        yield self.format_variant(variant)
-        i += 1
-      else:
-        return
+    for variant in vcf_parser.VCFParser(infile = self._variants[case]):
+      if i > skip:
+        if i < nr_of_variants:
+          yield self.format_variant(variant)
+        else:
+          return
+      i += 1
+    return
 
   def _many_variants(self, variant_ids):
     variants = []
@@ -138,8 +141,8 @@ class VcfAdapter(BaseAdapter):
 
   def variant(self, variant_id):
     for variant in self._variants:
-      if variant['id'] == int(variant_id):
-        return variant
+      if variant['variant_id'] == variant_id:
+        return self.format_variant(variant)
 
     return None
 

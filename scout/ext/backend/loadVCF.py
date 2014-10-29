@@ -9,7 +9,7 @@ import pymongo
 import os
 import sys
 
-client = MongoClient('localhost', 27018)
+client = MongoClient('localhost', 27017)
 db = client.variantDatabase
 
 sampleCollection = db.samples

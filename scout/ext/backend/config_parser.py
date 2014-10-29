@@ -117,10 +117,17 @@ class ConfigParser(ConfigObj):
 def read_config(config_file, outfile):
     """Parse the config file and print it to the output."""
     my_config_reader = ConfigParser(config_file)
-    pp(my_config_reader.collections)
-    pp(my_config_reader.categories)
-    for plugin in my_config_reader.plugins:
-      print(type(my_config_reader[plugin].get('vcf_data_field_number', '0')))
+    print('Collections:\n' '-------------------')
+    for collection in my_config_reader.collections:
+      for adapter in my_config_reader.collections[collection]:
+        print('%s : %s' % (collection, adapter))
+    print('\nCategories:\n' '-------------------')
+    for category in my_config_reader.categories:
+      for adapter in my_config_reader.categories[category]:
+        print('%s : %s' % (category, adapter))
+    # for plugin in my_config_reader.plugins:
+    #   print(type(my_config_reader[plugin].get('vcf_data_field_number', '0')))
+      
     # if outfile:
     #     my_config_reader.write_config(outfile)
     
