@@ -1,6 +1,6 @@
 ---
 site_name: Scout Docs
 repo_url: https://github.com/Clinical-Genomics/scout
-dev_addr: "0.0.0.0:8000"
+dev_addr: "0.0.0.0:3000"
 theme: bootstrap
 docs_dir: source

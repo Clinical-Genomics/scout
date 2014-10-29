@@ -8,7 +8,8 @@ We are trying to build Scout piece by piece. This is the prioritized order we ar
 - [ ] Make sure that the package is installable
 - [ ] Take in a first round of feedback from close collaborators
 - [ ] Add functionality for user management and comments
-- [ ] Implement more of less MIP specific functionality
+- [ ] Implement more of less MIP/Clinical Genomics specific functionality
+	- Access rights connected with cases/families. "Admin" users should be able to view any case.
 
 
 ## Quickstart
@@ -19,11 +20,9 @@ Run the following commands to bootstrap your development environment.
 # it's always a good idea to work in a virtual environment
 $ mkvirtualenv scout
 $ workon scout
-
 $ git clone https://github.com/Clinical-Genomics/scout.git
 $ cd scout
 $ pip install -r requirements/dev.txt
-$ python manage.py vagrant
 ```
 
 This doesn't mean that everything will work just like that. You also need some Google OAuth keys and other secret stuff. The config should be stored in a config file:

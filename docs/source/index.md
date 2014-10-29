@@ -14,20 +14,18 @@ For now, install as:
 $ pip install https://github.com/Clinical-Genomics/scout/zipball/master
 ```
 
-### Dependencies
+### Core dependencies
 
-* MongoDB
+- MongoDB
+- Python
+- Probably some C-compiler(s)
+
+**Recommended dependencies**
+
+- Docker
 
 
-## Usage
-
-
-
-## Roadmap & Wish list
-
-- Access rights connected with cases/families. "Admin" users should be able to view any case.
-
-### Goals
+## Goals
 There are 3 main goals stated for the project.
 
   1. Visualize (annotated) VCFs
@@ -36,7 +34,7 @@ There are 3 main goals stated for the project.
 
 For each of these topics there are a number of more concrete objectives ranked as primary, secondary (if possibles), or tertiary (if we have time).
 
-#### 1. Visualize (annotated) VCFs
+### 1. Visualize (annotated) VCFs
 We don't need to be GEMINI, focus more on visual part, marking, commenting etc.
 
 

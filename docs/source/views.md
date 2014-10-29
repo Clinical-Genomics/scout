@@ -19,6 +19,10 @@ We have chosen to use Google OAuth for the signup process. This means that you c
 
 > Should we still regularly discard the authentication token in (short) intervals?
 
+### User stories
+
+1. 
+
 ### Branding
 Scout needs a somewhat strong brand. It should have personality and be clearly stated on the splash page. We will present the logo, name of the product, and a one sentence tagline.
 
