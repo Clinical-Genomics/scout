@@ -19,14 +19,18 @@ We have chosen to use Google OAuth for the signup process. This means that you c
 
 > Should we still regularly discard the authentication token in (short) intervals?
 
-### User stories
-
-1. 
-
 ### Branding
 Scout needs a somewhat strong brand. It should have personality and be clearly stated on the splash page. We will present the logo, name of the product, and a one sentence tagline.
 
 We should call out all the people/institutes involved in the project. It makes sense to add the SciLifeLab (Clinical Genomics) and Karolinska Hospital logos. There should also be a link to the open source project in the footer.
+
+### User stories
+
+1. A new user arrives at Scout and find out what the project is about, what problem it is adressing, who's behind the project, and what they need to do to get signed up.
+
+2. An existing user visits the index page (logged out). She clicks the button to log in to Scout and is redirected to Google OAauth.
+
+3. A user comes to the index page and clicks the link that takes them to the documentation site.
 
 
 
