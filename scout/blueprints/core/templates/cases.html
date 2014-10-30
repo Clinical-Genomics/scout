@@ -2,10 +2,23 @@
 
 {% set page_title = _('Cases') %}
 
+{% block menu_right %}
+	<a href="{{ url_for('frontend.index') }}">
+		<paper-icon-button icon="home"></paper-icon-button>
+	</a>
+{% endblock %}
+
 {% block menu_bottom %}
-	<a href="{{ url_for('frontend.index') }}">Scout</a>
-	<core-icon icon="chevron-right"></core-icon>
-	Cases
+	<div layout horizontal>
+		<div flex>
+			<a href="{{ url_for('frontend.index') }}">Scout</a>
+			<core-icon icon="chevron-right"></core-icon>
+			Cases
+		</div>
+
+		<paper-icon-button icon="search" class="case-search-button"></paper-icon-button>
+		<input type="search" id="case-search" class="case-search-input">
+	</div>
 {% endblock %}
 
 {% block content %}

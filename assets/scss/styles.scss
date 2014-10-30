@@ -14,65 +14,60 @@
 @import "components/menu-bar";
 @import "components/case";
 
-// layout
-.homescreen {
-	height: 100%;
-	width: 100%;
-
-	display: flex;
-	flex-direction: column;
+// HEADER
+.title {
+	font-size: 1.4em;
 }
 
-	.homescreen-header {
-		flex-basis: 3em;
-	}
+.tagline {
+	font-size: .8em;
+}
 
-	.homescreen-content {
-		display: flex;
-		flex: 1;
-		overflow: auto;
-	}
+.login-button {
+	background: none;
+	border: 0;
+	font-size: .9em;
+	font-weight: 300;
+}
 
-.menu-bar {
-	padding: 1em;
-
-	// flex
-	display: flex;
-	justify-content: space-between;
-
-	// position
+paper-fab {
+	// default position, bottom right corner
 	position: fixed;
-	top: 0px;
-	bottom: auto;
-	left: 0px;
-	right: 0px;
-	float: none;
-
+	bottom: 60px;
+	right: 60px;
 	z-index: 1;
-
-	// styles
-	//box-shadow: 0px 1px 4px rgba(#000, .3);
-	background: $secondary-color;
-	color: #fff;
-	font-weight: 500;
-
-	// debug
-
-	a {
-		text-decoration: none;
-		color: #fff;
-		padding: .3em .5em;
-
-		&:hover {
-			background: rgba(#000, .2);
-			border-radius: 3px;
-		}
-	}
 }
 
-// clear the fixed nav-bar
-.menu-bar__padding {
-	height: 4em;
+section {
+	padding-left: 68px;
+	padding-right: 68px;
+
+	padding-bottom: 2em;
+
+	font-size: 1.1em;
+	line-height: 1.3em;
+}
+
+p {
+	max-width: 650px;
+}
+
+input {
+	background-color: inherit;
+	border: none;
+	outline: 0;
+	padding: 0;
+	color: inherit;
+	-webkit-appearance: none;
+}
+
+.case-search-button:active + .case-search-input {
+	width: 10em;
+}
+
+.case-search-input {
+	transition: width .2s;
+	width: 0em;
 }
 
 // Specific styles
@@ -198,6 +193,12 @@ div.toolbar-bottom {
 	font-size: .8em;
 }
 
+	.case-header-link {
+		&:not(:last-child) {
+			margin-right: 2em;
+		}
+	}
+
 .case-status {
 	display: flex;
 	align-items: center;
@@ -222,10 +223,6 @@ div.toolbar-bottom {
 .case-header-item {}
 
 	%case-header-item-row {
-		&:not(:last-child) {
-			margin-bottom: .5em;
-		}
-
 		> a {
 			color: #fff;
 			text-decoration: none;
@@ -235,14 +232,10 @@ div.toolbar-bottom {
 
 	.case-header-lead {
 		@extend %case-header-item-row;
-	}
-
-	.case-header-variants {
-		@extend %case-header-item-row;
+		margin-right: 1em;
 	}
 
 .case-content {
-	padding: 2em 0;
 	margin-left: auto;
 	margin-right: auto;
 	width: 90%;

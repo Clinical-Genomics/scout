@@ -11,7 +11,9 @@
     "core-dropdown": "Polymer/core-dropdown#~0.4.2",
     "core-dropdown-menu": "Polymer/core-dropdown-menu#~0.4.2",
     "paper-item": "Polymer/paper-item#~0.4.2",
-    "paper-input": "Polymer/paper-input#~0.4.2"
+    "paper-input": "Polymer/paper-input#~0.4.2",
+    "paper-fab": "Polymer/paper-fab#~0.4.2",
+    "core-item": "Polymer/core-item#~0.4.2"
   },
   "devDependencies": {
     "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip"

@@ -32,8 +32,9 @@ def variants(case_id):
   return dict(variants=current_app.db.variants(case_id), case_id=case_id)
 
 
-@core.route('/variants/<variant_id>')
+@core.route('/<case_id>/variants/<variant_id>')
 @templated('variant.html')
-def variant(variant_id):
+def variant(case_id, variant_id):
   """View a single variant in a single case."""
-  return dict(variant=current_app.db.variant(variant_id))
+  return dict(variant=current_app.db.variant(variant_id, case_id=case_id),
+              case_id=case_id)

@@ -8,28 +8,26 @@
 	</a>
 {% endblock %}
 
+{% block toolbar_middle %}
+	<div class="case-header-links" horizontal center layout>
+		<core-item class="case-header-link"
+							 icon="account-circle"
+							 label="Anna Wedell"></core-item>
+		<core-item class="case-header-link" icon="link" label="All variants">
+			<a href="{{ url_for('core.variants', case_id=case.id) }}"></a>
+		</core-item>
+	</div>
+{% endblock %}
+
 {% block menu_bottom %}
-	<div class="case-header">
+	<div horizontal layout center>
+		<a href="{{ url_for('frontend.index') }}">Scout</a>
+		<core-icon icon="chevron-right"></core-icon>
 
-		<div class="case-header-title">
-			<div>Case {{ case.id }}</div>
+		<a href="{{ url_for('core.cases') }}">Cases</a>
+		<core-icon icon="chevron-right"></core-icon>
 
-			<core-icon icon="lock-open"></core-icon>
-		</div>
-
-		<div class="case-header-links" layout vertical>
-			<div class="case-header-lead">
-				<core-icon icon="account-circle"></core-icon>
-				<a href="/profile/annawedell">Anna Wedell</a>
-			</div>
-
-			<div class="case-header-variants">
-				<core-icon icon="link"></core-icon>
-				<a href="{{ url_for('core.variants', case_id=case.id) }}">
-					All variants
-				</a>
-			</div>
-		</div>
+		<core-item icon="lock-open" label="Case {{ case.id }}"></core-item>
 	</div>
 {% endblock %}
 
