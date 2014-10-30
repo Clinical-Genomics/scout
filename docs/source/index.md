@@ -1,5 +1,5 @@
 # Scout
-Scout is a VCF visualizer.
+Analyze VCFs quicker and easier.
 
 ## Motivation
 DNA sequencing is quickly entering the clinical setting. As such we need tools that cater to non-bioinformatics people. Scout is an attempt to provide an interface for bioinformaticians and clinicians alike to collaborate on the interpretation of variant calling results.
