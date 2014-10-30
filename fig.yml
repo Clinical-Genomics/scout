@@ -1,0 +1,7 @@
+---
+docs:
+  build: docs
+  volumes:
+    - docs:/code
+  ports:
+    - "3000:3000"
