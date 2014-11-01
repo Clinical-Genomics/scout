@@ -12,9 +12,8 @@
 @import "global";
 
 // Components
-@import "components/menu-bar";
-@import "components/case";
 @import "components/landing";
+@import "components/cases";
 
 // Resets
 input {
@@ -24,15 +23,6 @@ input {
 	padding: 0;
 	color: inherit;
 	-webkit-appearance: none;
-}
-
-.case-search-button:active + .case-search-input {
-	width: 10em;
-}
-
-.case-search-input {
-	transition: width .2s;
-	width: 0em;
 }
 
 // Specific styles
@@ -263,56 +253,3 @@ core-toolbar {
   	text-decoration: none;
   }
 }
-
-
-.card-container {
-	padding: 2em;
-	max-width: 60em;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.card {
-	background-color: #fff;
-	display: flex;
-	box-shadow: 0 1px 3px -1px rgba(#000, .4);
-
-	&:not(:last-child) {
-		margin-bottom: 1em;
-	}
-}
-
-.card-item {
-	flex: 1;
-	color: rgba(#000, .5);
-	padding: 1em;
-}
-
-.card-title {
-	@extend .card-item;
-
-	width: 50%;
-	text-decoration: none;
-	font-size: 1.5em;
-	line-height: 0;
-}
-
-.card-overflow {
-	padding: 1em;
-	margin-left: -3em;
-	margin-top: -.3em;
-	position: absolute;
-
-	// styles
-	opacity: .3;
-	cursor: pointer;
-
-	&:hover {
-		opacity: 1;
-	}
-
-	> paper-icon-button {
-		padding: 0;
-	}
-}
-

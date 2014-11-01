@@ -2,49 +2,47 @@
 
 {% set page_title = _('Cases') %}
 
-{% block menu_right %}
-	<a href="{{ url_for('frontend.index') }}">
-		<paper-icon-button icon="home"></paper-icon-button>
-	</a>
+{% block toolbar_middle %}
+	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	<core-icon icon="chevron-right"></core-icon>
+	Cases
 {% endblock %}
 
-{% block menu_bottom %}
-	<div layout horizontal>
-		<div flex>
-			<a href="{{ url_for('frontend.index') }}">Scout</a>
-			<core-icon icon="chevron-right"></core-icon>
-			Cases
-		</div>
-
-		<paper-icon-button icon="search" class="case-search-button"></paper-icon-button>
-		<input type="search" id="case-search" class="case-search-input">
-	</div>
+{% block toolbar_bottom %}
+	<core-icon icon="search"></core-icon>
+	<input type="search" id="cases-search" class="cases-search-input">
 {% endblock %}
 
 {% block content %}
-	<div class="card-container">
+
+	<div class="cases-list">
 		{% for case in cases %}
-  		<div class="card">
 
-  			<a href="{{ url_for('core.case', case_id=case.id) }}"
-  				 class="card-title">
-  				{{ case.id }}
-  			</a>
+			<div class="cases-item" layout horizontal center>
 
-  			<div class="card-item" position="left">
-				  Updated 8 days ago
+				<paper-item class="cases-item-title"
+										icon="announcement"
+										label="{{ case.id }}"
+										flex>
+					<a href="{{ url_for('core.case', case_id=case.id) }}"></a>
+				</paper-item>
+
+				<div flex layout horizontal center justified>
+
+					<a href="{{ url_for('core.variants', case_id=case.id) }}"
+	  				 class="cases-item-link">
+	  				Variants
+	  			</a>
+
+					<div class="cases-item-date" position="left">
+					  Updated 8 days ago
+					</div>
+
 				</div>
 
-  			<a href="{{ url_for('core.variants', case_id=case.id) }}"
-  					 class="card-item">
-  				Variants
-  			</a>
+			</div>
 
-  			<div class="card-overflow">
-  				<paper-icon-button icon="drawer"></paper-icon-button>
-  			</div>
-
-  		</div>
-  	{% endfor %}
+		{% endfor %}
 	</div>
+
 {% endblock %}

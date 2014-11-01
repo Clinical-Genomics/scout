@@ -17,6 +17,7 @@
 	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-fab/paper-fab.html') }}">
 	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-input/paper-input.html') }}">
 	<link rel="import" href="{{ url_for('static', filename='js/vendor/core-item/core-item.html') }}">
+	<link rel="import" href="{{ url_for('static', filename='js/vendor/paper-item/paper-item.html') }}">
 
 {% endblock %}
 
@@ -27,30 +28,23 @@
 		<core-toolbar class="tall">
 			{% block toolbar_tall %}
 
-				{% block toolbar_top %}
-					<paper-icon-button icon="menu"></paper-icon-button>
+				<div class="toolbar-top top" layout horizontal>
+					{% block toolbar_top %}{% endblock %}
+				</div>
 
-					<div flex></div>
-
-					{% block menu_right %}{% endblock %}
-				{% endblock %}
-
-				<div class="toolbar-middle middle indent">
+				<div class="toolbar-middle middle indent" layout horizontal>
 					{% block toolbar_middle %}{% endblock %}
 				</div>
 
-				{% block toolbar_bottom %}
-					<div class="toolbar-bottom bottom indent">
-						{% block menu_bottom %}{% endblock %}
-					</div>
-				{% endblock %}
+				<div class="toolbar-bottom bottom indent" layout horizontal>
+					{% block toolbar_bottom %}{% endblock %}
+				</div>
 
 			{% endblock %}
 		</core-toolbar>
 
 		<div content>
-			{% block content %}
-			{% endblock %}
+			{% block content %}{% endblock %}
 		</div>
 	</core-scroll-header-panel>
 
