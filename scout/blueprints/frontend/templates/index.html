@@ -1,39 +1,94 @@
-{% extends 'layouts/scroll-header.html' %}
+{% extends 'layouts/base.html' %}
 
-{% set page_title = _('Home') %}
+{% block body %}
 
-{% block menu_bottom %}
-	<div layout horizontal center>
-		<div class="title">Scout</div>
-		<div flex></div>
-		<div class="tagline">Analyze VCFs quicker and easier.</div>
+	<div class="landing-page">
+
+		<header class="landing-header">
+			<div class="landing-header-brand">
+				<div class="landing-header-logo"></div>
+				<div class="landing-header-title">Scout</div>
+			</div>
+
+			{# {{ url_for('login.signin') }} #}
+			<a href="{{ url_for('core.cases') }}" class="landing-header-login">
+				Sign in
+			</a>
+		</header>
+
+		<div class="landing-hero">
+
+			<div class="landing-hero-tagline">Analyze VCFs quicker and easier.</div>
+			<div class="landing-hero-summary">
+				<p>
+					Scout allows you to browse VCFs in a web browser, identify
+					compound pairs, and solve cases as a team.
+				</p>
+			</div>
+			
+		</div>
+
+		<section id="feature-web-interface" class="landing-feature">
+			<div class="landing-feature-left">
+				<div class="landing-feature-title">Web interface</div>
+				<div class="landing-feature-summary">
+					Browse complex VCF files in an intuative web interface.
+				</div>
+			</div>
+
+			<div class="landing-feature-right"></div>
+		</section>
+
+		<section id="feature-compounds" class="landing-feature">
+			<div class="landing-feature-left"></div>
+
+			<div class="landing-feature-right">
+				<div class="landing-feature-title">Track progress</div>
+				<div class="landing-feature-summary">
+					Mark and save your calls about disease causing variants.
+				</div>
+			</div>
+		</section>
+
+		<section id="feature-track" class="landing-feature">
+			<div class="landing-feature-left">
+				<div class="landing-feature-title">Compounds</div>
+				<div class="landing-feature-summary">
+					Easily identify compound heterozygote mutations.
+				</div>
+			</div>
+
+			<div class="landing-feature-right"></div>
+		</section>
+
+		<section id="feature-collaborate" class="landing-feature">
+			<div class="landing-feature-left"></div>
+
+			<div class="landing-feature-right">
+				<div class="landing-feature-title">Collaboration</div>
+				<div class="landing-feature-summary">
+					Collaborate across your team by commenting and sharing activity.
+				</div>
+			</div>
+		</section>
+
+		<section id="affiliations" class="landing-box">
+			<div class="landing-affiliations-summary">Developed at</div>
+			<div class="landing-affiliations">
+				<div class="landing-affiliation">SciLifeLab</div>
+				<div class="landing-affiliation">Karolinska Institutet</div>
+			</div>
+		</section>
+
+		<section id="user-guide" class="landing-box">
+			<div class="user-guide-box">
+				<div class="user-guide-summary">
+					For more information read the comprahensive
+				</div>
+				<div class="user-guide-btn">User Guide</div>
+			</div>
+		</section>
+
 	</div>
-{% endblock %}
 
-{% block content %}
-
-	<section id="summary">
-		<p class="summary">Scout allows you to browse VCFs in a web browser, identify compound pairs, and solve cases as a team.</p>
-	</section>
-
-	<section id="key-features">
-		<h2>Key features</h2>
-		<ol class="key-features">
-			<li>Browse VCFs in a web browser</li>
-			<li>Make calls about disease causing variants</li>
-			<li>Identify compound heterozygote mutations</li>
-			<li>Collaborate across your team</li>
-		</ol>
-	</section>
-
-	{# {{ url_for('login.signin') }} #}
-	<form accept-charset="UTF-8"
-				action="{{ url_for('core.cases') }}"
-				method="GET">
-
-		<button type="submit" class="login-button">
-			<paper-fab icon="google"></paper-fab>
-		</button>
-
-	</form>
 {% endblock %}

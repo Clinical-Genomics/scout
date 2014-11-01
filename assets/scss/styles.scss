@@ -6,6 +6,7 @@
 // Libraries
 @import "bourbon";
 @import "vendor/normalize";
+@import "mixins";
 
 // Global Styles
 @import "global";
@@ -13,45 +14,9 @@
 // Components
 @import "components/menu-bar";
 @import "components/case";
+@import "components/landing";
 
-// HEADER
-.title {
-	font-size: 1.4em;
-}
-
-.tagline {
-	font-size: .8em;
-}
-
-.login-button {
-	background: none;
-	border: 0;
-	font-size: .9em;
-	font-weight: 300;
-}
-
-paper-fab {
-	// default position, bottom right corner
-	position: fixed;
-	bottom: 60px;
-	right: 60px;
-	z-index: 1;
-}
-
-section {
-	padding-left: 68px;
-	padding-right: 68px;
-
-	padding-bottom: 2em;
-
-	font-size: 1.1em;
-	line-height: 1.3em;
-}
-
-p {
-	max-width: 650px;
-}
-
+// Resets
 input {
 	background-color: inherit;
 	border: none;
