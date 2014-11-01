@@ -488,7 +488,7 @@ select {
       font-size: 1.2em;
       padding: 2em; } }
 
-.landing-hero-summary, .landing-feature-summary, .landing-affiliations-summary, .user-guide-summary {
+.landing-hero-summary, .landing-feature-summary, .landing-affiliations-summary, .user-guide-summary, .user-guide-project-info {
   color: rgba(0, 0, 0, 0.6);
   font-size: 0.9em; }
 
@@ -572,7 +572,7 @@ select {
   padding: 1em 0; }
 
 .landing-affiliations-summary {
-  font-size: 0.8em;
+  font-size: 0.7em;
   text-align: center;
   margin-bottom: 1em; }
 
@@ -605,8 +605,10 @@ select {
       -ms-flex-align: center;
           align-items: center; }
 
+.user-guide-summary, .user-guide-project-info {
+  font-size: 0.7em; }
+
 .user-guide-summary {
-  font-size: 0.8em;
   margin-bottom: 0.5em; }
 
 .user-guide-btn {
@@ -617,6 +619,9 @@ select {
   cursor: pointer; }
   .user-guide-btn:hover {
     background-color: rgba(0, 0, 0, 0.1); }
+
+.user-guide-project-info {
+  margin-top: 0.5em; }
 
 input {
   background-color: inherit;

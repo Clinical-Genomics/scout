@@ -116,7 +116,7 @@
 .landing-affiliations-summary {
 	@extend %landing-summary;
 
-	font-size: .8em;
+	font-size: .7em;
 	text-align: center;
 	margin-bottom: 1em;
 }
@@ -138,10 +138,13 @@
 	align-items: center;
 }
 
-.user-guide-summary {
+%user-guide-text {
 	@extend %landing-summary;
+	font-size: .7em;
+}
 
-	font-size: .8em;
+.user-guide-summary {
+	@extend %user-guide-text;
 	margin-bottom: .5em;
 }
 
@@ -155,4 +158,9 @@
 	&:hover {
 		background-color: rgba(#000, .1);
 	}
+}
+
+.user-guide-project-info {
+	@extend %user-guide-text;
+	margin-top: .5em;
 }
