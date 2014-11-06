@@ -38,5 +38,19 @@ For each of these topics there are a number of more concrete objectives ranked a
 We don't need to be GEMINI, focus more on visual part, marking, commenting etc.
 
 
+## Roadmap
+We are trying to build Scout piece by piece. This is the prioritized order we are planning on implementing those pieces.
+
+- [ ] Prepare real world representation of demo data + import CLI
+- [ ] Release a first draft of the working interface (core functionality)
+- [ ] Make sure that the package is installable with pip and/or Docker
+- [ ] Take in a first round of feedback from close collaborators
+- [ ] Add functionality for user management and comments
+- [ ] Implement more of less MIP/Clinical Genomics specific functionality
+  - Access rights connected with cases/families. "Admin" users should be able to view any case.
+  - IGV
+  - Sanger email order (+ image from IGV?)
+
+
 ## Contributing
 Further details to come at a later stage.
