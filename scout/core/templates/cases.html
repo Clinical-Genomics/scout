@@ -22,26 +22,26 @@
 {% block content %}
 
 	<div class="cases-list">
-		{% for case in cases %}
+		{% for case in institute.cases %}
 
 			<div class="cases-item" layout horizontal center>
 
 				<paper-item class="cases-item-title"
 										icon="announcement"
-										label="{{ case.id }}"
+										label="{{ case.name }}"
 										flex>
-					<a href="{{ url_for('core.case', case_id=case.id) }}"></a>
+					<a href="{{ url_for('core.case', case_id=case.name) }}"></a>
 				</paper-item>
 
 				<div flex layout horizontal center justified>
 
-					<a href="{{ url_for('core.variants', case_id=case.id) }}"
+					<a href="{{ url_for('core.variants', case_id=case.name) }}"
 	  				 class="cases-item-link">
 	  				Variants
 	  			</a>
 
 					<div class="cases-item-date" position="left">
-					  Updated 8 days ago
+					  Updated {{ case.created_at | human_date }}
 					</div>
 
 				</div>

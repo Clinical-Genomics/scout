@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from flask import Blueprint
+from flask import abort, Blueprint
 from flask.ext.login import login_required
 
+from ..models import Institute
 from ..extensions import store
 from ..helpers import templated
 
@@ -19,8 +20,10 @@ def cases():
   The purpose of this page is to display all cases related to an
   institute. It should also give an idea of which
   """
+  institute = Institute.objects.first()
+
   # fetch cases from the data store
-  return dict(cases=store.cases())
+  return dict(institute=institute, cases=store.cases())
 
 
 @core.route('/cases/<case_id>')
@@ -28,8 +31,16 @@ def cases():
 @login_required
 def case(case_id):
   """View one specific case."""
+  institute = Institute.objects.first()
+
+  cases = [case for case in institute.cases if case.name == case_id]
+
+  # abort with 404 error if the case doesn't exist
+  if len(cases) == 0:
+    return abort(404)
+
   # fetch a single, specific case from the data store
-  return dict(case=store.case(case_id))
+  return dict(case=cases[0])
 
 
 @core.route('/<case_id>/variants')

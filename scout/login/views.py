@@ -18,7 +18,7 @@ from flask.ext.login import (
 from flask_oauthlib.client import OAuthException
 
 from ..extensions import google, login_manager
-from ..admin import User
+from ..models import User
 
 
 login = Blueprint('login', __name__, template_folder='templates')

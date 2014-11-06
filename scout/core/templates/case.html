@@ -6,9 +6,11 @@
 	<div class="case-header-links" horizontal center layout>
 		<core-item class="case-header-link"
 							 icon="account-circle"
-							 label="Anna Wedell"></core-item>
+							 label="{{ case.assignee.name }}">
+			<a href="{{ url_for('user.profile', user_id=case.assignee.id) }}"></a>
+		</core-item>
 		<core-item class="case-header-link" icon="link" label="All variants">
-			<a href="{{ url_for('core.variants', case_id=case.id) }}"></a>
+			<a href="{{ url_for('core.variants', case_id=case.name) }}"></a>
 		</core-item>
 	</div>
 {% endblock %}
@@ -20,7 +22,7 @@
 	<a href="{{ url_for('core.cases') }}">Cases</a>
 	<core-icon icon="chevron-right"></core-icon>
 
-	<core-item icon="lock-open" label="Case {{ case.id }}"></core-item>
+	<core-item icon="lock-open" label="Case {{ case.name }}"></core-item>
 {% endblock %}
 
 {% block content %}
@@ -78,8 +80,8 @@
 			<div id="case-samples" class="case-segment-aside">
 				<div class="case-segment-title">Included samples</div>
 				<div class="case-segment-content">
-					{% for sample in case.individuals %}
-						<paper-item icon="assignment-ind" label="{{ sample.individual_id }}">
+					{% for sample in case.samples %}
+						<paper-item icon="assignment-ind" label="{{ sample.name }}">
 							<a href="#"></a>
 						</paper-item>
 					{% endfor %}

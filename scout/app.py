@@ -6,6 +6,7 @@ import os
 from flask import Flask, render_template
 from werkzeug.utils import import_string
 
+from .helpers import pretty_date
 from .settings import DevelopmentConfig
 
 
@@ -38,6 +39,7 @@ class AppFactory(object):
     self._configure_app()
     self._bind_extensions()
     self._register_blueprints()
+    self._configure_template_filters()
 
     return self.app
 
@@ -96,3 +98,14 @@ class AppFactory(object):
     @self.app.errorhandler(500)
     def server_error_page(error):
       return render_template('errors/server_error.html'), 500
+
+  def _configure_template_filters(self):
+    """Configure custom Jinja2 template filters."""
+
+    @self.app.template_filter()
+    def human_date(value):
+      return pretty_date(value)
+
+    @self.app.template_filter()
+    def format_date(value, format="%Y-%m-%d"):
+      return value.strftime(format)
