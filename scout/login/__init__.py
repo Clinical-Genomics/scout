@@ -3,4 +3,4 @@
 Depends on "admin"
 """
 
-from .core import init_blueprint
+from .views import login

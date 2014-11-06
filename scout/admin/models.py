@@ -43,16 +43,43 @@ class User(db.Document):
 
 
 class Role(db.Document):
-  name = db.StringField(required=True)
+  name = db.StringField(required=True, unique=True)
   created_at = db.DateTimeField(default=datetime.now)
 
   def __unicode__(self):
     return self.name
 
 
+class Sample(db.EmbeddedDocument):
+  name = db.StringField(required=True, unique=True)
+  display_name = db.StringField()
+
+  capture_kit = db.StringField()
+  inheritance_model = db.ListField(db.StringField())
+  phenotype = db.StringField()
+  sex = db.StringField()
+
+  def __unicode__(self):
+    return self.name
+
+
+class Case(db.EmbeddedDocument):
+  name = db.StringField(required=True, unique=True)
+  assignee = db.ReferenceField('User')
+  samples = db.ListField(db.EmbeddedDocumentField(Sample))
+  databases = db.ListField(db.StringField())
+  created_at = db.DateTimeField(default=datetime.now)
+  updated_at = db.DateTimeField(default=datetime.now)
+
+  def __unicode__(self):
+    return self.name
+
+
 class Institute(db.Document):
-  name = db.StringField(required=True)
-  sanger_email = db.ListField(db.EmailField())
+  name = db.StringField(required=True, unique=True)
+  sanger_recipients = db.ListField(db.EmailField())
+  cases = db.ListField(db.EmbeddedDocumentField(Case))
+  created_at = db.DateTimeField(default=datetime.now)
 
   def __unicode__(self):
     return self.name

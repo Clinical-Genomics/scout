@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from datetime import datetime
 
+from bson import ObjectId
 from flask import (
   abort,
   Blueprint,
@@ -15,9 +17,8 @@ from flask.ext.login import (
   confirm_login, login_required, login_user, logout_user)
 from flask_oauthlib.client import OAuthException
 
-from .extensions import google
+from ..extensions import google, login_manager
 from ..admin import User
-from ...utils import get_current_time
 
 
 login = Blueprint('login', __name__, template_folder='templates')
@@ -29,7 +30,26 @@ def get_google_token():
   return session.get('google_token')
 
 
-@login.route('/login', methods=['POST'])
+login_manager.login_view = 'login.signin'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.refresh_view = 'login.reauth'
+
+@login_manager.user_loader
+def load_user(user_id):
+  """Returns the currently active user as an object.
+
+  ============ LEGACY ==================
+  Since this app doesn't handle passwords etc. there isn't as much
+  incentive to keep pinging the database for every request protected
+  by 'login_required'.
+
+  Instead I set the expiration for the session cookie to expire at
+  regular intervals.
+  """
+  return User.objects.get(id=ObjectId(user_id))
+
+
+@login.route('/login')
 def signin():
   callback_url = url_for('.authorized', _external=True)
   return google.authorize(callback=callback_url)
@@ -87,12 +107,12 @@ def authorized(oauth_response):
   )
 
   if was_created:
-    user.created_at = get_current_time()
+    user.created_at = datetime.utcnow()
     user.location = google_data['locale']
     user.save()
 
   if login_user(user, remember=True):
-    user.accessed_at = get_current_time()
+    user.accessed_at = datetime.utcnow()
     user.save()
     flash('Logged in', 'success')
 

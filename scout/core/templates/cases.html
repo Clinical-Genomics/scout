@@ -1,6 +1,12 @@
 {% extends 'layouts/scroll-header.html' %}
 
-{% set page_title = _('Cases') %}
+{% set page_title = 'Cases' %}
+
+{% block toolbar_top %}
+	<form action="{{ url_for('login.logout') }}" method="POST">
+		<button>Logout</button>
+	</form>
+{% endblock %}
 
 {% block toolbar_middle %}
 	<a href="{{ url_for('frontend.index') }}">Scout</a>

@@ -13,11 +13,7 @@ def index():
   Doesn't require a user to login. But if they are logged in, they
   should be passed along to their personalized start page (TODO).
   """
-  try:
-    if current_user.is_authenticated():
-      return redirect(url_for('core.cases'))
-  except AttributeError:
-    # Flask-Login is not initialized
-    pass
-
-  return render_template('index.html')
+  if current_user.is_authenticated():
+    return redirect(url_for('core.cases'))
+  else:
+    return render_template('index.html')
