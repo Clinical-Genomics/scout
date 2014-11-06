@@ -16,31 +16,30 @@ from pprint import pprint as pp
 
 class VcfAdapter(BaseAdapter):
   """docstring for API"""
-  
-  def init_app(self, app, vcf_directory=None, config_file=None):
+  def init_app(self, app, vcf_directory='tests/vcf_examples', config_file='configs/config_test.ini'):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
-    
+
     # combine path to the local development fixtures
-    project_root = '/vagrant/scout'
-    cases_path = os.path.join(project_root,vcf_directory)
-    
+    project_root = '/vagrant'
+    cases_path = os.path.join(project_root, vcf_directory)
+
     self.config_object = ConfigParser(config_file)
-    
+
     self._cases = []
     self._variants = {} # Dict like {case_id: variant_parser}
-    
-    self.get_cases(cases_path) 
-    
+
+    self.get_cases(cases_path)
+
     for case in self._cases:
       self._variants[case['id']] = case['vcf_path']
 
 
   def get_cases(self, cases_path):
     """Take a case file and return the case on the specified format."""
-    
+
     ########### Loop over the case folders. Structure is described in documentation ###########
-    
+
     for root, dirs, files in os.walk(cases_path):
       if files:
         ped_file = None
@@ -69,10 +68,10 @@ class VcfAdapter(BaseAdapter):
         case['id'] = case['family_id']
         case['vcf_path'] = vcf_file
         self._cases.append(case)
-    
+
     return
-  
-  
+
+
   def cases(self):
     return self._cases
 
@@ -80,11 +79,11 @@ class VcfAdapter(BaseAdapter):
     for case in self._cases:
       if case['id'] == case_id:
         return case
-  
-  
+
+
   def format_variant(self, variant):
     """Return the variant in a format specified for scout."""
-    
+
     def get_value(variant, category, member):
       """Return the correct value from the variant according to rules in config parser.
           vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
@@ -93,28 +92,28 @@ class VcfAdapter(BaseAdapter):
       # In this case we read straight from the vcf line
       if self.config_object[member]['vcf_field'] not in ['INFO', 'FORMAT', 'other', 'individual']:
         value = variant[self.config_object[member]['vcf_field']]
-      
+
       # In this case we need to check the info dictionary:
       elif self.config_object[member]['vcf_field'] == 'INFO':
         value = variant['info_dict'].get(self.config_object[member]['vcf_info_key'], None)
-      
+
       # Check if we should return a list:
       if value and self.config_object[member]['vcf_data_field_number'] != '1':
         value = value.split(self.config_object[member]['vcf_data_field_separator'])
       return value
-      
+
     formated_variant = {}
     formated_variant['id'] = variant['variant_id']
     for category in self.config_object.categories:
       for member in self.config_object.categories[category]:
         if category != 'config_info':
           formated_variant[self.config_object[member]['internal_record_key']] = get_value(variant, category, member)
-    
+
     return formated_variant
-  
-  
+
+
   def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100, skip = 0):
-  
+
     # if variant_ids:
     #   return self._many_variants(variant_ids)
 
@@ -139,8 +138,8 @@ class VcfAdapter(BaseAdapter):
 
     return variants
 
-  def variant(self, variant_id):
-    for variant in self._variants:
+  def variant(self, variant_id, case_id=None):
+    for variant in vcf_parser.VCFParser(infile = self._variants[case_id]):
       if variant['variant_id'] == variant_id:
         return self.format_variant(variant)
 
@@ -184,10 +183,10 @@ def cli(vcf_dir, config_file):
     """Test the vcf class."""
     my_vcf = VcfAdapter()
     my_vcf.init_app('app', vcf_dir, config_file)
-    
+
     print(my_vcf.cases())
     print('')
-    
+
     for case in my_vcf._cases:
       for variant in my_vcf.variants(case['id']):
         pp(variant)

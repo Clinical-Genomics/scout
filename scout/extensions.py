@@ -14,14 +14,8 @@ toolbar = DebugToolbarExtension()
 # | Flask-Admin
 # +--------------------------------------------------------------------+
 from flask.ext.admin import Admin
-from flask.ext.admin.contrib.mongoengine import ModelView
-from .admin.views import AdminView, UserView
-from .admin.models import User, Institute, Role
-
-admin = Admin(name='Scout', index_view=AdminView())
-admin.add_view(UserView(User))
-admin.add_view(ModelView(Institute))
-admin.add_view(ModelView(Role))
+from .admin import AdminView
+admin = Admin(index_view=AdminView())
 
 # +--------------------------------------------------------------------+
 # | Flask-MongoEngine
