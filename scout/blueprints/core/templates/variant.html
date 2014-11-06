@@ -1,9 +1,17 @@
-{% extends 'layouts/base-core.html' %}
+{% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = _('Variant') %}
 
-{% block menu_title %}
-	<a href="{{ url_for('core.variants') }}">All variants</a>
+{% block menu_bottom %}
+	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	<core-icon icon="chevron-right"></core-icon>
+	<a href="{{ url_for('core.cases') }}">Cases</a>
+	<core-icon icon="chevron-right"></core-icon>
+	<a href="{{ url_for('core.case', case_id=case_id) }}">Case {{ case_id }}</a>
+	<core-icon icon="chevron-right"></core-icon>
+	<a href="{{ url_for('core.variants', case_id=case_id) }}">Variants</a>
+	<core-icon icon="chevron-right"></core-icon>
+	{{ variant.id }}
 {% endblock %}
 
 {% block core_container %}

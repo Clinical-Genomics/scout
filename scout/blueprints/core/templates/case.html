@@ -1,90 +1,101 @@
-{% extends 'layouts/base-core.html' %}
+{% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = _('Case') %}
 
-{% block menu_title %}
-	<a href="{{ url_for('core.cases') }}">All cases</a>
+{% block toolbar_middle %}
+	<div class="case-header-links" horizontal center layout>
+		<core-item class="case-header-link"
+							 icon="account-circle"
+							 label="Anna Wedell"></core-item>
+		<core-item class="case-header-link" icon="link" label="All variants">
+			<a href="{{ url_for('core.variants', case_id=case.id) }}"></a>
+		</core-item>
+	</div>
 {% endblock %}
 
-{% block core_container %}
+{% block toolbar_bottom %}
+	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	<core-icon icon="chevron-right"></core-icon>
 
-	<div class="case-container">
+	<a href="{{ url_for('core.cases') }}">Cases</a>
+	<core-icon icon="chevron-right"></core-icon>
 
-		<div class="case-header">
-			<div class="case-header-container">
-				<div class="case-header-title">
-					<h2>Case {{ case.id }}</h2>
+	<core-item icon="lock-open" label="Case {{ case.id }}"></core-item>
+{% endblock %}
 
-					<div class="case-status">
-						<div class="case-status-icon"></div>
-						<div class="case-status-text">Open</div>
+{% block content %}
+
+	<div class="case-segments">
+
+		<div class="case-segment-row">
+			<div id="case-candidates" class="case-segment-full">
+				<div class="case-segment-title">Strong candidates</div>
+				<div class="case-segment-content">
+					<div class="case-candidate" horizontal layout center justified>
+						<paper-ripple fit></paper-ripple>
+						<div>
+							<core-icon icon="bookmark"></core-icon> KAI12
+						</div>
+						<div class="case-candidate-user">
+							Pinned by <strong>Anna Wedell</strong>
+						</div>
+					</div>
+
+					<div class="case-candidate" horizontal layout center justified>
+						<paper-ripple fit></paper-ripple>
+						<div>
+							<core-icon icon="bookmark"></core-icon> POL2
+						</div>
+						<div class="case-candidate-user">
+							Pinned by <strong>Henrik Stranneheim</strong>
+						</div>
 					</div>
 				</div>
-
-				<div class="case-header-item">
-					<div class="case-header-lead">
-						<span class="fa fa-user-md fa-fw"></span>
-						<a href="/profile/annawedell">Anna Wedell</a>
-					</div>
-
-					<div class="case-header-variants">
-						<span class="fa fa-link fa-fw"></span>
-						<a href="{{ url_for('core.variants', case_id=case.id) }}">
-							All variants
-						</a>
-					</div>
+				<div class="case-segment-notes">
+					Highly suspected variants to be disease causing.
 				</div>
 			</div>
 		</div>
 
-		<div class="case-content">
+		<div class="case-segment-row">
+			<div id="case-readme" class="case-segment-main">
+				<div class="case-segment-title">README</div>
+				<div class="case-segment-content-text">
+					<h1>An exhibit of Markdown</h1>
 
-			<div id="case-complete" class="case-section">
-				<h3 class="case-section-header">Disease causing mutation</h3>
-				<form method="POST" class="case-complete-container">
-					<input class="case-complete-variant-box" placeholder="Disease causing variant...">
-					<button class="case-complete-report-btn" disabled="disabled">
-						<span class="fa fa-fw fa-check-circle"></span> Solved
-					</button>
-				</form>
-			</div>
+					<p>This note demonstrates some of what <a href="http://daringfireball.net/projects/markdown/">Markdown</a> is capable of doing.</p>
 
-			<div id="case-brief" class="case-section">
-				<h3 class="case-section-header">Breifing area</h3>
+					<p><em>Note: Feel free to play with this page. Unlike regular notes, this doesn’t automatically save itself.</em></p>
 
-				<div class="case-brief-layout">
-					<div class="case-brief-main">
-						<textarea class="case-brief-textarea">I saw this on the news last night!</textarea>
-					</div>
+					<h2>Basic formatting</h2>
 
-					<div class="case-brief-sidebar">
-						{% for sample in case.individuals %}
-							<div class="case-brief-sidebar-item">
-								<div>
-									<span class="fa fa-fw fa-barcode"></span>
-									{{ sample.id }} <br>
-								</div>
+					<p>Paragraphs can be written like so. A paragraph is the basic block of Markdown. A paragraph is what text will turn into when there is no reason it should become anything else.</p>
 
-								<div>
-									<span class="fa fa-fw fa-plus-square"></span>
-									{{ sample.phenotype }} <br>
-								</div>
-
-								<div>
-									<span class="fa fa-fw fa-user"></span>
-									{{ sample['sex:'] }} <br>
-								</div>
-							</div>
-						{% endfor %}
-					</div>
+					<p>Paragraphs must be separated by a blank line. Basic formatting of <em>italics</em> and <strong>bold</strong> is supported. This <em>can be <strong>nested</strong> like</em> so.</p>
 				</div>
 			</div>
 
-			<div id="case-activity" class="case-section">
-				<h3 class="case-section-header">Activity</h3>
-				<div class="case-activity-container"></div>
+			<div id="case-samples" class="case-segment-aside">
+				<div class="case-segment-title">Included samples</div>
+				<div class="case-segment-content">
+					{% for sample in case.individuals %}
+						<paper-item icon="assignment-ind" label="{{ sample.individual_id }}">
+							<a href="#"></a>
+						</paper-item>
+					{% endfor %}
+				</div>
 			</div>
-
 		</div>
+
+		<div class="case-segment-row">
+			<div id="case-activity" class="case-segment-full">
+				<div class="case-segment-title">Activity</div>
+				<div class="case-segment-content-text">
+					No recent activity.
+				</div>
+			</div>
+		</div>
+
 	</div>
+
 {% endblock %}

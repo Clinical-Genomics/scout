@@ -1,45 +1,48 @@
-{% extends 'layouts/base-core.html' %}
+{% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = _('Cases') %}
 
-{% block menu_title %}
+{% block toolbar_middle %}
+	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	<core-icon icon="chevron-right"></core-icon>
 	Cases
 {% endblock %}
 
-{% block core_container %}
-	<div class="display-list-container">
-		<div class="display-list">
+{% block toolbar_bottom %}
+	<core-icon icon="search"></core-icon>
+	<input type="search" id="cases-search" class="cases-search-input">
+{% endblock %}
 
-			<div class="display-list-header">
-				<div class="display-list-header-title">Case</div>
+{% block content %}
 
-				<div class="display-list-header-item">Last updated</div>
+	<div class="cases-list">
+		{% for case in cases %}
 
-				<div class="display-list-header-item">Variants</div>
-			</div>
+			<div class="cases-item" layout horizontal center>
 
-			{% for case in cases %}
-	  		<div class="display-list-row">
+				<paper-item class="cases-item-title"
+										icon="announcement"
+										label="{{ case.id }}"
+										flex>
+					<a href="{{ url_for('core.case', case_id=case.id) }}"></a>
+				</paper-item>
 
-	  			<a href="{{ url_for('core.case', case_id=case.id) }}"
-	  				 class="display-list-row-title">
-	  				{{ case.id }}
-	  			</a>
+				<div flex layout horizontal center justified>
 
-	  			<div class="display-list-row-item">8 days ago</div>
-
-	  			<a href="{{ url_for('core.variants', case_id=case.id) }}"
-	  					 class="display-list-row-item">
+					<a href="{{ url_for('core.variants', case_id=case.id) }}"
+	  				 class="cases-item-link">
 	  				Variants
 	  			</a>
 
-	  			<div class="display-list-row-overflow">
-	  				<span class="fa fa-ellipsis-v fa-lg"></span>
-	  			</div>
+					<div class="cases-item-date" position="left">
+					  Updated 8 days ago
+					</div>
 
-	  		</div>
-	  	{% endfor %}
+				</div>
 
-		</div>
+			</div>
+
+		{% endfor %}
 	</div>
+
 {% endblock %}

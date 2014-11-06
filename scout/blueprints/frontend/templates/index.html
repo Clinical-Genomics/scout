@@ -1,18 +1,97 @@
-{% extends 'layouts/base-frontend.html' %}
+{% extends 'layouts/base.html' %}
 
-{% set page_title = _('Home') %}
+{% block body %}
 
-{% block menu_title %}
-	<a href="{{ url_for('core.cases') }}">Cases</a>
-{% endblock %}
+	<div class="landing-page">
 
-{% block core_container %}
+		<header class="landing-header">
+			<div class="landing-header-brand">
+				<div class="landing-header-logo"></div>
+				<div class="landing-header-title">Scout</div>
+			</div>
 
-	{#{% if current_user %}
-		pass
-	{% else %}
-		<form accept-charset="UTF-8" action="/login" method="POST">
-			<button>Sign in</button>
-		</form>
-	{% endif %} #}
+			{# {{ url_for('login.signin') }} #}
+			<a href="{{ url_for('core.cases') }}" class="landing-header-login">
+				Sign in
+			</a>
+		</header>
+
+		<div class="landing-hero">
+
+			<div class="landing-hero-tagline">Analyze VCFs quicker and easier.</div>
+			<div class="landing-hero-summary">
+				<p>
+					Scout allows you to browse VCFs in a web browser, identify
+					compound pairs, and solve cases as a team.
+				</p>
+			</div>
+			
+		</div>
+
+		<section id="feature-web-interface" class="landing-feature">
+			<div class="landing-feature-left">
+				<div class="landing-feature-title">Web interface</div>
+				<div class="landing-feature-summary">
+					Browse complex VCF files in an intuative web interface.
+				</div>
+			</div>
+
+			<div class="landing-feature-right"></div>
+		</section>
+
+		<section id="feature-compounds" class="landing-feature">
+			<div class="landing-feature-left"></div>
+
+			<div class="landing-feature-right">
+				<div class="landing-feature-title">Track progress</div>
+				<div class="landing-feature-summary">
+					Mark and save your calls about disease causing variants.
+				</div>
+			</div>
+		</section>
+
+		<section id="feature-track" class="landing-feature">
+			<div class="landing-feature-left">
+				<div class="landing-feature-title">Compounds</div>
+				<div class="landing-feature-summary">
+					Easily identify compound heterozygote mutations.
+				</div>
+			</div>
+
+			<div class="landing-feature-right"></div>
+		</section>
+
+		<section id="feature-collaborate" class="landing-feature">
+			<div class="landing-feature-left"></div>
+
+			<div class="landing-feature-right">
+				<div class="landing-feature-title">Collaboration</div>
+				<div class="landing-feature-summary">
+					Collaborate across your team by commenting and sharing activity.
+				</div>
+			</div>
+		</section>
+
+		<section id="user-guide" class="landing-box">
+			<div class="user-guide-box">
+				<div class="user-guide-summary">
+					For more information read the comprahensive
+				</div>
+				<div class="user-guide-btn">User Guide</div>
+				<div class="user-guide-project-info">
+					... or visit the <a href="https://github.com/Clinical-Genomics/scout">project GitHub repo</a>.
+				</div>
+			</div>
+		</section>
+
+		<section id="affiliations" class="landing-box">
+			<div class="landing-affiliations-summary">Developed at</div>
+			<div class="landing-affiliations">
+				<div class="landing-affiliation">SciLifeLab</div>
+				<div class="landing-affiliation">Karolinska Institutet</div>
+			</div>
+		</section>
+
+	</div>
+
 {% endblock %}

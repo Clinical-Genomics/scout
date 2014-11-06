@@ -30,7 +30,8 @@
 
   {% block js_top %}{% endblock %}
 </head>
-<body>
+
+<body fullbleed layout vertical>
   {% include "macros/_ask_user_to_update_ie.html" %}
 
   {% block body %}{% endblock %}
@@ -39,11 +40,14 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js">
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- include browserify script tag -->
+		{% include 'footer.html' %}
   {% endblock %}
 
   {% block ga %}
     {% include "macros/_google_analytics.html" %}
   {% endblock %}
 </body>
-</html>
 
+</html>

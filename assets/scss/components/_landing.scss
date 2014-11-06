@@ -1,0 +1,166 @@
+.landing-page {
+	padding: 1em;
+
+	max-width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+
+	line-height: 1.5em;
+
+	@include respond-to(550) {
+    font-size: 1.2em;
+    padding: 2em;
+  }
+}
+
+%landing-summary {
+	color: rgba(#000, .6);
+	font-size: .9em;
+}
+
+.landing-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.landing-header-brand {
+	display: flex;
+	align-items: center;
+}
+
+%landing-header-brand-item {
+	&:first-child {
+		margin-right: 1em;
+	}
+}
+
+.landing-header-logo {
+	@extend %landing-header-brand-item;
+
+	// stub
+	width: 50px;
+	height: 50px;
+	background-color: rgba(#000, .3);
+}
+
+.landing-header-title {
+	@extend %landing-header-brand-item;
+
+	font-size: 1.4em;
+	color: green;
+}
+
+.landing-header-login {
+	text-decoration: none;
+}
+
+%landing-section {
+	padding: 4em 0;
+
+	&:not(:last-child) {
+		border-bottom: 1px solid rgba(#000, .1);
+	}
+}
+
+.landing-hero {
+	@extend %landing-section;
+
+	padding-bottom: 3em;
+}
+
+.landing-hero-tagline {
+	text-align: center;
+	font-size: 1.3em;
+}
+
+.landing-hero-summary {
+	@extend %landing-summary;
+	text-align: center;
+
+	max-width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+
+	@include respond-to(550) {
+		max-width: 500px;
+	}
+}
+
+.landing-feature {
+	@extend %landing-section;
+
+	display: flex;
+	font-size: .9em;
+}
+
+.landing-feature-left,
+.landing-feature-right {
+	flex: 1;
+}
+
+.landing-feature-title {
+	font-size: 1.2em;
+}
+
+.landing-feature-summary {
+	@extend %landing-summary;
+}
+
+.landing-box {
+	@extend %landing-section;
+
+	padding: 1em 0;
+}
+
+.landing-affiliations-summary {
+	@extend %landing-summary;
+
+	font-size: .7em;
+	text-align: center;
+	margin-bottom: 1em;
+}
+
+.landing-affiliations {
+	display: flex;
+	justify-content: space-around;
+	color: rgba(#000, .4);
+	font-weight: bold;
+}
+
+.landing-affiliation {
+	font-size: 1.3em;
+}
+
+.user-guide-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+%user-guide-text {
+	@extend %landing-summary;
+	font-size: .7em;
+}
+
+.user-guide-summary {
+	@extend %user-guide-text;
+	margin-bottom: .5em;
+}
+
+.user-guide-btn {
+	width: 80%;
+	text-align: center;
+	background-color: rgba(#000, .2);
+	padding: .5em;
+	cursor: pointer;
+
+	&:hover {
+		background-color: rgba(#000, .1);
+	}
+}
+
+.user-guide-project-info {
+	@extend %user-guide-text;
+	margin-top: .5em;
+}
