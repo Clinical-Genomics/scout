@@ -3,7 +3,9 @@ $variants-cell-padding: .7em;
 .variants-header {
 	font-size: .7em;
 	flex-basis: 100%;
-	margin-bottom: -34px;
+	margin-bottom: -29px;
+
+	background-color: rgba(#000, .1);
 }
 
 .variants-header-item {
@@ -12,7 +14,7 @@ $variants-cell-padding: .7em;
 	padding: $variants-cell-padding;
 
 	&:not(:last-child) {
-		border-right: 1px solid rgba(#fff, .3);
+		border-right: 1px solid rgba(#fff, .4);
 	}
 }
 

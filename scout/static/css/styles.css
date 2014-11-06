@@ -677,7 +677,8 @@ select {
   -webkit-flex-basis: 100%;
       -ms-flex-preferred-size: 100%;
           flex-basis: 100%;
-  margin-bottom: -34px; }
+  margin-bottom: -29px;
+  background-color: rgba(0, 0, 0, 0.1); }
 
 .variants-header-item {
   -webkit-box-flex: 1;
@@ -687,7 +688,7 @@ select {
   color: #fff;
   padding: 0.7em; }
   .variants-header-item:not(:last-child) {
-    border-right: 1px solid rgba(255, 255, 255, 0.3); }
+    border-right: 1px solid rgba(255, 255, 255, 0.4); }
 
 .variants-body {
   background-color: #fff;
