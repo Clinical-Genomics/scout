@@ -29,24 +29,24 @@ class AppFactory(object):
   def __init__(self):
     super(AppFactory, self).__init__()
 
-  def __call__(self, app_name=None, config=None, **kwargs):
+  def __call__(self, app_name=None, config=None, config_obj=None, **kwargs):
     # initialize the application
     self.app_config = config
     self.app = Flask(app_name or DevelopmentConfig.PROJECT,
                      instance_relative_config=True,
                      **kwargs)
 
-    self._configure_app()
+    self._configure_app(config_obj=config_obj)
     self._bind_extensions()
     self._register_blueprints()
     self._configure_template_filters()
 
     return self.app
 
-  def _configure_app(self):
+  def _configure_app(self, config_obj=None):
     """Configure the app in different ways."""
     # http://flask.pocoo.org/docs/api/#configuration
-    self.app.config.from_object(DevelopmentConfig)
+    self.app.config.from_object(config_obj or DevelopmentConfig)
 
     # user custom config
     # http://flask.pocoo.org/docs/config/#instance-folders
@@ -85,6 +85,18 @@ class AppFactory(object):
 
       else:
         raise NoBlueprintException("No %s blueprint found" % object_name)
+
+  def _register_context_processors(self):
+    """Register extra contexts for Jinja templates."""
+    for processor_path in self.app.config.get('CONTEXT_PROCESSORS', []):
+      module, object_name = self._get_imported_stuff_by_path(processor_path)
+
+      if hasattr(module, object_name):
+        self.app.context_processor(getattr(module, object_name))
+
+      else:
+        raise NoContextProcessorException(
+        "No %s context processor found" % object_name)
 
   def _configure_error_handlers(self):
     @self.app.errorhandler(403)

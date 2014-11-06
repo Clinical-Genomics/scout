@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from scout.app import create_app
+from scout.app import AppFactory
+from scout.settings import TestConfig
 
 
 @pytest.fixture(scope='session')
 def app(request):
   """Session-wide test `Flask` application."""
-  settings_override = {
-    'TESTING': True,
-  }
-  app = create_app(__name__, settings_override)
+  app = AppFactory()(__name__, config_obj=TestConfig)
 
-  # Establish an application context before running the tests.
+  # establish an application context before running the tests.
   ctx = app.app_context()
   ctx.push()
 
