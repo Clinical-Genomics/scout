@@ -40,6 +40,7 @@ class AppFactory(object):
     self._bind_extensions()
     self._register_blueprints()
     self._configure_template_filters()
+    self._configure_error_handlers()
 
     return self.app
 

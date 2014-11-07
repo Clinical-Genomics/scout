@@ -16,13 +16,13 @@ core = Blueprint('core', __name__, template_folder='templates')
 @login_required
 def institutes():
   """View all institutes that the current user belongs to."""
-  if len(current_user.institutes) > 1:
-    return dict(institutes=current_user.institutes)
-
-  else:
+  if len(current_user.institutes) == 1:
     # there no choice of institutes to make, redirect to only institute
     institute = current_user.institutes[0]
     return redirect(url_for('.cases', institute_id=institute.id))
+
+  else:
+    return dict(institutes=current_user.institutes)
 
 
 @core.route('/<institute_id>')

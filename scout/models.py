@@ -11,7 +11,11 @@ from datetime import datetime
 from .extensions import db
 
 
-# define MongoEngine documents
+class Whitelist(db.Document):
+  email = db.EmailField(required=True, unique=True)
+  created_at = db.DateTimeField(default=datetime.now)
+
+
 class User(db.Document):
   email = db.EmailField(required=True, unique=True)
   name = db.StringField(max_length=40, required=True)

@@ -7,7 +7,7 @@ from flask.ext.login import login_required
 
 from ..admin import UserView
 from ..extensions import admin
-from ..models import User, Institute, Role, Variant
+from ..models import User, Institute, Role, Variant, Whitelist
 from ..helpers import templated
 
 user = Blueprint('user', __name__, template_folder='templates')
@@ -17,6 +17,7 @@ admin.add_view(UserView(User))
 admin.add_view(ModelView(Institute))
 admin.add_view(ModelView(Role))
 admin.add_view(ModelView(Variant))
+admin.add_view(ModelView(Whitelist))
 
 
 @user.route('/profile/<user_id>')
