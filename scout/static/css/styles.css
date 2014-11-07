@@ -740,3 +740,16 @@ core-toolbar {
   core-toolbar a {
     color: #fff;
     text-decoration: none; }
+
+.main-drawer {
+  background-color: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.1); }
+
+.hidden-submit {
+  display: none; }
+
+.menu-button {
+  display: none; }
+
+core-drawer-panel[narrow] .menu-button {
+  display: inline-block; }

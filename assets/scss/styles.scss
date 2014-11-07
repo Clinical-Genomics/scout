@@ -42,3 +42,21 @@ core-toolbar {
   	text-decoration: none;
   }
 }
+
+.main-drawer {
+	background-color: #fff;
+	border-right: 1px solid rgba(#000, .1);
+}
+
+.hidden-submit {
+	// hide submit button replaced with polymer button
+	display: none;
+}
+
+.menu-button {
+	display: none;
+}
+
+core-drawer-panel[narrow] .menu-button {
+	display: inline-block;
+}
