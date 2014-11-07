@@ -11,7 +11,12 @@ from datetime import datetime
 from .extensions import db
 
 
-# define mongoengine documents
+class Whitelist(db.Document):
+  email = db.EmailField(required=True, unique=True)
+  created_at = db.DateTimeField(default=datetime.now)
+  default_institute = db.ReferenceField('Institute')
+
+
 class User(db.Document):
   email = db.EmailField(required=True, unique=True)
   name = db.StringField(max_length=40, required=True)
@@ -70,6 +75,7 @@ class Case(db.EmbeddedDocument):
   databases = db.ListField(db.StringField())
   created_at = db.DateTimeField(default=datetime.now)
   updated_at = db.DateTimeField(default=datetime.now)
+  suspects = db.ListField(db.ReferenceField('Variant'))
 
   def __unicode__(self):
     return self.name
@@ -77,9 +83,21 @@ class Case(db.EmbeddedDocument):
 
 class Institute(db.Document):
   name = db.StringField(required=True, unique=True)
+  display_name = db.StringField(required=True, unique=True)
   sanger_recipients = db.ListField(db.EmailField())
   cases = db.ListField(db.EmbeddedDocumentField(Case))
   created_at = db.DateTimeField(default=datetime.now)
 
   def __unicode__(self):
     return self.name
+
+
+class Variant(db.Document):
+  chromosome = db.StringField()
+  position = db.IntField()
+  reference = db.StringField()
+  alternative = db.StringField()
+  rs_number = db.StringField()
+
+  def __unicode__(self):
+    return "%s:%s" % (self.chromosome, self.position)

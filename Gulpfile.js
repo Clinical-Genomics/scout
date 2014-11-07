@@ -9,6 +9,8 @@ var reload       = browserSync.reload;
 var sass         = require('gulp-sass');
 var bourbon      = require('node-bourbon');
 var autoprefixer = require('gulp-autoprefixer');
+var vulcanize 	 = require('gulp-vulcanize');
+var replace 		 = require('gulp-replace');
 
 // Base target directory
 base_dir = 'scout/static'
@@ -40,6 +42,20 @@ gulp.task('sass', function () {
     .pipe(autoprefixer())
     .pipe(gulp.dest(base_dir + '/css/'))
     .pipe(reload({stream: true}));
+});
+
+// Vulcanize Polymer elements
+gulp.task('vulcanize', function () {
+  return gulp.src('assets/elements.html')
+    .pipe(vulcanize({
+        dest: 'scout/templates',
+        strip: true,  // Remove comments and empty text nodes
+        inline: true,
+    }))
+    .pipe(replace(/<html><head>/, '{% raw %}'))
+    .pipe(replace(/<\/body><\/html>/, '{% endraw %}'))
+    .pipe(replace(/<\/head><body>/, ''))
+    .pipe(gulp.dest('scout/templates'));
 });
 
 // Default task to be run with `gulp`

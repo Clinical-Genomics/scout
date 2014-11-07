@@ -58,6 +58,6 @@ instance
 
 # Node.js
 node_modules
-scout/static/js/vendor/
+scout/static/vendor/
 
 instance/

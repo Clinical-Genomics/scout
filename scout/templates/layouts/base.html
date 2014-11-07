@@ -22,8 +22,6 @@
   {% block css %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet"
-    			href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
   {% endblock %}
 
   {% block css_style %}{% endblock %}
@@ -31,18 +29,14 @@
   {% block js_top %}{% endblock %}
 </head>
 
-<body fullbleed layout vertical>
+<body unresolved fullbleed layout vertical>
   {% include "macros/_ask_user_to_update_ie.html" %}
 
   {% block body %}{% endblock %}
 
   {% block js_btm %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js">
-    </script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
     <!-- include browserify script tag -->
-		{% include 'footer.html' %}
+    {% include 'footer.html' %}
   {% endblock %}
 
   {% block ga %}

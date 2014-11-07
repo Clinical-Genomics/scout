@@ -415,7 +415,8 @@ select {
 .landing-header-logo {
   width: 50px;
   height: 50px;
-  background-color: rgba(0, 0, 0, 0.3); }
+  background-image: url(/static/img/scout-logo.png);
+  background-size: 50px; }
 
 .landing-header-title {
   font-size: 1.4em;
@@ -507,11 +508,12 @@ select {
 .user-guide-btn {
   width: 80%;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #ffa000;
+  color: #fff;
   padding: 0.5em;
   cursor: pointer; }
   .user-guide-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1); }
+    background-color: rgba(255, 160, 0, 0.8); }
 
 .user-guide-project-info {
   margin-top: 0.5em; }
@@ -727,6 +729,9 @@ input {
   color: inherit;
   -webkit-appearance: none; }
 
+.toolbar-top {
+  width: 100%; }
+
 div.toolbar-bottom {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
@@ -740,3 +745,16 @@ core-toolbar {
   core-toolbar a {
     color: #fff;
     text-decoration: none; }
+
+.main-drawer {
+  background-color: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.1); }
+
+.hidden-submit {
+  display: none; }
+
+.menu-button {
+  display: none; }
+
+core-drawer-panel[narrow] .menu-button {
+  display: inline-block; }

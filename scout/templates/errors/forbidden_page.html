@@ -1,17 +1,27 @@
-
-
 {% extends 'errors/layout.html' %}
+
 {% set page_title = 'Forbidden page' %}
+
 {% block body %}
-<h1>Forbidden Page <span>:(</span></h1>
-<p>You shall NOT pass!</p>
-<p>It looks like this was the result of either:</p>
-<ul>
-    <li>no permission</li>
-</ul>
-<script>
-    var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
-</script>
-<script src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
+  <h1>Forbidden Page <span>:(</span></h1>
+  <p>You shall NOT pass!</p>
+
+  <p>It looks like this was the result of either:</p>
+  <ul>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <li>No permission</li>
+  </ul>
+
+  <script>
+      var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
+  </script>
+  <script src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 {% endblock %}
 

@@ -14,6 +14,6 @@ def index():
   should be passed along to their personalized start page (TODO).
   """
   if current_user.is_authenticated():
-    return redirect(url_for('core.cases'))
+    return redirect(url_for('core.institutes'))
   else:
     return render_template('index.html')
