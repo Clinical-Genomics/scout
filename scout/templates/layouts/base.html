@@ -15,8 +15,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
+  <link rel="icon"
+        type="image/png"
+        href="{{ url_for('static', filename='favicon.ico') }}">
   <link rel="Shortcut Icon"
-        href="{{ url_for('static', filename='favicon.png') }}"
+        href="{{ url_for('static', filename='favicon.ico') }}"
         type="image/x-icon">
 
   {% block css %}
