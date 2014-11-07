@@ -16,10 +16,10 @@
 {% endblock %}
 
 {% block toolbar_bottom %}
-	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	{{ institute.name }}
 	<core-icon icon="chevron-right"></core-icon>
 
-	<a href="{{ url_for('core.cases') }}">Cases</a>
+	<a href="{{ url_for('core.cases', institute_id=institute.id) }}">Cases</a>
 	<core-icon icon="chevron-right"></core-icon>
 
 	<core-item icon="lock-open" label="Case {{ case.name }}"></core-item>

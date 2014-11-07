@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block toolbar_middle %}
-	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	{{ institute.name }}
 	<core-icon icon="chevron-right"></core-icon>
 	Cases
 {% endblock %}
@@ -30,7 +30,9 @@
 										icon="announcement"
 										label="{{ case.name }}"
 										flex>
-					<a href="{{ url_for('core.case', case_id=case.name) }}"></a>
+					<a href="{{ url_for('core.case',
+															institute_id=institute.id,
+															case_id=case.name) }}"></a>
 				</paper-item>
 
 				<div flex layout horizontal center justified>

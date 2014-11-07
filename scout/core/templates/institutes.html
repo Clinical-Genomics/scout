@@ -1,0 +1,30 @@
+{% extends 'layouts/scroll-header.html' %}
+
+{% set page_title = 'Institutes' %}
+
+{% block toolbar_middle %}
+	<a href="{{ url_for('frontend.index') }}">Home</a>
+{% endblock %}
+
+{% block content %}
+
+	<div class="cases-list">
+		<h3>You belong to:</h3>
+
+		{% for institute in institutes %}
+
+			<div class="cases-item" layout horizontal center>
+
+				<paper-item class="cases-item-title"
+										icon="assignment-ind"
+										label="{{ institute.name }}"
+										flex>
+					<a href="{{ url_for('core.cases', institute_id=institute.id) }}"></a>
+				</paper-item>
+
+			</div>
+
+		{% endfor %}
+	</div>
+
+{% endblock %}
