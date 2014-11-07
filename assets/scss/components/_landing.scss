@@ -41,7 +41,8 @@
 	// stub
 	width: 50px;
 	height: 50px;
-	background-color: rgba(#000, .3);
+	background-image: url(/static/img/scout-logo.png);
+	background-size: 50px;
 }
 
 .landing-header-title {
@@ -151,12 +152,13 @@
 .user-guide-btn {
 	width: 80%;
 	text-align: center;
-	background-color: rgba(#000, .2);
+	background-color: #ffa000;
+	color: #fff;
 	padding: .5em;
 	cursor: pointer;
 
 	&:hover {
-		background-color: rgba(#000, .1);
+		background-color: rgba(#ffa000, .8);
 	}
 }
 
