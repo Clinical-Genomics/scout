@@ -78,6 +78,7 @@ class Case(db.EmbeddedDocument):
 
 class Institute(db.Document):
   name = db.StringField(required=True, unique=True)
+  display_name = db.StringField(required=True, unique=True)
   sanger_recipients = db.ListField(db.EmailField())
   cases = db.ListField(db.EmbeddedDocumentField(Case))
   created_at = db.DateTimeField(default=datetime.now)
