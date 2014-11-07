@@ -2,16 +2,8 @@
 
 {% set page_title = 'Cases' %}
 
-{% block toolbar_top %}
-	<form action="{{ url_for('login.logout') }}" method="POST">
-		<button>Logout</button>
-	</form>
-{% endblock %}
-
 {% block toolbar_middle %}
 	{{ institute.name }}
-	<core-icon icon="chevron-right"></core-icon>
-	Cases
 {% endblock %}
 
 {% block toolbar_bottom %}
@@ -37,7 +29,7 @@
 
 				<div flex layout horizontal center justified>
 
-					<a href="{{ url_for('core.variants', case_id=case.name) }}"
+					<a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"
 	  				 class="cases-item-link">
 	  				Variants
 	  			</a>

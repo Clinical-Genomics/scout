@@ -10,16 +10,15 @@
 			<a href="{{ url_for('user.profile', user_id=case.assignee.id) }}"></a>
 		</core-item>
 		<core-item class="case-header-link" icon="link" label="All variants">
-			<a href="{{ url_for('core.variants', case_id=case.name) }}"></a>
+			<a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"></a>
 		</core-item>
 	</div>
 {% endblock %}
 
 {% block toolbar_bottom %}
-	{{ institute.name }}
-	<core-icon icon="chevron-right"></core-icon>
-
-	<a href="{{ url_for('core.cases', institute_id=institute.id) }}">Cases</a>
+	<a href="{{ url_for('core.cases', institute_id=institute.id) }}">
+		{{ institute.name }}
+	</a>
 	<core-icon icon="chevron-right"></core-icon>
 
 	<core-item icon="lock-open" label="Case {{ case.name }}"></core-item>

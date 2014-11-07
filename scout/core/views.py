@@ -25,7 +25,7 @@ def institutes():
     return redirect(url_for('.cases', institute_id=institute.id))
 
 
-@core.route('/<institute_id>/cases')
+@core.route('/<institute_id>')
 @templated('cases.html')
 @login_required
 def cases(institute_id):
@@ -40,7 +40,7 @@ def cases(institute_id):
   return dict(institute=institute, cases=store.cases())
 
 
-@core.route('/<institute_id>/cases/<case_id>')
+@core.route('/<institute_id>/<case_id>')
 @templated('case.html')
 @login_required
 def case(institute_id, case_id):
@@ -57,13 +57,15 @@ def case(institute_id, case_id):
   return dict(institute=institute, case=cases[0])
 
 
-@core.route('/<case_id>/variants')
+@core.route('/<institute_id>/<case_id>/variants')
 @templated('variants.html')
 @login_required
-def variants(case_id):
+def variants(institute_id, case_id):
   """View all variants for a single case."""
   # fetch all variants for a specific case
-  return dict(variants=store.variants(case_id), case_id=case_id)
+  return dict(variants=store.variants('1'),  # case_id
+              case_id=case_id,
+              institute_id=institute_id)
 
 
 @core.route('/<case_id>/variants/<variant_id>')

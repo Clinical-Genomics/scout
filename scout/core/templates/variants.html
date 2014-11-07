@@ -3,11 +3,9 @@
 {% set page_title = 'Variants' %}
 
 {% block toolbar_middle %}
-	<a href="{{ url_for('frontend.index') }}">Scout</a>
+	<a href="{{ url_for('core.cases', institute_id=institute_id) }}">Cases</a>
 	<core-icon icon="chevron-right"></core-icon>
-	<a href="{{ url_for('core.cases') }}">Cases</a>
-	<core-icon icon="chevron-right"></core-icon>
-	<a href="{{ url_for('core.case', case_id=case_id) }}">Case {{ case_id }}</a>
+	<a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
 	<core-icon icon="chevron-right"></core-icon>
 	Variants
 {% endblock %}
@@ -58,7 +56,7 @@
 
 			</div>
 		{% endfor %}
-		
+
 	</div>
 
 {% endblock %}
