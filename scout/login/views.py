@@ -103,7 +103,7 @@ def authorized(oauth_response):
 
   # match email against whitelist before completing sign up
   try:
-    Whitelist.objects.get(email=google_data['email'])
+    faux_user = Whitelist.objects.get(email=google_data['email'])
   except DoesNotExist:
     flash("Your email is not on the whitelist, contact an administor.")
     return abort(403)
@@ -111,12 +111,17 @@ def authorized(oauth_response):
   # get or create user from the database
   user, was_created = User.objects.get_or_create(
     email = google_data['email'],
-    name = google_data['name'],
+    name = google_data['name']
   )
 
   if was_created:
     user.created_at = datetime.utcnow()
     user.location = google_data['locale']
+
+    # add a default institute if it is specified
+    if faux_user.default_institute:
+      user.institutes.append(faux_user.default_institute)
+
     user.save()
 
   if login_user(user, remember=True):

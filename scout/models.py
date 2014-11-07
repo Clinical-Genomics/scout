@@ -14,6 +14,7 @@ from .extensions import db
 class Whitelist(db.Document):
   email = db.EmailField(required=True, unique=True)
   created_at = db.DateTimeField(default=datetime.now)
+  default_institute = db.ReferenceField('Institute')
 
 
 class User(db.Document):
