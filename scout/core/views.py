@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from flask import abort, Blueprint, redirect, url_for
 from flask.ext.login import login_required, current_user
 
-from ..models import Institute
+from ..models import Institute, Variant
 from ..extensions import store
 from ..helpers import templated
 
@@ -74,5 +74,6 @@ def variants(institute_id, case_id):
 @login_required
 def variant(case_id, variant_id):
   """View a single variant in a single case."""
-  return dict(variant=store.variant(variant_id, case_id=case_id),
+  return dict(variant=Variant.objects.first(),
+              variant_id=variant_id,
               case_id=case_id)

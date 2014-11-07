@@ -92,12 +92,32 @@ class Institute(db.Document):
     return self.name
 
 
-class Variant(db.Document):
-  chromosome = db.StringField()
+class VariantCommon(db.EmbeddedDocument):
+  chrom = db.StringField()
   position = db.IntField()
   reference = db.StringField()
   alternative = db.StringField()
   rs_number = db.StringField()
+  hgnc_symbol = db.StringField()
+  gene_ids = db.DictField()
+  thousand_genomes_frequency = db.FloatField()
+  cadd_score = db.FloatField()
 
   def __unicode__(self):
-    return "%s:%s" % (self.chromosome, self.position)
+    return "%s:%s" % (self.chrom, self.position)
+
+
+class VariantCaseSpecific(db.EmbeddedDocument):
+  rank_score = db.IntField()
+  inheritance_models = db.ListField(db.StringField(choices=[
+    'AR_hom', 'AR_compound', 'AR_hom_denovo', 'AD', 'AD_denovo', 'X', 'X_dn'
+  ]))
+
+
+class Variant(db.Document):
+  md5_key = db.StringField(required=True, unique=True)
+  common = db.EmbeddedDocumentField(VariantCommon)
+  case_specifics = db.ListField(db.EmbeddedDocumentField(VariantCaseSpecific))
+
+  def __unicode__(self):
+    return self.md5_key
