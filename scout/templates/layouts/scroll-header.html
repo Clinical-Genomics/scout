@@ -31,6 +31,12 @@
           <a href="{{ url_for('frontend.index') }}"></a>
         </paper-item>
 
+        {% if current_user.has_role('admin') %}
+          <paper-item icon="create" label="Admin">
+            <a href="/admin"></a>
+          </paper-item>
+        {% endif %}
+
         <paper-item icon="close" label="Logout" onclick="document.querySelector('#hidden-logout').click();"></paper-item>
         <form action="{{ url_for('login.logout') }}" method="POST">
           <button type="submit" id="hidden-logout" class="hidden-submit"></button>
@@ -46,6 +52,10 @@
           <div class="toolbar-top top" layout horizontal center>
             {% block toolbar_top %}
               <paper-icon-button icon="menu" class="menu-button" onclick="document.querySelector('core-drawer-panel').togglePanel();"></paper-icon-button>
+              <div flex></div>
+              <paper-item icon="account-circle" label="{{ current_user.name }}">
+                <a href="{{ url_for('user.profile', user_id=current_user.id) }}"></a>
+              </paper-item>
             {% endblock %}
           </div>
 

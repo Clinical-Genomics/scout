@@ -47,14 +47,15 @@ def case(institute_id, case_id):
   """View one specific case."""
   institute = Institute.objects.get_or_404(id=institute_id)
 
-  cases = [case for case in institute.cases if case.name == case_id]
-
   # abort with 404 error if the case doesn't exist
+  cases = [case for case in institute.cases if case.name == case_id]
   if len(cases) == 0:
     return abort(404)
 
+  case = cases[0]
+
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=cases[0])
+  return dict(institute=institute, case=case)
 
 
 @core.route('/<institute_id>/<case_id>/variants')

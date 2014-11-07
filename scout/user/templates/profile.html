@@ -1,5 +1,9 @@
 {% extends 'layouts/scroll-header.html' %}
 
+{% block toolbar_bottom %}
+  <core-item icon="accessibility" label="{{ user.name }}"></core-item>
+{% endblock %}
+
 {% block content %}
 	{{ user.to_json() }}
 {% endblock %}
