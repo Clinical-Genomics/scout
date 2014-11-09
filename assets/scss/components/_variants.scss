@@ -1,9 +1,9 @@
 $variants-cell-padding: .7em;
 
-.variants-header {
+div.variants-header {
 	font-size: .7em;
 	flex-basis: 100%;
-	margin-bottom: -29px;
+	margin: 0 0 -29px 0;
 
 	background-color: rgba(#000, .1);
 }
@@ -21,7 +21,7 @@ $variants-cell-padding: .7em;
 .variants-body {
 	background-color: #fff;
 	font-size: .9em;
-	margin: 2em 66px;
+	margin: 6px 6px;
 	border: 1px solid rgba(#000, .15);
 	box-shadow: 0 1px 0 rgba(#000, .07);
 	color: rgba(#000, .6);

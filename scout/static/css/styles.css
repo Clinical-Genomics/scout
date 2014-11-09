@@ -370,6 +370,44 @@ textarea {
 select {
   width: 100%; }
 
+input {
+  background-color: inherit;
+  border: none;
+  outline: 0;
+  padding: 0;
+  color: inherit;
+  -webkit-appearance: none; }
+
+.toolbar-top {
+  width: 100%; }
+
+div.toolbar-bottom {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin-right: 60px; }
+
+core-toolbar {
+  background: #00bcd4;
+  color: #fff; }
+  core-toolbar a {
+    color: #fff;
+    text-decoration: none; }
+
+.main-drawer {
+  background-color: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.1); }
+
+.hidden-submit {
+  display: none; }
+
+.menu-button {
+  display: none; }
+
+core-drawer-panel[narrow] .menu-button {
+  display: inline-block; }
+
 .landing-page {
   padding: 1em;
   max-width: 700px;
@@ -674,12 +712,12 @@ select {
         -ms-flex: 1;
             flex: 1; }
 
-.variants-header {
+div.variants-header {
   font-size: 0.7em;
   -webkit-flex-basis: 100%;
       -ms-flex-preferred-size: 100%;
           flex-basis: 100%;
-  margin-bottom: -29px;
+  margin: 0 0 -29px 0;
   background-color: rgba(0, 0, 0, 0.1); }
 
 .variants-header-item {
@@ -695,7 +733,7 @@ select {
 .variants-body {
   background-color: #fff;
   font-size: 0.9em;
-  margin: 2em 66px;
+  margin: 6px 6px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.07);
   color: rgba(0, 0, 0, 0.6); }
@@ -720,41 +758,3 @@ select {
   overflow: hidden; }
   .variants-row-item:not(:last-child) {
     border-right: 1px solid rgba(0, 0, 0, 0.15); }
-
-input {
-  background-color: inherit;
-  border: none;
-  outline: 0;
-  padding: 0;
-  color: inherit;
-  -webkit-appearance: none; }
-
-.toolbar-top {
-  width: 100%; }
-
-div.toolbar-bottom {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  margin-right: 60px; }
-
-core-toolbar {
-  background: #00bcd4;
-  color: #fff; }
-  core-toolbar a {
-    color: #fff;
-    text-decoration: none; }
-
-.main-drawer {
-  background-color: #fff;
-  border-right: 1px solid rgba(0, 0, 0, 0.1); }
-
-.hidden-submit {
-  display: none; }
-
-.menu-button {
-  display: none; }
-
-core-drawer-panel[narrow] .menu-button {
-  display: inline-block; }

@@ -1,6 +1,7 @@
 {% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = 'Variants' %}
+{% set scroll_header_keywords = 'condenses keepCondensedHeader scrollAwayTopbar' %}
 
 {% block toolbar_middle %}
 	<a href="{{ url_for('core.cases', institute_id=institute_id) }}">Cases</a>
@@ -10,15 +11,17 @@
 	Variants
 {% endblock %}
 
-{% block toolbar_bottom %}
-	<div class="variants-header" horizontal layout>
-		<div class="variants-header-item">CADD score</div>
-		<div class="variants-header-item">HGNC</div>
-		<div class="variants-header-item">1000 Genomes</div>
-		<div class="variants-header-item">Chromosome</div>
-		<div class="variants-header-item">dbSNP ID</div>
-		<div class="variants-header-item">Genetic models</div>
-	</div>
+{% block toolbar_bottom_outer %}
+  <div class="toolbar-bottom variants-header bottom" layout horizontal>
+
+    <div class="variants-header-item">CADD score</div>
+    <div class="variants-header-item">HGNC</div>
+    <div class="variants-header-item">1000 Genomes</div>
+    <div class="variants-header-item">Chromosome</div>
+    <div class="variants-header-item">dbSNP ID</div>
+    <div class="variants-header-item">Genetic models</div>
+
+  </div>
 {% endblock %}
 
 {% block content %}

@@ -11,12 +11,6 @@
 // Global Styles
 @import "global";
 
-// Components
-@import "components/landing";
-@import "components/cases";
-@import "components/case";
-@import "components/variants";
-
 // Resets
 input {
 	background-color: inherit;
@@ -64,3 +58,9 @@ core-toolbar {
 core-drawer-panel[narrow] .menu-button {
 	display: inline-block;
 }
+
+// Components
+@import "components/landing";
+@import "components/cases";
+@import "components/case";
+@import "components/variants";

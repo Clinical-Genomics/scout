@@ -44,7 +44,8 @@
       {% endblock %}
     </div>
 
-    <core-scroll-header-panel main flex condenses keepCondensedHeader>
+    <core-scroll-header-panel main flex
+      {{ scroll_header_keywords | default('condenses keepCondensedHeader') }}>
 
       <core-toolbar class="tall">
         {% block toolbar_tall %}
@@ -63,9 +64,11 @@
             {% block toolbar_middle %}{% endblock %}
           </div>
 
+          {% block toolbar_bottom_outer %}
           <div class="toolbar-bottom bottom indent" layout horizontal center>
             {% block toolbar_bottom %}{% endblock %}
           </div>
+          {% endblock %}
 
         {% endblock %}
       </core-toolbar>

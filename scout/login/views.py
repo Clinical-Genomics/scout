@@ -81,7 +81,7 @@ def logout():
 def authorized(oauth_response):
 
   if oauth_response is None:
-    flash('Access denied: reason=%s error=%s' % (
+    flash("Access denied: reason=%s error=%s" % (
       request.args['error_reason'],
       request.args['error_description']
     ))
@@ -90,7 +90,7 @@ def authorized(oauth_response):
 
   elif isinstance(oauth_response, OAuthException):
     current_app.logger.warning(oauth_response.message)
-    flash('%s - try again!' % oauth_response.message)
+    flash("%s - try again!" % oauth_response.message)
     return redirect(url_for('frontend.index'))
 
   # add token to session, do it before validation to be able to fetch
@@ -105,7 +105,7 @@ def authorized(oauth_response):
   try:
     faux_user = Whitelist.objects.get(email=google_data['email'])
   except DoesNotExist:
-    flash("Your email is not on the whitelist, contact an administor.")
+    flash('Your email is not on the whitelist, contact an administor.')
     return abort(403)
 
   # get or create user from the database
