@@ -792,3 +792,14 @@ div.variants-header {
 
 .variants-row-item:not(:last-child) {
   border-right-color: rgba(0, 0, 0, 0.15); }
+
+core-tooltip.variants-row-item {
+  overflow: visible; }
+
+.variants-tooltip {
+  line-height: 1rem;
+  font-size: 1.2em; }
+  .variants-tooltip > ul {
+    padding: 0;
+    margin: 0;
+    list-style: none; }

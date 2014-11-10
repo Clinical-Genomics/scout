@@ -59,12 +59,31 @@
 				</div>
 
         <!-- 1000 Genomes -->
-				<div class="variants-row-item text-right">
-					{{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
-				</div>
+				<core-tooltip class="variants-row-item text-right" position="left">
+          {{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
+
+          <div class="variants-tooltip" tip>
+            <ul>
+              <li><strong>ThousandG</strong> 0.004</li>
+              <li><strong>Esp6500</strong> 0.011</li>
+              <li><strong>Dbsnp129</strong> 0.004</li>
+            </ul>
+          </div>
+        </core-tooltip>
 
         <!-- PolyPhen -->
-        <div class="variants-row-item text-right">0.672</div>
+        <core-tooltip class="variants-row-item text-right" position="right">
+          0.672
+
+          <div class="variants-tooltip" tip>
+            <ul>
+              <li><strong>SiftWholeExome</strong> 0.04</li>
+              <li><strong>PolyphenDivHuman</strong> 0.999</li>
+              <li><strong>PolyphenVarHuman</strong> 0.985</li>
+              <li><strong>MutationTaster</strong> 0.498</li>
+            </ul>
+          </div>
+        </core-tooltip>
 
         <!-- Gene annotation -->
         <div class="variants-row-item">exonic</div>
