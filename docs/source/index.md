@@ -44,12 +44,17 @@ We are trying to build Scout piece by piece. This is the prioritized order we ar
 - [ ] Prepare real world representation of demo data + import CLI
 - [ ] Release a first draft of the working interface (core functionality)
 - [ ] Make sure that the package is installable with pip and/or Docker
+	- Include logging and error reports
+	- Setup testing suite
 - [ ] Take in a first round of feedback from close collaborators
 - [ ] Add functionality for user management and comments
+	- Profile, settings, feedback functionality
+	- Feeds and actitivy indicator in case list
 - [ ] Implement more of less MIP/Clinical Genomics specific functionality
   - Access rights connected with cases/families. "Admin" users should be able to view any case.
   - IGV
   - Sanger email order (+ image from IGV?)
+  - Show gene list and ethical approval in case list
 
 
 ## Contributing
