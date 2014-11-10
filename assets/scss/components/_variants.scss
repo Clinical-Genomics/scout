@@ -1,27 +1,44 @@
-$variants-cell-padding: .7em;
+$variants-cell-padding: .6rem;
+
+%variants-item {
+	flex: 1;
+	padding: $variants-cell-padding;
+
+	position: relative;
+	text-decoration: none;
+
+	// dotdotdot
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+
+	&:not(:last-child) {
+		border-right-width: 1px;
+		border-right-style: solid;
+	}
+}
+
+.flex-big {
+	flex: 3;
+}
 
 div.variants-header {
-	font-size: .7em;
+	font-size: .8rem;
 	flex-basis: 100%;
-	margin: 0 0 -29px 0;
-
-	background-color: rgba(#000, .1);
+	margin: 0 0 -32px 0;
 }
 
 .variants-header-item {
-	flex: 1;
+	@extend %variants-item;
 	color: #fff;
-	padding: $variants-cell-padding;
-
-	&:not(:last-child) {
-		border-right: 1px solid rgba(#fff, .4);
-	}
+	background-color: rgba(#000, .2);
+	border-right-color: rgba(#fff, .4);
 }
 
 .variants-body {
 	background-color: #fff;
-	font-size: .9em;
-	margin: 6px 6px;
+	font-size: .8rem;
+	margin: 7px;
 	border: 1px solid rgba(#000, .15);
 	box-shadow: 0 1px 0 rgba(#000, .07);
 	color: rgba(#000, .6);
@@ -42,19 +59,9 @@ div.variants-header {
 }
 
 .variants-row-item {
-	flex: 1;
-	padding: $variants-cell-padding;
-
-	position: relative;
-
-	text-decoration: none;
-
-	// dotdotdot
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
+	@extend %variants-item;
 
 	&:not(:last-child) {
-		border-right: 1px solid rgba(#000, .15);
+		border-right-color: rgba(#000, .15);
 	}
 }

@@ -21,6 +21,10 @@ input {
 	-webkit-appearance: none;
 }
 
+.text-right {
+	text-align: right;
+}
+
 core-scroll-header-panel {
 	background-color: $body-fg;
 }

@@ -374,6 +374,9 @@ input {
   color: inherit;
   -webkit-appearance: none; }
 
+.text-right {
+  text-align: right; }
+
 core-scroll-header-panel {
   background-color: #eee; }
 
@@ -712,28 +715,43 @@ core-drawer-panel[narrow] .menu-button {
     -ms-flex: 1;
     flex: 1; }
 
-div.variants-header {
-  font-size: 0.7em;
-  -webkit-flex-basis: 100%;
-  -ms-flex-preferred-size: 100%;
-  flex-basis: 100%;
-  margin: 0 0 -29px 0;
-  background-color: rgba(0, 0, 0, 0.1); }
-
-.variants-header-item {
+.variants-header-item, .variants-row-item {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
+  padding: 0.6rem;
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; }
+  .variants-header-item:not(:last-child), .variants-row-item:not(:last-child) {
+    border-right-width: 1px;
+    border-right-style: solid; }
+
+.flex-big {
+  -webkit-box-flex: 3;
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3; }
+
+div.variants-header {
+  font-size: 0.8rem;
+  -webkit-flex-basis: 100%;
+  -ms-flex-preferred-size: 100%;
+  flex-basis: 100%;
+  margin: 0 0 -32px 0; }
+
+.variants-header-item {
   color: #fff;
-  padding: 0.7em; }
-  .variants-header-item:not(:last-child) {
-    border-right: 1px solid rgba(255, 255, 255, 0.4); }
+  background-color: rgba(0, 0, 0, 0.2);
+  border-right-color: rgba(255, 255, 255, 0.4); }
 
 .variants-body {
   background-color: #fff;
-  font-size: 0.9em;
-  margin: 6px 6px;
+  font-size: 0.8rem;
+  margin: 7px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.07);
   color: rgba(0, 0, 0, 0.6); }
@@ -745,16 +763,5 @@ div.variants-header {
 .variants-row:not(:last-child) {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
 
-.variants-row-item {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
-  padding: 0.7em;
-  position: relative;
-  text-decoration: none;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden; }
-  .variants-row-item:not(:last-child) {
-    border-right: 1px solid rgba(0, 0, 0, 0.15); }
+.variants-row-item:not(:last-child) {
+  border-right-color: rgba(0, 0, 0, 0.15); }
