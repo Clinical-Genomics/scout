@@ -21,6 +21,10 @@ input {
 	-webkit-appearance: none;
 }
 
+core-scroll-header-panel {
+	background-color: $body-fg;
+}
+
 // Specific styles
 .toolbar-top {
 	width: 100%;

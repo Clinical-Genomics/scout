@@ -332,7 +332,7 @@ html, body {
        box-sizing: border-box; }
 
 body {
-  background: #eee;
+  background: #fff;
   color: #222;
   padding: 0;
   margin: 0;
@@ -377,6 +377,9 @@ input {
   padding: 0;
   color: inherit;
   -webkit-appearance: none; }
+
+core-scroll-header-panel {
+  background-color: #eee; }
 
 .toolbar-top {
   width: 100%; }
