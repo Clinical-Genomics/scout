@@ -5,7 +5,7 @@
 
   <title>
     {% block title %}
-      {{ page_title | default(_('Project')) }}
+      {{ page_title | default('Project') }}
     {% endblock %}
   </title>
 
@@ -15,35 +15,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
+  <link rel="icon"
+        type="image/png"
+        href="{{ url_for('static', filename='favicon.ico') }}">
   <link rel="Shortcut Icon"
-        href="{{ url_for('static', filename='favicon.png') }}"
+        href="{{ url_for('static', filename='favicon.ico') }}"
         type="image/x-icon">
 
   {% block css %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet"
-    			href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
   {% endblock %}
 
   {% block css_style %}{% endblock %}
 
   {% block js_top %}{% endblock %}
 </head>
-<body>
+
+<body unresolved fullbleed layout vertical>
   {% include "macros/_ask_user_to_update_ie.html" %}
 
   {% block body %}{% endblock %}
 
   {% block js_btm %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js">
-    </script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- include browserify script tag -->
+    {% include 'footer.html' %}
   {% endblock %}
 
   {% block ga %}
     {% include "macros/_google_analytics.html" %}
   {% endblock %}
 </body>
-</html>
 
+</html>

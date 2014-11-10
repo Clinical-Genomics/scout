@@ -1,0 +1,13 @@
+{% extends 'layouts/scroll-header.html' %}
+
+{% set page_title = 'Variant' %}
+
+{% block toolbar_bottom %}
+	{{ variant.id }}
+{% endblock %}
+
+{% block content %}
+	<h1>{{ variant.id }}</h1>
+
+	<p>{{ variant.to_json() }}</p>
+{% endblock %}

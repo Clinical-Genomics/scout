@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 from flask.ext.script import Manager, Server
 
-from scout.app import create_app
+from scout.app import AppFactory
 
-manager = Manager(create_app)
+app = AppFactory()
+
+manager = Manager(app)
 TEST_CMD = "py.test tests"
 
 
@@ -13,7 +15,7 @@ def make_shell_context():
   """Return context dict for a shell session so you can access
   app, db, and the User model by default.
   """
-  return dict(app=create_app())  # 'db': db, 'User': User
+  return dict(app=app())
 
 
 @manager.command
