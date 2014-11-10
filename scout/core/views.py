@@ -54,8 +54,12 @@ def case(institute_id, case_id):
 
   case = cases[0]
 
+  samples = [('123-1-1A', '1', '2', 'Agilent_SureSelect.V5'),
+             ('123-2-2A', '2', '1', 'Agilent_SureSelect.V5'),
+             ('123-2-1A', '1', '1', 'Agilent_SureSelect.V5')]
+
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=case)
+  return dict(institute=institute, case=case, samples=samples)
 
 
 @core.route('/<institute_id>/<case_id>/variants')

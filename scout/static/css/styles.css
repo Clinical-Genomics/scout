@@ -661,6 +661,12 @@ core-drawer-panel[narrow] .menu-button {
 .case-candidate-user {
   font-size: 0.8em; }
 
+.case-sample {
+  font-size: 0.8em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.6rem;
+  position: relative; }
+
 .case-section {
   padding: 1em 0; }
 
@@ -737,7 +743,7 @@ core-drawer-panel[narrow] .menu-button {
   flex: 3; }
 
 div.variants-header {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   -webkit-flex-basis: 100%;
   -ms-flex-preferred-size: 100%;
   flex-basis: 100%;
@@ -750,7 +756,7 @@ div.variants-header {
 
 .variants-body {
   background-color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   margin: 7px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.07);

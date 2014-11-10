@@ -81,10 +81,34 @@
       <div id="case-samples" class="case-segment-aside">
         <div class="case-segment-title">Included samples</div>
         <div class="case-segment-content">
-          {% for sample in case.samples %}
-            <paper-item icon="assignment-ind" label="{{ sample.name }}">
-              <a href="#"></a>
-            </paper-item>
+          {% for sample_id, sex, phenotype, kit in samples %}
+            <div class="case-sample" horizontal layout center justified>
+              <paper-ripple fit></paper-ripple>
+
+              <div class="case-sample-item">{{ sample_id }}</div>
+
+              <div class="case-sample-item">
+                {% if sex == '1' %}
+                  <core-icon src="{{ url_for('static', filename="img/icon-male.svg") }}"></core-icon>
+                {% elif sex == '2' %}
+                  <core-icon src="{{ url_for('static', filename="img/icon-female.svg") }}"></core-icon>
+                {% else %}
+                  {{ sex }}
+                {% endif %}
+              </div>
+
+              <div class="case-sample-item">
+                {% if phenotype == '1' %}
+                  <core-icon icon="star"></core-icon>
+                {% elif phenotype == '2' %}
+                  <core-icon icon="star-half"></core-icon>
+                {% else %}
+                  {{ phenotype }}
+                {% endif %}
+              </div>
+
+              <div class="case-sample-item">{{ kit }}</div>
+            </div>
           {% endfor %}
         </div>
       </div>
