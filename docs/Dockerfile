@@ -3,5 +3,5 @@ ADD . /code
 WORKDIR /code
 RUN pip install mkdocs
 
-EXPOSE 8000
+EXPOSE 3001
 CMD ["mkdocs", "serve"]
