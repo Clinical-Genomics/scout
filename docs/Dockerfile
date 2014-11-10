@@ -1,7 +1,7 @@
 FROM dockerfile/python
 ADD . /code
 WORKDIR /code
-RUN pip install git+https://github.com/tomchristie/mkdocs.git
+RUN pip install mkdocs
 
 EXPOSE 8000
 CMD ["mkdocs", "serve"]
