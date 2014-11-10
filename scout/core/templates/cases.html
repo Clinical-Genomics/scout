@@ -18,14 +18,13 @@
 
 			<div class="cases-item" layout horizontal center>
 
-				<paper-item class="cases-item-title"
-										icon="announcement"
-										label="{{ case.name }}"
-										flex>
-					<a href="{{ url_for('core.case',
-															institute_id=institute.id,
-															case_id=case.name) }}"></a>
-				</paper-item>
+				<a class="cases-item-title"
+           href="{{ url_for('core.case', institute_id=institute.id,
+                            case_id=case.name) }}" flex>
+          <paper-ripple fit></paper-ripple>
+          <div class="cases-item-indicator"></div>
+					{{ case.name }}
+				</a>
 
 				<div flex layout horizontal center justified>
 
