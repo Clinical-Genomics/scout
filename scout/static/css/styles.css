@@ -517,12 +517,10 @@ core-drawer-panel[narrow] .menu-button {
   display: flex;
   -webkit-justify-content: space-around;
   -ms-flex-pack: distribute;
-  justify-content: space-around;
-  color: rgba(0, 0, 0, 0.4);
-  font-weight: bold; }
+  justify-content: space-around; }
 
 .landing-affiliation {
-  font-size: 1.3em; }
+  width: 30%; }
 
 .user-guide-box {
   display: -webkit-box;
