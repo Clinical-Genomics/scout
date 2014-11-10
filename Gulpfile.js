@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This example:
  *  Shows how to plug in the details of your server.
@@ -9,8 +11,8 @@ var reload       = browserSync.reload;
 var sass         = require('gulp-sass');
 var bourbon      = require('node-bourbon');
 var autoprefixer = require('gulp-autoprefixer');
-var vulcanize 	 = require('gulp-vulcanize');
-var replace 		 = require('gulp-replace');
+var vulcanize    = require('gulp-vulcanize');
+var replace      = require('gulp-replace');
 
 // Base target directory
 base_dir = 'scout/static'
@@ -35,11 +37,11 @@ gulp.task('bs-reload', function () {
 // Sass task, will run when any SCSS files change.
 gulp.task('sass', function () {
   gulp.src('assets/scss/styles.scss')
-    .pipe(sass({
-      includePaths: ['scss', bourbon.includePaths],
-      errLogToConsole: true
+    .pipe(sass({ errLogToConsole: true }))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false
     }))
-    .pipe(autoprefixer())
     .pipe(gulp.dest(base_dir + '/css/'))
     .pipe(reload({stream: true}));
 });
