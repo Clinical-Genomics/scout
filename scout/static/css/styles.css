@@ -640,43 +640,49 @@ core-drawer-panel[narrow] .menu-button {
   flex-basis: 30%; }
 
 .case-segment-title {
-  padding: 0.5em 1em;
-  font-size: 0.9em;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
 
 .case-segment-content-text {
-  padding: 0.5em 1em;
-  font-size: 0.9em; }
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem; }
 
 .case-segment-notes {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
   background-color: rgba(0, 0, 0, 0.03);
-  padding: 0.5em;
-  font-size: 0.8em; }
+  padding: 0.5rem;
+  font-size: 0.8rem; }
 
 .case-candidate {
   position: relative;
-  padding: 1em; }
+  padding: 0.4rem; }
+  .case-candidate:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+  .case-candidate:hover {
+    background-color: RGBA(0, 188, 212, 0.1); }
 
 .case-candidate-user {
-  font-size: 0.8em; }
+  font-size: 0.8rem; }
 
 .case-sample {
-  font-size: 0.8em;
+  font-size: 0.8rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 0.6rem;
+  padding: 0.2rem 1rem;
   position: relative; }
+  .case-sample:hover {
+    background-color: RGBA(0, 188, 212, 0.1); }
 
 .case-sample-item > core-icon {
   fill: #444; }
 
 .case-section {
-  padding: 1em 0; }
+  padding: 1rem 0; }
 
 .case-section-header {
   color: #0097a7;
   font-weight: 400;
-  font-size: 1.5em; }
+  font-size: 1.5rem; }
 
 .case-complete-container {
   display: -webkit-box;
@@ -691,7 +697,7 @@ core-drawer-panel[narrow] .menu-button {
 .case-complete-variant-box {
   width: 80%;
   color: rgba(0, 0, 0, 0.3);
-  font-size: 1.5em; }
+  font-size: 1.5rem; }
 
 .case-brief-layout {
   display: -webkit-box;
@@ -701,7 +707,7 @@ core-drawer-panel[narrow] .menu-button {
 
 .case-brief-main {
   width: 60%;
-  margin-right: 1em; }
+  margin-right: 1rem; }
 
 .case-brief-textarea {
   width: 100%; }
@@ -717,7 +723,7 @@ core-drawer-panel[narrow] .menu-button {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  padding: 0.8em; }
+  padding: 0.8rem; }
   .case-brief-sidebar-item > div {
     -webkit-box-flex: 1;
     -webkit-flex: 1;

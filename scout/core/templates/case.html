@@ -6,7 +6,7 @@
   <div class="case-header-links" horizontal center layout>
     {% if case.assignee %}
       <core-item class="case-header-link"
-                 icon="account-circle"
+                 icon="assignment-ind"
                  label="{{ case.assignee.name }}">
         <a href="{{ url_for('user.profile', user_id=case.assignee.id) }}"></a>
       </core-item>
@@ -35,20 +35,20 @@
         <div class="case-segment-title">Strong candidates</div>
         <div class="case-segment-content">
           <div class="case-candidate" horizontal layout center justified>
-            <paper-ripple fit></paper-ripple>
-            <div>
-              <core-icon icon="bookmark"></core-icon> KAI12
-            </div>
+            <core-item label="KAI12" icon="bookmark">
+              <a href="#"></a>
+            </core-item>
+
             <div class="case-candidate-user">
               Pinned by <strong>Anna Wedell</strong>
             </div>
           </div>
 
           <div class="case-candidate" horizontal layout center justified>
-            <paper-ripple fit></paper-ripple>
-            <div>
-              <core-icon icon="bookmark"></core-icon> POL2
-            </div>
+            <core-item label="POL2" icon="bookmark">
+              <a href="#"></a>
+            </core-item>
+
             <div class="case-candidate-user">
               Pinned by <strong>Henrik Stranneheim</strong>
             </div>
@@ -83,15 +83,10 @@
         <div class="case-segment-content">
           {% for sample_id, sex, phenotype, kit in samples %}
             <div class="case-sample" horizontal layout center justified>
-              <paper-ripple fit></paper-ripple>
 
-              <div class="case-sample-item">{{ sample_id }}</div>
-
-              <div class="case-sample-item">
-                <core-icon src="{{
+              <core-item label="{{ sample_id }}" src="{{
                   url_for('static', filename=("img/icon-%s.svg" % sex)) }}">
-                </core-icon>
-              </div>
+              </core-item>
 
               <div class="case-sample-item">
                 {% if phenotype == 'unaffected' %}

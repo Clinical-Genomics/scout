@@ -10,6 +10,10 @@ from ..helpers import templated
 
 core = Blueprint('core', __name__, template_folder='templates')
 
+SAMPLES = [('123-1-1A', 'male', 'affected', 'Agilent_SureSelect.V5'),
+           ('123-2-2A', 'female', 'unaffected', 'Agilent_SureSelect.V5'),
+           ('123-2-1A', 'male', 'unaffected', 'Agilent_SureSelect.V5')]
+
 
 @core.route('/institutes')
 @templated('institutes.html')
@@ -54,12 +58,8 @@ def case(institute_id, case_id):
 
   case = cases[0]
 
-  samples = [('123-1-1A', 'male', 'affected', 'Agilent_SureSelect.V5'),
-             ('123-2-2A', 'female', 'unaffected', 'Agilent_SureSelect.V5'),
-             ('123-2-1A', 'male', 'unaffected', 'Agilent_SureSelect.V5')]
-
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=case, samples=samples)
+  return dict(institute=institute, case=case, samples=SAMPLES)
 
 
 @core.route('/<institute_id>/<case_id>/variants')
