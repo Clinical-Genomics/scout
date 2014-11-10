@@ -667,6 +667,9 @@ core-drawer-panel[narrow] .menu-button {
   padding: 0.6rem;
   position: relative; }
 
+.case-sample-item > core-icon {
+  fill: #444; }
+
 .case-section {
   padding: 1em 0; }
 

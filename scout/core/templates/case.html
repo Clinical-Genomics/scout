@@ -88,19 +88,15 @@
               <div class="case-sample-item">{{ sample_id }}</div>
 
               <div class="case-sample-item">
-                {% if sex == '1' %}
-                  <core-icon src="{{ url_for('static', filename="img/icon-male.svg") }}"></core-icon>
-                {% elif sex == '2' %}
-                  <core-icon src="{{ url_for('static', filename="img/icon-female.svg") }}"></core-icon>
-                {% else %}
-                  {{ sex }}
-                {% endif %}
+                <core-icon src="{{
+                  url_for('static', filename=("img/icon-%s.svg" % sex)) }}">
+                </core-icon>
               </div>
 
               <div class="case-sample-item">
-                {% if phenotype == '1' %}
+                {% if phenotype == 'unaffected' %}
                   <core-icon icon="star"></core-icon>
-                {% elif phenotype == '2' %}
+                {% elif phenotype == 'affected' %}
                   <core-icon icon="star-half"></core-icon>
                 {% else %}
                   {{ phenotype }}
