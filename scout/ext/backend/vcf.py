@@ -188,9 +188,9 @@ def cli(vcf_dir, config_file):
     print(my_vcf.cases())
     print('')
     
-    for case in my_vcf._cases:
-      for variant in my_vcf.variants(case['id']):
-        pp(variant)
+    # for case in my_vcf._cases:
+    #   for variant in my_vcf.variants(case['id']):
+    #     pp(variant)
     #   print('')
 
 if __name__ == '__main__':
