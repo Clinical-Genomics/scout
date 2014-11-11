@@ -61,10 +61,14 @@
           <div class="toolbar-top top" layout horizontal center>
             {% block toolbar_top %}
               <paper-icon-button icon="menu" class="menu-button" onclick="document.querySelector('core-drawer-panel').togglePanel();"></paper-icon-button>
+
               <div flex></div>
-              <paper-item icon="account-circle" label="{{ current_user.name }}">
-                <a href="{{ url_for('user.profile', user_id=current_user.id) }}"></a>
-              </paper-item>
+
+              {% block toolbar_top_right %}
+                <a href="{{ url_for('user.profile', user_id=current_user.id) }}">
+                  <paper-icon-button icon="account-circle"></paper-icon-button>
+                </a>
+              {% endblock %}
             {% endblock %}
           </div>
 

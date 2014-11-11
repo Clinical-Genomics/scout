@@ -2,7 +2,15 @@
 
 {% set page_title = 'Variant' %}
 
-{% block toolbar_bottom %}
+{% block toolbar_top_right %}
+  <paper-item label="Sanger" icon="mail"></paper-item>
+
+  <paper-icon-button title="Pin" icon="bookmark"></paper-icon-button>
+
+  {{ super() }}
+{% endblock %}
+
+{% block toolbar_middle %}
   <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
     {{ institute_id }}
   </a>
@@ -16,9 +24,37 @@
                       case_id=case_id) }}">
     Variants
   </a>
-  <core-icon icon="chevron-right"></core-icon>
+{% endblock %}
 
-  {{ variant.common.hgnc_symbol }}
+{% block toolbar_bottom %}
+  <core-item class="variant-header-item"
+             icon="grade"
+             label="{{ variant.common.cadd_score }}"></core-item>
+
+  <core-tooltip class="variant-header-item" position="bottom">
+    <core-item icon="room" label="Chr{{ variant.common.chrom }}: {{ variant.common.hgnc_symbol }}"></core-item>
+
+    <div class="variants-tooltip" tip>
+      <ul>
+        <li><strong>Position</strong>: {{ variant.common.position }}</li>
+        <li><strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}</li>
+        <li><strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}</li>
+        <li><strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}</li>
+      </ul>
+    </div>
+  </core-tooltip>
+
+  <core-item class="variant-header-item"
+             icon="swap-vert-circle"
+             label="{{ variant.common.reference }} &rarr; {{ variant.common.alternative }}"></core-item>
+
+  <core-item class="variant-header-item"
+             icon="report"
+             label="{{ 'exonic' }}"></core-item>
+
+  <core-item class="variant-header-item"
+             icon="settings"
+             label="{{ 'nonsynonymous SNV' }}"></core-item>
 {% endblock %}
 
 {% block content %}
@@ -26,9 +62,41 @@
 
     <div class="variant-segments-row">
 
+      <div id="frequency" class="variant-segment">
+        <div class="variant-segment-title">Frequency</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-list-item"><strong>ThousandG</strong> 0.01</div>
+          <div class="variant-list-item"><strong>Esp6500</strong> 0.007</div>
+        </div>
+      </div>
+
+      <div id="inheritance-model" class="variant-segment">
+        <div class="variant-segment-title">Inheritance models</div>
+
+        <div class="variant-segment-content"></div>
+      </div>
+
+      <div id="omim" class="variant-segment">
+        <div class="variant-segment-title">OMIM</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-list-item">
+            Epidermolysis bullosa simplex with muscular dystrophy
+          </div>
+          <div class="variant-list-item">
+            Epidermolysis bullosa simplex, ogna type
+          </div>
+          <div class="variant-list-item">
+            Epidermolysis bullosa simplex with pyloric atresia
+          </div>
+          <div class="variant-list-item">
+            Muscular dystrophy, limb-girdle, type 2q
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
-
-  <p>{{ variant.to_json() }}</p>
 {% endblock %}
