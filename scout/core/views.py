@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from flask import abort, Blueprint, redirect, url_for
+from flask import abort, Blueprint, redirect, url_for, request
 from flask.ext.login import login_required, current_user
 
 from ..models import Institute, Variant
@@ -68,9 +68,12 @@ def case(institute_id, case_id):
 def variants(institute_id, case_id):
   """View all variants for a single case."""
   # fetch all variants for a specific case
+  skip = int(request.args.get('skip', 0))
+
   return dict(variants=store.variants('1'),  # case_id
               case_id=case_id,
-              institute_id=institute_id)
+              institute_id=institute_id,
+              current_batch=(skip + 100))
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')

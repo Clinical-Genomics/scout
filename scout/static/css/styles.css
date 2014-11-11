@@ -828,3 +828,11 @@ core-tooltip.variants-row-item {
     padding: 0;
     margin: 0;
     list-style: none; }
+
+.variants-load-more {
+  display: block;
+  margin: 1rem auto;
+  width: 150px; }
+  .variants-load-more > a {
+    color: rgba(0, 0, 0, 0.7);
+    text-decoration: none; }

@@ -106,3 +106,14 @@ core-tooltip.variants-row-item {
 		list-style: none;
 	}
 }
+
+.variants-load-more {
+	display: block;
+	margin: 1rem auto;
+	width: 150px;
+	
+	> a {
+		color: rgba(#000, .7);
+		text-decoration: none;
+	}
+}
