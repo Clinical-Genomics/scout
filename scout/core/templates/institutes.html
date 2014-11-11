@@ -3,22 +3,22 @@
 {% set page_title = 'Institutes' %}
 
 {% block toolbar_bottom %}
-	Institutes
+  Institutes
 {% endblock %}
 
 {% block content %}
 
-	<div class="cases-list">
-		{% for institute in institutes %}
+  <div class="cases-list">
+    {% for institute in institutes %}
 
-			<div class="cases-item" layout horizontal center>
+      <div class="cases-item" layout horizontal center>
 
-				<paper-item class="cases-item-title"
-										icon="group-work"
-										label="{{ institute.display_name }}"
-										flex>
-					<a href="{{ url_for('core.cases', institute_id=institute.id) }}"></a>
-				</paper-item>
+        <paper-item class="cases-item-title"
+                    icon="group-work"
+                    label="{{ institute.display_name }}"
+                    flex>
+          <a href="{{ url_for('core.cases', institute_id=institute.id) }}"></a>
+        </paper-item>
 
         <div flex></div>
 
@@ -26,9 +26,9 @@
           {{ institute.count_cases() }} active cases
         </div>
 
-			</div>
+      </div>
 
-		{% endfor %}
-	</div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

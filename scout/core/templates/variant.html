@@ -3,7 +3,7 @@
 {% set page_title = 'Variant' %}
 
 {% block toolbar_bottom %}
-	<a href="{{ url_for('core.cases', institute_id=institute_id) }}">
+  <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
     {{ institute_id }}
   </a>
   <core-icon icon="chevron-right"></core-icon>
@@ -31,7 +31,7 @@
   </div>
 
 
-	<h1>{{ variant.id }}</h1>
+  <h1>{{ variant.id }}</h1>
 
-	<p>{{ variant.to_json() }}</p>
+  <p>{{ variant.to_json() }}</p>
 {% endblock %}
