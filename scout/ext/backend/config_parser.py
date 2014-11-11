@@ -76,7 +76,7 @@ class ConfigParser(ConfigObj):
                         'common':[],
                         'case':[],
                         'config_info':[],
-                        'specific':[]
+                        'individual':[]
                 }
     self.categories = {'variant_position':[],
                       'variant_id':[],
@@ -98,6 +98,9 @@ class ConfigParser(ConfigObj):
     """Write the config file to a new file"""
     self._cfg.write(outfile)
 
+
+
+########### Command Line Interface for the config parser: #############
 @click.command()
 # @click.argument('vcf_file',
 #                 nargs=1,
