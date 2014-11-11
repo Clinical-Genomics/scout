@@ -37,16 +37,7 @@ login_manager.refresh_view = 'login.reauth'
 
 @login_manager.user_loader
 def load_user(user_id):
-  """Returns the currently active user as an object.
-
-  ============ LEGACY ==================
-  Since this app doesn't handle passwords etc. there isn't as much
-  incentive to keep pinging the database for every request protected
-  by 'login_required'.
-
-  Instead I set the expiration for the session cookie to expire at
-  regular intervals.
-  """
+  """Returns the currently active user as an object."""
   return User.objects.get(id=ObjectId(user_id))
 
 
