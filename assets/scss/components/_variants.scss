@@ -1,27 +1,44 @@
-$variants-cell-padding: .7em;
+$variants-cell-padding: .6rem;
+
+%variants-item {
+	flex: 1;
+	padding: $variants-cell-padding;
+
+	position: relative;
+	text-decoration: none;
+
+	// dotdotdot
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+
+	&:not(:last-child) {
+		border-right-width: 1px;
+		border-right-style: solid;
+	}
+}
+
+.flex-big {
+	flex: 3;
+}
 
 div.variants-header {
-	font-size: .7em;
+	font-size: .9rem;
 	flex-basis: 100%;
-	margin: 0 0 -29px 0;
-
-	background-color: rgba(#000, .1);
+	margin: 0 0 -32px 0;
 }
 
 .variants-header-item {
-	flex: 1;
+	@extend %variants-item;
 	color: #fff;
-	padding: $variants-cell-padding;
-
-	&:not(:last-child) {
-		border-right: 1px solid rgba(#fff, .4);
-	}
+	background-color: rgba(#000, .2);
+	border-right-color: rgba(#fff, .4);
 }
 
 .variants-body {
 	background-color: #fff;
-	font-size: .9em;
-	margin: 6px 6px;
+	font-size: .9rem;
+	margin: 7px;
 	border: 1px solid rgba(#000, .15);
 	box-shadow: 0 1px 0 rgba(#000, .07);
 	color: rgba(#000, .6);
@@ -42,19 +59,61 @@ div.variants-header {
 }
 
 .variants-row-item {
-	flex: 1;
-	padding: $variants-cell-padding;
-
-	position: relative;
-
-	text-decoration: none;
-
-	// dotdotdot
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
+	@extend %variants-item;
 
 	&:not(:last-child) {
-		border-right: 1px solid rgba(#000, .15);
+		border-right-color: rgba(#000, .15);
+	}
+}
+
+.variants-row-list {
+	@extend %variants-item;
+	padding-top: 0;
+	padding-bottom: 0;
+
+	display: flex;
+	overflow: auto;
+}
+
+.variants-row-list-item {
+	padding: $variants-cell-padding;
+	flex-shrink: 0;
+
+	&:first-child {
+		padding-left: 0;
+	}
+
+	&:last-child {
+		padding-right: 0;
+	}
+
+	&:not(:last-child) {
+		border-right: 1px solid rgba(#000, .1);
+	}
+}
+
+core-tooltip.variants-row-item {
+	overflow: visible;	
+}
+
+.variants-tooltip {
+	line-height: 1rem;
+	font-size: 1.2em;
+
+	> ul {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+}
+
+.variants-load-more {
+	display: block;
+	margin: 1rem auto;
+	width: 150px;
+	
+	> a {
+		color: rgba(#000, .7);
+		text-decoration: none;
 	}
 }

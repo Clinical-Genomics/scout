@@ -21,6 +21,14 @@ input {
 	-webkit-appearance: none;
 }
 
+.text-right {
+	text-align: right;
+}
+
+h3 {
+	color: rgba(#000, .6);
+}
+
 core-scroll-header-panel {
 	background-color: $body-fg;
 }
