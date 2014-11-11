@@ -1,3 +1,5 @@
+/*We want to have a psecific structure for the variants since there are several issues with how to handle different types of data. For example variants that belong to a clinical list shouold not show the same information as a research variant, even if they are on the same position. The idea for now is to have the core information in the first layer, the annotated stuff in the 'common'-layer and the case specific information in the 'specific'-layer*/
+
 [
   {
 	"_id": "54325acbec3a4838edbecacf",
@@ -9,13 +11,36 @@
 	"REF": "GCCC",
 	"ALT": "[G]",
 	"RS" : 142034531,
-
-	"gene_ids": [{
-		"ensembl": "ENSG00000027847",
-		"hgnc_symbol": "B4GALT7"
-	  }],
-
-	"set": "Intersection"
+	"common" : {
+		"gene_ids": {
+			"ensembl": "ENSG00000027847",
+			"hgnc_symbol": "B4GALT7"
+	  	},
+    "Sift" : {
+			"CPOX": "deleterious"
+			},
+		
+		},
+	
+	"set": "Intersection",
+  
+  "specific": [ 
+    {
+      "FILTER" : [ 
+          "VQSRTrancheBOTH99.90to100.00"
+      ],
+      
+      "samples": [
+        {
+        "gt": "0/1",
+        "sample_id":"",
+      }
+      ]
+      
+    }
+  
+  
+  ]
   },
   {
     "_id" : "54367692ec3a4838edbf5626",

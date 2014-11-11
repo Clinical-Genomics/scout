@@ -1,4 +1,3 @@
-#FamilyID   SampleID   Father   Mother   Sex   Phenotype
-2   proband father  mother  1   2
-2   mother  0   0   2   2
-2   father  0   0   1   1
+2	2-1-2A	2-2-1U	2-2-2U	2	2
+2	2-2-2U	0	0	2	1
+2	2-2-1U	0	0	1	1

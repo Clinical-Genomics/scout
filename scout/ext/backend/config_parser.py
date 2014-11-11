@@ -85,7 +85,8 @@ class ConfigParser(ConfigObj):
                       'deleteriousness':[],
                       'inheritance_models':[],
                       'config_info':[],
-                      'gene_identifier':[]
+                      'gene_identifier':[],
+                      'genotype_information':[]
                 }
 
     self.plugins = [plugin for plugin in self.keys()]
