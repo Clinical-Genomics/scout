@@ -3,7 +3,7 @@ Development
 
 `Install MongoDB <http://tecadmin.net/install-mongodb-on-ubuntu/>`_
 
-Vagrant is used to create a separate and reproducible development environment. 
+Vagrant is used to create a separate and reproducible development environment.
 
 Two ports are forwarded to the host:
 
@@ -28,3 +28,10 @@ HTML is not preprocessed since it's written as Jinja2 templates.
 Whenever in doubt, use whatever convention GitHub is using. No more JS than that, be strict about the REST interface conventions:
 
   /<username>/<repo>/issues/new
+
+
+Git + GitHub
+~~~~~~~~~~~~
+Use git-up. You can pip install it and this will add a new subcommand to the git command line interface.
+
+To stay up-to-date with remotes, simply type ``git up`` and it will do the rest in a clean way with rebase.

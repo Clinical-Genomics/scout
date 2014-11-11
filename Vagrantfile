@@ -20,7 +20,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network "forwarded_port", guest: 5000, host: 5004
+
+  # Flask development port
+  config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
 
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false
@@ -32,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "provisioning/playbook.yml"
-  end
+  # config.vm.provision "ansible" do |ansible|
+  #   ansible.playbook = "provisioning/playbook.yml"
+  # end
 end

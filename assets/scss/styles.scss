@@ -1,26 +1,70 @@
-@import 'bourbon';
-@import 'normalize';
+// Scout Global Styles
 
-html,
-body {
-  height: 100%;
-  width: 100%;
+// Make sure the charset is set appropriately
+@charset "utf-8";
 
-  overflow: auto;
+// Libraries
+@import "bourbon";
+@import "vendor/normalize";
+@import "mixins";
+
+// Global Styles
+@import "global";
+
+// Resets
+input {
+	background-color: inherit;
+	border: none;
+	outline: 0;
+	padding: 0;
+	color: inherit;
+	-webkit-appearance: none;
 }
 
-body {
-  background: #444;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+core-scroll-header-panel {
+	background-color: $body-fg;
 }
 
-h1 {
-  color: white;
-  font-weight: normal;
-  font-size: 5ex;
-  text-align: center;
+// Specific styles
+.toolbar-top {
+	width: 100%;
 }
+
+div.toolbar-bottom {
+	flex: 1;
+	margin-right: 60px;
+}
+
+core-toolbar {
+  background: $primary-color;
+  color: #fff;
+
+  a {
+  	color: #fff;
+  	text-decoration: none;
+  }
+}
+
+.main-drawer {
+	background-color: #fff;
+	border-right: 1px solid rgba(#000, .1);
+}
+
+.hidden-submit {
+	// hide submit button replaced with polymer button
+	display: none;
+}
+
+.menu-button {
+	display: none;
+}
+
+core-drawer-panel[narrow] .menu-button {
+	display: inline-block;
+}
+
+// Components
+@import "components/landing";
+@import "components/cases";
+@import "components/case";
+@import "components/variants";
