@@ -55,30 +55,61 @@
 }
 
 .case-segment-title {
-	padding: .5em 1em;
-	font-size: .9em;
+	padding: .5rem 1rem;
+	font-size: .9rem;
 	border-bottom: 1px solid rgba(#000, .15);
 }
 
 .case-segment-content-text {
-	padding: .5em 1em;
-	font-size: .9em;
+	padding: .5rem 1rem;
+	font-size: .9rem;
 }
 
 .case-segment-notes {
 	border-top: 1px solid rgba(#000, .15);
 	background-color: rgba(#000, .03);
-	padding: .5em;
-	font-size: .8em;
+	padding: .5rem;
+	font-size: .8rem;
 }
 
 .case-candidate {
 	position: relative;
-	padding: 1em;
+	padding: .4rem;
+
+	&:not(:last-child) {
+		border-bottom: 1px solid rgba(#000, .1);
+	}
+
+	&:hover {
+		background-color: RGBA(0, 188, 212, .1);
+	}
 }
 
 .case-candidate-user {
-	font-size: .8em;
+	font-size: .8rem;
+}
+
+// SAMPLES
+%case-sample {
+	font-size: .8rem;
+	border-bottom: 1px solid rgba(#000, .1);
+	padding: .2rem 1rem;
+	position: relative;
+}
+
+.case-sample-unaffected {
+	@extend %case-sample;
+}
+
+.case-sample-affected {
+	@extend %case-sample;
+	background-color: rgba(#f44336, .15);
+}
+
+.case-sample-item {
+	> core-icon {
+		fill: #444;
+	}
 }
 
 
@@ -87,13 +118,13 @@
 
 
 .case-section {
-	padding: 1em 0;
+	padding: 1rem 0;
 }
 
 	.case-section-header {
 		color: $secondary-color;
 		font-weight: 400;
-		font-size: 1.5em;
+		font-size: 1.5rem;
 	}
 
 .case-complete-container {
@@ -104,7 +135,7 @@
 	.case-complete-variant-box {
 		width: 80%;
 		color: rgba(#000, .3);
-		font-size: 1.5em;
+		font-size: 1.5rem;
 	}
 
 .case-brief-layout {
@@ -113,7 +144,7 @@
 
 	.case-brief-main {
 		width: 60%;
-		margin-right: 1em;
+		margin-right: 1rem;
 	}
 
 		.case-brief-textarea {
@@ -126,7 +157,7 @@
 
 		.case-brief-sidebar-item {
 			display: flex;
-			padding: .8em;
+			padding: .8rem;
 
 			> div {
 				flex: 1;

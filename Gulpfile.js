@@ -15,7 +15,7 @@ var vulcanize    = require('gulp-vulcanize');
 var replace      = require('gulp-replace');
 
 // Base target directory
-base_dir = 'scout/static'
+var base_dir = 'scout/static';
 
 // Browser-sync task, only cares about compiled CSS
 gulp.task('browser-sync', function() {
@@ -37,7 +37,10 @@ gulp.task('bs-reload', function () {
 // Sass task, will run when any SCSS files change.
 gulp.task('sass', function () {
   gulp.src('assets/scss/styles.scss')
-    .pipe(sass({ errLogToConsole: true }))
+    .pipe(sass({
+      includePaths: [bourbon.includePaths],
+      errLogToConsole: true
+    }))
     .pipe(autoprefixer({
       browsers: ['last 2 versions'],
       cascade: false

@@ -31,6 +31,10 @@
           <a href="{{ url_for('frontend.index') }}"></a>
         </paper-item>
 
+        <paper-item icon="book" label="User Guide">
+          <a href="https://github.com/Clinical-Genomics/scout/tree/master/docs/source"></a>
+        </paper-item>
+
         {% if current_user.has_role('admin') %}
           <paper-item icon="create" label="Admin">
             <a href="/admin"></a>

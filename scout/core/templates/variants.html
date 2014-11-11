@@ -14,12 +14,25 @@
 {% block toolbar_bottom_outer %}
   <div class="toolbar-bottom variants-header bottom" layout horizontal>
 
-    <div class="variants-header-item">CADD score</div>
-    <div class="variants-header-item">HGNC</div>
-    <div class="variants-header-item">1000 Genomes</div>
-    <div class="variants-header-item">Chromosome</div>
-    <div class="variants-header-item">dbSNP ID</div>
-    <div class="variants-header-item">Genetic models</div>
+    <div class="variants-header-item" title="CADD score">CADD score</div>
+    <div class="variants-header-item flex-big" title="HGNC">HGNC</div>
+    <div class="variants-header-item" title="1000 Genomes">1000 Genomes</div>
+    <div class="variants-header-item" title="PolyPhen">PolyPhen</div>
+    <div class="variants-header-item" title="Gene annotation">
+      Gene annotation
+    </div>
+    <div class="variants-header-item flex-big" title="Func. annotation">
+      Func. annotation
+    </div>
+    <div class="variants-header-item flex-big" title="Disease group">
+      Disease group
+    </div>
+    <div class="variants-header-item" title="Disease gene model">
+      Disease gene model
+    </div>
+    <div class="variants-header-item flex-big" title="Inheritance models">
+      Inheritance models
+    </div>
 
   </div>
 {% endblock %}
@@ -32,34 +45,74 @@
 
 			<div class="variants-row" horizontal layout>
 
-				<a class="variants-row-item"
+        <!-- CADD score -->
+				<a class="variants-row-item text-right"
 					 href="{{ url_for('core.variant',
-					 									variant_id=variant.id, case_id=case_id) }}">
+                            institute_id=institute_id,
+					 									variant_id=variant.id,
+                            case_id=case_id) }}">
 					<paper-ripple fit></paper-ripple>
 					{{ variant.cadd_score|join(', ') }}
 				</a>
 
-				<div class="variants-row-item">
+        <!-- HGNC -->
+				<div class="variants-row-item flex-big">
 					{{ (variant.hgnc_symbol or '-')|join(', ') }}
 				</div>
 
-				<div class="variants-row-item">
-					{{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
-				</div>
+        <!-- 1000 Genomes -->
+				<core-tooltip class="variants-row-item text-right" position="left">
+          {{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
 
-				<div class="variants-row-item">Chr{{ variant.chromosome }}</div>
+          <div class="variants-tooltip" tip>
+            <ul>
+              <li><strong>ThousandG</strong> 0.004</li>
+              <li><strong>Esp6500</strong> 0.011</li>
+              <li><strong>Dbsnp129</strong> 0.004</li>
+            </ul>
+          </div>
+        </core-tooltip>
 
-				<div class="variants-row-item">
-					{{ (variant.db_snp_id)|join(', ') }}
-				</div>
+        <!-- PolyPhen -->
+        <core-tooltip class="variants-row-item text-right" position="right">
+          0.672
 
-				<div class="variants-row-item">
-					{{ (variant.genetic_models or '-')|join(', ') }}
+          <div class="variants-tooltip" tip>
+            <ul>
+              <li><strong>SiftWholeExome</strong> 0.04</li>
+              <li><strong>PolyphenDivHuman</strong> 0.999</li>
+              <li><strong>PolyphenVarHuman</strong> 0.985</li>
+              <li><strong>MutationTaster</strong> 0.498</li>
+            </ul>
+          </div>
+        </core-tooltip>
+
+        <!-- Gene annotation -->
+        <div class="variants-row-item">exonic</div>
+
+        <!-- Func. annotation -->
+        <div class="variants-row-item flex-big">nonsynonymous SNV</div>
+
+        <!-- Disease group -->
+        <div class="variants-row-item flex-big">Cellular immunity</div>
+
+        <!-- Disease gene model -->
+        <div class="variants-row-item">AD</div>
+
+        <!-- Inheritance models -->
+				<div class="variants-row-list flex-big">
+					{% for model in (variant.genetic_models or []) %}
+            <div class="variants-row-list-item">{{ model }}</div>
+          {% endfor %}
 				</div>
 
 			</div>
 		{% endfor %}
 
 	</div>
+
+  <paper-button class="variants-load-more">
+    <a href="{{ request.path }}?skip={{ current_batch }}">Load more</a>
+  </paper-button>
 
 {% endblock %}

@@ -88,6 +88,9 @@ class Institute(db.Document):
   cases = db.ListField(db.EmbeddedDocumentField(Case))
   created_at = db.DateTimeField(default=datetime.now)
 
+  def count_cases(self):
+    return len(self.cases)
+
   def __unicode__(self):
     return self.name
 
