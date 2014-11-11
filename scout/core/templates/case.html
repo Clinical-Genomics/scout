@@ -82,23 +82,13 @@
         <div class="case-segment-title">Included samples</div>
         <div class="case-segment-content">
           {% for sample_id, sex, phenotype, kit in samples %}
-            <div class="case-sample" horizontal layout center justified>
+            <div class="case-sample-{{ phenotype }}" horizontal layout center justified>
 
               <core-item label="{{ sample_id }}"
                          title="{{ sex }}"
                          src="{{ url_for('static',
                                    filename=("img/icon-%s.svg" % sex)) }}">
               </core-item>
-
-              <div class="case-sample-item">
-                {% if phenotype == 'unaffected' %}
-                  <core-icon icon="star" title="{{ phenotype }}"></core-icon>
-                {% elif phenotype == 'affected' %}
-                  <core-icon icon="star-half" title="{{ phenotype }}"></core-icon>
-                {% else %}
-                  {{ phenotype }}
-                {% endif %}
-              </div>
 
               <div class="case-sample-item">{{ kit }}</div>
             </div>

@@ -73,11 +73,14 @@ def variants(institute_id, case_id):
               institute_id=institute_id)
 
 
-@core.route('/<case_id>/variants/<variant_id>')
+@core.route('/<institute_id>/<case_id>/variants/<variant_id>')
 @templated('variant.html')
 @login_required
-def variant(case_id, variant_id):
+def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
-  return dict(variant=Variant.objects.first(),
-              variant_id=variant_id,
-              case_id=case_id)
+  return dict(
+    institute_id=institute_id,
+    case_id=case_id,
+    variant_id=variant_id,
+    variant=Variant.objects.first()
+  )

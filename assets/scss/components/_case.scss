@@ -90,15 +90,20 @@
 }
 
 // SAMPLES
-.case-sample {
+%case-sample {
 	font-size: .8rem;
 	border-bottom: 1px solid rgba(#000, .1);
 	padding: .2rem 1rem;
 	position: relative;
+}
 
-	&:hover {
-		background-color: RGBA(0, 188, 212, .1);
-	}
+.case-sample-unaffected {
+	@extend %case-sample;
+}
+
+.case-sample-affected {
+	@extend %case-sample;
+	background-color: rgba(#f44336, .15);
 }
 
 .case-sample-item {

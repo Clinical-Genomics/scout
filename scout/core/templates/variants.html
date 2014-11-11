@@ -48,7 +48,9 @@
         <!-- CADD score -->
 				<a class="variants-row-item text-right"
 					 href="{{ url_for('core.variant',
-					 									variant_id=variant.id, case_id=case_id) }}">
+                            institute_id=institute_id,
+					 									variant_id=variant.id,
+                            case_id=case_id) }}">
 					<paper-ripple fit></paper-ripple>
 					{{ variant.cadd_score|join(', ') }}
 				</a>
@@ -98,8 +100,10 @@
         <div class="variants-row-item">AD</div>
 
         <!-- Inheritance models -->
-				<div class="variants-row-item flex-big">
-					{{ (variant.genetic_models or '-')|join(', ') }}
+				<div class="variants-row-list flex-big">
+					{% for model in (variant.genetic_models or []) %}
+            <div class="variants-row-list-item">{{ model }}</div>
+          {% endfor %}
 				</div>
 
 			</div>

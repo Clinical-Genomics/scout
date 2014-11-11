@@ -377,6 +377,9 @@ input {
 .text-right {
   text-align: right; }
 
+h3 {
+  color: rgba(0, 0, 0, 0.6); }
+
 core-scroll-header-panel {
   background-color: #eee; }
 
@@ -574,7 +577,7 @@ core-drawer-panel[narrow] .menu-button {
     margin-bottom: 1em; }
 
 .cases-item-title, .cases-item-date, .cases-item-link {
-  padding: 1.2rem 1rem; }
+  padding: 1rem; }
 
 .cases-item-title {
   position: relative;
@@ -677,13 +680,14 @@ core-drawer-panel[narrow] .menu-button {
 .case-candidate-user {
   font-size: 0.8rem; }
 
-.case-sample {
+.case-sample-unaffected, .case-sample-affected {
   font-size: 0.8rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0.2rem 1rem;
   position: relative; }
-  .case-sample:hover {
-    background-color: RGBA(0, 188, 212, 0.1); }
+
+.case-sample-affected {
+  background-color: rgba(244, 67, 54, 0.15); }
 
 .case-sample-item > core-icon {
   fill: #444; }
@@ -742,7 +746,7 @@ core-drawer-panel[narrow] .menu-button {
     -ms-flex: 1;
     flex: 1; }
 
-.variants-header-item, .variants-row-item {
+.variants-header-item, .variants-row-item, .variants-row-list {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
   -ms-flex: 1;
@@ -753,7 +757,7 @@ core-drawer-panel[narrow] .menu-button {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden; }
-  .variants-header-item:not(:last-child), .variants-row-item:not(:last-child) {
+  .variants-header-item:not(:last-child), .variants-row-item:not(:last-child), .variants-row-list:not(:last-child) {
     border-right-width: 1px;
     border-right-style: solid; }
 
@@ -792,6 +796,27 @@ div.variants-header {
 
 .variants-row-item:not(:last-child) {
   border-right-color: rgba(0, 0, 0, 0.15); }
+
+.variants-row-list {
+  padding-top: 0;
+  padding-bottom: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: auto; }
+
+.variants-row-list-item {
+  padding: 0.6rem;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0; }
+  .variants-row-list-item:first-child {
+    padding-left: 0; }
+  .variants-row-list-item:last-child {
+    padding-right: 0; }
+  .variants-row-list-item:not(:last-child) {
+    border-right: 1px solid rgba(0, 0, 0, 0.1); }
 
 core-tooltip.variants-row-item {
   overflow: visible; }

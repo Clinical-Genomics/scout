@@ -9,8 +9,6 @@
 {% block content %}
 
 	<div class="cases-list">
-		<h3>You belong to:</h3>
-
 		{% for institute in institutes %}
 
 			<div class="cases-item" layout horizontal center>
@@ -24,7 +22,9 @@
 
         <div flex></div>
 
-        <div>{{ institute.count_cases() }} active cases</div>
+        <div class="cases-item-date">
+          {{ institute.count_cases() }} active cases
+        </div>
 
 			</div>
 

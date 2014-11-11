@@ -66,6 +66,32 @@ div.variants-header {
 	}
 }
 
+.variants-row-list {
+	@extend %variants-item;
+	padding-top: 0;
+	padding-bottom: 0;
+
+	display: flex;
+	overflow: auto;
+}
+
+.variants-row-list-item {
+	padding: $variants-cell-padding;
+	flex-shrink: 0;
+
+	&:first-child {
+		padding-left: 0;
+	}
+
+	&:last-child {
+		padding-right: 0;
+	}
+
+	&:not(:last-child) {
+		border-right: 1px solid rgba(#000, .1);
+	}
+}
+
 core-tooltip.variants-row-item {
 	overflow: visible;	
 }
