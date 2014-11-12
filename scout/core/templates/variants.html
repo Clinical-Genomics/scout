@@ -4,20 +4,26 @@
 {% set scroll_header_keywords = 'condenses keepCondensedHeader scrollAwayTopbar' %}
 
 {% block toolbar_middle %}
-	<a href="{{ url_for('core.cases', institute_id=institute_id) }}">Cases</a>
+  <paper-button raised class="breadcrumb-button">
+    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">Cases</a>
+  </paper-button>
 	<core-icon icon="chevron-right"></core-icon>
-	<a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
-	<core-icon icon="chevron-right"></core-icon>
+
+  <paper-button raised class="breadcrumb-button">
+    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
+  </paper-button>
+  <core-icon icon="chevron-right"></core-icon>
+
 	Variants
 {% endblock %}
 
 {% block toolbar_bottom_outer %}
   <div class="toolbar-bottom variants-header bottom" layout horizontal>
 
-    <div class="variants-header-item" title="CADD score">CADD score</div>
+    <div class="variants-header-item" title="Chromosome">Chromosome</div>
     <div class="variants-header-item flex-big" title="HGNC">HGNC</div>
     <div class="variants-header-item" title="1000 Genomes">1000 Genomes</div>
-    <div class="variants-header-item" title="PolyPhen">PolyPhen</div>
+    <div class="variants-header-item" title="CADD score">CADD score</div>
     <div class="variants-header-item" title="Gene annotation">
       Gene annotation
     </div>
@@ -45,14 +51,14 @@
 
 			<div class="variants-row" horizontal layout>
 
-        <!-- CADD score -->
+        <!-- Chromosome -->
 				<a class="variants-row-item text-right"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
 					 									variant_id=variant.id,
                             case_id=case_id) }}">
 					<paper-ripple fit></paper-ripple>
-					{{ variant.cadd_score|join(', ') }}
+          {{ variant.chromosome }}
 				</a>
 
         <!-- HGNC -->
@@ -75,7 +81,7 @@
 
         <!-- PolyPhen -->
         <core-tooltip class="variants-row-item text-right" position="right">
-          0.672
+          {{ variant.cadd_score|join(', ') }}
 
           <div class="variants-tooltip" tip>
             <ul>
@@ -111,7 +117,7 @@
 
 	</div>
 
-  <paper-button class="variants-load-more">
+  <paper-button raised class="variants-load-more">
     <a href="{{ request.path }}?skip={{ current_batch }}">Load more</a>
   </paper-button>
 

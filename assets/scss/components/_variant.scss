@@ -1,0 +1,133 @@
+.variant-header-item {
+	font-size: .9em;
+
+	&:not(:last-child) {
+		margin-right: 2rem;
+	}
+
+}
+
+.variant-segments {
+	padding: 2em 68px;
+
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 90em;
+}
+
+.variant-segments-row {
+	display: flex;
+	align-items: stretch;  // expand row items to same height
+
+	&:not(:last-child) {
+		margin-bottom: 1em;
+	}
+}
+
+%variant-segment-base {
+	background-color: #fff;
+	box-shadow: 0 1px 3px -1px rgba(#000, .4);
+}
+
+.variant-segment {
+	@extend %variant-segment-base;
+	flex: 1;
+
+	&:not(:last-child) {
+		margin-right: 1rem;
+	}
+}
+
+.variant-segment-full {
+	@extend %variant-segment-base;
+
+	flex-basis: 100%;
+}
+
+.variant-segment-main {
+	@extend %variant-segment-base;
+
+	flex-basis: 70%;
+
+	+ .variant-segment-aside {
+		margin-left: 1em;
+	}
+}
+
+.variant-segment-aside {
+	@extend %variant-segment-base;
+
+	flex-basis: 30%;
+}
+
+.variant-segment-title {
+	padding: .5rem 1rem;
+	font-size: .9rem;
+	border-bottom: 1px solid rgba(#000, .15);
+	background-color: rgba($primary-color, .3);
+	color: #008B9D;
+	font-weight: bold;
+}
+
+.variant-segment-content-text {
+	padding: .5rem 1rem;
+	font-size: .9rem;
+}
+
+.variant-segment-notes {
+	border-top: 1px solid rgba(#000, .15);
+	background-color: rgba(#000, .03);
+	padding: .5rem;
+	font-size: .8rem;
+}
+
+.variant-list-item {
+	padding: .5rem 1rem;
+	font-size: .9rem;
+
+	white-space: nowrap;
+	overflow: auto;
+
+	border-bottom: 1px solid rgba(#000, .15);
+}
+
+.variant-row-item {
+	padding: 0 $variant-base-padding;
+	font-size: .9rem;
+
+	border-bottom: 1px solid rgba(#000, .15);
+}
+
+.variant-row-item-sublist {
+	overflow: auto;
+}
+
+.variant-row-item-sublist-item {
+	padding: .5rem $variant-base-padding;
+	flex-shrink: 0;
+
+	&:first-child {
+		padding-left: 0;
+	}
+
+	&:last-child {
+		padding-right: 0;
+	}
+
+	&:not(:last-child) {
+		border-right: 1px solid rgba(#000, .1);
+	}
+}
+
+.variant-link-external {
+	padding: 1rem $variant-base-padding;
+	flex: 1;
+
+	text-decoration: none;
+	text-align: center;
+	color: darken($primary-color, 10%);
+
+	&:not(:last-child) {
+		border-right: 1px solid rgba(#000, .1);
+	}
+}

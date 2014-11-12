@@ -71,8 +71,16 @@ core-drawer-panel[narrow] .menu-button {
 	display: inline-block;
 }
 
+.breadcrumb-button {
+	padding-top: .5rem;
+	padding-bottom: .5rem;
+	text-transform: none;
+	background-color: rgba(#000, .05);
+}
+
 // Components
 @import "components/landing";
 @import "components/cases";
 @import "components/case";
 @import "components/variants";
+@import "components/variant";

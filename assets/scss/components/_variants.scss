@@ -111,9 +111,11 @@ core-tooltip.variants-row-item {
 	display: block;
 	margin: 1rem auto;
 	width: 150px;
-	
+	background-color: rgba(#000, .05);
+	color: lighten($primary-color, 10%);  // ripple color
+
 	> a {
-		color: rgba(#000, .7);
+		color: darken($primary-color, 10%);
 		text-decoration: none;
 	}
 }

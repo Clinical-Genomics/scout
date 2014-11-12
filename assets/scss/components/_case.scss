@@ -163,3 +163,15 @@
 				flex: 1;
 			}
 		}
+
+.case-variants-button {
+	width: 60%;
+	padding: 1rem;
+	background-color: $primary-color;
+
+	> a {
+		font-weight: bold;
+		color: #fff;
+		text-decoration: none;
+	}
+}

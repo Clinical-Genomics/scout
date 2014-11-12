@@ -44,3 +44,51 @@ The case page also displays a simple wiki-style briefing report about the curren
 > How are we going to handle tagging comments as "finding", "action", "conclusion"? Perhaps we should just stick with something more general; tags + category etc.
 
 Lastly users can also mark verified disease causing variants. Once a variant has been marked in this fashion, the case can be marked as solved and hence no longer active.
+
+----------
+
+
+## Variant
+This is the most complex view with a lot of related data presented to the user in a compact way. A lot of thought went into the design of the layout so here it the imagined workflow.
+
+### Toolbar
+Two options are added to the right side of the menu:
+
+  - Send Sanger email to an institute related email address.
+  - Pin the current variant as interesting so that it shows up in the case view.
+
+### Fixed header
+"This is the variant." Introduces the basic facts of the variant that the user is often referring back to. As an example you need to refer back to the chromosome when assessing possible inheritance models. Some more details are hidden until the user hovers over each section.
+
+### Important data
+This is the first a user looks at when assesing the variant.
+
+  - OMIM
+  - Disease gene model, possible inheritance models, OMIM model
+  - Frequencies
+    - local
+
+### Details
+Depending on the first assessment, this section represents what a user digs deeper into.
+
+  - Predicted protein changes
+  - Severities
+  - Conservation
+
+  => "Matrix" with highlighted cells (significant numbers)
+
+### GT Call
+
+### Compounds
+Only interesting when the compound inheritance pattern is required, the list can be very long - best to put it far down the page.
+
+  - Mark a variant with it's compound pair => link as "/.../variants/<id>?compound=<compound_id>" (pinnable URL)
+
+### Links
+Consider moving them somewhere where they are easier to reach.
+
+### Comments
+"Discuss." Keep tucked away on the side.
+
+### Coverage
+Coming. Perhaps.
