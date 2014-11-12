@@ -11,9 +11,6 @@
         <a href="{{ url_for('user.profile', user_id=case.assignee.id) }}"></a>
       </core-item>
     {% endif %}
-    <core-item class="case-header-link" icon="link" label="All variants">
-      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"></a>
-    </core-item>
   </div>
 {% endblock %}
 
@@ -30,7 +27,13 @@
 
   <div class="case-segments">
 
-    <div class="case-segment-row">
+    <div id="variants-button" class="case-segment-row" horizontal center-justified layout>
+      <paper-button class="case-variants-button" raised icon="link">
+        <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}">Go to all variants</a>
+      </paper-button>
+    </div>
+
+    <div id="strong-candidates" class="case-segment-row">
       <div id="case-candidates" class="case-segment-full">
         <div class="case-segment-title">Strong candidates</div>
         <div class="case-segment-content">
@@ -60,7 +63,7 @@
       </div>
     </div>
 
-    <div class="case-segment-row">
+    <div id="readme+samples" class="case-segment-row">
       <div id="case-readme" class="case-segment-main">
         <div class="case-segment-title">README</div>
         <div class="case-segment-content-text">

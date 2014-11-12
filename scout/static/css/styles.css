@@ -746,6 +746,15 @@ core-drawer-panel[narrow] .menu-button {
     -ms-flex: 1;
     flex: 1; }
 
+.case-variants-button {
+  width: 60%;
+  padding: 1rem;
+  background-color: #00bcd4; }
+  .case-variants-button > a {
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none; }
+
 .variants-header-item, .variants-row-item, .variants-row-list {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
