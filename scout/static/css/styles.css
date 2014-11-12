@@ -923,6 +923,27 @@ core-tooltip.variants-row-item {
 
 .variant-list-item {
   padding: 0.5rem 1rem;
-  font-size: 0.9rem; }
-  .variant-list-item:not(:last-child) {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: auto;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+
+.variant-row-item {
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+
+.variant-row-item-sublist {
+  overflow: auto; }
+
+.variant-row-item-sublist-item {
+  padding: 0.5rem 1rem;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0; }
+  .variant-row-item-sublist-item:first-child {
+    padding-left: 0; }
+  .variant-row-item-sublist-item:last-child {
+    padding-right: 0; }
+  .variant-row-item-sublist-item:not(:last-child) {
+    border-right: 1px solid rgba(0, 0, 0, 0.1); }

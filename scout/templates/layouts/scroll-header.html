@@ -1,5 +1,12 @@
 {% extends 'layouts/base.html' %}
 
+{% block css %}
+    {{ super() }}
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/temp.css') }}">
+  {% endblock %}
+
 {% block js_top %}
 
   <script src="{{ url_for('static', filename='vendor/platform/platform.js') }}"></script>

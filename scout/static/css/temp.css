@@ -1,0 +1,4 @@
+/* Color header icons in a deeper shade of teal */
+.variant-header-item /deep/ core-icon {
+	fill: #008B9D;
+}
