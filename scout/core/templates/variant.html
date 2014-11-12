@@ -11,19 +11,25 @@
 {% endblock %}
 
 {% block toolbar_middle %}
-  <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
-    {{ institute_id }}
-  </a>
+  <paper-button raised class="breadcrumb-button">
+    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute_id }}
+    </a>
+  </paper-button>
   <core-icon icon="chevron-right"></core-icon>
 
-  <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
+  <paper-button raised class="breadcrumb-button">
+    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
+  </paper-button>
   <core-icon icon="chevron-right"></core-icon>
 
-  <a href="{{ url_for('core.variants',
-                      institute_id=institute_id,
-                      case_id=case_id) }}">
-    Variants
-  </a>
+  <paper-button raised class="breadcrumb-button">
+    <a href="{{ url_for('core.variants',
+                        institute_id=institute_id,
+                        case_id=case_id) }}">
+      Variants
+    </a>
+  </paper-button>
 {% endblock %}
 
 {% block toolbar_bottom %}

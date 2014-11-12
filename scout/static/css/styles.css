@@ -413,6 +413,12 @@ core-toolbar {
 core-drawer-panel[narrow] .menu-button {
   display: inline-block; }
 
+.breadcrumb-button {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  text-transform: none;
+  background-color: rgba(0, 0, 0, 0.05); }
+
 .landing-page {
   padding: 1em;
   max-width: 700px;
@@ -842,7 +848,8 @@ core-tooltip.variants-row-item {
   display: block;
   margin: 1rem auto;
   width: 150px;
-  background-color: rgba(0, 0, 0, 0.05); }
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #08e6ff; }
   .variants-load-more > a {
     color: #0091a1;
     text-decoration: none; }

@@ -15,9 +15,11 @@
 {% endblock %}
 
 {% block toolbar_bottom %}
-  <a href="{{ url_for('core.cases', institute_id=institute.id) }}">
-    {{ institute.name }}
-  </a>
+  <paper-button raised class="breadcrumb-button">
+    <a href="{{ url_for('core.cases', institute_id=institute.id) }}">
+      {{ institute.name }}
+    </a>
+  </paper-button>
   <core-icon icon="chevron-right"></core-icon>
 
   <core-item icon="lock-open" label="Case {{ case.name }}"></core-item>
