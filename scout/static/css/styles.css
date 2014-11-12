@@ -841,9 +841,10 @@ core-tooltip.variants-row-item {
 .variants-load-more {
   display: block;
   margin: 1rem auto;
-  width: 150px; }
+  width: 150px;
+  background-color: rgba(0, 0, 0, 0.05); }
   .variants-load-more > a {
-    color: rgba(0, 0, 0, 0.7);
+    color: #0091a1;
     text-decoration: none; }
 
 .variant-header-item {
