@@ -42,10 +42,22 @@
 
     <div class="variants-tooltip" tip>
       <ul>
-        <li><strong>Position</strong>: {{ variant.common.position }}</li>
-        <li><strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}</li>
-        <li><strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}</li>
-        <li><strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}</li>
+        <li horizontal layout center justified>
+          <div>Position</div>
+          <div>{{ variant.common.position }}</div>
+        </li>
+        <li horizontal layout center justified>
+          <div>Aliases</div>
+          <div>{{ 'CPO, CPX, HCP' }}</div>
+        </li>
+        <li horizontal layout center justified>
+          <div>Full name</div>
+          <div>{{ 'Coproporphyrinogen III oxidase' }}</div>
+        </li>
+        <li horizontal layout center justified>
+          <div>Ensembl</div>
+          <div>{{ variant.common.gene_ids.ensembl_id }}</div>
+        </li>
       </ul>
     </div>
   </core-tooltip>
@@ -72,15 +84,49 @@
         <div class="variant-segment-title">Frequency</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item"><strong>ThousandG</strong> 0.01</div>
-          <div class="variant-list-item"><strong>Esp6500</strong> 0.007</div>
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>ThousandG</div>
+            <div>0.01</div>
+          </div>
+
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>Esp6500</div>
+            <div>0.007</div>
+          </div>
+
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>Local</div>
+            <div>0.27</div>
+          </div>
         </div>
       </div>
 
       <div id="inheritance-model" class="variant-segment">
         <div class="variant-segment-title">Inheritance models</div>
 
-        <div class="variant-segment-content"></div>
+        <div class="variant-segment-content">
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>Disease gene model</div>
+            <div>-</div>
+          </div>
+
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>OMIM</div>
+            <div>Autosomal recessive</div>
+          </div>
+
+          <div class="variant-row-item" horizontal layout center justified>
+            <div>
+              Matching
+            </div>
+
+            <div class="variant-row-item-sublist" horizontal layout>
+              {% for model in variant.case_specifics[0].inheritance_models %}
+                <div class="variant-row-item-sublist-item">{{ model }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="omim" class="variant-segment">
@@ -101,7 +147,131 @@
           </div>
         </div>
       </div>
+    </div>
 
+    <div id="details" class="variant-segments-row">
+      <div id="frequency" class="variant-segment">
+        <div class="variant-segment-title">Predicted protein changes</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-list-item">
+            COL6A2:NM_001849:exon26:c.2351G>A:p.R784H
+          </div>
+          <div class="variant-list-item">
+            COL6A2:NM_058174:exon26:c.2351G>A:p.R784H
+          </div>
+          <div class="variant-list-item">
+            COL6A2:NM_058175:exon26:c.2351G>A:p.R784H
+          </div>
+        </div>
+      </div>
+
+      <div id="severities" class="variant-segment">
+        <div class="variant-segment-title">Severity</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>SiftWholeExome</div>
+            <div>0.63</div>
+          </div>
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>PolyphenDivHuman</div>
+            <div>0.049</div>
+          </div>
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>PolyphenVarHuman</div>
+            <div>0.01</div>
+          </div>
+          <div class="variant-list-item" horizontal layout center justified>
+            <div>MutationTaster</div>
+            <div>0.531</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="conservation" class="variant-segment">
+        <div class="variant-segment-title">Conservation</div>
+
+        <div class="variant-list-item" horizontal layout center justified>
+          <div>PhylopWholeExome</div>
+          <div>1.586</div>
+        </div>
+        <div class="variant-list-item" horizontal layout center justified>
+          <div>LrtWholeExome</div>
+          <div>0.183</div>
+        </div>
+        <div class="variant-list-item" horizontal layout center justified>
+          <div>PhastConstElementsScore</div>
+          <div>555</div>
+        </div>
+        <div class="variant-list-item" horizontal layout center justified>
+          <div>GerpElement</div>
+          <div>1065.5</div>
+        </div>
+        <div class="variant-list-item" horizontal layout center justified>
+          <div>GerpWholeExome</div>
+          <div>2.76</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gt-call" class="variant-segments-row">
+      <div id="inheritance-model" class="variant-segment">
+        <div class="variant-segment-title">GT call</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-row-item" horizontal layout center justified>
+            <div class="variant-row-item-sublist" horizontal layout>
+              {% for item in "14701600331 0/1 22,18 449,0,501 99".split(' ') %}
+                <div class="variant-row-item-sublist-item">{{ item }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gt-call" class="variant-segments-row">
+      <div class="variant-segment">
+        <div class="variant-segment-content">
+          <div class="variant-list-links" horizontal layout justified>
+            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397" relative>
+              <paper-ripple fit></paper-ripple>
+              Ensembl
+            </a>
+
+            <a class="variant-link-external" href="http://www.proteinatlas.org/search/ENSG00000105397" relative>
+              <paper-ripple fit></paper-ripple>
+              HPA
+            </a>
+
+            <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier=ENSG00000105397" relative>
+              <paper-ripple fit></paper-ripple>
+              STRING
+            </a>
+
+            <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr19:10463118-10463118&dgv=pack&knownGene=pack&omimGene=pack" relative>
+              <paper-ripple fit></paper-ripple>
+              UCSC
+            </a>
+
+            <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term=TYK2" relative>
+              <paper-ripple fit></paper-ripple>
+              Entrez
+            </a>
+
+            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397" relative>
+              <paper-ripple fit></paper-ripple>
+              Ensembl
+            </a>
+
+            <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081" relative>
+              <paper-ripple fit></paper-ripple>
+              IGV
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>

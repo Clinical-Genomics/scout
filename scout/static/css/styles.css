@@ -909,7 +909,10 @@ core-tooltip.variants-row-item {
 .variant-segment-title {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  background-color: rgba(0, 188, 212, 0.3);
+  color: #008B9D;
+  font-weight: bold; }
 
 .variant-segment-content-text {
   padding: 0.5rem 1rem;
@@ -946,4 +949,16 @@ core-tooltip.variants-row-item {
   .variant-row-item-sublist-item:last-child {
     padding-right: 0; }
   .variant-row-item-sublist-item:not(:last-child) {
+    border-right: 1px solid rgba(0, 0, 0, 0.1); }
+
+.variant-link-external {
+  padding: 1rem 1rem;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  text-decoration: none;
+  text-align: center;
+  color: #0091a1; }
+  .variant-link-external:not(:last-child) {
     border-right: 1px solid rgba(0, 0, 0, 0.1); }
