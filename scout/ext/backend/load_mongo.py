@@ -52,9 +52,13 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None):
   # print(project_root, vcf_file, ped_file, config_file)
   config_object = ConfigParser(config_file)  
   
+  print(db.database_names())
+  
   # pp(config_object.__dict__)
   
   ######## Get the case and add it to the mongo db: ######## 
+  db.cases.drop()
+
   cases = db.cases
   
   
@@ -74,12 +78,16 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None):
   
   variants = db.variants
   
+  variants.remove()
+  
   # variants = {} # Dict like {case_id: variant_parser}
   variant_parser = vcf_parser.VCFParser(infile = vcf_file)
   for variant in variant_parser:
     # pp(variant)
     # pp(format_variant(variant, case, config_object))
-    variants.insert(format_variant(variant, case, config_object))
+    variant = format_variant(variant, case, config_object)
+    # pp(variant)
+    variants.insert(variant)
     
   sys.exit()
   
@@ -105,8 +113,7 @@ def get_case(ped_file):
 
 
 def format_variant(variant, case, config_object):
-  """Return the variant in a format specified for scout."""
-  
+  """Return the variant in a format specified for scout. The structure is decided by the config file that is used."""
   
   def generate_md5_key(chrom, pos, ref, alt):
     """Generate an md5-key from variant information"""

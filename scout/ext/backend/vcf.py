@@ -63,12 +63,12 @@ class VcfAdapter(BaseAdapter):
         if not (ped_file and vcf_file):
           raise SyntaxError('Wrong folder structure in vcf directories. '
                             'Could not find ped and/or vcf files. '
-                              'See documentation.')
+                            'See documentation.')
         # Store the path to variants as case id:s:
         case['id'] = case['family_id']
         case['vcf_path'] = vcf_file
         self._cases.append(case)
-
+    
     return
 
 

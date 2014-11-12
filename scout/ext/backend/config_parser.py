@@ -101,6 +101,7 @@ class ConfigParser(ConfigObj):
 
 
 ########### Command Line Interface for the config parser: #############
+
 @click.command()
 # @click.argument('vcf_file',
 #                 nargs=1,
