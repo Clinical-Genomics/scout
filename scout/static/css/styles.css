@@ -393,6 +393,9 @@ div.toolbar-bottom {
   flex: 1;
   margin-right: 60px; }
 
+.breadcrumb-button {
+  font-size: 0.8em; }
+
 core-toolbar {
   background: #00bcd4;
   color: #fff; }
@@ -403,6 +406,8 @@ core-toolbar {
 .main-drawer {
   background-color: #fff;
   border-right: 1px solid rgba(0, 0, 0, 0.1); }
+  .main-drawer > paper-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
 
 .hidden-submit {
   display: none; }
@@ -910,8 +915,8 @@ core-tooltip.variants-row-item {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-  background-color: rgba(0, 188, 212, 0.3);
-  color: #008B9D;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.5);
   font-weight: bold; }
 
 .variant-segment-content-text {

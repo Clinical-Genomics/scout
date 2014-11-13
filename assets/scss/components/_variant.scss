@@ -1,3 +1,5 @@
+$variant-base-padding: 1rem;
+
 .variant-header-item {
 	font-size: .9em;
 
@@ -64,8 +66,8 @@
 	padding: .5rem 1rem;
 	font-size: .9rem;
 	border-bottom: 1px solid rgba(#000, .15);
-	background-color: rgba($primary-color, .3);
-	color: #008B9D;
+	background-color: rgba(#000, .1);
+	color: rgba(#000, .5);
 	font-weight: bold;
 }
 

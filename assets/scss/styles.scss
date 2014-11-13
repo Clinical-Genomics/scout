@@ -43,6 +43,10 @@ div.toolbar-bottom {
 	margin-right: 60px;
 }
 
+.breadcrumb-button {
+	font-size: .8em;
+}
+
 core-toolbar {
   background: $primary-color;
   color: #fff;
@@ -56,6 +60,10 @@ core-toolbar {
 .main-drawer {
 	background-color: #fff;
 	border-right: 1px solid rgba(#000, .1);
+
+	> paper-item {
+		border-bottom: 1px solid rgba(#000, .1);
+	}
 }
 
 .hidden-submit {
