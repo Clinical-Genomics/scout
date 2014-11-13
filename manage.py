@@ -28,7 +28,7 @@ def test():
 
 manager.add_option(
   '-c', '--config', dest='config', required=False, help='config file path')
-manager.add_command('server', Server())
+manager.add_command('server', Server(host='0.0.0.0'))
 manager.add_command('vagrant', Server(host='0.0.0.0', use_reloader=True))
 
 

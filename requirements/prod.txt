@@ -36,8 +36,9 @@ Flask-OAuthlib==0.7.0
 # Caching
 #Flask-Cache>=0.12
 
-# Translations
-Flask-Babel
+# SSL
+Flask-SSLify
+pyOpenSSL
 
 # Markdown
 Flask-Markdown
