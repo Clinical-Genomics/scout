@@ -668,7 +668,9 @@ core-drawer-panel[narrow] .menu-button {
 .case-segment-title {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  background-color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.5); }
 
 .case-segment-content-text {
   padding: 0.5rem 1rem;
