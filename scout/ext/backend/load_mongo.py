@@ -30,6 +30,7 @@ import json
 import click
 import hashlib
 
+from datetime import datetime
 from pymongo import MongoClient
 
 from .config_parser import ConfigParser
@@ -52,47 +53,46 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None):
   # print(project_root, vcf_file, ped_file, config_file)
   config_object = ConfigParser(config_file)  
   
-  print(db.database_names())
+  # print(db.database_names())
   
   # pp(config_object.__dict__)
   
   ######## Get the case and add it to the mongo db: ######## 
-  db.cases.drop()
-
-  cases = db.cases
   
+  case_collection = db.cases
   
   case = get_case(ped_file)
-  # pp(case)
-  
-  case_individuals = [individual['individual_id'] for individual in case['individuals']]
-  
-  cases.insert(case)
-  
-  # print('Collections:\n')
-  # pp(config_object.collections)
-  # print('Categories:\n')
-  # pp(config_object.categories)
+  case['last_updated'] = datetime.now()
+  case['display_name'] = case['family_id']
+  case['_id'] = generate_md5_key([case['family_id']])
+    
+  # This function updates the cases collection if the specific family exists.
+  # If the family exists a new object is inserted
+  case_collection.update({ '_id': case['_id']}, {"$set" : case}, upsert=True)
   
   ######## Get the variants and add them to the mongo db: ######## 
   
-  variants = db.variants
+  variant_collection = db.variants
   
-  variants.remove()
+  start_inserting_variants = datetime.now()
   
-  # variants = {} # Dict like {case_id: variant_parser}
   variant_parser = vcf_parser.VCFParser(infile = vcf_file)
+  nr_of_variants = 0
+  
   for variant in variant_parser:
-    # pp(variant)
-    # pp(format_variant(variant, case, config_object))
-    variant = format_variant(variant, case, config_object)
-    # pp(variant)
-    variants.insert(variant)
-    
-  sys.exit()
+    nr_of_variants += 1
+    load_variant(variant, case, config_object, variant_collection, nr_of_variants)
   
+  print('%s variants inserted!' % nr_of_variants)
+  print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants))
   
+def generate_md5_key(list_of_arguments):
+  """Generate an md5-key from a list of arguments"""
+  h = hashlib.md5()
+  h.update(' '.join(list_of_arguments))
+  return h.hexdigest()
 
+  
 def get_case(ped_file):
   """Take a case file and return the case on the specified format."""
   
@@ -101,26 +101,22 @@ def get_case(ped_file):
   
   return case
   
-  
-# def cases(self):
-#   return self._cases
-#
-# def case(self, case_id):
-#   for case in self._cases:
-#     if case['id'] == case_id:
-#       return case
-#
 
+def load_variant(variant, case, config_object, variant_collection, variant_count):
+  """Load a variant into the database."""
+  formated_variant = format_variant(variant, case, config_object)
+  case_specific = formated_variant.pop('specific', {})
+  case_specific['variant_rank'] = variant_count
+  
+  variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : formated_variant}, upsert=True)
+  
+  variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : {("specific.%s" % case['_id']) : case_specific}})
+  
+  return
 
 def format_variant(variant, case, config_object):
   """Return the variant in a format specified for scout. The structure is decided by the config file that is used."""
   
-  def generate_md5_key(chrom, pos, ref, alt):
-    """Generate an md5-key from variant information"""
-    h = hashlib.md5()
-    alt = ','.join(alt)
-    h.update(' '.join([chrom, pos, ref, alt]))
-    return h.hexdigest()
   
   def get_genotype_information(variant, genotype_collection, individual):
     """Get the genotype information in the proper format and return an array with the individuals."""
@@ -154,54 +150,42 @@ def format_variant(variant, case, config_object):
     # Check if we should return a list:
     if value and config_object[information]['vcf_data_field_number'] != '1':
       value = value.split(config_object[information]['vcf_data_field_separator'])
+    # If there should be one value but there are several we need to get the right one.
+    # elif len(value.split(config_object[information].get(['vcf_data_field_separator'], ','))) > 1:
+      
     return value
   
-  family_id = case['family_id']
+  # We insert the family with the md5-key as id, same key we use in cases
+  family_id = case['_id']
+  # These are the individuals included in the family
   case_individuals = [individual['individual_id'] for individual in case['individuals']]
   
+  # We use common to store annotations and specific to store
   formated_variant = {'common':{}, 'specific':{}}
-  formated_variant['specific'][family_id] = {}
-  formated_variant['specific'][family_id]['samples'] = []
   
-  formated_variant['variant_id'] = variant['variant_id']
-  formated_variant['md5_key'] = generate_md5_key(variant['CHROM'], variant['POS'], variant['REF'], variant['ALT'])
+  formated_variant['specific']['_id'] = family_id
+  formated_variant['specific']['display_name'] = case['family_id']
+  formated_variant['specific']['samples'] = []
+  
+  # 
+  formated_variant['display_name'] = variant['variant_id']
+  formated_variant['_id'] = generate_md5_key([variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']])
   
   
   # Add the genotype information for each individual 
   for individual in case_individuals:
-    formated_variant['specific'][family_id]['samples'].append(
+    formated_variant['specific']['samples'].append(
           get_genotype_information(variant, config_object.categories['genotype_information'], individual))
   
   for annotation in config_object.collections['core']:
-    # print('core', annotation)
     formated_variant[config_object[annotation]['internal_record_key']] = get_value(variant, 'core', annotation)
   
   for annotation in config_object.collections['common']:
-    # print('common', annotation)
     formated_variant['common'][config_object[annotation]['internal_record_key']] = get_value(variant, 'common', annotation)
   
   for annotation in config_object.collections['case']:
-    # print('common', annotation)
-    formated_variant['specific'][family_id][config_object[annotation]['internal_record_key']] = get_value(variant, 'case', annotation)
-  
-  # for category in config_object.categories:
-  #   for member in config_object.categories[category]:
-  #     if category != 'config_info':
-  #       if config_object[member]['collection'] == 'core':
-  #         formated_variant[config_object[member]['internal_record_key']] = get_value(variant, category, member)
-  #
-  #       elif config_object[member]['collection'] == 'common':
-  #         formated_variant['common'][config_object[member]['internal_record_key']] = get_value(variant, category, member)
-  #
-  #       elif config_object[member]['collection'] == 'case':
-  #         # Consider to use default dict here...
-  #         if family_id not in formated_variant['specific']:
-  #           formated_variant['specific'][family_id] = {}
-  #         for individual in case_individuals:
-  #           formated_variant['specific'][family_id][config_object[member]['internal_record_key']] = get_value(
-                                                                                                # variant, category, member, )
-          # else:
-  
+    formated_variant['specific'][config_object[annotation]['internal_record_key']] = get_value(variant, 'case', annotation)
+    
   return formated_variant
   
   
