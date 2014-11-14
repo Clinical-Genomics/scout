@@ -39,6 +39,17 @@ $variant-base-padding: 1rem;
 	}
 }
 
+.variant-segment-summary {
+	@extend %variant-segment-base;
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+
+	@media (min-width: 40em) {
+		width: 40rem;
+	}
+}
+
 .variant-segment-full {
 	@extend %variant-segment-base;
 
