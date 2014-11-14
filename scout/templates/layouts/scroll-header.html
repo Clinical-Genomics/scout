@@ -9,6 +9,8 @@
 
 {% block js_top %}
 
+  {{ super() }}
+
   <script src="{{ url_for('static', filename='vendor/platform/platform.js') }}"></script>
   <link rel="import" href="{{ url_for('static', filename='vendor/polymer/polymer.html') }}">
 
@@ -94,6 +96,9 @@
 
       <div content>
         {% block content %}{% endblock %}
+
+        <div id="name"></div>
+
       </div>
     </core-scroll-header-panel>
   </core-drawer-panel>

@@ -1,70 +1,70 @@
+/* gulpfile.js */
+
 'use strict';
 
-/**
- * This example:
- *  Shows how to plug in the details of your server.
- *  Watches & injects CSS files
- */
+// Load some modules which are installed through NPM.
 var gulp         = require('gulp');
+var browserify   = require('browserify');  // Bundles JS.
+var reactify     = require('reactify');  // Transforms React JSX to JS.
+var source       = require('vinyl-source-stream');
+var transform    = require('vinyl-transform');
+var sass         = require('gulp-sass');  // To compile Stylus CSS.
 var browserSync  = require('browser-sync');
 var reload       = browserSync.reload;
-var sass         = require('gulp-sass');
-var bourbon      = require('node-bourbon');
 var autoprefixer = require('gulp-autoprefixer');
-var vulcanize    = require('gulp-vulcanize');
-var replace      = require('gulp-replace');
+var uglify       = require('gulp-uglify');
+var concat       = require('gulp-concat');
 
-// Base target directory
-var base_dir = 'scout/static';
+// Define some paths.
+var paths = {
+  app_scss: ['./assets/scss/styles.scss'],
+  scss: ['./assets/scss/**/*.scss'],
+  app_js: ['./assets/js/app.jsx'],
+  js: ['./assets/js/*.js', './assets/js/app.jsx'],
+};
 
 // Browser-sync task, only cares about compiled CSS
 gulp.task('browser-sync', function() {
   browserSync({
-    files: base_dir + '/css/*.css',
-    proxy: {
-      port: 5000,
-    },
+    files: ['scout/static/css/*.css', 'scout/static/js/*.js'],
+    proxy: { port: 5000 },
   });
 });
 
-// Copy static assets
-gulp.task('bs-reload', function () {
-  gulp.src('assets/*.html')
-    .pipe(gulp.dest(base_dir))
-    .pipe(reload({stream: true}))
-});
-
-// Sass task, will run when any SCSS files change.
-gulp.task('sass', function () {
-  gulp.src('assets/scss/styles.scss')
-    .pipe(sass({
-      includePaths: [bourbon.includePaths],
-      errLogToConsole: true
-    }))
+// Our CSS task. It finds all our Stylus files and compiles them.
+gulp.task('css', function() {
+  return gulp.src(paths.app_scss)
+    .pipe(sass({ errLogToConsole: true }))
     .pipe(autoprefixer({
       browsers: ['last 2 versions'],
       cascade: false
     }))
-    .pipe(gulp.dest(base_dir + '/css/'))
-    .pipe(reload({stream: true}));
+    .pipe(gulp.dest('./scout/static/css/'))
+    .pipe(reload({ stream: true }));
 });
 
-// Vulcanize Polymer elements
-gulp.task('vulcanize', function () {
-  return gulp.src('assets/elements.html')
-    .pipe(vulcanize({
-        dest: 'scout/templates',
-        strip: true,  // Remove comments and empty text nodes
-        inline: true,
-    }))
-    .pipe(replace(/<html><head>/, '{% raw %}'))
-    .pipe(replace(/<\/body><\/html>/, '{% endraw %}'))
-    .pipe(replace(/<\/head><body>/, ''))
-    .pipe(gulp.dest('scout/templates'));
+// Our JS task. It will Browserify our code and compile React JSX files.
+gulp.task('js', function() {
+
+  var browserified = transform(function(filename) {
+    var b = browserify(filename);
+    b.transform(reactify);
+    return b.bundle();
+  });
+
+  // Browserify/bundle the JS.
+  return gulp.src(paths.app_js)
+    .pipe(browserified)
+    .pipe(concat('bundle.js'))
+    .pipe(gulp.dest('./scout/static/js/'))
+    .pipe(reload({ stream: true }));
 });
 
-// Default task to be run with `gulp`
-gulp.task('default', ['sass', 'browser-sync'], function () {
-  gulp.watch('assets/scss/**/*.scss', ['sass']);
-  gulp.watch('assets/*.html', ['bs-reload']);
+// Rerun tasks whenever a file changes.
+gulp.task('watch', function() {
+  gulp.watch(paths.scss, ['css']);
+  gulp.watch(paths.js, ['js']);
 });
+
+// The default task (called when we run `gulp` from cli)
+gulp.task('default', ['watch', 'css', 'js', 'browser-sync']);

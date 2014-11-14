@@ -38,6 +38,8 @@
   {% block body %}{% endblock %}
 
   {% block js_btm %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+
     <!-- include browserify script tag -->
     {% include 'footer.html' %}
   {% endblock %}
