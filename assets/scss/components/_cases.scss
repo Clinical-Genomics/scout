@@ -28,13 +28,11 @@
 }
 
 %cases-item-base {
-	padding: 1rem;
+	padding: .7em;
 }
 
 .cases-item-title {
 	@extend %cases-item-base;
-
-	position: relative;
 	color: darken(#00bcd4, 10%);
 
 	display: flex;
@@ -42,12 +40,7 @@
 	flex: 1;
 
 	font-size: 1.5em;
-	line-height: 0;
 	text-decoration: none;
-
-	&:hover {
-		background-color: rgba($primary-color, .2);
-	}
 }
 
 .cases-item-indicator {

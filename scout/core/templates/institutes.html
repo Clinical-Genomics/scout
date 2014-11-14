@@ -1,4 +1,5 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
 
 {% set page_title = 'Institutes' %}
 
@@ -13,11 +14,7 @@
 
       <div class="cases-item">
 
-        <paper-item class="cases-item-title"
-                    icon="group-work"
-                    label="{{ institute.display_name }}">
-          <a href="{{ url_for('core.cases', institute_id=institute.id) }}"></a>
-        </paper-item>
+        {{ core_item(institute.display_name, icon='group-work', href=url_for('core.cases', institute_id=institute.id), class='cases-item-title') }}
 
         <div class="cases-item-date">
           {{ institute.count_cases() }} active cases

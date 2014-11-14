@@ -25,6 +25,7 @@ $variants-cell-padding: .6rem;
 .variants-header {
 	@extend .header-toolbar-bottom;
 
+	margin: 0 7px;
 	font-size: .9em;
 }
 
@@ -93,18 +94,62 @@ $variants-cell-padding: .6rem;
 	}
 }
 
-core-tooltip.variants-row-item {
-	overflow: visible;	
+.variants-row-item {
+	overflow: visible;
 }
 
-.variants-tooltip {
-	line-height: 1rem;
-	font-size: 1.2em;
+.variants-tooltip-tip {
+	position: absolute;
+	padding: 8px;
+	color: white;
+	background-color: rgba(#000, .8);
+	border-radius: 3px;
+	white-space: nowrap;
+	z-index: 10;
+	visibility: hidden;
+
+	font-size: .9em;
+	line-height: 1.3em;
+
+	&:hover {
+		visibility: visible;
+	}
 
 	> ul {
 		padding: 0;
 		margin: 0;
 		list-style: none;
+	}
+}
+
+.is-left {
+	right: 100%;
+	margin-right: .5rem;
+
+	top: -15px; // works for 3 rows
+}
+
+.is-right {
+	left: 100%;
+	margin-left: .5rem;
+
+	top: -15px; // works for 3 rows
+}
+
+.is-bottom {
+	top: 100%;
+	margin-top: .5rem;
+
+	left: -50px; // works for 3 rows
+}
+
+
+.variants-tooltip {
+	position: relative;
+	overflow: visible;
+
+	&:hover > .variants-tooltip-tip {
+		visibility: visible;
 	}
 }
 

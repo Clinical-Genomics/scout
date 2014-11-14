@@ -1,7 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = 'Variants' %}
-{% set scroll_header_keywords = 'condenses keepCondensedHeader scrollAwayTopbar' %}
 
 {% block toolbar_middle %}
   <a class="breadcrumb-button is-raised"
@@ -67,23 +66,23 @@
 				</div>
 
         <!-- 1000 Genomes -->
-				<core-tooltip class="variants-row-item text-right" position="left">
+				<div class="variants-row-item text-right variants-tooltip">
           {{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
 
-          <div class="variants-tooltip" tip>
+          <div class="variants-tooltip-tip is-left">
             <ul>
               <li><strong>ThousandG</strong> 0.004</li>
               <li><strong>Esp6500</strong> 0.011</li>
               <li><strong>Dbsnp129</strong> 0.004</li>
             </ul>
           </div>
-        </core-tooltip>
+        </div>
 
         <!-- PolyPhen -->
-        <core-tooltip class="variants-row-item text-right" position="right">
+        <div class="variants-row-item text-right variants-tooltip">
           {{ variant.cadd_score|join(', ') }}
 
-          <div class="variants-tooltip" tip>
+          <div class="variants-tooltip-tip is-right">
             <ul>
               <li><strong>SiftWholeExome</strong> 0.04</li>
               <li><strong>PolyphenDivHuman</strong> 0.999</li>
@@ -91,7 +90,7 @@
               <li><strong>MutationTaster</strong> 0.498</li>
             </ul>
           </div>
-        </core-tooltip>
+        </div>
 
         <!-- Gene annotation -->
         <div class="variants-row-item">exonic</div>

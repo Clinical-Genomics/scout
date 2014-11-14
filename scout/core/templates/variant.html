@@ -31,30 +31,26 @@
                icon='grade',
                class='variant-header-item') }}
 
-  <core-tooltip class="variant-header-item" position="bottom">
+  <div class="variant-header-item variants-tooltip">
     {{ core_item('Chr%s: %s' % (variant.common.chrom, variant.common.hgnc_symbol), icon='room') }}
 
-    <div class="variants-tooltip" tip>
+    <div class="variants-tooltip-tip is-bottom">
       <ul>
-        <li horizontal layout center justified>
-          <div>Position</div>
-          <div>{{ variant.common.position }}</div>
+        <li>
+          <strong>Position</strong>: {{ variant.common.position }}
         </li>
-        <li horizontal layout center justified>
-          <div>Aliases</div>
-          <div>{{ 'CPO, CPX, HCP' }}</div>
+        <li>
+          <strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}
         </li>
-        <li horizontal layout center justified>
-          <div>Full name</div>
-          <div>{{ 'Coproporphyrinogen III oxidase' }}</div>
+        <li>
+          <strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}
         </li>
-        <li horizontal layout center justified>
-          <div>Ensembl</div>
-          <div>{{ variant.common.gene_ids.ensembl_id }}</div>
+        <li>
+          <strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}
         </li>
       </ul>
     </div>
-  </core-tooltip>
+  </div>
 
   {{ core_item('%s → %s' % (variant.common.reference, variant.common.alternative), icon='swap-vert-circle', class='variant-header-item') }}
 
