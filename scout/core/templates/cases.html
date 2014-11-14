@@ -16,17 +16,16 @@
 	<div class="cases-list">
 		{% for case in institute.cases %}
 
-			<div class="cases-item" layout horizontal center>
+			<div class="cases-item">
 
 				<a class="cases-item-title"
            href="{{ url_for('core.case', institute_id=institute.id,
-                            case_id=case.name) }}" flex>
-          <paper-ripple fit></paper-ripple>
+                            case_id=case.name) }}">
           <div class="cases-item-indicator"></div>
 					{{ case.name }}
 				</a>
 
-				<div flex layout horizontal center justified>
+				<div class="flex" layout horizontal center justified>
 
 					<a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"
 	  				 class="cases-item-link">

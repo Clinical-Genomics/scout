@@ -11,8 +11,22 @@ var HelloMessage = React.createClass({
   }
 });
 
+var ToggleClassButton = React.createClass({
+	query: '',
+	toggleClass: '',
+
+	handleClick: function() {
+		var element = document.querySelector(this.props.query);
+		return element.classList.toggle(this.props.toggleClass)
+	},
+
+	render: function() {
+		return <div onClick={this.handleClick} className="button-menu"></div>
+	}
+});
+
 // Render HelloMessage component at #name.
 React.render(
-  <HelloMessage name="Robin" />,
-  document.getElementById('name')
+  <ToggleClassButton icon="menu" query=".drawer-panel-aside" toggleClass="is-showing" />,
+  document.getElementById('menu-button')
 );

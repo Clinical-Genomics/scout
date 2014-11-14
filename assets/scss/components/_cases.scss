@@ -14,6 +14,11 @@
 }
 
 .cases-item {
+	// layout
+	display: flex;
+	align-items: center;
+
+	// styles
 	background: #fff;
 	box-shadow: 0 1px 3px -1px rgba(#000, .4);
 
@@ -34,10 +39,15 @@
 
 	display: flex;
 	align-items: center;
+	flex: 1;
 
 	font-size: 1.5em;
 	line-height: 0;
 	text-decoration: none;
+
+	&:hover {
+		background-color: rgba($primary-color, .2);
+	}
 }
 
 .cases-item-indicator {

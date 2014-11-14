@@ -11,16 +11,13 @@
   <div class="cases-list">
     {% for institute in institutes %}
 
-      <div class="cases-item" layout horizontal center>
+      <div class="cases-item">
 
         <paper-item class="cases-item-title"
                     icon="group-work"
-                    label="{{ institute.display_name }}"
-                    flex>
+                    label="{{ institute.display_name }}">
           <a href="{{ url_for('core.cases', institute_id=institute.id) }}"></a>
         </paper-item>
-
-        <div flex></div>
 
         <div class="cases-item-date">
           {{ institute.count_cases() }} active cases
