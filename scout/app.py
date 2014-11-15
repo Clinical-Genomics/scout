@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 
 from flask import Flask, render_template
+from jinja2 import is_undefined
 from werkzeug.utils import import_string
 
 from .helpers import pretty_date
@@ -122,3 +123,20 @@ class AppFactory(object):
     @self.app.template_filter()
     def format_date(value, format="%Y-%m-%d"):
       return value.strftime(format)
+
+    @self.app.template_filter()
+    def client_filter(value):
+      """Pass through variable in Jinja2 to client side template.
+
+      The filter tells Jinja2 that a variable is for a client side
+      template engine.
+
+      If the variable is undefined, its name will be used in the
+      client side template, otherwise, its content will be used.
+      """
+
+      if is_undefined(value):
+          return '{{{{{}}}}}'.format(value._undefined_name)
+      if type(value) is bool:
+          value = repr(value).lower()
+      return '{{{{{}}}}}'.format(value)
