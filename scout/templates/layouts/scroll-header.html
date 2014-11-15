@@ -10,8 +10,8 @@
 
 {% block body %}
 
-  <div class="drawer-panel">
-    <div class="drawer-panel-aside">
+  <div id="app">
+    <drawer-panel v-ref="drawer">
       {% block main_drawer %}
         {{ core_item('Home', icon='home', href=url_for('frontend.index')) }}
 
@@ -28,44 +28,42 @@
           <button type="submit" id="hidden-logout" class="hidden-submit"></button>
         </form>
       {% endblock %}
-    </div>
+    </drawer-panel>
 
-    <div class="drawer-panel-overlay" onclick="document.querySelector('.drawer-panel-aside').classList.toggle('is-showing');"></div>
-  </div>
+    <div class="header-panel">
+      <div class="header-panel-toolbar--tall">
+        {% block toolbar_tall %}
 
-  <div class="header-panel">
-    <div class="header-panel-toolbar--tall">
-      {% block toolbar_tall %}
+          <div class="header-toolbar-top">
+            {% block toolbar_top %}
+              <div v-on="click: showDrawer" class="button-menu"></div>
 
-        <div class="header-toolbar-top">
-          {% block toolbar_top %}
-            <div class="button-menu" onclick="document.querySelector('.drawer-panel-aside').classList.toggle('is-showing');"></div>
+              <div class="flex"></div>
 
-            <div class="flex"></div>
-
-            {% block toolbar_top_right %}
-              <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
-                <core-icon icon="account-circle"></core-icon>
-              </a>
+              {% block toolbar_top_right %}
+                <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
+                  <core-icon icon="account-circle"></core-icon>
+                </a>
+              {% endblock %}
             {% endblock %}
+          </div>
+
+          <div class="header-toolbar-middle is-indented">
+            {% block toolbar_middle %}{% endblock %}
+          </div>
+
+          {% block toolbar_bottom_outer %}
+          <div class="header-toolbar-bottom is-indented">
+            {% block toolbar_bottom %}{% endblock %}
+          </div>
           {% endblock %}
-        </div>
 
-        <div class="header-toolbar-middle is-indented">
-          {% block toolbar_middle %}{% endblock %}
-        </div>
-
-        {% block toolbar_bottom_outer %}
-        <div class="header-toolbar-bottom is-indented">
-          {% block toolbar_bottom %}{% endblock %}
-        </div>
         {% endblock %}
+      </div>
 
-      {% endblock %}
-    </div>
-
-    <div class="header-panel-toolbar-main">
-      {% block content %}{% endblock %}
+      <div class="header-panel-toolbar-main">
+        {% block content %}{% endblock %}
+      </div>
     </div>
   </div>
 

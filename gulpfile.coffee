@@ -35,7 +35,7 @@ gulp.task 'css', ->
 gulp.task 'webpack', ->
 	myConfig = Object.create webpackConfig
 
-	return gulp.src 'assets/coffee/main.js'
+	gulp.src 'assets/coffee/main.js'
 		.pipe webpack myConfig
 		.pipe gulpif argv.production, uglify()
 		.pipe gulp.dest 'build/'
