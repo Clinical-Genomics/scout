@@ -49,7 +49,7 @@
 
 		{% for variant in variants %}
 
-			<div class="variants-row" horizontal layout>
+			<div class="variants-row">
 
         <!-- Chromosome -->
 				<a class="variants-row-item text-right"
@@ -80,7 +80,7 @@
 
         <!-- PolyPhen -->
         <div class="variants-row-item text-right variants-tooltip">
-          {{ variant.cadd_score|join(', ') }}
+          {{ variant.cadd_score }}
 
           <div class="variants-tooltip-tip is-right">
             <ul>

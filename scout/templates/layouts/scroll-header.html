@@ -8,17 +8,6 @@
           href="{{ url_for('static', filename='css/temp.css') }}">
   {% endblock %}
 
-{% block js_top %}
-
-  {{ super() }}
-
-  <script src="{{ url_for('static', filename='vendor/platform/platform.js') }}"></script>
-  <link rel="import" href="{{ url_for('static', filename='vendor/polymer/polymer.html') }}">
-
-  <link rel="import" href="{{ url_for('static', filename='vendor/core-icon-button/core-icon-button.html') }}">
-
-{% endblock %}
-
 {% block body %}
 
   <div class="drawer-panel">

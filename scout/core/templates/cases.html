@@ -25,14 +25,14 @@
 					{{ case.name }}
 				</a>
 
-				<div class="flex" layout horizontal center justified>
+				<div class="cases-item-bonus">
 
 					<a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"
 	  				 class="cases-item-link">
 	  				Variants
 	  			</a>
 
-					<div class="cases-item-date" position="left">
+					<div class="cases-item-date">
 					  Updated {{ case.created_at | human_date }}
 					</div>
 
