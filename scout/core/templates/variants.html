@@ -1,24 +1,24 @@
 {% extends 'layouts/scroll-header.html' %}
 
 {% set page_title = 'Variants' %}
-{% set scroll_header_keywords = 'condenses keepCondensedHeader scrollAwayTopbar' %}
 
 {% block toolbar_middle %}
-  <paper-button raised class="breadcrumb-button">
-    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">Cases</a>
-  </paper-button>
+  <a class="breadcrumb-button is-raised"
+     href="{{ url_for('core.cases', institute_id=institute_id) }}">
+    Cases
+  </a>
 	<core-icon icon="chevron-right"></core-icon>
 
-  <paper-button raised class="breadcrumb-button">
-    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
-  </paper-button>
+  <a class="breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+    Case {{ case_id }}
+  </a>
   <core-icon icon="chevron-right"></core-icon>
 
 	Variants
 {% endblock %}
 
 {% block toolbar_bottom_outer %}
-  <div class="toolbar-bottom variants-header bottom" layout horizontal>
+  <div class="variants-header">
 
     <div class="variants-header-item" title="Chromosome">Chromosome</div>
     <div class="variants-header-item flex-big" title="HGNC">HGNC</div>
@@ -57,7 +57,6 @@
                             institute_id=institute_id,
 					 									variant_id=variant.id,
                             case_id=case_id) }}">
-					<paper-ripple fit></paper-ripple>
           {{ variant.chromosome }}
 				</a>
 
@@ -67,23 +66,23 @@
 				</div>
 
         <!-- 1000 Genomes -->
-				<core-tooltip class="variants-row-item text-right" position="left">
+				<div class="variants-row-item text-right variants-tooltip">
           {{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
 
-          <div class="variants-tooltip" tip>
+          <div class="variants-tooltip-tip is-left">
             <ul>
               <li><strong>ThousandG</strong> 0.004</li>
               <li><strong>Esp6500</strong> 0.011</li>
               <li><strong>Dbsnp129</strong> 0.004</li>
             </ul>
           </div>
-        </core-tooltip>
+        </div>
 
         <!-- PolyPhen -->
-        <core-tooltip class="variants-row-item text-right" position="right">
+        <div class="variants-row-item text-right variants-tooltip">
           {{ variant.cadd_score|join(', ') }}
 
-          <div class="variants-tooltip" tip>
+          <div class="variants-tooltip-tip is-right">
             <ul>
               <li><strong>SiftWholeExome</strong> 0.04</li>
               <li><strong>PolyphenDivHuman</strong> 0.999</li>
@@ -91,7 +90,7 @@
               <li><strong>MutationTaster</strong> 0.498</li>
             </ul>
           </div>
-        </core-tooltip>
+        </div>
 
         <!-- Gene annotation -->
         <div class="variants-row-item">exonic</div>
@@ -117,8 +116,9 @@
 
 	</div>
 
-  <paper-button raised class="variants-load-more">
-    <a href="{{ request.path }}?skip={{ current_batch }}">Load more</a>
-  </paper-button>
+  <a href="{{ request.path }}?skip={{ current_batch }}"
+     class="variants-load-more is-raised">
+    Load more
+  </a>
 
 {% endblock %}

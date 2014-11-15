@@ -1,12 +1,11 @@
 $variant-base-padding: 1rem;
 
 .variant-header-item {
-	font-size: .9em;
+	@extend .core-item;
 
 	&:not(:last-child) {
-		margin-right: 2rem;
+		margin-right: 1em;
 	}
-
 }
 
 .variant-segments {
@@ -84,6 +83,10 @@ $variant-base-padding: 1rem;
 }
 
 .variant-list-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
 	padding: .5rem 1rem;
 	font-size: .9rem;
 
@@ -94,6 +97,10 @@ $variant-base-padding: 1rem;
 }
 
 .variant-row-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
 	padding: 0 $variant-base-padding;
 	font-size: .9rem;
 
@@ -101,6 +108,7 @@ $variant-base-padding: 1rem;
 }
 
 .variant-row-item-sublist {
+	display: flex;
 	overflow: auto;
 }
 
@@ -121,6 +129,10 @@ $variant-base-padding: 1rem;
 	}
 }
 
+.variant-list-links {
+	display: flex;
+}
+
 .variant-link-external {
 	padding: 1rem $variant-base-padding;
 	flex: 1;
@@ -128,6 +140,10 @@ $variant-base-padding: 1rem;
 	text-decoration: none;
 	text-align: center;
 	color: darken($primary-color, 10%);
+
+	&:hover {
+		background-color: rgba($primary-color, .1);
+	}
 
 	&:not(:last-child) {
 		border-right: 1px solid rgba(#000, .1);

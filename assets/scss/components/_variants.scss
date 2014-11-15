@@ -22,14 +22,16 @@ $variants-cell-padding: .6rem;
 	flex: 3;
 }
 
-div.variants-header {
-	font-size: .9rem;
-	flex-basis: 100%;
-	margin: 0 0 -32px 0;
+.variants-header {
+	@extend .header-toolbar-bottom;
+
+	margin: 0 7px;
+	font-size: .9em;
 }
 
 .variants-header-item {
 	@extend %variants-item;
+
 	color: #fff;
 	background-color: rgba(#000, .2);
 	border-right-color: rgba(#fff, .4);
@@ -92,13 +94,26 @@ div.variants-header {
 	}
 }
 
-core-tooltip.variants-row-item {
-	overflow: visible;	
+.variants-row-item {
+	overflow: visible;
 }
 
-.variants-tooltip {
-	line-height: 1rem;
-	font-size: 1.2em;
+.variants-tooltip-tip {
+	position: absolute;
+	padding: 8px;
+	color: white;
+	background-color: rgba(#000, .8);
+	border-radius: 3px;
+	white-space: nowrap;
+	z-index: 10;
+	visibility: hidden;
+
+	font-size: .9em;
+	line-height: 1.3em;
+
+	&:hover {
+		visibility: visible;
+	}
 
 	> ul {
 		padding: 0;
@@ -107,15 +122,41 @@ core-tooltip.variants-row-item {
 	}
 }
 
-.variants-load-more {
-	display: block;
-	margin: 1rem auto;
-	width: 150px;
-	background-color: rgba(#000, .05);
-	color: lighten($primary-color, 10%);  // ripple color
+.is-left {
+	right: 100%;
+	margin-right: .5rem;
 
-	> a {
-		color: darken($primary-color, 10%);
-		text-decoration: none;
+	top: -15px; // works for 3 rows
+}
+
+.is-right {
+	left: 100%;
+	margin-left: .5rem;
+
+	top: -15px; // works for 3 rows
+}
+
+.is-bottom {
+	top: 100%;
+	margin-top: .5rem;
+
+	left: -50px; // works for 3 rows
+}
+
+
+.variants-tooltip {
+	position: relative;
+	overflow: visible;
+
+	&:hover > .variants-tooltip-tip {
+		visibility: visible;
 	}
+}
+
+.variants-load-more {
+	@extend .button-base;
+
+	display: block;
+	margin: 1.5rem auto;
+	width: 10em;
 }

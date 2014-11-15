@@ -1,78 +1,62 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
 
 {% set page_title = 'Variant' %}
 
 {% block toolbar_top_right %}
-  <paper-item label="Sanger" icon="mail"></paper-item>
-
-  <paper-item label="Pin" icon="bookmark"></paper-item>
-
+  <div class="button-base">{{ core_item('Sanger', icon='mail') }}</div>
+  <div class="button-base">{{ core_item('Pin', icon='bookmark') }}</div>
   {{ super() }}
 {% endblock %}
 
 {% block toolbar_middle %}
-  <paper-button raised class="breadcrumb-button">
-    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
-      {{ institute_id }}
-    </a>
-  </paper-button>
+  <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
+     class="breadcrumb-button is-raised">
+    {{ institute_id }}
+  </a>
   <core-icon icon="chevron-right"></core-icon>
 
-  <paper-button raised class="breadcrumb-button">
-    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
-  </paper-button>
+  <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
+    Case {{ case_id }}
+  </a>
   <core-icon icon="chevron-right"></core-icon>
 
-  <paper-button raised class="breadcrumb-button">
-    <a href="{{ url_for('core.variants',
-                        institute_id=institute_id,
-                        case_id=case_id) }}">
-      Variants
-    </a>
-  </paper-button>
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
+    Variants
+  </a>
 {% endblock %}
 
 {% block toolbar_bottom %}
-  <core-item class="variant-header-item"
-             icon="grade"
-             label="{{ variant.common.cadd_score }}"></core-item>
+  {{ core_item(variant.common.cadd_score,
+               icon='grade',
+               class='variant-header-item') }}
 
-  <core-tooltip class="variant-header-item" position="bottom">
-    <core-item icon="room" label="Chr{{ variant.common.chrom }}: {{ variant.common.hgnc_symbol }}"></core-item>
+  <div class="variant-header-item variants-tooltip">
+    {{ core_item('Chr%s: %s' % (variant.common.chrom, variant.common.hgnc_symbol), icon='room') }}
 
-    <div class="variants-tooltip" tip>
+    <div class="variants-tooltip-tip is-bottom">
       <ul>
-        <li horizontal layout center justified>
-          <div>Position</div>
-          <div>{{ variant.common.position }}</div>
+        <li>
+          <strong>Position</strong>: {{ variant.common.position }}
         </li>
-        <li horizontal layout center justified>
-          <div>Aliases</div>
-          <div>{{ 'CPO, CPX, HCP' }}</div>
+        <li>
+          <strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}
         </li>
-        <li horizontal layout center justified>
-          <div>Full name</div>
-          <div>{{ 'Coproporphyrinogen III oxidase' }}</div>
+        <li>
+          <strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}
         </li>
-        <li horizontal layout center justified>
-          <div>Ensembl</div>
-          <div>{{ variant.common.gene_ids.ensembl_id }}</div>
+        <li>
+          <strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}
         </li>
       </ul>
     </div>
-  </core-tooltip>
+  </div>
 
-  <core-item class="variant-header-item"
-             icon="swap-vert-circle"
-             label="{{ variant.common.reference }} &rarr; {{ variant.common.alternative }}"></core-item>
+  {{ core_item('%s → %s' % (variant.common.reference, variant.common.alternative), icon='swap-vert-circle', class='variant-header-item') }}
 
-  <core-item class="variant-header-item"
-             icon="report"
-             label="{{ 'exonic' }}"></core-item>
+  {{ core_item('exonic', icon='report', class='variant-header-item') }}
 
-  <core-item class="variant-header-item"
-             icon="settings"
-             label="{{ 'nonsynonymous SNV' }}"></core-item>
+  {{ core_item('nonsynonymous SNV', icon='settings', class='variant-header-item') }}
 {% endblock %}
 
 {% block content %}
@@ -84,17 +68,17 @@
         <div class="variant-segment-title">Frequency</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>ThousandG</div>
             <div>0.01</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Esp6500</div>
             <div>0.007</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Local</div>
             <div>0.27</div>
           </div>
@@ -105,22 +89,22 @@
         <div class="variant-segment-title">Inheritance models</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Disease gene model</div>
             <div>-</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>OMIM</div>
             <div>Autosomal recessive</div>
           </div>
 
-          <div class="variant-row-item" horizontal layout center justified>
+          <div class="variant-row-item">
             <div>
               Matching
             </div>
 
-            <div class="variant-row-item-sublist" horizontal layout>
+            <div class="variant-row-item-sublist">
               {% for model in variant.case_specifics[0].inheritance_models %}
                 <div class="variant-row-item-sublist-item">{{ model }}</div>
               {% endfor %}
@@ -170,19 +154,19 @@
         <div class="variant-segment-title">Severity</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>SiftWholeExome</div>
             <div>0.63</div>
           </div>
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>PolyphenDivHuman</div>
             <div>0.049</div>
           </div>
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>PolyphenVarHuman</div>
             <div>0.01</div>
           </div>
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>MutationTaster</div>
             <div>0.531</div>
           </div>
@@ -192,23 +176,23 @@
       <div id="conservation" class="variant-segment">
         <div class="variant-segment-title">Conservation</div>
 
-        <div class="variant-list-item" horizontal layout center justified>
+        <div class="variant-list-item">
           <div>PhylopWholeExome</div>
           <div>1.586</div>
         </div>
-        <div class="variant-list-item" horizontal layout center justified>
+        <div class="variant-list-item">
           <div>LrtWholeExome</div>
           <div>0.183</div>
         </div>
-        <div class="variant-list-item" horizontal layout center justified>
+        <div class="variant-list-item">
           <div>PhastConstElementsScore</div>
           <div>555</div>
         </div>
-        <div class="variant-list-item" horizontal layout center justified>
+        <div class="variant-list-item">
           <div>GerpElement</div>
           <div>1065.5</div>
         </div>
-        <div class="variant-list-item" horizontal layout center justified>
+        <div class="variant-list-item">
           <div>GerpWholeExome</div>
           <div>2.76</div>
         </div>
@@ -220,8 +204,8 @@
         <div class="variant-segment-title">GT call</div>
 
         <div class="variant-segment-content">
-          <div class="variant-row-item" horizontal layout center justified>
-            <div class="variant-row-item-sublist" horizontal layout>
+          <div class="variant-row-item">
+            <div class="variant-row-item-sublist">
               {% for item in "14701600331 0/1 22,18 449,0,501 99".split(' ') %}
                 <div class="variant-row-item-sublist-item">{{ item }}</div>
               {% endfor %}
@@ -234,39 +218,32 @@
     <div id="gt-call" class="variant-segments-row">
       <div class="variant-segment">
         <div class="variant-segment-content">
-          <div class="variant-list-links" horizontal layout justified>
-            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397" relative>
-              <paper-ripple fit></paper-ripple>
+          <div class="variant-list-links">
+            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397">
               Ensembl
             </a>
 
-            <a class="variant-link-external" href="http://www.proteinatlas.org/search/ENSG00000105397" relative>
-              <paper-ripple fit></paper-ripple>
+            <a class="variant-link-external" href="http://www.proteinatlas.org/search/ENSG00000105397">
               HPA
             </a>
 
-            <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier=ENSG00000105397" relative>
-              <paper-ripple fit></paper-ripple>
+            <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier=ENSG00000105397">
               STRING
             </a>
 
-            <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr19:10463118-10463118&dgv=pack&knownGene=pack&omimGene=pack" relative>
-              <paper-ripple fit></paper-ripple>
+            <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr19:10463118-10463118&dgv=pack&knownGene=pack&omimGene=pack">
               UCSC
             </a>
 
-            <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term=TYK2" relative>
-              <paper-ripple fit></paper-ripple>
+            <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term=TYK2">
               Entrez
             </a>
 
-            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397" relative>
-              <paper-ripple fit></paper-ripple>
+            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397">
               Ensembl
             </a>
 
-            <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081" relative>
-              <paper-ripple fit></paper-ripple>
+            <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
               IGV
             </a>
           </div>

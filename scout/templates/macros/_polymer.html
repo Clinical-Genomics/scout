@@ -1,0 +1,16 @@
+{% macro core_item(label, icon=None, src=None, class='core-item', href=None, title=None, onclick=None) %}
+
+  <div class="{{ class }}" title="{{ title }}" {% if onclick %}onclick="{{ onclick }}"{% endif %}>
+    <core-icon icon="{{ icon }}"
+               {% if src %}src="{{ src }}"{% endif %}
+               class="core-item-icon"></core-icon>
+
+    {% if href %}
+      <a class="core-item-label" href="{{ href }}">{{ label }}</a>
+    {% else %}
+      <div class="core-item-label">{{ label }}</div>
+    {% endif %}
+
+  </div>
+
+{% endmacro%}

@@ -32,12 +32,14 @@
   {% block js_top %}{% endblock %}
 </head>
 
-<body unresolved fullbleed layout vertical>
+<body>
   {% include "macros/_ask_user_to_update_ie.html" %}
 
   {% block body %}{% endblock %}
 
   {% block js_btm %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+
     <!-- include browserify script tag -->
     {% include 'footer.html' %}
   {% endblock %}

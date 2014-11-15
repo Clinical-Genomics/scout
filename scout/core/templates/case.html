@@ -1,58 +1,51 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
 
 {% set page_title = 'Case' %}
 
 {% block toolbar_middle %}
   <div class="case-header-links" horizontal center layout>
     {% if case.assignee %}
-      <core-item class="case-header-link"
-                 icon="assignment-ind"
-                 label="{{ case.assignee.name }}">
-        <a href="{{ url_for('user.profile', user_id=case.assignee.id) }}"></a>
-      </core-item>
+      {{ core_item(case.assignee.name,
+                   icon='assignment-ind',
+                   href=url_for('user.profile', user_id=case.assignee.id)) }}
     {% endif %}
   </div>
 {% endblock %}
 
 {% block toolbar_bottom %}
-  <paper-button raised class="breadcrumb-button">
-    <a href="{{ url_for('core.cases', institute_id=institute.id) }}">
-      {{ institute.name }}
-    </a>
-  </paper-button>
+  <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
+    {{ institute.name }}
+  </a>
   <core-icon icon="chevron-right"></core-icon>
 
-  <core-item icon="lock-open" label="Case {{ case.name }}"></core-item>
+  {{ core_item('Case ' + case.name, icon='lock-open') }}
 {% endblock %}
 
 {% block content %}
 
   <div class="case-segments">
 
-    <div id="variants-button" class="case-segment-row" horizontal center-justified layout>
-      <paper-button class="case-variants-button" raised icon="link">
-        <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}">Go to all variants</a>
-      </paper-button>
+    <div id="variants-button" class="case-segment-row">
+      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}" class="case-variants-button is-raised">
+        Go to all variants
+      </a>
     </div>
 
     <div id="strong-candidates" class="case-segment-row">
       <div id="case-candidates" class="case-segment-full">
         <div class="case-segment-title">Strong candidates</div>
         <div class="case-segment-content">
-          <div class="case-candidate" horizontal layout center justified>
-            <core-item label="KAI12" icon="bookmark">
-              <a href="#"></a>
-            </core-item>
+          <div class="case-candidate">
+            {{ core_item('KAI12', icon='bookmark') }}
 
             <div class="case-candidate-user">
               Pinned by <strong>Anna Wedell</strong>
             </div>
           </div>
 
-          <div class="case-candidate" horizontal layout center justified>
-            <core-item label="POL2" icon="bookmark">
-              <a href="#"></a>
-            </core-item>
+          <div class="case-candidate">
+            {{ core_item('POL2', icon='bookmark') }}
 
             <div class="case-candidate-user">
               Pinned by <strong>Henrik Stranneheim</strong>
@@ -87,13 +80,13 @@
         <div class="case-segment-title">Included samples</div>
         <div class="case-segment-content">
           {% for sample_id, sex, phenotype, kit in samples %}
-            <div class="case-sample-{{ phenotype }}" horizontal layout center justified>
+            <div class="case-sample-{{ phenotype }}">
 
-              <core-item label="{{ sample_id }}"
-                         title="{{ sex }}"
-                         src="{{ url_for('static',
-                                   filename=("img/icon-%s.svg" % sex)) }}">
-              </core-item>
+              {{ core_item(
+                  sample_id,
+                  src=url_for('static', filename=("img/icon-%s.svg" % sex)),
+                  title=sex)
+              }}
 
               <div class="case-sample-item">{{ kit }}</div>
             </div>
