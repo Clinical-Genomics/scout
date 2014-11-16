@@ -37,7 +37,7 @@
           <div class="header-toolbar-top">
             {% block toolbar_top %}
               <div v-on="click: showDrawer" class="icon-button">
-                <core-icon data-icon="menu"></core-icon>
+                <core-icon v-with="icon: 'menu'"></core-icon>
               </div>
 
               {% block toolbar_top_left %}{% endblock %}
@@ -46,7 +46,7 @@
 
               {% block toolbar_top_right %}
                 <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
-                  <core-icon data-icon="account-circle"></core-icon>
+                  <core-icon v-with="icon: 'account-circle'"></core-icon>
                 </a>
               {% endblock %}
             {% endblock %}

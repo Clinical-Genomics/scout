@@ -7,9 +7,6 @@
 <script lang="coffee">
 	module.exports =
 
-		ready: ->
-			@icon = @$el.dataset.icon
-
 		data: ->
 			return {
 				icon: ''

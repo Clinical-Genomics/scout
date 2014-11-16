@@ -7,7 +7,7 @@
   <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
     {{ institute.name }}
   </a>
-  <core-icon data-icon="chevron-right"></core-icon>
+  <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
   <div>Case {{ case.name }}</div>
 {% endblock %}

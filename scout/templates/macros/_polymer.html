@@ -1,7 +1,7 @@
 {% macro core_item(label, icon=None, src=None, class='core-item', href=None, title=None, onclick=None) %}
 
   <div class="{{ class }}" title="{{ title }}" {% if onclick %}onclick="{{ onclick }}"{% endif %}>
-    <core-icon data-icon="{{ icon }}"
+    <core-icon v-with="icon: '{{ icon }}'"
                {% if src %}src="{{ src }}"{% endif %}
                class="core-item-icon"></core-icon>
 
