@@ -82,11 +82,8 @@
           {% for sample_id, sex, phenotype, kit in samples %}
             <div class="case-sample-{{ phenotype }}">
 
-              {{ core_item(
-                  sample_id,
-                  src=url_for('static', filename=("img/icon-%s.svg" % sex)),
-                  title=sex)
-              }}
+              {{ core_item(sample_id, icon=sex, title=sex,
+                           class="case-sample-item-title") }}
 
               <div class="case-sample-item">{{ kit }}</div>
             </div>

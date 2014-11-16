@@ -97,6 +97,16 @@
 	justify-content: space-between;
 }
 
+.case-sample-item-title {
+	@extend .core-item;
+
+	padding-left: 0;
+
+	> core-icon {
+		color: #666;
+	}
+}
+
 .case-sample-unaffected {
 	@extend %case-sample;
 }
@@ -104,12 +114,6 @@
 .case-sample-affected {
 	@extend %case-sample;
 	background-color: rgba(#f44336, .15);
-}
-
-.case-sample-item {
-	> core-icon {
-		fill: #444;
-	}
 }
 
 

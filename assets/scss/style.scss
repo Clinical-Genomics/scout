@@ -37,6 +37,19 @@ h3 {
 	flex: 1;
 }
 
+core-icon {
+	display: inline-block;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  position: relative;
+  height: 24px;
+  width: 24px;
+
+  fill: currentcolor;
+  stroke: currentcolor;
+  stroke-width: 0;
+}
+
 .header-panel {
 	height: inherit;
 

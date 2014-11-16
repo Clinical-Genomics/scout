@@ -1,7 +1,7 @@
 {% macro core_item(label, icon=None, src=None, class='core-item', href=None, title=None, onclick=None) %}
 
   <div class="{{ class }}" title="{{ title }}" {% if onclick %}onclick="{{ onclick }}"{% endif %}>
-    <core-icon icon="{{ icon }}"
+    <core-icon data-icon="{{ icon }}"
                {% if src %}src="{{ src }}"{% endif %}
                class="core-item-icon"></core-icon>
 
