@@ -7,12 +7,12 @@
      href="{{ url_for('core.cases', institute_id=institute_id) }}">
     Cases
   </a>
-	<core-icon icon="chevron-right"></core-icon>
+	<core-icon data-icon="chevron-right"></core-icon>
 
   <a class="breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
     Case {{ case_id }}
   </a>
-  <core-icon icon="chevron-right"></core-icon>
+  <core-icon data-icon="chevron-right"></core-icon>
 
 	Variants
 {% endblock %}

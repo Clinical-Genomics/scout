@@ -36,13 +36,15 @@
 
           <div class="header-toolbar-top">
             {% block toolbar_top %}
-              <div v-on="click: showDrawer" class="button-menu"></div>
+              <div v-on="click: showDrawer" class="icon-button">
+                <core-icon data-icon="menu"></core-icon>
+              </div>
 
               <div class="flex"></div>
 
               {% block toolbar_top_right %}
                 <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
-                  <core-icon icon="account-circle"></core-icon>
+                  <core-icon data-icon="account-circle"></core-icon>
                 </a>
               {% endblock %}
             {% endblock %}

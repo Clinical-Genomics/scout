@@ -17,7 +17,7 @@
   <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
     {{ institute.name }}
   </a>
-  <core-icon icon="chevron-right"></core-icon>
+  <core-icon data-icon="chevron-right"></core-icon>
 
   {{ core_item('Case ' + case.name, icon='lock-open') }}
 {% endblock %}
