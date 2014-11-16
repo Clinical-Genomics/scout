@@ -3,13 +3,7 @@
 
 {% set page_title = 'Variant' %}
 
-{% block toolbar_top_right %}
-  <div class="button-base">{{ core_item('Sanger', icon='mail') }}</div>
-  <div class="button-base">{{ core_item('Pin', icon='bookmark') }}</div>
-  {{ super() }}
-{% endblock %}
-
-{% block toolbar_middle %}
+{% block toolbar_top_left %}
   <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
      class="breadcrumb-button is-raised">
     {{ institute_id }}
@@ -24,6 +18,13 @@
   <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
     Variants
   </a>
+{% endblock %}
+
+{% block toolbar_top_right %}
+  <div class="button-base">{{ core_item('Sanger', icon='mail') }}</div>
+  <div class="button-base">{{ core_item('Pin', icon='bookmark') }}</div>
+
+  {{ super() }}
 {% endblock %}
 
 {% block toolbar_bottom %}

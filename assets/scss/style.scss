@@ -71,7 +71,7 @@ core-icon {
 .header-panel-toolbar--tall {
 	@extend .header-panel-toolbar;
 
-	flex-basis: 12rem;
+	flex-basis: 8rem;
 }
 
 .header-panel-toolbar-main {
@@ -167,13 +167,6 @@ div.toolbar-bottom {
 
 	font-size: .9em;
 	background-color: rgba(#000, .05);
-}
-
-core-toolbar {
-  a {
-  	color: #fff;
-  	text-decoration: none;
-  }
 }
 
 .button-menu {

@@ -40,6 +40,8 @@
                 <core-icon data-icon="menu"></core-icon>
               </div>
 
+              {% block toolbar_top_left %}{% endblock %}
+
               <div class="flex"></div>
 
               {% block toolbar_top_right %}
@@ -48,10 +50,6 @@
                 </a>
               {% endblock %}
             {% endblock %}
-          </div>
-
-          <div class="header-toolbar-middle is-indented">
-            {% block toolbar_middle %}{% endblock %}
           </div>
 
           {% block toolbar_bottom_outer %}

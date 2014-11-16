@@ -3,7 +3,16 @@
 
 {% set page_title = 'Case' %}
 
-{% block toolbar_middle %}
+{% block toolbar_top_left %}
+  <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
+    {{ institute.name }}
+  </a>
+  <core-icon data-icon="chevron-right"></core-icon>
+
+  <div>Case {{ case.name }}</div>
+{% endblock %}
+
+{% block toolbar_bottom %}
   <div class="case-header-links" horizontal center layout>
     {% if case.assignee %}
       {{ core_item(case.assignee.name,
@@ -11,15 +20,6 @@
                    href=url_for('user.profile', user_id=case.assignee.id)) }}
     {% endif %}
   </div>
-{% endblock %}
-
-{% block toolbar_bottom %}
-  <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
-    {{ institute.name }}
-  </a>
-  <core-icon data-icon="chevron-right"></core-icon>
-
-  {{ core_item('Case ' + case.name, icon='lock-open') }}
 {% endblock %}
 
 {% block content %}
