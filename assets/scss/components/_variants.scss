@@ -23,27 +23,32 @@ $variants-cell-padding: .6rem;
 }
 
 .variants-header {
-	@extend .header-toolbar-bottom;
-
-	margin: 0 7px;
+	display: flex;
+	background-color: $primary-color;
+	border-top: 1px solid rgba(#000, .15);
+	padding: 0;
 	font-size: .9em;
+	position: relative;
+	z-index: 9;
 }
 
 .variants-header-item {
 	@extend %variants-item;
 
 	color: #fff;
-	background-color: rgba(#000, .2);
-	border-right-color: rgba(#fff, .4);
+	border-right-color: rgba(#000, .15);
 }
 
 .variants-body {
 	background-color: #fff;
 	font-size: .9rem;
-	margin: 7px;
-	border: 1px solid rgba(#000, .15);
+	border-bottom: 1px solid rgba(#000, .15);
+	border-top: 1px solid rgba(#000, .15);
 	box-shadow: 0 1px 0 rgba(#000, .07);
 	color: rgba(#000, .6);
+
+	// clear overflow
+	margin-top: 1em;
 }
 
 .variants-row {
@@ -107,7 +112,7 @@ $variants-cell-padding: .6rem;
 	background-color: rgba(#000, .8);
 	border-radius: 3px;
 	white-space: nowrap;
-	z-index: 10;
+	z-index: 20;
 	visibility: hidden;
 
 	font-size: .9em;

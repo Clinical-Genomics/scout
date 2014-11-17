@@ -2,7 +2,7 @@
 
 {% set page_title = 'Variants' %}
 
-{% block toolbar_top_left %}
+{% block toolbar_left %}
   <a class="breadcrumb-button is-raised"
      href="{{ url_for('core.cases', institute_id=institute_id) }}">
     Cases
@@ -17,7 +17,7 @@
 	Variants
 {% endblock %}
 
-{% block toolbar_bottom_outer %}
+{% block toolbar_secondary %}
   <div class="variants-header">
 
     <div class="variants-header-item" title="Chromosome">Chromosome</div>

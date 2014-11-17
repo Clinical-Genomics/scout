@@ -3,7 +3,7 @@
 
 {% set page_title = 'Variant' %}
 
-{% block toolbar_top_left %}
+{% block toolbar_left %}
   <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
      class="breadcrumb-button is-raised">
     {{ institute_id }}
@@ -20,44 +20,46 @@
   </a>
 {% endblock %}
 
-{% block toolbar_top_right %}
+{% block toolbar_right %}
   <div class="button-base">{{ core_item('Sanger', icon='mail') }}</div>
   <div class="button-base">{{ core_item('Pin', icon='bookmark') }}</div>
 
   {{ super() }}
 {% endblock %}
 
-{% block toolbar_bottom %}
-  {{ core_item(variant.common.cadd_score,
-               icon='grade',
-               class='variant-header-item') }}
+{% block toolbar_secondary %}
+  <div class="toolbar-secondary">
+    {{ core_item(variant.common.cadd_score,
+                 icon='grade',
+                 class='variant-header-item') }}
 
-  <div class="variant-header-item variants-tooltip">
-    {{ core_item('Chr%s: %s' % (variant.common.chrom, variant.common.hgnc_symbol), icon='room') }}
+    <div class="variant-header-item variants-tooltip">
+      {{ core_item('Chr%s: %s' % (variant.common.chrom, variant.common.hgnc_symbol), icon='room') }}
 
-    <div class="variants-tooltip-tip is-bottom">
-      <ul>
-        <li>
-          <strong>Position</strong>: {{ variant.common.position }}
-        </li>
-        <li>
-          <strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}
-        </li>
-        <li>
-          <strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}
-        </li>
-        <li>
-          <strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}
-        </li>
-      </ul>
+      <div class="variants-tooltip-tip is-bottom">
+        <ul>
+          <li>
+            <strong>Position</strong>: {{ variant.common.position }}
+          </li>
+          <li>
+            <strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}
+          </li>
+          <li>
+            <strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}
+          </li>
+          <li>
+            <strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}
+          </li>
+        </ul>
+      </div>
     </div>
+
+    {{ core_item('%s → %s' % (variant.common.reference, variant.common.alternative), icon='swap-vert-circle', class='variant-header-item') }}
+
+    {{ core_item('exonic', icon='report', class='variant-header-item') }}
+
+    {{ core_item('nonsynonymous SNV', icon='settings', class='variant-header-item') }}
   </div>
-
-  {{ core_item('%s → %s' % (variant.common.reference, variant.common.alternative), icon='swap-vert-circle', class='variant-header-item') }}
-
-  {{ core_item('exonic', icon='report', class='variant-header-item') }}
-
-  {{ core_item('nonsynonymous SNV', icon='settings', class='variant-header-item') }}
 {% endblock %}
 
 {% block content %}

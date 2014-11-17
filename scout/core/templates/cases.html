@@ -2,15 +2,17 @@
 
 {% set page_title = 'Cases' %}
 
-{% block toolbar_top_left %}
+{% block toolbar_left %}
 	{{ institute.name }}
 {% endblock %}
 
-{% block toolbar_bottom %}
-	<core-icon v-with="icon: 'search'"></core-icon>
-  <form id="search-cases">
-    <input v-model="casesSearchQuery" type="search" class="cases-search-input">
-  </form>
+{% block toolbar_secondary %}
+	<div class="toolbar-secondary">
+    <core-icon v-with="icon: 'search'"></core-icon>
+    <form id="search-cases">
+      <input v-model="casesSearchQuery" type="search" class="cases-search-input">
+    </form>
+  </div>
 {% endblock %}
 
 {% block content %}
