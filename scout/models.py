@@ -106,6 +106,8 @@ class VariantCommon(db.EmbeddedDocument):
   cadd_score = db.FloatField()
   sift_predictions = db.ListField(db.StringField())
   polyphen_predictions = db.ListField(db.StringField())
+  functional_annotation = db.ListField(db.StringField())
+  region_annotation = db.ListField(db.StringField())
 
   def readable_id(self):
     return ("Chr%s:%d_%s-%s" %

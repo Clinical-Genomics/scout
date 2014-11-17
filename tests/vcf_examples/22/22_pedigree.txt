@@ -1,0 +1,3 @@
+#FamilyID	SampleID	Father	Mother	Sex	Phenotype	CMMSID	Tissue_origin	Isolation_kit	Isolation_date	Isolation_personnel	Medical_doctor	Inheritance_model	Phenotype_terms	CMMS_seqID	SciLifeID	Capture_kit	Capture_date	Capture_personnel	Clustering_date	Sequencing_kit	Clinical_db
+22	22-1-4A	0	0	2	2	12-06821	Blood	Qiagen midi	20120404	NA	ME	NA	NA	WES9	A.Wedell_12_05	Agilent_SureSelect.V4	20121120	Na	20121212	TruSeq SBS Kit v3-HS	dbCMMS.v1.0.txt
+22	22-1-3A	0	0	1	2	14-05220	Fibroblasts	Qiagen midi	20140129	iw	Naess	AR;AR_compound;AD_denovo;X;X_denovo	Na	Clinical	Unknown	Agilent_SureSelect.V5	Unknown	Unknown	Unknown	Unknown	IEM
