@@ -41,7 +41,7 @@ from ped_parser import parser as ped_parser
 from pprint import pprint as pp
 
 
-def load_mongo(vcf_file=None, ped_file=None, config_file=None):
+def load_mongo(vcf_file=None, ped_file=None, config_file=None, family_type='ped'):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
@@ -53,19 +53,12 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None):
   # print(project_root, vcf_file, ped_file, config_file)
   config_object = ConfigParser(config_file)  
   
-  # print(db.database_names())
-  
-  # pp(config_object.__dict__)
-  
   ######## Get the case and add it to the mongo db: ######## 
   
   case_collection = db.cases
   
-  case = get_case(ped_file)
-  case['last_updated'] = datetime.now()
-  case['display_name'] = case['family_id']
-  case['_id'] = generate_md5_key([case['family_id']])
-    
+  case = get_case(ped_file, family_type)
+  
   # This function updates the cases collection if the specific family exists.
   # If the family exists a new object is inserted
   case_collection.update({ '_id': case['_id']}, {"$set" : case}, upsert=True)
@@ -73,8 +66,6 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None):
   ######## Get the variants and add them to the mongo db: ######## 
   
   variant_collection = db.variants
-  
-  # variant_collection.ensure_index()
   
   start_inserting_variants = datetime.now()
   
@@ -95,11 +86,17 @@ def generate_md5_key(list_of_arguments):
   return h.hexdigest()
 
   
-def get_case(ped_file):
+def get_case(ped_file, family_type):
   """Take a case file and return the case on the specified format."""
   
-  case_parser = ped_parser.FamilyParser(ped_file)
+  case = {}
+  case_parser = ped_parser.FamilyParser(ped_file, family_type=family_type)
+  
   case = case_parser.get_json()[0]
+  
+  case['last_updated'] = datetime.now()
+  case['display_name'] = case['family_id']
+  case['_id'] = generate_md5_key([case['family_id']])
   
   return case
   
@@ -204,13 +201,13 @@ def format_variant(variant, case, config_object):
                 nargs=1,
                 type=click.Path(exists=True)
 )
-# @click.argument('outfile',
-#                 nargs=1,
-#                 type=click.File('w')
-# )
-def cli(vcf_file, ped_file, config_file):
+@click.option('-type', '--family_type',
+                default='ped',
+                nargs=1,
+)
+def cli(vcf_file, ped_file, config_file, family_type):
   """Test the vcf class."""
-  my_vcf = load_mongo(vcf_file, ped_file, config_file)
+  my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type)
   
 
 if __name__ == '__main__':
