@@ -11,6 +11,11 @@
 @import "global";
 
 // Resets
+#app {
+	height: inherit;
+	width: inherit;
+}
+
 input {
 	background-color: inherit;
 	border: none;
@@ -30,6 +35,19 @@ h3 {
 
 .flex {
 	flex: 1;
+}
+
+core-icon {
+	display: inline-block;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  position: relative;
+  height: 24px;
+  width: 24px;
+
+  fill: currentcolor;
+  stroke: currentcolor;
+  stroke-width: 0;
 }
 
 .header-panel {
@@ -53,7 +71,7 @@ h3 {
 .header-panel-toolbar--tall {
 	@extend .header-panel-toolbar;
 
-	flex-basis: 12rem;
+	flex-basis: 8rem;
 }
 
 .header-panel-toolbar-main {
@@ -126,6 +144,7 @@ div.toolbar-bottom {
 	padding: 1em;
 	transition: background-color 50ms;
 	border-radius: 100%;
+	cursor: pointer;
 
 	&:active {
 		background-color: rgba(#fff, .2);
@@ -133,11 +152,13 @@ div.toolbar-bottom {
 }
 
 .is-raised {
-	transition: box-shadow .2s;
-	box-shadow: 0 1px 3px -1px rgba(#000, .4);
+	transition: box-shadow .15s;
+	// z=1
+	box-shadow: 0 2px 5px 0 rgba(#000, .26), 0 2px 10px 0 rgba(#000, .16);
 
 	&:active {
-		box-shadow: 0 3px 3px -1px rgba(#000, .2);
+		// z=2
+		box-shadow: 0 8px 17px 0 rgba(#000, .2), 0 6px 20px 0 rgba(#000, .19);
 	}
 }
 
@@ -146,13 +167,6 @@ div.toolbar-bottom {
 
 	font-size: .9em;
 	background-color: rgba(#000, .05);
-}
-
-core-toolbar {
-  a {
-  	color: #fff;
-  	text-decoration: none;
-  }
 }
 
 .button-menu {
@@ -186,6 +200,17 @@ core-toolbar {
 
 .menu-button {
 	display: none;
+}
+
+.drawer-panel-aside {
+	> .core-item {
+		padding: .8em;
+		border-bottom: 1px solid rgba(#000, .1);
+
+		&:hover {
+			background-color: rgba($primary-color, .05);
+		}
+	}
 }
 
 core-drawer-panel[narrow] .menu-button {

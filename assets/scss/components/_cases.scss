@@ -52,6 +52,13 @@
 	margin-right: .7rem;
 }
 
+.cases-item-bonus {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
 .cases-item-date {
 	@extend %cases-item-base;
 

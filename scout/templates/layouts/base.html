@@ -24,7 +24,7 @@
 
   {% block css %}
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/styles.css') }}">
+          href="{{ url_for('static', filename='style.css') }}">
   {% endblock %}
 
   {% block css_style %}{% endblock %}
@@ -38,7 +38,9 @@
   {% block body %}{% endblock %}
 
   {% block js_btm %}
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+    <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 
     <!-- include browserify script tag -->
     {% include 'footer.html' %}

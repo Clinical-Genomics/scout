@@ -47,6 +47,8 @@ $variants-cell-padding: .6rem;
 }
 
 .variants-row {
+	display: flex;
+
 	&:nth-child(even) {
 		background-color: rgba(#000, .01);
 	}

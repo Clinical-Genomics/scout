@@ -2,17 +2,17 @@
 
 {% set page_title = 'Variants' %}
 
-{% block toolbar_middle %}
+{% block toolbar_top_left %}
   <a class="breadcrumb-button is-raised"
      href="{{ url_for('core.cases', institute_id=institute_id) }}">
     Cases
   </a>
-	<core-icon icon="chevron-right"></core-icon>
+	<core-icon v-with="icon: 'chevron-right'"></core-icon>
 
   <a class="breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
     Case {{ case_id }}
   </a>
-  <core-icon icon="chevron-right"></core-icon>
+  <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
 	Variants
 {% endblock %}
@@ -49,7 +49,7 @@
 
 		{% for variant in variants %}
 
-			<div class="variants-row" horizontal layout>
+			<div class="variants-row">
 
         <!-- Chromosome -->
 				<a class="variants-row-item text-right"
@@ -80,7 +80,7 @@
 
         <!-- PolyPhen -->
         <div class="variants-row-item text-right variants-tooltip">
-          {{ variant.cadd_score|join(', ') }}
+          {{ variant.cadd_score }}
 
           <div class="variants-tooltip-tip is-right">
             <ul>

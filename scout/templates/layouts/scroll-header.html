@@ -8,21 +8,10 @@
           href="{{ url_for('static', filename='css/temp.css') }}">
   {% endblock %}
 
-{% block js_top %}
-
-  {{ super() }}
-
-  <script src="{{ url_for('static', filename='vendor/platform/platform.js') }}"></script>
-  <link rel="import" href="{{ url_for('static', filename='vendor/polymer/polymer.html') }}">
-
-  <link rel="import" href="{{ url_for('static', filename='vendor/core-icon-button/core-icon-button.html') }}">
-
-{% endblock %}
-
 {% block body %}
 
-  <div class="drawer-panel">
-    <div class="drawer-panel-aside">
+  <div id="app">
+    <drawer-panel v-ref="drawer">
       {% block main_drawer %}
         {{ core_item('Home', icon='home', href=url_for('frontend.index')) }}
 
@@ -39,44 +28,43 @@
           <button type="submit" id="hidden-logout" class="hidden-submit"></button>
         </form>
       {% endblock %}
-    </div>
+    </drawer-panel>
 
-    <div class="drawer-panel-overlay" onclick="document.querySelector('.drawer-panel-aside').classList.toggle('is-showing');"></div>
-  </div>
+    <div class="header-panel">
+      <div class="header-panel-toolbar--tall">
+        {% block toolbar_tall %}
 
-  <div class="header-panel">
-    <div class="header-panel-toolbar--tall">
-      {% block toolbar_tall %}
+          <div class="header-toolbar-top">
+            {% block toolbar_top %}
+              <div v-on="click: showDrawer" class="icon-button">
+                <core-icon v-with="icon: 'menu'"></core-icon>
+              </div>
 
-        <div class="header-toolbar-top">
-          {% block toolbar_top %}
-            <div class="button-menu" onclick="document.querySelector('.drawer-panel-aside').classList.toggle('is-showing');"></div>
+              {% block toolbar_top_left %}{% endblock %}
 
-            <div class="flex"></div>
+              <div class="flex"></div>
 
-            {% block toolbar_top_right %}
-              <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
-                <core-icon icon="account-circle"></core-icon>
-              </a>
+              {% block toolbar_top_right %}
+                {{ current_user.name }}
+                <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
+                  <core-icon v-with="icon: 'account-circle'"></core-icon>
+                </a>
+              {% endblock %}
             {% endblock %}
+          </div>
+
+          {% block toolbar_bottom_outer %}
+          <div class="header-toolbar-bottom is-indented">
+            {% block toolbar_bottom %}{% endblock %}
+          </div>
           {% endblock %}
-        </div>
 
-        <div class="header-toolbar-middle is-indented">
-          {% block toolbar_middle %}{% endblock %}
-        </div>
-
-        {% block toolbar_bottom_outer %}
-        <div class="header-toolbar-bottom is-indented">
-          {% block toolbar_bottom %}{% endblock %}
-        </div>
         {% endblock %}
+      </div>
 
-      {% endblock %}
-    </div>
-
-    <div class="header-panel-toolbar-main">
-      {% block content %}{% endblock %}
+      <div class="header-panel-toolbar-main">
+        {% block content %}{% endblock %}
+      </div>
     </div>
   </div>
 

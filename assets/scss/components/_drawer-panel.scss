@@ -1,47 +1,44 @@
 $drawer-panel-aside-width: 15rem;
 
-.drawer-panel-overlay {
-	position: fixed;
-	height: 100%;
-	width: 100%;
-	background-color: rgba(#000, 0);
-	left: -100%;
-	top: 0;
+drawer-panel {
+  position: relative;
+}
 
-	transition: background-color 250ms, left 0 250ms;
+.drawer-panel-overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(#000, 0);
+  left: -100%;
+  top: 0;
+  z-index: 1;
+
+  transition: background-color 250ms, left 0 250ms;
 }
 
 .drawer-panel-aside {
-	height: 100%;
-	position: fixed;
-	width: 256px;
-	z-index: 1;
-	top: 0px;
+  height: 100%;
+  position: fixed;
+  width: 256px;
+  z-index: 2;
+  top: 0px;
 
-	transition: left 250ms;
+  transition: left 250ms;
 
-	// fixed but min-width (flex: 0)
+  // fixed but min-width (flex: 0)
 	width: $drawer-panel-aside-width;
 	// hide out of view on small screens
 	left: -$drawer-panel-aside-width;
 
-	// default styles
-	background-color: #fff;
-	z-index: 1;
+  background-color: #fff;
 
-	&.is-showing {
-		// toggle panel programmatically
-		left: 0;
+  &.is-showing {
+    left: 0;
 
-		+ .drawer-panel-overlay {
-			background-color: rgba(#000, .54);
-			transition: background-color 400ms;
-			left: 0;
-		}
-	}
-
-	> .core-item {
-		padding: .8em;
-		border-bottom: 1px solid rgba(#000, .1);
-	}
+    + .drawer-panel-overlay {
+      background-color: rgba(#000, .54);
+      transition: background-color 400ms;
+      left: 0;
+    }
+  }
 }
