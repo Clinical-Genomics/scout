@@ -18,6 +18,9 @@
   <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
     Variants
   </a>
+
+  <core-icon v-with="icon: 'chevron-right'"></core-icon>
+  {{ variant.common.readable_id() }}
 {% endblock %}
 
 {% block toolbar_right %}

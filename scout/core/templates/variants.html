@@ -5,7 +5,7 @@
 {% block toolbar_left %}
   <a class="breadcrumb-button is-raised"
      href="{{ url_for('core.cases', institute_id=institute_id) }}">
-    Cases
+    {{ institute_id }}
   </a>
 	<core-icon v-with="icon: 'chevron-right'"></core-icon>
 
