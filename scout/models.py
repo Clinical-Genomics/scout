@@ -96,15 +96,16 @@ class Institute(db.Document):
 
 
 class VariantCommon(db.EmbeddedDocument):
-  chrom = db.StringField()
-  position = db.IntField()
-  reference = db.StringField()
-  alternative = db.StringField()
-  rs_number = db.StringField()
-  hgnc_symbol = db.StringField()
-  gene_ids = db.DictField()
+  # Gene ids:
+  hgnc_symbols = db.ListField(db.StringField())
+  ensemble_gene_ids = db.ListField(db.StringField())
+  # Frequencies:
   thousand_genomes_frequency = db.FloatField()
+  exac_frequency = db.FloatField()
+  # Predicted deleteriousness:
   cadd_score = db.FloatField()
+  sift_predictions = db.ListField(db.StringField())
+  polyphen_predictions = db.ListField(db.StringField())
 
   def readable_id(self):
     return ("Chr%s:%d_%s-%s" %
@@ -113,9 +114,22 @@ class VariantCommon(db.EmbeddedDocument):
   def __unicode__(self):
     return "%s:%s" % (self.chrom, self.position)
 
+class GTCall(db.EmbeddedDocument):
+  allele_depths = db.ListField(db.IntField())
+  genotype_call = db.StringField()
+  read_depth = db.IntField()
+  sample = db.StringField()
+
+  def __unicode__(self):
+    return self.name
+
 
 class VariantCaseSpecific(db.EmbeddedDocument):
   rank_score = db.IntField()
+  variant_rank = db.IntField()
+  quality = db.FloatField()
+  filters = db.ListField(db.StringField())
+  samples = db.ListField(db.StringField(db.EmbeddedDocumentField(GTCall)))
   inheritance_models = db.ListField(db.StringField(choices=[
     'AR_hom', 'AR_compound', 'AR_hom_denovo', 'AD', 'AD_denovo', 'X', 'X_dn'
   ]))
@@ -123,8 +137,15 @@ class VariantCaseSpecific(db.EmbeddedDocument):
 
 class Variant(db.Document):
   md5_key = db.StringField(required=True, unique=True)
+  chromosome = db.StringField(required=True)
+  position = db.IntField(required=True)
+  reference = db.StringField(required=True)
+  alternatives = db.ListField(db.StringField(), required=True)
   common = db.EmbeddedDocumentField(VariantCommon)
   case_specifics = db.ListField(db.EmbeddedDocumentField(VariantCaseSpecific))
+  db_snp_ids = db.ListField(db.StringField())
+  display_name = db.StringField(required=True)
+  
 
   def __unicode__(self):
     return self.md5_key

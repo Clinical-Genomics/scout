@@ -1,4 +1,15 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+mongo.py
+
+This is the mongo adapter for scout, it is a communicator for quering and updating the mongodatabase.
+Implements BaseAdapter.
+
+Created by Måns Magnusson on 2014-11-17.
+Copyright (c) 2014 __MoonsoInc__. All rights reserved.
+
+"""
 from __future__ import absolute_import, unicode_literals, print_function
 
 import sys
@@ -8,6 +19,7 @@ import io
 import json
 import click
 from pymongo import MongoClient
+import pymongo
 
 
 from . import BaseAdapter
@@ -33,129 +45,83 @@ class MongoAdapter(BaseAdapter):
     
     self.config_object = ConfigParser(config_file)
     
-    cases = db.cases
+    self.case_collection = db.cases
+    self.variant_collection = db.variants
     
-    print(cases.find_one())
-    
-    sys.exit()
-    
-    self._cases = []
-    self._variants = {} # Dict like {case_id: variant_parser}
-    
-    self.get_cases(db) 
-    
-    for case in self._cases:
-      self._variants[case['id']] = case['vcf_path']
-
-  def get_cases(self, cases_path):
-    """Take a case file and return the case on the specified format."""
-    
-    ########### Loop over the case folders. Structure is described in documentation ###########
-    
-    for root, dirs, files in os.walk(cases_path):
-      if files:
-        ped_file = None
-        vcf_file = None
-        zipped_vcf_file = None
-        case = None
-        for file in files:
-          if os.path.splitext(file)[-1] == '.ped':
-            ped_file = os.path.join(root, file)
-            case_parser = ped_parser.FamilyParser(ped_file)
-            case = case_parser.get_json()[0]
-          if os.path.splitext(file)[-1] == '.vcf':
-            vcf_file = os.path.join(root, file)
-          if os.path.splitext(file)[-1] == '.gz':
-            if os.path.splitext(file)[0][-1] == '.gz':
-              zipped_vcf_file = os.path.join(root, file)
-        # If no vcf we search for zipped files
-        if not vcf_file:
-          vcf_file = zipped_vcf_file
-        # If ped and vcf are not found exit:
-        if not (ped_file and vcf_file):
-          raise SyntaxError('Wrong folder structure in vcf directories. '
-                            'Could not find ped and/or vcf files. '
-                              'See documentation.')
-        # Store the path to variants as case id:s:
-        case['id'] = case['family_id']
-        case['vcf_path'] = vcf_file
-        self._cases.append(case)
-    
-    return
+      # for development:
+      # case_id = case['_id']
+      # for variant in self.variants(case_id):
+      #   pp(variant)
+      # print(case_id)
   
   
   def cases(self):
-    return self._cases
+    for case in self.case_collection.find():
+      yield case
 
   def case(self, case_id):
-    for case in self._cases:
-      if case['id'] == case_id:
-        return case
+    
+    return self.case_collection.find_one({ '_id' : case_id })
   
   
-  def format_variant(self, variant):
+  def format_variant(self, variant, case_id):
     """Return the variant in a format specified for scout."""
     
-    def get_value(variant, category, member):
-      """Return the correct value from the variant according to rules in config parser.
-          vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
-      # If information is on the core we can access it directly through the vcf key
-      value = None
-      # In this case we read straight from the vcf line
-      if self.config_object[member]['vcf_field'] not in ['INFO', 'FORMAT', 'other', 'individual']:
-        value = variant[self.config_object[member]['vcf_field']]
-      
-      # In this case we need to check the info dictionary:
-      elif self.config_object[member]['vcf_field'] == 'INFO':
-        value = variant['info_dict'].get(self.config_object[member]['vcf_info_key'], None)
-      
-      # Check if we should return a list:
-      if value and self.config_object[member]['vcf_data_field_number'] != '1':
-        value = value.split(self.config_object[member]['vcf_data_field_separator'])
-      return value
-      
+    # Stupid solution to follow scout.models.py
+    
+    ### Core information ###
+    
     formated_variant = {}
-    formated_variant['id'] = variant['variant_id']
-    for category in self.config_object.categories:
-      for member in self.config_object.categories[category]:
-        if category != 'config_info':
-          formated_variant[self.config_object[member]['internal_record_key']] = get_value(variant, category, member)
+    formated_variant['common'] = {}
+    formated_variant['specific'] = {}
+    formated_variant['id'] = variant['_id']
+    formated_variant['chromosome'] = variant['chromosome']
+    formated_variant['position'] = variant['position']
+    formated_variant['reference'] = variant['reference']
+    formated_variant['alternatives'] = variant['alternatives']
+    formated_variant['display_name'] = variant['display_name']
+    
+    ### Specific information ###
+    
+    # Gene ids:
+    formated_variant['common']['hgnc_symbols'] = variant['common'].get('hgnc_symbols', [])
+    formated_variant['common']['ensemble_gene_ids'] = variant['common'].get('ensemble_gene_ids', [])
+    # Frequencies:
+    formated_variant['common']['thousand_genomes_frequency'] = variant['common'].get('thousand_genomes_frequency', None)
+    formated_variant['common']['exac_frequency'] = variant['common'].get('exac_frequency', None)
+    # Predicted deleteriousness:
+    formated_variant['common']['cadd_score'] = variant['common'].get('cadd_score', None)
+    formated_variant['common']['sift_predictions'] = variant['common'].get('sift_predictions', [])
+    formated_variant['common']['polyphen_predictions'] = variant['common'].get('polyphen_predictions', [])
+    
+    ### Specific information ###
+    
+    formated_variant['specific']['rank_score'] = variant['specific'][case_id].get('rank_score', 0)
+    formated_variant['specific']['filters'] = variant['specific'][case_id].get('filters', [])
+    formated_variant['specific']['genetic_models'] = variant['specific'][case_id].get('genetic_models', [])
+    formated_variant['specific']['quality'] = variant['specific'][case_id].get('quality', 0.0)
+    formated_variant['specific']['variant_rank'] = variant['specific'][case_id].get('variant_rank', 0)
+    formated_variant['specific']['samples'] = variant['specific'][case_id].get('samples', [])
     
     return formated_variant
   
   
-  def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100, skip = 0):
+  def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
   
     # if variant_ids:
     #   return self._many_variants(variant_ids)
 
     variants = []
     nr_of_variants = skip + nr_of_variants
-    i = 0
-    for variant in vcf_parser.VCFParser(infile = self._variants[case]):
-      if i > skip:
-        if i < nr_of_variants:
-          yield self.format_variant(variant)
-        else:
-          return
-      i += 1
-    return
+    case_specific = ('specific.%s' % case_id)
+    for variant in self.variant_collection.find({case_specific: {'$exists' : True}}).sort(case_specific + '.variant_rank', pymongo.ASCENDING)[skip:nr_of_variants]:
+      # yield variant
+      yield self.format_variant(variant, case_id)
 
-  def _many_variants(self, variant_ids):
-    variants = []
-
-    for variant in self._variants:
-      if variant['id'] in variant_ids:
-        variants.append(variant)
-
-    return variants
 
   def variant(self, variant_id):
-    for variant in self._variants:
-      if variant['variant_id'] == variant_id:
-        return self.format_variant(variant)
-
-    return None
+    
+    return self.format_variant(self.variant_collection.find_one({ '_id' : variant_id}))
 
   def create_variant(self, variant):
     # Find out last ID
@@ -193,7 +159,27 @@ class MongoAdapter(BaseAdapter):
 # )
 def cli(config_file):
     """Test the vcf class."""
+    import hashlib
+    
+    def generate_md5_key(list_of_arguments):
+      """Generate an md5-key from a list of arguments"""
+      h = hashlib.md5()
+      h.update(' '.join(list_of_arguments))
+      return h.hexdigest()
+    
     my_mongo = MongoAdapter(config_file = config_file)
+    
+    ### FOR DEVELOPMENT ###
+    small_family_id = generate_md5_key(['3'])
+    big_family_id = generate_md5_key(['2'])
+    for case in my_mongo.cases():
+      if case['_id'] == big_family_id:
+        pp(case)
+        variant_count = 0
+        for variant in my_mongo.variants(big_family_id, nr_of_variants = 20, skip = 20):
+          pp(variant)
+          variant_count += 1
+          print(variant_count)
     # my_vcf.init_app('app', vcf_dir, config_file)
     
     # for case in my_vcf.cases():
