@@ -24,8 +24,13 @@
 {% endblock %}
 
 {% block toolbar_right %}
-  <div class="button-base">{{ core_item('Sanger', icon='mail') }}</div>
-  <div class="button-base">{{ core_item('Pin', icon='bookmark') }}</div>
+  <div class="icon-button" title="Order Sanger">
+    <core-icon v-with="icon: 'mail'"></core-icon>
+  </div>
+
+  <div class="icon-button" title="Pin variant">
+    <core-icon v-with="icon: 'bookmark'"></core-icon>
+  </div>
 
   {{ super() }}
 {% endblock %}
