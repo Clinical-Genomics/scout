@@ -91,20 +91,32 @@
 	border-bottom: 1px solid rgba(#000, .1);
 	padding: .2rem 1rem;
 	position: relative;
+	height: 2.8rem;
 
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
 
-.case-sample-item-title {
-	@extend .core-item;
+%case-sample-icon {
+	width: 15px;
+	height: 15px;
 
-	padding-left: 0;
+	border: 2px solid #000;
+}
 
-	> core-icon {
-		color: #666;
-	}
+.case-sample-icon-male {
+	@extend %case-sample-icon;
+}
+
+.case-sample-icon-female {
+	@extend %case-sample-icon;
+
+	border-radius: 100%;
+}
+
+.is-affected {
+	background-color: #000;
 }
 
 .case-sample-unaffected {
