@@ -106,6 +106,10 @@ class VariantCommon(db.EmbeddedDocument):
   thousand_genomes_frequency = db.FloatField()
   cadd_score = db.FloatField()
 
+  def readable_id(self):
+    return ("Chr%s:%d_%s-%s" %
+            (self.chrom, self.position, self.reference, self.alternative))
+
   def __unicode__(self):
     return "%s:%s" % (self.chrom, self.position)
 

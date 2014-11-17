@@ -2,10 +2,10 @@
 
 {% set page_title = 'Variants' %}
 
-{% block toolbar_top_left %}
+{% block toolbar_left %}
   <a class="breadcrumb-button is-raised"
      href="{{ url_for('core.cases', institute_id=institute_id) }}">
-    Cases
+    {{ institute_id }}
   </a>
 	<core-icon v-with="icon: 'chevron-right'"></core-icon>
 
@@ -17,10 +17,12 @@
 	Variants
 {% endblock %}
 
-{% block toolbar_bottom_outer %}
+{% block toolbar_secondary %}
   <div class="variants-header">
 
-    <div class="variants-header-item" title="Chromosome">Chromosome</div>
+    <div class="variants-header-item" title="Rank position">Rank</div>
+    <div class="variants-header-item" title="Rank score">Score</div>
+    <div class="variants-header-item" title="Chromosome">Chr.</div>
     <div class="variants-header-item flex-big" title="HGNC">HGNC</div>
     <div class="variants-header-item" title="1000 Genomes">1000 Genomes</div>
     <div class="variants-header-item" title="CADD score">CADD score</div>
@@ -51,14 +53,24 @@
 
 			<div class="variants-row">
 
-        <!-- Chromosome -->
+        <!-- Rank position -->
 				<a class="variants-row-item text-right"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
 					 									variant_id=variant.id,
                             case_id=case_id) }}">
-          {{ variant.chromosome }}
+          {{ loop.index }}
 				</a>
+
+        <!-- Rank score -->
+        <div class="variants-row-item text-right">
+          {{ variant.rank_score or 24 }}
+        </div>
+
+        <!-- Chromosome -->
+        <div class="variants-row-item">
+          {{ variant.chromosome }}
+        </div>
 
         <!-- HGNC -->
 				<div class="variants-row-item flex-big">

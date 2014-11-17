@@ -50,7 +50,7 @@ core-icon {
   stroke-width: 0;
 }
 
-.header-panel {
+.toolbar-wrapper {
 	height: inherit;
 
 	display: flex;
@@ -60,57 +60,38 @@ core-icon {
 	background-color: $body-fg;
 }
 
-.header-panel-toolbar {
-	flex-basis: 4rem;
-
-	// default styles
-	background: $primary-color;
-  color: #fff;
-}
-
-.header-panel-toolbar--tall {
-	@extend .header-panel-toolbar;
-
-	flex-basis: 8rem;
-}
-
-.header-panel-toolbar-main {
-	flex: 1;
-}
-
-%header-toolbar-row {
+.toolbar {
 	display: flex;
 	align-items: center;
 
 	height: 4rem;
 
-	&.is-indented {
-		margin-left: 60px;
-	}
+	// default styles
+	background: $primary-color;
+  color: #fff;
+  flex-basis: 4rem;
+	font-size: 1.3em;
 }
 
-.header-toolbar-top {
-	@extend %header-toolbar-row;
+.toolbar-right {
+	display: flex;
+	align-items: center;
+	font-size: .7em;
 }
 
-.header-toolbar-middle {
-	@extend %header-toolbar-row;
+.toolbar-secondary {
+	@extend .toolbar;
+
+	font-size: 1em;
+	padding-left: .8em;
 }
 
-.header-toolbar-bottom {
-	@extend %header-toolbar-row;
+.toolbar-content {
+	flex: 1;
+	overflow: auto;
 }
 
 // Specific styles
-.toolbar-top {
-	width: 100%;
-}
-
-div.toolbar-bottom {
-	flex: 1;
-	margin-right: 60px;
-}
-
 .button-base {
 	// reset
 	display: inline-block;
@@ -120,7 +101,7 @@ div.toolbar-bottom {
 	cursor: pointer;
 	user-select: none;
 
-	padding: .8em 1em;
+	padding: .8em .5em;
 
 	// styles
 	background-color: $primary-color;
@@ -141,7 +122,8 @@ div.toolbar-bottom {
 }
 
 .icon-button {
-	padding: 1em;
+	padding: .5em;
+	margin: .5em;
 	transition: background-color 50ms;
 	border-radius: 100%;
 	cursor: pointer;
@@ -165,6 +147,8 @@ div.toolbar-bottom {
 .breadcrumb-button {
 	@extend .button-base;
 
+	padding-top: .5em;
+	padding-bottom: .5em;
 	font-size: .9em;
 	background-color: rgba(#000, .05);
 }
@@ -180,6 +164,9 @@ div.toolbar-bottom {
 	display: flex;
 	align-items: center;
 	padding: .5em;
+
+	text-decoration: none;
+	cursor: pointer;
 }
 
 .core-item-icon {
@@ -189,8 +176,6 @@ div.toolbar-bottom {
 .core-item-label {
 	// reset
 	text-decoration: none;
-
-	margin-right: 1em;
 }
 
 .hidden-submit {
@@ -198,23 +183,16 @@ div.toolbar-bottom {
 	display: none;
 }
 
-.menu-button {
-	display: none;
-}
-
 .drawer-panel-aside {
 	> .core-item {
 		padding: .8em;
 		border-bottom: 1px solid rgba(#000, .1);
+		color: #444;
 
 		&:hover {
 			background-color: rgba($primary-color, .05);
 		}
 	}
-}
-
-core-drawer-panel[narrow] .menu-button {
-	display: inline-block;
 }
 
 // Components

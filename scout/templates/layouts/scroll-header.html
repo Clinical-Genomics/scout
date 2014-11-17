@@ -30,39 +30,35 @@
       {% endblock %}
     </drawer-panel>
 
-    <div class="header-panel">
-      <div class="header-panel-toolbar--tall">
-        {% block toolbar_tall %}
+    <div class="toolbar-wrapper">
+      <div class="toolbar">
+        {% block toolbar %}
 
-          <div class="header-toolbar-top">
-            {% block toolbar_top %}
-              <div v-on="click: showDrawer" class="icon-button">
-                <core-icon v-with="icon: 'menu'"></core-icon>
-              </div>
+          <div v-on="click: showDrawer" class="icon-button">
+            <core-icon v-with="icon: 'menu'"></core-icon>
+          </div>
 
-              {% block toolbar_top_left %}{% endblock %}
+          {% block toolbar_left %}{% endblock %}
 
-              <div class="flex"></div>
+          <div class="flex"></div>
 
-              {% block toolbar_top_right %}
-                {{ current_user.name }}
-                <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
-                  <core-icon v-with="icon: 'account-circle'"></core-icon>
-                </a>
-              {% endblock %}
+          <div class="toolbar-right">
+            {% block toolbar_right %}
+              {{ current_user.name }}
+              <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
+                <core-icon v-with="icon: 'account-circle'"></core-icon>
+              </a>
             {% endblock %}
           </div>
-
-          {% block toolbar_bottom_outer %}
-          <div class="header-toolbar-bottom is-indented">
-            {% block toolbar_bottom %}{% endblock %}
-          </div>
-          {% endblock %}
 
         {% endblock %}
       </div>
 
-      <div class="header-panel-toolbar-main">
+      {% block toolbar_secondary %}
+        {# Still fixed but below the toolbar #}
+      {% endblock %}
+
+      <div class="toolbar-content">
         {% block content %}{% endblock %}
       </div>
     </div>
