@@ -74,6 +74,8 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None):
   
   variant_collection = db.variants
   
+  # variant_collection.ensure_index()
+  
   start_inserting_variants = datetime.now()
   
   variant_parser = vcf_parser.VCFParser(infile = vcf_file)
@@ -209,44 +211,7 @@ def format_variant(variant, case, config_object):
 def cli(vcf_file, ped_file, config_file):
   """Test the vcf class."""
   my_vcf = load_mongo(vcf_file, ped_file, config_file)
-  # my_vcf.init_app('app', vcf_dir, config_file)
   
-  # for case in my_vcf.cases():
-  #   pp(case)
-  # print('')
-  
-  # for case in my_vcf._cases:
-  #   for variant in my_vcf.variants(case['id']):
-  #     pp(variant)
-  #   print('')
-  # for root, dirs, files in os.walk(cases_path):
-  #   if files:
-  #     ped_file = None
-  #     vcf_file = None
-  #     zipped_vcf_file = None
-  #     case = None
-  #     for file in files:
-  #       if os.path.splitext(file)[-1] == '.ped':
-  #         ped_file = os.path.join(root, file)
-  #         case_parser = ped_parser.FamilyParser(ped_file)
-  #         case = case_parser.get_json()[0]
-  #       if os.path.splitext(file)[-1] == '.vcf':
-  #         vcf_file = os.path.join(root, file)
-  #       if os.path.splitext(file)[-1] == '.gz':
-  #         if os.path.splitext(file)[0][-1] == '.gz':
-  #           zipped_vcf_file = os.path.join(root, file)
-  #     # If no vcf we search for zipped files
-  #     if not vcf_file:
-  #       vcf_file = zipped_vcf_file
-  #     # If ped and vcf are not found exit:
-  #     if not (ped_file and vcf_file):
-  #       raise SyntaxError('Wrong folder structure in vcf directories. '
-  #                         'Could not find ped and/or vcf files. '
-  #                           'See documentation.')
-  #     # Store the path to variants as case id:s:
-  #     case['id'] = case['family_id']
-  #     case['vcf_path'] = vcf_file
-    
 
 if __name__ == '__main__':
     cli()
