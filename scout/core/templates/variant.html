@@ -20,7 +20,7 @@
   </a>
 
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
-  {{ variant.common.readable_id() }}
+  {{ variant.display_name }}
 {% endblock %}
 
 {% block toolbar_right %}
@@ -42,12 +42,15 @@
                  class='variant-header-item') }}
 
     <div class="variant-header-item variants-tooltip">
-      {{ core_item('Chr%s: %s' % (variant.common.chrom, variant.common.hgnc_symbol), icon='room') }}
+      {{ core_item(
+        'Chr%s: %s' % (variant.chromosome, variant.common.hgnc_symbols),
+        icon='room')
+      }}
 
       <div class="variants-tooltip-tip is-bottom">
         <ul>
           <li>
-            <strong>Position</strong>: {{ variant.common.position }}
+            <strong>Position</strong>: {{ variant.position }}
           </li>
           <li>
             <strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}
@@ -56,13 +59,14 @@
             <strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}
           </li>
           <li>
-            <strong>Ensembl</strong>: {{ variant.common.gene_ids.ensembl_id }}
+            <strong>Ensembl</strong>:
+            {{ variant.common.ensemble_gene_ids|join(',') }}
           </li>
         </ul>
       </div>
     </div>
 
-    {{ core_item('%s → %s' % (variant.common.reference, variant.common.alternative), icon='swap-vert-circle', class='variant-header-item') }}
+    {{ core_item('%s → %s' % (variant.reference, variant.alternatives), icon='swap-vert-circle', class='variant-header-item') }}
 
     {{ core_item('exonic', icon='report', class='variant-header-item') }}
 

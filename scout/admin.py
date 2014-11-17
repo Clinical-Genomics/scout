@@ -27,8 +27,5 @@ class UserView(ModelView):
   form_ajax_refs = {
     'institutes': {
       'fields': ('name',)
-    },
-    'roles': {
-      'fields': ('name',)
     }
   }
