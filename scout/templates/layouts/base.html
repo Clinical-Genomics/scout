@@ -38,6 +38,8 @@
   {% block body %}{% endblock %}
 
   {% block js_btm %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
     <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 
     <!-- include browserify script tag -->

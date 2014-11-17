@@ -45,6 +45,7 @@
               <div class="flex"></div>
 
               {% block toolbar_top_right %}
+                {{ current_user.name }}
                 <a class="icon-button" href="{{ url_for('user.profile', user_id=current_user.id) }}">
                   <core-icon v-with="icon: 'account-circle'"></core-icon>
                 </a>
