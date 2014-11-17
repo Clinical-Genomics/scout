@@ -1,4 +1,15 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+mongo.py
+
+This is the mongo adapter for scout, it is a communicator for quering and updating the mongodatabase.
+Implements BaseAdapter.
+
+Created by Måns Magnusson on 2014-11-17.
+Copyright (c) 2014 __MoonsoInc__. All rights reserved.
+
+"""
 from __future__ import absolute_import, unicode_literals, print_function
 
 import sys
@@ -33,129 +44,56 @@ class MongoAdapter(BaseAdapter):
     
     self.config_object = ConfigParser(config_file)
     
-    cases = db.cases
+    self.case_collection = db.cases
+    self.variant_collection = db.variants
     
-    print(cases.find_one())
-    
-    sys.exit()
-    
-    self._cases = []
-    self._variants = {} # Dict like {case_id: variant_parser}
-    
-    self.get_cases(db) 
-    
-    for case in self._cases:
-      self._variants[case['id']] = case['vcf_path']
-
-  def get_cases(self, cases_path):
-    """Take a case file and return the case on the specified format."""
-    
-    ########### Loop over the case folders. Structure is described in documentation ###########
-    
-    for root, dirs, files in os.walk(cases_path):
-      if files:
-        ped_file = None
-        vcf_file = None
-        zipped_vcf_file = None
-        case = None
-        for file in files:
-          if os.path.splitext(file)[-1] == '.ped':
-            ped_file = os.path.join(root, file)
-            case_parser = ped_parser.FamilyParser(ped_file)
-            case = case_parser.get_json()[0]
-          if os.path.splitext(file)[-1] == '.vcf':
-            vcf_file = os.path.join(root, file)
-          if os.path.splitext(file)[-1] == '.gz':
-            if os.path.splitext(file)[0][-1] == '.gz':
-              zipped_vcf_file = os.path.join(root, file)
-        # If no vcf we search for zipped files
-        if not vcf_file:
-          vcf_file = zipped_vcf_file
-        # If ped and vcf are not found exit:
-        if not (ped_file and vcf_file):
-          raise SyntaxError('Wrong folder structure in vcf directories. '
-                            'Could not find ped and/or vcf files. '
-                              'See documentation.')
-        # Store the path to variants as case id:s:
-        case['id'] = case['family_id']
-        case['vcf_path'] = vcf_file
-        self._cases.append(case)
-    
-    return
+    for case in self.cases():
+      pp(case)
+      # for development:
+      # case_id = case['_id']
+      # for variant in self.variants(case_id):
+      #   pp(variant)
+      # print(case_id)
   
   
   def cases(self):
-    return self._cases
+    for case in self.case_collection.find():
+      yield case
 
   def case(self, case_id):
-    for case in self._cases:
-      if case['id'] == case_id:
-        return case
+    
+    return self.case_collection.find_one({ '_id' : case_id })
   
   
   def format_variant(self, variant):
     """Return the variant in a format specified for scout."""
     
-    def get_value(variant, category, member):
-      """Return the correct value from the variant according to rules in config parser.
-          vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
-      # If information is on the core we can access it directly through the vcf key
-      value = None
-      # In this case we read straight from the vcf line
-      if self.config_object[member]['vcf_field'] not in ['INFO', 'FORMAT', 'other', 'individual']:
-        value = variant[self.config_object[member]['vcf_field']]
-      
-      # In this case we need to check the info dictionary:
-      elif self.config_object[member]['vcf_field'] == 'INFO':
-        value = variant['info_dict'].get(self.config_object[member]['vcf_info_key'], None)
-      
-      # Check if we should return a list:
-      if value and self.config_object[member]['vcf_data_field_number'] != '1':
-        value = value.split(self.config_object[member]['vcf_data_field_separator'])
-      return value
-      
-    formated_variant = {}
-    formated_variant['id'] = variant['variant_id']
-    for category in self.config_object.categories:
-      for member in self.config_object.categories[category]:
-        if category != 'config_info':
-          formated_variant[self.config_object[member]['internal_record_key']] = get_value(variant, category, member)
+    formated_variant = variant
+    # formated_variant['id'] = variant['variant_id']
+    # for category in self.config_object.categories:
+    #   for member in self.config_object.categories[category]:
+    #     if category != 'config_info':
+    #       formated_variant[self.config_object[member]['internal_record_key']] = get_value(variant, category, member)
     
     return formated_variant
   
   
-  def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100, skip = 0):
+  def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
   
     # if variant_ids:
     #   return self._many_variants(variant_ids)
 
     variants = []
     nr_of_variants = skip + nr_of_variants
-    i = 0
-    for variant in vcf_parser.VCFParser(infile = self._variants[case]):
-      if i > skip:
-        if i < nr_of_variants:
-          yield self.format_variant(variant)
-        else:
-          return
-      i += 1
-    return
+    print('Searching')
+    for variant in self.variant_collection.find()[skip:nr_of_variants]:
+      yield variant
+      # yield self.format_variant(variant)
 
-  def _many_variants(self, variant_ids):
-    variants = []
-
-    for variant in self._variants:
-      if variant['id'] in variant_ids:
-        variants.append(variant)
-
-    return variants
 
   def variant(self, variant_id):
-    for variant in self._variants:
-      if variant['variant_id'] == variant_id:
-        return self.format_variant(variant)
-
-    return None
+    
+    return self.format_variant(self.variant_collection.find_one({ '_id' : variant_id}))
 
   def create_variant(self, variant):
     # Find out last ID

@@ -156,20 +156,20 @@ def format_variant(variant, case, config_object):
     return value
   
   # We insert the family with the md5-key as id, same key we use in cases
-  family_id = case['_id']
+  variant_id = generate_md5_key([variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']])
   # These are the individuals included in the family
   case_individuals = [individual['individual_id'] for individual in case['individuals']]
   
   # We use common to store annotations and specific to store
   formated_variant = {'common':{}, 'specific':{}}
   
-  formated_variant['specific']['_id'] = family_id
-  formated_variant['specific']['display_name'] = case['family_id']
+  # Store the case specific variant information in specific:
   formated_variant['specific']['samples'] = []
   
-  # 
+  # Add the human readable display name to the variant
   formated_variant['display_name'] = variant['variant_id']
-  formated_variant['_id'] = generate_md5_key([variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']])
+  
+  formated_variant['_id'] = variant_id
   
   
   # Add the genotype information for each individual 
@@ -188,56 +188,6 @@ def format_variant(variant, case, config_object):
     
   return formated_variant
   
-  
-def variants(self, case, query=None, variant_ids=None, nr_of_variants = 100, skip = 0):
-
-  # if variant_ids:
-  #   return self._many_variants(variant_ids)
-
-  variants = []
-  nr_of_variants = skip + nr_of_variants
-  i = 0
-  for variant in vcf_parser.VCFParser(infile = self._variants[case]):
-    if i > skip:
-      if i < nr_of_variants:
-        yield self.format_variant(variant)
-      else:
-        return
-    i += 1
-  return
-
-# def _many_variants(self, variant_ids):
-#   variants = []
-#
-#   for variant in self._variants:
-#     if variant['id'] in variant_ids:
-#       variants.append(variant)
-#
-#   return variants
-
-# def variant(self, variant_id):
-#   for variant in self._variants:
-#     if variant['variant_id'] == variant_id:
-#       return self.format_variant(variant)
-#
-#   return None
-
-# def create_variant(self, variant):
-#   # Find out last ID
-#   try:
-#     last_id = self._variants[-1]['id']
-#   except IndexError:
-#     last_id = 0
-#
-#   next_id = last_id + 1
-#
-#   # Assign id to the new variant
-#   variant['id'] = next_id
-#
-#   # Add new variant to the list
-#   self._variants.append(variant)
-#
-#   return variant
 
 @click.command()
 @click.argument('vcf_file',
