@@ -88,6 +88,8 @@ class MongoAdapter(BaseAdapter):
     formated_variant['common']['cadd_score'] = variant['common'].get('cadd_score', None)
     formated_variant['common']['sift_predictions'] = variant['common'].get('sift_predictions', [])
     formated_variant['common']['polyphen_predictions'] = variant['common'].get('polyphen_predictions', [])
+    formated_variant['common']['functional_annotation'] = variant['common'].get('functional_annotation', [])
+    formated_variant['common']['region_annotation'] = variant['common'].get('region_annotation', [])
     
     ### Specific information ###
     

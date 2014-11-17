@@ -74,6 +74,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None, family_type='ped'
   
   for variant in variant_parser:
     nr_of_variants += 1
+    # pp(variant)
     load_variant(variant, case, config_object, variant_collection, nr_of_variants)
   
   print('%s variants inserted!' % nr_of_variants)
