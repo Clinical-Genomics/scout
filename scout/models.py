@@ -129,7 +129,7 @@ class VariantCaseSpecific(db.EmbeddedDocument):
   variant_rank = db.IntField()
   quality = db.FloatField()
   filters = db.ListField(db.StringField())
-  samples = db.ListField(db.StringField(db.EmbeddedDocumentField(GTCall)))
+  samples = db.ListField(db.EmbeddedDocumentField(GTCall))
   inheritance_models = db.ListField(db.StringField(choices=[
     'AR_hom', 'AR_compound', 'AR_hom_denovo', 'AD', 'AD_denovo', 'X', 'X_dn'
   ]))

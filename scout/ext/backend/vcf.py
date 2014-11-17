@@ -16,6 +16,7 @@ from pprint import pprint as pp
 
 class VcfAdapter(BaseAdapter):
   """docstring for API"""
+  
   def init_app(self, app, vcf_directory='tests/vcf_examples', config_file='configs/config_test.ini'):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])

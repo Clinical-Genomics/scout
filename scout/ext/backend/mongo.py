@@ -33,27 +33,22 @@ from pprint import pprint as pp
 class MongoAdapter(BaseAdapter):
   """Adapter for cummunication between the scout server and a mongo database."""
   
-  # def init_app(self, app, vcf_directory=None, config_file=None):
-  def __init__(self,  mongo_db=None, config_file=None):
-    # get root path of the Flask app
-    # project_root = '/'.join(app.root_path.split('/')[0:-1])
+  def init_app(self, app):
+    config = getattr(app, 'config', {})
     
-    client = MongoClient('localhost', 27017)
-    db = client.variantDatabase
-    # combine path to the local development fixtures
-    project_root = '/vagrant/scout'
-    
-    self.config_object = ConfigParser(config_file)
-    
-    self.case_collection = db.cases
-    self.variant_collection = db.variants
-    
-      # for development:
-      # case_id = case['_id']
-      # for variant in self.variants(case_id):
-      #   pp(variant)
-      # print(case_id)
+    self.client = MongoClient(config.get('MONGODB_HOST', 'localhost'), config.get('MONGODB_PORT', 27017))
+    self.db = self.client[config.get('MONGODB_DB', 'variantDatabase')]
+    self.case_collection = self.db.cases
+    self.variant_collection = self.db.variants
   
+  def __init__(self, app=None):
+    
+    if app:
+      self.init_app(app)
+    
+    # combine path to the local development fixtures
+    # self.config_object = ConfigParser(config_file)
+    
   
   def cases(self):
     for case in self.case_collection.find():
@@ -149,15 +144,15 @@ class MongoAdapter(BaseAdapter):
 #                 nargs=1,
 #                 type=click.Path(exists=True)
 # )
-@click.argument('config_file',
-                nargs=1,
-                type=click.Path(exists=True)
-)
+# @click.argument('config_file',
+#                 nargs=1,
+#                 type=click.Path(exists=True)
+# )
 # @click.argument('outfile',
 #                 nargs=1,
 #                 type=click.File('w')
 # )
-def cli(config_file):
+def cli():
     """Test the vcf class."""
     import hashlib
     
@@ -167,19 +162,17 @@ def cli(config_file):
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
     
-    my_mongo = MongoAdapter(config_file = config_file)
+    my_mongo = MongoAdapter(app='hej')
     
     ### FOR DEVELOPMENT ###
     small_family_id = generate_md5_key(['3'])
     big_family_id = generate_md5_key(['2'])
     for case in my_mongo.cases():
-      if case['_id'] == big_family_id:
-        pp(case)
-        variant_count = 0
-        for variant in my_mongo.variants(big_family_id, nr_of_variants = 20, skip = 20):
-          pp(variant)
-          variant_count += 1
-          print(variant_count)
+      variant_count = 0
+      for variant in my_mongo.variants(case['_id'], nr_of_variants = 20):
+        pp(variant)
+        variant_count += 1
+        print(variant_count)
     # my_vcf.init_app('app', vcf_dir, config_file)
     
     # for case in my_vcf.cases():
