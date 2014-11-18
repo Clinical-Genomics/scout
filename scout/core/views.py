@@ -74,6 +74,17 @@ def assign_self(institute_id, case_id):
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
+@core.route('/<institute_id>/<case_id>/unassign', methods=['POST'])
+def remove_assignee(institute_id, case_id):
+  case = Case.objects.get_or_404(display_name=case_id)
+
+  # unassign user and persist changes
+  case.assignee = None
+  case.save()
+
+  return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
+
+
 @core.route('/<institute_id>/<case_id>/variants')
 @templated('variants.html')
 @login_required
