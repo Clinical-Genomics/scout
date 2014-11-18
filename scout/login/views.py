@@ -38,7 +38,10 @@ login_manager.refresh_view = 'login.reauth'
 @login_manager.user_loader
 def load_user(user_id):
   """Returns the currently active user as an object."""
-  return User.objects.get(id=ObjectId(user_id))
+  try:
+    return User.objects.get(id=ObjectId(user_id))
+  except DoesNotExist:
+    return None
 
 
 @login.route('/login')

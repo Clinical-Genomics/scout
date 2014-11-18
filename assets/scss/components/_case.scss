@@ -96,6 +96,33 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+
+	overflow: auto;
+}
+
+.case-sample-item {
+	flex: 2;
+
+	&:not(:last-child) {
+		margin-right: 1em;
+	}
+
+	// dotdotdot
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.case-sample-item--big {
+	@extend .case-sample-item;
+
+	flex: 4;
+}
+
+.case-sample-item--small {
+	@extend .case-sample-item;
+
+	flex: 1;
 }
 
 %case-sample-icon {

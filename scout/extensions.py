@@ -26,8 +26,8 @@ db = MongoEngine()
 # +--------------------------------------------------------------------+
 # | Storage-Adapter
 # +--------------------------------------------------------------------+
-from .ext.backend import VcfAdapter
-store = VcfAdapter()
+from .ext.backend import MongoAdapter
+store = MongoAdapter()
 
 # +--------------------------------------------------------------------+
 # | Flask-Login

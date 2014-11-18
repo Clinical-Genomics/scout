@@ -5,11 +5,11 @@
 
 {% block toolbar_left %}
   <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
-    {{ institute.name }}
+    {{ institute.display_name }}
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
-  <div>Case {{ case.name }}</div>
+  <div>Case {{ case.display_name }}</div>
 {% endblock %}
 
 {% block toolbar_secondary %}
@@ -25,7 +25,7 @@
   <div class="case-segments">
 
     <div id="variants-button" class="case-segment-row">
-      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}" class="case-variants-button is-raised">
+      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name) }}" class="case-variants-button is-raised">
         Go to all variants
       </a>
     </div>
@@ -75,15 +75,23 @@
       </div>
 
       <div id="case-samples" class="case-segment-aside">
-        <div class="case-segment-title">Included samples</div>
+        <div class="case-segment-title">Individuals</div>
         <div class="case-segment-content">
-          {% for sample_id, gender, phenotype, kit in samples %}
-            <div class="case-sample-{{ phenotype }}" title="{{ phenotype }} {{ gender }}">
-              <div class="case-sample-icon-{{ gender }} is-{{ phenotype }}"></div>
+          {% for sample in case.individuals %}
+            <div class="case-sample-{{ sample.phenotype_human }}" title="{{ sample.phenotype_human }} {{ sample.sex_human }}">
+              <div class="case-sample-item--small">
+                <div class="case-sample-icon-{{ sample.sex_human }} is-{{ sample.phenotype_human }}"></div>
+              </div>
 
-              <div class="case-sample-item">{{ sample_id }}</div>
+              <div class="case-sample-item">
+                {{ sample.display_name }}
+              </div>
 
-              <div class="case-sample-item">{{ kit }}</div>
+              <div class="case-sample-item">
+                {{ sample.individual_id }}
+              </div>
+
+              <div class="case-sample-item--big">{{ sample.capture_kit }}</div>
             </div>
           {% endfor %}
         </div>
