@@ -107,7 +107,13 @@
         <div class="variant-segment-content">
           <div class="variant-list-item">
             <div>ThousandG</div>
-            <div>{{ variant.common.thousand_genomes_frequency|round(3) }}</div>
+            <div>
+              {% if variant.common.thousand_genomes_frequency %}
+                {{ variant.common.thousand_genomes_frequency|float|round(3) }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
           </div>
 
           <div class="variant-list-item">

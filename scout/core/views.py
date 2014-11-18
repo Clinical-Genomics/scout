@@ -84,7 +84,7 @@ def variants(institute_id, case_id):
   case = Case.objects.get_or_404(display_name=case_id)
   skip = int(request.args.get('skip', 0))
 
-  return dict(variants=Variant.objects[skip:100],
+  return dict(variants=store.variants(case.id, nr_of_variants=100, skip=skip),
               case=case,
               case_id=case_id,
               institute=institute,
@@ -108,5 +108,5 @@ def variant(institute_id, case_id, variant_id):
     case_id=case_id,
     variant_id=variant_id,
     variant=variant,
-    specific=variant.specific['37693cfc748049e45d87b8c7d8b9aacd']
+    specific=variant.specific[case.id]
   )
