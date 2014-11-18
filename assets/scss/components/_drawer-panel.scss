@@ -11,7 +11,7 @@ drawer-panel {
   background-color: rgba(#000, 0);
   left: -100%;
   top: 0;
-  z-index: 1;
+  z-index: 2;
 
   transition: background-color 250ms, left 0 250ms;
 }
@@ -20,7 +20,7 @@ drawer-panel {
   height: 100%;
   position: fixed;
   width: 256px;
-  z-index: 2;
+  z-index: 3;
   top: 0px;
 
   transition: left 250ms;
