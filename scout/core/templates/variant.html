@@ -101,7 +101,6 @@
     </div>
 
     <div class="variant-segments-row">
-
       <div id="frequency" class="variant-segment">
         <div class="variant-segment-title">Frequency</div>
 
@@ -112,7 +111,7 @@
           </div>
 
           <div class="variant-list-item">
-            <div>EXAC</div>
+            <div title="Exome Aggregation Consortium">ExAC</div>
             <div>{{ variant.common.exac_frequency }}</div>
           </div>
 
@@ -201,17 +200,37 @@
     </div>
 
     <div id="gt-call" class="variant-segments-row">
-      <div id="inheritance-model" class="variant-segment">
+      <div class="variant-segment">
         <div class="variant-segment-title">GT call</div>
 
         <div class="variant-segment-content">
-          <div class="variant-row-item">
-            <div class="variant-row-item-sublist">
-              {% for item in "14701600331 0/1 22,18 449,0,501 99".split(' ') %}
-                <div class="variant-row-item-sublist-item">{{ item }}</div>
+          <table class="gtcall-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Sample</th>
+                <th rowspan="2">Genotype call (GT)</th>
+                <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+              </tr>
+              <tr>
+                <th>Reference</th>
+                <th>Alternative</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for individual in specific.samples %}
+                <tr>
+                  <td>{{ individual.sample }}</td>
+                  <td>{{ individual.genotype_call }}</td>
+                  {% for number in individual.allele_depths %}
+                    <td>{{ number }}</td>
+                  {% endfor %}
+                  <td>{{ 'coming soon' }}</td>
+                </tr>
               {% endfor %}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

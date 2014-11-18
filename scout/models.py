@@ -130,10 +130,10 @@ class VariantCommon(db.EmbeddedDocument):
 
 
 class GTCall(db.EmbeddedDocument):
-  allele_depths = db.ListField(db.IntField())
-  genotype_call = db.StringField()
-  read_depth = db.IntField()
   sample = db.StringField()
+  genotype_call = db.StringField()
+  allele_depths = db.ListField(db.IntField())
+  read_depth = db.IntField()
 
   def __unicode__(self):
     return self.sample
