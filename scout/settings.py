@@ -30,7 +30,8 @@ class BaseConfig(object):
                 'scout.extensions.admin',
                 'scout.extensions.db',
                 'scout.extensions.oauth',
-                'scout.extensions.login_manager']
+                'scout.extensions.login_manager',
+                'scout.extensions.markdown']
 
 
 

@@ -36,6 +36,12 @@ from flask.ext.login import LoginManager
 login_manager = LoginManager()
 
 # +--------------------------------------------------------------------+
+# | Flask-Markdown
+# +--------------------------------------------------------------------+
+from flask.ext.markdown import Markdown
+markdown = lambda app: Markdown(app)
+
+# +--------------------------------------------------------------------+
 # | Flask-OAuthlib
 # +--------------------------------------------------------------------+
 from flask_oauthlib.client import OAuth

@@ -91,6 +91,7 @@ class Case(db.Document):
   updated_at = db.DateTimeField(default=datetime.now)
   last_updated = db.DateTimeField()
   suspects = db.ListField(db.ReferenceField('Variant'))
+  synopsis = db.StringField(default='')
 
   def __unicode__(self):
     return self.display_name

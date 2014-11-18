@@ -55,6 +55,11 @@
 .case-segment-content-text {
 	padding: .5rem 1rem;
 	font-size: .9rem;
+	line-height: 1.3rem;
+
+	> p {
+		padding: .2em 0;
+	}
 }
 
 .case-segment-notes {

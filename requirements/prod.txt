@@ -39,6 +39,9 @@ Flask-OAuthlib==0.7.0
 # Translations
 Flask-Babel
 
+# Markdown
+Flask-Markdown
+
 # utils
 path.py
 configparser
