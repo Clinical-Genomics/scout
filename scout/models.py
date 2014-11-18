@@ -152,7 +152,7 @@ class VariantCaseSpecific(db.EmbeddedDocument):
 
 class Variant(db.Document):
   _id = db.StringField(primary_key=True)
-  md5_key = db.StringField(required=True, unique=True)
+  md5_key = db.StringField()
   display_name = db.StringField(required=True)
   chromosome = db.StringField(required=True)
   position = db.IntField(required=True)

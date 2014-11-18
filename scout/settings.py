@@ -18,7 +18,7 @@ class BaseConfig(object):
   SECRET_KEY = 'secret key'
 
   # Flask-MongoEngine
-  MONGODB_SETTINGS = {'DB': 'testing'}
+  MONGODB_SETTINGS = {'db': 'testing'}
 
   BLUEPRINTS = ['scout.core.core',
                 'scout.frontend.frontend',
