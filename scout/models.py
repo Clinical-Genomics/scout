@@ -57,6 +57,26 @@ class Individual(db.EmbeddedDocument):
   individual_id = db.StringField()
   capture_kit = db.StringField()
 
+  @property
+  def sex_human(self):
+    """Transform sex string into human readable form."""
+    # pythonic switch statement
+    return {
+      '1': 'male',
+      '2': 'female'
+    }.get(self.sex, 'unknown')
+
+  @property
+  def phenotype_human(self):
+    """Transform phenotype integer into human readable form."""
+    # pythonic switch statement
+    return {
+      -9: 'missing',
+       0: 'missing',
+       1: 'unaffected',
+       2: 'affected'
+    }.get(self.phenotype, 'undefined')
+
   def __unicode__(self):
     return self.name
 

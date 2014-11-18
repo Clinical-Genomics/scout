@@ -66,6 +66,9 @@ core-icon {
 
 	height: 4rem;
 
+	position: relative;
+	z-index: 1;
+
 	// default styles
 	background: $primary-color;
   color: #fff;
@@ -84,6 +87,7 @@ core-icon {
 
 	font-size: 1em;
 	padding-left: .8em;
+	z-index: 0;
 }
 
 .toolbar-content {
