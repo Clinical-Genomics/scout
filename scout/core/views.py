@@ -80,10 +80,14 @@ def assign_self(institute_id, case_id):
 def variants(institute_id, case_id):
   """View all variants for a single case."""
   # fetch all variants for a specific case
+  institute = Institute.objects.get_or_404(id=institute_id)
+  case = Case.objects.get_or_404(display_name=case_id)
   skip = int(request.args.get('skip', 0))
 
   return dict(variants=Variant.objects[skip:100],
+              case=case,
               case_id=case_id,
+              institute=institute,
               institute_id=institute_id,
               current_batch=(skip + 100))
 
@@ -93,11 +97,14 @@ def variants(institute_id, case_id):
 @login_required
 def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
+  institute = Institute.objects.get_or_404(id=institute_id)
   case = Case.objects.get_or_404(display_name=case_id)
   variant = Variant.objects.get_or_404(_id=variant_id)
 
   return dict(
+    institute=institute,
     institute_id=institute_id,
+    case=case,
     case_id=case_id,
     variant_id=variant_id,
     variant=variant,

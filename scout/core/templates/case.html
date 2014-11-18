@@ -94,14 +94,12 @@
               </div>
 
               <div class="case-sample-item">
-                {{ sample.display_name }}
-              </div>
-
-              <div class="case-sample-item">
                 {{ sample.individual_id }}
               </div>
 
-              <div class="case-sample-item--big">{{ sample.capture_kit }}</div>
+              <div class="case-sample-item--big">
+                {{ sample.capture_kit or 'capture kit: N/A' }}
+              </div>
             </div>
           {% endfor %}
         </div>

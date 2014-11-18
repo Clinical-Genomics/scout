@@ -6,12 +6,12 @@
 {% block toolbar_left %}
   <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
      class="breadcrumb-button is-raised">
-    {{ institute_id }}
+    {{ institute.display_name }}
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
   <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
-    Case {{ case_id }}
+    Case {{ case.display_name }}
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
