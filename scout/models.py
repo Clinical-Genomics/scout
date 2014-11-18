@@ -145,9 +145,12 @@ class VariantCaseSpecific(db.EmbeddedDocument):
   quality = db.FloatField()
   filters = db.ListField(db.StringField())
   samples = db.ListField(db.EmbeddedDocumentField(GTCall))
-  inheritance_models = db.ListField(db.StringField(choices=[
+  genetic_models = db.ListField(db.StringField(choices=[
     'AR_hom', 'AR_compound', 'AR_hom_denovo', 'AD', 'AD_denovo', 'X', 'X_dn'
   ]))
+
+  def __unicode__(self):
+    return 'placeholder'
 
 
 class Variant(db.Document):
@@ -158,9 +161,9 @@ class Variant(db.Document):
   position = db.IntField(required=True)
   reference = db.StringField(required=True)
   alternatives = db.ListField(db.StringField(), required=True)
-  common = db.EmbeddedDocumentField(VariantCommon)
-  case_specifics = db.ListField(db.EmbeddedDocumentField(VariantCaseSpecific))
   db_snp_ids = db.ListField(db.StringField())
+  common = db.EmbeddedDocumentField(VariantCommon)
+  specific = db.MapField(db.EmbeddedDocumentField(VariantCaseSpecific))
 
   def __unicode__(self):
     return self.display_name
