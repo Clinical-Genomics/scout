@@ -79,17 +79,20 @@ def assign_self(institute_id, case_id):
 @login_required
 def variants(institute_id, case_id):
   """View all variants for a single case."""
+  per_page = 50
+
   # fetch all variants for a specific case
   institute = Institute.objects.get_or_404(id=institute_id)
   case = Case.objects.get_or_404(display_name=case_id)
   skip = int(request.args.get('skip', 0))
 
-  return dict(variants=store.variants(case.id, nr_of_variants=100, skip=skip),
+  return dict(variants=store.variants(case.id, nr_of_variants=per_page,
+                                      skip=skip),
               case=case,
               case_id=case_id,
               institute=institute,
               institute_id=institute_id,
-              current_batch=(skip + 100))
+              current_batch=(skip + per_page))
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
