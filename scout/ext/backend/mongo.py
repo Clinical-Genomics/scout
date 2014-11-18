@@ -32,40 +32,40 @@ from pprint import pprint as pp
 
 class MongoAdapter(BaseAdapter):
   """Adapter for cummunication between the scout server and a mongo database."""
-  
+
   def init_app(self, app):
     config = getattr(app, 'config', {})
-    
+
     self.client = MongoClient(config.get('MONGODB_HOST', 'localhost'), config.get('MONGODB_PORT', 27017))
     self.db = self.client[config.get('MONGODB_DB', 'variantDatabase')]
-    self.case_collection = self.db.cases
-    self.variant_collection = self.db.variants
-  
+    self.case_collection = self.db.case
+    self.variant_collection = self.db.variant
+
   def __init__(self, app=None):
-    
+
     if app:
       self.init_app(app)
-    
+
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
-    
-  
+
+
   def cases(self):
     for case in self.case_collection.find():
       yield case
 
   def case(self, case_id):
-    
+
     return self.case_collection.find_one({ '_id' : case_id })
-  
-  
+
+
   def format_variant(self, variant, case_id):
     """Return the variant in a format specified for scout."""
-    
+
     # Stupid solution to follow scout.models.py
-    
+
     ### Core information ###
-    
+
     formated_variant = {}
     formated_variant['common'] = {}
     formated_variant['specific'] = {}
@@ -75,9 +75,9 @@ class MongoAdapter(BaseAdapter):
     formated_variant['reference'] = variant['reference']
     formated_variant['alternatives'] = variant['alternatives']
     formated_variant['display_name'] = variant['display_name']
-    
+
     ### Specific information ###
-    
+
     # Gene ids:
     formated_variant['common']['hgnc_symbols'] = variant['common'].get('hgnc_symbols', [])
     formated_variant['common']['ensemble_gene_ids'] = variant['common'].get('ensemble_gene_ids', [])
@@ -90,21 +90,21 @@ class MongoAdapter(BaseAdapter):
     formated_variant['common']['polyphen_predictions'] = variant['common'].get('polyphen_predictions', [])
     formated_variant['common']['functional_annotation'] = variant['common'].get('functional_annotation', [])
     formated_variant['common']['region_annotation'] = variant['common'].get('region_annotation', [])
-    
+
     ### Specific information ###
-    
+
     formated_variant['specific']['rank_score'] = variant['specific'][case_id].get('rank_score', 0)
     formated_variant['specific']['filters'] = variant['specific'][case_id].get('filters', [])
     formated_variant['specific']['genetic_models'] = variant['specific'][case_id].get('genetic_models', [])
     formated_variant['specific']['quality'] = variant['specific'][case_id].get('quality', 0.0)
     formated_variant['specific']['variant_rank'] = variant['specific'][case_id].get('variant_rank', 0)
     formated_variant['specific']['samples'] = variant['specific'][case_id].get('samples', [])
-    
+
     return formated_variant
-  
-  
+
+
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
-  
+
     # if variant_ids:
     #   return self._many_variants(variant_ids)
 
@@ -117,7 +117,7 @@ class MongoAdapter(BaseAdapter):
 
 
   def variant(self, variant_id):
-    
+
     return self.format_variant(self.variant_collection.find_one({ '_id' : variant_id}))
 
   def create_variant(self, variant):
@@ -157,15 +157,15 @@ class MongoAdapter(BaseAdapter):
 def cli():
     """Test the vcf class."""
     import hashlib
-    
+
     def generate_md5_key(list_of_arguments):
       """Generate an md5-key from a list of arguments"""
       h = hashlib.md5()
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
-    
+
     my_mongo = MongoAdapter(app='hej')
-    
+
     ### FOR DEVELOPMENT ###
     small_family_id = generate_md5_key(['3'])
     big_family_id = generate_md5_key(['2'])
@@ -176,11 +176,11 @@ def cli():
         variant_count += 1
         print(variant_count)
     # my_vcf.init_app('app', vcf_dir, config_file)
-    
+
     # for case in my_vcf.cases():
     #   pp(case)
     # print('')
-    
+
     # for case in my_vcf._cases:
     #   for variant in my_vcf.variants(case['id']):
     #     pp(variant)

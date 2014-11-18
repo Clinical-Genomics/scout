@@ -160,3 +160,31 @@ $variant-base-padding: 1rem;
 		border-right: 1px solid rgba(#000, .1);
 	}
 }
+
+.gtcall-table {
+	width: 100%;
+	table-layout: fixed;
+	font-size: .9em;
+
+	th {
+		color: $primary-color;
+		border-right: 1px solid rgba(#000, .1);
+		background-color: rgba($primary-color, .07);
+	}
+
+	tr {
+		border-bottom: 1px solid rgba(#000, .1);
+	}
+
+	td, th {
+		padding: .5em 1em;
+	}
+
+	td {
+		border: 1px solid rgba(#000, .1);
+	}
+}
+
+.gtcall-table-subcell {
+	font-size: .9em;
+}

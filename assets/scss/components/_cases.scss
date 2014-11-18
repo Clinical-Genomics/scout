@@ -1,7 +1,26 @@
 // navbar
+
+.cases-search {
+	background-color: rgba(#000, .05);
+	padding: .7em 1em;
+
+	display: flex;
+	align-items: center;
+	width: 100%;
+	border-radius: 3px;
+
+	&:hover {
+		background-color: rgba(#000, .1);
+	}
+
+	:first-child {
+		margin-right: .5em;
+	}
+}
+
 .cases-search-input {
 	padding: 0 .5em;
-	-webkit-font-smoothing: antialiased;
+	background-color: transparent;
 }
 
 // content

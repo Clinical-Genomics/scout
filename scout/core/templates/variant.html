@@ -6,12 +6,12 @@
 {% block toolbar_left %}
   <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
      class="breadcrumb-button is-raised">
-    {{ institute_id }}
+    {{ institute.display_name }}
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
   <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
-    Case {{ case_id }}
+    Case {{ case.display_name }}
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
@@ -37,13 +37,14 @@
 
 {% block toolbar_secondary %}
   <div class="toolbar-secondary">
-    {{ core_item(variant.common.cadd_score,
+    {{ core_item(specific.variant_rank,
                  icon='grade',
                  class='variant-header-item') }}
 
     <div class="variant-header-item variants-tooltip">
       {{ core_item(
-        'Chr%s: %s' % (variant.chromosome, variant.common.hgnc_symbols),
+        'Chr%s: %s' % (variant.chromosome,
+                       variant.common.hgnc_symbols|join(',')),
         icon='room')
       }}
 
@@ -53,10 +54,7 @@
             <strong>Position</strong>: {{ variant.position }}
           </li>
           <li>
-            <strong>Aliases</strong>: {{ 'CPO, CPX, HCP' }}
-          </li>
-          <li>
-            <strong>Full name</strong>: {{ 'Coproporphyrinogen III oxidase' }}
+            <strong>Full name</strong>: {{ 'coming soon!' }}
           </li>
           <li>
             <strong>Ensembl</strong>:
@@ -66,11 +64,13 @@
       </div>
     </div>
 
-    {{ core_item('%s → %s' % (variant.reference, variant.alternatives), icon='swap-vert-circle', class='variant-header-item') }}
+    {{ core_item('%s → %s' % (variant.reference, variant.alternatives|join(',')), icon='swap-vert-circle', class='variant-header-item') }}
 
-    {{ core_item('exonic', icon='report', class='variant-header-item') }}
+    {{ core_item(variant.common.region_annotation|join(','),
+                 icon='report', class='variant-header-item') }}
 
-    {{ core_item('nonsynonymous SNV', icon='settings', class='variant-header-item') }}
+    {{ core_item(variant.common.functional_annotation|join(','),
+                 icon='settings', class='variant-header-item') }}
   </div>
 {% endblock %}
 
@@ -84,7 +84,7 @@
         <div class="variant-segment-content">
           <div class="variant-list-item" horizontal layout center justified>
             <div>Rank score</div>
-            <div>19</div>
+            <div>{{ specific.rank_score }}</div>
           </div>
 
           <div class="variant-list-item" horizontal layout center justified>
@@ -101,24 +101,29 @@
     </div>
 
     <div class="variant-segments-row">
-
       <div id="frequency" class="variant-segment">
         <div class="variant-segment-title">Frequency</div>
 
         <div class="variant-segment-content">
           <div class="variant-list-item">
             <div>ThousandG</div>
-            <div>0.01</div>
+            <div>
+              {% if variant.common.thousand_genomes_frequency %}
+                {{ variant.common.thousand_genomes_frequency|float|round(3) }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
           </div>
 
           <div class="variant-list-item">
-            <div>Esp6500</div>
-            <div>0.007</div>
+            <div title="Exome Aggregation Consortium">ExAC</div>
+            <div>{{ variant.common.exac_frequency or '-' }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>Local</div>
-            <div>0.27</div>
+            <div>{{ 'coming soon' }}</div>
           </div>
         </div>
       </div>
@@ -129,12 +134,12 @@
         <div class="variant-segment-content">
           <div class="variant-list-item">
             <div>Disease gene model</div>
-            <div>-</div>
+            <div>{{ 'coming soon' }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>OMIM</div>
-            <div>Autosomal recessive</div>
+            <div>{{ 'Ex: Autosomal recessive' }}</div>
           </div>
 
           <div class="variant-row-item">
@@ -143,7 +148,7 @@
             </div>
 
             <div class="variant-row-item-sublist">
-              {% for model in variant.case_specifics[0].inheritance_models %}
+              {% for model in specific.genetic_models %}
                 <div class="variant-row-item-sublist-item">{{ model }}</div>
               {% endfor %}
             </div>
@@ -155,36 +160,23 @@
         <div class="variant-segment-title">OMIM</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item">
-            Epidermolysis bullosa simplex with muscular dystrophy
-          </div>
-          <div class="variant-list-item">
-            Epidermolysis bullosa simplex, ogna type
-          </div>
-          <div class="variant-list-item">
-            Epidermolysis bullosa simplex with pyloric atresia
-          </div>
-          <div class="variant-list-item">
-            Muscular dystrophy, limb-girdle, type 2q
-          </div>
+          {% for entry in ['coming soon'] %}
+            <div class="variant-list-item">
+              {{ entry }}
+            </div>
+          {% endfor %}
         </div>
       </div>
     </div>
 
     <div id="details" class="variant-segments-row">
-      <div id="frequency" class="variant-segment">
+      <div id="protein-changes" class="variant-segment">
         <div class="variant-segment-title">Predicted protein changes</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item">
-            COL6A2:NM_001849:exon26:c.2351G>A:p.R784H
-          </div>
-          <div class="variant-list-item">
-            COL6A2:NM_058174:exon26:c.2351G>A:p.R784H
-          </div>
-          <div class="variant-list-item">
-            COL6A2:NM_058175:exon26:c.2351G>A:p.R784H
-          </div>
+          {% for prediction in ['coming soon'] %}
+            <div class="variant-list-item">{{ prediction }}</div>
+          {% endfor %}
         </div>
       </div>
 
@@ -193,20 +185,12 @@
 
         <div class="variant-segment-content">
           <div class="variant-list-item">
-            <div>SiftWholeExome</div>
-            <div>0.63</div>
+            <div>Sift</div>
+            <div>{{ variant.common.sift_predictions|join(',') }}</div>
           </div>
           <div class="variant-list-item">
-            <div>PolyphenDivHuman</div>
-            <div>0.049</div>
-          </div>
-          <div class="variant-list-item">
-            <div>PolyphenVarHuman</div>
-            <div>0.01</div>
-          </div>
-          <div class="variant-list-item">
-            <div>MutationTaster</div>
-            <div>0.531</div>
+            <div>Polyphen</div>
+            <div>{{ variant.common.polyphen_predictions|join(',') }}</div>
           </div>
         </div>
       </div>
@@ -215,69 +199,73 @@
         <div class="variant-segment-title">Conservation</div>
 
         <div class="variant-list-item">
-          <div>PhylopWholeExome</div>
-          <div>1.586</div>
-        </div>
-        <div class="variant-list-item">
-          <div>LrtWholeExome</div>
-          <div>0.183</div>
-        </div>
-        <div class="variant-list-item">
-          <div>PhastConstElementsScore</div>
-          <div>555</div>
-        </div>
-        <div class="variant-list-item">
-          <div>GerpElement</div>
-          <div>1065.5</div>
-        </div>
-        <div class="variant-list-item">
-          <div>GerpWholeExome</div>
-          <div>2.76</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="gt-call" class="variant-segments-row">
-      <div id="inheritance-model" class="variant-segment">
-        <div class="variant-segment-title">GT call</div>
-
-        <div class="variant-segment-content">
-          <div class="variant-row-item">
-            <div class="variant-row-item-sublist">
-              {% for item in "14701600331 0/1 22,18 449,0,501 99".split(' ') %}
-                <div class="variant-row-item-sublist-item">{{ item }}</div>
-              {% endfor %}
-            </div>
-          </div>
+          <div>{{ 'coming soon' }}</div>
+          <div>Ex: 1.586</div>
         </div>
       </div>
     </div>
 
     <div id="gt-call" class="variant-segments-row">
       <div class="variant-segment">
+        <div class="variant-segment-title">GT call</div>
+
+        <div class="variant-segment-content">
+          <table class="gtcall-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Sample</th>
+                <th rowspan="2">Genotype call (GT)</th>
+                <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+              </tr>
+              <tr>
+                <th class="gtcall-table-subcell">Reference</th>
+                <th class="gtcall-table-subcell">Alternative</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for individual in specific.samples %}
+                <tr>
+                  <td class="text-center">{{ individual.sample }}</td>
+                  <td class="text-center">{{ individual.genotype_call }}</td>
+                  {% for number in individual.allele_depths %}
+                    <td class="text-right">{{ number }}</td>
+                  {% endfor %}
+                  <td class="text-right">{{ 'coming soon' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="external-links" class="variant-segments-row">
+      <div class="variant-segment">
         <div class="variant-segment-content">
           <div class="variant-list-links">
-            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397">
+            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.common.ensemble_gene_ids|join(',') }}">
               Ensembl
             </a>
 
-            <a class="variant-link-external" href="http://www.proteinatlas.org/search/ENSG00000105397">
+            <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.common.ensemble_gene_ids|join(',') }}">
               HPA
             </a>
 
-            <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier=ENSG00000105397">
+            <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.common.ensemble_gene_ids|join(',') }}">
               STRING
             </a>
 
-            <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr19:10463118-10463118&dgv=pack&knownGene=pack&omimGene=pack">
+            <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
               UCSC
             </a>
 
-            <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term=TYK2">
+            <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.common.hgnc_symbols|join(',') }}">
               Entrez
             </a>
 
-            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000105397">
+            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.common.ensemble_gene_ids|join(',') }}">
               Ensembl
             </a>
 

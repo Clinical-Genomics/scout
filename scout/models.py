@@ -48,7 +48,6 @@ class User(db.Document):
 
 
 class Individual(db.EmbeddedDocument):
-  name = db.StringField(required=True, unique=True)
   display_name = db.StringField()
   sex = db.StringField()
   phenotype = db.IntField()
@@ -78,7 +77,7 @@ class Individual(db.EmbeddedDocument):
     }.get(self.phenotype, 'undefined')
 
   def __unicode__(self):
-    return self.name
+    return self.individual_id
 
 
 class Case(db.Document):
@@ -130,10 +129,10 @@ class VariantCommon(db.EmbeddedDocument):
 
 
 class GTCall(db.EmbeddedDocument):
-  allele_depths = db.ListField(db.IntField())
-  genotype_call = db.StringField()
-  read_depth = db.IntField()
   sample = db.StringField()
+  genotype_call = db.StringField()
+  allele_depths = db.ListField(db.IntField())
+  read_depth = db.IntField()
 
   def __unicode__(self):
     return self.sample
@@ -145,22 +144,25 @@ class VariantCaseSpecific(db.EmbeddedDocument):
   quality = db.FloatField()
   filters = db.ListField(db.StringField())
   samples = db.ListField(db.EmbeddedDocumentField(GTCall))
-  inheritance_models = db.ListField(db.StringField(choices=[
+  genetic_models = db.ListField(db.StringField(choices=[
     'AR_hom', 'AR_compound', 'AR_hom_denovo', 'AD', 'AD_denovo', 'X', 'X_dn'
   ]))
+
+  def __unicode__(self):
+    return 'placeholder'
 
 
 class Variant(db.Document):
   _id = db.StringField(primary_key=True)
-  md5_key = db.StringField(required=True, unique=True)
+  md5_key = db.StringField()
   display_name = db.StringField(required=True)
   chromosome = db.StringField(required=True)
   position = db.IntField(required=True)
   reference = db.StringField(required=True)
   alternatives = db.ListField(db.StringField(), required=True)
-  common = db.EmbeddedDocumentField(VariantCommon)
-  case_specifics = db.ListField(db.EmbeddedDocumentField(VariantCaseSpecific))
   db_snp_ids = db.ListField(db.StringField())
+  common = db.EmbeddedDocumentField(VariantCommon)
+  specific = db.MapField(db.EmbeddedDocumentField(VariantCaseSpecific))
 
   def __unicode__(self):
     return self.display_name

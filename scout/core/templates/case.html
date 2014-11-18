@@ -16,6 +16,16 @@
   <div class="toolbar-secondary">
     {% if case.assignee %}
       {{ core_item(case.assignee.name, icon='assignment-ind') }}
+    {% else %}
+      <form action="{{ url_for('core.assign_self',
+                               institute_id=institute.id,
+                               case_id=case.display_name) }}"
+            method="POST">
+        <button type="submit" class="case-assign-button">
+          <core-icon v-with="icon: 'assignment-ind'"></core-icon>
+          Assign myself
+        </button>
+      </form>
     {% endif %}
   </div>
 {% endblock %}
@@ -84,14 +94,12 @@
               </div>
 
               <div class="case-sample-item">
-                {{ sample.display_name }}
-              </div>
-
-              <div class="case-sample-item">
                 {{ sample.individual_id }}
               </div>
 
-              <div class="case-sample-item--big">{{ sample.capture_kit }}</div>
+              <div class="case-sample-item--big">
+                {{ sample.capture_kit or 'capture kit: N/A' }}
+              </div>
             </div>
           {% endfor %}
         </div>

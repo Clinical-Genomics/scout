@@ -5,15 +5,11 @@ from bson.json_util import dumps
 from flask import abort, Blueprint, redirect, url_for, request, Response
 from flask.ext.login import login_required, current_user
 
-from ..models import Institute, Variant
+from ..models import Institute, Variant, Case
 from ..extensions import store
 from ..helpers import templated
 
 core = Blueprint('core', __name__, template_folder='templates')
-
-SAMPLES = [('123-1-1A', 'male', 'affected', 'Agilent_SureSelect.V5'),
-           ('123-2-2A', 'female', 'unaffected', 'Agilent_SureSelect.V5'),
-           ('123-2-1A', 'male', 'unaffected', 'Agilent_SureSelect.V5')]
 
 
 @core.route('/institutes')
@@ -49,7 +45,6 @@ def cases(institute_id):
 @login_required
 def api_cases(institute_id):
   institute = Institute.objects.get_or_404(id=institute_id)
-
   cases_json = dumps([case.to_mongo() for case in institute.cases])
 
   return Response(cases_json, mimetype='application/json; charset=utf-8')
@@ -60,17 +55,23 @@ def api_cases(institute_id):
 @login_required
 def case(institute_id, case_id):
   """View one specific case."""
+  # abort with 404 error if case/institute doesn't exist
+  case = Case.objects.get_or_404(display_name=case_id)
   institute = Institute.objects.get_or_404(id=institute_id)
 
-  # abort with 404 error if the case doesn't exist
-  cases = [case for case in institute.cases if case.display_name == case_id]
-  if len(cases) == 0:
-    return abort(404)
-
-  case = cases[0]
-
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=case, samples=SAMPLES)
+  return dict(institute=institute, case=case)
+
+
+@core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
+def assign_self(institute_id, case_id):
+  case = Case.objects.get_or_404(display_name=case_id)
+
+  # assign logged in user and persist changes
+  case.assignee = current_user.to_dbref()
+  case.save()
+
+  return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
 @core.route('/<institute_id>/<case_id>/variants')
@@ -78,13 +79,20 @@ def case(institute_id, case_id):
 @login_required
 def variants(institute_id, case_id):
   """View all variants for a single case."""
+  per_page = 50
+
   # fetch all variants for a specific case
+  institute = Institute.objects.get_or_404(id=institute_id)
+  case = Case.objects.get_or_404(display_name=case_id)
   skip = int(request.args.get('skip', 0))
 
-  return dict(variants=store.variants('1'),  # case_id
+  return dict(variants=store.variants(case.id, nr_of_variants=per_page,
+                                      skip=skip),
+              case=case,
               case_id=case_id,
+              institute=institute,
               institute_id=institute_id,
-              current_batch=(skip + 100))
+              current_batch=(skip + per_page))
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
@@ -92,9 +100,16 @@ def variants(institute_id, case_id):
 @login_required
 def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
+  institute = Institute.objects.get_or_404(id=institute_id)
+  case = Case.objects.get_or_404(display_name=case_id)
+  variant = Variant.objects.get_or_404(_id=variant_id)
+
   return dict(
+    institute=institute,
     institute_id=institute_id,
+    case=case,
     case_id=case_id,
     variant_id=variant_id,
-    variant=Variant.objects.first()
+    variant=variant,
+    specific=variant.specific[case.id]
   )

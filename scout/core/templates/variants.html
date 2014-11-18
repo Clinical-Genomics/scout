@@ -5,12 +5,12 @@
 {% block toolbar_left %}
   <a class="breadcrumb-button is-raised"
      href="{{ url_for('core.cases', institute_id=institute_id) }}">
-    {{ institute_id }}
+    {{ institute.display_name }}
   </a>
 	<core-icon v-with="icon: 'chevron-right'"></core-icon>
 
   <a class="breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-    Case {{ case_id }}
+    Case {{ case.display_name }}
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
@@ -59,12 +59,12 @@
                             institute_id=institute_id,
 					 									variant_id=variant.id,
                             case_id=case_id) }}">
-          {{ loop.index }}
+          {{ variant.specific.variant_rank }}
 				</a>
 
         <!-- Rank score -->
         <div class="variants-row-item text-right">
-          {{ variant.rank_score or 24 }}
+          {{ variant.specific.rank_score }}
         </div>
 
         <!-- Chromosome -->
@@ -74,51 +74,62 @@
 
         <!-- HGNC -->
 				<div class="variants-row-item flex-big">
-					{{ (variant.hgnc_symbol or '-')|join(', ') }}
+					{{ (variant.common.hgnc_symbols or ['-'])|join(', ') }}
 				</div>
 
         <!-- 1000 Genomes -->
 				<div class="variants-row-item text-right variants-tooltip">
-          {{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
+          {% if variant.common.thousand_genomes_frequency %}
+            {{ variant.common.thousand_genomes_frequency|float|round(3) }}
+          {% else %}
+            -
+          {% endif %}
 
           <div class="variants-tooltip-tip is-left">
             <ul>
-              <li><strong>ThousandG</strong> 0.004</li>
-              <li><strong>Esp6500</strong> 0.011</li>
-              <li><strong>Dbsnp129</strong> 0.004</li>
+              <li><strong>ExAC</strong> {{ variant.common.exac_frequency or '-' }}</li>
+              <li><strong>Local</strong> {{ 'soon' }}</li>
             </ul>
           </div>
         </div>
 
         <!-- PolyPhen -->
         <div class="variants-row-item text-right variants-tooltip">
-          {{ variant.cadd_score }}
+          {{ variant.common.cadd_score or '-' }}
 
           <div class="variants-tooltip-tip is-right">
             <ul>
-              <li><strong>SiftWholeExome</strong> 0.04</li>
-              <li><strong>PolyphenDivHuman</strong> 0.999</li>
-              <li><strong>PolyphenVarHuman</strong> 0.985</li>
-              <li><strong>MutationTaster</strong> 0.498</li>
+              <li>
+                <strong>Sift</strong>
+                {{ (variant.common.sift_predictions or ['-'])|join(',') }}
+              </li>
+              <li>
+                <strong>Sift</strong>
+                {{ (variant.common.polyphen_predictions or ['-'])|join(',') }}
+              </li>
             </ul>
           </div>
         </div>
 
         <!-- Gene annotation -->
-        <div class="variants-row-item">exonic</div>
+        <div class="variants-row-item is-scrollable">
+          {{ variant.common.region_annotation|join(',') }}
+        </div>
 
         <!-- Func. annotation -->
-        <div class="variants-row-item flex-big">nonsynonymous SNV</div>
+        <div class="variants-row-item is-scrollable flex-big">
+          {{ variant.common.functional_annotation|join(',') }}
+        </div>
 
         <!-- Disease group -->
-        <div class="variants-row-item flex-big">Cellular immunity</div>
+        <div class="variants-row-item flex-big">{{ 'coming soon' }}</div>
 
         <!-- Disease gene model -->
-        <div class="variants-row-item">AD</div>
+        <div class="variants-row-item">{{ 'coming soon' }}</div>
 
         <!-- Inheritance models -->
 				<div class="variants-row-list flex-big">
-					{% for model in (variant.genetic_models or []) %}
+					{% for model in (variant.specific.genetic_models or []) %}
             <div class="variants-row-list-item">{{ model }}</div>
           {% endfor %}
 				</div>

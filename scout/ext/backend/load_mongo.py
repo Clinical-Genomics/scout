@@ -41,83 +41,84 @@ from ped_parser import parser as ped_parser
 from pprint import pprint as pp
 
 
-def load_mongo(vcf_file=None, ped_file=None, config_file=None, family_type='ped'):
+def load_mongo(vcf_file=None, ped_file=None, config_file=None,
+               family_type='ped', mongo_db='variantDatabase'):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-  
+
   client = MongoClient('localhost', 27017)
-  db = client.variantDatabase
+  db = client[mongo_db]
   # combine path to the local development fixtures
   project_root = '/vagrant/scout'
   # print(project_root, vcf_file, ped_file, config_file)
-  config_object = ConfigParser(config_file)  
-  
-  ######## Get the case and add it to the mongo db: ######## 
-  
-  case_collection = db.cases
-  
+  config_object = ConfigParser(config_file)
+
+  ######## Get the case and add it to the mongo db: ########
+
+  case_collection = db.case
+
   case = get_case(ped_file, family_type)
-  
+
   # This function updates the cases collection if the specific family exists.
   # If the family exists a new object is inserted
   case_collection.update({ '_id': case['_id']}, {"$set" : case}, upsert=True)
-  
-  ######## Get the variants and add them to the mongo db: ######## 
-  
-  variant_collection = db.variants
-  
+
+  ######## Get the variants and add them to the mongo db: ########
+
+  variant_collection = db.variant
+
   start_inserting_variants = datetime.now()
-  
+
   variant_parser = vcf_parser.VCFParser(infile = vcf_file)
   nr_of_variants = 0
-  
+
   for variant in variant_parser:
     nr_of_variants += 1
     # pp(variant)
     load_variant(variant, case, config_object, variant_collection, nr_of_variants)
-  
+
   print('%s variants inserted!' % nr_of_variants)
   print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants))
-  
+
 def generate_md5_key(list_of_arguments):
   """Generate an md5-key from a list of arguments"""
   h = hashlib.md5()
   h.update(' '.join(list_of_arguments))
   return h.hexdigest()
 
-  
+
 def get_case(ped_file, family_type):
   """Take a case file and return the case on the specified format."""
-  
+
   case = {}
   case_parser = ped_parser.FamilyParser(ped_file, family_type=family_type)
-  
+
   case = case_parser.get_json()[0]
-  
+
   case['last_updated'] = datetime.now()
   case['display_name'] = case['family_id']
   case['_id'] = generate_md5_key([case['family_id']])
-  
+
   return case
-  
+
 
 def load_variant(variant, case, config_object, variant_collection, variant_count):
   """Load a variant into the database."""
   formated_variant = format_variant(variant, case, config_object)
   case_specific = formated_variant.pop('specific', {})
   case_specific['variant_rank'] = variant_count
-  
+
   variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : formated_variant}, upsert=True)
-  
+
   variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : {("specific.%s" % case['_id']) : case_specific}})
-  
+
   return
 
 def format_variant(variant, case, config_object):
   """Return the variant in a format specified for scout. The structure is decided by the config file that is used."""
-  
-  
+
+
   def get_genotype_information(variant, genotype_collection, individual):
     """Get the genotype information in the proper format and return an array with the individuals."""
     individual_information = {'sample':individual}
@@ -129,7 +130,7 @@ def format_variant(variant, case, config_object):
       elif config_object[genotype_information]['vcf_format_key'] == 'AD':
         individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].allele_depth
     return individual_information
-  
+
   def get_value(variant, collection, information):
     """Return the correct value from the variant according to rules in config parser.
         vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
@@ -152,42 +153,42 @@ def format_variant(variant, case, config_object):
       value = value.split(config_object[information]['vcf_data_field_separator'])
     # If there should be one value but there are several we need to get the right one.
     # elif len(value.split(config_object[information].get(['vcf_data_field_separator'], ','))) > 1:
-      
+
     return value
-  
+
   # We insert the family with the md5-key as id, same key we use in cases
   variant_id = generate_md5_key([variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']])
   # These are the individuals included in the family
   case_individuals = [individual['individual_id'] for individual in case['individuals']]
-  
+
   # We use common to store annotations and specific to store
   formated_variant = {'common':{}, 'specific':{}}
-  
+
   # Store the case specific variant information in specific:
   formated_variant['specific']['samples'] = []
-  
+
   # Add the human readable display name to the variant
   formated_variant['display_name'] = variant['variant_id']
-  
+
   formated_variant['_id'] = variant_id
-  
-  
-  # Add the genotype information for each individual 
+
+
+  # Add the genotype information for each individual
   for individual in case_individuals:
     formated_variant['specific']['samples'].append(
           get_genotype_information(variant, config_object.categories['genotype_information'], individual))
-  
+
   for annotation in config_object.collections['core']:
     formated_variant[config_object[annotation]['internal_record_key']] = get_value(variant, 'core', annotation)
-  
+
   for annotation in config_object.collections['common']:
     formated_variant['common'][config_object[annotation]['internal_record_key']] = get_value(variant, 'common', annotation)
-  
+
   for annotation in config_object.collections['case']:
     formated_variant['specific'][config_object[annotation]['internal_record_key']] = get_value(variant, 'case', annotation)
-    
+
   return formated_variant
-  
+
 
 @click.command()
 @click.argument('vcf_file',
@@ -206,10 +207,12 @@ def format_variant(variant, case, config_object):
                 default='ped',
                 nargs=1,
 )
-def cli(vcf_file, ped_file, config_file, family_type):
+@click.option('-db', '--mongo-db', default='variantDatabase')
+def cli(vcf_file, ped_file, config_file, family_type, mongo_db):
   """Test the vcf class."""
-  my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type)
-  
+  my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type,
+                      mongo_db=mongo_db)
+
 
 if __name__ == '__main__':
     cli()
