@@ -26,6 +26,7 @@ class BaseConfig(object):
                 'scout.user.user']
 
   EXTENSIONS = ['scout.extensions.store',
+                'scout.extensions.toolbar',
                 'scout.extensions.admin',
                 'scout.extensions.db',
                 'scout.extensions.oauth',

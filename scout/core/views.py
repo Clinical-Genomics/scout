@@ -5,7 +5,7 @@ from bson.json_util import dumps
 from flask import abort, Blueprint, redirect, url_for, request, Response
 from flask.ext.login import login_required, current_user
 
-from ..models import Institute, Variant, Case
+from ..models import Institute, Variant
 from ..extensions import store
 from ..helpers import templated
 
