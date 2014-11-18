@@ -2,11 +2,8 @@
 {% from 'macros/_polymer.html' import core_item %}
 
 {% block css %}
-    {{ super() }}
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/temp.css') }}">
-  {% endblock %}
+  {{ super() }}
+{% endblock %}
 
 {% block body %}
 

@@ -48,7 +48,6 @@ class User(db.Document):
 
 
 class Individual(db.EmbeddedDocument):
-  name = db.StringField(required=True, unique=True)
   display_name = db.StringField()
   sex = db.StringField()
   phenotype = db.IntField()
@@ -78,7 +77,7 @@ class Individual(db.EmbeddedDocument):
     }.get(self.phenotype, 'undefined')
 
   def __unicode__(self):
-    return self.name
+    return self.individual_id
 
 
 class Case(db.Document):

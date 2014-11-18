@@ -63,6 +63,17 @@ def case(institute_id, case_id):
   return dict(institute=institute, case=case)
 
 
+@core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
+def assign_self(institute_id, case_id):
+  case = Case.objects.get_or_404(display_name=case_id)
+
+  # assign logged in user and persist changes
+  case.assignee = current_user.to_dbref()
+  case.save()
+
+  return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
+
+
 @core.route('/<institute_id>/<case_id>/variants')
 @templated('variants.html')
 @login_required
