@@ -169,7 +169,6 @@ $variant-base-padding: 1rem;
 	th {
 		color: $primary-color;
 		border-right: 1px solid rgba(#000, .1);
-		font-size: .9em;
 		background-color: rgba($primary-color, .07);
 	}
 
@@ -184,4 +183,8 @@ $variant-base-padding: 1rem;
 	td {
 		border: 1px solid rgba(#000, .1);
 	}
+}
+
+.gtcall-table-subcell {
+	font-size: .9em;
 }

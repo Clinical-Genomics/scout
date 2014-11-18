@@ -213,20 +213,20 @@
                 <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
               </tr>
               <tr>
-                <th>Reference</th>
-                <th>Alternative</th>
+                <th class="gtcall-table-subcell">Reference</th>
+                <th class="gtcall-table-subcell">Alternative</th>
               </tr>
             </thead>
 
             <tbody>
               {% for individual in specific.samples %}
                 <tr>
-                  <td>{{ individual.sample }}</td>
-                  <td>{{ individual.genotype_call }}</td>
+                  <td class="text-center">{{ individual.sample }}</td>
+                  <td class="text-center">{{ individual.genotype_call }}</td>
                   {% for number in individual.allele_depths %}
-                    <td>{{ number }}</td>
+                    <td class="text-right">{{ number }}</td>
                   {% endfor %}
-                  <td>{{ 'coming soon' }}</td>
+                  <td class="text-right">{{ 'coming soon' }}</td>
                 </tr>
               {% endfor %}
             </tbody>
