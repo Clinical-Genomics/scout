@@ -10,8 +10,8 @@
 
 {% block toolbar_secondary %}
 	<div class="toolbar-secondary">
-    <core-icon v-with="icon: 'search'"></core-icon>
-    <form id="search-cases">
+    <form id="search-cases" class="cases-search">
+      <core-icon v-with="icon: 'search'" class="cases-search-icon"></core-icon>
       <input v-model="casesSearchQuery" type="search" class="cases-search-input">
     </form>
   </div>

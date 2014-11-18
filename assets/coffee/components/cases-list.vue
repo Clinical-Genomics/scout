@@ -13,7 +13,7 @@
         </a>
 
         <div class="cases-item-date">
-          Updated {{created_at.$date | fromNow}}
+          Updated {{last_updated.$date | fromNow}}
         </div>
 
       </div>
