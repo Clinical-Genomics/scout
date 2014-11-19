@@ -55,6 +55,7 @@ class Individual(db.EmbeddedDocument):
   mother = db.StringField()
   individual_id = db.StringField()
   capture_kit = db.StringField()
+  extra_info = db.DictField()
 
   @property
   def sex_human(self):
