@@ -43,7 +43,7 @@ class OMIM(object):
     Returns:
       str, dict: URL entry point and params as a ``dict``
     """
-    url = "%s/entry" % self.base_url
+    url = "%s/%s" % (self.base_url, handler)
     params = {
       'apiKey': self.api_key,
       'format': self.format
@@ -51,19 +51,24 @@ class OMIM(object):
 
     return url, params
 
-  def clinical_synopsis(self, mim, includes=('clinicalSynopsis',)):
+  def clinical_synopsis(self, mim, include=('clinicalSynopsis',),
+                        exclude=None):
     """Get data from ``clinicalSynopsis`` handler.
 
     Args:
       mim (str): OMIM Phenotype MIM number
-      includes (list, optional): included sections in response
+      include (list, optional): included sections in response
+      exclude (list, optional): exclude sections in response
 
     Returns:
       response: response object from ``requests``
     """
     url, params = self.base('clinicalSynopsis')
     params['mimNumber'] = mim
-    params['include'] = includes
+    params['include'] = include
+
+    if exclude:
+      params['exclude'] = exclude
 
     return requests.get(url, params=params)
 
@@ -81,16 +86,11 @@ class OMIM(object):
     url, params = self.base('entry')
 
     # add MIM number(s)
-    if isinstance(mim, list):
-      params['mimNumber'] = mim.join(',')
-    else:
-      params['mimNumber'] = mim
+    params['mimNumber'] = mim
 
     # add include section(s)
     if include_all:
       params['include'] = 'all'
-    elif isinstance(includes, list):
-      params['include'] = includes.join(',')
     else:
       params['include'] = includes
 
