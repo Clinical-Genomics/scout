@@ -98,6 +98,7 @@ def get_case(ped_file, family_type):
 
   case['last_updated'] = datetime.now()
   case['display_name'] = case['family_id']
+  case['synopsis'] = ''
   case['_id'] = generate_md5_key([case['family_id']])
 
   return case

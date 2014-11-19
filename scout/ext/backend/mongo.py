@@ -38,14 +38,14 @@ class MongoAdapter(BaseAdapter):
 
     self.client = MongoClient(config.get('MONGODB_HOST', 'localhost'), config.get('MONGODB_PORT', 27017))
     self.db = self.client[config.get('MONGODB_DB', 'variantDatabase')]
-    self.case_collection = self.db.case
-    self.variant_collection = self.db.variant
+    self.case_collection = self.db.cases
+    self.variant_collection = self.db.variants
 
   def __init__(self, app=None):
 
     if app:
       self.init_app(app)
-
+    
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
 
@@ -120,6 +120,25 @@ class MongoAdapter(BaseAdapter):
 
     return self.format_variant(self.variant_collection.find_one({ '_id' : variant_id}))
 
+
+  def next_variant(self, variant_id, case_id):
+    """Returns the next variant from the rank order"""
+    case_specific = ('specific.%s' % case_id)
+    previous_variant = self.variant_collection.find_one({'_id': variant_id})
+    rank = int(previous_variant['specific'].get(case_id, {}).get('variant_rank', 0))
+    
+    return self.format_variant(self.variant_collection.find_one(
+                {case_specific + '.variant_rank': rank+1}), case_id)
+    
+  def previous_variant(self, variant_id, case_id):
+    """Returns the next variant from the rank order"""
+    case_specific = ('specific.%s' % case_id)
+    previous_variant = self.variant_collection.find_one({'_id': variant_id})
+    rank = int(previous_variant['specific'].get(case_id, {}).get('variant_rank', 0))
+    
+    return self.format_variant(self.variant_collection.find_one(
+                {case_specific + '.variant_rank': rank-1}), case_id)
+  
   def create_variant(self, variant):
     # Find out last ID
     try:
@@ -136,6 +155,11 @@ class MongoAdapter(BaseAdapter):
     self._variants.append(variant)
 
     return variant
+
+  def add_synopsis(self, case_id, synopsis):
+    """Add a synopsis string to a case"""
+    self.case_collection.update({'_id': case_id}, {'$set' : {'synopsis' : synopsis}})
+    return
 
 @click.command()
 # @click.argument('vcf_dir',
@@ -169,14 +193,17 @@ def cli():
     ### FOR DEVELOPMENT ###
     small_family_id = generate_md5_key(['3'])
     big_family_id = generate_md5_key(['2'])
-    for case in my_mongo.cases():
-      variant_count = 0
-      for variant in my_mongo.variants(case['_id'], nr_of_variants = 20):
-        pp(variant)
-        variant_count += 1
-        print(variant_count)
+    # for case in my_mongo.cases():
+    #   variant_count = 0
+    #   pp(case)
+      # for variant in my_mongo.variants(case['_id'], nr_of_variants = 20):
+      #   pp(variant)
+      #   variant_count += 1
+      #   print(variant_count)
     # my_vcf.init_app('app', vcf_dir, config_file)
-
+    # rank = my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436')
+    pp(my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436'))
+    # print(rank, type(rank))
     # for case in my_vcf.cases():
     #   pp(case)
     # print('')
