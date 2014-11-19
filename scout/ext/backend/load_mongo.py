@@ -130,6 +130,8 @@ def format_variant(variant, case, config_object):
         individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].depth_of_coverage
       elif config_object[genotype_information]['vcf_format_key'] == 'AD':
         individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].allele_depth
+      elif config_object[genotype_information]['vcf_format_key'] == 'GQ':
+        individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].genotype_quality
     return individual_information
 
   def get_value(variant, collection, information):

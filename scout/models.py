@@ -134,6 +134,7 @@ class GTCall(db.EmbeddedDocument):
   genotype_call = db.StringField()
   allele_depths = db.ListField(db.IntField())
   read_depth = db.IntField()
+  genotype_quality = db.IntField()
 
   def __unicode__(self):
     return self.sample

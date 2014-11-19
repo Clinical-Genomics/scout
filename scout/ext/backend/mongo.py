@@ -38,8 +38,8 @@ class MongoAdapter(BaseAdapter):
 
     self.client = MongoClient(config.get('MONGODB_HOST', 'localhost'), config.get('MONGODB_PORT', 27017))
     self.db = self.client[config.get('MONGODB_DB', 'variantDatabase')]
-    self.case_collection = self.db.cases
-    self.variant_collection = self.db.variants
+    self.case_collection = self.db.case
+    self.variant_collection = self.db.variant
 
   def __init__(self, app=None):
 
