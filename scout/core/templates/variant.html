@@ -139,7 +139,7 @@
 
           <div class="variant-list-item">
             <div>OMIM</div>
-            <omim-model v-with="mim: {{ '614300' }}"></omim-model>
+            <omim-model v-with="url: '{{ url_for('api.omim_inheritance', mim_number='614300') }}'"></omim-model>
           </div>
 
           <div class="variant-row-item">

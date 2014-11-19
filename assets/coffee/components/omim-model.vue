@@ -5,13 +5,13 @@
 <script lang="coffee">
   module.exports =
     ready: ->
-      if @mim
-        superagent.get "/api/v1/omim/inheritance/#{@mim}", (res) =>
+      if @url
+        superagent.get @url, (res) =>
           @entry = JSON.parse(res.text)
 
     data: ->
       return {
-        mim: ''
+        url: ''
         entry:
           inheritance: 'unknown'
           inheritance_human: ''
