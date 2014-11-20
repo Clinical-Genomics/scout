@@ -58,11 +58,11 @@ google = oauth.remote_app('google', app_key='GOOGLE')
 from flask_sslify import SSLify
 from OpenSSL import SSL
 
+# (ext lacks init_app...)
+ctx = SSL.Context(SSL.SSLv23_METHOD)
+
 
 def ssl(app):
-  # (ext lacks init_app...)
-  ctx = SSL.Context(SSL.SSLv23_METHOD)
-
   # Setup SSL: http://flask.pocoo.org/snippets/111/
   ctx.use_privatekey_file(app.config.get('SSL_KEY_PATH'))
   ctx.use_certificate_file(app.config.get('SSL_CERT_PATH'))
