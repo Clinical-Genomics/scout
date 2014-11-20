@@ -1,6 +1,39 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from datetime import datetime
+
 import requests
+
+
+def format_entry(json_entry):
+  """Extract interesting information from a single OMIM entry."""
+  # extract nested titles section
+  titles = json_entry.get('titles', {})
+
+  # extract "geneMap"
+  gene_map = json_entry.get('geneMap', {})
+
+  # extract phenotypes for the gene
+  phenotypes_raw = (item['phenotypeMap']
+                    for item in gene_map.get('phenotypeMapList', []))
+  phenotypes = [{
+    'mim_number': phenotype.get('mimNumber'),
+    'phenotype': phenotype.get('phenotype'),
+    'mapping_key': phenotype.get('phenotypeMappingKey'),
+    'inheritance': phenotype.get('phenotypeInheritance')
+  } for phenotype in phenotypes_raw]
+
+  return {
+    'prefix': json_entry.get('prefix'),
+    'mim_number': json_entry.get('mimNumber'),
+    'status': json_entry.get('status'),
+    'other_entities': titles.get('includedTitles'),
+    'gene_symbol': gene_map.get('geneSymbols'),
+    'gene_name': gene_map.get('geneName'),
+    'phenotypes': phenotypes,
+    'created_at': datetime.fromtimestamp(json_entry.get('epochCreated')),
+    'updated_at': datetime.fromtimestamp(json_entry.get('epochUpdated'))
+  }
 
 
 class OMIM(object):
@@ -50,6 +83,31 @@ class OMIM(object):
     }
 
     return url, params
+
+  def gene(self, hgnc_symbol):
+    entry = self.search_gene(hgnc_symbol)
+
+    return format_entry(entry)
+
+  def search_gene(self, hgnc_symbol, include=('geneMap', 'dates')):
+    """Search for MIM number for a HGNC approved symbol.
+
+    Args:
+      hgnc_symbol (str): HGNC approved symbol
+      include (list, optional): additional sections to include
+
+    Returns:
+      dict: first matching entry in the results
+    """
+    url, params = self.base('entry/search')
+
+    params['search'] = "approved_gene_symbol:%s" % hgnc_symbol
+    params['include'] = include
+
+    res = requests.get(url, params=params)
+    data = res.json()
+
+    return data['omim']['searchResponse']['entryList'][0]['entry']
 
   def clinical_synopsis(self, mim, include=('clinicalSynopsis',),
                         exclude=None):

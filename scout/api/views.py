@@ -7,11 +7,9 @@ from ..extensions import omim
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 
 
-@api.route('/omim/clinical_synopsis/<mim_number>')
-def omim_clinical_synopsis(mim_number):
-  res = omim.clinical_synopsis(mim_number)
-  json = res.json()
-  return jsonify(**json['omim'])
+@api.route('/omim/gene/<hgnc_symbol>')
+def omim_clinical_synopsis(hgnc_symbol):
+  return jsonify(**omim.gene(hgnc_symbol))
 
 
 @api.route('/omim/inheritance/<mim_number>')
