@@ -140,27 +140,40 @@ $variant-base-padding: 1rem;
 	}
 }
 
-.variant-list-links {
-	display: flex;
+// +-------------------------------------------------------------------+
+// |  OMIM summary
+// +-------------------------------------------------------------------+
+.omim-summary-empty {
+	@extend .variant-list-item;
 }
 
-.variant-link-external {
-	padding: 1rem $variant-base-padding;
-	flex: 1;
+.omim-summary-entities {
+	@extend .variant-list-item;
+	font-size: .8em;
+}
 
-	text-decoration: none;
-	text-align: center;
-	color: darken($primary-color, 10%);
+.omim-summary-phenotype {
+	@extend .variant-list-item;
+	padding-top: 0;
+	padding-bottom: 0;
 
-	&:hover {
-		background-color: rgba($primary-color, .1);
-	}
-
-	&:not(:last-child) {
+	:not(:last-child) {
 		border-right: 1px solid rgba(#000, .1);
 	}
 }
 
+.omim-summary-phenotype-item {
+	flex-shrink: 0;
+	padding: .5em;
+
+	&:first-child {
+		padding-left: 0;
+	}
+}
+
+// +-------------------------------------------------------------------+
+// |  GT call table
+// +-------------------------------------------------------------------+
 .gtcall-table {
 	width: 100%;
 	table-layout: fixed;
@@ -187,4 +200,28 @@ $variant-base-padding: 1rem;
 
 .gtcall-table-subcell {
 	font-size: .9em;
+}
+
+// +-------------------------------------------------------------------+
+// |  Variant links
+// +-------------------------------------------------------------------+
+.variant-list-links {
+	display: flex;
+}
+
+.variant-link-external {
+	padding: 1rem $variant-base-padding;
+	flex: 1;
+
+	text-decoration: none;
+	text-align: center;
+	color: darken($primary-color, 10%);
+
+	&:hover {
+		background-color: rgba($primary-color, .1);
+	}
+
+	&:not(:last-child) {
+		border-right: 1px solid rgba(#000, .1);
+	}
 }

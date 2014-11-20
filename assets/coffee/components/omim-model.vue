@@ -1,5 +1,5 @@
 <template>
-  <span title="{{entry.inheritance_human}}">{{entry.inheritance}}</span>
+  <span>{{entry.models | join ,}}</span>
 </template>
 
 <script lang="coffee">
@@ -9,11 +9,17 @@
         superagent.get @url, (res) =>
           @entry = JSON.parse(res.text)
 
+          if @entry.models.length is 0
+            @entry.models = ['unknown']
+
     data: ->
       return {
         url: ''
         entry:
-          inheritance: 'unknown'
-          inheritance_human: ''
+          models: ['loading...']
       }
+
+    filters:
+      join: (list, separator) ->
+        return list.join(separator)
 </script>

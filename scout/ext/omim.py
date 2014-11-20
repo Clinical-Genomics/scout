@@ -10,6 +10,11 @@ def format_entry(json_entry):
   # extract nested titles section
   titles = json_entry.get('titles', {})
 
+  if 'includedTitles' in titles:
+    other_entities = titles['includedTitles'].split(';;\n')
+  else:
+    other_entities = []
+
   # extract "geneMap"
   gene_map = json_entry.get('geneMap', {})
 
@@ -23,17 +28,21 @@ def format_entry(json_entry):
     'inheritance': phenotype.get('phenotypeInheritance')
   } for phenotype in phenotypes_raw]
 
-  return {
+  data = {
     'prefix': json_entry.get('prefix'),
     'mim_number': json_entry.get('mimNumber'),
     'status': json_entry.get('status'),
-    'other_entities': titles.get('includedTitles'),
+    'other_entities': other_entities,
     'gene_symbol': gene_map.get('geneSymbols'),
     'gene_name': gene_map.get('geneName'),
-    'phenotypes': phenotypes,
-    'created_at': datetime.fromtimestamp(json_entry.get('epochCreated')),
-    'updated_at': datetime.fromtimestamp(json_entry.get('epochUpdated'))
+    'phenotypes': phenotypes
   }
+
+  if 'epochCreated' in json_entry:
+    data['created_at'] = datetime.fromtimestamp(json_entry.get('epochCreated'))
+    data['updated_at'] = datetime.fromtimestamp(json_entry.get('epochUpdated'))
+
+  return data
 
 
 class OMIM(object):
@@ -107,7 +116,13 @@ class OMIM(object):
     res = requests.get(url, params=params)
     data = res.json()
 
-    return data['omim']['searchResponse']['entryList'][0]['entry']
+    entries = data['omim']['searchResponse']['entryList']
+
+    if entries:
+      return entries[0]['entry']
+    else:
+      return {}
+
 
   def clinical_synopsis(self, mim, include=('clinicalSynopsis',),
                         exclude=None):
