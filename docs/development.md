@@ -32,3 +32,12 @@ All assets are already bundled but before deployment one should compile the file
 ```bash
 $ gulp build --production
 ```
+
+## FAQ
+
+### Unable to install PyOpenSSL/Cryptography
+Quite a few people seem to have problems installing later versions on PyOpenSSL. This in mainly because of the Cryptography dependency that was introduces post 0.13 so it's possible you will find more luck installing it as:
+
+```bash
+$ pip install PyOpenSSL==0.13
+```
