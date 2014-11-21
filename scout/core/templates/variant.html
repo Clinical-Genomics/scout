@@ -72,6 +72,20 @@
 
     {{ core_item(variant.common.functional_annotation|join(','),
                  icon='settings', class='variant-header-item') }}
+
+    <div class="flex"></div>
+
+    <div class="variant-move">
+      <div class="variant-move-back" title="Previous variant">
+        <div class="variant-move-text">Prev</div>
+        <core-icon v-with="icon: 'arrow-back'"></core-icon>
+      </div>
+
+      <div class="variant-move-forward" title="Previous variant">
+        <div class="variant-move-text">Next</div>
+        <core-icon v-with="icon: 'arrow-forward'"></core-icon>
+      </div>
+    </div>
   </div>
 {% endblock %}
 

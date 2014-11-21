@@ -18,7 +18,6 @@
 {% endblock %}
 
 {% block content %}
-
 	<div v-component="cases-list" class="cases-list" v-with="
     url: '{{ url_for('api.cases', institute_id=institute_id) }}',
     baseUrl: '{{ url_for('core.cases', institute_id=institute_id) }}',
@@ -26,5 +25,4 @@
     user_id: '{{ current_user.id }}'
   ">
   </div>
-
 {% endblock %}
