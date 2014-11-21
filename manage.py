@@ -8,7 +8,6 @@ from scout.extensions import ctx
 app = AppFactory()
 
 manager = Manager(app)
-TEST_CMD = "py.test tests"
 
 
 @manager.shell

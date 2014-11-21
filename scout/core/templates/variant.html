@@ -2,6 +2,7 @@
 {% from 'macros/_polymer.html' import core_item %}
 
 {% set page_title = 'Variant' %}
+{% set hgnc_symbol = variant.common.hgnc_symbols[0] %}
 
 {% block toolbar_left %}
   <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
@@ -139,7 +140,10 @@
 
           <div class="variant-list-item">
             <div>OMIM</div>
-            <div>{{ 'Ex: Autosomal recessive' }}</div>
+            <omim-model v-with="
+              url: '{{ url_for('api.omim_inheritance',
+                               hgnc_symbol=hgnc_symbol) }}'">
+            </omim-model>
           </div>
 
           <div class="variant-row-item">
@@ -160,11 +164,9 @@
         <div class="variant-segment-title">OMIM</div>
 
         <div class="variant-segment-content">
-          {% for entry in ['coming soon'] %}
-            <div class="variant-list-item">
-              {{ entry }}
-            </div>
-          {% endfor %}
+          <omim-summary v-with="
+            url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
+          "></omim-summary>
         </div>
       </div>
     </div>

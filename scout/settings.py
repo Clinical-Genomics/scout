@@ -23,7 +23,8 @@ class BaseConfig(object):
   BLUEPRINTS = ['scout.core.core',
                 'scout.frontend.frontend',
                 'scout.login.login',
-                'scout.user.user']
+                'scout.user.user',
+                'scout.api.api']
 
   EXTENSIONS = ['scout.extensions.store',
                 'scout.extensions.toolbar',
@@ -32,7 +33,8 @@ class BaseConfig(object):
                 'scout.extensions.oauth',
                 'scout.extensions.login_manager',
                 'scout.extensions.ssl',
-                'scout.extensions.markdown']
+                'scout.extensions.markdown',
+                'scout.extensions.omim']
 
 
 class DevelopmentConfig(BaseConfig):
