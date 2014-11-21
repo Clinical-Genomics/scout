@@ -19,6 +19,7 @@
 }
 
 .cases-search-input {
+	width: 100%;
 	padding: 0 .5em;
 	background-color: transparent;
 }
@@ -89,4 +90,17 @@
 	@extend %cases-item-base;
 
 	display: inline-block;
+}
+
+.cases-item-databases {
+	@extend %cases-item-base;
+
+	overflow: auto;
+	white-space: nowrap;
+	margin: 0 2em;
+	border-radius: 3px;
+	flex: .5;
+	background-color: rgba(#000, .05);
+	border: 1px solid rgba(#000, .15);
+	font-size: .9em;
 }

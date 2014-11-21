@@ -54,6 +54,16 @@ core-icon {
   stroke-width: 0;
 }
 
+.tag {
+	margin: 0 1em;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: .4rem .5rem;
+	background-color: $primary-color;
+	border-radius: 3px;
+	color: #fff;
+}
+
 .toolbar-wrapper {
 	height: inherit;
 
