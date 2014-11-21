@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from bson.json_util import dumps
 
-from flask import abort, Blueprint, redirect, url_for, request, Response
+from flask import Blueprint, redirect, url_for, request
 from flask.ext.login import login_required, current_user
 
 from ..models import Institute, Variant, Case
@@ -39,15 +38,6 @@ def cases(institute_id):
 
   # fetch cases from the data store
   return dict(institute=institute, institute_id=institute_id)
-
-
-@core.route('/api/v1/<institute_id>/cases')
-@login_required
-def api_cases(institute_id):
-  institute = Institute.objects.get_or_404(id=institute_id)
-  cases_json = dumps([case.to_mongo() for case in institute.cases])
-
-  return Response(cases_json, mimetype='application/json; charset=utf-8')
 
 
 @core.route('/<institute_id>/<case_id>')

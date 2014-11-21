@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from flask import Blueprint, jsonify
+from bson.json_util import dumps
+from flask import Blueprint, jsonify, Response
 
 from ..extensions import omim
+from ..models import Institute
 
 TERMS_MAPPER = {
   'Autosomal recessive': 'AR',
@@ -27,3 +29,11 @@ def omim_inheritance(hgnc_symbol):
   terms = [TERMS_MAPPER.get(model_human, model_human) for model_human in models]
 
   return jsonify(models=terms)
+
+
+@api.route('/<institute_id>/cases')
+def cases(institute_id):
+  institute = Institute.objects.get_or_404(id=institute_id)
+  cases_json = dumps([case.to_mongo() for case in institute.cases])
+
+  return Response(cases_json, mimetype='application/json; charset=utf-8')
