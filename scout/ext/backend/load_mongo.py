@@ -32,8 +32,10 @@ import hashlib
 
 from datetime import datetime
 from pymongo import MongoClient
+from mongoengine import connect
 
 from .config_parser import ConfigParser
+from ...models import *
 
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
@@ -42,41 +44,41 @@ from pprint import pprint as pp
 
 
 def load_mongo(vcf_file=None, ped_file=None, config_file=None,
-               family_type='ped', mongo_db='variantDatabase'):
+               family_type='ped', mongo_db='variantDatabase', institute = 'CMMS'):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
 
-  client = MongoClient('localhost', 27017)
-  db = client[mongo_db]
+  connect(mongo_db, host='localhost', port=27017)
+  # db = client[mongo_db]
   # combine path to the local development fixtures
   project_root = '/vagrant/scout'
   # print(project_root, vcf_file, ped_file, config_file)
   config_object = ConfigParser(config_file)
-
+    
   ######## Get the case and add it to the mongo db: ########
-
-  case_collection = db.case
-
-  case = get_case(ped_file, family_type)
-
+  
+  case = get_case(ped_file, family_type, institute)
+  case.save()
+  
+  ######## Add the to the mongo db: ########
+  
+  institute = get_institute(institute)
+  institute.save()
+  
+  sys.exit()
   # This function updates the cases collection if the specific family exists.
   # If the family exists a new object is inserted
-  case_collection.update({ '_id': case['_id']}, {"$set" : case}, upsert=True)
-
+  
   ######## Get the variants and add them to the mongo db: ########
-
-  variant_collection = db.variant
-
-  start_inserting_variants = datetime.now()
-
+  
   variant_parser = vcf_parser.VCFParser(infile = vcf_file)
   nr_of_variants = 0
 
   for variant in variant_parser:
     nr_of_variants += 1
     # pp(variant)
-    load_variant(variant, case, config_object, variant_collection, nr_of_variants)
+    variant = get_variant(variant, case, config_object, variant_collection, nr_of_variants)
 
   print('%s variants inserted!' % nr_of_variants)
   print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants))
@@ -88,20 +90,40 @@ def generate_md5_key(list_of_arguments):
   return h.hexdigest()
 
 
-def get_case(ped_file, family_type):
+def get_institute(institute):
+  """Return a institute object"""
+  return Institute(internal_id=institute, display_name=institute)
+
+def get_case(ped_file, family_type, institute):
   """Take a case file and return the case on the specified format."""
 
   case = {}
   case_parser = ped_parser.FamilyParser(ped_file, family_type=family_type)
-
+  
   case = case_parser.get_json()[0]
-
-  case['last_updated'] = datetime.now()
-  case['display_name'] = case['family_id']
-  case['synopsis'] = ''
-  case['_id'] = generate_md5_key([case['family_id']])
-
-  return case
+  
+  mongo_case = Case(case_id = generate_md5_key([institute, case['family_id']]))
+  mongo_case['display_name'] = case['family_id']
+  individuals = []
+  databases = set()
+  for individual in case['individuals']:
+    ind = Individual()
+    ind['father'] = individual['father']
+    ind['mother'] = individual['mother']
+    ind['display_name'] = individual['individual_id']
+    # Fix this when ped_parser is updated:
+    ind['sex'] = str(individual['sex:'])
+    ind['phenotype'] = individual['phenotype']
+    ind['individual_id'] = individual['individual_id']
+    ind['capture_kit'] = individual.get('extra_info', {}).get('Capture_kit', '').split(',')
+    # Fix this when ped_parser is updated:
+    for clinical_db in individual.get('extra_info', {}).get('Clinical_db\n', '').split(','):
+      databases.add(clinical_db)
+    individuals.append(ind)
+  mongo_case['individuals'] = individuals
+  mongo_case['databases'] = list(databases)
+  
+  return mongo_case
 
 
 def load_variant(variant, case, config_object, variant_collection, variant_count):
@@ -109,14 +131,14 @@ def load_variant(variant, case, config_object, variant_collection, variant_count
   formated_variant = format_variant(variant, case, config_object)
   case_specific = formated_variant.pop('specific', {})
   case_specific['variant_rank'] = variant_count
-
+  
   variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : formated_variant}, upsert=True)
-
+  
   variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : {("specific.%s" % case['_id']) : case_specific}})
 
   return
 
-def format_variant(variant, case, config_object):
+def get_variant(variant, case, config_object):
   """Return the variant in a format specified for scout. The structure is decided by the config file that is used."""
 
 
