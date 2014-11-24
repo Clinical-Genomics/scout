@@ -43,6 +43,9 @@ pyOpenSSL
 # Markdown
 Flask-Markdown
 
+# Mail
+Flask-Mail
+
 # utils
 path.py
 configparser

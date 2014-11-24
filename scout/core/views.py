@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from flask import Blueprint, redirect, url_for, request
+from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
+                   request, url_for)
 from flask.ext.login import login_required, current_user
+from flask.ext.mail import Message
 
 from ..models import Institute, Variant, Case
-from ..extensions import store
+from ..extensions import mail, store
 from ..helpers import templated
 
 core = Blueprint('core', __name__, template_folder='templates')
@@ -114,3 +116,30 @@ def variant(institute_id, case_id, variant_id):
     variant=variant,
     specific=variant.specific[case.id]
   )
+
+
+@core.route('/<institute_id>/email', methods=['POST'])
+@login_required
+def email(institute_id):
+  institute = Institute.objects.get_or_404(id=institute_id)
+
+  recipients = institute.sanger_recipients
+  if len(recipients) == 0:
+    flash('No sanger recipients added to the institute.')
+    return abort(404)
+
+  kwargs = dict(
+    subject="SCOUT: Sanger sequencing of %s" % request.form['hgnc_symbol'],
+    html=request.form['message'],
+    sender=current_app.config['MAIL_USERNAME'],
+    recipients=recipients,
+    # cc the sender of the email for confirmation
+    cc=[current_user.email],
+    bcc=[current_app.config['MAIL_USERNAME']]
+  )
+
+  # compose and send the email message
+  msg = Message(**kwargs)
+  mail.send(msg)
+
+  return jsonify(**kwargs)

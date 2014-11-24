@@ -42,6 +42,12 @@ from flask.ext.markdown import Markdown
 markdown = lambda app: Markdown(app)
 
 # +--------------------------------------------------------------------+
+# | Flask-Mail
+# +--------------------------------------------------------------------+
+from flask.ext.mail import Mail
+mail = Mail()
+
+# +--------------------------------------------------------------------+
 # | Flask-OAuthlib
 # +--------------------------------------------------------------------+
 from flask_oauthlib.client import OAuth

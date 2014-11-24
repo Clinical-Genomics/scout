@@ -20,6 +20,18 @@ class BaseConfig(object):
   # Flask-MongoEngine
   MONGODB_SETTINGS = {'db': 'testing'}
 
+  # Flask-mail: http://pythonhosted.org/flask-mail/
+  # see: https://bitbucket.org/danjac/flask-mail/issue/3
+  MAIL_DEBUG = DEBUG
+  MAIL_SERVER = 'smtp.gmail.com'
+  MAIL_PORT = 587
+  MAIL_USE_TLS = True
+  MAIL_USE_SSL = False
+  # put real MAIL_USERNAME and MAIL_PASSWORD under instance folder
+  MAIL_USERNAME = 'yourmail@gmail.com'
+  MAIL_PASSWORD = 'yourpass'
+  MAIL_DEFAULT_SENDER = MAIL_USERNAME
+
   BLUEPRINTS = ['scout.core.core',
                 'scout.frontend.frontend',
                 'scout.login.login',
@@ -34,6 +46,7 @@ class BaseConfig(object):
                 'scout.extensions.login_manager',
                 'scout.extensions.ssl',
                 'scout.extensions.markdown',
+                'scout.extensions.mail',
                 'scout.extensions.omim']
 
 
