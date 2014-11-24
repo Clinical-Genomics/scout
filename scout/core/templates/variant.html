@@ -25,9 +25,15 @@
 {% endblock %}
 
 {% block toolbar_right %}
-  <div class="icon-button" title="Order Sanger">
-    <core-icon v-with="icon: 'mail'"></core-icon>
-  </div>
+  <form action="{{ url_for('core.email_sanger', institute_id=institute_id) }}"
+        method="POST">
+
+    <input class="is-hidden" name="hgnc_symbol" value="{{ variant.common.hgnc_symbols|join(',') }}">
+
+    <button class="icon-button" type="submit" title="Order Sanger">
+      <core-icon v-with="icon: 'mail'"></core-icon>
+    </button>
+  </form>
 
   <div class="icon-button" title="Pin variant">
     <core-icon v-with="icon: 'bookmark'"></core-icon>

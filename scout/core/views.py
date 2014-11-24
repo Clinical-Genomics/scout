@@ -105,7 +105,7 @@ def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
   institute = Institute.objects.get_or_404(id=institute_id)
   case = Case.objects.get_or_404(display_name=case_id)
-  variant = Variant.objects.get_or_404(_id=variant_id)
+  variant = Variant.objects.get_or_404(variant_id=variant_id)
 
   return dict(
     institute=institute,
@@ -118,9 +118,9 @@ def variant(institute_id, case_id, variant_id):
   )
 
 
-@core.route('/<institute_id>/email', methods=['POST'])
+@core.route('/<institute_id>/email-sanger', methods=['POST'])
 @login_required
-def email(institute_id):
+def email_sanger(institute_id):
   institute = Institute.objects.get_or_404(id=institute_id)
 
   recipients = institute.sanger_recipients
@@ -128,9 +128,31 @@ def email(institute_id):
     flash('No sanger recipients added to the institute.')
     return abort(404)
 
+  html = """
+    <p>
+      Case %(family_id)s:
+      <a class='activity-caption-link' href='%(url)s'>%(variant_id)s</a>
+    </p>
+    <p>HGNC symbol: %(hgnc_symbol)s</p>
+    <p>Database: %(database_id)s</p>
+    <p>
+      Chr position: <br>
+      %(chromosome_position)s
+    </p>
+    <p>
+      Amino acid change(s): <br>
+      <ul>#{(functions.join('') or '<li>No protein changes</li>')}</ul>
+    </p>
+    <p>
+      GT-call: <br>
+      <ul>#{gtcalls.join('')}</ul>
+    </p>
+    <p>Ordered by: %(name)s</p>
+  """ % dict(family_id=None, name=current_user.name)
+
   kwargs = dict(
     subject="SCOUT: Sanger sequencing of %s" % request.form['hgnc_symbol'],
-    html=request.form['message'],
+    html=request.form.get('message', 'Hi, default here'),
     sender=current_app.config['MAIL_USERNAME'],
     recipients=recipients,
     # cc the sender of the email for confirmation

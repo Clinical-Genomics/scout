@@ -141,6 +141,11 @@ core-icon {
 }
 
 .icon-button {
+	// reset
+	border: 0;
+	background-color: transparent;
+	outline: none;
+
 	padding: .5em;
 	margin: .5em;
 	transition: background-color 50ms;
