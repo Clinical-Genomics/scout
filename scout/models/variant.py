@@ -40,13 +40,13 @@ class GTCall(db.EmbeddedDocument):
 
 
 class VariantCaseSpecific(db.EmbeddedDocument):
-  rank_score = db.IntField()
+  rank_score = db.FloatField()
   variant_rank = db.IntField()
   quality = db.FloatField()
   filters = db.ListField(db.StringField())
   samples = db.ListField(db.EmbeddedDocumentField(GTCall))
   genetic_models = db.ListField(db.StringField(choices=[
-    'AR_hom', 'AR_compound', 'AR_hom_denovo', 'AD', 'AD_denovo', 'X', 'X_dn'
+    'AR_hom', 'AR_comp', 'AR_hom_denovo', 'AD', 'AD_denovo', 'XR', 'XR_dn', 'XD', 'XD_dn'
   ]))
 
   def __unicode__(self):
@@ -54,8 +54,7 @@ class VariantCaseSpecific(db.EmbeddedDocument):
 
 
 class Variant(db.Document):
-  _id = db.StringField(primary_key=True)
-  md5_key = db.StringField()
+  variant_id = db.StringField(primary_key=True)
   display_name = db.StringField(required=True)
   chromosome = db.StringField(required=True)
   position = db.IntField(required=True)

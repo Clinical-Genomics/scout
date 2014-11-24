@@ -66,20 +66,21 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   institute = get_institute(institute)
   institute.save()
   
-  sys.exit()
-  # This function updates the cases collection if the specific family exists.
-  # If the family exists a new object is inserted
   
   ######## Get the variants and add them to the mongo db: ########
   
+  individuals = [individual.individual_id for individual in case.individuals]
+  
   variant_parser = vcf_parser.VCFParser(infile = vcf_file)
   nr_of_variants = 0
-
+  
+  start_inserting_variants = datetime.now()
+  
   for variant in variant_parser:
     nr_of_variants += 1
-    # pp(variant)
-    variant = get_variant(variant, case, config_object, variant_collection, nr_of_variants)
-
+    mongo_variant = get_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
+    mongo_variant.save()
+  
   print('%s variants inserted!' % nr_of_variants)
   print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants))
 
@@ -97,7 +98,6 @@ def get_institute(institute):
 def get_case(ped_file, family_type, institute):
   """Take a case file and return the case on the specified format."""
 
-  case = {}
   case_parser = ped_parser.FamilyParser(ped_file, family_type=family_type)
   
   case = case_parser.get_json()[0]
@@ -111,13 +111,11 @@ def get_case(ped_file, family_type, institute):
     ind['father'] = individual['father']
     ind['mother'] = individual['mother']
     ind['display_name'] = individual['individual_id']
-    # Fix this when ped_parser is updated:
-    ind['sex'] = str(individual['sex:'])
+    ind['sex'] = str(individual['sex'])
     ind['phenotype'] = individual['phenotype']
     ind['individual_id'] = individual['individual_id']
     ind['capture_kit'] = individual.get('extra_info', {}).get('Capture_kit', '').split(',')
-    # Fix this when ped_parser is updated:
-    for clinical_db in individual.get('extra_info', {}).get('Clinical_db\n', '').split(','):
+    for clinical_db in individual.get('extra_info', {}).get('Clinical_db', '').split(','):
       databases.add(clinical_db)
     individuals.append(ind)
   mongo_case['individuals'] = individuals
@@ -125,94 +123,104 @@ def get_case(ped_file, family_type, institute):
   
   return mongo_case
 
-
-def load_variant(variant, case, config_object, variant_collection, variant_count):
-  """Load a variant into the database."""
-  formated_variant = format_variant(variant, case, config_object)
-  case_specific = formated_variant.pop('specific', {})
-  case_specific['variant_rank'] = variant_count
-  
-  variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : formated_variant}, upsert=True)
-  
-  variant_collection.update({ '_id': formated_variant['_id']}, {"$set" : {("specific.%s" % case['_id']) : case_specific}})
-
-  return
-
-def get_variant(variant, case, config_object):
+def get_variant(variant, individuals, case_id, config_object, variant_count):
   """Return the variant in a format specified for scout. The structure is decided by the config file that is used."""
 
 
   def get_genotype_information(variant, genotype_collection, individual):
-    """Get the genotype information in the proper format and return an array with the individuals."""
-    individual_information = {'sample':individual}
+    """Get the genotype information in the proper format and return ODM specified gt call."""
+    mongo_gt_call = GTCall(sample=individual)
     for genotype_information in genotype_collection:
       if config_object[genotype_information]['vcf_format_key'] == 'GT':
-        individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].genotype
+        mongo_gt_call['genotype_call'] = variant['genotypes'][individual].genotype
       elif config_object[genotype_information]['vcf_format_key'] == 'DP':
-        individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].depth_of_coverage
+        mongo_gt_call['read_depth'] = variant['genotypes'][individual].depth_of_coverage
       elif config_object[genotype_information]['vcf_format_key'] == 'AD':
-        individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].allele_depth
+        mongo_gt_call['allele_depths'] = [variant['genotypes'][individual].ref_depth,
+                                          variant['genotypes'][individual].alt_depth]
       elif config_object[genotype_information]['vcf_format_key'] == 'GQ':
-        individual_information[config_object[genotype_information]['internal_record_key']] = variant['genotypes'][individual].genotype_quality
-    return individual_information
-
-  def get_value(variant, collection, information):
-    """Return the correct value from the variant according to rules in config parser.
-        vcf_fiels can be one of the following[CHROM, POS, ID, REF, ALT, QUAL, INFO, FORMAT, individual, other]"""
-    # If information is on the core we can access it directly through the vcf key
-    value = None
-    # The core information can be read straight from the vcf line
-    if collection == 'core':
-      value = variant[config_object[information]['vcf_field']]
-    # The common data is read from the INFO field
-    elif collection == 'common':
-      value = variant['info_dict'].get(config_object[information]['vcf_info_key'], None)
-    # The case specific information can be either in INFO field or one of the mandatory fields:
-    elif collection == 'case':
-      if config_object[information]['vcf_field'] == 'INFO':
-        value = variant['info_dict'].get(config_object[information]['vcf_info_key'], None)
-      else:
-        value = variant.get(config_object[information]['vcf_field'], None)
-    # Check if we should return a list:
-    if value and config_object[information]['vcf_data_field_number'] != '1':
-      value = value.split(config_object[information]['vcf_data_field_separator'])
-    # If there should be one value but there are several we need to get the right one.
-    # elif len(value.split(config_object[information].get(['vcf_data_field_separator'], ','))) > 1:
-
-    return value
-
+        mongo_gt_call['genotype_quality'] = variant['genotypes'][individual].genotype_quality
+    
+    return mongo_gt_call
+  
+  
+  id_fields = [variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']]
   # We insert the family with the md5-key as id, same key we use in cases
-  variant_id = generate_md5_key([variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']])
-  # These are the individuals included in the family
-  case_individuals = [individual['individual_id'] for individual in case['individuals']]
+  # Add the core information about the variant  
+  mongo_variant = Variant(variant_id = generate_md5_key(id_fields),
+                          display_name = '_'.join(id_fields),
+                          chromosome = variant['CHROM'],
+                          position = int(variant['POS']),
+                          reference = variant['REF'],
+                          alternatives = variant['ALT'].split(',')
+                  )
+  
+  mongo_variant['db_snp_ids'] = variant.get(config_object['ID']['vcf_field'], '').split(
+                                              config_object['ID']['vcf_data_field_separator'])
+  
+  mongo_common = VariantCommon()
+  # Add the gene ids
+  mongo_common['hgnc_symbols'] = variant['info_dict'].get(config_object['HGNC_symbol']['vcf_info_key'], '').split(
+                                              config_object['HGNC_symbol']['vcf_data_field_separator'])
+  mongo_common['ensemble_gene_ids'] = variant['info_dict'].get(config_object['Ensembl_gene_id']['vcf_info_key'], '').split(
+                                              config_object['Ensembl_gene_id']['vcf_data_field_separator'])
+  # Add the frequencies
+  mongo_common['thousand_genomes_frequency'] = min([float(frequency) for frequency in
+              variant['info_dict'].get(config_object['1000GMAF']['vcf_info_key'], '0').split(
+              config_object['1000GMAF']['vcf_data_field_separator'])])
+  
+  mongo_common['exac_frequency'] = min([float(frequency) for frequency in
+              variant['info_dict'].get(config_object['EXAC']['vcf_info_key'], '0').split(
+              config_object['EXAC']['vcf_data_field_separator'])])
 
-  # We use common to store annotations and specific to store
-  formated_variant = {'common':{}, 'specific':{}}
-
-  # Store the case specific variant information in specific:
-  formated_variant['specific']['samples'] = []
-
-  # Add the human readable display name to the variant
-  formated_variant['display_name'] = variant['variant_id']
-
-  formated_variant['_id'] = variant_id
+  # Add the severity predictions
+  mongo_common['cadd_score'] = max([float(score) for score in
+              variant['info_dict'].get(config_object['CADD']['vcf_info_key'], '0').split(
+              config_object['CADD']['vcf_data_field_separator'])])
+  
+  mongo_common['sift_predictions'] = variant['info_dict'].get(config_object['Sift']['vcf_info_key'], '').split(
+              config_object['Sift']['vcf_data_field_separator'])
+  
+  mongo_common['polyphen_predictions'] = variant['info_dict'].get(config_object['PolyPhen']['vcf_info_key'], '').split(
+              config_object['PolyPhen']['vcf_data_field_separator'])
+  
+  # Add functional annotation
+  mongo_common['functional_annotation'] = variant['info_dict'].get(config_object['FunctionalAnnotation']['vcf_info_key'], '').split(
+              config_object['FunctionalAnnotation']['vcf_data_field_separator'])
+  
+  # Add region annotation
+  mongo_common['region_annotation'] = variant['info_dict'].get(config_object['GeneticRegionAnnotation']['vcf_info_key'], '').split(
+              config_object['GeneticRegionAnnotation']['vcf_data_field_separator'])
+  
+  # Add the common field:
+  mongo_variant['common'] = mongo_common
+  
+  # Add the information that is specific to this case
+  mongo_specific = VariantCaseSpecific()
+  mongo_specific['rank_score'] = float(variant['info_dict'].get(config_object['RankScore']['vcf_info_key'], 0))
+  mongo_specific['variant_rank'] = variant_count
+  mongo_specific['quality'] = float(variant.get(config_object['QUAL']['vcf_field'], 0))
+  mongo_specific['filters'] = variant.get(config_object['FILTER']['vcf_field'], '').split(
+                                              config_object['FILTER']['vcf_data_field_separator'])
+  
+  # print('Genetic models:%s' % variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], ''))
+  
+  mongo_specific['genetic_models'] = variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], '').split(
+                                              config_object['GeneticModels']['vcf_data_field_separator'])
+  
+  
+  mongo_variant['specific'][case_id] = mongo_specific
 
 
   # Add the genotype information for each individual
-  for individual in case_individuals:
-    formated_variant['specific']['samples'].append(
-          get_genotype_information(variant, config_object.categories['genotype_information'], individual))
-
-  for annotation in config_object.collections['core']:
-    formated_variant[config_object[annotation]['internal_record_key']] = get_value(variant, 'core', annotation)
-
-  for annotation in config_object.collections['common']:
-    formated_variant['common'][config_object[annotation]['internal_record_key']] = get_value(variant, 'common', annotation)
-
-  for annotation in config_object.collections['case']:
-    formated_variant['specific'][config_object[annotation]['internal_record_key']] = get_value(variant, 'case', annotation)
-
-  return formated_variant
+  gt_calls = []
+  for individual in individuals:
+    # This function returns an ODM GTCall object with the relevant information:
+    gt_calls.append(get_genotype_information(variant, config_object.categories['genotype_information'], individual))
+  
+  mongo_variant['specific'][case_id]['samples'] = gt_calls
+  
+  return mongo_variant
 
 
 @click.command()
