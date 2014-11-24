@@ -38,10 +38,10 @@ class MongoAdapter(BaseAdapter):
     host = config.get('MONGODB_HOST', 'localhost')
     port = config.get('MONGODB_PORT', 27017)
     database = config.get('MONGODB_DB', 'variantDatabase')
-    
+
     connect(database, host=host, port=port)
-    
-    
+
+
     # self.case_collection = self.db.case
     # self.variant_collection = self.db.variant
 
@@ -49,23 +49,23 @@ class MongoAdapter(BaseAdapter):
 
     if app:
       self.init_app(app)
-    
+
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
-  
-  
+
+
   def cases(self):
     return Case.objects
 
   def case(self, case_id):
-    
+
     try:
       return Case.objects.get(pk = case_id)
     except DoesNotExist:
       return None
-  
+
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
-    
+
     variants = []
     nr_of_variants = skip + nr_of_variants
     case_specific = ('specific.%s' % case_id)
@@ -84,23 +84,23 @@ class MongoAdapter(BaseAdapter):
     case_specific = ('specific.%s' % case_id)
     previous_variant = Variants.get(pk = variant_id)
     rank = int(previous_variant['specific'].get(case_id, {}).get('variant_rank', 0))
-    
+
     try:
       return Variant.get(__raw__ = {case_specific + '.variant_rank': rank+1})
     except DoesNotExist:
       return None
-    
+
   def previous_variant(self, variant_id, case_id):
     """Returns the next variant from the rank order"""
     case_specific = ('specific.%s' % case_id)
     previous_variant = Variants.get(pk = variant_id)
     rank = int(previous_variant['specific'].get(case_id, {}).get('variant_rank', 0))
-    
+
     try:
       return Variant.get(__raw__ = {case_specific + '.variant_rank': rank-1})
     except DoesNotExist:
       return None
-  
+
 @click.command()
 def cli():
     """Test the vcf class."""
@@ -111,9 +111,9 @@ def cli():
       h = hashlib.md5()
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
-    
+
     my_mongo = MongoAdapter(app='hej')
-    
+
     ### FOR DEVELOPMENT ###
     # small_family_id = generate_md5_key(['3'])
     # big_family_id = generate_md5_key(['2'])

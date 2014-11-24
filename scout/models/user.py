@@ -34,6 +34,9 @@ class User(Document):
   def has_role(self, query_role):
     return query_role in self.roles
 
+  def belongs_to(self, institute_id):
+    return institute_id in self.institutes
+
   # required for Flask-Admin interface
   def __unicode__(self):
     return self.name

@@ -5,12 +5,20 @@ from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
                    request, url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
+from mongoengine import DoesNotExist
 
 from ..models import Institute, Variant, Case
 from ..extensions import mail, store
-from ..helpers import templated
+from ..helpers import templated, md5ify
 
 core = Blueprint('core', __name__, template_folder='templates')
+
+
+def get_document_or_404(model, display_name):
+  try:
+    return model.objects.get(display_name=display_name)
+  except DoesNotExist:
+    return abort(404)
 
 
 @core.route('/institutes')
@@ -21,7 +29,7 @@ def institutes():
   if len(current_user.institutes) == 1:
     # there no choice of institutes to make, redirect to only institute
     institute = current_user.institutes[0]
-    return redirect(url_for('.cases', institute_id=institute.id))
+    return redirect(url_for('.cases', institute_id=institute.display_name))
 
   else:
     return dict(institutes=current_user.institutes)
@@ -36,7 +44,7 @@ def cases(institute_id):
   The purpose of this page is to display all cases related to an
   institute. It should also give an idea of which
   """
-  institute = Institute.objects.get_or_404(id=institute_id)
+  institute = get_document_or_404(Institute, institute_id)
 
   # fetch cases from the data store
   return dict(institute=institute, institute_id=institute_id)
@@ -48,8 +56,8 @@ def cases(institute_id):
 def case(institute_id, case_id):
   """View one specific case."""
   # abort with 404 error if case/institute doesn't exist
-  case = Case.objects.get_or_404(display_name=case_id)
-  institute = Institute.objects.get_or_404(id=institute_id)
+  institute = get_document_or_404(Institute, institute_id)
+  case = get_document_or_404(Case, case_id)
 
   # fetch a single, specific case from the data store
   return dict(institute=institute, case=case)
@@ -57,7 +65,7 @@ def case(institute_id, case_id):
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
 def assign_self(institute_id, case_id):
-  case = Case.objects.get_or_404(display_name=case_id)
+  case = get_document_or_404(Case, case_id)
 
   # assign logged in user and persist changes
   case.assignee = current_user.to_dbref()
@@ -68,7 +76,7 @@ def assign_self(institute_id, case_id):
 
 @core.route('/<institute_id>/<case_id>/unassign', methods=['POST'])
 def remove_assignee(institute_id, case_id):
-  case = Case.objects.get_or_404(display_name=case_id)
+  case = get_document_or_404(Case, case_id)
 
   # unassign user and persist changes
   case.assignee = None
@@ -85,14 +93,15 @@ def variants(institute_id, case_id):
   per_page = 50
 
   # fetch all variants for a specific case
-  institute = Institute.objects.get_or_404(id=institute_id)
-  case = Case.objects.get_or_404(display_name=case_id)
+  institute = get_document_or_404(Institute, institute_id)
+  case = get_document_or_404(Case, case_id)
   skip = int(request.args.get('skip', 0))
 
   return dict(variants=store.variants(case.id, nr_of_variants=per_page,
                                       skip=skip),
               case=case,
               case_id=case_id,
+              case_specific_id=md5ify((case_id, )),
               institute=institute,
               institute_id=institute_id,
               current_batch=(skip + per_page))
@@ -103,9 +112,9 @@ def variants(institute_id, case_id):
 @login_required
 def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
-  institute = Institute.objects.get_or_404(id=institute_id)
-  case = Case.objects.get_or_404(display_name=case_id)
-  variant = Variant.objects.get_or_404(variant_id=variant_id)
+  institute = get_document_or_404(Institute, institute_id)
+  case = get_document_or_404(Case, case_id)
+  variant = Variant.objects.get(variant_id=variant_id)
 
   return dict(
     institute=institute,
@@ -121,7 +130,7 @@ def variant(institute_id, case_id, variant_id):
 @core.route('/<institute_id>/email-sanger', methods=['POST'])
 @login_required
 def email_sanger(institute_id):
-  institute = Institute.objects.get_or_404(id=institute_id)
+  institute = get_document_or_404(Institute, institute_id)
 
   recipients = institute.sanger_recipients
   if len(recipients) == 0:

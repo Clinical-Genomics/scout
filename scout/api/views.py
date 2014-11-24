@@ -33,7 +33,7 @@ def omim_inheritance(hgnc_symbol):
 
 @api.route('/<institute_id>/cases')
 def cases(institute_id):
-  institute = Institute.objects.get_or_404(id=institute_id)
+  institute = Institute.objects.get(display_name=institute_id)
   cases_json = dumps([case.to_mongo() for case in institute.cases])
 
   return Response(cases_json, mimetype='application/json; charset=utf-8')
