@@ -4,6 +4,9 @@
       showDrawer: ->
         @$.drawer.show()
 
+    data:
+      selected: 'inactive'
+
     components:
       'drawer-panel': require './components/drawer-panel.vue'
       'core-icon': require './components/core-icon.vue'

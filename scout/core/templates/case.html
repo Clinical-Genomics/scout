@@ -9,7 +9,7 @@
   </a>
   <core-icon v-with="icon: 'chevron-right'"></core-icon>
 
-  <div>Case {{ case.display_name }}</div>
+  <div>{{ case.display_name }}</div>
 {% endblock %}
 
 {% block toolbar_secondary %}
@@ -35,6 +35,16 @@
         </button>
       </form>
     {% endif %}
+
+    <form action="POST">
+      <select v-model="selected">
+        <option value="inactive">Inactive</option>
+        <option value="active">Active</option>
+        <option value="research">Research</option>
+        <option value="archived">Archived</option>
+        <option value="solved">Solved</option>
+      </select>
+    </form>
   </div>
 {% endblock %}
 
