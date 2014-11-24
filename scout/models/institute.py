@@ -7,14 +7,14 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from ..extensions import db
+from mongoengine import *
 
-class Institute(db.Document):
-  internal_id = db.StringField(primary_key=True, required=True)
-  display_name = db.StringField(required=True)
-  sanger_recipients = db.ListField(db.EmailField())
-  cases = db.ListField(db.ReferenceField('Case'))
-  created_at = db.DateTimeField(default=datetime.now)
+class Institute(Document):
+  internal_id = StringField(primary_key=True, required=True)
+  display_name = StringField(required=True)
+  sanger_recipients = ListField(EmailField())
+  cases = ListField(ReferenceField('Case'))
+  created_at = DateTimeField(default=datetime.now)
 
   def count_cases(self):
     return len(self.cases)

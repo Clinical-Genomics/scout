@@ -7,9 +7,9 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from ..extensions import db
+from mongoengine import *
 
-class Whitelist(db.Document):
-  email = db.EmailField(required=True, unique=True)
-  created_at = db.DateTimeField(default=datetime.now)
-  default_institute = db.ReferenceField('Institute')
+class Whitelist(Document):
+  email = EmailField(required=True, unique=True)
+  created_at = DateTimeField(default=datetime.now)
+  default_institute = ReferenceField('Institute')

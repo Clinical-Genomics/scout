@@ -7,16 +7,16 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from ..extensions import db
+from mongoengine import *
 
-class User(db.Document):
-  email = db.EmailField(required=True, unique=True)
-  name = db.StringField(max_length=40, required=True)
-  created_at = db.DateTimeField(default=datetime.now)
-  accessed_at = db.DateTimeField()
-  location = db.StringField()
-  institutes = db.ListField(db.ReferenceField('Institute'))
-  roles = db.ListField(db.StringField())
+class User(Document):
+  email = EmailField(required=True, unique=True)
+  name = StringField(max_length=40, required=True)
+  created_at = DateTimeField(default=datetime.now)
+  accessed_at = DateTimeField()
+  location = StringField()
+  institutes = ListField(ReferenceField('Institute'))
+  roles = ListField(StringField())
 
   # Flask-Login integration
   def is_authenticated(self):
