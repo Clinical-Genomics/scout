@@ -5,20 +5,12 @@ from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
                    request, url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
-from mongoengine import DoesNotExist
 
 from ..models import Institute, Variant, Case
 from ..extensions import mail, store
-from ..helpers import templated, md5ify
+from ..helpers import templated, md5ify, get_document_or_404
 
 core = Blueprint('core', __name__, template_folder='templates')
-
-
-def get_document_or_404(model, display_name):
-  try:
-    return model.objects.get(display_name=display_name)
-  except DoesNotExist:
-    return abort(404)
 
 
 @core.route('/institutes')
@@ -96,6 +88,11 @@ def variants(institute_id, case_id):
   institute = get_document_or_404(Institute, institute_id)
   case = get_document_or_404(Case, case_id)
   skip = int(request.args.get('skip', 0))
+
+  # update case status if currently inactive
+  if case.status == 'inactive':
+    case.status = 'active'
+    case.save()
 
   return dict(variants=store.variants(case.id, nr_of_variants=per_page,
                                       skip=skip),

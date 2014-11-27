@@ -4,6 +4,7 @@ from functools import wraps
 import hashlib
 
 from flask import request, render_template
+from mongoengine import DoesNotExist
 
 
 def templated(template=None):
@@ -65,3 +66,10 @@ def md5ify(list_of_arguments):
   h = hashlib.md5()
   h.update(' '.join(list_of_arguments))
   return h.hexdigest()
+
+
+def get_document_or_404(model, display_name):
+  try:
+    return model.objects.get(display_name=display_name)
+  except DoesNotExist:
+    return abort(404)

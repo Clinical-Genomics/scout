@@ -4,8 +4,18 @@
       showDrawer: ->
         @$.drawer.show()
 
-    data:
-      selected: 'inactive'
+      onChange: (e) ->
+        superagent
+          .put "/api/v1#{location.pathname}/status"
+          .send { status: @selected }
+          .end (res) =>
+            if res.ok
+              @message = 'Status changed!'
+            else
+              @message = 'Status update failed.'
+
+    data: ->
+      message: ''
 
     components:
       'drawer-panel': require './components/drawer-panel.vue'

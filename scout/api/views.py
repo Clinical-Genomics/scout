@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from bson.json_util import dumps
-from flask import Blueprint, jsonify, Response
+from flask import Blueprint, jsonify, Response, request
 
 from ..extensions import omim
-from ..models import Institute
+from ..models import Institute, Case
+from ..helpers import get_document_or_404
 
 TERMS_MAPPER = {
   'Autosomal recessive': 'AR',
@@ -37,3 +38,14 @@ def cases(institute_id):
   cases_json = dumps([case.to_mongo() for case in institute.cases])
 
   return Response(cases_json, mimetype='application/json; charset=utf-8')
+
+
+@api.route('/<institute_id>/<case_id>/status', methods=['PUT'])
+def case_status(institute_id, case_id):
+  case = get_document_or_404(Case, case_id)
+  case.status = request.json.get('status', case.status)
+  case.save()
+
+  # TODO: create a new event here!
+
+  return jsonify(status=case.status, ok=True)

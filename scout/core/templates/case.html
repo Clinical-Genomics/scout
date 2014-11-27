@@ -37,7 +37,7 @@
     {% endif %}
 
     <form action="POST">
-      <select v-model="selected">
+      <select v-model="selected" v-on="change: onChange">
         {% for status in statuses %}
           <option {% if status == case.status %}selected{% endif %}
                   value="{{ status }}">
@@ -46,6 +46,7 @@
         {% endfor %}
       </select>
     </form>
+    <div class="status-message" v-text="message"></div>
   </div>
 {% endblock %}
 
