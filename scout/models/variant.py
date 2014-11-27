@@ -6,7 +6,10 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import absolute_import, unicode_literals
 
-from mongoengine import *
+from mongoengine import (
+  Document, EmbeddedDocument, EmbeddedDocumentField, FloatField,
+  IntField, ListField, MapField, StringField
+)
 
 
 class VariantCommon(EmbeddedDocument):

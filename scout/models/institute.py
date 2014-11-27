@@ -7,8 +7,9 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from mongoengine import (DateTimeField, Document, EmailField, ListField,
-                         ReferenceField, StringField)
+from mongoengine import (
+  DateTimeField, Document, EmailField, ListField, ReferenceField, StringField
+)
 
 
 class Institute(Document):
