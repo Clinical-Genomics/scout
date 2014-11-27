@@ -221,17 +221,15 @@
 	font-weight: bold;
 }
 
-.case-assign-button {
-	// reset
-	background-color: transparent;
-	border: 0;
-
+.case-assign {
 	display: flex;
 	align-items: center;
+}
 
-	@extend .button-base;
+.case-assign-icon {
+	@extend .icon-button;
+}
 
-	> core-icon {
-		margin-right: .5em;
-	}
+.case-assign-name {
+	font-size: .8em;
 }

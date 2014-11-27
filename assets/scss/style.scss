@@ -41,6 +41,10 @@ h3 {
 	flex: 1;
 }
 
+.is-hidden {
+	display: none;
+}
+
 core-icon {
 	display: inline-block;
   vertical-align: middle;
@@ -48,6 +52,7 @@ core-icon {
   position: relative;
   height: 24px;
   width: 24px;
+  min-width: 24px;
 
   fill: currentcolor;
   stroke: currentcolor;
@@ -64,53 +69,7 @@ core-icon {
 	color: #fff;
 }
 
-.toolbar-wrapper {
-	height: inherit;
-
-	display: flex;
-	flex-direction: column;
-
-	// default styles
-	background-color: $body-fg;
-}
-
-.toolbar {
-	display: flex;
-	align-items: center;
-
-	height: 4rem;
-
-	position: relative;
-	z-index: 1;
-
-	// default styles
-	background: $primary-color;
-  color: #fff;
-  flex-basis: 4rem;
-	font-size: 1.3em;
-}
-
-.toolbar-right {
-	display: flex;
-	align-items: center;
-	font-size: .7em;
-}
-
-.toolbar-secondary {
-	@extend .toolbar;
-
-	font-size: 1em;
-	padding-left: 1em;
-	padding-right: 1em;
-	z-index: 0;
-}
-
-.toolbar-content {
-	flex: 1;
-	overflow: auto;
-}
-
-// Specific styles
+// BUTTONS
 .button-base {
 	// reset
 	display: inline-block;
@@ -147,7 +106,6 @@ core-icon {
 	outline: none;
 
 	padding: .5em;
-	margin: .5em;
 	transition: background-color 50ms;
 	border-radius: 100%;
 	cursor: pointer;
@@ -168,15 +126,6 @@ core-icon {
 	}
 }
 
-.breadcrumb-button {
-	@extend .button-base;
-
-	padding-top: .5em;
-	padding-bottom: .5em;
-	font-size: .9em;
-	background-color: rgba(#000, .05);
-}
-
 .button-menu {
 	width: 24px;
 	height: 24px;
@@ -184,6 +133,99 @@ core-icon {
 	margin: 1em;
 }
 
+// TOOLBAR
+.md-toolbar-wrapper {
+	// take up the whole outer container
+	height: 100%;
+
+	// dist. content vertically
+	display: flex;
+	flex-direction: column;
+
+	// default styles
+	background-color: $body-fg;
+}
+
+.md-toolbar-content {
+	// cover the rest of the container vertically
+	flex: 1;
+	// always be scrollabe if necessary
+	overflow: auto;
+}
+
+.md-toolbar {
+	// resets
+	display: block;
+
+	// fixed height
+	flex-basis: 3.5rem;
+
+	// ... and flexbox model
+	display: flex;
+	align-items: center;
+
+	// keep just above md-toolbar-secondary (shadows etc.)
+	z-index: 1;
+
+	// slightly bigger text than the body content
+	font-size: 1.3em;
+
+	// default styles
+	background: $primary-color;
+  color: #fff;
+
+	// items in the toolbar are kept separated
+	> * {
+		margin: 0 .3em;
+	}
+}
+
+.is-secondary {
+	// keep just below md-toolbar (shadows etc.)
+	z-index: 0;
+}
+
+.md-toolbar-user {
+	// reset
+	text-decoration: none;
+
+	display: flex;
+	align-items: center;
+
+	color: rgba(#fff, .8);
+
+	&:hover {
+		color: #fff;
+	}
+}
+
+.md-toolbar-user-icon {
+	@extend .icon-button;
+}
+
+.md-toolbar-user-name {
+	font-size: .8em;
+}
+
+.md-breadcrumbs {
+	display: flex;
+	align-items: center;
+}
+
+.md-breadcrumbs-separator {
+	margin-top: -3px;
+}
+
+.md-breadcrumb-button {
+	@extend .button-base;
+
+	padding-top: .5em;
+	padding-bottom: .4em;
+	font-size: .9em;
+	background-color: rgba(#000, .05);
+}
+
+// Specific styles
 .core-item {
 	display: flex;
 	align-items: center;

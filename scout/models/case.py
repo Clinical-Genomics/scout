@@ -20,7 +20,7 @@ class Individual(EmbeddedDocument):
   father = StringField()
   mother = StringField()
   individual_id = StringField()
-  capture_kit = ListField(StringField())
+  # capture_kit = ListField(StringField())
 
   @property
   def sex_human(self):

@@ -2,6 +2,7 @@ $variant-base-padding: 1rem;
 
 .variant-header-item {
 	@extend .core-item;
+	font-size: .8em;
 
 	&:not(:last-child) {
 		margin-right: 1em;
@@ -152,7 +153,7 @@ $variant-base-padding: 1rem;
 .variant-move-text {
 	position: absolute;
 	top: 1em;
-	font-size: .9em;
+	font-size: .7em;
 
 	visibility: hidden;
 }

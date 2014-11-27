@@ -3,21 +3,31 @@
 {% set page_title = 'Variants' %}
 
 {% block toolbar_left %}
-  <a class="breadcrumb-button is-raised"
-     href="{{ url_for('core.cases', institute_id=institute_id) }}">
-    {{ institute.display_name }}
-  </a>
-	<core-icon v-with="icon: 'chevron-right'"></core-icon>
+  {{ super() }}
 
-  <a class="breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-    Case {{ case.display_name }}
-  </a>
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
+  <div class="md-breadcrumbs flex">
+    <a class="md-breadcrumb-button is-raised"
+       href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
 
-	Variants
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      {{ case.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
+
+    <div class="md-breadcrumb">Variants</div>
+  </div>
 {% endblock %}
 
-{% block toolbar_secondary %}
+{% block toolbar_custom %}
   <div class="variants-header">
 
     <div class="variants-header-item" title="Rank position">Rank</div>

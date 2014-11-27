@@ -3,18 +3,22 @@
 {% set page_title = 'Cases' %}
 
 {% block toolbar_left %}
-	{{ institute.display_name }}
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
-  cases
+  {{ super() }}
+
+  <div class="md-breadcrumbs flex">
+    <div class="md-breadcrumb">{{ institute.display_name }}</div>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'"></core-icon>
+    <div class="md-breadcrumb">cases</div>
+  </div>
 {% endblock %}
 
 {% block toolbar_secondary %}
-	<div class="toolbar-secondary">
-    <form id="search-cases" class="cases-search">
-      <core-icon v-with="icon: 'search'" class="cases-search-icon"></core-icon>
-      <input v-model="casesSearchQuery" type="search" class="cases-search-input">
-    </form>
-  </div>
+	<form id="search-cases" class="cases-search">
+    <core-icon v-with="icon: 'search'" class="cases-search-icon"></core-icon>
+    <input v-model="casesSearchQuery" type="search" class="cases-search-input">
+  </form>
 {% endblock %}
 
 {% block content %}

@@ -125,6 +125,12 @@ class AppFactory(object):
       return value.strftime(format)
 
     @self.app.template_filter()
+    def initials(value):
+      parts = value.split(' ')
+      letters = (part[0] for part in parts)
+      return ''.join(letters)
+
+    @self.app.template_filter()
     def client_filter(value):
       """Pass through variable in Jinja2 to client side template.
 
