@@ -38,11 +38,12 @@
 
     <form action="POST">
       <select v-model="selected">
-        <option value="inactive">Inactive</option>
-        <option value="active">Active</option>
-        <option value="research">Research</option>
-        <option value="archived">Archived</option>
-        <option value="solved">Solved</option>
+        {% for status in statuses %}
+          <option {% if status == case.status %}selected{% endif %}
+                  value="{{ status }}">
+            {{ status|capitalize }}
+          </option>
+        {% endfor %}
       </select>
     </form>
   </div>

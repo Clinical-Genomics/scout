@@ -60,7 +60,7 @@ def case(institute_id, case_id):
   case = get_document_or_404(Case, case_id)
 
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=case)
+  return dict(institute=institute, case=case, statuses=Case.status.choices)
 
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
