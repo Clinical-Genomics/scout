@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 from bson.json_util import dumps
 from flask import Blueprint, jsonify, Response, request
+import markdown as md
 
 from ..extensions import omim
 from ..models import Institute, Case
@@ -14,6 +15,8 @@ TERMS_MAPPER = {
   'X-linked recessive': 'XR',
   'Autosomal dominant; Isolated cases': 'AD'
 }
+
+mkd = md.Markdown()
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -49,3 +52,12 @@ def case_status(institute_id, case_id):
   # TODO: create a new event here!
 
   return jsonify(status=case.status, ok=True)
+
+
+@api.route('/markdown', methods=['POST'])
+def markdown():
+  """Convert a Markdown string to HTML"""
+  mkd_string = request.json.get('markdown')
+  html_string = mkd.convert(mkd_string)
+
+  return jsonify(html=html_string)
