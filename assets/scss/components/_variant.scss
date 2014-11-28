@@ -2,7 +2,7 @@ $variant-base-padding: 1rem;
 
 .variant-header-item {
 	@extend .core-item;
-	font-size: .8em;
+	font-size: .7em;
 
 	&:not(:last-child) {
 		margin-right: 1em;
@@ -144,6 +144,7 @@ $variant-base-padding: 1rem;
 .variant-move {
 	display: flex;
 	align-items: center;
+  flex-shrink: 0;
 
 	> :first-child {
 		margin-right: 1.5em;
@@ -161,6 +162,7 @@ $variant-base-padding: 1rem;
 %variant-move-button {
 	@extend .icon-button;
 	position: relative;
+  color: #fff;
 
 	&:hover {
 		> .variant-move-text {

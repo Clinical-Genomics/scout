@@ -6,9 +6,9 @@ from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
-from ..models import Institute, Variant, Case
+from ..models import Institute, Case
 from ..extensions import mail, store
-from ..helpers import templated, md5ify, get_document_or_404
+from ..helpers import templated, get_document_or_404
 
 core = Blueprint('core', __name__, template_folder='templates')
 
@@ -94,11 +94,10 @@ def variants(institute_id, case_id):
     case.status = 'active'
     case.save()
 
-  return dict(variants=store.variants(case.id, nr_of_variants=per_page,
+  return dict(variants=store.variants(case.case_id, nr_of_variants=per_page,
                                       skip=skip),
               case=case,
               case_id=case_id,
-              case_specific_id=md5ify((case_id, )),
               institute=institute,
               institute_id=institute_id,
               current_batch=(skip + per_page))
@@ -111,7 +110,12 @@ def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
   institute = get_document_or_404(Institute, institute_id)
   case = get_document_or_404(Case, case_id)
-  variant = Variant.objects.get(variant_id=variant_id)
+  variant = store.variant(variant_id=variant_id)
+
+  prev_variant = store.previous_variant(variant_id=variant_id,
+                                        case_id=case.case_id)
+  next_variant = store.next_variant(variant_id=variant_id,
+                                    case_id=case.case_id)
 
   return dict(
     institute=institute,
@@ -120,7 +124,9 @@ def variant(institute_id, case_id, variant_id):
     case_id=case_id,
     variant_id=variant_id,
     variant=variant,
-    specific=variant.specific[case.id]
+    specific=variant.specific[case.id],
+    prev_variant=prev_variant,
+    next_variant=next_variant,
   )
 
 

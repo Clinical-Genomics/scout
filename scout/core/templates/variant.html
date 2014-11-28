@@ -93,15 +93,23 @@
   <div class="flex"></div>
 
   <div class="variant-move">
-    <div class="variant-move-back" title="Previous variant">
-      <div class="variant-move-text">Prev</div>
-      <core-icon v-with="icon: 'arrow-back'"></core-icon>
-    </div>
+    {% if prev_variant %}
+      <a class="variant-move-back" title="Previous variant"
+         href="{{ url_for('core.variant',
+                    institute_id=institute_id, case_id=case_id,
+                    variant_id=prev_variant.variant_id) }}">
+        <div class="variant-move-text">Prev</div>
+        <core-icon v-with="icon: 'arrow-back'"></core-icon>
+      </a>
+    {% endif %}
 
-    <div class="variant-move-forward" title="Previous variant">
+    <a class="variant-move-forward" title="Previous variant"
+       href="{{ url_for('core.variant',
+                  institute_id=institute_id, case_id=case_id,
+                  variant_id=next_variant.variant_id) }}">
       <div class="variant-move-text">Next</div>
       <core-icon v-with="icon: 'arrow-forward'"></core-icon>
-    </div>
+    </a>
   </div>
 {% endblock %}
 
@@ -139,17 +147,13 @@
           <div class="variant-list-item">
             <div>ThousandG</div>
             <div>
-              {% if variant.common.thousand_genomes_frequency %}
-                {{ variant.common.thousand_genomes_frequency|float|round(3) }}
-              {% else %}
-                -
-              {% endif %}
+              {{ variant.common.thousand_genomes_frequency|float|round(3) }}
             </div>
           </div>
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.common.exac_frequency or '-' }}</div>
+            <div>{{ variant.common.exac_frequency }}</div>
           </div>
 
           <div class="variant-list-item">
@@ -194,7 +198,7 @@
         <div class="variant-segment-title">OMIM</div>
 
         <div class="variant-segment-content">
-          <omim-summary v-with="
+          <omim-summary v-ref="omim" v-with="
             url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
           "></omim-summary>
         </div>
@@ -297,9 +301,11 @@
               Entrez
             </a>
 
-            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.common.ensemble_gene_ids|join(',') }}">
-              Ensembl
+            {% raw %}
+            <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber}}">
+              OMIM
             </a>
+            {% endraw %}
 
             <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
               IGV

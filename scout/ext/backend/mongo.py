@@ -19,6 +19,7 @@ import io
 import json
 import click
 from mongoengine import connect
+from mongoengine.errors import DoesNotExist
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
@@ -82,22 +83,22 @@ class MongoAdapter(BaseAdapter):
   def next_variant(self, variant_id, case_id):
     """Returns the next variant from the rank order"""
     case_specific = ('specific.%s' % case_id)
-    previous_variant = Variants.get(pk = variant_id)
-    rank = int(previous_variant['specific'].get(case_id, {}).get('variant_rank', 0))
+    previous_variant = Variant.objects.get(pk=variant_id)
+    rank = previous_variant['specific'].get(case_id, {}).variant_rank or 0
 
     try:
-      return Variant.get(__raw__ = {case_specific + '.variant_rank': rank+1})
+      return Variant.objects.get(__raw__ = {case_specific + '.variant_rank': rank+1})
     except DoesNotExist:
       return None
 
   def previous_variant(self, variant_id, case_id):
     """Returns the next variant from the rank order"""
     case_specific = ('specific.%s' % case_id)
-    previous_variant = Variants.get(pk = variant_id)
-    rank = int(previous_variant['specific'].get(case_id, {}).get('variant_rank', 0))
+    previous_variant = Variant.objects.get(pk=variant_id)
+    rank = previous_variant['specific'].get(case_id, {}).variant_rank or 0
 
     try:
-      return Variant.get(__raw__ = {case_specific + '.variant_rank': rank-1})
+      return Variant.objects.get(__raw__ = {case_specific + '.variant_rank': rank-1})
     except DoesNotExist:
       return None
 
