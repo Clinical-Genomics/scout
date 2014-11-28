@@ -3,7 +3,11 @@
     No OMIM entry found.
   </div>
 
-  <div class="omim-summary">
+  <div v-show="isFound" class="omim-summary">
+    <div v-show="!phenotypes" class="omim-summary-empty">
+      No phenotypes found for {{entry.gene_symbol}}.
+    </div>
+
     <div v-repeat="entry.other_entities" class="omim-summary-entities">
       {{$value}}
     </div>
@@ -23,6 +27,10 @@
         @entry = JSON.parse(res.text)
         if @entry.gene_symbol
           @isFound = yes
+
+    computed:
+      mimNumber: ->
+        return @entry.mim_number
 
     data: ->
       return {

@@ -24,6 +24,10 @@
             else
               @message = 'Synopsis update failed.'
 
+    computed:
+      mimNumber: ->
+        return @$.omim.mimNumber
+
     data: ->
       message: null
       html: null

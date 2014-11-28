@@ -119,8 +119,10 @@ class OMIM(object):
     entries = data['omim']['searchResponse']['entryList']
 
     if entries:
+      print('Found entries')
       return entries[0]['entry']
     else:
+      print('No entries')
       return {}
 
 
