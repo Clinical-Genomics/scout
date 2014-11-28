@@ -3,21 +3,31 @@
 {% set page_title = 'Variants' %}
 
 {% block toolbar_left %}
-  <a class="breadcrumb-button is-raised"
-     href="{{ url_for('core.cases', institute_id=institute_id) }}">
-    {{ institute.display_name }}
-  </a>
-	<core-icon v-with="icon: 'chevron-right'"></core-icon>
+  {{ super() }}
 
-  <a class="breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-    Case {{ case.display_name }}
-  </a>
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
+  <div class="md-breadcrumbs flex">
+    <a class="md-breadcrumb-button is-raised"
+       href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
 
-	Variants
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      {{ case.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
+
+    <div class="md-breadcrumb">Variants</div>
+  </div>
 {% endblock %}
 
-{% block toolbar_secondary %}
+{% block toolbar_custom %}
   <div class="variants-header">
 
     <div class="variants-header-item" title="Rank position">Rank</div>
@@ -48,8 +58,9 @@
 {% block content %}
 
 	<div class="variants-body">
-
 		{% for variant in variants %}
+
+      {% set specific = variant.specific[case_specific_id] %}
 
 			<div class="variants-row">
 
@@ -57,14 +68,14 @@
 				<a class="variants-row-item text-right"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
-					 									variant_id=variant.id,
+					 									variant_id=variant.variant_id,
                             case_id=case_id) }}">
-          {{ variant.specific.variant_rank }}
+          {{ specific.variant_rank }}
 				</a>
 
         <!-- Rank score -->
         <div class="variants-row-item text-right">
-          {{ variant.specific.rank_score }}
+          {{ specific.rank_score }}
         </div>
 
         <!-- Chromosome -->
@@ -129,7 +140,7 @@
 
         <!-- Inheritance models -->
 				<div class="variants-row-list flex-big">
-					{% for model in (variant.specific.genetic_models or []) %}
+					{% for model in (specific.genetic_models or []) %}
             <div class="variants-row-list-item">{{ model }}</div>
           {% endfor %}
 				</div>

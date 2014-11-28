@@ -7,7 +7,11 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from mongoengine import *
+from mongoengine import (
+  DateTimeField, Document, EmbeddedDocument, EmbeddedDocumentField,
+  IntField, ListField, ReferenceField, StringField
+)
+
 
 class Individual(EmbeddedDocument):
   display_name = StringField()
@@ -54,10 +58,10 @@ class Case(Document):
   last_updated = DateTimeField()
   suspects = ListField(ReferenceField('Variant'))
   synopsis = StringField(default='')
-  status = StringField(default = 'inactive', choices=[
+  status = StringField(default='inactive', choices=[
     'inactive', 'active', 'research', 'archived', 'solved'
   ])
-  
+
   def __unicode__(self):
     return self.display_name
 

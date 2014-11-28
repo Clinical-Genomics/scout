@@ -1,3 +1,6 @@
+# +--------------------------------------------------------------------+
+# | gulp.js config to compile frontend assets
+# +--------------------------------------------------------------------+
 gulp = require 'gulp'
 sass = require 'gulp-sass'
 autoprefixer = require 'gulp-autoprefixer'

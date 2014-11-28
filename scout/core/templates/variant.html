@@ -5,29 +5,47 @@
 {% set hgnc_symbol = variant.common.hgnc_symbols[0] %}
 
 {% block toolbar_left %}
-  <a href="{{ url_for('core.cases', institute_id=institute_id) }}"
-     class="breadcrumb-button is-raised">
-    {{ institute.display_name }}
-  </a>
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
+  {{ super() }}
 
-  <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
-    Case {{ case.display_name }}
-  </a>
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
+  <div class="md-breadcrumbs flex">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
 
-  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="breadcrumb-button is-raised">
-    Variants
-  </a>
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      Case {{ case.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
 
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
-  {{ variant.display_name }}
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">
+      Variants
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'">
+    </core-icon>
+
+    <div class="md-breadcrumb">{{ variant.display_name }}</div>
+  </div>
 {% endblock %}
 
 {% block toolbar_right %}
-  <div class="icon-button" title="Order Sanger">
-    <core-icon v-with="icon: 'mail'"></core-icon>
-  </div>
+  <form action="{{ url_for('core.email_sanger', institute_id=institute_id) }}"
+        method="POST">
+
+    <input class="is-hidden" name="hgnc_symbol" value="{{ variant.common.hgnc_symbols|join(',') }}">
+
+    <button class="icon-button" type="submit" title="Order Sanger">
+      <core-icon v-with="icon: 'mail'"></core-icon>
+    </button>
+  </form>
 
   <div class="icon-button" title="Pin variant">
     <core-icon v-with="icon: 'bookmark'"></core-icon>
@@ -37,41 +55,53 @@
 {% endblock %}
 
 {% block toolbar_secondary %}
-  <div class="toolbar-secondary">
-    {{ core_item(specific.variant_rank,
-                 icon='grade',
-                 class='variant-header-item') }}
+  {{ core_item(specific.variant_rank,
+               icon='grade',
+               class='variant-header-item') }}
 
-    <div class="variant-header-item variants-tooltip">
-      {{ core_item(
-        'Chr%s: %s' % (variant.chromosome,
-                       variant.common.hgnc_symbols|join(',')),
-        icon='room')
-      }}
+  <div class="variant-header-item variants-tooltip">
+    {{ core_item(
+      'Chr%s: %s' % (variant.chromosome,
+                     variant.common.hgnc_symbols|join(',')),
+      icon='room')
+    }}
 
-      <div class="variants-tooltip-tip is-bottom">
-        <ul>
-          <li>
-            <strong>Position</strong>: {{ variant.position }}
-          </li>
-          <li>
-            <strong>Full name</strong>: {{ 'coming soon!' }}
-          </li>
-          <li>
-            <strong>Ensembl</strong>:
-            {{ variant.common.ensemble_gene_ids|join(',') }}
-          </li>
-        </ul>
-      </div>
+    <div class="variants-tooltip-tip is-bottom">
+      <ul>
+        <li>
+          <strong>Position</strong>: {{ variant.position }}
+        </li>
+        <li>
+          <strong>Full name</strong>: {{ 'coming soon!' }}
+        </li>
+        <li>
+          <strong>Ensembl</strong>:
+          {{ variant.common.ensemble_gene_ids|join(',') }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  {{ core_item('%s → %s' % (variant.reference, variant.alternatives|join(',')), icon='swap-vert-circle', class='variant-header-item') }}
+
+  {{ core_item(variant.common.region_annotation|join(','),
+               icon='report', class='variant-header-item') }}
+
+  {{ core_item(variant.common.functional_annotation|join(','),
+               icon='settings', class='variant-header-item') }}
+
+  <div class="flex"></div>
+
+  <div class="variant-move">
+    <div class="variant-move-back" title="Previous variant">
+      <div class="variant-move-text">Prev</div>
+      <core-icon v-with="icon: 'arrow-back'"></core-icon>
     </div>
 
-    {{ core_item('%s → %s' % (variant.reference, variant.alternatives|join(',')), icon='swap-vert-circle', class='variant-header-item') }}
-
-    {{ core_item(variant.common.region_annotation|join(','),
-                 icon='report', class='variant-header-item') }}
-
-    {{ core_item(variant.common.functional_annotation|join(','),
-                 icon='settings', class='variant-header-item') }}
+    <div class="variant-move-forward" title="Previous variant">
+      <div class="variant-move-text">Next</div>
+      <core-icon v-with="icon: 'arrow-forward'"></core-icon>
+    </div>
   </div>
 {% endblock %}
 

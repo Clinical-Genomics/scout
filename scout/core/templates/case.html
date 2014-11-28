@@ -4,38 +4,54 @@
 {% set page_title = 'Case' %}
 
 {% block toolbar_left %}
-  <a href="{{ url_for('core.cases', institute_id=institute.id) }}" class="breadcrumb-button is-raised">
-    {{ institute.display_name }}
-  </a>
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
+  {{ super() }}
 
-  <div>Case {{ case.display_name }}</div>
+  <div class="md-breadcrumbs flex">
+    <a href="{{ url_for('core.cases', institute_id=institute.display_name) }}" class="md-breadcrumb-button is-raised">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'"></core-icon>
+    <div class="md-breadcrumb">{{ case.display_name }}</div>
+  </div>
 {% endblock %}
 
 {% block toolbar_secondary %}
-  <div class="toolbar-secondary">
-    {% if case.assignee %}
-      <form action="{{ url_for('core.remove_assignee',
-                               institute_id=institute.id,
-                               case_id=case.display_name) }}"
-            method="POST">
-        <button type="submit" class="case-assign-button">
-          <core-icon v-with="icon: 'assignment-ind'"></core-icon>
-          {{ case.assignee.name }}
-        </button>
-      </form>
-    {% else %}
-      <form action="{{ url_for('core.assign_self',
-                               institute_id=institute.id,
-                               case_id=case.display_name) }}"
-            method="POST">
-        <button type="submit" class="case-assign-button">
-          <core-icon v-with="icon: 'assignment-ind'"></core-icon>
-          Assign myself
-        </button>
-      </form>
-    {% endif %}
-  </div>
+  {% if case.assignee %}
+    <form class="case-assign" action="{{ url_for('core.remove_assignee',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name) }}"
+          method="POST">
+      <button type="submit" class="case-assign-icon">
+        <core-icon v-with="icon: 'highlight-remove'"></core-icon>
+      </button>
+      <div class="case-assign-name">{{ case.assignee.name|initials }}</div>
+    </form>
+  {% else %}
+    <form class="case-assign" action="{{ url_for('core.assign_self',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name) }}"
+          method="POST">
+
+      <button type="submit" class="case-assign-icon">
+        <core-icon v-with="icon: 'assignment-ind'"></core-icon>
+      </button>
+      <div class="case-assign-name">Adopt</div>
+    </form>
+  {% endif %}
+
+  <form class="status-picker" action="POST">
+    <select v-model="selected" v-on="change: onChange">
+      {% for status in statuses %}
+        <option {% if status == case.status %}selected{% endif %}
+                value="{{ status }}">
+          {{ status|capitalize }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+  <div class="status-message" v-text="message"></div>
 {% endblock %}
 
 {% block content %}
@@ -43,7 +59,7 @@
   <div class="case-segments">
 
     <div id="variants-button" class="case-segment-row">
-      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name) }}" class="case-variants-button is-raised">
+      <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button is-raised">
         Go to all variants
       </a>
     </div>
@@ -96,7 +112,7 @@
               </div>
 
               <div class="case-sample-item--big">
-                {{ sample.extra_info.Capture_kit or 'capture kit: N/A' }}
+                {{ sample.capture_kit or 'capture kit: N/A' }}
               </div>
             </div>
           {% endfor %}

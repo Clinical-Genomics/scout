@@ -3,22 +3,25 @@
 {% set page_title = 'Cases' %}
 
 {% block toolbar_left %}
-	{{ institute.display_name }}
-  <core-icon v-with="icon: 'chevron-right'"></core-icon>
-  cases
-{% endblock %}
+  {{ super() }}
 
-{% block toolbar_secondary %}
-	<div class="toolbar-secondary">
-    <form id="search-cases" class="cases-search">
-      <core-icon v-with="icon: 'search'" class="cases-search-icon"></core-icon>
-      <input v-model="casesSearchQuery" type="search" class="cases-search-input">
-    </form>
+  <div class="md-breadcrumbs flex">
+    <div class="md-breadcrumb">{{ institute.display_name }}</div>
+    <core-icon
+      class="md-breadcrumbs-separator"
+      v-with="icon: 'chevron-right'"></core-icon>
+    <div class="md-breadcrumb">cases</div>
   </div>
 {% endblock %}
 
-{% block content %}
+{% block toolbar_secondary %}
+	<form id="search-cases" class="cases-search">
+    <core-icon v-with="icon: 'search'" class="cases-search-icon"></core-icon>
+    <input v-model="casesSearchQuery" type="search" class="cases-search-input">
+  </form>
+{% endblock %}
 
+{% block content %}
 	<div v-component="cases-list" class="cases-list" v-with="
     url: '{{ url_for('api.cases', institute_id=institute_id) }}',
     baseUrl: '{{ url_for('core.cases', institute_id=institute_id) }}',
@@ -26,5 +29,4 @@
     user_id: '{{ current_user.id }}'
   ">
   </div>
-
 {% endblock %}

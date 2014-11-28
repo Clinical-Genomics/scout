@@ -39,7 +39,7 @@ This is the detailed view of one individual case.
 
 This is where users can request to have the research list opened. It will send an email to the administrators of the site. The user agrees that she is reponsible to have acquired an informed consent for this action. This will also be logged as a new event in the case log.
 
-The case page also displays a simple wiki-style briefing report about the current case that can be used to communicat details on the case to collaborators.
+The case page also displays a simple wiki-style briefing report about the current case that can be used to communicate details on the case to collaborators.
 
 > How are we going to handle tagging comments as "finding", "action", "conclusion"? Perhaps we should just stick with something more general; tags + category etc.
 

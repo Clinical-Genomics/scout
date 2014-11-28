@@ -4,7 +4,8 @@
 {% set page_title = 'Institutes' %}
 
 {% block toolbar_left %}
-  Institutes
+  {{ super() }}
+  <span class="flex">Institutes</span>
 {% endblock %}
 
 {% block content %}
@@ -13,13 +14,15 @@
     {% for institute in institutes %}
 
       <div class="cases-item">
-
-        {{ core_item(institute.display_name, icon='group-work', href=url_for('core.cases', institute_id=institute.id), class='cases-item-title') }}
+        {{ core_item(
+            institute.display_name,
+            icon='group-work',
+            href=url_for('core.cases', institute_id=institute.display_name),
+            class='cases-item-title') }}
 
         <div class="cases-item-date">
           {{ institute.count_cases() }} active cases
         </div>
-
       </div>
 
     {% endfor %}

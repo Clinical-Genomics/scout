@@ -7,7 +7,7 @@ from invoke.util import log
 @task
 def test():
   """test - run the test runner."""
-  run('python setup.py test', pty=True)
+  run('py.test tests', pty=True)
 
 
 @task(name='test-all')
@@ -59,24 +59,7 @@ def publish(test=False):
   log.info('published new release')
 
 
-@task
-def setup():
-  """Setup virtualenv."""
-
-  run('mkvirtualenv scout')
-  run('workon scout')
-  run('pip install --editable .')
-
-
 @task()
 def d(host='0.0.0.0'):
   """Debug."""
   run("python manage.py runserver --host=%s --debug --reload" % host)
-
-
-@task
-def babel():
-  """Babel compile."""
-
-  run("python setup.py compile_catalog "
-      "--directory `find -name translations` --locale sv -f")

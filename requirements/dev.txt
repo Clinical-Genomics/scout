@@ -3,8 +3,6 @@
 
 # testing
 pytest
-webtest
-factory-boy==2.4.1
 coverage
 coveralls
 flake8
@@ -14,11 +12,6 @@ Flask-Script
 
 # Debug toolbar
 Flask-DebugToolbar==0.9.0
-
-# documentation
-sphinx
-sphinxcontrib-napoleon
-sphinx-bootstrap-theme
 
 # packaging
 wheel>=0.23

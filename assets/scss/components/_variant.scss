@@ -2,6 +2,7 @@ $variant-base-padding: 1rem;
 
 .variant-header-item {
 	@extend .core-item;
+	font-size: .8em;
 
 	&:not(:last-child) {
 		margin-right: 1em;
@@ -137,6 +138,50 @@ $variant-base-padding: 1rem;
 
 	&:not(:last-child) {
 		border-right: 1px solid rgba(#000, .1);
+	}
+}
+
+.variant-move {
+	display: flex;
+	align-items: center;
+
+	> :first-child {
+		margin-right: 1.5em;
+	}
+}
+
+.variant-move-text {
+	position: absolute;
+	top: 1em;
+	font-size: .7em;
+
+	visibility: hidden;
+}
+
+%variant-move-button {
+	@extend .icon-button;
+	position: relative;
+
+	&:hover {
+		> .variant-move-text {
+			visibility: visible;
+		}
+	}
+}
+
+.variant-move-back {
+	@extend %variant-move-button;
+
+	> .variant-move-text {
+		right: -2em;
+	}
+}
+
+.variant-move-forward {
+	@extend %variant-move-button;
+
+	> .variant-move-text {
+		left: -2em;
 	}
 }
 
