@@ -94,7 +94,10 @@
       <div id="case-synopsis" class="case-segment-main">
         <div class="case-segment-title">Synopsis</div>
         <div class="case-segment-content-text">
-          {{ case.synopsis|markdown }}
+          <markdown-editor v-with="
+            content: '{{ case.synopsis }}',
+            onSave: updateSynopsis
+          "></markdown-editor>
         </div>
       </div>
 

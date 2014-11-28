@@ -82,6 +82,18 @@ def case_status(institute_id, case_id):
   return jsonify(status=case.status, ok=True)
 
 
+@api.route('/<institute_id>/<case_id>/synopsis', methods=['PUT'])
+def case_synopsis(institute_id, case_id):
+  """Update (PUT) synopsis of a specific case."""
+  case = get_document_or_404(Case, case_id)
+  case.synopsis = request.json.get('synopsis', case.synopsis)
+  case.save()
+
+  # TODO: create a new event here!
+
+  return jsonify(synopsis=case.synopsis, ok=True)
+
+
 @api.route('/markdown', methods=['POST'])
 def markdown():
   """Convert a Markdown string to HTML.

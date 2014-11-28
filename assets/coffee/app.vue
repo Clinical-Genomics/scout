@@ -14,15 +14,15 @@
             else
               @message = 'Status update failed.'
 
-      testMkd: ->
+      updateSynopsis: (markdown) ->
         superagent
-          .post "/api/v1/markdown"
-          .send { markdown: "**Robin** Andeer" }
-          .end (res) =>
+          .put "/api/v1#{location.pathname}/synopsis"
+          .send { synopsis: markdown }
+          .end (res) ->
             if res.ok
-              @html = res.body.html
+              @message = 'Synopsis updated!'
             else
-              @html = "Didn't work..."
+              @message = 'Synopsis update failed.'
 
     data: ->
       message: null
@@ -34,4 +34,5 @@
       'cases-list': require './components/cases-list.vue'
       'omim-model': require './components/omim-model.vue'
       'omim-summary': require './components/omim-summary.vue'
+      'markdown-editor': require './components/markdown-editor.vue'
 </script>
