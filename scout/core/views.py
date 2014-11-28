@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
-from ..models import Institute, Variant, Case
+from ..models import Institute, Case
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
 
@@ -112,6 +112,11 @@ def variant(institute_id, case_id, variant_id):
   case = get_document_or_404(Case, case_id)
   variant = store.variant(variant_id=variant_id)
 
+  prev_variant = store.previous_variant(variant_id=variant_id,
+                                        case_id=case.case_id)
+  next_variant = store.next_variant(variant_id=variant_id,
+                                    case_id=case.case_id)
+
   return dict(
     institute=institute,
     institute_id=institute_id,
@@ -119,7 +124,9 @@ def variant(institute_id, case_id, variant_id):
     case_id=case_id,
     variant_id=variant_id,
     variant=variant,
-    specific=variant.specific[case.id]
+    specific=variant.specific[case.id],
+    prev_variant=prev_variant,
+    next_variant=next_variant,
   )
 
 
