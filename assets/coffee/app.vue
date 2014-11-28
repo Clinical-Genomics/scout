@@ -14,8 +14,19 @@
             else
               @message = 'Status update failed.'
 
+      testMkd: ->
+        superagent
+          .post "/api/v1/markdown"
+          .send { markdown: "**Robin** Andeer" }
+          .end (res) =>
+            if res.ok
+              @html = res.body.html
+            else
+              @html = "Didn't work..."
+
     data: ->
-      message: ''
+      message: null
+      html: null
 
     components:
       'drawer-panel': require './components/drawer-panel.vue'
