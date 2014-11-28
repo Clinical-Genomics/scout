@@ -112,7 +112,7 @@
               </div>
 
               <div class="case-sample-item--big">
-                {{ sample.capture_kit or 'capture kit: N/A' }}
+                {{ sample.capture_kit|join(',') }}
               </div>
             </div>
           {% endfor %}

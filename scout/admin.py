@@ -23,9 +23,3 @@ class UserView(ModelView):
   column_filters = ['name', 'email', 'created_at', 'location']
 
   column_searchable_list = ('name', 'email')
-
-  form_ajax_refs = {
-    'institutes': {
-      'fields': ('internal_id',)
-    }
-  }
