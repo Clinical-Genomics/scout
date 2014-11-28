@@ -3,9 +3,9 @@
 from setuptools import setup
 
 setup(
-  name="scout",
+  name='scout',
   version='0.0.1',
-  url='https://github.com/robinandeer/scout',
+  url='https://github.com/Clinical-Genomics/scout',
   description='Scout is a Flask template/bootstrap/boilerplate application.',
   author='Robin Andeer',
   author_email='robin.andeer@gmail.com',

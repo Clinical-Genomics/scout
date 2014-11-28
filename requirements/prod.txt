@@ -13,9 +13,6 @@ Flask-Admin==1.0.8
 # Database
 Flask-MongoEngine==0.7.1
 
-# Migrations
-#Flask-Migrate==1.2.0
-
 # Forms
 Flask-WTF==0.10.2
 WTForms==1.0.5
@@ -23,14 +20,8 @@ WTForms==1.0.5
 # Deployment
 gunicorn>=17.5
 
-# Assets
-#Flask-Assets==0.10
-#cssmin>=0.1.4
-#jsmin>=2.0.4
-
 # Auth
 Flask-Login==0.2.11
-#Flask-Bcrypt==0.6.0
 Flask-OAuthlib==0.7.0
 
 # Caching
@@ -40,10 +31,8 @@ Flask-OAuthlib==0.7.0
 Flask-SSLify
 pyOpenSSL
 
-# Markdown
+# misc. extensions
 Flask-Markdown
-
-# Mail
 Flask-Mail
 
 # utils
