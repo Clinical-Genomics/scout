@@ -35,7 +35,7 @@ from pymongo import MongoClient
 from mongoengine import connect
 
 from .config_parser import ConfigParser
-from ...models import *
+from ...models import (Case, Individual, Institute, Variant, GTCall, VariantCommon, VariantCaseSpecific, Compound)
 
 from vcf_parser import parser as vcf_parser
 from ped_parser import parser as ped_parser
@@ -165,14 +165,20 @@ def get_variant(variant, individuals, case_id, config_object, variant_count):
   mongo_common['ensemble_gene_ids'] = variant['info_dict'].get(config_object['Ensembl_gene_id']['vcf_info_key'], '').split(
                                               config_object['Ensembl_gene_id']['vcf_data_field_separator'])
   # Add the frequencies
-  mongo_common['thousand_genomes_frequency'] = min([float(frequency) for frequency in
-              variant['info_dict'].get(config_object['1000GMAF']['vcf_info_key'], '0').split(
-              config_object['1000GMAF']['vcf_data_field_separator'])])
-  
-  mongo_common['exac_frequency'] = min([float(frequency) for frequency in
-              variant['info_dict'].get(config_object['EXAC']['vcf_info_key'], '0').split(
-              config_object['EXAC']['vcf_data_field_separator'])])
+  try:
+    mongo_common['thousand_genomes_frequency'] = min([float(frequency) for frequency in
+                variant['info_dict'].get(config_object['1000GMAF']['vcf_info_key'], '0').split(
+                config_object['1000GMAF']['vcf_data_field_separator'])])
+  except ValueError:
+    pass
 
+  try:
+    mongo_common['exac_frequency'] = min([float(frequency) for frequency in
+                variant['info_dict'].get(config_object['EXAC']['vcf_info_key'], '0').split(
+                config_object['EXAC']['vcf_data_field_separator'])])
+  except ValueError:
+    pass
+  
   # Add the severity predictions
   mongo_common['cadd_score'] = max([float(score) for score in
               variant['info_dict'].get(config_object['CADD']['vcf_info_key'], '0').split(
@@ -185,12 +191,31 @@ def get_variant(variant, individuals, case_id, config_object, variant_count):
               config_object['PolyPhen']['vcf_data_field_separator'])
   
   # Add functional annotation
-  mongo_common['functional_annotation'] = variant['info_dict'].get(config_object['FunctionalAnnotation']['vcf_info_key'], '').split(
+  mongo_common['functional_annotations'] = variant['info_dict'].get(config_object['FunctionalAnnotation']['vcf_info_key'], '').split(
               config_object['FunctionalAnnotation']['vcf_data_field_separator'])
   
   # Add region annotation
-  mongo_common['region_annotation'] = variant['info_dict'].get(config_object['GeneticRegionAnnotation']['vcf_info_key'], '').split(
+  mongo_common['region_annotations'] = variant['info_dict'].get(config_object['GeneticRegionAnnotation']['vcf_info_key'], '').split(
               config_object['GeneticRegionAnnotation']['vcf_data_field_separator'])
+  
+  # Add conservation annotation
+  gerp = variant['info_dict'].get(config_object['Gerp']['vcf_info_key'], None)
+  if gerp:
+    mongo_common['gerp_conservation'] = gerp.split(config_object['Gerp']['vcf_data_field_separator'])
+
+  phast_cons = variant['info_dict'].get(config_object['PhastCons']['vcf_info_key'], None)
+  if phast_cons:
+    mongo_common['phast_conservation'] = phast_cons.split(config_object['PhastCons']['vcf_data_field_separator'])
+  
+  phylop_cons = variant['info_dict'].get(config_object['PhylopCons']['vcf_info_key'], None)
+  if phylop_cons:
+    mongo_common['phylop_conservation'] = phylop_cons.split(config_object['PhylopCons']['vcf_data_field_separator'])
+  
+  # Add the predicted protein change
+  
+  protein_change = variant['info_dict'].get(config_object['Transcript']['vcf_info_key'], None)
+  if protein_change:
+    mongo_common['protein_change'] = protein_change.split(config_object['Transcript']['vcf_data_field_separator'])
   
   # Add the common field:
   mongo_variant['common'] = mongo_common
@@ -202,11 +227,29 @@ def get_variant(variant, individuals, case_id, config_object, variant_count):
   mongo_specific['quality'] = float(variant.get(config_object['QUAL']['vcf_field'], 0))
   mongo_specific['filters'] = variant.get(config_object['FILTER']['vcf_field'], '').split(
                                               config_object['FILTER']['vcf_data_field_separator'])
+  compounds = []
+  for compound in variant['info_dict'].get(config_object['Compounds']['vcf_info_key'], '').split(
+                                              config_object['Compounds']['vcf_data_field_separator']):
+    try:
+      splitted_compound = compound.split('>')
+      compound_name = splitted_compound[0]
+      compound_individual_score = float(splitted_compound[1])
+      mongo_compound = Compound(variant_id=generate_md5_key(compound_name.split('_')),
+                              display_name = compound_name,
+                              rank_score = compound_individual_score,
+                              combined_score = mongo_specific['rank_score'] + compound_individual_score
+                              )
+      compounds.append(mongo_compound)
+    except IndexError:
+      pass
+  
+  mongo_specific['compounds'] = compounds
+    
   
   # print('Genetic models:%s' % variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], ''))
-  
-  mongo_specific['genetic_models'] = variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], '').split(
-                                              config_object['GeneticModels']['vcf_data_field_separator'])
+  models = variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], None)
+  if models:
+    mongo_specific['genetic_models'] = models.split(config_object['GeneticModels']['vcf_data_field_separator'])
   
   
   mongo_variant['specific'][case_id] = mongo_specific

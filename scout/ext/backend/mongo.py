@@ -18,12 +18,11 @@ import os
 import io
 import json
 import click
-from mongoengine import connect
-from mongoengine.errors import DoesNotExist
+from mongoengine import connect, DoesNotExist
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
-from ...models import *
+from ...models import (Variant, Compound, Case)
 
 
 from pprint import pprint as pp
@@ -64,14 +63,32 @@ class MongoAdapter(BaseAdapter):
       return Case.objects.get(pk = case_id)
     except DoesNotExist:
       return None
-
+  
+  def format_variant(self, variant):
+    """Return a variant where relevant information is added."""
+    for case in variant['specific']:
+      case_specific = ('specific.%s' % case)
+      for compound in variant['specific'][case]['compounds']:
+        print('Compound id: %s, Display name: %s, Combined_score: %s' % 
+                (compound['variant_id'], compound['display_name'], compound['combined_score']))
+        try:
+          pair = Variant.objects.get(pk = compound['variant_id'])
+          print('pair: %s' % pair)
+          compound['functional_annotations'] = pair['common']['functional_annotations']
+          compound['region_annotations'] = pair['common']['region_annotations']
+          print(pair['common'])
+        except DoesNotExist:
+          pass
+    return variant
+      
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
 
     variants = []
     nr_of_variants = skip + nr_of_variants
     case_specific = ('specific.%s' % case_id)
-    return Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
-                                      case_specific + '.variant_rank')[skip:nr_of_variants]
+    for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
+                                      case_specific + '.variant_rank')[skip:nr_of_variants]:
+      yield self.format_variant(variant)
 
   def variant(self, variant_id):
 
@@ -118,7 +135,7 @@ def cli():
     ### FOR DEVELOPMENT ###
     # small_family_id = generate_md5_key(['3'])
     # big_family_id = generate_md5_key(['2'])
-    case_id = "d7d48f6ffb8d15ed533ad25808d5453b"
+    case_id = "2652eb875192ad4c350271ad76e048ac"
     my_case = my_mongo.case(case_id)
     # my_case = my_mongo.case('hej')
     variant_count = 0
@@ -127,7 +144,7 @@ def cli():
       print('id: %s' % my_case.id)
       for variant in my_mongo.variants(my_case.id, nr_of_variants = 5):
         pp(variant.to_json())
-        print('')
+        # print('')
         variant_count += 1
     print('Number of variants: %s' % variant_count)
     # for case in my_mongo.cases():

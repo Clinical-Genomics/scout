@@ -23,11 +23,21 @@ class VariantCommon(EmbeddedDocument):
   cadd_score = FloatField()
   sift_predictions = ListField(StringField())
   polyphen_predictions = ListField(StringField())
-  functional_annotation = ListField(StringField())
-  region_annotation = ListField(StringField())
+  functional_annotations = ListField(StringField())
+  protein_change = ListField(StringField())
+  region_annotations = ListField(StringField())
+  phast_conservation = ListField(StringField(choices=[
+    'NotConserved', 'Conserved'
+  ]))
+  gerp_conservation = ListField(StringField(choices=[
+    'NotConserved', 'Conserved'
+  ]))
+  phylop_conservation = ListField(StringField(choices=[
+    'NotConserved', 'Conserved'
+  ]))
 
-  def __unicode__(self):
-    return "%s:%s" % (self.chrom, self.position)
+  # def __unicode__(self):
+  #   return "%s:%s" % (self.chromosome, self.position)
 
 
 class GTCall(EmbeddedDocument):
@@ -40,6 +50,13 @@ class GTCall(EmbeddedDocument):
   def __unicode__(self):
     return self.sample
 
+class Compound(EmbeddedDocument):
+  variant_id = StringField(required=True)
+  display_name = StringField(required=True)
+  rank_score = FloatField(required=True)
+  combined_score = FloatField(required=True)
+  region_annotations = ListField(StringField())
+  functional_annotations = ListField(StringField())
 
 class VariantCaseSpecific(EmbeddedDocument):
   rank_score = FloatField()
@@ -50,6 +67,7 @@ class VariantCaseSpecific(EmbeddedDocument):
   genetic_models = ListField(StringField(choices=[
     'AR_hom', 'AR_comp', 'AR_comp_dn', 'AR_hom_dn', 'AD', 'AD_dn', 'XR', 'XR_dn', 'XD', 'XD_dn'
   ]))
+  compounds = ListField(EmbeddedDocumentField(Compound))
 
   def __unicode__(self):
     return 'placeholder'

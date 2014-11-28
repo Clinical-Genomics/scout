@@ -82,6 +82,7 @@ class ConfigParser(ConfigObj):
                       'variant_id':[],
                       'variant_information':[],
                       'allele_frequency':[],
+                      'conservation': [],
                       'deleteriousness':[],
                       'inheritance_models':[],
                       'config_info':[],
