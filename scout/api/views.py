@@ -8,7 +8,7 @@ from ..extensions import omim
 from ..models import Institute, Case
 from ..helpers import get_document_or_404
 
-TERMS_MAPPER = {
+TERMS_MAP = {
   'Autosomal recessive': 'AR',
   'Autosomal dominant': 'AD',
   'X-linked dominant': 'XD',
@@ -16,6 +16,8 @@ TERMS_MAPPER = {
   'Autosomal dominant; Isolated cases': 'AD'
 }
 
+# markdown to HTML converter object
+# can't use Flask-Markdown object since it doesn't support ``init_app``
 mkd = md.Markdown()
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
@@ -23,20 +25,45 @@ api = Blueprint('api', __name__, url_prefix='/api/v1')
 
 @api.route('/omim/gene/<hgnc_symbol>')
 def omim_gene(hgnc_symbol):
+  """Query OMIM for extended information on a specific gene.
+
+  Args:
+    hgnc_symbol (str): HGNC symbol for a gene
+
+  Returns:
+    Response: jsonified ``dict`` of gene specific information
+  """
+  # query using the OMIM extension
   return jsonify(**omim.gene(hgnc_symbol))
 
 
 @api.route('/omim/inheritance/<hgnc_symbol>')
 def omim_inheritance(hgnc_symbol):
+  """Query OMIM for inheritance model of a specific gene.
+
+  Args:
+    hgnc_symbol (str): HGNC symbol for a gene
+
+  Returns:
+    Response: jsonified ``dict`` of inheritance model terms
+  """
   entry = omim.gene(hgnc_symbol)
   models = set(phenotype['inheritance'] for phenotype in entry['phenotypes'])
-  terms = [TERMS_MAPPER.get(model_human, model_human) for model_human in models]
+  terms = [TERMS_MAP.get(model_human, model_human) for model_human in models]
 
   return jsonify(models=terms)
 
 
 @api.route('/<institute_id>/cases')
 def cases(institute_id):
+  """Fetch all cases belonging to a specific institute.
+
+  Args:
+    institute_id (str): unique institute display name
+
+  Returns:
+    Response: jsonified MongoDB objects as a list
+  """
   institute = Institute.objects.get(display_name=institute_id)
   cases_json = dumps([case.to_mongo() for case in institute.cases])
 
@@ -45,6 +72,7 @@ def cases(institute_id):
 
 @api.route('/<institute_id>/<case_id>/status', methods=['PUT'])
 def case_status(institute_id, case_id):
+  """Update (PUT) status of a specific case."""
   case = get_document_or_404(Case, case_id)
   case.status = request.json.get('status', case.status)
   case.save()
@@ -56,7 +84,15 @@ def case_status(institute_id, case_id):
 
 @api.route('/markdown', methods=['POST'])
 def markdown():
-  """Convert a Markdown string to HTML"""
+  """Convert a Markdown string to HTML.
+
+  Retrives the content (str) in the request object for the key
+  ``markdown`` and converts it into HTML using a standard Markdown
+  converter.
+
+  Returns:
+    Response: jsonified ``dict`` with the converted HTML string
+  """
   mkd_string = request.json.get('markdown')
   html_string = mkd.convert(mkd_string)
 
