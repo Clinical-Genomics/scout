@@ -154,7 +154,7 @@
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.common.exac_frequency }}</div>
+            <div>{{ variant.common.exac_frequency|round(3) }}</div>
           </div>
 
           <div class="variant-list-item">
@@ -211,8 +211,10 @@
         <div class="variant-segment-title">Predicted protein changes</div>
 
         <div class="variant-segment-content">
-          {% for prediction in ['coming soon'] %}
+          {% for prediction in variant.common.protein_change %}
             <div class="variant-list-item">{{ prediction }}</div>
+          {% else %}
+            <div class="variant-list-item">No protein predictions.</div>
           {% endfor %}
         </div>
       </div>
@@ -236,8 +238,18 @@
         <div class="variant-segment-title">Conservation</div>
 
         <div class="variant-list-item">
-          <div>{{ 'coming soon' }}</div>
-          <div>Ex: 1.586</div>
+          <div>PHAST</div>
+          <div>{{ variant.common.phast_conservation|join(',') or '-' }}</div>
+        </div>
+
+        <div class="variant-list-item">
+          <div>GERP</div>
+          <div>{{ variant.common.gerp_conservation|join(',') or '-' }}</div>
+        </div>
+
+        <div class="variant-list-item">
+          <div>phyloP</div>
+          <div>{{ variant.common.phylop_conservation|join(',') or '-' }}</div>
         </div>
       </div>
     </div>
