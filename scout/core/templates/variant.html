@@ -84,10 +84,10 @@
 
   {{ core_item('%s → %s' % (variant.reference, variant.alternatives|join(',')), icon='swap-vert-circle', class='variant-header-item') }}
 
-  {{ core_item(variant.common.region_annotation|join(','),
+  {{ core_item(variant.common.region_annotations|join(','),
                icon='report', class='variant-header-item') }}
 
-  {{ core_item(variant.common.functional_annotation|join(','),
+  {{ core_item(variant.common.functional_annotations|join(','),
                icon='settings', class='variant-header-item') }}
 
   <div class="flex"></div>
@@ -122,17 +122,17 @@
         <div class="variant-segment-title">Summary</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Rank score</div>
             <div>{{ specific.rank_score }}</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>CADD score</div>
             <div>{{ variant.common.cadd_score }}</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Matches expected inheritance model</div>
             <div>Yes</div>
           </div>
