@@ -176,3 +176,11 @@ $variants-cell-padding: .6rem;
 	margin: 1.5rem auto;
 	width: 10em;
 }
+
+.table-compounds-popup {
+  @extend .default-table;
+
+  width: 50em;
+  color: #444;
+  background-color: #fff;
+}

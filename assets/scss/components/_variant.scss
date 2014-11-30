@@ -219,45 +219,6 @@ $variant-base-padding: 1rem;
 }
 
 // +-------------------------------------------------------------------+
-// |  GT call table
-// +-------------------------------------------------------------------+
-.gtcall-table {
-  width: 100%;
-  table-layout: fixed;
-  font-size: .9em;
-
-  th {
-    color: $primary-color;
-    border-right: 1px solid rgba(#000, .1);
-    background-color: rgba($primary-color, .07);
-  }
-
-  tr {
-    border-bottom: 1px solid rgba(#000, .1);
-
-    > td:first-child {
-      border-left: 0;
-    }
-
-    > td:last-child {
-      border-right: 0;
-    }
-  }
-
-  td, th {
-    padding: .5em 1em;
-  }
-
-  td {
-    border: 1px solid rgba(#000, .1);
-  }
-}
-
-.gtcall-table-subcell {
-  font-size: .9em;
-}
-
-// +-------------------------------------------------------------------+
 // |  Variant links
 // +-------------------------------------------------------------------+
 .variant-list-links {

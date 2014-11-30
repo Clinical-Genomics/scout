@@ -1,5 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
+{% from '_macros.html' import compounds_table %}
 
 {% set page_title = 'Variant' %}
 {% set hgnc_symbol = variant.common.hgnc_symbols[0] %}
@@ -259,7 +260,7 @@
         <div class="variant-segment-title">GT call</div>
 
         <div class="variant-segment-content">
-          <table class="gtcall-table">
+          <table class="default-table">
             <thead>
               <tr>
                 <th rowspan="2">Sample</th>
@@ -268,8 +269,8 @@
                 <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
               </tr>
               <tr>
-                <th class="gtcall-table-subcell">Reference</th>
-                <th class="gtcall-table-subcell">Alternative</th>
+                <th class="default-table-subcell">Reference</th>
+                <th class="default-table-subcell">Alternative</th>
               </tr>
             </thead>
 
@@ -295,41 +296,7 @@
         <div class="variant-segment-title">Compounds</div>
 
         <div class="variant-segment-content">
-          <table class="gtcall-table">
-            <thead>
-              <tr>
-                <th>Variant</th>
-                <th>Combined score</th>
-                <th>Rank score</th>
-                <th>Region annotation</th>
-                <th>Functional annotation</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {% for compound in specific.compounds %}
-                <tr>
-                  <td>
-                    <a href="{{
-                      url_for('core.variant',
-                              institute_id=institute_id, case_id=case_id,
-                              variant_id=compound.variant_id)
-                    }}">
-                      {{ compound.display_name }}
-                    </a>
-                  </td>
-                  <td class="text-right">{{ compound.combined_score }}</td>
-                  <td class="text-right">{{ compound.rank_score }}</td>
-                  <td>{{ compound.region_annotations|join(',') }}</td>
-                  <td>{{ compound.functional_annotations|join(',') }}</td>
-                </tr>
-              {% else %}
-                <tr>
-                  <td colspan="5">No compounds.</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {{ compounds_table(specific.compounds) }}
         </div>
       </div>
     </div>
