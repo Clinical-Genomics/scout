@@ -117,7 +117,7 @@
 
   <div class="variant-segments">
 
-    <div class="variant-segments-row">
+    <div id="summary" class="variant-segments-row">
       <div id="summary" class="variant-segment-summary">
         <div class="variant-segment-title">Summary</div>
 
@@ -140,7 +140,7 @@
       </div>
     </div>
 
-    <div class="variant-segments-row">
+    <div id="important-data" class="variant-segments-row">
       <div id="frequency" class="variant-segment">
         <div class="variant-segment-title">Frequency</div>
 
@@ -270,6 +270,50 @@
                     <td class="text-right">{{ number }}</td>
                   {% endfor %}
                   <td class="text-right">{{ 'coming soon' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="compounds" class="variant-segments-row">
+      <div class="variant-segment">
+        <div class="variant-segment-title">Compounds</div>
+
+        <div class="variant-segment-content">
+          <table class="gtcall-table">
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Combined score</th>
+                <th>Rank score</th>
+                <th>Region annotation</th>
+                <th>Functional annotation</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for compound in specific.compounds %}
+                <tr>
+                  <td>
+                    <a href="{{
+                      url_for('core.variant',
+                              institute_id=institute_id, case_id=case_id,
+                              variant_id=compound.variant_id)
+                    }}">
+                      {{ compound.display_name }}
+                    </a>
+                  </td>
+                  <td class="text-right">{{ compound.combined_score }}</td>
+                  <td class="text-right">{{ compound.rank_score }}</td>
+                  <td>{{ compound.region_annotations|join(',') }}</td>
+                  <td>{{ compound.functional_annotations|join(',') }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="5">No compounds.</td>
                 </tr>
               {% endfor %}
             </tbody>
