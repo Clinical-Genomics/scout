@@ -33,15 +33,14 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
 from mongoengine import (
-  DateTimeField, EmbeddedDocument, ListField, ReferenceField, StringField,
-  URLField
+  DateTimeField, EmbeddedDocument, ListField, ReferenceField, StringField
 )
 
 
 class Event(EmbeddedDocument):
   title = StringField()
   content = StringField()
-  link = URLField()
+  link = StringField()
 
   # metadata
   author = ReferenceField('User')      # George

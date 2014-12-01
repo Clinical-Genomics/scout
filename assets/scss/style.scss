@@ -272,6 +272,16 @@ core-icon {
 @import "components/markdown-editor";
 @import "components/activity-feed";
 
+.comment-box {}
+
+.comment-box-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid rgba(#000, .2);
+}
+
+.comment-box-submit {}
+
 @import "components/landing";
 @import "components/cases";
 @import "components/case";

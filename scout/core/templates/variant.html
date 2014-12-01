@@ -326,7 +326,7 @@
                 <div class="activity-feed-item-event">
                   <strong>{{ event.author.name }}</strong>
                   {{ event.verb }}
-                  <a href="{{ event.url }}">{{ event.subject }}</a>
+                  <a href="{{ event.link }}">{{ event.subject }}</a>
                   <span class="timestamp">
                     {{ event.created_at|human_date }}
                   </span>

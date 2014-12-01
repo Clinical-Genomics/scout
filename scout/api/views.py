@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from bson.json_util import dumps
-from flask import Blueprint, jsonify, Response, request
+from flask import Blueprint, jsonify, Response, request, redirect
+from flask.ext.login import current_user
 import markdown as md
 
 from ..extensions import omim
-from ..models import Institute, Case
+from ..models import Institute, Case, Event
 from ..helpers import get_document_or_404
 
 TERMS_MAP = {
@@ -109,3 +110,37 @@ def markdown():
   html_string = mkd.convert(mkd_string)
 
   return jsonify(html=html_string)
+
+
+@api.route('/<institute_id>/<case_id>/event', methods=['POST'])
+@api.route('/<institute_id>/<case_id>/event/<int:event_id>',
+           methods=['GET'])
+def event(institute_id, case_id, event_id=None):
+  case = get_document_or_404(Case, case_id)
+
+  if request.method == 'POST':
+
+    event = Event(
+      title=request.form.get('title'),
+      content=request.form.get('content'),
+      link=request.form.get('link'),
+      author=current_user.to_dbref(),
+      verb=request.form.get('verb'),
+      subject=request.form.get('subject'),
+    )
+
+    case.events.append(event)
+
+  elif request.method == 'GET':  # TODO: make this work with DELETE!
+    # remove event by index
+    case.events.pop(event_id - 1)
+
+  # persist changes
+  case.save()
+
+  if request.args.get('json'):
+    case_json = dumps(case.to_mongo())
+    return Response(case_json, mimetype='application/json; charset=utf-8')
+
+  else:
+    return redirect(request.referrer)
