@@ -1,4 +1,5 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from '_macros.html' import compounds_table %}
 
 {% set page_title = 'Variants' %}
 
@@ -139,10 +140,18 @@
         <div class="variants-row-item">{{ 'coming soon' }}</div>
 
         <!-- Inheritance models -->
-				<div class="variants-row-list flex-big">
+				<div class="variants-row-list flex-big variants-tooltip">
 					{% for model in (specific.genetic_models or []) %}
             <div class="variants-row-list-item">{{ model }}</div>
           {% endfor %}
+
+          {% if specific.compounds %}
+            <div class="variants-tooltip-tip is-left">
+              {{ compounds_table(
+                   specific.compounds,
+                   class_names=['default-table', 'table-compounds-popup']) }}
+            </div>
+          {% endif %}
 				</div>
 
 			</div>

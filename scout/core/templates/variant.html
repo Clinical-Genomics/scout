@@ -1,5 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
+{% from '_macros.html' import compounds_table %}
 
 {% set page_title = 'Variant' %}
 {% set hgnc_symbol = variant.common.hgnc_symbols[0] %}
@@ -84,10 +85,10 @@
 
   {{ core_item('%s → %s' % (variant.reference, variant.alternatives|join(',')), icon='swap-vert-circle', class='variant-header-item') }}
 
-  {{ core_item(variant.common.region_annotation|join(','),
+  {{ core_item(variant.common.region_annotations|join(','),
                icon='report', class='variant-header-item') }}
 
-  {{ core_item(variant.common.functional_annotation|join(','),
+  {{ core_item(variant.common.functional_annotations|join(','),
                icon='settings', class='variant-header-item') }}
 
   <div class="flex"></div>
@@ -117,22 +118,22 @@
 
   <div class="variant-segments">
 
-    <div class="variant-segments-row">
+    <div id="summary" class="variant-segments-row">
       <div id="summary" class="variant-segment-summary">
         <div class="variant-segment-title">Summary</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Rank score</div>
             <div>{{ specific.rank_score }}</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>CADD score</div>
             <div>{{ variant.common.cadd_score }}</div>
           </div>
 
-          <div class="variant-list-item" horizontal layout center justified>
+          <div class="variant-list-item">
             <div>Matches expected inheritance model</div>
             <div>Yes</div>
           </div>
@@ -140,7 +141,7 @@
       </div>
     </div>
 
-    <div class="variant-segments-row">
+    <div id="important-data" class="variant-segments-row">
       <div id="frequency" class="variant-segment">
         <div class="variant-segment-title">Frequency</div>
 
@@ -154,7 +155,7 @@
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.common.exac_frequency }}</div>
+            <div>{{ variant.common.exac_frequency|round(3) }}</div>
           </div>
 
           <div class="variant-list-item">
@@ -211,8 +212,10 @@
         <div class="variant-segment-title">Predicted protein changes</div>
 
         <div class="variant-segment-content">
-          {% for prediction in ['coming soon'] %}
+          {% for prediction in variant.common.protein_change %}
             <div class="variant-list-item">{{ prediction }}</div>
+          {% else %}
+            <div class="variant-list-item">No protein predictions.</div>
           {% endfor %}
         </div>
       </div>
@@ -236,8 +239,18 @@
         <div class="variant-segment-title">Conservation</div>
 
         <div class="variant-list-item">
-          <div>{{ 'coming soon' }}</div>
-          <div>Ex: 1.586</div>
+          <div>PHAST</div>
+          <div>{{ variant.common.phast_conservation|join(',') or '-' }}</div>
+        </div>
+
+        <div class="variant-list-item">
+          <div>GERP</div>
+          <div>{{ variant.common.gerp_conservation|join(',') or '-' }}</div>
+        </div>
+
+        <div class="variant-list-item">
+          <div>phyloP</div>
+          <div>{{ variant.common.phylop_conservation|join(',') or '-' }}</div>
         </div>
       </div>
     </div>
@@ -247,7 +260,7 @@
         <div class="variant-segment-title">GT call</div>
 
         <div class="variant-segment-content">
-          <table class="gtcall-table">
+          <table class="default-table">
             <thead>
               <tr>
                 <th rowspan="2">Sample</th>
@@ -256,8 +269,8 @@
                 <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
               </tr>
               <tr>
-                <th class="gtcall-table-subcell">Reference</th>
-                <th class="gtcall-table-subcell">Alternative</th>
+                <th class="default-table-subcell">Reference</th>
+                <th class="default-table-subcell">Alternative</th>
               </tr>
             </thead>
 
@@ -274,6 +287,16 @@
               {% endfor %}
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="compounds" class="variant-segments-row">
+      <div class="variant-segment">
+        <div class="variant-segment-title">Compounds</div>
+
+        <div class="variant-segment-content">
+          {{ compounds_table(specific.compounds) }}
         </div>
       </div>
     </div>
