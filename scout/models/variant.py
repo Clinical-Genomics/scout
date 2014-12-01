@@ -11,6 +11,8 @@ from mongoengine import (
   IntField, ListField, MapField, StringField
 )
 
+from .event import Event
+
 
 class VariantCommon(EmbeddedDocument):
   # Gene ids:
@@ -68,6 +70,7 @@ class VariantCaseSpecific(EmbeddedDocument):
     'AR_hom', 'AR_comp', 'AR_comp_dn', 'AR_hom_dn', 'AD', 'AD_dn', 'XR', 'XR_dn', 'XD', 'XD_dn'
   ]))
   compounds = ListField(EmbeddedDocumentField(Compound))
+  events = ListField(EmbeddedDocumentField(Event))
 
   def __unicode__(self):
     return 'placeholder'

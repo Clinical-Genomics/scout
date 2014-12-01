@@ -1,0 +1,21 @@
+.activity-feed {
+  font-size: .9em;
+}
+
+.activity-feed-item {
+  padding: 1em;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(#000, .2);
+  }
+}
+
+.timestamp {
+  font-size: .9em;
+  color: rgba(#000, .6);
+}
+
+.activity-feed-item-body {
+  margin-top: .5em;
+  font-size: 1.2em;
+}

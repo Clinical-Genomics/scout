@@ -3,7 +3,7 @@ from datetime import datetime
 from functools import wraps
 import hashlib
 
-from flask import request, render_template
+from flask import abort, request, render_template
 from mongoengine import DoesNotExist
 
 

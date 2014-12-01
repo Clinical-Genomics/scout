@@ -114,6 +114,7 @@
 {% endblock %}
 
 {% block content %}
+
   <div class="variant-segments">
 
     <div class="variant-segments-row">
@@ -310,6 +311,40 @@
             <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
               IGV
             </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="activity" class="variant-segments-row">
+      <div class="variant-segment">
+        <div class="variant-segment-title">Activity</div>
+        <div class="variant-segment-content">
+          <div class="activity-feed">
+            {% for event in variant.events %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <strong>{{ event.author.name }}</strong>
+                  {{ event.verb }}
+                  <a href="{{ event.url }}">{{ event.subject }}</a>
+                  <span class="timestamp">
+                    {{ event.created_at|human_date }}
+                  </span>
+                </div>
+
+                {% if event.content %}
+                  <div class="activity-feed-item-body">
+                    {{ event.content }}
+                  </div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No variant activity yet.
+                </div>
+              </div>
+            {% endfor %}
           </div>
         </div>
       </div>

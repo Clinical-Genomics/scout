@@ -12,6 +12,8 @@ from mongoengine import (
   IntField, ListField, ReferenceField, StringField
 )
 
+from .event import Event
+
 
 class Individual(EmbeddedDocument):
   display_name = StringField()
@@ -61,6 +63,8 @@ class Case(Document):
   status = StringField(default='inactive', choices=[
     'inactive', 'active', 'research', 'archived', 'solved'
   ])
+
+  events = ListField(EmbeddedDocumentField(Event))
 
   def __unicode__(self):
     return self.display_name

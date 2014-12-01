@@ -56,13 +56,11 @@
 
 {% block content %}
 
-  <div class="case-segments">
+  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button is-raised">
+    Go to all variants
+  </a>
 
-    <div id="variants-button" class="case-segment-row">
-      <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button is-raised">
-        Go to all variants
-      </a>
-    </div>
+  <div class="case-segments">
 
     <div id="strong-candidates" class="case-segment-row">
       <div id="case-candidates" class="case-segment-full">
@@ -123,11 +121,30 @@
       </div>
     </div>
 
-    <div class="case-segment-row">
+    <div id="activity" class="case-segment-row">
       <div id="case-activity" class="case-segment-full">
         <div class="case-segment-title">Activity</div>
         <div class="case-segment-content-text">
-          No recent activity.
+          <div class="activity-feed">
+            {% for event in case.events %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <strong>{{ event.author.name }}</strong>
+                  {{ event.verb }}
+                  <a href="{{ event.url }}">{{ event.subject }}</a>
+                  <span class="timestamp">
+                    {{ event.created_at|human_date }}
+                  </span>
+                </div>
+
+                {% if event.content %}
+                  <div class="activity-feed-item-body">
+                    {{ event.content }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
