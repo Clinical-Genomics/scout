@@ -23,6 +23,11 @@
 
 .activity-feed-delete-button {
   cursor: pointer;
+  fill: rgba(#000, .5);
+
+  &:hover {
+    fill: rgba(red, .8);
+  }
 }
 
 .activity-feed-item-body {
