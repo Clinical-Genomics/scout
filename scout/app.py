@@ -3,11 +3,11 @@
 from __future__ import absolute_import, unicode_literals
 import os
 
+import arrow
 from flask import Flask, render_template
 from jinja2 import is_undefined
 from werkzeug.utils import import_string
 
-from .helpers import pretty_date
 from .settings import DevelopmentConfig
 
 
@@ -118,7 +118,7 @@ class AppFactory(object):
 
     @self.app.template_filter()
     def human_date(value):
-      return pretty_date(value)
+      return arrow.get(value).humanize()
 
     @self.app.template_filter()
     def format_date(value, format="%Y-%m-%d"):

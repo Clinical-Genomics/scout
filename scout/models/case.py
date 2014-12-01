@@ -63,7 +63,6 @@ class Case(Document):
   status = StringField(default='inactive', choices=[
     'inactive', 'active', 'research', 'archived', 'solved'
   ])
-
   events = ListField(EmbeddedDocumentField(Event))
 
   def __unicode__(self):

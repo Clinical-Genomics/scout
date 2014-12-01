@@ -132,8 +132,8 @@ def event(institute_id, case_id, event_id=None):
     case.events.append(event)
 
   elif request.method == 'GET':  # TODO: make this work with DELETE!
-    # remove event by index
-    case.events.pop(event_id - 1)
+    # remove event by index, expects list to be reversed in template
+    case.events.pop(-event_id)
 
   # persist changes
   case.save()
@@ -168,8 +168,8 @@ def variant_event(institute_id, case_id, variant_id, event_id=None):
     specific.events.append(event)
 
   elif request.method == 'GET':  # TODO: make this work with DELETE!
-    # remove event by index
-    specific.events.pop(event_id - 1)
+    # remove event by index, expects list to be reversed in template
+    specific.events.pop(-event_id)
 
   # persist changes
   variant.save()

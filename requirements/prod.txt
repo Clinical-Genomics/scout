@@ -43,3 +43,4 @@ ped_parser>=0.8.1
 vcf_parser>=0.8.3
 configobj
 requests
+arrow
