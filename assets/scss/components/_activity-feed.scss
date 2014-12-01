@@ -1,0 +1,36 @@
+.activity-feed {
+  font-size: .9em;
+}
+
+.activity-feed-item {
+  padding: 1em;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(#000, .2);
+  }
+}
+
+.activity-feed-item-event {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timestamp {
+  font-size: .9em;
+  color: rgba(#000, .6);
+}
+
+.activity-feed-delete-button {
+  cursor: pointer;
+  fill: rgba(#000, .5);
+
+  &:hover {
+    fill: rgba(red, .8);
+  }
+}
+
+.activity-feed-item-body {
+  margin-top: .3em;
+  font-size: 1.1em;
+}

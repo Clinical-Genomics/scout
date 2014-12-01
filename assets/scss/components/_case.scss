@@ -160,63 +160,12 @@
 	background-color: rgba(#f44336, .15);
 }
 
-
-
-
-
-
-.case-section {
-	padding: 1rem 0;
-}
-
-	.case-section-header {
-		color: $secondary-color;
-		font-weight: 400;
-		font-size: 1.5rem;
-	}
-
-.case-complete-container {
-	display: flex;
-	align-items: center;
-}
-
-	.case-complete-variant-box {
-		width: 80%;
-		color: rgba(#000, .3);
-		font-size: 1.5rem;
-	}
-
-.case-brief-layout {
-	display: flex;
-}
-
-	.case-brief-main {
-		width: 60%;
-		margin-right: 1rem;
-	}
-
-		.case-brief-textarea {
-			width: 100%;
-		}
-
-	.case-brief-sidebar {
-		flex: 1;
-	}
-
-		.case-brief-sidebar-item {
-			display: flex;
-			padding: .8rem;
-
-			> div {
-				flex: 1;
-			}
-		}
-
 .case-variants-button {
 	@extend .button-base;
 
 	// case-specific
-	margin: 0 auto;
+  display: block;
+	margin: 2em auto 0;
 	width: 60%;
 	font-weight: bold;
 }

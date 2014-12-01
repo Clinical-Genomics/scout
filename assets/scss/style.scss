@@ -57,6 +57,12 @@ core-icon {
   fill: currentcolor;
   stroke: currentcolor;
   stroke-width: 0;
+
+  &.is-small {
+    min-width: 15px;
+    width: 15px;
+    height: 15px;
+  }
 }
 
 .tag {
@@ -264,6 +270,17 @@ core-icon {
 // Components
 @import "components/drawer-panel";
 @import "components/markdown-editor";
+@import "components/activity-feed";
+
+.comment-box {}
+
+.comment-box-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid rgba(#000, .2);
+}
+
+.comment-box-submit {}
 
 @import "components/landing";
 @import "components/cases";

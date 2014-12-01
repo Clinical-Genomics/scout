@@ -32,24 +32,26 @@ Variant:
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from ..extensions import db
+from mongoengine import (
+  DateTimeField, EmbeddedDocument, ListField, ReferenceField, StringField
+)
 
 
-class Event(db.EmbeddedDocument):
-  title = db.StringField()
-  content = db.StringField()
-  link = db.URLField()
+class Event(EmbeddedDocument):
+  title = StringField()
+  content = StringField()
+  link = StringField()
 
   # metadata
-  author = db.ReferenceField('User')
-  verb = db.StringField()
-  action = db.StringField()
-  category = db.StringField()
-  tags = db.ListField(db.StringField())
+  author = ReferenceField('User')      # George
+  verb = StringField()                 # commented on
+  subject = StringField()              # case 23
+  action = StringField()
+  tags = ListField(StringField())
 
   # timestamps
-  created_at = db.DateTimeField(default=datetime.now)
-  updated_at = db.DateTimeField(default=datetime.now)
+  created_at = DateTimeField(default=datetime.now)
+  updated_at = DateTimeField(default=datetime.now)
 
   def is_edited(self):
     """Find out if the event has been edited."""

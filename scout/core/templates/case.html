@@ -56,13 +56,11 @@
 
 {% block content %}
 
-  <div class="case-segments">
+  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button is-raised">
+    Go to all variants
+  </a>
 
-    <div id="variants-button" class="case-segment-row">
-      <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button is-raised">
-        Go to all variants
-      </a>
-    </div>
+  <div class="case-segments">
 
     <div id="strong-candidates" class="case-segment-row">
       <div id="case-candidates" class="case-segment-full">
@@ -123,11 +121,81 @@
       </div>
     </div>
 
-    <div class="case-segment-row">
+    <div id="activity" class="case-segment-row">
       <div id="case-activity" class="case-segment-full">
         <div class="case-segment-title">Activity</div>
+        <div class="case-segment-content-main">
+          <div class="activity-feed">
+            {% for event in case.events %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ event.author.name }}</strong>
+                    {{ event.verb }}
+                    <a href="{{ event.link }}">{{ event.subject }}</a>
+                    <span class="timestamp">
+                      {{ event.created_at|human_date }}
+                    </span>
+                  </div>
+
+                  {% if event.author.id == current_user.id %}
+                    {% set form_id = 'delete-comment-%s' % loop.index %}
+                    <form class="activity-feed-delete"
+                          accept-charset="UTF-8"
+                          action="{{ url_for('api.event',
+                                             institute_id=institute.display_name,
+                                             case_id=case.display_name,
+                                             event_id=loop.index) }}"
+                          method="DELETE">
+                      <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" v-with=" icon: 'highlight-remove'"></core-icon>
+                      <button id="{{ form_id }}" class="is-hidden"></button>
+                    </form>
+                  {% endif %}
+                </div>
+
+                {% if event.content %}
+                  <div class="activity-feed-item-body">
+                    {{ event.content }}
+                  </div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No case activity yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="comment-box" class="case-segment-row">
+      <div class="case-segment-full">
+        <div class="case-segment-title">Comment on case</div>
         <div class="case-segment-content-text">
-          No recent activity.
+          <form class="comment-box"
+                accept-charset="UTF-8"
+                action="{{ url_for('api.event',
+                                   institute_id=institute.display_name,
+                                   case_id=case.display_name) }}"
+                method="POST">
+
+            <input type="hidden"
+                   name="link"
+                   value="{{ url_for('core.case',
+                                     institute_id=institute.display_name,
+                                     case_id=case.display_name) }}">
+            <input type="hidden" name="verb" value="commented on">
+            <input type="hidden"
+                   name="subject"
+                   value="{{ case.display_name }}">
+            <textarea class="comment-box-input"
+                      name="content"
+                      placeholder="Leave a comment"></textarea>
+            <button class="comment-box-submit" type="submit">Comment</button>
+          </form>
         </div>
       </div>
     </div>
