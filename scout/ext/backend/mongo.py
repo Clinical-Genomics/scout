@@ -38,9 +38,11 @@ class MongoAdapter(BaseAdapter):
     host = config.get('MONGODB_HOST', 'localhost')
     port = config.get('MONGODB_PORT', 27017)
     database = config.get('MONGODB_DB', 'variantDatabase')
+    username = config.get('MONGO_USERNAME', None)
+    password = config.get('MONGO_PASSWORD', None)
 
-    connect(database, host=host, port=port)
-
+    connect(database, host=host, port=port, username=username,
+            password=password)
 
     # self.case_collection = self.db.case
     # self.variant_collection = self.db.variant
@@ -63,13 +65,13 @@ class MongoAdapter(BaseAdapter):
       return Case.objects.get(pk = case_id)
     except DoesNotExist:
       return None
-  
+
   def format_variant(self, variant):
     """Return a variant where relevant information is added."""
     for case in variant['specific']:
       case_specific = ('specific.%s' % case)
       for compound in variant['specific'][case]['compounds']:
-        print('Compound id: %s, Display name: %s, Combined_score: %s' % 
+        print('Compound id: %s, Display name: %s, Combined_score: %s' %
                 (compound['variant_id'], compound['display_name'], compound['combined_score']))
         try:
           pair = Variant.objects.get(pk = compound['variant_id'])
@@ -80,7 +82,7 @@ class MongoAdapter(BaseAdapter):
         except DoesNotExist:
           pass
     return variant
-      
+
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
 
     variants = []
