@@ -44,8 +44,10 @@
       <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
       <script src="{{ url_for('static', filename='bundle.js') }}"></script>
 
-      <!-- include browserify script tag -->
-      {% include 'footer.html' %}
+      {% if config.DEBUG %}
+        <!-- include browser-sync script tag -->
+        {% include 'footer.html' %}
+      {% endif %}
     {% endblock %}
 
     {% block ga %}
