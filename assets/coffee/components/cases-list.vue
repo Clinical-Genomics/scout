@@ -2,7 +2,7 @@
   <div v-repeat="cases | filterBy filterKey" class="cases-item">
 
     <a class="cases-item-title" href="{{baseUrl}}/{{display_name}}">
-      <div class="cases-item-indicator"></div>
+      <div v-if="events.length" class="cases-item-indicator"></div>
       {{display_name}}
 
       <div v-if="assignee.$oid == user_id" class="tag">Assigned</div>
@@ -17,7 +17,7 @@
       <!-- <div class="cases-item-databases">IEM, EP</div> -->
 
       <div class="cases-item-date">
-        Updated {{last_updated.$date | fromNow}}
+        Updated {{created_at.$date | fromNow}}
       </div>
 
     </div>
@@ -34,6 +34,15 @@
     filters:
       fromNow: (date) ->
         return moment(date).fromNow()
+
+      isUpdated: (date) ->
+        diff = -moment(date).diff()  # milliseconds
+        hh = Math.floor diff / 1000 / 60 / 60  # hours
+
+        if hh < 48
+          return yes
+        else
+          return no
 
     data: ->
       return {
