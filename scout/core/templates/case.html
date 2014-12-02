@@ -92,10 +92,10 @@
       <div id="case-synopsis" class="case-segment-main">
         <div class="case-segment-title">Synopsis</div>
         <div class="case-segment-content-text">
-          <markdown-editor v-with="
-            content: '{{ case.synopsis }}',
+          <markdown-editor v-with='
+            content: {{ case.synopsis|tojson|safe }},
             onSave: updateSynopsis
-          "></markdown-editor>
+          '></markdown-editor>
         </div>
       </div>
 
