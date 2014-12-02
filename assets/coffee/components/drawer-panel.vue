@@ -3,10 +3,7 @@
     <content></content>
   </div>
 
-  <div
-    v-on="click: hide"
-    class="drawer-panel-overlay">
-  </div>
+  <div v-on="click: hide" class="drawer-panel-overlay"></div>
 </template>
 
 <script lang="coffee">

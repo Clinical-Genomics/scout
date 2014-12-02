@@ -6,7 +6,6 @@
 
 <script lang="coffee">
   module.exports =
-
     data: ->
       return {
         icon: ''

@@ -92,10 +92,10 @@
       <div id="case-synopsis" class="case-segment-main">
         <div class="case-segment-title">Synopsis</div>
         <div class="case-segment-content-text">
-          <markdown-editor v-with="
-            content: '{{ case.synopsis }}',
+          <markdown-editor v-with='
+            content: {{ case.synopsis|tojson|safe }},
             onSave: updateSynopsis
-          "></markdown-editor>
+          '></markdown-editor>
         </div>
       </div>
 
@@ -126,7 +126,7 @@
         <div class="case-segment-title">Activity</div>
         <div class="case-segment-content-main">
           <div class="activity-feed">
-            {% for event in case.events %}
+            {% for event in case.events|reverse %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">

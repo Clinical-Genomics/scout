@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
-from ..models import Institute, Case
+from ..models import Institute, Case, Event
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
 
@@ -61,6 +61,17 @@ def assign_self(institute_id, case_id):
 
   # assign logged in user and persist changes
   case.assignee = current_user.to_dbref()
+
+  # create event
+  event = Event(
+    link=url_for('.case', institute_id=institute_id, case_id=case_id),
+    author=current_user.to_dbref(),
+    verb='was assigned to',
+    subject=case.display_name
+  )
+  case.events.append(event)
+
+  # persist changes
   case.save()
 
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
@@ -72,6 +83,16 @@ def remove_assignee(institute_id, case_id):
 
   # unassign user and persist changes
   case.assignee = None
+
+  # create event
+  event = Event(
+    link=url_for('.case', institute_id=institute_id, case_id=case_id),
+    author=current_user.to_dbref(),
+    verb='was unassigned from',
+    subject=case.display_name
+  )
+  case.events.append(event)
+
   case.save()
 
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))

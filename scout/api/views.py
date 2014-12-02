@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from bson.json_util import dumps
-from flask import Blueprint, jsonify, Response, request, redirect
+from flask import Blueprint, jsonify, Response, request, redirect, url_for
 from flask.ext.login import current_user
 import markdown as md
 
@@ -76,9 +76,16 @@ def case_status(institute_id, case_id):
   """Update (PUT) status of a specific case."""
   case = get_document_or_404(Case, case_id)
   case.status = request.json.get('status', case.status)
-  case.save()
 
-  # TODO: create a new event here!
+  event = Event(
+    link=url_for('core.case', institute_id=institute_id, case_id=case_id),
+    author=current_user.to_dbref(),
+    verb="updated the status to '%s' for" % case.status,
+    subject=case.display_name,
+  )
+  case.events.append(event)
+
+  case.save()
 
   return jsonify(status=case.status, ok=True)
 
@@ -87,10 +94,20 @@ def case_status(institute_id, case_id):
 def case_synopsis(institute_id, case_id):
   """Update (PUT) synopsis of a specific case."""
   case = get_document_or_404(Case, case_id)
-  case.synopsis = request.json.get('synopsis', case.synopsis)
-  case.save()
+  new_synopsis = request.json.get('synopsis', case.synopsis)
 
-  # TODO: create a new event here!
+  if case.synopsis != new_synopsis:
+    # create event only if synopsis was actually changed
+    event = Event(
+      link=url_for('core.case', institute_id=institute_id, case_id=case_id),
+      author=current_user.to_dbref(),
+      verb='edited synopsis for',
+      subject=case.display_name,
+    )
+    case.events.append(event)
+
+  case.synopsis = new_synopsis
+  case.save()
 
   return jsonify(synopsis=case.synopsis, ok=True)
 
@@ -132,8 +149,8 @@ def event(institute_id, case_id, event_id=None):
     case.events.append(event)
 
   elif request.method == 'GET':  # TODO: make this work with DELETE!
-    # remove event by index
-    case.events.pop(event_id - 1)
+    # remove event by index, expects list to be reversed in template
+    case.events.pop(-event_id)
 
   # persist changes
   case.save()
@@ -168,8 +185,8 @@ def variant_event(institute_id, case_id, variant_id, event_id=None):
     specific.events.append(event)
 
   elif request.method == 'GET':  # TODO: make this work with DELETE!
-    # remove event by index
-    specific.events.pop(event_id - 1)
+    # remove event by index, expects list to be reversed in template
+    specific.events.pop(-event_id)
 
   # persist changes
   variant.save()
