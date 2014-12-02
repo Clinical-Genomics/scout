@@ -1,45 +1,66 @@
+// Simple, animated drawer (left side)
+// Useful for stuffing away navigation etc.
+
+// Variables
 $drawer-panel-aside-width: 15rem;
+$drawer-panel-aside-bg: #fff;
 
 drawer-panel {
   position: relative;
 }
 
 .drawer-panel-overlay {
+  // covers the entire container (usually window)
   position: fixed;
   height: 100%;
   width: 100%;
-  background-color: rgba(#000, 0);
-  left: -100%;
-  top: 0;
+
+  // should be ontop of everything but the drawer
   z-index: 2;
 
-  transition: background-color 250ms, left 0 250ms;
+  // starts out pushed out of the way and invisible
+  top: 0;
+  left: -100%;
+  background-color: rgba(#000, 0);
+
+  // fade in when drawer is summoned
+  transition: background-color 250ms, left 0 250ms cubic-bezier(.55, 0, .1, 1);
 }
 
 .drawer-panel-aside {
-  height: 100%;
+  // coveres the height of the container
   position: fixed;
-  width: 256px;
-  z-index: 3;
   top: 0px;
-
-  box-shadow: 0 3px 10px rgba(#000, .16);
-  transition: left 250ms;
+  height: 100%;
 
   // fixed but min-width (flex: 0)
-	width: $drawer-panel-aside-width;
-	// hide out of view on small screens
-	left: -$drawer-panel-aside-width;
+  width: $drawer-panel-aside-width;
+  // hide out of view on small screens
+  left: -$drawer-panel-aside-width;
 
-  background-color: #fff;
+  // starts out pushed out of view to the left
+  transition: left 250ms cubic-bezier(.55, 0, .1, 1);
+
+  // should be ontop of everything else pretty much
+  z-index: 3;
+
+  // add some extra distance to overlay
+  box-shadow: 0 3px 10px rgba(#000, .16);
+
+  background-color: $drawer-panel-aside-bg;
 
   &.is-showing {
+    // slide in from the left when summoned
     left: 0;
 
     + .drawer-panel-overlay {
-      background-color: rgba(#000, .54);
-      transition: background-color 400ms;
+      // ... and this activates the overlay as well
+      // slide in from the left with drawer
       left: 0;
+      background-color: rgba(#000, .54);
+
+      // update transition to make it dissapear quicker than it appeared
+      transition: background-color 400ms;
     }
   }
 }
