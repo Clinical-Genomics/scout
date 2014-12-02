@@ -38,8 +38,8 @@ class MongoAdapter(BaseAdapter):
     host = config.get('MONGODB_HOST', 'localhost')
     port = config.get('MONGODB_PORT', 27017)
     database = config.get('MONGODB_DB', 'variantDatabase')
-    username = config.get('MONGO_USERNAME', None)
-    password = config.get('MONGO_PASSWORD', None)
+    username = config.get('MONGODB_USERNAME', None)
+    password = config.get('MONGODB_PASSWORD', None)
 
     connect(database, host=host, port=port, username=username,
             password=password)
