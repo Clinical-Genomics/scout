@@ -1,7 +1,12 @@
-// Simple, animated drawer (left side)
-// Useful for stuffing away navigation etc.
+// +-------------------------------------------------------------------+
+// | Drawer-Panel
+// +-------------------------------------------------------------------+
+// | Simple, animated drawer (left side). Useful for stuffing away
+// | navigation etc.
+// +-------------------------------------------------------------------+
+// require "./shadow"
 
-// Variables
+// Public API
 $drawer-panel-aside-width: 15rem;
 $drawer-panel-aside-bg: #fff;
 
@@ -28,6 +33,9 @@ drawer-panel {
 }
 
 .drawer-panel-aside {
+  // add some extra distance to overlay
+  @extend .md-shadow-1-half;
+
   // coveres the height of the container
   position: fixed;
   top: 0px;
@@ -43,9 +51,6 @@ drawer-panel {
 
   // should be ontop of everything else pretty much
   z-index: 3;
-
-  // add some extra distance to overlay
-  box-shadow: 0 3px 10px rgba(#000, .16);
 
   background-color: $drawer-panel-aside-bg;
 
