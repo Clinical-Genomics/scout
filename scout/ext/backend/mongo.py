@@ -75,10 +75,8 @@ class MongoAdapter(BaseAdapter):
                 (compound['variant_id'], compound['display_name'], compound['combined_score']))
         try:
           pair = Variant.objects.get(pk = compound['variant_id'])
-          print('pair: %s' % pair)
           compound['functional_annotations'] = pair['common']['functional_annotations']
           compound['region_annotations'] = pair['common']['region_annotations']
-          print(pair['common'])
         except DoesNotExist:
           pass
     return variant

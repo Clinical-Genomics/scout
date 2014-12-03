@@ -14,6 +14,10 @@ from mongoengine import (
 from .event import Event
 
 
+######## Common are attributes that is specific for the variant on this certain position ########
+
+CONSERVATION = ('NotConserved', 'Conserved')
+
 class VariantCommon(EmbeddedDocument):
   # Gene ids:
   hgnc_symbols = ListField(StringField())
@@ -28,19 +32,35 @@ class VariantCommon(EmbeddedDocument):
   functional_annotations = ListField(StringField())
   protein_change = ListField(StringField())
   region_annotations = ListField(StringField())
-  phast_conservation = ListField(StringField(choices=[
-    'NotConserved', 'Conserved'
-  ]))
-  gerp_conservation = ListField(StringField(choices=[
-    'NotConserved', 'Conserved'
-  ]))
-  phylop_conservation = ListField(StringField(choices=[
-    'NotConserved', 'Conserved'
-  ]))
+  phast_conservation = ListField(StringField(choices=CONSERVATION))
+  gerp_conservation = ListField(StringField(choices=CONSERVATION))
+  phylop_conservation = ListField(StringField(choices=CONSERVATION))
 
   # def __unicode__(self):
   #   return "%s:%s" % (self.chromosome, self.position)
 
+######## Common are attributes that is specific for the variant on this certain position ########
+
+
+GENETIC_MODELS = (('AR_hom', 'Autosomal Recessive Homozygote'),
+                  ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),
+                  ('AR_comp', 'Autosomal Recessive Compound'),
+                  ('AR_comp_dn', 'Autosomal Recessive Compound De Novo'),
+                  ('AD', 'Autosomal Dominant'),
+                  ('AD_dn', 'Autosomal Dominant De Novo'),
+                  ('XR', 'X Linked Recessive'),
+                  ('XR_dn', 'X Linked Recessive De Novo'),
+                  ('XD', 'X Linked Dominant'),
+                  ('XD_dn', 'X Linked Dominant De Novo'),
+)
+
+class Compound(EmbeddedDocument):
+  variant_id = StringField(required=True)
+  display_name = StringField(required=True)
+  rank_score = FloatField(required=True)
+  combined_score = FloatField(required=True)
+  region_annotations = ListField(StringField())
+  functional_annotations = ListField(StringField())
 
 class GTCall(EmbeddedDocument):
   sample = StringField()
@@ -52,23 +72,13 @@ class GTCall(EmbeddedDocument):
   def __unicode__(self):
     return self.sample
 
-class Compound(EmbeddedDocument):
-  variant_id = StringField(required=True)
-  display_name = StringField(required=True)
-  rank_score = FloatField(required=True)
-  combined_score = FloatField(required=True)
-  region_annotations = ListField(StringField())
-  functional_annotations = ListField(StringField())
-
 class VariantCaseSpecific(EmbeddedDocument):
   rank_score = FloatField()
   variant_rank = IntField()
   quality = FloatField()
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
-  genetic_models = ListField(StringField(choices=[
-    'AR_hom', 'AR_comp', 'AR_comp_dn', 'AR_hom_dn', 'AD', 'AD_dn', 'XR', 'XR_dn', 'XD', 'XD_dn'
-  ]))
+  genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = ListField(EmbeddedDocumentField(Compound))
   events = ListField(EmbeddedDocumentField(Event))
 
@@ -86,6 +96,16 @@ class Variant(Document):
   db_snp_ids = ListField(StringField())
   common = EmbeddedDocumentField(VariantCommon)
   specific = MapField(EmbeddedDocumentField(VariantCaseSpecific))
+  meta = {
+    'indexes': [
+      'position',
+      'common.thousand_genomes_frequency',
+      'common.exac_frequency',
+      'common.cadd_score',
+      'specific.rank_score',
+      'specific.variant_rank',
+    ]
+  }
 
   def __unicode__(self):
     return self.display_name

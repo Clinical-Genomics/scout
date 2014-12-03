@@ -32,7 +32,8 @@ import hashlib
 
 from datetime import datetime
 from pymongo import MongoClient
-from mongoengine import connect
+from mongoengine import connect, DoesNotExist
+
 
 from .config_parser import ConfigParser
 from ...models import (Case, Individual, Institute, Variant, GTCall, VariantCommon, VariantCaseSpecific, Compound)
@@ -80,8 +81,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
 
   for variant in variant_parser:
     nr_of_variants += 1
-    mongo_variant = get_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
-    mongo_variant.save()
+    add_mongo_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
 
   print('%s variants inserted!' % nr_of_variants)
   print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants))
@@ -125,7 +125,7 @@ def get_case(ped_file, family_type, institute):
 
   return mongo_case
 
-def get_variant(variant, individuals, case_id, config_object, variant_count):
+def add_mongo_variant(variant, individuals, case_id, config_object, variant_count):
   """Return the variant in a format specified for scout. The structure is decided by the config file that is used."""
 
 
@@ -147,88 +147,19 @@ def get_variant(variant, individuals, case_id, config_object, variant_count):
 
 
   id_fields = [variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']]
-  # We insert the family with the md5-key as id, same key we use in cases
-  # Add the core information about the variant
-  mongo_variant = Variant(variant_id = generate_md5_key(id_fields),
-                          display_name = '_'.join(id_fields),
-                          chromosome = variant['CHROM'],
-                          position = int(variant['POS']),
-                          reference = variant['REF'],
-                          alternatives = variant['ALT'].split(',')
-                  )
-
-  mongo_variant['db_snp_ids'] = variant.get(config_object['ID']['vcf_field'], '').split(
-                                              config_object['ID']['vcf_data_field_separator'])
-
-  mongo_common = VariantCommon()
-  # Add the gene ids
-  mongo_common['hgnc_symbols'] = variant['info_dict'].get(config_object['HGNC_symbol']['vcf_info_key'], '').split(
-                                              config_object['HGNC_symbol']['vcf_data_field_separator'])
-  mongo_common['ensemble_gene_ids'] = variant['info_dict'].get(config_object['Ensembl_gene_id']['vcf_info_key'], '').split(
-                                              config_object['Ensembl_gene_id']['vcf_data_field_separator'])
-  # Add the frequencies
-  try:
-    mongo_common['thousand_genomes_frequency'] = min([float(frequency) for frequency in
-                variant['info_dict'].get(config_object['1000GMAF']['vcf_info_key'], '0').split(
-                config_object['1000GMAF']['vcf_data_field_separator'])])
-  except ValueError:
-    pass
-
-  try:
-    mongo_common['exac_frequency'] = min([float(frequency) for frequency in
-                variant['info_dict'].get(config_object['EXAC']['vcf_info_key'], '0').split(
-                config_object['EXAC']['vcf_data_field_separator'])])
-  except ValueError:
-    pass
-
-  # Add the severity predictions
-  mongo_common['cadd_score'] = max([float(score) for score in
-              variant['info_dict'].get(config_object['CADD']['vcf_info_key'], '0').split(
-              config_object['CADD']['vcf_data_field_separator'])])
-
-  mongo_common['sift_predictions'] = variant['info_dict'].get(config_object['Sift']['vcf_info_key'], '').split(
-              config_object['Sift']['vcf_data_field_separator'])
-
-  mongo_common['polyphen_predictions'] = variant['info_dict'].get(config_object['PolyPhen']['vcf_info_key'], '').split(
-              config_object['PolyPhen']['vcf_data_field_separator'])
-
-  # Add functional annotation
-  mongo_common['functional_annotations'] = variant['info_dict'].get(config_object['FunctionalAnnotation']['vcf_info_key'], '').split(
-              config_object['FunctionalAnnotation']['vcf_data_field_separator'])
-
-  # Add region annotation
-  mongo_common['region_annotations'] = variant['info_dict'].get(config_object['GeneticRegionAnnotation']['vcf_info_key'], '').split(
-              config_object['GeneticRegionAnnotation']['vcf_data_field_separator'])
-
-  # Add conservation annotation
-  gerp = variant['info_dict'].get(config_object['Gerp']['vcf_info_key'], None)
-  if gerp:
-    mongo_common['gerp_conservation'] = gerp.split(config_object['Gerp']['vcf_data_field_separator'])
-
-  phast_cons = variant['info_dict'].get(config_object['PhastCons']['vcf_info_key'], None)
-  if phast_cons:
-    mongo_common['phast_conservation'] = phast_cons.split(config_object['PhastCons']['vcf_data_field_separator'])
-
-  phylop_cons = variant['info_dict'].get(config_object['PhylopCons']['vcf_info_key'], None)
-  if phylop_cons:
-    mongo_common['phylop_conservation'] = phylop_cons.split(config_object['PhylopCons']['vcf_data_field_separator'])
-
-  # Add the predicted protein change
-
-  protein_change = variant['info_dict'].get(config_object['Transcript']['vcf_info_key'], None)
-  if protein_change:
-    mongo_common['protein_change'] = protein_change.split(config_object['Transcript']['vcf_data_field_separator'])
-
-  # Add the common field:
-  mongo_variant['common'] = mongo_common
-
+  variant_id = generate_md5_key(id_fields)
+  
+  # We first add the case specific information
   # Add the information that is specific to this case
-  mongo_specific = VariantCaseSpecific()
+  mongo_specific = VariantCaseSpecific(case_id = case_id)
   mongo_specific['rank_score'] = float(variant['info_dict'].get(config_object['RankScore']['vcf_info_key'], 0))
   mongo_specific['variant_rank'] = variant_count
   mongo_specific['quality'] = float(variant.get(config_object['QUAL']['vcf_field'], 0))
   mongo_specific['filters'] = variant.get(config_object['FILTER']['vcf_field'], '').split(
-                                              config_object['FILTER']['vcf_data_field_separator'])
+                                              config_object['FILTER']['vcf_data_field_separator']
+                              )
+  
+  # Add the compound information:
   compounds = []
   for compound in variant['info_dict'].get(config_object['Compounds']['vcf_info_key'], '').split(
                                               config_object['Compounds']['vcf_data_field_separator']):
@@ -244,28 +175,114 @@ def get_variant(variant, individuals, case_id, config_object, variant_count):
       compounds.append(mongo_compound)
     except IndexError:
       pass
-
+  
   mongo_specific['compounds'] = compounds
-
-
-  # print('Genetic models:%s' % variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], ''))
+  
+  # Add the inheritance patterns:
+  
   models = variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], None)
   if models:
     mongo_specific['genetic_models'] = models.split(config_object['GeneticModels']['vcf_data_field_separator'])
-
-
-  mongo_variant['specific'][case_id] = mongo_specific
-
-
-  # Add the genotype information for each individual
+  
+  
+  # Add the gt calls:
+  
   gt_calls = []
   for individual in individuals:
     # This function returns an ODM GTCall object with the relevant information:
     gt_calls.append(get_genotype_information(variant, config_object.categories['genotype_information'], individual))
 
-  mongo_variant['specific'][case_id]['samples'] = gt_calls
-
-  return mongo_variant
+  mongo_specific['samples'] = gt_calls
+  
+  # Variant.objects(variant_id=variant_id).update_one(push__specific=mongo_specific)
+  
+  try:
+    
+    if Variant.objects.get(variant_id = variant_id):
+      Variant.objects(variant_id = variant_id).update(**{('set__specific__%s' % case_id) : mongo_specific})
+    
+  except DoesNotExist:
+    # We insert the family with the md5-key as id, same key we use in cases
+    # Add the core information about the variant
+    mongo_variant = Variant(variant_id = variant_id,
+                            display_name = '_'.join(id_fields),
+                            chromosome = variant['CHROM'],
+                            position = int(variant['POS']),
+                            reference = variant['REF'],
+                            alternatives = variant['ALT'].split(',')
+                    )
+    
+    mongo_variant['db_snp_ids'] = variant.get(config_object['ID']['vcf_field'], '').split(
+                                                config_object['ID']['vcf_data_field_separator'])
+    
+    mongo_common = VariantCommon()
+    # Add the gene ids
+    mongo_common['hgnc_symbols'] = variant['info_dict'].get(config_object['HGNC_symbol']['vcf_info_key'], '').split(
+                                                config_object['HGNC_symbol']['vcf_data_field_separator'])
+    mongo_common['ensemble_gene_ids'] = variant['info_dict'].get(config_object['Ensembl_gene_id']['vcf_info_key'], '').split(
+                                                config_object['Ensembl_gene_id']['vcf_data_field_separator'])
+    # Add the frequencies
+    try:
+      mongo_common['thousand_genomes_frequency'] = min([float(frequency) for frequency in
+                  variant['info_dict'].get(config_object['1000GMAF']['vcf_info_key'], '0').split(
+                  config_object['1000GMAF']['vcf_data_field_separator'])])
+    except ValueError:
+      pass
+    
+    try:
+      mongo_common['exac_frequency'] = min([float(frequency) for frequency in
+                  variant['info_dict'].get(config_object['EXAC']['vcf_info_key'], '0').split(
+                  config_object['EXAC']['vcf_data_field_separator'])])
+    except ValueError:
+      pass
+    
+    # Add the severity predictions
+    mongo_common['cadd_score'] = max([float(score) for score in
+                variant['info_dict'].get(config_object['CADD']['vcf_info_key'], '0').split(
+                config_object['CADD']['vcf_data_field_separator'])])
+    
+    mongo_common['sift_predictions'] = variant['info_dict'].get(config_object['Sift']['vcf_info_key'], '').split(
+                config_object['Sift']['vcf_data_field_separator'])
+    
+    mongo_common['polyphen_predictions'] = variant['info_dict'].get(config_object['PolyPhen']['vcf_info_key'], '').split(
+                config_object['PolyPhen']['vcf_data_field_separator'])
+    
+    # Add functional annotation
+    mongo_common['functional_annotations'] = variant['info_dict'].get(config_object['FunctionalAnnotation']['vcf_info_key'], '').split(
+                config_object['FunctionalAnnotation']['vcf_data_field_separator'])
+    
+    # Add region annotation
+    mongo_common['region_annotations'] = variant['info_dict'].get(config_object['GeneticRegionAnnotation']['vcf_info_key'], '').split(
+                config_object['GeneticRegionAnnotation']['vcf_data_field_separator'])
+    
+    # Add conservation annotation
+    gerp = variant['info_dict'].get(config_object['Gerp']['vcf_info_key'], None)
+    if gerp:
+      mongo_common['gerp_conservation'] = gerp.split(config_object['Gerp']['vcf_data_field_separator'])
+    
+    phast_cons = variant['info_dict'].get(config_object['PhastCons']['vcf_info_key'], None)
+    if phast_cons:
+      mongo_common['phast_conservation'] = phast_cons.split(config_object['PhastCons']['vcf_data_field_separator'])
+    
+    phylop_cons = variant['info_dict'].get(config_object['PhylopCons']['vcf_info_key'], None)
+    if phylop_cons:
+      mongo_common['phylop_conservation'] = phylop_cons.split(config_object['PhylopCons']['vcf_data_field_separator'])
+    
+    # Add the predicted protein change
+    
+    protein_change = variant['info_dict'].get(config_object['Transcript']['vcf_info_key'], None)
+    if protein_change:
+      mongo_common['protein_change'] = protein_change.split(config_object['Transcript']['vcf_data_field_separator'])
+    
+    # Add the common field:
+    mongo_variant['common'] = mongo_common
+    
+    # When we save the variant in this stage it will be an upsert when using mongoengine
+    mongo_variant['specific'][case_id] = mongo_specific
+    
+    mongo_variant.save()
+  
+  return
 
 
 @click.command()
