@@ -1,7 +1,8 @@
 <template>
   <textarea v-if="isEditing"
             v-model="content"
-            class="markdown-editor-input">
+            class="markdown-editor-input"
+            placeholder="Edit synopsis">
   </textarea>
   <div v-html="html" v-if="!isEditing" class="markdown-editor-html"></div>
 

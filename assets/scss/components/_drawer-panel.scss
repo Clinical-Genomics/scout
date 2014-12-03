@@ -24,7 +24,7 @@ drawer-panel {
   background-color: rgba(#000, 0);
 
   // fade in when drawer is summoned
-  transition: background-color 250ms, left 0 250ms cubic-bezier(.55, 0, .1, 1);
+  transition: background-color 250ms, left 0 250ms $global-timing-function;
 }
 
 .drawer-panel-aside {
@@ -39,7 +39,7 @@ drawer-panel {
   left: -$drawer-panel-aside-width;
 
   // starts out pushed out of view to the left
-  transition: left 250ms cubic-bezier(.55, 0, .1, 1);
+  transition: left 250ms $global-timing-function;
 
   // should be ontop of everything else pretty much
   z-index: 3;
