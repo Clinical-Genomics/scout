@@ -6,13 +6,13 @@
 {% block toolbar_left %}
   {{ super() }}
 
-  <div class="md-breadcrumbs flex">
+  <div class="md-breadcrumb-group flex">
     <a class="md-breadcrumb-button is-raised"
        href="{{ url_for('core.cases', institute_id=institute_id) }}">
       {{ institute.display_name }}
     </a>
     <core-icon
-      class="md-breadcrumbs-separator"
+      class="md-breadcrumb-separator"
       v-with="icon: 'chevron-right'">
     </core-icon>
 
@@ -20,7 +20,7 @@
       {{ case.display_name }}
     </a>
     <core-icon
-      class="md-breadcrumbs-separator"
+      class="md-breadcrumb-separator"
       v-with="icon: 'chevron-right'">
     </core-icon>
 

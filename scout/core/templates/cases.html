@@ -5,10 +5,10 @@
 {% block toolbar_left %}
   {{ super() }}
 
-  <div class="md-breadcrumbs flex">
+  <div class="md-breadcrumb-group flex">
     <div class="md-breadcrumb">{{ institute.display_name }}</div>
     <core-icon
-      class="md-breadcrumbs-separator"
+      class="md-breadcrumb-separator"
       v-with="icon: 'chevron-right'"></core-icon>
     <div class="md-breadcrumb">cases</div>
   </div>
