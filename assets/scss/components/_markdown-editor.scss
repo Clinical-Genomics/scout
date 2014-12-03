@@ -1,13 +1,7 @@
 markdown-editor {}
 
 .markdown-editor-toggle {
-  @extend .button-base;
-  @extend .is-raised;
-
-  width: 100px;
-  padding-top: .5em;
-  padding-bottom: .5em;
-  margin-bottom: .5em;
+  @extend .button-flat;
 }
 
 .markdown-editor-input {

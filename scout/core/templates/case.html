@@ -56,7 +56,7 @@
 
 {% block content %}
 
-  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button is-raised">
+  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button">
     Go to all variants
   </a>
 
@@ -194,7 +194,7 @@
             <textarea class="comment-box-input"
                       name="content"
                       placeholder="Leave a comment"></textarea>
-            <button class="comment-box-submit" type="submit">Comment</button>
+            <button class="button-flat" type="submit">Comment</button>
           </form>
         </div>
       </div>

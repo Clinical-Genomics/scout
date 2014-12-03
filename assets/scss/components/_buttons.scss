@@ -1,0 +1,74 @@
+$button-height: 36px !default;
+$button-color: $primary-color !default;
+
+// Z-levels
+.z-depth-1{
+  box-shadow: 0 2px 5px 0 rgba(#000, .16),
+              0 2px 10px 0 rgba(#000, .12);
+}
+.z-depth-1-half{
+  box-shadow: 0 5px 11px 0 rgba(#000, .18),
+              0 4px 15px 0 rgba(#000, .15);
+}
+.z-depth-2{
+  box-shadow: 0 8px 17px 0 rgba(#000, .2),
+              0 6px 20px 0 rgba(#000, .19);
+}
+.z-depth-3{
+  box-shadow: 0 12px 15px 0 rgba(#000, .24),
+              0 17px 50px 0 rgba(#000, .19);
+}
+.z-depth-4{
+  box-shadow: 0 16px 28px 0 rgba(#000, .22),
+              0 25px 55px 0 rgba(#000, .21);
+}
+.z-depth-5{
+  box-shadow: 0 27px 24px 0 rgba(#000, .2),
+              0 40px 77px 0 rgba(#000, .22);
+}
+
+// shared styles
+%button {
+  border: none;
+  display: inline-block;
+  height: $button-height;
+  margin-bottom: 15px;
+  padding: 0 2rem;
+  border-radius: 2px;
+  line-height: $button-height;
+  cursor: pointer;
+}
+
+// Raised Button
+.button {
+  @extend %button;
+  @extend .z-depth-1;
+  text-decoration: none;
+  color: #fff;
+  background-color: $button-color;
+  text-align: center;
+  letter-spacing: .8px;
+  transition: .2s ease-out;
+
+  &:hover {
+    @extend .z-depth-1-half;
+    background-color: lighten($button-color, 3%);
+  }
+}
+
+// Flat button
+.button-flat {
+  @extend %button;
+  box-shadow: none;
+  background-color: transparent;
+  color: #343434;
+  text-transform: uppercase;
+
+  &.disabled {
+    color: lighten(#999, 10%);
+  }
+
+  &:hover {
+    background-color: #DFDFDF;
+  }
+}
