@@ -3,15 +3,14 @@
   overflow: visible !important;  // required
 
   &:hover > .md-tooltip-tip {
-    transform: scale(1);
+    visibility: visible;
   }
 }
 
 .md-tooltip-tip {
   position: absolute;
   z-index: 20;
-  transform: scale(0);
-  transition: .4s all cubic-bezier(.19, 1, .22, 1);
+  visibility: hidden;
 
   padding: .5rem;
   white-space: nowrap;
@@ -25,7 +24,7 @@
 
   &:hover {
     // keep visible if hovered over
-    transform: scale(1);
+    visibility: visible;
   }
 
   // TODO: factor this out

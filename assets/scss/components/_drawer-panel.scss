@@ -43,8 +43,8 @@ drawer-panel {
 
   // fixed but min-width (flex: 0)
   width: $drawer-panel-aside-width;
-  // hide out of view on small screens
-  left: -$drawer-panel-aside-width;
+  // hide out of view on small screens (+ clear drop shadow)
+  left: -($drawer-panel-aside-width + 1rem);
 
   // starts out pushed out of view to the left
   transition: left 250ms $global-timing-function;
