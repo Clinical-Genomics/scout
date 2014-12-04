@@ -2,6 +2,10 @@
 // | Shadow: for different z-levels
 // +-------------------------------------------------------------------+
 
+.md-shadow-0-half {
+  box-shadow: 0 1px 3px -1px rgba(#000, .4);
+}
+
 .md-shadow-1 {
   box-shadow: 0 2px 5px 0 rgba(#000, .16),
               0 2px 10px 0 rgba(#000, .12);

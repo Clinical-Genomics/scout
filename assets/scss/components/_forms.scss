@@ -13,7 +13,6 @@ textarea {
   height: 3rem;
   width: 100%;
   font-size: 1rem;
-  margin: 0 0 15px 0;
   padding: 0;
   box-shadow: none;
   box-sizing: content-box;
@@ -31,7 +30,6 @@ textarea:focus {
 
 textarea {
   overflow-y: hidden;  // prevents scroll bar flash
-  padding: 1rem 0;   // prevents text jump on Enter keypress
 }
 
 // $checkbox-check-color: #16a085;

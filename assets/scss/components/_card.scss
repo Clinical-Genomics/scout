@@ -1,0 +1,55 @@
+// +-------------------------------------------------------------------+
+// | Card
+// +-------------------------------------------------------------------+
+// require "./buttons"
+
+.md-card-list {
+  > .md-card:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}
+
+.md-card {
+  // styles
+  @extend .md-shadow-0-half;
+  background: #fff;
+
+  width: 100%;
+}
+
+%md-card-part {
+  padding: .5rem;
+  border-color: rgba(#000, .15);
+  font-size: .9rem;
+  color: #444;
+}
+
+.md-card-header {
+  @extend %md-card-part;
+
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  font-weight: bold;
+}
+
+.md-card-body {
+  // layout
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.md-card-body-list {}
+
+.md-card-body--padded {
+  @extend .md-card-body;
+
+  padding: 1rem;
+}
+
+.md-card-footer {
+  @extend %md-card-part;
+
+  border-top-width: 1px;
+  border-top-style: solid;
+}

@@ -1,113 +1,98 @@
 // navbar
 
 .cases-search {
-	background-color: rgba(#000, .05);
-	padding: .7em .5em;
+  background-color: rgba(#000, .05);
+  padding: .7em .5em;
 
-	display: flex;
-	align-items: center;
-	width: 100%;
-	height: 2em;
-	border-radius: 3px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 2em;
+  border-radius: 3px;
 
-	&:hover {
-		background-color: rgba(#000, .1);
-	}
+  &:hover {
+    background-color: rgba(#000, .1);
+  }
 
-	:first-child {
-		margin-right: 1em;
-	}
+  :first-child {
+    margin-right: 1em;
+  }
 }
 
 .cases-search-input {
-	width: 100%;
-	padding: 0 .5em;
-	background-color: transparent;
+  width: 100%;
+  padding: 0 .5em;
+  background-color: transparent;
 }
 
 // content
 .cases-list {
-	padding: 2em 0;
-	width: 80%;
-	max-width: 60em;
-	margin-right: auto;
-	margin-left: auto;
-}
-
-.cases-item {
-	// layout
-	display: flex;
-	align-items: center;
-
-	// styles
-	background: #fff;
-	box-shadow: 0 1px 3px -1px rgba(#000, .4);
-
-	&:not(:last-child) {
-		margin-bottom: 1em;
-	}
+  padding: 2em 0;
+  width: 80%;
+  max-width: 60em;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 %cases-item-base {
-	padding: .7em;
+  padding: .7em;
 }
 
 .cases-item-title {
-	@extend %cases-item-base;
-	color: darken(#00bcd4, 10%);
+  @extend %cases-item-base;
+  color: darken(#00bcd4, 10%);
 
-	display: flex;
-	align-items: center;
-	flex: 1;
+  display: flex;
+  align-items: center;
+  flex: 1;
 
-	font-size: 1.5em;
-	text-decoration: none;
+  font-size: 1.5em;
+  text-decoration: none;
 }
 
-.cases-item-indicator {
-	display: inline-block;
-	height: 1rem;
-	width: 1rem;
-	border-radius: 100%;
-	background-color: #00bcd4;
-	margin-right: .7rem;
+.cases-indicator {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  border-radius: 100%;
+  background-color: #00bcd4;
 }
 
 .cases-item-bonus {
-	@extend %cases-item-base;
+  @extend %cases-item-base;
 
-	flex: 1;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.cases-item-date {
-	@extend %cases-item-base;
+.cases-date {
+  @extend %cases-item-base;
 
-	padding-top: 0;
-	padding-bottom: 0;
-	color: rgba(#000, .5);
-	font-size: .9em;
+  padding-top: 0;
+  padding-bottom: 0;
+  color: rgba(#000, .5);
+  font-size: .9em;
 }
 
 .cases-item-link {
-	@extend %cases-item-base;
+  @extend %cases-item-base;
 
-	padding-top: 0;
-	padding-bottom: 0;
-	display: inline-block;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-block;
 }
 
 .cases-item-databases {
-	@extend %cases-item-base;
+  @extend %cases-item-base;
 
-	overflow: auto;
-	white-space: nowrap;
-	margin: 0 2em;
-	border-radius: 3px;
-	flex: .5;
-	background-color: rgba(#000, .05);
-	border: 1px solid rgba(#000, .15);
-	font-size: .9em;
+  overflow: auto;
+  white-space: nowrap;
+  margin: 0 2em;
+  border-radius: 3px;
+  flex: .5;
+  background-color: rgba(#000, .05);
+  border: 1px solid rgba(#000, .15);
+  font-size: .9em;
 }

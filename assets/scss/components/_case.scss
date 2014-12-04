@@ -14,6 +14,18 @@
 	&:not(:last-child) {
 		margin-bottom: 1em;
 	}
+
+  > :not(:last-child) {
+    margin-right: 1em;
+  }
+
+  > .is-main {
+    flex-basis: 70%;
+  }
+
+  > .is-aside {
+    flex-basis: 30%;
+  }
 }
 
 %case-segment {
@@ -25,22 +37,6 @@
 	@extend %case-segment;
 
 	flex-basis: 100%;
-}
-
-.case-segment-main {
-	@extend %case-segment;
-
-	flex-basis: 70%;
-
-	+ .case-segment-aside {
-		margin-left: 1em;
-	}
-}
-
-.case-segment-aside {
-	@extend %case-segment;
-
-	flex-basis: 30%;
 }
 
 .case-segment-title {

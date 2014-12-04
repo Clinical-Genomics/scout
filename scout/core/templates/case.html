@@ -63,9 +63,9 @@
   <div class="case-segments">
 
     <div id="strong-candidates" class="case-segment-row">
-      <div id="case-candidates" class="case-segment-full">
-        <div class="case-segment-title">Strong candidates</div>
-        <div class="case-segment-content">
+      <div id="case-candidates" class="md-card">
+        <div class="md-card-header">Strong candidates</div>
+        <div class="md-card-body-list">
           <div class="case-candidate">
             {{ core_item('KAI12', icon='bookmark') }}
 
@@ -82,16 +82,13 @@
             </div>
           </div>
         </div>
-        <div class="case-segment-notes">
-          Highly suspected variants to be disease causing.
-        </div>
       </div>
     </div>
 
     <div id="synopsis+samples" class="case-segment-row">
-      <div id="case-synopsis" class="case-segment-main">
-        <div class="case-segment-title">Synopsis</div>
-        <div class="case-segment-content-text">
+      <div id="case-synopsis" class="md-card is-main">
+        <div class="md-card-header">Synopsis</div>
+        <div class="md-card-body--padded">
           <markdown-editor v-with='
             content: {{ case.synopsis|tojson|safe }},
             onSave: updateSynopsis
@@ -99,9 +96,9 @@
         </div>
       </div>
 
-      <div id="case-samples" class="case-segment-aside">
-        <div class="case-segment-title">Individuals</div>
-        <div class="case-segment-content">
+      <div id="case-samples" class="md-card is-aside">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list">
           {% for sample in case.individuals %}
             <div class="case-sample-{{ sample.phenotype_human }}" title="{{ sample.phenotype_human }} {{ sample.sex_human }}">
               <div class="case-sample-item--small">
@@ -172,32 +169,29 @@
     </div>
 
     <div id="comment-box" class="case-segment-row">
-      <div class="case-segment-full">
-        <div class="case-segment-title">Comment on case</div>
-        <div class="case-segment-content-text">
-          <form class="comment-box"
-                accept-charset="UTF-8"
-                action="{{ url_for('api.event',
+      <form class="md-card"
+            accept-charset="UTF-8"
+            method="POST"
+            action="{{ url_for('api.event',
+                               institute_id=institute.display_name,
+                               case_id=case.display_name) }}">
+        <div class="md-card-body--padded">
+          <input type="hidden"
+                 name="link"
+                 value="{{ url_for('core.case',
                                    institute_id=institute.display_name,
-                                   case_id=case.display_name) }}"
-                method="POST">
-
-            <input type="hidden"
-                   name="link"
-                   value="{{ url_for('core.case',
-                                     institute_id=institute.display_name,
-                                     case_id=case.display_name) }}">
-            <input type="hidden" name="verb" value="commented on">
-            <input type="hidden"
-                   name="subject"
-                   value="{{ case.display_name }}">
-            <textarea class="comment-box-input"
-                      name="content"
-                      placeholder="Leave a comment"></textarea>
-            <button class="md-button-flat" type="submit">Comment</button>
-          </form>
+                                   case_id=case.display_name) }}">
+          <input type="hidden" name="verb" value="commented on">
+          <input type="hidden"
+                 name="subject"
+                 value="{{ case.display_name }}">
+          <textarea name="content"
+                    placeholder="Leave a comment"></textarea>
         </div>
-      </div>
+        <div class="md-card-footer">
+          <button class="md-button-flat" type="submit">Comment</button>
+        </div>
+      </form>
     </div>
 
   </div>

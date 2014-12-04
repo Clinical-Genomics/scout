@@ -1,27 +1,23 @@
 <template>
-  <div v-repeat="cases | filterBy filterKey" class="cases-item">
+  <div class="md-card-list">
+    <div v-repeat="cases | filterBy filterKey" class="md-card">
+      <div class="md-card-body--padded">
+        <a href="{{baseUrl}}/{{display_name}}" class="md-item">
+          <div v-show="events.length" class="md-item-icon">
+            <div class="cases-indicator"></div>
+          </div>
 
-    <a class="cases-item-title" href="{{baseUrl}}/{{display_name}}">
-      <div v-if="events.length" class="cases-item-indicator"></div>
-      {{display_name}}
+          <div class="md-item-label">{{display_name}}</div>
 
-      <div v-if="assignee.$oid == user_id" class="tag">Assigned</div>
-    </a>
+          <div v-show="assignee.$oid == user_id" class="tag">Assigned</div>
+        </a>
 
-    <div class="cases-item-bonus">
-
-      <a href="{{baseUrl}}/{{display_name}}/variants" class="cases-item-link">
-        Variants
-      </a>
-
-      <!-- <div class="cases-item-databases">IEM, EP</div> -->
-
-      <div class="cases-item-date">
-        Updated {{created_at.$date | fromNow}}
+        <div>
+          <a href="{{baseUrl}}/{{display_name}}/variants">Variants</a> |
+          <span class="timestamp">{{created_at.$date | fromNow}}</span>
+        </div>
       </div>
-
     </div>
-
   </div>
 </template>
 
