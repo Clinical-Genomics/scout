@@ -90,14 +90,14 @@
 				</div>
 
         <!-- 1000 Genomes -->
-				<div class="variants-row-item text-right variants-tooltip">
+				<div class="variants-row-item text-right md-tooltip">
           {% if variant.common.thousand_genomes_frequency %}
             {{ variant.common.thousand_genomes_frequency|float|round(3) }}
           {% else %}
             -
           {% endif %}
 
-          <div class="variants-tooltip-tip is-left">
+          <div class="md-tooltip-tip is-left">
             <ul>
               <li><strong>ExAC</strong> {{ variant.common.exac_frequency or '-' }}</li>
               <li><strong>Local</strong> {{ 'soon' }}</li>
@@ -106,10 +106,10 @@
         </div>
 
         <!-- PolyPhen -->
-        <div class="variants-row-item text-right variants-tooltip">
+        <div class="variants-row-item text-right md-tooltip">
           {{ variant.common.cadd_score or '-' }}
 
-          <div class="variants-tooltip-tip is-right">
+          <div class="md-tooltip-tip is-right">
             <ul>
               <li>
                 <strong>Sift</strong>
@@ -140,13 +140,13 @@
         <div class="variants-row-item">{{ 'coming soon' }}</div>
 
         <!-- Inheritance models -->
-				<div class="variants-row-list flex-big variants-tooltip">
+				<div class="variants-row-list flex-big md-tooltip">
 					{% for model in (specific.genetic_models or []) %}
             <div class="variants-row-list-item">{{ model }}</div>
           {% endfor %}
 
           {% if specific.compounds %}
-            <div class="variants-tooltip-tip is-left">
+            <div class="md-tooltip-tip is-left">
               {{ compounds_table(
                    specific.compounds,
                    class_names=['default-table', 'table-compounds-popup']) }}

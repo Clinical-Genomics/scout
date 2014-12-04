@@ -60,14 +60,14 @@
                icon='grade',
                class='variant-header-item') }}
 
-  <div class="variant-header-item variants-tooltip">
+  <div class="variant-header-item md-tooltip">
     {{ core_item(
       'Chr%s: %s' % (variant.chromosome,
                      variant.common.hgnc_symbols|join(',')),
       icon='room')
     }}
 
-    <div class="variants-tooltip-tip is-bottom">
+    <div class="md-tooltip-tip is-bottom">
       <ul>
         <li>
           <strong>Position</strong>: {{ variant.position }}
