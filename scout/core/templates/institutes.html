@@ -11,22 +11,22 @@
 {% block content %}
 
   <div class="cases-list">
-    {% for institute in institutes %}
+    <div class="md-card-list">
+      {% for institute in institutes %}
+        <div class="md-card">
+          <div class="md-card-body--padded">
+            {{ core_item(
+                institute.display_name,
+                icon='group-work',
+                href=url_for('core.cases', institute_id=institute.display_name)) }}
 
-      <div class="md-card">
-        <div class="md-card-body--padded">
-          {{ core_item(
-              institute.display_name,
-              icon='group-work',
-              href=url_for('core.cases', institute_id=institute.display_name)) }}
-
-          <div class="cases-date">
-            {{ institute.count_cases() }} active cases
+            <div class="cases-date">
+              {{ institute.count_cases() }} active cases
+            </div>
           </div>
         </div>
-      </div>
-
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 
 {% endblock %}

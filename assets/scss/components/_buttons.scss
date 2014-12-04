@@ -2,6 +2,7 @@
 // | Buttons
 // +-------------------------------------------------------------------+
 // require "./shadow"
+// require "./core-icon"
 
 // Public API
 $button-height: 36px !default;
@@ -52,5 +53,21 @@ $button-color: $primary-color !default;
 
   &:hover {
     background-color: #DFDFDF;
+  }
+}
+
+// simple button using just an icon
+.md-icon-button {
+  display: inline-block;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  z-index: 0;
+
+  padding: .2rem;
+  border-radius: 100%;
+
+  &:active {
+    background-color: rgba(#000, .1);
   }
 }

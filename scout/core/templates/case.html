@@ -66,19 +66,41 @@
       <div id="case-candidates" class="md-card">
         <div class="md-card-header">Strong candidates</div>
         <div class="md-card-body-list">
-          <div class="case-candidate">
-            {{ core_item('KAI12', icon='bookmark') }}
+          <div class="list-item">
+            <div class="md-item">
+              <div class="md-item-icon">
+                <core-icon v-with="icon: 'bookmark'"></core-icon>
+              </div>
 
-            <div class="case-candidate-user">
-              Pinned by <strong>Anna Wedell</strong>
+              <div class="md-item-body">
+                <div class="md-item-title">KAI12</div>
+                <div class="md-item-subtitle">
+                  Pinned by <strong>Anna Wedell</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="md-icon-button">
+              <core-icon v-with="icon: 'more-vert'"></core-icon>
             </div>
           </div>
 
-          <div class="case-candidate">
-            {{ core_item('POL2', icon='bookmark') }}
+          <div class="list-item">
+            <div class="md-item">
+              <div class="md-item-icon">
+                <core-icon v-with="icon: 'bookmark'"></core-icon>
+              </div>
 
-            <div class="case-candidate-user">
-              Pinned by <strong>Henrik Stranneheim</strong>
+              <div class="md-item-body">
+                <div class="md-item-title">POL2</div>
+                <div class="md-item-subtitle">
+                  Pinned by <strong>Henrik Stranneheim</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="md-icon-button">
+              <core-icon v-with="icon: 'more-vert'"></core-icon>
             </div>
           </div>
         </div>

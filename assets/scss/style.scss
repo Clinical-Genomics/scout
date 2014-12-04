@@ -12,26 +12,17 @@
 
 // Components
 @import "components/shadow";
+@import "components/item";
+@import "components/lists";
 @import "components/buttons";
 @import "components/forms";
 @import "components/drawer-panel";
 @import "components/card";
+@import "components/tooltip";
 @import "components/markdown-editor";
 @import "components/table";
 @import "components/activity-feed";
 @import "components/breadcrumb";
-
-.md-item {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-
-  > :not(:last-child) {
-    margin-right: .5rem;
-  }
-}
-
-.md-item-label {}
 
 // Resets
 #app {

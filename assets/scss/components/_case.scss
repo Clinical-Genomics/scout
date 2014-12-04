@@ -65,39 +65,15 @@
 	font-size: .8rem;
 }
 
-.case-candidate {
-	position: relative;
-	padding: .4rem;
-
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	&:not(:last-child) {
-		border-bottom: 1px solid rgba(#000, .1);
-	}
-
-	&:hover {
-		background-color: RGBA(0, 188, 212, .1);
-	}
-}
-
-.case-candidate-user {
-	font-size: .8rem;
-}
-
 // SAMPLES
 %case-sample {
+  @extend .list-item;
+
 	font-size: .8rem;
-	border-bottom: 1px solid rgba(#000, .1);
+	border-bottom: 1px solid rgba(#000, .1);  // colored background
 	padding: .2rem 1rem;
 	position: relative;
 	height: 2.8rem;
-
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
 	overflow: auto;
 }
 
