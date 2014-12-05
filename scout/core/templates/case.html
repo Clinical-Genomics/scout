@@ -105,20 +105,8 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="synopsis+samples" class="case-segment-row">
-      <div id="case-synopsis" class="md-card is-main">
-        <div class="md-card-header">Synopsis</div>
-        <div class="md-card-body--padded">
-          <markdown-editor v-with='
-            content: {{ case.synopsis|tojson|safe }},
-            onSave: updateSynopsis
-          '></markdown-editor>
-        </div>
-      </div>
-
-      <div id="case-samples" class="md-card is-aside">
+      <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list">
           {% for sample in case.individuals %}
@@ -140,10 +128,22 @@
       </div>
     </div>
 
+    <div id="synopsis+samples" class="case-segment-row">
+      <div id="case-synopsis" class="md-card">
+        <div class="md-card-header">Synopsis</div>
+        <div class="md-card-body--padded">
+          <markdown-editor v-with='
+            content: {{ case.synopsis|tojson|safe }},
+            onSave: updateSynopsis
+          '></markdown-editor>
+        </div>
+      </div>
+    </div>
+
     <div id="activity" class="case-segment-row">
-      <div id="case-activity" class="case-segment-full">
-        <div class="case-segment-title">Activity</div>
-        <div class="case-segment-content-main">
+      <div id="case-activity" class="md-card is-main">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
           <div class="activity-feed">
             {% for event in case.events|reverse %}
               <div class="activity-feed-item">
@@ -188,10 +188,8 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="comment-box" class="case-segment-row">
-      <form class="md-card"
+      <form class="md-card is-aside"
             accept-charset="UTF-8"
             method="POST"
             action="{{ url_for('api.event',
