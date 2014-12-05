@@ -95,7 +95,8 @@
 
   <div class="md-toolbar-group">
     {% if prev_variant %}
-      <a title="Previous variant"
+      <a class="icon-button"
+         title="Previous variant"
          href="{{ url_for('core.variant',
                     institute_id=institute_id, case_id=case_id,
                     variant_id=prev_variant.variant_id) }}">
@@ -103,7 +104,8 @@
       </a>
     {% endif %}
 
-    <a title="Previous variant"
+    <a class="icon-button"
+       title="Previous variant"
        href="{{ url_for('core.variant',
                   institute_id=institute_id, case_id=case_id,
                   variant_id=next_variant.variant_id) }}">
@@ -118,7 +120,7 @@
 
     <div id="summary" class="variant-segments-row">
       <div id="summary" class="variant-segment-summary">
-        <div class="variant-segment-title">Summary</div>
+        <div class="md-card-header">Summary</div>
 
         <div class="variant-segment-content">
           <div class="variant-list-item">
@@ -140,10 +142,10 @@
     </div>
 
     <div id="important-data" class="variant-segments-row">
-      <div id="frequency" class="variant-segment">
-        <div class="variant-segment-title">Frequency</div>
 
-        <div class="variant-segment-content">
+      <div id="frequency" class="md-card">
+        <div class="md-card-header">Frequency</div>
+        <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>ThousandG</div>
             <div>
@@ -163,10 +165,10 @@
         </div>
       </div>
 
-      <div id="inheritance-model" class="variant-segment">
-        <div class="variant-segment-title">Inheritance models</div>
+      <div id="inheritance-model" class="md-card">
+        <div class="md-card-header">Inheritance models</div>
 
-        <div class="variant-segment-content">
+        <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Disease gene model</div>
             <div>{{ 'coming soon' }}</div>
@@ -194,10 +196,10 @@
         </div>
       </div>
 
-      <div id="omim" class="variant-segment">
-        <div class="variant-segment-title">OMIM</div>
+      <div id="omim" class="md-card">
+        <div class="md-card-header">OMIM</div>
 
-        <div class="variant-segment-content">
+        <div class="md-card-body-list">
           <omim-summary v-ref="omim" v-with="
             url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
           "></omim-summary>
@@ -206,10 +208,10 @@
     </div>
 
     <div id="details" class="variant-segments-row">
-      <div id="protein-changes" class="variant-segment">
-        <div class="variant-segment-title">Predicted protein changes</div>
+      <div id="protein-changes" class="md-card">
+        <div class="md-card-header">Predicted protein changes</div>
 
-        <div class="variant-segment-content">
+        <div class="md-card-body-list">
           {% for prediction in variant.common.protein_change %}
             <div class="variant-list-item">{{ prediction }}</div>
           {% else %}
@@ -218,10 +220,10 @@
         </div>
       </div>
 
-      <div id="severities" class="variant-segment">
-        <div class="variant-segment-title">Severity</div>
+      <div id="severities" class="md-card">
+        <div class="md-card-header">Severity</div>
 
-        <div class="variant-segment-content">
+        <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Sift</div>
             <div>{{ variant.common.sift_predictions|join(',') }}</div>
@@ -233,31 +235,33 @@
         </div>
       </div>
 
-      <div id="conservation" class="variant-segment">
-        <div class="variant-segment-title">Conservation</div>
+      <div id="conservation" class="md-card">
+        <div class="md-card-header">Conservation</div>
 
-        <div class="variant-list-item">
-          <div>PHAST</div>
-          <div>{{ variant.common.phast_conservation|join(',') or '-' }}</div>
-        </div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>PHAST</div>
+            <div>{{ variant.common.phast_conservation|join(',') or '-' }}</div>
+          </div>
 
-        <div class="variant-list-item">
-          <div>GERP</div>
-          <div>{{ variant.common.gerp_conservation|join(',') or '-' }}</div>
-        </div>
+          <div class="variant-list-item">
+            <div>GERP</div>
+            <div>{{ variant.common.gerp_conservation|join(',') or '-' }}</div>
+          </div>
 
-        <div class="variant-list-item">
-          <div>phyloP</div>
-          <div>{{ variant.common.phylop_conservation|join(',') or '-' }}</div>
+          <div class="variant-list-item">
+            <div>phyloP</div>
+            <div>{{ variant.common.phylop_conservation|join(',') or '-' }}</div>
+          </div>
         </div>
       </div>
     </div>
 
     <div id="gt-call" class="variant-segments-row">
-      <div class="variant-segment">
-        <div class="variant-segment-title">GT call</div>
+      <div class="md-card">
+        <div class="md-card-header">GT call</div>
 
-        <div class="variant-segment-content">
+        <div class="md-card-body">
           <table class="default-table">
             <thead>
               <tr>
@@ -290,57 +294,55 @@
     </div>
 
     <div id="compounds" class="variant-segments-row">
-      <div class="variant-segment">
-        <div class="variant-segment-title">Compounds</div>
+      <div class="md-card">
+        <div class="md-card-header">Compounds</div>
 
-        <div class="variant-segment-content">
+        <div class="md-card-body">
           {{ compounds_table(specific.compounds) }}
         </div>
       </div>
     </div>
 
     <div id="external-links" class="variant-segments-row">
-      <div class="variant-segment">
-        <div class="variant-segment-content">
-          <div class="variant-list-links">
-            <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.common.ensemble_gene_ids|join(',') }}">
-              Ensembl
-            </a>
+      <div class="md-card">
+        <div class="md-card-body">
+          <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.common.ensemble_gene_ids|join(',') }}">
+            Ensembl
+          </a>
 
-            <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.common.ensemble_gene_ids|join(',') }}">
-              HPA
-            </a>
+          <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.common.ensemble_gene_ids|join(',') }}">
+            HPA
+          </a>
 
-            <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.common.ensemble_gene_ids|join(',') }}">
-              STRING
-            </a>
+          <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.common.ensemble_gene_ids|join(',') }}">
+            STRING
+          </a>
 
-            <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
-              UCSC
-            </a>
+          <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
+            UCSC
+          </a>
 
-            <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.common.hgnc_symbols|join(',') }}">
-              Entrez
-            </a>
+          <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.common.hgnc_symbols|join(',') }}">
+            Entrez
+          </a>
 
-            {% raw %}
-            <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber}}">
-              OMIM
-            </a>
-            {% endraw %}
+          {% raw %}
+          <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber}}">
+            OMIM
+          </a>
+          {% endraw %}
 
-            <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
-              IGV
-            </a>
-          </div>
+          <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
+            IGV
+          </a>
         </div>
       </div>
     </div>
 
     <div id="activity" class="variant-segments-row">
-      <div class="variant-segment">
-        <div class="variant-segment-title">Activity</div>
-        <div class="variant-segment-content">
+      <div class="md-card">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body">
           <div class="activity-feed">
             {% for event in specific.events|reverse %}
               <div class="activity-feed-item">
@@ -389,9 +391,9 @@
     </div>
 
     <div id="comment-box" class="case-segment-row">
-      <div class="case-segment-full">
-        <div class="case-segment-title">Comment on variant</div>
-        <div class="case-segment-content-text">
+      <div class="md-card">
+        <div class="md-card-header">Comment on variant</div>
+        <div class="md-card-body--padded">
           <form class="comment-box"
                 accept-charset="UTF-8"
                 action="{{ url_for('api.variant_event',
