@@ -1,0 +1,16 @@
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: .7rem 1rem;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(#000, .1);
+  }
+
+  &:hover {
+    background-color: RGBA(0, 188, 212, .1);
+  }
+}

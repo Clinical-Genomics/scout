@@ -1,13 +1,20 @@
 <template>
-  <textarea v-if="isEditing"
+  <textarea v-show="isEditing"
             v-model="content"
-            class="markdown-editor-input">
+            class="markdown-editor-input"
+            placeholder="Edit synopsis">
   </textarea>
-  <div v-html="html" v-if="!isEditing" class="markdown-editor-html"></div>
+  <div v-html="html" v-show="!isEditing" class="markdown-editor-html"></div>
 
-  <div class="markdown-editor-toggle">
-    <span v-on="click:save" v-if="isEditing">Save</span>
-    <span v-on="click:edit" v-if="!isEditing">Edit</span>
+  <div class="md-button-group">
+    <div class="md-button-flat" v-on="click:save" v-show="isEditing">Save</div>
+    <div class="md-button-flat" v-on="click:cancel" v-show="isEditing">
+      Cancel
+    </div>
+
+    <div class="md-button-flat" v-on="click:edit" v-show="!isEditing">
+      Edit
+    </div>
   </div>
 </template>
 
@@ -27,13 +34,16 @@
         if @onSave
           @onSave(@content)
 
+      cancel: ->
+        @isEditing = no
+
       update: ->
         superagent
           .post "/api/v1/markdown"
           .send { markdown: @content }
           .end (res) =>
             if res.ok
-              @html = res.body.html
+              @html = res.body.html or '<h3>Nothing written yet.</h3>'
             else
               @html = "<p>Server error...</p>"
 

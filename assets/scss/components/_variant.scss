@@ -24,20 +24,15 @@ $variant-base-padding: 1rem;
   &:not(:last-child) {
     margin-bottom: 1em;
   }
+
+  > :not(:last-child) {
+    margin-right: 1rem;
+  }
 }
 
 %variant-segment-base {
   background-color: #fff;
   box-shadow: 0 1px 3px -1px rgba(#000, .4);
-}
-
-.variant-segment {
-  @extend %variant-segment-base;
-  flex: 1;
-
-  &:not(:last-child) {
-    margin-right: 1rem;
-  }
 }
 
 .variant-segment-summary {
@@ -49,49 +44,6 @@ $variant-base-padding: 1rem;
   @media (min-width: 40em) {
     width: 40rem;
   }
-}
-
-.variant-segment-full {
-  @extend %variant-segment-base;
-
-  flex-basis: 100%;
-}
-
-.variant-segment-main {
-  @extend %variant-segment-base;
-
-  flex-basis: 70%;
-
-  + .variant-segment-aside {
-    margin-left: 1em;
-  }
-}
-
-.variant-segment-aside {
-  @extend %variant-segment-base;
-
-  flex-basis: 30%;
-}
-
-.variant-segment-title {
-  padding: .5rem 1rem;
-  font-size: .9rem;
-  border-bottom: 1px solid rgba(#000, .15);
-  background-color: rgba(#000, .1);
-  color: rgba(#000, .5);
-  font-weight: bold;
-}
-
-.variant-segment-content-text {
-  padding: .5rem 1rem;
-  font-size: .9rem;
-}
-
-.variant-segment-notes {
-  border-top: 1px solid rgba(#000, .15);
-  background-color: rgba(#000, .03);
-  padding: .5rem;
-  font-size: .8rem;
 }
 
 .variant-list-item {
@@ -141,52 +93,6 @@ $variant-base-padding: 1rem;
   }
 }
 
-.variant-move {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-
-  > :first-child {
-    margin-right: 1.5em;
-  }
-}
-
-.variant-move-text {
-  position: absolute;
-  top: 1em;
-  font-size: .7em;
-
-  visibility: hidden;
-}
-
-%variant-move-button {
-  @extend .icon-button;
-  position: relative;
-  color: #fff;
-
-  &:hover {
-    > .variant-move-text {
-      visibility: visible;
-    }
-  }
-}
-
-.variant-move-back {
-  @extend %variant-move-button;
-
-  > .variant-move-text {
-    right: -2em;
-  }
-}
-
-.variant-move-forward {
-  @extend %variant-move-button;
-
-  > .variant-move-text {
-    left: -2em;
-  }
-}
-
 // +-------------------------------------------------------------------+
 // |  OMIM summary
 // +-------------------------------------------------------------------+
@@ -221,10 +127,6 @@ $variant-base-padding: 1rem;
 // +-------------------------------------------------------------------+
 // |  Variant links
 // +-------------------------------------------------------------------+
-.variant-list-links {
-  display: flex;
-}
-
 .variant-link-external {
   padding: 1rem $variant-base-padding;
   flex: 1;

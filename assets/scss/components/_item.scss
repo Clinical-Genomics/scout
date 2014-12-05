@@ -1,0 +1,21 @@
+// +-------------------------------------------------------------------+
+// | Item (layout component)
+// +-------------------------------------------------------------------+
+
+.md-item {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+
+  > :not(:last-child) {
+    margin-right: .7rem;
+  }
+}
+
+.md-item-label {}
+
+.md-item-subtitle {
+  font-size: 0.8rem;
+  color: rgba(#000, .7);
+  margin-top: .1rem;
+}

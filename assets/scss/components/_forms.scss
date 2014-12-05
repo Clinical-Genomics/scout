@@ -1,0 +1,144 @@
+$border-color: #bdbdbd !default;
+$highlight-color: $primary-color !default;
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=date],
+textarea {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid $border-color;
+  outline: none;
+  height: 3rem;
+  width: 100%;
+  font-size: 1rem;
+  padding: 0;
+  box-shadow: none;
+  box-sizing: content-box;
+  transition: .3s;
+}
+
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=email]:focus,
+input[type=date]:focus,
+textarea:focus {
+  border-bottom: 1px solid $highlight-color;
+  box-shadow: 0 1px 0 0 $highlight-color;
+}
+
+textarea {
+  overflow-y: hidden;  // prevents scroll bar flash
+}
+
+// $checkbox-check-color: #16a085;
+// $checkbox-border-color: rgba(#000, .2);
+
+// @function rem($val) {
+//   @return #{$val / $base-font-size-px}rem;
+// }
+
+// .label--checkbox,
+// .label--radio {
+//   position: relative;
+//   cursor: pointer;
+//   margin: .5rem;
+//   line-height: 135%;
+// }
+
+// .checkbox {
+//   position: relative;
+//   top: rem(-12);
+
+//   cursor: pointer;
+//   margin: 0 1.5rem 0 0;
+
+//   &:before {
+//     transition: transform .4s cubic-bezier(.45, 1.8, .5, .75);
+//     transform: rotate(-45deg) scale(0, 0);
+
+//     content: "";
+
+//     position: absolute;
+//     left: rem(3);
+//     top: rem(2);
+//     z-index: 1;
+
+//     width: rem(12);
+//     height: rem(6);
+
+//     border: 2px solid $checkbox-check-color;
+//     border-top-style: none;
+//     border-right-style: none;
+//   }
+
+//   &:checked {
+//     &:before {
+//       transform: rotate(-45deg) scale(1, 1);
+//     }
+//   }
+
+//   &:after {
+//     content: "";
+
+//     position: absolute;
+//     top: rem(-2);
+//     left: 0;
+
+//     width: 1rem;
+//     height: 1rem;
+
+//     // background: #fff;
+//     border: 2px solid $checkbox-border-color;
+
+//     cursor: pointer;
+//   }
+// }
+
+// .radio {
+//   cursor: pointer;
+//   position: relative;
+//   margin: 0 1rem 0 0;
+
+//   &:before {
+//     transition: transform .4s cubic-bezier(.45, 1.8, .5, .75);
+//     transform: scale(0, 0);
+
+//     content: "";
+
+//     position: absolute;
+//     top: 0;
+//     left: rem(2);
+//     z-index: 1;
+
+//     width: rem(12);
+//     height: rem(12);
+
+//     background: $checkbox-check-color;
+
+//     border-radius: 50%;
+//   }
+
+//   &:checked {
+//     &:before {
+//      transform: scale(1, 1);
+//     }
+//   }
+
+//   &:after {
+//     content: "";
+
+//     position: absolute;
+//     top: rem(-4);
+//     left: rem(-2);
+
+//     width: 1rem;
+//     height: 1rem;
+
+//     background: #fff;
+
+//     border: 2px solid $checkbox-border-color;
+//     border-radius: 50%;
+//   }
+// }

@@ -14,6 +14,18 @@
 	&:not(:last-child) {
 		margin-bottom: 1em;
 	}
+
+  > :not(:last-child) {
+    margin-right: 1em;
+  }
+
+  > .is-main {
+    flex-basis: 70%;
+  }
+
+  > .is-aside {
+    flex-basis: 30%;
+  }
 }
 
 %case-segment {
@@ -25,22 +37,6 @@
 	@extend %case-segment;
 
 	flex-basis: 100%;
-}
-
-.case-segment-main {
-	@extend %case-segment;
-
-	flex-basis: 70%;
-
-	+ .case-segment-aside {
-		margin-left: 1em;
-	}
-}
-
-.case-segment-aside {
-	@extend %case-segment;
-
-	flex-basis: 30%;
 }
 
 .case-segment-title {
@@ -69,39 +65,15 @@
 	font-size: .8rem;
 }
 
-.case-candidate {
-	position: relative;
-	padding: .4rem;
-
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	&:not(:last-child) {
-		border-bottom: 1px solid rgba(#000, .1);
-	}
-
-	&:hover {
-		background-color: RGBA(0, 188, 212, .1);
-	}
-}
-
-.case-candidate-user {
-	font-size: .8rem;
-}
-
 // SAMPLES
 %case-sample {
+  @extend .list-item;
+
 	font-size: .8rem;
-	border-bottom: 1px solid rgba(#000, .1);
+	border-bottom: 1px solid rgba(#000, .1);  // colored background
 	padding: .2rem 1rem;
 	position: relative;
 	height: 2.8rem;
-
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
 	overflow: auto;
 }
 
@@ -161,13 +133,13 @@
 }
 
 .case-variants-button {
-	@extend .button-base;
+	@extend .md-button;
 
 	// case-specific
   display: block;
 	margin: 2em auto 0;
-	width: 60%;
-	font-weight: bold;
+	width: 40%;
+  min-width: 15em;
 }
 
 .case-assign {
