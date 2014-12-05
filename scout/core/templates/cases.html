@@ -16,7 +16,9 @@
 
 {% block toolbar_secondary %}
 	<form id="search-cases" class="cases-search">
-    <core-icon v-with="icon: 'search'" class="cases-search-icon"></core-icon>
+    <div class="cases-search-icon">
+      <core-icon v-with="icon: 'search'"></core-icon>
+    </div>
     <input v-model="casesSearchQuery" type="search" class="cases-search-input">
   </form>
 {% endblock %}

@@ -93,22 +93,20 @@
 
   <div class="flex"></div>
 
-  <div class="variant-move">
+  <div class="md-toolbar-group">
     {% if prev_variant %}
-      <a class="variant-move-back" title="Previous variant"
+      <a title="Previous variant"
          href="{{ url_for('core.variant',
                     institute_id=institute_id, case_id=case_id,
                     variant_id=prev_variant.variant_id) }}">
-        <div class="variant-move-text">Prev</div>
         <core-icon v-with="icon: 'arrow-back'"></core-icon>
       </a>
     {% endif %}
 
-    <a class="variant-move-forward" title="Previous variant"
+    <a title="Previous variant"
        href="{{ url_for('core.variant',
                   institute_id=institute_id, case_id=case_id,
                   variant_id=next_variant.variant_id) }}">
-      <div class="variant-move-text">Next</div>
       <core-icon v-with="icon: 'arrow-forward'"></core-icon>
     </a>
   </div>
