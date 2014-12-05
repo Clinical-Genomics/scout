@@ -6,6 +6,7 @@ from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
+from .forms import FiltersForm
 from ..models import Institute, Case, Event
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
@@ -98,7 +99,7 @@ def remove_assignee(institute_id, case_id):
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
-@core.route('/<institute_id>/<case_id>/variants')
+@core.route('/<institute_id>/<case_id>/variants', methods=['GET', 'POST'])
 @templated('variants.html')
 @login_required
 def variants(institute_id, case_id):
@@ -115,13 +116,17 @@ def variants(institute_id, case_id):
     case.status = 'active'
     case.save()
 
+  form = FiltersForm(**request.form)
+  form.gene_list.choices = [(option, option) for option in case.gene_lists]
+
   return dict(variants=store.variants(case.case_id, nr_of_variants=per_page,
                                       skip=skip),
               case=case,
               case_id=case_id,
               institute=institute,
               institute_id=institute_id,
-              current_batch=(skip + per_page))
+              current_batch=(skip + per_page),
+              form=form)
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')

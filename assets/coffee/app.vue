@@ -4,6 +4,9 @@
       showDrawer: ->
         @$.drawer.show()
 
+      showFilters: ->
+        @$.filters.show()
+
       onChange: (e) ->
         superagent
           .put "/api/v1#{location.pathname}/status"

@@ -64,6 +64,7 @@ class Case(Document):
     'inactive', 'active', 'research', 'archived', 'solved'
   ])
   events = ListField(EmbeddedDocumentField(Event))
+  gene_lists = ListField(StringField())
 
   def __unicode__(self):
     return self.display_name

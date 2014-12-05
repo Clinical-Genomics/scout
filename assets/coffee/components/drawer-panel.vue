@@ -1,5 +1,6 @@
 <template>
-  <div class="drawer-panel-aside {{visible ? 'is-showing' : ''}}">
+  <div class="drawer-panel-aside {{side}}"
+       v-class="'is-showing': visible">
     <content></content>
   </div>
 
@@ -19,5 +20,8 @@
         @visible = not @visible
 
     data: ->
-      return { visible: no }
+      return {
+        visible: no
+        side: 'left'
+      }
 </script>

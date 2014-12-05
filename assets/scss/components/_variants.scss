@@ -23,10 +23,11 @@ $variants-cell-padding: .6rem;
 }
 
 .variants-header {
+  @extend .is-secondary;
+
 	display: flex;
 	position: relative;
 
-	border-top: 1px solid rgba(#000, .15);
 	border-bottom: 1px solid rgba(#000, .05);
 	font-size: .9em;
 	box-shadow: 0 2px 5px rgba(#000, .4);
@@ -128,4 +129,27 @@ $variants-cell-padding: .6rem;
   width: 50em;
   color: #444;
   background-color: #fff;
+}
+
+// FILTERS
+.variants-filters-group {
+  border-bottom: 1px solid rgba(#000, .1);
+}
+
+.variants-filters-group-label {
+  @extend .md-card-header;
+}
+
+.variants-filters-submit {
+  @extend .md-button;
+
+  margin: 1rem auto 0;
+  display: block;
+}
+
+.variants-filters-select {
+  max-width: 90%;
+  margin: 1rem;
+  display: block;
+  height: 10rem;
 }

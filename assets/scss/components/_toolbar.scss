@@ -7,6 +7,7 @@ $toolbar-bg-color: $primary-color;
 .md-toolbar {
   // resets
   display: block;
+  position: relative;
 
   // fixed height
   height: 3.5rem;

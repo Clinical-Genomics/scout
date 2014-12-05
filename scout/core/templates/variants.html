@@ -28,6 +28,14 @@
   </div>
 {% endblock %}
 
+{% block toolbar_right %}
+  <div v-on="click: showFilters" class="icon-button">
+    <core-icon v-with="icon: 'filter-list'"></core-icon>
+  </div>
+
+  {{ super() }}
+{% endblock %}
+
 {% block toolbar_custom %}
   <div class="variants-header">
 
@@ -57,6 +65,83 @@
 {% endblock %}
 
 {% block content %}
+
+  <drawer-panel v-ref="filters" v-with="side: 'right'">
+    <form method="POST">
+      {{ form.csrf_token }}
+
+      <div class="variants-filters-group">
+      <div class="variants-filters-group-label">Filters</div>
+
+        <div class="variants-filters-group-list">
+          <div class="list-item">
+            <div>{{ form.gene_list.label }}</div>
+            <div>{{ form.gene_list }}</div>
+          </div>
+
+          <div class="list-item">
+            <div>{{ form.hgnc_symbol.label }}</div>
+            <div>{{ form.hgnc_symbol }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">Frequency cutoffs</div>
+
+        <div class="variants-filters-group-list">
+          <div class="list-item">
+            <div>{{ form.thousand_genomes_frequency.label }}</div>
+            <div>{{ form.thousand_genomes_frequency }}</div>
+          </div>
+
+          <div class="list-item">
+            <div>{{ form.exac_frequency.label }}</div>
+            <div>{{ form.exac_frequency }}</div>
+          </div>
+
+          <div class="list-item">
+            <div>{{ form.local_frequency.label }}</div>
+            <div>{{ form.local_frequency }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.region_annotations.label }}
+        </div>
+
+        <div class="variant-filters-group-body">
+          {{ form.region_annotations(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.functional_annotations.label }}
+        </div>
+
+        <div class="variant-filters-group-body">
+          {{ form.functional_annotations(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.genetic_models.label }}
+        </div>
+
+        <div class="variant-filters-group-body">
+          {{ form.genetic_models(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <button class="variants-filters-submit" type="submit">
+        Filter variants
+      </button>
+    </form>
+  </drawer-panel>
 
 	<div class="variants-body">
 		{% for variant in variants %}

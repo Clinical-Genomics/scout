@@ -7,7 +7,7 @@
 // require "./shadow"
 
 // Public API
-$drawer-panel-aside-width: 15rem;
+$drawer-panel-aside-width: 20rem;
 $drawer-panel-aside-bg: #fff;
 
 drawer-panel {
@@ -43,21 +43,36 @@ drawer-panel {
 
   // fixed but min-width (flex: 0)
   width: $drawer-panel-aside-width;
-  // hide out of view on small screens (+ clear drop shadow)
-  left: -($drawer-panel-aside-width + 1rem);
 
   // starts out pushed out of view to the left
-  transition: left 250ms $global-timing-function;
+  transition: all 250ms $global-timing-function;
 
   // should be ontop of everything else pretty much
   z-index: 3;
 
   background-color: $drawer-panel-aside-bg;
 
-  &.is-showing {
-    // slide in from the left when summoned
-    left: 0;
+  &.right {
+    // hide out of view on small screens (+ clear drop shadow)
+    right: -($drawer-panel-aside-width + 1rem);
 
+    &.is-showing {
+      // slide in from the right when summoned
+      right: 0;
+    }
+  }
+
+  &.left {
+    // hide out of view on small screens (+ clear drop shadow)
+    left: -($drawer-panel-aside-width + 1rem);
+
+    &.is-showing {
+      // slide in from the left when summoned
+      left: 0;
+    }
+  }
+
+  &.is-showing {
     + .drawer-panel-overlay {
       // ... and this activates the overlay as well
       // slide in from the left with drawer
