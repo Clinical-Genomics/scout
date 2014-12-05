@@ -14,7 +14,9 @@
 
     <div v-repeat="entry.phenotypes" class="omim-summary-phenotype">
       <div class="omim-summary-phenotype-item">{{phenotype}}</div>
-      <div class="omim-summary-phenotype-item">{{inheritance}}</div>
+      <div class="omim-summary-phenotype-item">
+        {{inheritance || 'unknown'}}
+      </div>
       <div class="omim-summary-phenotype-item">{{mapping_key}}</div>
     </div>
   </div>

@@ -9,7 +9,7 @@
         superagent.get @url, (res) =>
           @entry = JSON.parse(res.text)
 
-          if @entry.models.length is 0
+          if @entry.models.length is 0 or @entry.models[0] is null
             @entry.models = ['unknown']
 
     data: ->
