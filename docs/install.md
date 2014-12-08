@@ -72,7 +72,7 @@ $ inv add-user --email="your.name@example.com" --name="Your Name"
 You are now ready to start the development server and complete the setup in the admin interface.
 
 ```bash
-$ python manage.py -c "$(pwd)/instance/demo.cfg" vagrant
+$ python manage.py -c "$(pwd)/configs/boilerplate.cfg" vagrant
 ```
 
 
