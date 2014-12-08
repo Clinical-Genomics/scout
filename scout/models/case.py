@@ -45,7 +45,7 @@ class Individual(EmbeddedDocument):
     }.get(self.phenotype, 'undefined')
 
   def __unicode__(self):
-    return self.individual_id
+    return self.display_name
 
 
 class Case(Document):

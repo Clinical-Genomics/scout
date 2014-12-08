@@ -10,7 +10,7 @@ from scout.models import User, Whitelist, Institute
 @task
 def test():
   """test - run the test runner."""
-  run('py.test tests', pty=True)
+  run('python -m pytest tests/', pty=True)
 
 
 @task(name='test-all')
