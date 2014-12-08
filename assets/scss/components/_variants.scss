@@ -79,11 +79,9 @@ $variants-cell-padding: .6rem;
 
 .variants-row-list {
 	@extend %variants-item;
+
 	padding-top: 0;
 	padding-bottom: 0;
-
-	display: flex;
-	overflow: auto;
 }
 
 .variants-row-list-item {

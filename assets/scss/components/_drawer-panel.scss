@@ -50,6 +50,10 @@ drawer-panel {
   // should be ontop of everything else pretty much
   z-index: 3;
 
+  // scrollable
+  overflow-y: auto;
+  padding-bottom: 1rem;
+
   background-color: $drawer-panel-aside-bg;
 
   &.right {

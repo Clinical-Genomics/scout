@@ -226,9 +226,11 @@
 
         <!-- Inheritance models -->
 				<div class="variants-row-list flex-big md-tooltip">
-					{% for model in (specific.genetic_models or []) %}
-            <div class="variants-row-list-item">{{ model }}</div>
-          {% endfor %}
+          <div class="list--horizontal">
+            {% for model in (specific.genetic_models or []) %}
+              <div class="variants-row-list-item">{{ model }}</div>
+            {% endfor %}
+          </div>
 
           {% if specific.compounds %}
             <div class="md-tooltip-tip is-left">
