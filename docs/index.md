@@ -8,9 +8,9 @@ Scout is a **visualizer for VCF files** intended for a clinical audience. As suc
 
 --------------
 
-**Scout is currently in active development.**
+**N.B. Scout is currently under active development.**
 
-Most of the features are already worked out but the code base will still change significantly before the eventual 1.0 release.
+Most of the features are already planned out but the code base will still change significantly before the eventual 1.0 release.
 
 --------------
 

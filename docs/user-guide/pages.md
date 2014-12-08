@@ -1,18 +1,20 @@
 # Pages
 Scout can be logically separated into a number of pages with different responsibility and purpose. The core pages include institues, cases, case, variants, and variant.
 
-This document describes each page, it's purpose, it's function, and it's intended use.
+This document describes each page, it's purpose, function, and intended use.
 
 ----------
 
 ## Index
-This is the default view that all users who aren't logged in will arrive at. This page is usually called a "landing page". It's main purpose is to introduce potentially new users to the website. It's allows users to sign in/up.
+The "landing page". This is your default view where all users who aren't logged in will arrive at. It's main purpose is to introduce potentially new users to the website. It also allows you to sign in.
 
 ### Sign up
-New users have to apply for access. The team leaders for each institute are required to sign off on new users. Authentication is handled thourgh Google OAuth using separate @clinicalgenomics.se accounts.
+New users have to apply for access prior to logging in the first time. The team leaders for each institute are required to sign off on new users.
 
 ### Sign in
-We have chosen to use Google OAuth for the signup process. This means that users click on a button on the first page which launches the OAuth process. When the user is returned, she will see her customized welcome page.
+We have chosen to use Google OAuth for the signup process. This means that you click on a button on the first page which launches the OAuth process. When the user is returned, you will see your customized welcome page.
+
+We also use separate ``@clinicalgenomics.se`` accounts to be able to enforce 2-factor authentication.
 
 > Should we still regularly discard the authentication token in (short) intervals?
 
@@ -20,30 +22,74 @@ We have chosen to use Google OAuth for the signup process. This means that users
 
 
 ## Welcome page
-This is the first page a user sees when she first logs in from the index page. This view is normally personalized to the user that just logged in. She is presented with a list of institutes she belongs to.
+This is the first page a you see after logging in. Notice your initials in the upper right corner. You can also access the list of institutes you belong to.
 
 ### Institute selection
-A user can belong to multiple institutes. Each institutes defines what cases can be viewed by the user. Some users will only ever belong to one institute making this selection void.
+Users can belong to multiple institutes. Each institutes defines what cases can be viewed by the user. If you only belong to a single institute you will be redirected automatically to "Cases".
 
 ----------
 
 
 ## Cases
-This page displays the list of active cases for any particular institute. Each item links to the detailed view for that case. A quick link to get straight to the list of all variants is also displayed. To help users know what cases have recently been added/updated, a "last updated" date is also displayed.
+This page displays the list of active cases for any particular institute. Each item links to the detailed view for that case. You can filter the list for any given search term by typing it in the search box above the list.
+
+A quick link to get straight to the list of all variants is also displayed. To indicate what cases have recently been added/updated, a "last updated" date is also displayed.
+
+Sometimes you will also see a cyan colored dot to the left of the case ID. This is an indicator that there's been some recent activity in the case such as a new comment.
+
+A tag "ASSIGNED" will be displayed for each case that you are assigned to.
 
 ----------
 
 
 ## Case
-This is the detailed view of one individual case.
+This is the detailed view of one individual case. The intended use is to give a consise overview of the family under investigation and show recent activity related to the case.
 
-This is where users can request to have the research list opened. It will send an email to the administrators of the site. The user agrees that she is reponsible to have acquired an informed consent for this action. This will also be logged as a new event in the case log.
+There's a list of "Strong candidates" on the page. This list is curated by the collaborators and consists of "pinned" variants from the variants list. This feature can be used to mark variants of particular interest that you might want to highlight to other users.
 
-The case page also displays a simple wiki-style briefing report about the current case that can be used to communicate details on the case to collaborators.
+The "Individuals" list includes all individuals in the analysis. You can view the ID of each individual as well as which capture kit during the library prep. The rest of the information is encoded in the left-most symbol which is the same as you would find in a pedigree tree.
+
+- circle = female
+- square = male
+- filled = affected
+- hollow = unaffected
+
+The case page also displays a simple wiki-style synopsis on the current case that can be used to communicate information on the case to collaborators.
+
+The "Activity" feed is a reverse chronological list of events and comments related to the case. Examples of events include comments, status updates, assignments, Sanger sequencing orders etc.
+
+### Actions
+There are many actions you can take on this page.
+
+**Adopt case**: By clicking the button next to "Adopt" you can assign yourself to a case unless someone else has already done so. If you have assigned yourself to a case you can click your name to "unassign".
+
+**Update case status**: The status dropdown allows anyone to chage the status of a case. Before anyone has looked at the variant list, the case will be marked as "Inactive".
+
+The case can be moved to "Research" which means all variants will be made visible for the entire exome. This will send an email to the administrators of the site. The user agrees that she is reponsible to have acquired an informed consent for this action. This will also be logged as a new event in the case log.
+
+Setting the status to "Archived" will hide the case from the normal case list. Marking the case as "Solved" will permanently archive the case.
+
+**Edit case synopsis**: The case sysnopsis can be edited in a format known as [Markdown][markdown]. Just click "EDIT" to open the editor view. When you are finished click "SAVE" to save changes or "CANCEL" to abort.
+
+**Comment**: You can leave comments in the activity log by writing a message in the input box next to the feed. Click "COMMENT" to submit the comment.
 
 > How are we going to handle tagging comments as "finding", "action", "conclusion"? Perhaps we should just stick with something more general; tags + category etc.
 
-Lastly users can also mark verified disease causing variants. Once a variant has been marked in this fashion, the case can be marked as solved and hence no longer active.
+----------
+
+
+## Variants
+The big list of variants. This page serves as an overview of all data and annotations for a single case. It's meant to allow you to skim through many variants ordered by the ranking.
+
+The first couple of columns are meant to give you a sense of place in the overall ranked list. The "Rank" column is especially useful after applying various filters.
+
+Hovering over both "1000 Genomes" (frequency) and "CADD score" (severity) columns will reveal additional metrics in a popup.
+
+Hover over "Inheritance models" will pop up a list of all possible compounds if the variants follows this pattern.
+
+At the bottom of the list you will find a button to load the next batch of variants in the list. To return to the previous batch of variants, just press the browser back button.
+
+It's also possible to filter the variants using a number of different criteria. Open the filters panel by clicking the "filter" icon in the top right. Here you can fill in form and click "Filter variants" to update the list. This is also the place where you switch gene lists.
 
 ----------
 
@@ -88,7 +134,6 @@ Only interesting when the compound inheritance pattern is required, the list can
 Consider moving them somewhere where they are easier to reach.
 
 ### Comments
-"Discuss." Keep tucked away on the side.
+"Discuss."
 
-### Coverage
-Coming. Perhaps.
+[markdown]: https://help.github.com/articles/markdown-basics/
