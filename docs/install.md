@@ -24,7 +24,7 @@ $ cd /vagrant
 
 
 ## 2. Configure
-You need to sign up for access to a few web APIs like Google OAuth and OMIM to make full use of Scout. The keys and secrets should be added to the Flask instance config.
+You need to sign up for access to a few web APIs like Google OAuth and OMIM to make full use of Scout. The keys and secrets should be added to the Flask instance config. To learn more about possible settings, take a look in the ``scout/settings.py`` module.
 
 ### Google OAuth
 Create a new project in your [Google Developer console][google-console]. Under your project, click "APIs & auth" > "Credentials". Here you will find your "CLIENT ID" and "CLIENT SECRET". You also need to add some "REDIRECT URLS" and "JAVASCRIPT ORIGINS".
@@ -74,6 +74,16 @@ You are now ready to start the development server and complete the setup in the 
 ```bash
 $ python manage.py -c "$(pwd)/configs/boilerplate.cfg" vagrant
 ```
+
+The user you created with ``inv add-user`` has admin rights. You can access the admin interface by visiting ``/admin``.
+
+```bash
+$ open http://localhost:5000/admin
+```
+
+Go to the tab "Institute" and add a few "Cases" before pressing "Submit". Exit the admin interface and you will now see the list of cases that you added to the default institute.
+
+That's it! Go and explore Scout.
 
 
 [google-console]: https://console.developers.google.com/project
