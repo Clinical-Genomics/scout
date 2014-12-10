@@ -1,5 +1,5 @@
-{% macro compounds_table(compounds, class_names=['default-table']) %}
-
+{% macro compounds_table(compounds, institute_id, case_id,
+                         class_names=['default-table']) %}
   <table class="{{ class_names|join(' ') }}">
     <thead>
       <tr>
@@ -17,7 +17,8 @@
           <td>
             <a href="{{
               url_for('core.variant',
-                      institute_id=institute_id, case_id=case_id,
+                      institute_id=institute_id,
+                      case_id=case_id,
                       variant_id=compound.variant_id)
             }}">
               {{ compound.display_name }}
@@ -35,5 +36,4 @@
       {% endfor %}
     </tbody>
   </table>
-
 {% endmacro%}
