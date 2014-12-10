@@ -13,7 +13,6 @@ from mongoengine import (
 
 
 class Institute(Document):
-  id = StringField()
   internal_id = StringField(primary_key=True, required=True)
   display_name = StringField(required=True)
   sanger_recipients = ListField(EmailField())

@@ -113,8 +113,8 @@ def authorized(oauth_response):
     user.location = google_data['locale']
 
     # add a default institute if it is specified
-    if faux_user.default_institute:
-      user.institutes.append(faux_user.default_institute)
+    if faux_user.institutes:
+      user.institutes = faux_user.institutes
 
     user.save()
 
