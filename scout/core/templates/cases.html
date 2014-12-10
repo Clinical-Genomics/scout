@@ -8,8 +8,9 @@
   <div class="md-breadcrumb-group flex">
     <div class="md-breadcrumb">{{ institute.display_name }}</div>
     <core-icon
-      class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'"></core-icon>
+      icon="chevron-right"
+      class="md-breadcrumb-separator">
+    </core-icon>
     <div class="md-breadcrumb">cases</div>
   </div>
 {% endblock %}
@@ -17,7 +18,7 @@
 {% block toolbar_secondary %}
 	<form id="search-cases" class="cases-search">
     <div class="cases-search-icon">
-      <core-icon v-with="icon: 'search'"></core-icon>
+      <core-icon icon="search"></core-icon>
     </div>
     <input v-model="casesSearchQuery" type="search" class="cases-search-input">
   </form>

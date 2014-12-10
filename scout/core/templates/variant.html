@@ -14,7 +14,7 @@
     </a>
     <core-icon
       class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'">
+      icon="chevron-right">
     </core-icon>
 
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
@@ -22,7 +22,7 @@
     </a>
     <core-icon
       class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'">
+      icon="chevron-right">
     </core-icon>
 
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">
@@ -30,7 +30,7 @@
     </a>
     <core-icon
       class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'">
+      icon="chevron-right">
     </core-icon>
 
     <div class="md-breadcrumb">{{ variant.display_name }}</div>
@@ -44,12 +44,12 @@
     <input class="is-hidden" name="hgnc_symbol" value="{{ variant.common.hgnc_symbols|join(',') }}">
 
     <button class="icon-button" type="submit" title="Order Sanger">
-      <core-icon v-with="icon: 'mail'"></core-icon>
+      <core-icon icon="mail"></core-icon>
     </button>
   </form>
 
   <div class="icon-button" title="Pin variant">
-    <core-icon v-with="icon: 'bookmark'"></core-icon>
+    <core-icon icon="bookmark"></core-icon>
   </div>
 
   {{ super() }}
@@ -100,16 +100,16 @@
          href="{{ url_for('core.variant',
                     institute_id=institute_id, case_id=case_id,
                     variant_id=prev_variant.variant_id) }}">
-        <core-icon v-with="icon: 'arrow-back'"></core-icon>
+        <core-icon icon="arrow-back"></core-icon>
       </a>
     {% endif %}
 
     <a class="icon-button"
-       title="Previous variant"
+       title="Next variant"
        href="{{ url_for('core.variant',
                   institute_id=institute_id, case_id=case_id,
                   variant_id=next_variant.variant_id) }}">
-      <core-icon v-with="icon: 'arrow-forward'"></core-icon>
+      <core-icon icon="arrow-forward"></core-icon>
     </a>
   </div>
 {% endblock %}
@@ -366,7 +366,7 @@
                                              variant_id=variant_id,
                                              event_id=loop.index) }}"
                           method="DELETE">
-                      <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" v-with=" icon: 'highlight-remove'"></core-icon>
+                      <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" icon="highlight-remove"></core-icon>
                       <button id="{{ form_id }}" class="is-hidden"></button>
                     </form>
                   {% endif %}
