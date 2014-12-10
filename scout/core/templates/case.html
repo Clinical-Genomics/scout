@@ -11,8 +11,9 @@
       {{ institute.display_name }}
     </a>
     <core-icon
-      class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'"></core-icon>
+      icon="chevron-right"
+      class="md-breadcrumb-separator">
+    </core-icon>
     <div class="md-breadcrumb">{{ case.display_name }}</div>
   </div>
 {% endblock %}
@@ -24,7 +25,7 @@
                              case_id=case.display_name) }}"
           method="POST">
       <button type="submit" class="case-assign-icon">
-        <core-icon v-with="icon: 'highlight-remove'"></core-icon>
+        <core-icon icon="highlight-remove"></core-icon>
       </button>
       <div class="case-assign-name">{{ case.assignee.name|initials }}</div>
     </form>
@@ -35,7 +36,7 @@
           method="POST">
 
       <button type="submit" class="case-assign-icon">
-        <core-icon v-with="icon: 'assignment-ind'"></core-icon>
+        <core-icon icon="assignment-ind"></core-icon>
       </button>
       <div class="case-assign-name">Adopt</div>
     </form>
@@ -69,7 +70,7 @@
           <div class="list-item">
             <div class="md-item">
               <div class="md-item-icon">
-                <core-icon v-with="icon: 'bookmark'"></core-icon>
+                <core-icon icon="bookmark"></core-icon>
               </div>
 
               <div class="md-item-body">
@@ -81,14 +82,14 @@
             </div>
 
             <div class="md-icon-button">
-              <core-icon v-with="icon: 'more-vert'"></core-icon>
+              <core-icon icon="more-vert"></core-icon>
             </div>
           </div>
 
           <div class="list-item">
             <div class="md-item">
               <div class="md-item-icon">
-                <core-icon v-with="icon: 'bookmark'"></core-icon>
+                <core-icon icon="bookmark"></core-icon>
               </div>
 
               <div class="md-item-body">
@@ -100,7 +101,7 @@
             </div>
 
             <div class="md-icon-button">
-              <core-icon v-with="icon: 'more-vert'"></core-icon>
+              <core-icon icon="more-vert"></core-icon>
             </div>
           </div>
         </div>
@@ -166,7 +167,10 @@
                                              case_id=case.display_name,
                                              event_id=loop.index) }}"
                           method="DELETE">
-                      <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" v-with=" icon: 'highlight-remove'"></core-icon>
+                      <core-icon icon="highlight-remove"
+                        class="activity-feed-delete-button"
+                        onclick="document.querySelector('#{{ form_id }}').click();">
+                      </core-icon>
                       <button id="{{ form_id }}" class="is-hidden"></button>
                     </form>
                   {% endif %}

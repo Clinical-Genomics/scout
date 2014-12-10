@@ -6,6 +6,7 @@
 
 <script lang="coffee">
   module.exports =
+    paramAttributes: ['icon']
     data: ->
       return {
         icon: ''

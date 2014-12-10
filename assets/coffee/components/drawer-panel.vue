@@ -9,6 +9,7 @@
 
 <script lang="coffee">
   module.exports =
+    paramAttributes: ['side']
     methods:
       show: ->
         @visible = yes

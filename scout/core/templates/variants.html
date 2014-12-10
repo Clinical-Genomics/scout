@@ -13,7 +13,7 @@
     </a>
     <core-icon
       class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'">
+      icon="chevron-right">
     </core-icon>
 
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
@@ -21,7 +21,7 @@
     </a>
     <core-icon
       class="md-breadcrumb-separator"
-      v-with="icon: 'chevron-right'">
+      icon="chevron-right">
     </core-icon>
 
     <div class="md-breadcrumb">Variants</div>
@@ -30,7 +30,7 @@
 
 {% block toolbar_right %}
   <div v-on="click: showFilters" class="icon-button">
-    <core-icon v-with="icon: 'filter-list'"></core-icon>
+    <core-icon icon="filter-list"></core-icon>
   </div>
 
   {{ super() }}
@@ -66,7 +66,7 @@
 
 {% block content %}
 
-  <drawer-panel v-ref="filters" v-with="side: 'right'">
+  <drawer-panel v-ref="filters" side="right">
     <form method="POST">
       {{ form.csrf_token }}
 
