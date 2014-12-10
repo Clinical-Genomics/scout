@@ -28,6 +28,14 @@ $variant-base-padding: 1rem;
   > :not(:last-child) {
     margin-right: 1rem;
   }
+
+  > .is-main {
+    flex-basis: 70%;
+  }
+
+  > .is-aside {
+    flex-basis: 30%;
+  }
 }
 
 %variant-segment-base {
