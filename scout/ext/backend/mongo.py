@@ -71,8 +71,8 @@ class MongoAdapter(BaseAdapter):
     for case in variant['specific']:
       case_specific = ('specific.%s' % case)
       for compound in variant['specific'][case]['compounds']:
-        print('Compound id: %s, Display name: %s, Combined_score: %s' %
-                (compound['variant_id'], compound['display_name'], compound['combined_score']))
+        # print('Compound id: %s, Display name: %s, Combined_score: %s' %
+        #         (compound['variant_id'], compound['display_name'], compound['combined_score']))
         try:
           pair = Variant.objects.get(pk = compound['variant_id'])
           compound['functional_annotations'] = pair['common']['functional_annotations']
@@ -86,8 +86,9 @@ class MongoAdapter(BaseAdapter):
     variants = []
     nr_of_variants = skip + nr_of_variants
     case_specific = ('specific.%s' % case_id)
-    for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
-                                      case_specific + '.variant_rank')[skip:nr_of_variants]:
+    # for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
+    #                                   case_specific + '.variant_rank')[skip:nr_of_variants]:
+    for variant in Variant.objects(specific__exists = case_id):
       yield self.format_variant(variant)
 
   def variant(self, variant_id):
@@ -139,21 +140,21 @@ def cli():
     my_case = my_mongo.case(case_id)
     # my_case = my_mongo.case('hej')
     variant_count = 0
-    if my_case:
-      print(my_case.to_json())
-      print('id: %s' % my_case.id)
-      for variant in my_mongo.variants(my_case.id, nr_of_variants = 5):
-        pp(variant.to_json())
-        # print('')
-        variant_count += 1
-    print('Number of variants: %s' % variant_count)
-    # for case in my_mongo.cases():
-    #   variant_count = 0
-    #   pp(case.to_json())
-    #   for variant in my_mongo.variants(case.id], nr_of_variants = 20):
-    #     pp(variant.to_json)
+    # if my_case:
+    #   print(my_case.to_json())
+    #   print('id: %s' % my_case.id)
+    #   for variant in my_mongo.variants(my_case.id, nr_of_variants = 5):
+    #     pp(variant.to_json())
+    #     # print('')
     #     variant_count += 1
-      #   print(variant_count)
+    # print('Number of variants: %s' % variant_count)
+    for case in my_mongo.cases():
+      variant_count = 0
+      pp(case.to_json())
+      for variant in my_mongo.variants(case.id, nr_of_variants = 20):
+        pp(variant.__dict__)
+        variant_count += 1
+        print(variant_count)
     # my_vcf.init_app('app', vcf_dir, config_file)
     # rank = my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436')
     # pp(my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436'))
