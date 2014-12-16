@@ -190,7 +190,7 @@
           </div>
         </div>
 
-        <!-- PolyPhen -->
+        <!-- CADD (severity) -->
         <div class="variants-row-item text-right md-tooltip">
           {{ variant.common.cadd_score or '-' }}
 
@@ -201,7 +201,7 @@
                 {{ (variant.common.sift_predictions or ['-'])|join(',') }}
               </li>
               <li>
-                <strong>Sift</strong>
+                <strong>PolyPhen</strong>
                 {{ (variant.common.polyphen_predictions or ['-'])|join(',') }}
               </li>
             </ul>

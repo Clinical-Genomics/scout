@@ -150,4 +150,9 @@ $variants-cell-padding: .6rem;
   margin: 1rem;
   display: block;
   height: 10rem;
+
+  > option {
+    // just in case long options
+    overflow: auto;
+  }
 }
