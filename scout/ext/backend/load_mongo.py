@@ -109,10 +109,6 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   connect(mongo_db, host='localhost', port=27017, username=username,
           password=password)
   
-  if verbose:
-    print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\nmongo_db:\t%s\ninstitute:\t%s\n" % 
-              (vcf_file, ped_file, config_file, family_type, mongo_db, institute_name), file=sys.stderr)
-  
   ######## Parse the config file to check for keys: ########
   config_object = ConfigParser(config_file)
   
