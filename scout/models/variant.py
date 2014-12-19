@@ -16,9 +16,96 @@ from .event import Event
 
 ######## Common are attributes that is specific for the variant on this certain position ########
 
-CONSERVATION = ('NotConserved', 'Conserved')
+CONSERVATION = (
+  'NotConserved', 
+  'Conserved'
+)
+CONSEQUENCE = (
+  'deleterious',
+  'probably_damaging',
+  'possibly_damaging',
+  'tolerated',
+  'benign',
+  'unknown'
+)
+
+SO_TERMS = (
+  'transcript_ablation',
+  'splice_donor_variant',
+  'splice_acceptor_variant',
+  'stop_gained',
+  'frameshift_variant',
+  'stop_lost',
+  'initiator_codon_variant',
+  'transcript_amplification',
+  'inframe_insertion',
+  'inframe_deletion',
+  'missense_variant',
+  'splice_region_variant',
+  'incomplete_terminal_codon_variant',
+  'stop_retained_variant',
+  'synonymous_variant',
+  'coding_sequence_variant',
+  'mature_miRNA_variant',
+  '5_prime_UTR_variant',
+  '3_prime_UTR_variant',
+  'non_coding_exon_variant',
+  'non_coding_transcript_exon_variant',
+  'non_coding_transcript_variant',
+  'nc_transcript_variant',
+  'intron_variant',
+  'NMD_transcript_variant',
+  'non_coding_transcript_variant',
+  'upstream_gene_variant',
+  'downstream_gene_variant',
+  'TFBS_ablation',
+  'TFBS_amplification',
+  'TF_binding_site_variant',
+  'regulatory_region_ablation',
+  'regulatory_region_amplification',
+  'regulatory_region_variant',
+  'feature_elongation',
+  'feature_truncation',
+  'intergenic_variant'
+)
+
+FEATURE_TYPES = (
+  'exonic', 
+  'splicing', 
+  'ncRNA_exonic', 
+  'intronic', 
+  'ncRNA', 
+  'upstream', 
+  '5UTR',
+  '3UTR',
+  'downstream',
+  'TFBS',
+  'regulatory_region',
+  'genomic_feature',
+  'intergenic_variant'
+)
+
+class Transcript(EmbeddedDocument):
+  transcript_id = StringField(required=True)
+  sift_prediction = StringField(choices=CONSEQUENCE)
+  polyphen_prediction = StringField(choices=CONSEQUENCE)
+  functional_annotation = StringField(choices=SO_TERMS)
+  region_annotation = StringField(choices=FEATURE_TYPES)
+  exon = StringField()
+  intron = StringField()
+  coding_sequence_name = StringField()
+  protein_sequence_name = StringField()
+
+class Gene(EmbeddedDocument):
+  hgnc_symbol = StringField(required=True)
+  transcripts = ListField(EmbeddedDocumentField(Transcript))
+  functional_annotation = StringField(choices=SO_TERMS)
+  region_annotation = StringField(choices=FEATURE_TYPES)
+  sift_prediction = StringField(choices=CONSEQUENCE)
+  polyphen_prediction = StringField(choices=CONSEQUENCE)
 
 class VariantCommon(EmbeddedDocument):
+  genes = MapField(EmbeddedDocumentField(Gene))
   # Gene ids:
   hgnc_symbols = ListField(StringField())
   ensemble_gene_ids = ListField(StringField())
@@ -27,15 +114,59 @@ class VariantCommon(EmbeddedDocument):
   exac_frequency = FloatField()
   # Predicted deleteriousness:
   cadd_score = FloatField()
-  sift_predictions = ListField(StringField())
-  polyphen_predictions = ListField(StringField())
-  functional_annotations = ListField(StringField())
-  protein_change = ListField(StringField())
-  region_annotations = ListField(StringField())
   phast_conservation = ListField(StringField(choices=CONSERVATION))
   gerp_conservation = ListField(StringField(choices=CONSERVATION))
   phylop_conservation = ListField(StringField(choices=CONSERVATION))
+  
+  @property
+  def region_annotations(self):
+    """Returns a list with region annotation(s)."""
+    region_annotations = []
+    if len(self.genes) == 1:
+      return [self.genes[gene].region_annotation for gene in genes]
+    else:
+      for gene in self.genes:
+        region_annotations.append(':'.join([gene, self.genes[gene].region_annotation]))
+    return region_annotations
+  
+  @property
+  def hgnc_symbols(self):
+    """Returns a list with the hgnc id:s for this variant."""
+    return [gene for gene in self.genes]
+  
+  @property
+  def sift_predictions(self):
+    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
+    sift_predictions = []
+    if len(self.genes) == 1:
+      sift_predictions = [self.genes[gene].sift_prediction for gene in self.genes]
+    else:
+      for gene in self.genes:
+        sift_predictions.append(':'.join([gene, self.genes[gene].sift_prediction]))
+    return sift_predictions
+  
+  @property
+  def polyphen_predictions(self):
+    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
+    polyphen_predictions = []
+    if len(self.genes) == 1:
+      polyphen_predictions = [self.genes[gene].polyphen_prediction for gene in self.genes]
+    else:
+      for gene in self.genes:
+        polyphen_predictions.append(':'.join([gene, self.genes[gene].polyphen_prediction]))
+    return polyphen_predictions
 
+  @property
+  def functional_annotations(self):
+    """Return a list with the functional annotation(s) for this variant. The most severe for each gene."""
+    functional_annotations = []
+    if len(self.genes) == 1:
+      functional_annotations = [self.genes[gene].functional_annotation for gene in self.genes]
+    else:
+      for gene in self.genes:
+        functional_annotation.append(':'.join([gene, self.genes[gene].functional_annotation]))
+    return functional_annotation
+  
   # def __unicode__(self):
   #   return "%s:%s" % (self.chromosome, self.position)
 
@@ -92,7 +223,7 @@ class Variant(Document):
   chromosome = StringField(required=True)
   position = IntField(required=True)
   reference = StringField(required=True)
-  alternatives = ListField(StringField(), required=True)
+  alternative = StringField(required=True)
   db_snp_ids = ListField(StringField())
   common = EmbeddedDocumentField(VariantCommon)
   specific = MapField(EmbeddedDocumentField(VariantCaseSpecific))
