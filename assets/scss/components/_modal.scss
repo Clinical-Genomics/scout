@@ -9,14 +9,13 @@
 $md-modal-aside-bg: #fff;
 
 md-modal {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
   position: absolute;
   top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .md-modal-overlay {
@@ -27,11 +26,11 @@ md-modal {
 
   // should be ontop of everything but the drawer
   z-index: 2;
+  cursor: pointer;
 
-  top: 0;
+  top: -100%;
   left: 0;
   background-color: rgba(#000, 0);
-  display: none;
 
   // fade in when drawer is summoned
   transition: background-color 250ms;
@@ -41,21 +40,23 @@ md-modal {
   // add some extra distance to overlay
   @extend .md-shadow-1-half;
 
-  display: none;
+  margin-top: -100%;
   padding: 1rem;
 
   // should be ontop of everything else pretty much
   z-index: 3;
 
   background-color: $md-modal-aside-bg;
+  transition: margin-top .2s;
 
   &.is-showing {
     display: block;
+    margin-top: 0;
 
     + .md-modal-overlay {
       // ... and this activates the overlay as well
-      display: block;
       background-color: rgba(#000, .54);
+      top: 0;
     }
   }
 }
