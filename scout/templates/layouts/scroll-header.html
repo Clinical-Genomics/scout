@@ -34,15 +34,17 @@
 
             {% block toolbar_left %}
               <div v-on="click: showDrawer" class="icon-button">
-                <core-icon v-with="icon: 'menu'"></core-icon>
+                <core-icon icon="menu"></core-icon>
               </div>
             {% endblock %}
 
             {% block toolbar_right %}
               <a class="md-toolbar-user" href="{{ url_for('user.profile', user_id=current_user.id) }}">
-                <div class="md-toolbar-user-name">{{ current_user.name|initials }}</div>
                 <div class="md-toolbar-user-icon">
-                  <core-icon v-with="icon: 'account-circle'"></core-icon>
+                  <core-icon icon="account-circle"></core-icon>
+                </div>
+                <div class="md-toolbar-user-name">
+                  {{ current_user.first_name }}
                 </div>
               </a>
             {% endblock %}

@@ -38,6 +38,8 @@
 {% endblock %}
 
 {% block toolbar_right %}
+  {{ super() }}
+
   <div v-on="click: showModal" class="icon-button" title="Order Sanger">
     <core-icon icon="mail"></core-icon>
   </div>
@@ -45,8 +47,6 @@
   <div class="icon-button" title="Pin variant">
     <core-icon icon="bookmark"></core-icon>
   </div>
-
-  {{ super() }}
 {% endblock %}
 
 {% block toolbar_secondary %}

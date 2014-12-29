@@ -6,7 +6,6 @@ $toolbar-bg-color: $primary-color;
 
 .md-toolbar {
   // resets
-  display: block;
   position: relative;
 
   // fixed height
@@ -67,6 +66,7 @@ $toolbar-bg-color: $primary-color;
 
   display: flex;
   align-items: center;
+  padding-right: .5rem;
 }
 
 .md-toolbar-user-icon {
@@ -74,5 +74,5 @@ $toolbar-bg-color: $primary-color;
 }
 
 .md-toolbar-user-name {
-  font-size: .8rem;
+  font-size: .9rem;
 }
