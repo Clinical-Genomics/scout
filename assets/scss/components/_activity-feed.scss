@@ -1,9 +1,9 @@
 .activity-feed {
-  font-size: .9em;
+  font-size: .9rem;
 }
 
 .activity-feed-item {
-  padding: 1em;
+  padding: 1rem;
 
   &:not(:last-child) {
     border-bottom: 1px solid rgba(#000, .2);
@@ -17,7 +17,7 @@
 }
 
 .timestamp {
-  font-size: .9em;
+  font-size: .9rem;
   color: rgba(#000, .6);
 }
 

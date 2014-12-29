@@ -38,15 +38,9 @@
 {% endblock %}
 
 {% block toolbar_right %}
-  <form action="{{ url_for('core.email_sanger', institute_id=institute_id) }}"
-        method="POST">
-
-    <input class="is-hidden" name="hgnc_symbol" value="{{ variant.common.hgnc_symbols|join(',') }}">
-
-    <button class="icon-button" type="submit" title="Order Sanger">
-      <core-icon icon="mail"></core-icon>
-    </button>
-  </form>
+  <div v-on="click: showModal" class="icon-button" title="Order Sanger">
+    <core-icon icon="mail"></core-icon>
+  </div>
 
   <div class="icon-button" title="Pin variant">
     <core-icon icon="bookmark"></core-icon>
@@ -417,4 +411,32 @@
       </form>
     </div>
   </div>
+
+  <!-- SANGER EMAIL MODAL -->
+  <md-modal v-ref="modal">
+    <form
+      action="{{ url_for('core.email_sanger', institute_id=institute_id) }}"
+      method="POST"
+    >
+
+      <p>
+        Case {{ case_id }}:
+        <a href="{{ url_for('core.variant',
+                            institute_id=institute_id,
+                            variant_id=variant.variant_id,
+                            case_id=case_id) }}">
+          {{ variant.chromosome }}: {{ variant.position }}
+        </a>
+      </p>
+
+      <p>HGNC symbol(s): {{ variant.common.hgnc_symbols|join(', ') }}</p>
+
+      <p>Ordered by: {{ current_user.name }}</p>
+
+      <button class="md-button-flat" type="submit" title="Order Sanger">
+        Send
+      </button>
+    </form>
+  </md-modal>
+
 {% endblock %}

@@ -133,10 +133,31 @@
       <div id="case-synopsis" class="md-card">
         <div class="md-card-header">Synopsis</div>
         <div class="md-card-body--padded">
-          <markdown-editor v-with='
+          <markdown-editor v-ref="synopsisEditor" v-with='
             content: {{ case.synopsis|tojson|safe }},
             onSave: updateSynopsis
           '></markdown-editor>
+        </div>
+
+        <div class="md-card-footer">
+          <div class="md-button-group">
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.save"
+                 v-show="$.synopsisEditor.isEditing">
+              Save
+            </div>
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.cancel"
+                 v-show="$.synopsisEditor.isEditing">
+              Cancel
+            </div>
+
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.edit"
+                 v-show="!$.synopsisEditor.isEditing">
+              Edit
+            </div>
+          </div>
         </div>
       </div>
     </div>

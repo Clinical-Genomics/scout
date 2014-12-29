@@ -2,17 +2,33 @@
 // | Card
 // +-------------------------------------------------------------------+
 // require "./buttons"
+$card-bg-color: #fff;
 
 .md-card-list {
+  > .md-card {
+    transition: .2s ease-out;
+
+    &:hover {
+      @extend .md-shadow-1-half;
+    }
+
+    &:active {
+      background-color: darken($card-bg-color, 3%);
+    }
+  }
+
   > .md-card:not(:last-child) {
     margin-bottom: 1rem;
   }
 }
 
 .md-card {
-  // styles
   @extend .md-shadow-0-half;
-  background: #fff;
+
+  // styles
+  background: $card-bg-color;
+  display: block;
+  text-decoration: none;
 
   width: 100%;
 }

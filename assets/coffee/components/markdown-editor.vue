@@ -5,17 +5,6 @@
             placeholder="Edit synopsis">
   </textarea>
   <div v-html="html" v-show="!isEditing" class="markdown-editor-html"></div>
-
-  <div class="md-button-group">
-    <div class="md-button-flat" v-on="click:save" v-show="isEditing">Save</div>
-    <div class="md-button-flat" v-on="click:cancel" v-show="isEditing">
-      Cancel
-    </div>
-
-    <div class="md-button-flat" v-on="click:edit" v-show="!isEditing">
-      Edit
-    </div>
-  </div>
 </template>
 
 <script lang="coffee">

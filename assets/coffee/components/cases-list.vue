@@ -12,9 +12,9 @@
           <div v-show="assignee.$oid == user_id" class="tag">Assigned</div>
         </a>
 
-        <div>
+        <div class="md-item-subtitle">
           <a href="{{baseUrl}}/{{display_name}}/variants">Variants</a> |
-          <span class="timestamp">{{created_at.$date | fromNow}}</span>
+          <span>{{created_at.$date | fromNow}}</span>
         </div>
       </div>
     </div>

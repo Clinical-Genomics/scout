@@ -1,0 +1,61 @@
+// +-------------------------------------------------------------------+
+// | Md-Modal
+// +-------------------------------------------------------------------+
+// | Simple centered take-over modal.
+// +-------------------------------------------------------------------+
+// require "./shadow"
+
+// Public API
+$md-modal-aside-bg: #fff;
+
+md-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-modal-overlay {
+  // covers the entire container (usually window)
+  position: fixed;
+  height: 100%;
+  width: 100%;
+
+  // should be ontop of everything but the drawer
+  z-index: 2;
+
+  top: 0;
+  left: 0;
+  background-color: rgba(#000, 0);
+  display: none;
+
+  // fade in when drawer is summoned
+  transition: background-color 250ms;
+}
+
+.md-modal {
+  // add some extra distance to overlay
+  @extend .md-shadow-1-half;
+
+  display: none;
+  padding: 1rem;
+
+  // should be ontop of everything else pretty much
+  z-index: 3;
+
+  background-color: $md-modal-aside-bg;
+
+  &.is-showing {
+    display: block;
+
+    + .md-modal-overlay {
+      // ... and this activates the overlay as well
+      display: block;
+      background-color: rgba(#000, .54);
+    }
+  }
+}

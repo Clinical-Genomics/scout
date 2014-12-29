@@ -17,6 +17,9 @@
             else
               @message = 'Status update failed.'
 
+      showModal: ->
+        @$.modal.show()
+
       updateSynopsis: (markdown) ->
         superagent
           .put "/api/v1#{location.pathname}/synopsis"
@@ -42,4 +45,5 @@
       'omim-model': require './components/omim-model.vue'
       'omim-summary': require './components/omim-summary.vue'
       'markdown-editor': require './components/markdown-editor.vue'
+      'md-modal': require './components/md-modal.vue'
 </script>

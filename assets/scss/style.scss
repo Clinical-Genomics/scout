@@ -25,6 +25,7 @@
 @import "components/activity-feed";
 @import "components/breadcrumb";
 @import "components/toolbar";
+@import "components/modal";
 
 // Resets
 #app {
@@ -47,6 +48,10 @@ input {
 
 .text-center {
   text-align: center;
+}
+
+h1 {
+  margin-top: 0;
 }
 
 h3 {
@@ -200,3 +205,18 @@ core-icon {
 @import "components/case";
 @import "components/variants";
 @import "components/variant";
+
+.md-title-box {
+  :nth-child(2) {
+    margin-top: .3rem;
+  }
+}
+
+.md-title {
+  font-size: 1.2rem;
+}
+
+.md-title-sub {
+  font-size: .9rem;
+  color: rgba(#000, .6);
+}
