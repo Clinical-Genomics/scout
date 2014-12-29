@@ -156,41 +156,54 @@ def variant(institute_id, case_id, variant_id):
   )
 
 
-@core.route('/<institute_id>/email-sanger', methods=['POST'])
+@core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger', methods=['POST'])
 @login_required
-def email_sanger(institute_id):
+def email_sanger(institute_id, case_id, variant_id):
   institute = get_document_or_404(Institute, institute_id)
+  case = get_document_or_404(Case, case_id)
+  variant = store.variant(variant_id=variant_id)
+  specific = variant.specific[case.id]
 
   recipients = institute.sanger_recipients
   if len(recipients) == 0:
     flash('No sanger recipients added to the institute.')
     return abort(404)
 
+  # build variant page URL
+  variant_url = url_for('.variant', institute_id=institute_id,
+                        case_id=case_id, variant_id=variant_id)
+
+  hgnc_symbol = ', '.join(variant.common.hgnc_symbols)
+  functions = ["<li>%s</li>" % function for function in
+               variant.common.protein_change]
+  gtcalls = ["<li>%s: %s</li>" % (individual.sample, individual.genotype_call)
+             for individual in specific.samples]
+
   html = """
-    <p>
-      Case %(family_id)s:
-      <a class='activity-caption-link' href='%(url)s'>%(variant_id)s</a>
-    </p>
-    <p>HGNC symbol: %(hgnc_symbol)s</p>
-    <p>Database: %(database_id)s</p>
-    <p>
-      Chr position: <br>
-      %(chromosome_position)s
-    </p>
-    <p>
-      Amino acid change(s): <br>
-      <ul>#{(functions.join('') or '<li>No protein changes</li>')}</ul>
-    </p>
-    <p>
-      GT-call: <br>
-      <ul>#{gtcalls.join('')}</ul>
-    </p>
-    <p>Ordered by: %(name)s</p>
-  """ % dict(family_id=None, name=current_user.name)
+    <p>Case {case_id}: <a href='{url}'>{variant_id}</a></p>
+    <p>HGNC symbol: {hgnc_symbol}</p>
+    <p>Database: {database_id}</p>
+    <p>Chr position: {chromosome_position}</p>
+    <p>Amino acid change(s): <br> <ul>{functions}</ul></p>
+    <p>GT-call: <br> <ul>{gtcalls}</ul></p>
+    <p>Ordered by: {name}</p>
+  """.format(
+    case_id=case_id,
+    url=variant_url,
+    variant_id=variant_id,
+    hgnc_symbol=hgnc_symbol,
+    database_id='coming soon',
+    chromosome_position="%s:%s-%s" % (variant.chromosome,
+                                      variant.position,
+                                      variant.end_position),
+    functions=''.join(functions),
+    gtcalls=''.join(gtcalls),
+    name=current_user.name
+  )
 
   kwargs = dict(
-    subject="SCOUT: Sanger sequencing of %s" % request.form['hgnc_symbol'],
-    html=request.form.get('message', 'Hi, default here'),
+    subject="SCOUT: Sanger sequencing of %s" % hgnc_symbol,
+    html=html,
     sender=current_app.config['MAIL_USERNAME'],
     recipients=recipients,
     # cc the sender of the email for confirmation
@@ -202,4 +215,19 @@ def email_sanger(institute_id):
   msg = Message(**kwargs)
   mail.send(msg)
 
-  return jsonify(**kwargs)
+  # add events
+  event_kwargs = dict(
+    link=url_for('.case', institute_id=institute_id, case_id=case_id),
+    author=current_user.to_dbref(),
+    verb="ordered Sanger sequencing for %s" % hgnc_symbol,
+    subject=variant_id,
+  )
+  case.events.append(Event(**event_kwargs))
+  case.save()
+
+  # add to variant
+  event_kwargs['link'] = variant_url
+  specific.events.append(Event(**event_kwargs))
+  variant.save()
+
+  return redirect(variant_url)

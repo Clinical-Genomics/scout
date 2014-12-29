@@ -1,25 +1,19 @@
 $variant-base-padding: 1rem;
 
 .variant-header-item {
-  @extend .core-item;
   font-size: .7em;
-
-  &:not(:last-child) {
-    margin-right: 1em;
-  }
 }
 
 .variant-segments {
-  padding: 2em 68px;
-
   margin-left: auto;
   margin-right: auto;
   max-width: 90em;
+  padding: 2em 68px;
 }
 
 .variant-segments-row {
-  display: flex;
   align-items: stretch;  // expand row items to same height
+  display: flex;
 
   &:not(:last-child) {
     margin-bottom: 1em;
@@ -45,9 +39,10 @@ $variant-base-padding: 1rem;
 
 .variant-segment-summary {
   @extend %variant-segment-base;
-  width: 100%;
-  margin-right: auto;
+
   margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 
   @media (min-width: 40em) {
     width: 40rem;
@@ -150,4 +145,11 @@ $variant-base-padding: 1rem;
   &:not(:last-child) {
     border-right: 1px solid rgba(#000, .1);
   }
+}
+
+.sanger-form-footer {
+  padding: .7rem 0;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(#000, .2);
 }

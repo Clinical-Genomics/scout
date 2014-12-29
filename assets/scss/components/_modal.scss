@@ -41,7 +41,7 @@ md-modal {
   @extend .md-shadow-1-half;
 
   margin-top: -100%;
-  padding: 1rem;
+  min-width: 30rem;
 
   // should be ontop of everything else pretty much
   z-index: 3;
@@ -59,4 +59,15 @@ md-modal {
       top: 0;
     }
   }
+}
+
+.md-modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(#000, .2);
+  background-color: rgba(#000, .05);
+  font-weight: bold;
+}
+
+.md-modal-body {
+  padding: 0.5rem 1rem;
 }

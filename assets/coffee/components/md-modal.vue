@@ -12,6 +12,7 @@
 
 <script lang="coffee">
   module.exports =
+    paramAttributes: ['title']
     methods:
       show: ->
         @visible = yes
@@ -25,5 +26,6 @@
     data: ->
       return {
         visible: no
+        title: null
       }
 </script>

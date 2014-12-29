@@ -25,9 +25,13 @@
                              case_id=case.display_name) }}"
           method="POST">
       <button type="submit" class="case-assign-icon">
-        <core-icon icon="highlight-remove"></core-icon>
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="highlight-remove"></core-icon>
+          </div>
+          <div class="md-label-text">{{ case.assignee.name }}</div>
+        </div>
       </button>
-      <div class="case-assign-name">{{ case.assignee.name|initials }}</div>
     </form>
   {% else %}
     <form class="case-assign" action="{{ url_for('core.assign_self',
@@ -36,21 +40,30 @@
           method="POST">
 
       <button type="submit" class="case-assign-icon">
-        <core-icon icon="assignment-ind"></core-icon>
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="assignment-ind"></core-icon>
+          </div>
+          <div class="md-label-text">Assign</div>
+        </div>
       </button>
-      <div class="case-assign-name">Adopt</div>
     </form>
   {% endif %}
 
   <form class="status-picker" action="POST">
-    <select v-model="selected" v-on="change: onChange">
-      {% for status in statuses %}
-        <option {% if status == case.status %}selected{% endif %}
-                value="{{ status }}">
-          {{ status|capitalize }}
-        </option>
-      {% endfor %}
-    </select>
+    <div class="md-label">
+      <div class="md-label-icon">Status</div>
+      <div class="md-label-text">
+        <select v-model="selected" v-on="change: onChange">
+          {% for status in statuses %}
+            <option {% if status == case.status %}selected{% endif %}
+                    value="{{ status }}">
+              {{ status|capitalize }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
   </form>
   <div class="status-message" v-text="message"></div>
 {% endblock %}

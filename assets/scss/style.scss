@@ -220,3 +220,27 @@ core-icon {
   font-size: .9rem;
   color: rgba(#000, .6);
 }
+
+.md-label {
+  display: flex;
+  align-items: center;
+
+  background-color: rgba(#000, .05);
+  border: 1px solid rgba(#000, .15);
+  border-radius: 2px;
+}
+
+.md-label-icon {
+  padding: .3rem .4rem;
+  background-color: rgba(#000, .05);
+  border-right: 1px solid rgba(#000, .1);
+  border-radius: 3px 0 0 3px;
+  color: #fff;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.md-label-text {
+  padding: .5rem .6rem;
+}
