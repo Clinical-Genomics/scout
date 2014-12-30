@@ -38,6 +38,12 @@
       message: null
       html: null
 
+    ready: ->
+      # prevent FOUC
+      # ref: http://en.wikipedia.org/wiki/Flash_of_unstyled_content
+      body = document.getElementsByTagName('body')[0]
+      body.classList.remove('unresolved')
+
     components:
       'drawer-panel': require './components/drawer-panel.vue'
       'core-icon': require './components/core-icon.vue'

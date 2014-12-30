@@ -28,6 +28,14 @@
 @import 'components/modal';
 
 // Resets
+.unresolved {
+  opacity: 0;
+  display: block;
+  overflow: hidden;
+
+  transition: all 200ms;
+}
+
 #app {
   height: inherit;
   width: inherit;
