@@ -1,31 +1,31 @@
 // Scout Global Styles
 
 // Make sure the charset is set appropriately
-@charset "utf-8";
+@charset 'utf-8';
 
 // Libraries
-@import "vendor/normalize";
-@import "mixins";
+@import 'vendor/normalize';
+@import 'mixins';
 
 // Global Styles
-@import "global";
+@import 'global';
 
 // Components
-@import "components/shadow";
-@import "components/item";
-@import "components/lists";
-@import "components/buttons";
-@import "components/forms";
-@import "components/drawer-panel";
-@import "components/header-panel";
-@import "components/card";
-@import "components/tooltip";
-@import "components/markdown-editor";
-@import "components/table";
-@import "components/activity-feed";
-@import "components/breadcrumb";
-@import "components/toolbar";
-@import "components/modal";
+@import 'components/shadow';
+@import 'components/item';
+@import 'components/lists';
+@import 'components/buttons';
+@import 'components/forms';
+@import 'components/drawer-panel';
+@import 'components/header-panel';
+@import 'components/card';
+@import 'components/tooltip';
+@import 'components/markdown-editor';
+@import 'components/table';
+@import 'components/activity-feed';
+@import 'components/breadcrumb';
+@import 'components/toolbar';
+@import 'components/modal';
 
 // Resets
 #app {
@@ -35,7 +35,7 @@
 
 input {
   background-color: inherit;
-  border: none;
+  border: 0;
   outline: 0;
   padding: 0;
   color: inherit;

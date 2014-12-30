@@ -30,6 +30,7 @@ $card-bg-color: #fff;
   text-decoration: none;
 
   width: 100%;
+  display: inline-block;
 }
 
 %md-card-part {
@@ -45,6 +46,7 @@ $card-bg-color: #fff;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   font-weight: bold;
+  background-color: rgba(#000, .05);
 }
 
 .md-card-body {

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from flask import (abort, Blueprint, current_app, flash, jsonify, redirect,
-                   request, url_for)
+from flask import (abort, Blueprint, current_app, flash, redirect, request,
+                   url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
@@ -156,7 +156,60 @@ def variant(institute_id, case_id, variant_id):
   )
 
 
-@core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger', methods=['POST'])
+@core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])
+def pin_variant(institute_id, case_id, variant_id):
+  """Pin or unpin a variant from the list of suspects."""
+  case = get_document_or_404(Case, case_id)
+  variant = store.variant(variant_id=variant_id)
+  variant_url = url_for('.variant', institute_id=institute_id,
+                        case_id=case_id, variant_id=variant_id)
+
+  # add variant to list of pinned variants in the case model
+  case.suspects.append(variant)
+  verb = 'added'
+
+  # add event
+  case.events.append(Event(
+    link=variant_url,
+    author=current_user.to_dbref(),
+    verb="%s a variant suspect: " % verb,
+    subject=variant_id,
+  ))
+
+  # persist changes
+  case.save()
+
+  return redirect(request.args.get('next') or request.referrer or variant_url)
+
+
+@core.route('/<institute_id>/<case_id>/<variant_id>/unpin', methods=['POST'])
+def unpin_variant(institute_id, case_id, variant_id):
+  """Pin or unpin a variant from the list of suspects."""
+  case = get_document_or_404(Case, case_id)
+  variant = store.variant(variant_id=variant_id)
+  variant_url = url_for('.variant', institute_id=institute_id,
+                        case_id=case_id, variant_id=variant_id)
+
+  # remove an already existing pinned variant
+  case.suspects.remove(variant)
+  verb = 'removed'
+
+  # add event
+  case.events.append(Event(
+    link=variant_url,
+    author=current_user.to_dbref(),
+    verb="%s a variant suspect: " % verb,
+    subject=variant_id,
+  ))
+
+  # persist changes
+  case.save()
+
+  return redirect(request.args.get('next') or request.referrer or variant_url)
+
+
+@core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger',
+            methods=['POST'])
 @login_required
 def email_sanger(institute_id, case_id, variant_id):
   institute = get_document_or_404(Institute, institute_id)

@@ -10,9 +10,7 @@
 
   padding: .7rem 1rem;
 
-  &:not(:last-child) {
-    border-bottom: 1px solid rgba(#000, .1);
-  }
+  border-bottom: 1px solid rgba(#000, .1);
 
   &:hover {
     background-color: rgba(0, 188, 212, .1);

@@ -44,7 +44,7 @@
           <div class="md-label-icon">
             <core-icon icon="assignment-ind"></core-icon>
           </div>
-          <div class="md-label-text">Assign</div>
+          <div class="md-label-text">Adopt</div>
         </div>
       </button>
     </form>
@@ -77,48 +77,42 @@
   <div class="case-segments">
 
     <div id="strong-candidates" class="case-segment-row">
-      <!-- <div id="case-candidates" class="md-card">
+      <div id="case-candidates" class="md-card">
         <div class="md-card-header">Strong candidates</div>
         <div class="md-card-body-list">
-          <div class="list-item">
-            <div class="md-item">
-              <div class="md-item-icon">
-                <core-icon icon="bookmark"></core-icon>
-              </div>
-
-              <div class="md-item-body">
-                <div class="md-item-title">KAI12</div>
-                <div class="md-item-subtitle">
-                  Pinned by <strong>Anna Wedell</strong>
+          {% for variant in case.suspects %}
+            <div class="list-item">
+              <a href="{{ url_for('core.variant',
+                                  institute_id=institute.display_name,
+                                  case_id=case.display_name,
+                                  variant_id=variant.id) }}"
+                 class="md-item">
+                <div class="md-item-icon">
+                  <core-icon icon="bookmark"></core-icon>
                 </div>
-              </div>
-            </div>
 
-            <div class="md-icon-button">
-              <core-icon icon="more-horiz"></core-icon>
-            </div>
-          </div>
-
-          <div class="list-item">
-            <div class="md-item">
-              <div class="md-item-icon">
-                <core-icon icon="bookmark"></core-icon>
-              </div>
-
-              <div class="md-item-body">
-                <div class="md-item-title">POL2</div>
-                <div class="md-item-subtitle">
-                  Pinned by <strong>Henrik Stranneheim</strong>
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    {{variant.common.hgnc_symbols|join(', ')}}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </a>
 
-            <div class="md-icon-button">
-              <core-icon icon="more-horiz"></core-icon>
+              <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant.id) }}"
+                    method="POST">
+                <button type="submit" class="md-icon-button" title="Unpin">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
             </div>
-          </div>
+          {% else %}
+            <div class="list-item">No variants suspected yet.</div>
+          {% endfor %}
         </div>
-      </div> -->
+      </div>
 
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>

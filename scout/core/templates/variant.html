@@ -44,9 +44,27 @@
     <core-icon icon="mail"></core-icon>
   </div>
 
-  <div class="icon-button" title="Pin variant">
-    <core-icon icon="bookmark"></core-icon>
-  </div>
+  {% if variant not in case.suspects %}
+    <form action="{{ url_for('core.pin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Pin variant">
+        <core-icon icon="bookmark-outline"></core-icon>
+      </button>
+    </form>
+  {% else %}
+    <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Unpin variant">
+        <core-icon icon="bookmark"></core-icon>
+      </button>
+    </form>
+  {% endif %}
 {% endblock %}
 
 {% block toolbar_secondary %}
