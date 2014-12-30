@@ -39,6 +39,11 @@ def cases(institute_id):
   """
   institute = get_document_or_404(Institute, institute_id)
 
+  # very basic security check
+  if institute not in current_user.institutes:
+    flash('You do not have access to this institute.')
+    return abort(403)
+
   # fetch cases from the data store
   return dict(institute=institute, institute_id=institute_id)
 
