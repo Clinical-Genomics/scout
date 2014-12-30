@@ -252,3 +252,47 @@ core-icon {
 .md-label-text {
   padding: .5rem .6rem;
 }
+
+.dist-even {
+  display: flex;
+  width: 100%;
+}
+
+.dist-even-item {
+  flex: 1;
+  padding: .5rem 1rem;
+
+  display: flex;
+  justify-content: space-between;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+
+  &:not(:last-child) {
+    border-right: 1px solid rgba(#000, .1);
+  }
+}
+
+.md-badge {
+  padding: .2rem .5rem;
+  border-radius: 2px;
+  background-color: rgba(#000, .5);
+  color: #fff;
+}
+
+.is-safe {
+  background-color: #7cb342;
+}
+
+.is-warning {
+  background-color: #ff5722;
+}
+
+.is-alert {
+  background-color: #f44336;
+}

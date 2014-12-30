@@ -169,19 +169,24 @@
         <div class="md-card-header">Summary</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item">
-            <div>Rank score</div>
-            <div>{{ specific.rank_score }}</div>
-          </div>
+          <div class="variant-row-item">
 
-          <div class="variant-list-item">
-            <div>CADD score</div>
-            <div>{{ variant.common.cadd_score }}</div>
+            <div class="dist-even">
+              <div class="dist-even-item">
+                <div>Rank score</div>
+                <div>{{ specific.rank_score }}</div>
+              </div>
+
+              <div class="dist-even-item">
+                <div>CADD score</div>
+                <div>{{ variant.common.cadd_score }}</div>
+              </div>
+            </div>
           </div>
 
           <div class="variant-list-item">
             <div>Matches expected inheritance model</div>
-            <div>Yes</div>
+            <div class="md-badge">Yes</div>
           </div>
         </div>
       </div>
