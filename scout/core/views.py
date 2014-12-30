@@ -7,6 +7,7 @@ from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
 from .forms import FiltersForm
+from .utils import validate_user
 from ..models import Institute, Case, Event
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
@@ -37,12 +38,8 @@ def cases(institute_id):
   The purpose of this page is to display all cases related to an
   institute. It should also give an idea of which
   """
-  institute = get_document_or_404(Institute, institute_id)
-
   # very basic security check
-  if institute not in current_user.institutes:
-    flash('You do not have access to this institute.')
-    return abort(403)
+  institute = validate_user(current_user, institute_id)
 
   # fetch cases from the data store
   return dict(institute=institute, institute_id=institute_id)
@@ -53,8 +50,12 @@ def cases(institute_id):
 @login_required
 def case(institute_id, case_id):
   """View one specific case."""
-  # abort with 404 error if case/institute doesn't exist
-  institute = get_document_or_404(Institute, institute_id)
+  # very basic security check
+  institute = validate_user(current_user, institute_id)
+
+  # very basic security check
+  validate_user(current_user, institute)
+
   case = get_document_or_404(Case, case_id)
 
   # fetch a single, specific case from the data store
@@ -63,6 +64,8 @@ def case(institute_id, case_id):
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
 def assign_self(institute_id, case_id):
+  # very basic security check
+  validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
 
   # assign logged in user and persist changes
@@ -85,6 +88,8 @@ def assign_self(institute_id, case_id):
 
 @core.route('/<institute_id>/<case_id>/unassign', methods=['POST'])
 def remove_assignee(institute_id, case_id):
+  # very basic security check
+  validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
 
   # unassign user and persist changes
@@ -112,7 +117,8 @@ def variants(institute_id, case_id):
   per_page = 50
 
   # fetch all variants for a specific case
-  institute = get_document_or_404(Institute, institute_id)
+  # very basic security check
+  institute = validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
   skip = int(request.args.get('skip', 0))
 
@@ -139,7 +145,8 @@ def variants(institute_id, case_id):
 @login_required
 def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
-  institute = get_document_or_404(Institute, institute_id)
+  # very basic security check
+  institute = validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
   variant = store.variant(variant_id=variant_id)
 
@@ -164,6 +171,8 @@ def variant(institute_id, case_id, variant_id):
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])
 def pin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
+  # very basic security check
+  validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
   variant = store.variant(variant_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
@@ -190,6 +199,8 @@ def pin_variant(institute_id, case_id, variant_id):
 @core.route('/<institute_id>/<case_id>/<variant_id>/unpin', methods=['POST'])
 def unpin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
+  # very basic security check
+  validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
   variant = store.variant(variant_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
@@ -217,7 +228,9 @@ def unpin_variant(institute_id, case_id, variant_id):
             methods=['POST'])
 @login_required
 def email_sanger(institute_id, case_id, variant_id):
-  institute = get_document_or_404(Institute, institute_id)
+  # very basic security check
+  institute = validate_user(current_user, institute_id)
+
   case = get_document_or_404(Case, case_id)
   variant = store.variant(variant_id=variant_id)
   specific = variant.specific[case.id]
