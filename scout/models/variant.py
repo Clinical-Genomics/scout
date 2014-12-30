@@ -107,5 +107,14 @@ class Variant(Document):
     ]
   }
 
+  @property
+  def end_position(self):
+    # which alternative allele contains most bases
+    alt_bases = max([len(alt) for alt in self.alternatives])
+    # vs. reference allele
+    bases = max(len(self.reference), alt_bases)
+
+    return self.position + (bases - 1)
+
   def __unicode__(self):
     return self.display_name

@@ -29,11 +29,11 @@
 {% endblock %}
 
 {% block toolbar_right %}
+  {{ super() }}
+
   <div v-on="click: showFilters" class="icon-button">
     <core-icon icon="filter-list"></core-icon>
   </div>
-
-  {{ super() }}
 {% endblock %}
 
 {% block toolbar_custom %}

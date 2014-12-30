@@ -1,33 +1,41 @@
 // Scout Global Styles
 
 // Make sure the charset is set appropriately
-@charset "utf-8";
+@charset 'utf-8';
 
 // Libraries
-@import "vendor/normalize";
-@import "mixins";
+@import 'vendor/normalize';
+@import 'mixins';
 
 // Global Styles
-@import "global";
+@import 'global';
 
 // Components
-@import "components/shadow";
-@import "components/item";
-@import "components/lists";
-@import "components/buttons";
-@import "components/forms";
-@import "components/drawer-panel";
-@import "components/header-panel";
-@import "components/card";
-@import "components/tooltip";
-@import "components/markdown-editor";
-@import "components/table";
-@import "components/activity-feed";
-@import "components/breadcrumb";
-@import "components/toolbar";
-@import "components/modal";
+@import 'components/shadow';
+@import 'components/item';
+@import 'components/lists';
+@import 'components/buttons';
+@import 'components/forms';
+@import 'components/drawer-panel';
+@import 'components/header-panel';
+@import 'components/card';
+@import 'components/tooltip';
+@import 'components/markdown-editor';
+@import 'components/table';
+@import 'components/activity-feed';
+@import 'components/breadcrumb';
+@import 'components/toolbar';
+@import 'components/modal';
 
 // Resets
+.unresolved {
+  opacity: 0;
+  display: block;
+  overflow: hidden;
+
+  transition: all 200ms;
+}
+
 #app {
   height: inherit;
   width: inherit;
@@ -35,7 +43,7 @@
 
 input {
   background-color: inherit;
-  border: none;
+  border: 0;
   outline: 0;
   padding: 0;
   color: inherit;
@@ -219,4 +227,72 @@ core-icon {
 .md-title-sub {
   font-size: .9rem;
   color: rgba(#000, .6);
+}
+
+.md-label {
+  display: flex;
+  align-items: center;
+
+  background-color: rgba(#000, .05);
+  border: 1px solid rgba(#000, .15);
+  border-radius: 2px;
+}
+
+.md-label-icon {
+  padding: .3rem .4rem;
+  background-color: rgba(#000, .05);
+  border-right: 1px solid rgba(#000, .1);
+  border-radius: 3px 0 0 3px;
+  color: #fff;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.md-label-text {
+  padding: .5rem .6rem;
+}
+
+.dist-even {
+  display: flex;
+  width: 100%;
+}
+
+.dist-even-item {
+  flex: 1;
+  padding: .5rem 1rem;
+
+  display: flex;
+  justify-content: space-between;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+
+  &:not(:last-child) {
+    border-right: 1px solid rgba(#000, .1);
+  }
+}
+
+.md-badge {
+  padding: .2rem .5rem;
+  border-radius: 2px;
+  background-color: rgba(#000, .5);
+  color: #fff;
+}
+
+.is-safe {
+  background-color: #7cb342;
+}
+
+.is-warning {
+  background-color: #ff5722;
+}
+
+.is-alert {
+  background-color: #f44336;
 }

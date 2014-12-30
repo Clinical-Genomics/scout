@@ -1,19 +1,19 @@
 // CONTENT
 .case-segments {
-	padding: 2em 68px;
+  padding: 2em 68px;
 
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 90em;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 90em;
 }
 
 .case-segment-row {
-	display: flex;
-	align-items: stretch;  // expand row items to same height
+  display: flex;
+  align-items: stretch;  // expand row items to same height
 
-	&:not(:last-child) {
-		margin-bottom: 1em;
-	}
+  &:not(:last-child) {
+    margin-bottom: 1em;
+  }
 
   > :not(:last-child) {
     margin-right: 1em;
@@ -29,130 +29,132 @@
 }
 
 %case-segment {
-	background-color: #fff;
-	box-shadow: 0 1px 3px -1px rgba(#000, .4);
+  background-color: #fff;
+  box-shadow: 0 1px 3px -1px rgba(#000, .4);
 }
 
 .case-segment-full {
-	@extend %case-segment;
+  @extend %case-segment;
 
-	flex-basis: 100%;
+  flex-basis: 100%;
 }
 
 .case-segment-title {
-	padding: .5rem 1rem;
-	font-size: .9rem;
-	border-bottom: 1px solid rgba(#000, .15);
+  padding: .5rem 1rem;
+  font-size: .9rem;
+  border-bottom: 1px solid rgba(#000, .15);
 
-	background-color: rgba(#000, .1);
-	color: rgba(#000, .5);
+  background-color: rgba(#000, .1);
+  color: rgba(#000, .5);
 }
 
 .case-segment-content-text {
-	padding: .5rem 1rem;
-	font-size: .9rem;
-	line-height: 1.3rem;
+  padding: .5rem 1rem;
+  font-size: .9rem;
+  line-height: 1.3rem;
 
-	> p {
-		padding: .2em 0;
-	}
+  > p {
+    padding: .2em 0;
+  }
 }
 
 .case-segment-notes {
-	border-top: 1px solid rgba(#000, .15);
-	background-color: rgba(#000, .03);
-	padding: .5rem;
-	font-size: .8rem;
+  border-top: 1px solid rgba(#000, .15);
+  background-color: rgba(#000, .03);
+  padding: .5rem;
+  font-size: .8rem;
 }
 
 // SAMPLES
 %case-sample {
   @extend .list-item;
 
-	font-size: .8rem;
-	border-bottom: 1px solid rgba(#000, .1);  // colored background
-	padding: .2rem 1rem;
-	position: relative;
-	height: 2.8rem;
-	overflow: auto;
+  font-size: .8rem;
+  border-bottom: 1px solid rgba(#000, .1);  // colored background
+  padding: .2rem 1rem;
+  position: relative;
+  height: 2.8rem;
+  overflow: auto;
 }
 
 .case-sample-item {
-	flex: 2;
+  flex: 2;
 
-	&:not(:last-child) {
-		margin-right: 1em;
-	}
+  &:not(:last-child) {
+    margin-right: 1em;
+  }
 
-	// dotdotdot
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
+  // dotdotdot
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .case-sample-item--big {
-	@extend .case-sample-item;
+  @extend .case-sample-item;
 
-	flex: 4;
+  flex: 4;
 }
 
 .case-sample-item--small {
-	@extend .case-sample-item;
+  @extend .case-sample-item;
 
-	flex: 1;
+  flex: 1;
 }
 
 %case-sample-icon {
-	width: 15px;
-	height: 15px;
+  width: 15px;
+  height: 15px;
 
-	border: 2px solid #000;
+  border: 2px solid #000;
 }
 
 .case-sample-icon-male {
-	@extend %case-sample-icon;
+  @extend %case-sample-icon;
 }
 
 .case-sample-icon-female {
-	@extend %case-sample-icon;
+  @extend %case-sample-icon;
 
-	border-radius: 100%;
+  border-radius: 100%;
 }
 
 .is-affected {
-	background-color: #000;
+  background-color: #000;
 }
 
 .case-sample-unaffected {
-	@extend %case-sample;
+  @extend %case-sample;
 }
 
 .case-sample-affected {
-	@extend %case-sample;
-	background-color: rgba(#f44336, .15);
+  @extend %case-sample;
+  background-color: rgba(#f44336, .15);
 }
 
 .case-variants-button {
-	@extend .md-button;
+  @extend .md-button;
 
-	// case-specific
+  // case-specific
   display: block;
-	margin: 2em auto 0;
-	width: 40%;
+  margin: 2em auto 0;
+  width: 40%;
   min-width: 15em;
 }
 
 .case-assign {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .case-assign-icon {
-	@extend .icon-button;
+  background: none;
+  border: 0;
+  font-size: 1rem;
 }
 
 .case-assign-name {
-	font-size: .8em;
+  font-size: 1rem;
 }
 
 .status-picker {

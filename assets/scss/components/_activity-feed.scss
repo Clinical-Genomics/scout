@@ -4,10 +4,7 @@
 
 .activity-feed-item {
   padding: 1rem;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid rgba(#000, .2);
-  }
+  border-bottom: 1px solid rgba(#000, .2);
 }
 
 .activity-feed-item-event {

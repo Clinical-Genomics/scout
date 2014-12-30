@@ -39,14 +39,6 @@ def make_shell_context():
   return dict(app=app())
 
 
-@manager.command
-def test():
-  """Run the tests."""
-  import pytest
-  exit_code = pytest.main(['tests', '--verbose'])
-  return exit_code
-
-
 manager.add_option(
   '-c', '--config', dest='config', required=False, help='config file path')
 # command meant to be run in a Vagrant environment during development

@@ -15,8 +15,6 @@ setup(
   zip_safe=False,
   install_requires=[
     'Flask',
-    'Flask-Babel',
-    'Flask-Cache',
     'Flask-Script',
     'path.py',
   ],

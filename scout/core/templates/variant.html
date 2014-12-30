@@ -38,28 +38,55 @@
 {% endblock %}
 
 {% block toolbar_right %}
+  {{ super() }}
+
   <div v-on="click: showModal" class="icon-button" title="Order Sanger">
     <core-icon icon="mail"></core-icon>
   </div>
 
-  <div class="icon-button" title="Pin variant">
-    <core-icon icon="bookmark"></core-icon>
-  </div>
-
-  {{ super() }}
+  {% if variant not in case.suspects %}
+    <form action="{{ url_for('core.pin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Pin variant">
+        <core-icon icon="bookmark-outline"></core-icon>
+      </button>
+    </form>
+  {% else %}
+    <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Unpin variant">
+        <core-icon icon="bookmark"></core-icon>
+      </button>
+    </form>
+  {% endif %}
 {% endblock %}
 
 {% block toolbar_secondary %}
-  {{ core_item(specific.variant_rank,
-               icon='grade',
-               class='variant-header-item') }}
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="grade"></core-icon>
+      </div>
+      <div class="md-label-text">{{ specific.variant_rank }}</div>
+    </div>
+  </div>
 
   <div class="variant-header-item md-tooltip">
-    {{ core_item(
-      'Chr%s: %s' % (variant.chromosome,
-                     variant.common.hgnc_symbols|join(',')),
-      icon='room')
-    }}
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="room"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.chromosome }}: {{ variant.common.hgnc_symbols|join(',') }}
+      </div>
+    </div>
 
     <div class="md-tooltip-tip is-bottom">
       <ul>
@@ -77,13 +104,38 @@
     </div>
   </div>
 
-  {{ core_item('%s → %s' % (variant.reference, variant.alternatives|join(',')), icon='swap-vert-circle', class='variant-header-item') }}
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="swap-vert-circle"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.reference }} → {{ variant.alternatives|join(',') }}
+      </div>
+    </div>
+  </div>
 
-  {{ core_item(variant.common.region_annotations|join(','),
-               icon='report', class='variant-header-item') }}
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="report"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.common.region_annotations|join(',') }}
+      </div>
+    </div>
+  </div>
 
-  {{ core_item(variant.common.functional_annotations|join(','),
-               icon='settings', class='variant-header-item') }}
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="settings"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.common.functional_annotations|join(',') }}
+      </div>
+    </div>
+  </div>
 
   <div class="flex"></div>
 
@@ -117,19 +169,24 @@
         <div class="md-card-header">Summary</div>
 
         <div class="variant-segment-content">
-          <div class="variant-list-item">
-            <div>Rank score</div>
-            <div>{{ specific.rank_score }}</div>
-          </div>
+          <div class="variant-row-item">
 
-          <div class="variant-list-item">
-            <div>CADD score</div>
-            <div>{{ variant.common.cadd_score }}</div>
+            <div class="dist-even">
+              <div class="dist-even-item">
+                <div>Rank score</div>
+                <div>{{ specific.rank_score }}</div>
+              </div>
+
+              <div class="dist-even-item">
+                <div>CADD score</div>
+                <div>{{ variant.common.cadd_score }}</div>
+              </div>
+            </div>
           </div>
 
           <div class="variant-list-item">
             <div>Matches expected inheritance model</div>
-            <div>Yes</div>
+            <div class="md-badge">Yes</div>
           </div>
         </div>
       </div>
@@ -413,29 +470,64 @@
   </div>
 
   <!-- SANGER EMAIL MODAL -->
-  <md-modal v-ref="modal">
+  <md-modal v-ref="modal" title="Order Sanger sequencing">
     <form
-      action="{{ url_for('core.email_sanger', institute_id=institute_id) }}"
+      action="{{ url_for('core.email_sanger',
+                         institute_id=institute_id,
+                         case_id=case_id,
+                         variant_id=variant.variant_id) }}"
       method="POST"
     >
 
       <p>
-        Case {{ case_id }}:
+        <strong>Case {{ case_id }}</strong>:
         <a href="{{ url_for('core.variant',
                             institute_id=institute_id,
-                            variant_id=variant.variant_id,
-                            case_id=case_id) }}">
-          {{ variant.chromosome }}: {{ variant.position }}
+                            case_id=case_id,
+                            variant_id=variant.variant_id) }}">
+          {{ variant.chromosome }}:{{ variant.position }}
         </a>
       </p>
 
-      <p>HGNC symbol(s): {{ variant.common.hgnc_symbols|join(', ') }}</p>
+      <p>
+        <strong>HGNC symbol(s)</strong>:
+        {{ variant.common.hgnc_symbols|join(', ') }}
+      </p>
 
-      <p>Ordered by: {{ current_user.name }}</p>
+      <p><strong>Database</strong>: {{ 'coming soon' }}</p>
 
-      <button class="md-button-flat" type="submit" title="Order Sanger">
-        Send
-      </button>
+      <p>
+        <strong>Chromosome position</strong>:
+        {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
+      </p>
+
+      <p><strong>Amino acid change(s)</strong>:</p>
+      <p>
+        <ul>
+          {% for item in variant.common.protein_change %}
+            <li>{{ item }}</li>
+          {% else %}
+            <li>No protein predictions</li>
+          {% endfor %}
+        </ul>
+      </p>
+
+      <p><strong>GT call</strong></p>
+      <p>
+        <ul>
+          {% for individual in specific.samples %}
+            <li>{{ individual.sample }}: {{ individual.genotype_call }}</li>
+          {% endfor %}
+        </ul>
+      </p>
+
+      <p><strong>Ordered by</strong>: {{ current_user.name }}</p>
+
+      <div class="sanger-form-footer">
+        <button class="md-button" type="submit" title="Order Sanger">
+          Send
+        </button>
+      </div>
     </form>
   </md-modal>
 

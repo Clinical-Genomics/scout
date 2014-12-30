@@ -52,17 +52,20 @@ $button-color: $primary-color !default;
   }
 
   &:hover {
-    background-color: #DFDFDF;
+    background-color: #dfdfdf;
   }
 }
 
 // simple button using just an icon
 .md-icon-button {
+  background: none;
+  border: 0;
   display: inline-block;
   outline: none;
   user-select: none;
   cursor: pointer;
   z-index: 0;
+  flex-shrink: 0;
 
   padding: .2rem;
   border-radius: 100%;

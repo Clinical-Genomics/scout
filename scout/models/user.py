@@ -40,6 +40,10 @@ class User(Document):
   def belongs_to(self, institute_id):
     return institute_id in self.institutes
 
+  @property
+  def first_name(self):
+    return self.name.split(' ')[0]
+
   # required for Flask-Admin interface
   def __unicode__(self):
     return self.name

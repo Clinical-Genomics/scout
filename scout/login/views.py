@@ -57,7 +57,7 @@ def reauth():
     flash('Reauthenticated', 'success')
 
   return redirect(
-    request.args.get('next') or request.referer or url_for('frontend.index'))
+    request.args.get('next') or request.referrer or url_for('frontend.index'))
 
 
 @login.route('/logout', methods=['POST'])

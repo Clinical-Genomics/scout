@@ -25,9 +25,13 @@
                              case_id=case.display_name) }}"
           method="POST">
       <button type="submit" class="case-assign-icon">
-        <core-icon icon="highlight-remove"></core-icon>
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="highlight-remove"></core-icon>
+          </div>
+          <div class="md-label-text">{{ case.assignee.name }}</div>
+        </div>
       </button>
-      <div class="case-assign-name">{{ case.assignee.name|initials }}</div>
     </form>
   {% else %}
     <form class="case-assign" action="{{ url_for('core.assign_self',
@@ -36,21 +40,30 @@
           method="POST">
 
       <button type="submit" class="case-assign-icon">
-        <core-icon icon="assignment-ind"></core-icon>
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="assignment-ind"></core-icon>
+          </div>
+          <div class="md-label-text">Adopt</div>
+        </div>
       </button>
-      <div class="case-assign-name">Adopt</div>
     </form>
   {% endif %}
 
   <form class="status-picker" action="POST">
-    <select v-model="selected" v-on="change: onChange">
-      {% for status in statuses %}
-        <option {% if status == case.status %}selected{% endif %}
-                value="{{ status }}">
-          {{ status|capitalize }}
-        </option>
-      {% endfor %}
-    </select>
+    <div class="md-label">
+      <div class="md-label-icon">Status</div>
+      <div class="md-label-text">
+        <select v-model="selected" v-on="change: onChange">
+          {% for status in statuses %}
+            <option {% if status == case.status %}selected{% endif %}
+                    value="{{ status }}">
+              {{ status|capitalize }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
   </form>
   <div class="status-message" v-text="message"></div>
 {% endblock %}
@@ -67,43 +80,37 @@
       <div id="case-candidates" class="md-card">
         <div class="md-card-header">Strong candidates</div>
         <div class="md-card-body-list">
-          <div class="list-item">
-            <div class="md-item">
-              <div class="md-item-icon">
-                <core-icon icon="bookmark"></core-icon>
-              </div>
-
-              <div class="md-item-body">
-                <div class="md-item-title">KAI12</div>
-                <div class="md-item-subtitle">
-                  Pinned by <strong>Anna Wedell</strong>
+          {% for variant in case.suspects %}
+            <div class="list-item">
+              <a href="{{ url_for('core.variant',
+                                  institute_id=institute.display_name,
+                                  case_id=case.display_name,
+                                  variant_id=variant.id) }}"
+                 class="md-item">
+                <div class="md-item-icon">
+                  <core-icon icon="bookmark"></core-icon>
                 </div>
-              </div>
-            </div>
 
-            <div class="md-icon-button">
-              <core-icon icon="more-horiz"></core-icon>
-            </div>
-          </div>
-
-          <div class="list-item">
-            <div class="md-item">
-              <div class="md-item-icon">
-                <core-icon icon="bookmark"></core-icon>
-              </div>
-
-              <div class="md-item-body">
-                <div class="md-item-title">POL2</div>
-                <div class="md-item-subtitle">
-                  Pinned by <strong>Henrik Stranneheim</strong>
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    {{variant.common.hgnc_symbols|join(', ')}}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </a>
 
-            <div class="md-icon-button">
-              <core-icon icon="more-horiz"></core-icon>
+              <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant.id) }}"
+                    method="POST">
+                <button type="submit" class="md-icon-button" title="Unpin">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
             </div>
-          </div>
+          {% else %}
+            <div class="list-item">No variants suspected yet.</div>
+          {% endfor %}
         </div>
       </div>
 
