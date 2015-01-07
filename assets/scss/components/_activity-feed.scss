@@ -3,19 +3,19 @@
 }
 
 .activity-feed-item {
-  padding: 1rem;
   border-bottom: 1px solid rgba(#000, .2);
+  padding: 1rem;
 }
 
 .activity-feed-item-event {
+  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
 .timestamp {
-  font-size: .9rem;
   color: rgba(#000, .6);
+  font-size: .9rem;
 }
 
 .activity-feed-delete-button {
@@ -23,11 +23,12 @@
   fill: rgba(#000, .5);
 
   &:hover {
-    fill: rgba(red, .8);
+    // red
+    fill: #e53935;
   }
 }
 
 .activity-feed-item-body {
-  margin-top: .3em;
   font-size: 1.1em;
+  margin-top: .3em;
 }

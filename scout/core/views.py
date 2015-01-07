@@ -8,7 +8,7 @@ from flask.ext.mail import Message
 
 from .forms import FiltersForm
 from .utils import validate_user
-from ..models import Institute, Case, Event
+from ..models import Case, Event
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
 
