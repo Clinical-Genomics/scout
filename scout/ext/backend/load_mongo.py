@@ -30,7 +30,9 @@ import json
 import click
 import hashlib
 
+
 from datetime import datetime
+from six import string_types
 from pymongo import MongoClient
 from mongoengine import connect, DoesNotExist
 
@@ -98,8 +100,8 @@ SO_TERMS = {
 }
 
 def load_mongo(vcf_file=None, ped_file=None, config_file=None,
-               family_type='ped', mongo_db='variantDatabase', institute='CMMS',
-               username=None, password=None):
+               family_type='ped', mongo_db='variantDatabase', institute_name='CMMS',
+               username=None, password=None, verbose = False):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
@@ -107,22 +109,35 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   connect(mongo_db, host='localhost', port=27017, username=username,
           password=password)
   
+  if verbose:
+    print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\nmongo_db:\t%s\ninstitute:\t%s\n" % 
+              (vcf_file, ped_file, config_file, family_type, mongo_db, institute_name), file=sys.stderr)
+  
   ######## Parse the config file to check for keys: ########
   config_object = ConfigParser(config_file)
-
+  
+  ######## Add the institute to the mongo db: ########
+  
+  institute = get_institute(institute_name)
+  try:
+    if Institute.objects.get(internal_id = institute.internal_id):
+      institute = Institute.objects.get(internal_id = institute.internal_id)
+  except DoesNotExist:
+    if verbose:
+      print('New institute!', file=sys.stderr)
+    
+  
   ######## Get the case and add it to the mongo db: ########
   individuals = []
-  cases = get_case(ped_file, family_type, institute)
+  cases = get_case(ped_file, family_type, institute_name)
   for case in cases:
+    if case not in institute.cases:
+      institute.cases.append(case)
     for individual in case.individuals:
       individuals.append(individual.individual_id)
     case.save()
-
-  ######## Add the to the mongo db: ########
-
-  institute = get_institute(institute)
-  institute.save()
   
+  institute.save()
   
   ######## Get the variants and add them to the mongo db: ########
   
@@ -138,37 +153,61 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   
   start_inserting_variants = datetime.now()
   
-  print('Start parsing variants...')
+  if verbose:
+    print('Start parsing variants...', file=sys.stderr)
   
   for variant in variant_parser:
     nr_of_variants += 1
     add_mongo_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
-    if nr_of_variants % 1000 == 0:
-      print('%s variants parsed!' % nr_of_variants)
+    if verbose:
+      if nr_of_variants % 1000 == 0:
+        print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
   
-  print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS)
-  print('%s variants inserted!' % nr_of_variants)
-  print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants))
+  if verbose:
+    print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS, file=sys.stderr)
+    print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
+    print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
 
 def generate_md5_key(list_of_arguments):
-  """Generate an md5-key from a list of arguments"""
+  """
+  Generate an md5-key from a list of arguments.
+  
+  Args:
+    list_of_arguments: A list of strings
+  
+  Returns:
+    A md5-key object generated from the list of strings.
+  """
+  for arg in list_of_arguments:
+    if not isinstance(arg, string_types):
+      print('Error in generate_md5_key:\n' 'One of the objects in the list of arguments is not a string', file=sys.stderr)
+      print('Argument: %s is a %s' % (arg, type(arg)))
+      sys.exit(1)
   h = hashlib.md5()
   h.update(' '.join(list_of_arguments))
   return h.hexdigest()
 
 
-def get_institute(institute):
-  """Return a institute object"""
-  return Institute(internal_id=institute, display_name=institute)
+def get_institute(institute_name):
+  """
+  Take a institute name and return a institute object.
+  
+  Args:
+    institute_name: A string that represents the name of an institute
+  
+  Returns:
+    A mongoengine Institute object described in scout.models.institute.py
+  """
+  return Institute(internal_id=institute_name, display_name=institute_name)
 
-def get_case(ped_file, family_type, institute):
+def get_case(ped_file, family_type, institute_name):
   """Take a case file and return the case on the specified format."""
 
   case_parser = ped_parser.FamilyParser(ped_file, family_type=family_type)
   cases = []
   for case in case_parser.get_json():
   
-    mongo_case = Case(case_id = generate_md5_key([institute, case['family_id']]))
+    mongo_case = Case(case_id = generate_md5_key([institute_name, case['family_id']]))
     mongo_case['display_name'] = case['family_id']
     individuals = []
     databases = set()
@@ -439,30 +478,71 @@ def add_mongo_variant(variant, individuals, case_id, config_object, variant_coun
 
 
 @click.command()
-@click.argument('vcf_file',
+@click.option('-vcf', '--vcf_file',
                 nargs=1,
-                type=click.Path(exists=True)
+                type=click.Path(exists=True),
+                help="Path to the vcf file that should be loaded."
 )
-@click.argument('ped_file',
+@click.option('-ped', '--ped_file',
                 nargs=1,
-                type=click.Path(exists=True)
+                type=click.Path(exists=True),
+                help="Path to the corresponding ped file."
 )
-@click.argument('config_file',
+@click.option('-config', 'config_file',
                 nargs=1,
-                type=click.Path(exists=True)
+                type=click.Path(exists=True),
+                help="Path to the config file for loading the variants."
 )
 @click.option('-type', '--family_type',
+                type=click.Choice(['ped', 'alt', 'cmms', 'mip']), 
                 default='ped',
                 nargs=1,
+                help="Specify the file format of the ped (or ped like) file."
 )
-@click.option('-db', '--mongo-db', default='variantDatabase')
-@click.option('-u', '--username', type=str)
-@click.option('-p', '--password', type=str)
+@click.option('-db', '--mongo-db', 
+                default='variantDatabase'
+)
+@click.option('-u', '--username', 
+                type=str
+)
+@click.option('-p', '--password', 
+                type=str
+)
+@click.option('-v', '--verbose', 
+                is_flag=True,
+                help='Increase output verbosity.'
+)
 def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
-        password):
+        password, verbose):
   """Test the vcf class."""
+  # Check if vcf file exists and that it has the correct naming:
+  if not vcf_file:
+    print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+    sys.exit(0)
+  else:
+    splitted_vcf_file_name = os.path.splitext(vcf_file)
+    vcf_ending = splitted_vcf_file_name[-1]
+    if vcf_ending != '.vcf':
+      if vcf_ending == '.gz':
+        vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
+        if vcf_ending != '.vcf':
+          print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", file=sys.stderr)
+          sys.ext(0)
+      else:
+        if vcf_ending != '.vcf':
+          print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", file=sys.stderr)
+          sys.ext(0)
+  # Check that the ped file is provided:
+  if not ped_file:
+    print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+    sys.exit(0)
+  # Check that the config file is provided:
+  if not config_file:
+    print("Please provide a config file.(Use flag '-config/--config_file')", file=sys.stderr)
+    sys.exit(0)
+  
   my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type,
-                      mongo_db=mongo_db, username=username, password=password)
+                      mongo_db=mongo_db, username=username, password=password, verbose=verbose)
 
 
 if __name__ == '__main__':
