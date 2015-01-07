@@ -19,9 +19,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 3000, host: 3000
   config.vm.network "forwarded_port", guest: 27017, host: 27217
 
-  # Simlpe Shell provisioning
-  config.vm.provision "shell", path: "provision.sh"
-
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false
   # config.ssh.forward_agent = true

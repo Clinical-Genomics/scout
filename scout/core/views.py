@@ -53,9 +53,6 @@ def case(institute_id, case_id):
   # very basic security check
   institute = validate_user(current_user, institute_id)
 
-  # very basic security check
-  validate_user(current_user, institute)
-
   case = get_document_or_404(Case, case_id)
 
   # fetch a single, specific case from the data store
