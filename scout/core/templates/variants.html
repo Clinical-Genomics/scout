@@ -31,6 +31,10 @@
 {% block toolbar_right %}
   {{ super() }}
 
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="icon-button">
+    <core-icon icon="fast-rewind"></core-icon>
+  </a>
+
   <div v-on="click: showFilters" class="icon-button">
     <core-icon icon="filter-list"></core-icon>
   </div>
