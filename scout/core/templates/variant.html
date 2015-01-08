@@ -264,18 +264,6 @@
     </div>
 
     <div id="details" class="variant-segments-row">
-      <div id="protein-changes" class="md-card">
-        <div class="md-card-header">Predicted protein changes</div>
-
-        <div class="md-card-body-list">
-          {% for prediction in variant.common.protein_change %}
-            <div class="variant-list-item">{{ prediction }}</div>
-          {% else %}
-            <div class="variant-list-item">No protein predictions.</div>
-          {% endfor %}
-        </div>
-      </div>
-
       <div id="severities" class="md-card">
         <div class="md-card-header">Severity</div>
 
@@ -355,6 +343,41 @@
 
         <div class="md-card-body">
           {{ compounds_table(specific.compounds, institute_id, case_id) }}
+        </div>
+      </div>
+    </div>
+
+    <div id="transcripts" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Transcripts</div>
+
+        <div class="md-card-body">
+          <table class="default-table">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Mutation type</th>
+                <th>Strand</th>
+                <th>Exon</th>
+                <th>Intron</th>
+                <th>cDNA</th>
+                <th>Amino acid</th>
+                <th>Sift</th>
+                <th>PolyPhen</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.common.transcripts %}
+                <tr></tr>
+              {% else %}
+                <tr>
+                  <td colspan="9">No protein change predictions available.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -469,39 +492,6 @@
           <button class="md-button-flat" type="submit">Comment</button>
         </div>
       </form>
-    </div>
-
-    <div id="transcripts" class="variant-segments-row">
-      <div class="md-card">
-        <div class="md-card-header">Transcripts</div>
-
-        <div class="md-card-body">
-          <table class="default-table">
-            <thead>
-              <tr>
-                <th>Transcript</th>
-                <th>Gene</th>
-                <th>Sift</th>
-                <th>PolyPhen</th>
-                <th>Amino acid</th>
-                <th>Protein</th>
-                <th>Exon</th>
-                <th>Intron</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {% for transcript in variant.common.transcripts %}
-                <tr></tr>
-              {% else %}
-                <tr>
-                  <td colspan="8">No protein change predictions available.</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   </div>
 
