@@ -248,7 +248,10 @@
 
 	</div>
 
-  <a href="{{ request.path }}?skip={{ current_batch }}"
+  {% set get_args = request.args.to_dict() %}
+  {{ get_args.update({'skip': current_batch})|default('', True) }}
+  <a href="{{ url_for('core.variants', institute_id=institute_id,
+                      case_id=case_id, **get_args) }}"
      class="variants-load-more is-raised">
     Load more
   </a>
