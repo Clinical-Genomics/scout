@@ -46,7 +46,7 @@ $card-bg-color: #fff;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   font-weight: bold;
-  background-color: rgba(#000, .05);
+  background-color: $primary-color-lighter;
 }
 
 .md-card-body {
