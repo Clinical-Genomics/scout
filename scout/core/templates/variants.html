@@ -31,6 +31,10 @@
 {% block toolbar_right %}
   {{ super() }}
 
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="icon-button">
+    <core-icon icon="fast-rewind"></core-icon>
+  </a>
+
   <div v-on="click: showFilters" class="icon-button">
     <core-icon icon="filter-list"></core-icon>
   </div>
@@ -67,7 +71,7 @@
 {% block content %}
 
   <drawer-panel v-ref="filters" side="right">
-    <form method="POST">
+    <form method="GET">
       {{ form.csrf_token }}
 
       <div class="variants-filters-group">
@@ -137,9 +141,20 @@
         </div>
       </div>
 
-      <button class="variants-filters-submit" type="submit">
-        Filter variants
-      </button>
+      <div class="variants-filter-buttons">
+        <a href="{{ url_for('core.variants', institute_id=institute_id,
+                      case_id=case_id,
+                      functional_annotations=severe_so_terms,
+                      region_annotations=['exonic', 'splicing'],
+                      thousand_genomes_frequency=0.01) }}"
+           class="md-button">
+          Clinical filter
+        </a>
+
+        <button class="md-button" type="submit">
+          Filter variants
+        </button>
+      </div>
     </form>
   </drawer-panel>
 
@@ -248,7 +263,10 @@
 
 	</div>
 
-  <a href="{{ request.path }}?skip={{ current_batch }}"
+  {% set get_args = request.args.to_dict() %}
+  {{ get_args.update({'skip': current_batch})|default('', True) }}
+  <a href="{{ url_for('core.variants', institute_id=institute_id,
+                      case_id=case_id, **get_args) }}"
      class="variants-load-more is-raised">
     Load more
   </a>

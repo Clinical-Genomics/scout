@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, flash, redirect, request,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
-from .forms import FiltersForm
+from .forms import init_filters_form, SO_TERMS
 from .utils import validate_user
 from ..models import Case, Event
 from ..extensions import mail, store
@@ -124,17 +124,22 @@ def variants(institute_id, case_id):
     case.status = 'active'
     case.save()
 
-  form = FiltersForm(**request.form)
-  form.gene_list.choices = [(option, option) for option in case.gene_lists]
+  # form submitted as GET
+  form = init_filters_form(request.args, case.gene_lists)
 
-  return dict(variants=store.variants(case.case_id, nr_of_variants=per_page,
-                                      skip=skip),
+  # validate here like: if form.validate():
+  # fetch list of variants
+  variants = store.variants(case.case_id, query=form.data,
+                            nr_of_variants=per_page, skip=skip)
+
+  return dict(variants=variants,
               case=case,
               case_id=case_id,
               institute=institute,
               institute_id=institute_id,
               current_batch=(skip + per_page),
-              form=form)
+              form=form,
+              severe_so_terms=SO_TERMS[:14])
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')

@@ -138,11 +138,11 @@ $variants-cell-padding: .6rem;
   @extend .md-card-header;
 }
 
-.variants-filters-submit {
-  @extend .md-button;
+.variants-filter-buttons {
+  display: flex;
+  justify-content: space-around;
 
   margin: 1rem auto 0;
-  display: block;
 }
 
 .variants-filters-select {
