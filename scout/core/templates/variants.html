@@ -141,9 +141,16 @@
         </div>
       </div>
 
-      <button class="variants-filters-submit" type="submit">
-        Filter variants
-      </button>
+      <div class="variants-filter-buttons">
+        <a href="{{ url_for('core.variants', institute_id=institute_id,
+                        case_id=case_id, region_annotations=['exonic', 'splicing'], thousand_genomes_frequency=0.01) }}" class="md-button">
+          Clinical filter
+        </a>
+
+        <button class="md-button" type="submit">
+          Filter variants
+        </button>
+      </div>
     </form>
   </drawer-panel>
 
