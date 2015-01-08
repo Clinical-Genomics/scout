@@ -53,3 +53,33 @@ class FiltersForm(Form):
   region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
   functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
   genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
+
+
+def init_filters_form(get_args, gene_lists=None):
+  """Initialize the filters form with GET request data.
+
+  This is to get around some inconsistencies in the way the WTForms
+  seems to handle GET request arguments. I suppose that it's difficult
+  to reason about what is supposed to be a list and what is not.
+  """
+  if gene_lists is None:
+    gene_lists = []
+
+  # initialize the normal way to get lists inserted correctly
+  form = FiltersForm(**get_args)
+
+  # add gene list options
+  form.gene_list.choices = [(option, option) for option in gene_lists]
+
+  if form.hgnc_symbol.data:
+    form.hgnc_symbol.data = (form.hgnc_symbol.data[0]
+                             if form.hgnc_symbol.data[0] != '' else None)
+
+  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
+                     'local_frequency']:
+    field = getattr(form, field_name)
+
+    if field.data:
+      field.data = float(field.data[0]) if field.data[0] else None
+
+  return form

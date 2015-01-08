@@ -67,7 +67,7 @@
 {% block content %}
 
   <drawer-panel v-ref="filters" side="right">
-    <form method="POST">
+    <form method="GET">
       {{ form.csrf_token }}
 
       <div class="variants-filters-group">
