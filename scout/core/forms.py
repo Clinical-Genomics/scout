@@ -8,38 +8,10 @@ from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
 from wtforms import FloatField, SelectField, SelectMultipleField, StringField
 
-from ..models.variant import GENETIC_MODELS
+from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
 
-REGION_ANNOTATIONS = (
-  ('exonic', 'exonic'),
-  ('intronic', 'intronic'),
-  ('downstream', 'downstream'),
-  ('intergenic', 'intergenic'),
-  ('ncRNA_exonic', 'ncRNA_exonic'),
-  ('ncRNA_intronic', 'ncRNA_intronic'),
-  ('ncRNA_splicing', 'ncRNA_splicing'),
-  ('ncRNA_UTR3', 'ncRNA_UTR3'),
-  ('ncRNA_UTR5', 'ncRNA_UTR5'),
-  ('splicing', 'splicing'),
-  ('upstream', 'upstream'),
-  ('UTR3', 'UTR3'),
-  ('UTR5', 'UTR5')
-)
-
-FUNC_ANNOTATIONS = (
-  ('-', '-'),
-  ('frameshift deletion', 'frameshift deletion'),
-  ('frameshift insertion', 'frameshift insertion'),
-  ('frameshift substitution', 'frameshift substitution'),
-  ('nonframeshift deletion', 'nonframeshift deletion'),
-  ('nonframeshift insertion', 'nonframeshift insertion'),
-  ('nonframeshift substitution', 'nonframeshift substitution'),
-  ('nonsynonymous SNV', 'nonsynonymous SNV'),
-  ('stopgain SNV', 'stopgain SNV'),
-  ('stoploss SNV', 'stoploss SNV'),
-  ('synonymous SNV', 'synonymous SNV'),
-  ('unknown', 'unknown'),
-)
+REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
+FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
 
 
 class FiltersForm(Form):

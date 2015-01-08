@@ -143,7 +143,11 @@
 
       <div class="variants-filter-buttons">
         <a href="{{ url_for('core.variants', institute_id=institute_id,
-                        case_id=case_id, region_annotations=['exonic', 'splicing'], thousand_genomes_frequency=0.01) }}" class="md-button">
+                      case_id=case_id,
+                      functional_annotations=severe_so_terms,
+                      region_annotations=['exonic', 'splicing'],
+                      thousand_genomes_frequency=0.01) }}"
+           class="md-button">
           Clinical filter
         </a>
 

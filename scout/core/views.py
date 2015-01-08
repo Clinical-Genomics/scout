@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, flash, redirect, request,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
-from .forms import init_filters_form
+from .forms import init_filters_form, SO_TERMS
 from .utils import validate_user
 from ..models import Case, Event
 from ..extensions import mail, store
@@ -134,7 +134,8 @@ def variants(institute_id, case_id):
               institute=institute,
               institute_id=institute_id,
               current_batch=(skip + per_page),
-              form=form)
+              form=form,
+              severe_so_terms=SO_TERMS[:14])
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
