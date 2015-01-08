@@ -382,11 +382,9 @@
             Entrez
           </a>
 
-          {% raw %}
-          <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber}}">
+          <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
             OMIM
           </a>
-          {% endraw %}
 
           <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
             IGV
@@ -471,6 +469,39 @@
           <button class="md-button-flat" type="submit">Comment</button>
         </div>
       </form>
+    </div>
+
+    <div id="transcripts" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Transcripts</div>
+
+        <div class="md-card-body">
+          <table class="default-table">
+            <thead>
+              <tr>
+                <th>Transcript</th>
+                <th>Gene</th>
+                <th>Sift</th>
+                <th>PolyPhen</th>
+                <th>Amino acid</th>
+                <th>Protein</th>
+                <th>Exon</th>
+                <th>Intron</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.common.transcripts %}
+                <tr></tr>
+              {% else %}
+                <tr>
+                  <td colspan="8">No protein change predictions available.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
