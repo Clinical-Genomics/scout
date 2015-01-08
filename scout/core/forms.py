@@ -52,6 +52,6 @@ def init_filters_form(get_args, gene_lists=None):
     field = getattr(form, field_name)
 
     if field.data:
-      field.data = float(field.data[0]) if field.data[0] else None
+      field.data = field.data[0] if field.data[0] else None
 
   return form

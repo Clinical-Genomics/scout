@@ -127,8 +127,12 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args, case.gene_lists)
 
-  return dict(variants=store.variants(case.case_id, nr_of_variants=per_page,
-                                      skip=skip),
+  # validate here like: if form.validate():
+  # fetch list of variants
+  variants = store.variants(case.case_id, query=form.data,
+                            nr_of_variants=per_page, skip=skip)
+
+  return dict(variants=variants,
               case=case,
               case_id=case_id,
               institute=institute,
