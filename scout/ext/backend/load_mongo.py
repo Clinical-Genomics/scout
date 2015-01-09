@@ -499,7 +499,14 @@ def add_mongo_variant(variant, individuals, case_id, config_object, variant_coun
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
 )
+<<<<<<< HEAD
      @click.option('-u', '--username', 
+=======
+@click.option('-db', '--mongo-db', 
+                default='variantDatabase'
+)
+@click.option('-u', '--username', 
+>>>>>>> 9891f20e4b4b377b459c2b959a07677a99322458
                 type=str
 )
 @click.option('-p', '--password', 
