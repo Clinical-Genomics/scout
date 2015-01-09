@@ -119,9 +119,26 @@ class MongoAdapter(BaseAdapter):
       return Variant.objects.get(__raw__ = {case_specific + '.variant_rank': rank-1})
     except DoesNotExist:
       return None
-
+    
+  def filter_variants(self, case_id, thousand_g_freq = 100.0, hgnc_id=[]):
+    """Return the variants that pass the filters specified."""
+    case_specific = ('specific.%s' % case_id)
+    gene = 'common.genes.' + hgnc_id
+    print(gene)
+    try:
+      return Variant.objects(__raw__ = {gene: {'$exists' : 1}})
+      # return Variant.objects(common__thousand_genomes_frequency__lte = thousand_g_freq)
+    except DoesNotExist:
+      return None
+    
 @click.command()
-def cli():
+@click.option('--thousand_g',
+                default=100.0
+)
+@click.option('--hgnc_id',
+                default=[]
+)
+def cli(thousand_g, hgnc_id):
     """Test the vcf class."""
     import hashlib
 
@@ -136,10 +153,14 @@ def cli():
     ### FOR DEVELOPMENT ###
     # small_family_id = generate_md5_key(['3'])
     # big_family_id = generate_md5_key(['2'])
-    case_id = "2652eb875192ad4c350271ad76e048ac"
+    # case_id = "2652eb875192ad4c350271ad76e048ac"
+    institute = 'CMMS'
+    hap_map_family = 'P575-coriell'
+    case_id = generate_md5_key([institute, hap_map_family])
     my_case = my_mongo.case(case_id)
     # my_case = my_mongo.case('hej')
     variant_count = 0
+    print(hgnc_id)
     # if my_case:
     #   print(my_case.to_json())
     #   print('id: %s' % my_case.id)
@@ -148,13 +169,18 @@ def cli():
     #     # print('')
     #     variant_count += 1
     # print('Number of variants: %s' % variant_count)
-    for case in my_mongo.cases():
-      variant_count = 0
-      pp(case.to_json())
-      for variant in my_mongo.variants(case.id, nr_of_variants = 20):
-        pp(variant.__dict__)
-        variant_count += 1
-        print(variant_count)
+    numbers_matched = 0
+    for variant in my_mongo.filter_variants(case_id, hgnc_id = hgnc_id):
+      pp(json.loads(variant.to_json()))
+      numbers_matched += 1
+    print('Number of variants: %s' % (numbers_matched))
+    # for case in my_mongo.cases():
+    #   variant_count = 0
+    #   pp(json.loads(case.to_json()))
+      # for variant in my_mongo.variants(case.id, nr_of_variants = 20):
+      #   pp(variant.__dict__)
+      #   variant_count += 1
+      #   print(variant_count)
     # my_vcf.init_app('app', vcf_dir, config_file)
     # rank = my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436')
     # pp(my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436'))
