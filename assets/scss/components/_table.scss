@@ -9,7 +9,7 @@
   th {
     color: $primary-color;
     border-right: 1px solid rgba(#000, .1);
-    background-color: rgba($primary-color, .07);
+    background-color: $primary-color-lightest;
 
     white-space: nowrap;
     text-overflow: ellipsis;

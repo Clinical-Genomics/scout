@@ -208,11 +208,12 @@ core-icon {
   width: 100%;
 }
 
-@import "components/landing";
-@import "components/cases";
-@import "components/case";
-@import "components/variants";
-@import "components/variant";
+// Regions
+@import "regions/landing";
+@import "regions/cases";
+@import "regions/case";
+@import "regions/variants";
+@import "regions/variant";
 
 .md-title-box {
   :nth-child(2) {
