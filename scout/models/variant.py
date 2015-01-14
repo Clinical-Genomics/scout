@@ -105,7 +105,7 @@ class Gene(EmbeddedDocument):
   polyphen_prediction = StringField(choices=CONSEQUENCE)
 
 class VariantCommon(EmbeddedDocument):
-  genes = MapField(EmbeddedDocumentField(Gene))
+  genes = ListField(EmbeddedDocumentField(Gene))
   # Gene ids:
   hgnc_symbols = ListField(StringField())
   ensemble_gene_ids = ListField(StringField())
@@ -123,26 +123,26 @@ class VariantCommon(EmbeddedDocument):
     """Returns a list with region annotation(s)."""
     region_annotations = []
     if len(self.genes) == 1:
-      return [self.genes[gene].region_annotation for gene in genes]
+      return [gene.region_annotation for gene in genes]
     else:
       for gene in self.genes:
-        region_annotations.append(':'.join([gene, self.genes[gene].region_annotation]))
+        region_annotations.append(':'.join([gene, gene.region_annotation]))
     return region_annotations
   
   @property
   def hgnc_symbols(self):
     """Returns a list with the hgnc id:s for this variant."""
-    return [gene for gene in self.genes]
+    return [gene.hgnc_symbol for gene in self.genes]
   
   @property
   def sift_predictions(self):
     """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
     sift_predictions = []
     if len(self.genes) == 1:
-      sift_predictions = [self.genes[gene].sift_prediction for gene in self.genes]
+      sift_predictions = [gene.sift_prediction for gene in genes]
     else:
       for gene in self.genes:
-        sift_predictions.append(':'.join([gene, self.genes[gene].sift_prediction]))
+        sift_predictions.append(':'.join([gene, gene.sift_prediction]))
     return sift_predictions
   
   @property
@@ -150,10 +150,10 @@ class VariantCommon(EmbeddedDocument):
     """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
     polyphen_predictions = []
     if len(self.genes) == 1:
-      polyphen_predictions = [self.genes[gene].polyphen_prediction for gene in self.genes]
+      polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
     else:
       for gene in self.genes:
-        polyphen_predictions.append(':'.join([gene, self.genes[gene].polyphen_prediction]))
+        polyphen_predictions.append(':'.join([gene, gene.polyphen_prediction]))
     return polyphen_predictions
 
   @property
@@ -161,10 +161,10 @@ class VariantCommon(EmbeddedDocument):
     """Return a list with the functional annotation(s) for this variant. The most severe for each gene."""
     functional_annotations = []
     if len(self.genes) == 1:
-      functional_annotations = [self.genes[gene].functional_annotation for gene in self.genes]
+      functional_annotations = [gene.functional_annotation for gene in self.genes]
     else:
       for gene in self.genes:
-        functional_annotation.append(':'.join([gene, self.genes[gene].functional_annotation]))
+        functional_annotation.append(':'.join([gene, gene.functional_annotation]))
     return functional_annotation
   
   # def __unicode__(self):
@@ -204,6 +204,7 @@ class GTCall(EmbeddedDocument):
     return self.sample
 
 class VariantCaseSpecific(EmbeddedDocument):
+  case_id = StringField(required=True)
   rank_score = FloatField()
   variant_rank = IntField()
   quality = FloatField()
@@ -212,7 +213,7 @@ class VariantCaseSpecific(EmbeddedDocument):
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = ListField(EmbeddedDocumentField(Compound))
   events = ListField(EmbeddedDocumentField(Event))
-
+  
   def __unicode__(self):
     return 'placeholder'
 
@@ -226,7 +227,7 @@ class Variant(Document):
   alternative = StringField(required=True)
   db_snp_ids = ListField(StringField())
   common = EmbeddedDocumentField(VariantCommon)
-  specific = MapField(EmbeddedDocumentField(VariantCaseSpecific))
+  specific = ListField(EmbeddedDocumentField(VariantCaseSpecific))
   meta = {
     'indexes': [
       'position',

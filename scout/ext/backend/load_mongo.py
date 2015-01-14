@@ -46,6 +46,8 @@ from ped_parser import parser as ped_parser
 
 from pprint import pprint as pp
 
+
+# These are the valid region annotations
 GENETIC_REGIONS = set(['exonic', 
                         'splicing', 
                         'ncRNA_exonic', 
@@ -60,6 +62,7 @@ GENETIC_REGIONS = set(['exonic',
 
 NON_GENETIC_REGIONS = 0
 
+# These are the valid SO terms with corresponfing severity rank
 SO_TERMS = {
   'transcript_ablation': {'rank':1, 'region':'exonic'},
   'splice_donor_variant': {'rank':2, 'region':'splicing'},
@@ -361,59 +364,89 @@ def add_mongo_variant(variant, individuals, case_id, config_object, variant_coun
     
     return mongo_genes
   
+  def get_compounds(variant, rank_score):
+    """
+    Get a list with mongoengine compounds for this variant.
+    
+    Arguments:
+      variant : A Variant dictionary
+    
+    Returns:
+      compounds : A list of mongo engine compound objects
+    """
+    
+    compounds = []
+    for compound in variant['info_dict'].get(config_object['Compounds']['vcf_info_key'], []):
+      print('compound: %s'% compound)
+      try:
+        splitted_compound = compound.split('>')
+        compound_name = splitted_compound[0]
+        compound_individual_score = float(splitted_compound[1])
+        mongo_compound = Compound(variant_id=generate_md5_key(compound_name.split('_')),
+                                display_name = compound_name,
+                                rank_score = compound_individual_score,
+                                combined_score = rank_score + compound_individual_score
+                                )
+        compounds.append(mongo_compound)
+      except IndexError:
+        pass
+    return compounds
   
+  def get_case_specific(variant, case_id, variant_count):
+    """
+    Create a mongo engine object with the case specific information and return it.
+    
+    Arguments:
+      variant : A Variant dictionary
+    
+    Returns:
+      mongo_specific: A mongo engine object with the case specific information
+    """
+    mongo_specific = VariantCaseSpecific(case_id = case_id)
+    # Get the rank score as specified in the config file. This is central for displaying variants in scout
+    try:
+      mongo_specific['rank_score'] = float(variant['info_dict'][config_object['RankScore']['vcf_info_key']][0])
+    except KeyError:
+      mongo_specific['rank_score'] = 0.0
+  
+    mongo_specific['variant_rank'] = variant_count
+    mongo_specific['quality'] = float(variant['QUAL'])
+    mongo_specific['filters'] = variant['FILTER'].split(';')
+
+    # Add the compound information:
+    mongo_specific['compounds'] = get_compounds(variant, mongo_specific['rank_score'])
+  
+    # Add the inheritance patterns:
+    models = variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], None)
+    if models:
+      genetic_models = []
+      for family_models in models:
+        for model in family_models.split(':')[-1].split('|'):
+          genetic_models.append(model)
+        mongo_specific['genetic_models'] = genetic_models
+    
+    # Add the gt calls:
+    
+    gt_calls = []
+    for individual in individuals:
+      # This function returns an ODM GTCall object with the relevant information:
+      gt_calls.append(get_genotype_information(variant, config_object.categories['genotype_information'], individual))
+    
+    mongo_specific['samples'] = gt_calls
+    
+    return mongo_specific
+  
+  #############################################################################################################
+  # Create the ID for the variant
   id_fields = [variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']]
   variant_id = generate_md5_key(id_fields)
- 
+  
   # We first add the case specific information
   # Add the information that is specific to this case
-  mongo_specific = VariantCaseSpecific(case_id = case_id)
-  try:
-    mongo_specific['rank_score'] = float(variant['info_dict'][config_object['RankScore']['vcf_info_key']][0])
-  except KeyError:
-    mongo_specific['rank_score'] = 0.0
+  variant_specific = get_case_specific(variant, case_id, variant_count)
+  pp(json.loads(variant_specific.to_json()))
   
-  mongo_specific['variant_rank'] = variant_count
-  mongo_specific['quality'] = float(variant['QUAL'])
-  mongo_specific['filters'] = variant['FILTER'].split(';')
-
-  # Add the compound information:
-  compounds = []
-  for compound in variant['info_dict'].get(config_object['Compounds']['vcf_info_key'], []):
-    try:
-      splitted_compound = compound.split('>')
-      compound_name = splitted_compound[0]
-      compound_individual_score = float(splitted_compound[1])
-      mongo_compound = Compound(variant_id=generate_md5_key(compound_name.split('_')),
-                              display_name = compound_name,
-                              rank_score = compound_individual_score,
-                              combined_score = mongo_specific['rank_score'] + compound_individual_score
-                              )
-      compounds.append(mongo_compound)
-    except IndexError:
-      pass
-  
-  mongo_specific['compounds'] = compounds
-  
-  # Add the inheritance patterns:
-  
-  models = variant['info_dict'].get(config_object['GeneticModels']['vcf_info_key'], None)
-  if models:
-    genetic_models = []
-    for family_models in models:
-      for model in family_models.split(':')[-1].split('|'):
-        genetic_models.append(model)
-      mongo_specific['genetic_models'] = genetic_models
-
-  # Add the gt calls:
-
-  gt_calls = []
-  for individual in individuals:
-    # This function returns an ODM GTCall object with the relevant information:
-    gt_calls.append(get_genotype_information(variant, config_object.categories['genotype_information'], individual))
-
-  mongo_specific['samples'] = gt_calls
-
+  return
   # Variant.objects(variant_id=variant_id).update_one(push__specific=mongo_specific)
 
   # If the variant exists we only need to update the relevant information:
@@ -499,7 +532,10 @@ def add_mongo_variant(variant, individuals, case_id, config_object, variant_coun
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
 )
-     @click.option('-u', '--username', 
+@click.option('-db', '--mongo-db', 
+                default='variantDatabase'
+)
+@click.option('-u', '--username', 
                 type=str
 )
 @click.option('-p', '--password', 
