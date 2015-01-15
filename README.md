@@ -10,6 +10,8 @@ $ scout run
 Running on http://localhost:5000...
 ```
 
+![Case page demo](/artwork/case-demo.png)
+
 
 ## Installation
 Scout will ship as a regular Python package through ``pip`` but until then you can install it through GitHub.
