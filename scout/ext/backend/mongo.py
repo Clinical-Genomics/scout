@@ -62,7 +62,7 @@ class MongoAdapter(BaseAdapter):
   def case(self, case_id):
 
     try:
-      return Case.objects.get(pk = case_id)
+      return Case.objects(case_id = case_id)
     except DoesNotExist:
       return None
 
@@ -82,117 +82,123 @@ class MongoAdapter(BaseAdapter):
     return variant
 
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
-
-    variants = []
+    """
+    Returns the number of variants specified in question for a specific case.
+    If skip ≠ 0 skip the first n variants.
+    
+    Arguments:
+      case_id : A string that represents the case
+      query   : A dictionary with querys for the database
+      
+    Returns:
+      A generator with the variants
+      
+    """
+    
     nr_of_variants = skip + nr_of_variants
-    case_specific = ('specific.%s' % case_id)
     # for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
     #                                   case_specific + '.variant_rank')[skip:nr_of_variants]:
-    for variant in Variant.objects(specific__exists = case_id):
-      yield self.format_variant(variant)
+    for variant in Variant.objects(case_id = case_id):
+      yield variant
 
-  def variant(self, variant_id):
-
-    try:
-      return Variant.objects.get(pk = variant_id)
-    except DoesNotExist:
-      return None
-
-  def next_variant(self, variant_id, case_id):
-    """Returns the next variant from the rank order"""
-    case_specific = ('specific.%s' % case_id)
-    previous_variant = Variant.objects.get(pk=variant_id)
-    rank = previous_variant['specific'].get(case_id, {}).variant_rank or 0
-
-    try:
-      return Variant.objects.get(__raw__ = {case_specific + '.variant_rank': rank+1})
-    except DoesNotExist:
-      return None
-
-  def previous_variant(self, variant_id, case_id):
-    """Returns the next variant from the rank order"""
-    case_specific = ('specific.%s' % case_id)
-    previous_variant = Variant.objects.get(pk=variant_id)
-    rank = previous_variant['specific'].get(case_id, {}).variant_rank or 0
-
-    try:
-      return Variant.objects.get(__raw__ = {case_specific + '.variant_rank': rank-1})
-    except DoesNotExist:
-      return None
+  def variant(self, document_id):
+    """
+    Returns the specified variant.
     
-  def filter_variants(self, case_id, thousand_g_freq = 100.0, hgnc_id=[]):
-    """Return the variants that pass the filters specified."""
-    case_specific = ('specific.%s' % case_id)
-    gene = 'common.genes.' + hgnc_id
-    print(gene)
+    Arguments:
+      document_id : A md5 key that represents the variant
+    
+    Returns:
+      variant_object: A odm variant object
+    """
+    
     try:
-      return Variant.objects(__raw__ = {gene: {'$exists' : 1}})
-      # return Variant.objects(common__thousand_genomes_frequency__lte = thousand_g_freq)
+      return Variant.objects(document_id = document_id)
+    except DoesNotExist:
+      return None
+
+  def next_variant(self, document_id):
+    """
+    Returns the next variant from the rank order.
+    
+    Arguments:
+      document_id : A md5 key that represents the variant
+    
+    Returns:
+      variant_object: A odm variant object
+    """
+    
+    previous_variant = Variant.objects(document_id=document_id)
+    rank = previous_variant.variant_rank or 0
+    case_id = previous_variant.case_id
+    try:
+      return Variant.objects(Q(case_id= case_id) & Q(variant_rank = rank+1))
+    except DoesNotExist:
+      return None
+
+  def previous_variant(self, document_id):
+    """
+    Returns the next variant from the rank order
+    
+    Arguments:
+      document_id : A md5 key that represents the variant
+    
+    Returns:
+      variant_object: A odm variant object
+    
+    """
+    previous_variant = Variant.objects(document_id=document_id)
+    rank = previous_variant.variant_rank or 0
+    case_id = previous_variant.case_id
+    try:
+      return Variant.objects(Q(case_id= case_id) & Q(variant_rank = rank-1))
     except DoesNotExist:
       return None
     
 @click.command()
+@click.option('-i','--institute',
+                default='CMMS'
+)
+@click.option('-c' ,'--case',
+                default='1'
+)
 @click.option('--thousand_g',
                 default=100.0
 )
 @click.option('--hgnc_id',
                 default=[]
 )
-def cli(thousand_g, hgnc_id):
+def cli(institute, case, thousand_g, hgnc_id):
     """Test the vcf class."""
     import hashlib
-
+    
     def generate_md5_key(list_of_arguments):
       """Generate an md5-key from a list of arguments"""
       h = hashlib.md5()
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
-
+    
+    
+    print('Institute: %s, Case: %s' % (institute, case))
     my_mongo = MongoAdapter(app='hej')
-
+    
     ### FOR DEVELOPMENT ###
-    # small_family_id = generate_md5_key(['3'])
-    # big_family_id = generate_md5_key(['2'])
-    # case_id = "2652eb875192ad4c350271ad76e048ac"
-    institute = 'CMMS'
-    hap_map_family = 'P575-coriell'
-    case_id = generate_md5_key([institute, hap_map_family])
+    
+    case_id = '_'.join([institute, family])
     my_case = my_mongo.case(case_id)
-    # my_case = my_mongo.case('hej')
+    
+    print('Case found:')
+    pp(json.loads(my_case.to_json()))
+    print('')
+    
+    
     variant_count = 0
-    print(hgnc_id)
-    # if my_case:
-    #   print(my_case.to_json())
-    #   print('id: %s' % my_case.id)
-    #   for variant in my_mongo.variants(my_case.id, nr_of_variants = 5):
-    #     pp(variant.to_json())
-    #     # print('')
-    #     variant_count += 1
-    # print('Number of variants: %s' % variant_count)
+    
     numbers_matched = 0
-    for variant in my_mongo.filter_variants(case_id, hgnc_id = hgnc_id):
+    for variant in my_mongo.variants(case_id):
       pp(json.loads(variant.to_json()))
       numbers_matched += 1
     print('Number of variants: %s' % (numbers_matched))
-    # for case in my_mongo.cases():
-    #   variant_count = 0
-    #   pp(json.loads(case.to_json()))
-      # for variant in my_mongo.variants(case.id, nr_of_variants = 20):
-      #   pp(variant.__dict__)
-      #   variant_count += 1
-      #   print(variant_count)
-    # my_vcf.init_app('app', vcf_dir, config_file)
-    # rank = my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436')
-    # pp(my_mongo.next_variant('0ab656e8fe4aaf8f87405a0bc3b18eba', 'a684eceee76fc522773286a895bc8436'))
-    # print(rank, type(rank))
-    # for case in my_vcf.cases():
-    #   pp(case)
-    # print('')
-
-    # for case in my_vcf._cases:
-    #   for variant in my_vcf.variants(case['id']):
-    #     pp(variant)
-    #   print('')
 
 if __name__ == '__main__':
     cli()

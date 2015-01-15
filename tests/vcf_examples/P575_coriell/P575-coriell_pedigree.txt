@@ -1,4 +1,0 @@
-#FamilyID	SampleID	Father	Mother	Sex	Phenotype	Capture_kit	Catalog_No	Sample_description	Lot_name_used_in_tables
-P575-coriell	P575-101E	P575-105E	P575-106E	1	2	Agilent_SureSelect.V5	NA10860	CEPH/Utah_pedigree_1362	C2
-P575-coriell	P575-105E	0	0	1	1	Agilent_SureSelect.V5	NA11992	CEPH/Utah_pedigree_1362	E2
-P575-coriell	P575-106E	0	0	2	1	Agilent_SureSelect.V5	NA11993	CEPH/Utah_pedigree_1362	D3
