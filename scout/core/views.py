@@ -112,6 +112,7 @@ def remove_assignee(institute_id, case_id):
 def variants(institute_id, case_id):
   """View all variants for a single case."""
   per_page = 50
+  gene_list = request.args.get('gene_list')
 
   # fetch all variants for a specific case
   # very basic security check
@@ -125,7 +126,7 @@ def variants(institute_id, case_id):
     case.save()
 
   # form submitted as GET
-  form = init_filters_form(request.args, case.gene_lists)
+  form = init_filters_form(request.args)
 
   # validate here like: if form.validate():
   # fetch list of variants
@@ -139,7 +140,8 @@ def variants(institute_id, case_id):
               institute_id=institute_id,
               current_batch=(skip + per_page),
               form=form,
-              severe_so_terms=SO_TERMS[:14])
+              severe_so_terms=SO_TERMS[:14],
+              current_gene_list=gene_list)
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
