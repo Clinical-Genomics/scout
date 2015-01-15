@@ -244,6 +244,7 @@ core-icon {
   background-color: rgba(#000, .05);
   border-right: 1px solid rgba(#000, .1);
   border-radius: 3px 0 0 3px;
+  font-size: .9rem;
   color: #fff;
   align-self: stretch;
   display: flex;
@@ -252,6 +253,7 @@ core-icon {
 
 .md-label-text {
   padding: .5rem .6rem;
+  font-size: 1rem;
 }
 
 .dist-even {

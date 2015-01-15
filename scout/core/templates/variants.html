@@ -31,6 +31,21 @@
 {% block toolbar_right %}
   {{ super() }}
 
+  <div class="md-label">
+    <div class="md-label-icon">Gene list</div>
+    <div class="md-label-text">
+      <select v-model="geneListURL" v-on="change: onGeneListChange">
+        <!-- deselect option, TODO: retain filters! -->
+        <option value="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">All</option>
+        {% for gene_list in case.gene_lists %}
+          <option {% if gene_list == current_gene_list %}selected{% endif %} value="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, gene_list=gene_list) }}">
+            {{ gene_list }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
   <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="icon-button">
     <core-icon icon="fast-rewind"></core-icon>
   </a>
@@ -78,11 +93,6 @@
       <div class="variants-filters-group-label">Filters</div>
 
         <div class="variants-filters-group-list">
-          <div class="list-item">
-            <div>{{ form.gene_list.label }}</div>
-            <div>{{ form.gene_list }}</div>
-          </div>
-
           <div class="list-item">
             <div>{{ form.hgnc_symbol.label }}</div>
             <div>{{ form.hgnc_symbol }}</div>

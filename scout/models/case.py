@@ -65,6 +65,8 @@ class Case(Document):
   ])
   events = ListField(EmbeddedDocumentField(Event))
   gene_lists = ListField(StringField())
+  gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
+                             default='unconfirmed')
 
   def __unicode__(self):
     return self.display_name
