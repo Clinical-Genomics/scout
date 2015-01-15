@@ -94,7 +94,25 @@ class MongoAdapter(BaseAdapter):
       A generator with the variants
       
     """
-    
+    # {
+    #   ’genetic_models’: None,
+    #   ’thousand_genomes_frequency’: None,
+    #   ’functional_annotations’: None,
+    #   ’local_frequency’: None,
+    #   ’exac_frequency’: None,
+    #   ’hgnc_symbol’: None,
+    #   ’region_annotations’: None
+    # }
+    #
+    #
+    # Clinical filter (sort of):
+    #
+    # {
+    #   ’genetic_models’: None,
+    #   ’thousand_genomes_frequency’: 0.01,
+    #   ’functional_annotations’: [u’transcript_ablation’, u’splice_donor_variant’, u’splice_acceptor_variant’, u’stop_gained’, u’frameshift_variant’, u’stop_lost’, u’initiator_codon_variant’, u’transcript_amplification’,],
+    #   ’local_frequency’: None,
+    # }
     nr_of_variants = skip + nr_of_variants
     # for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
     #                                   case_specific + '.variant_rank')[skip:nr_of_variants]:
