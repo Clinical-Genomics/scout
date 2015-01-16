@@ -19,7 +19,6 @@ class FiltersForm(Form):
 
   thousand_genomes_frequency = FloatField('1000 Genomes')
   exac_frequency = FloatField('ExAC')
-  local_frequency = FloatField('Local')
 
   region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
   functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
@@ -40,8 +39,7 @@ def init_filters_form(get_args):
     form.hgnc_symbol.data = (form.hgnc_symbol.data[0]
                              if form.hgnc_symbol.data[0] != '' else None)
 
-  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
-                     'local_frequency']:
+  for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
     field = getattr(form, field_name)
 
     if field.data:
