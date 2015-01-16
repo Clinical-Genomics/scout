@@ -17,6 +17,15 @@ REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
 
 
+def process_filters_form(form):
+  # process HGNC symbols to list
+  if form.hgnc_symbols.data:
+    form.hgnc_symbols.data = [x.strip() for x in
+                              form.hgnc_symbols.data[0].split(',')]
+  else:
+    form.hgnc_symbols.data = []
+
+
 class DecimalField(_DecimalField):
   """Modify regular DecimalField to better handle text input from user.
 
