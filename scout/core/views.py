@@ -128,7 +128,6 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args)
 
-  # validate here like: if form.validate():
   # fetch list of variants
   variants = store.variants(case.case_id, query=form.data,
                             nr_of_variants=per_page, skip=skip)

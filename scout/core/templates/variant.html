@@ -110,7 +110,7 @@
         <core-icon icon="swap-vert-circle"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.reference }} → {{ variant.alternatives|join(',') }}
+        {{ variant.reference }} → {{ variant.alternative }}
       </div>
     </div>
   </div>
@@ -205,7 +205,7 @@
           <div class="variant-list-item">
             <div>ThousandG</div>
             <div>
-              {{ variant.thousand_genomes_frequency|float|round(3) }}
+              {{ variant.thousand_genomes_frequency|round(3) }}
             </div>
           </div>
 

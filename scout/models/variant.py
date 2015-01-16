@@ -106,16 +106,17 @@ class Gene(EmbeddedDocument):
   polyphen_prediction = StringField(choices=CONSEQUENCE)
 
 
-GENETIC_MODELS = (('AR_hom', 'Autosomal Recessive Homozygote'),
-                  ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),
-                  ('AR_comp', 'Autosomal Recessive Compound'),
-                  ('AR_comp_dn', 'Autosomal Recessive Compound De Novo'),
-                  ('AD', 'Autosomal Dominant'),
-                  ('AD_dn', 'Autosomal Dominant De Novo'),
-                  ('XR', 'X Linked Recessive'),
-                  ('XR_dn', 'X Linked Recessive De Novo'),
-                  ('XD', 'X Linked Dominant'),
-                  ('XD_dn', 'X Linked Dominant De Novo'),
+GENETIC_MODELS = (
+  ('AR_hom', 'Autosomal Recessive Homozygote'),
+  ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),
+  ('AR_comp', 'Autosomal Recessive Compound'),
+  ('AR_comp_dn', 'Autosomal Recessive Compound De Novo'),
+  ('AD', 'Autosomal Dominant'),
+  ('AD_dn', 'Autosomal Dominant De Novo'),
+  ('XR', 'X Linked Recessive'),
+  ('XR_dn', 'X Linked Recessive De Novo'),
+  ('XD', 'X Linked Dominant'),
+  ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
 class Compound(EmbeddedDocument):
@@ -188,7 +189,7 @@ class Variant(Document):
       return [gene.region_annotation for gene in self.genes]
     else:
       for gene in self.genes:
-        region_annotations.append(':'.join([gene, gene.region_annotation]))
+        region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation]))
     return region_annotations
 
   @property

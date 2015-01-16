@@ -94,8 +94,8 @@
 
         <div class="variants-filters-group-list">
           <div class="list-item">
-            <div>{{ form.hgnc_symbol.label }}</div>
-            <div>{{ form.hgnc_symbol }}</div>
+            <div>{{ form.hgnc_symbols.label }}</div>
+            <div>{{ form.hgnc_symbols }}</div>
           </div>
         </div>
       </div>
@@ -202,7 +202,12 @@
 
           <div class="md-tooltip-tip is-left">
             <ul>
-              <li><strong>ExAC</strong> {{ variant.exac_frequency or '-' }}</li>
+              {% if variant.exac_frequency %}
+                <li>
+                  <strong>ExAC</strong>
+                  {{ variant.exac_frequency|round(3) }}
+                </li>
+              {% endif %}
               <li><strong>Local</strong> {{ 'soon' }}</li>
             </ul>
           </div>
@@ -228,12 +233,12 @@
 
         <!-- Gene annotation -->
         <div class="variants-row-item is-scrollable">
-          {{ 'region annotations coming' }}
+          {{ variant.region_annotations|join(',') }}
         </div>
 
         <!-- Func. annotation -->
         <div class="variants-row-item is-scrollable flex-big">
-          {{ 'functional annotations coming' }}
+          {{ variant.functional_annotations|join(',') }}
         </div>
 
         <!-- Disease group -->
