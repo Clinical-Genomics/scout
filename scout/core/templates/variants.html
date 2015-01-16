@@ -171,8 +171,6 @@
 	<div class="variants-body">
 		{% for variant in variants %}
 
-      {% set specific = variant.specific[case.case_id] %}
-
 			<div class="variants-row">
 
         <!-- Rank position -->
@@ -181,12 +179,12 @@
                             institute_id=institute_id,
 					 									variant_id=variant.variant_id,
                             case_id=case_id) }}">
-          {{ specific.variant_rank }}
+          {{ variant.variant_rank }}
 				</a>
 
         <!-- Rank score -->
         <div class="variants-row-item text-right">
-          {{ specific.rank_score }}
+          {{ variant.rank_score }}
         </div>
 
         <!-- Chromosome -->
@@ -196,20 +194,20 @@
 
         <!-- HGNC -->
 				<div class="variants-row-item flex-big">
-					{{ (variant.common.hgnc_symbols or ['-'])|join(', ') }}
+					{{ (variant.hgnc_symbols or ['-'])|join(', ') }}
 				</div>
 
         <!-- 1000 Genomes -->
 				<div class="variants-row-item text-right md-tooltip">
-          {% if variant.common.thousand_genomes_frequency %}
-            {{ variant.common.thousand_genomes_frequency|float|round(3) }}
+          {% if variant.thousand_genomes_frequency %}
+            {{ variant.thousand_genomes_frequency|round(3) }}
           {% else %}
             -
           {% endif %}
 
           <div class="md-tooltip-tip is-left">
             <ul>
-              <li><strong>ExAC</strong> {{ variant.common.exac_frequency or '-' }}</li>
+              <li><strong>ExAC</strong> {{ variant.exac_frequency or '-' }}</li>
               <li><strong>Local</strong> {{ 'soon' }}</li>
             </ul>
           </div>
@@ -217,17 +215,17 @@
 
         <!-- CADD (severity) -->
         <div class="variants-row-item text-right md-tooltip">
-          {{ variant.common.cadd_score or '-' }}
+          {{ variant.cadd_score or '-' }}
 
           <div class="md-tooltip-tip is-right">
             <ul>
               <li>
                 <strong>Sift</strong>
-                {{ (variant.common.sift_predictions or ['-'])|join(',') }}
+                {{ (variant.sift_predictions or ['-'])|join(',') }}
               </li>
               <li>
                 <strong>PolyPhen</strong>
-                {{ (variant.common.polyphen_predictions or ['-'])|join(',') }}
+                {{ (variant.polyphen_predictions or ['-'])|join(',') }}
               </li>
             </ul>
           </div>
@@ -235,12 +233,12 @@
 
         <!-- Gene annotation -->
         <div class="variants-row-item is-scrollable">
-          {{ variant.common.region_annotation|join(',') }}
+          {{ 'region annotations coming' }}
         </div>
 
         <!-- Func. annotation -->
         <div class="variants-row-item is-scrollable flex-big">
-          {{ variant.common.functional_annotation|join(',') }}
+          {{ 'functional annotations coming' }}
         </div>
 
         <!-- Disease group -->
@@ -252,15 +250,15 @@
         <!-- Inheritance models -->
 				<div class="variants-row-list flex-big md-tooltip">
           <div class="list--horizontal">
-            {% for model in (specific.genetic_models or []) %}
+            {% for model in (variant.genetic_models or []) %}
               <div class="variants-row-list-item">{{ model }}</div>
             {% endfor %}
           </div>
 
-          {% if specific.compounds %}
+          {% if variant.compounds %}
             <div class="md-tooltip-tip is-left">
               {{ compounds_table(
-                   specific.compounds,
+                   variant.compounds,
                    institute_id,
                    case_id,
                    class_names=['default-table', 'table-compounds-popup']) }}
