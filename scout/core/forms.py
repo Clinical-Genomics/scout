@@ -6,20 +6,65 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
-from wtforms import FloatField, SelectMultipleField, StringField
+from wtforms import (DecimalField as _DecimalField, Field,
+                     SelectMultipleField)
+from wtforms.widgets import TextInput
 
 from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
+from .._compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
 
 
-class FiltersForm(Form):
-  hgnc_symbol = StringField()
+def process_filters_form(form):
+  # process HGNC symbols to list
+  if form.hgnc_symbols.data:
+    form.hgnc_symbols.data = [x.strip() for x in
+                              form.hgnc_symbols.data[0].split(',')]
+  else:
+    form.hgnc_symbols.data = []
 
-  thousand_genomes_frequency = FloatField('1000 Genomes')
-  exac_frequency = FloatField('ExAC')
-  local_frequency = FloatField('Local')
+
+class DecimalField(_DecimalField):
+  """Modify regular DecimalField to better handle text input from user.
+
+  Based on: http://stackoverflow.com/questions/15366452
+  """
+  def _value(self):
+    try:
+      # check whether you have a 'number'
+      float(self.data)
+      return super(DecimalField, self)._value()
+
+    except (TypeError, ValueError):
+      # self.data is 'None', 'asdf' ...
+      return text_type(self.data) if self.data else ''
+
+
+class ListField(Field):
+  widget = TextInput()
+
+  def _value(self):
+    if self.data:
+      return ', '.join(self.data)
+
+    else:
+      return ''
+
+  def process_formdata(self, valuelist):
+    if valuelist:
+      self.data = [x.strip() for x in valuelist[0].split(',')]
+
+    else:
+      self.data = []
+
+
+class FiltersForm(Form):
+  hgnc_symbols = ListField()
+
+  thousand_genomes_frequency = DecimalField('1000 Genomes')
+  exac_frequency = DecimalField('ExAC')
 
   region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
   functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
@@ -36,12 +81,7 @@ def init_filters_form(get_args):
   # initialize the normal way to get lists inserted correctly
   form = FiltersForm(**get_args)
 
-  if form.hgnc_symbol.data:
-    form.hgnc_symbol.data = (form.hgnc_symbol.data[0]
-                             if form.hgnc_symbol.data[0] != '' else None)
-
-  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
-                     'local_frequency']:
+  for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
     field = getattr(form, field_name)
 
     if field.data:

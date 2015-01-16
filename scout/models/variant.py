@@ -17,7 +17,7 @@ from .event import Event
 ######## Common are attributes that is specific for the variant on this certain position ########
 
 CONSERVATION = (
-  'NotConserved', 
+  'NotConserved',
   'Conserved'
 )
 CONSEQUENCE = (
@@ -70,12 +70,12 @@ SO_TERMS = (
 )
 
 FEATURE_TYPES = (
-  'exonic', 
-  'splicing', 
-  'ncRNA_exonic', 
-  'intronic', 
-  'ncRNA', 
-  'upstream', 
+  'exonic',
+  'splicing',
+  'ncRNA_exonic',
+  'intronic',
+  'ncRNA',
+  'upstream',
   '5UTR',
   '3UTR',
   'downstream',
@@ -104,67 +104,19 @@ class Gene(EmbeddedDocument):
   region_annotation = StringField(choices=FEATURE_TYPES)
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
-   
-  @property
-  def region_annotations(self):
-    """Returns a list with region annotation(s)."""
-    region_annotations = []
-    if len(self.genes) == 1:
-      return [gene.region_annotation for gene in genes]
-    else:
-      for gene in self.genes:
-        region_annotations.append(':'.join([gene, gene.region_annotation]))
-    return region_annotations
-  
-  @property
-  def hgnc_symbols(self):
-    """Returns a list with the hgnc id:s for this variant."""
-    return [gene.hgnc_symbol for gene in self.genes]
-  
-  @property
-  def sift_predictions(self):
-    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
-    sift_predictions = []
-    if len(self.genes) == 1:
-      sift_predictions = [gene.sift_prediction for gene in genes]
-    else:
-      for gene in self.genes:
-        sift_predictions.append(':'.join([gene, gene.sift_prediction]))
-    return sift_predictions
-  
-  @property
-  def polyphen_predictions(self):
-    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
-    polyphen_predictions = []
-    if len(self.genes) == 1:
-      polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
-    else:
-      for gene in self.genes:
-        polyphen_predictions.append(':'.join([gene, gene.polyphen_prediction]))
-    return polyphen_predictions
-
-  @property
-  def functional_annotations(self):
-    """Return a list with the functional annotation(s) for this variant. The most severe for each gene."""
-    functional_annotations = []
-    if len(self.genes) == 1:
-      functional_annotations = [gene.functional_annotation for gene in self.genes]
-    else:
-      for gene in self.genes:
-        functional_annotation.append(':'.join([gene, gene.functional_annotation]))
-    return functional_annotation
 
 
-GENETIC_MODELS = (('AR_hom', 'Autosomal Recessive Homozygote'),
-                  ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),
-                  ('AR_comp', 'Autosomal Recessive Compound'),
-                  ('AR_comp_dn', 'Autosomal Recessive Compound De Novo'),
-                  ('AD', 'Autosomal Dominant'),
-                  ('AD_dn', 'Autosomal Dominant De Novo'),
-                  ('XR', 'X Linked Recessive'),
-                  ('XR_dn', 'X Linked Recessive De Novo'),
-                  ('XD', 'X Linked Dominant'),
-                  ('XD_dn', 'X Linked Dominant De Novo'),
+GENETIC_MODELS = (
+  ('AR_hom', 'Autosomal Recessive Homozygote'),
+  ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),
+  ('AR_comp', 'Autosomal Recessive Compound'),
+  ('AR_comp_dn', 'Autosomal Recessive Compound De Novo'),
+  ('AD', 'Autosomal Dominant'),
+  ('AD_dn', 'Autosomal Dominant De Novo'),
+  ('XR', 'X Linked Recessive'),
+  ('XR_dn', 'X Linked Recessive De Novo'),
+  ('XD', 'X Linked Dominant'),
+  ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
 class Compound(EmbeddedDocument):
@@ -181,7 +133,7 @@ class GTCall(EmbeddedDocument):
   allele_depths = ListField(IntField())
   read_depth = IntField()
   genotype_quality = IntField()
-  
+
   def __unicode__(self):
     return self.sample
 
@@ -209,7 +161,6 @@ class Variant(Document):
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:
-  hgnc_symbols = ListField(StringField())
   ensemble_gene_ids = ListField(StringField())
   # Frequencies:
   thousand_genomes_frequency = FloatField()
@@ -229,6 +180,72 @@ class Variant(Document):
   #     'specific.variant_rank',
   #   ]
   # }
+
+  @property
+  def region_annotations(self):
+    """Returns a list with region annotation(s)."""
+    region_annotations = []
+    if len(self.genes) == 1:
+      return [gene.region_annotation for gene in self.genes]
+    else:
+      for gene in self.genes:
+        region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation]))
+    return region_annotations
+
+  @property
+  def hgnc_symbols(self):
+    """Returns a list with the hgnc id:s for this variant."""
+    return [gene.hgnc_symbol for gene in self.genes]
+
+  @property
+  def sift_predictions(self):
+    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
+    sift_predictions = []
+    if len(self.genes) == 1:
+      sift_predictions = [gene.sift_prediction for gene in self.genes]
+    else:
+      for gene in self.genes:
+        sift_predictions.append(':'.join([gene.hgnc_symbol, gene.sift_prediction or '-']))
+    return sift_predictions
+
+  @property
+  def polyphen_predictions(self):
+    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
+    polyphen_predictions = []
+    if len(self.genes) == 1:
+      polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
+    else:
+      for gene in self.genes:
+        polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
+    return polyphen_predictions
+
+  @property
+  def functional_annotations(self):
+    """Return a list with the functional annotation(s) for this variant. The most severe for each gene."""
+    functional_annotations = []
+    if len(self.genes) == 1:
+      functional_annotations = [gene.functional_annotation for gene in self.genes]
+    else:
+      for gene in self.genes:
+        functional_annotations.append(':'.join([gene.hgnc_symbol, gene.functional_annotation or '-']))
+    return functional_annotations
+
+  @property
+  def transcripts(self):
+    """Yield all transcripts as a flat iterator.
+
+    For each transcript both the parent gene object as well as the
+    transcript is yielded.
+
+    Yields:
+      class, class: Gene and Transcript ODM
+    """
+    # loop over each gene in order
+    for gene in self.genes:
+      # loop over each child transcript for the gene
+      for transcript in gene.transcripts:
+        # yield the parent gene, child transcript combo
+        yield transcript
 
   @property
   def end_position(self):

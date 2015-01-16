@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, flash, redirect, request,
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 
-from .forms import init_filters_form, SO_TERMS
+from .forms import init_filters_form, SO_TERMS, process_filters_form
 from .utils import validate_user
 from ..models import Case, Event
 from ..extensions import mail, store
@@ -127,8 +127,8 @@ def variants(institute_id, case_id):
 
   # form submitted as GET
   form = init_filters_form(request.args)
+  process_filters_form(form)
 
-  # validate here like: if form.validate():
   # fetch list of variants
   variants = store.variants(case.case_id, query=form.data,
                             nr_of_variants=per_page, skip=skip)

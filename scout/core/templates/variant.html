@@ -110,7 +110,7 @@
         <core-icon icon="swap-vert-circle"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.reference }} → {{ variant.alternatives|join(',') }}
+        {{ variant.reference }} → {{ variant.alternative }}
       </div>
     </div>
   </div>
@@ -121,7 +121,7 @@
         <core-icon icon="report"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ 'region annotations coming' }}
+        {{ variant.region_annotations|join(',') }}
       </div>
     </div>
   </div>
@@ -132,7 +132,7 @@
         <core-icon icon="settings"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ 'functional annotations coming' }}
+        {{ variant.functional_annotations|join(',') }}
       </div>
     </div>
   </div>
@@ -205,7 +205,7 @@
           <div class="variant-list-item">
             <div>ThousandG</div>
             <div>
-              {{ variant.thousand_genomes_frequency|float|round(3) }}
+              {{ variant.thousand_genomes_frequency|round(3) }}
             </div>
           </div>
 
@@ -379,11 +379,24 @@
             </thead>
 
             <tbody>
-              {% for gene in variant.genes %}
-                <tr></tr>
+              {% for transcript in variant.transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>{{ transcript.transcript_id }}</td>
+                  <td>{{ transcript.functional_annotation }}</td>
+                  <td>{{ 'coming: strand' }}</td>
+                  <td>{{ transcript.exon }}</td>
+                  <td>{{ transcript.intron or '-' }}</td>
+                  <td>{{ transcript.coding_sequence_name }}</td>
+                  <td>{{ transcript.protein_sequence_name }}</td>
+                  <td>{{ transcript.sift_prediction }}</td>
+                  <td>{{ transcript.polyphen_prediction }}</td>
+                </tr>
               {% else %}
                 <tr>
-                  <td colspan="10">No protein change predictions available.</td>
+                  <td colspan="10">
+                    No protein change predictions available.
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
