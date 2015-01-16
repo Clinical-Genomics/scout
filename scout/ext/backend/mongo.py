@@ -18,7 +18,7 @@ import os
 import io
 import json
 import click
-from mongoengine import connect, DoesNotExist
+from mongoengine import connect, DoesNotExist, Q
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
@@ -65,58 +65,132 @@ class MongoAdapter(BaseAdapter):
       return Case.objects(case_id = case_id)
     except DoesNotExist:
       return None
+  
 
-  def format_variant(self, variant):
-    """Return a variant where relevant information is added."""
-    for case in variant['specific']:
-      case_specific = ('specific.%s' % case)
-      for compound in variant['specific'][case]['compounds']:
-        # print('Compound id: %s, Display name: %s, Combined_score: %s' %
-        #         (compound['variant_id'], compound['display_name'], compound['combined_score']))
-        try:
-          pair = Variant.objects.get(pk = compound['variant_id'])
-          compound['functional_annotations'] = pair['common']['functional_annotations']
-          compound['region_annotations'] = pair['common']['region_annotations']
-        except DoesNotExist:
-          pass
-    return variant
+  def build_query(self, case_id, query=None, variant_ids=None):
+    """
+    Build a mongo query based on what is found in the query.
+    query looks like:
+      {
+         'genetic_models': list,
+         'thousand_genomes_frequency': float,
+         'exac_frequency': float,
+         'functional_annotations': list,
+         'hgnc_symbols': list,
+         'region_annotations': list
+       }
+    
+    Arguments:
+      case_id     : A string that represents the case
+      query       : A dictionary with querys for the database
+      variant_ids : A list of md5 strings that represents variant ids
+    
+    Returns:
+      mongo_query : A dictionary in the mongo query format
+    
+    """
+    mongo_query = {}
+    # We will allways use the case id when we query the database
+    mongo_query['case_id'] = case_id
+    if query:
+      # We need to check if there is any query specified in the input query
+      any_query = False
+      mongo_query['$and'] = []
+      if query['thousand_genomes_frequency']:
+        mongo_query['$and'].append({'thousand_genomes_frequency':{
+                                '$lt': query['thousand_genomes_frequency']
+                                                              }
+                                                            }
+                                                          )
+        any_query = True
+          
+      if query['exac_frequency']:
+        mongo_query['$and'].append({'exac_frequency':{
+                                '$lt': query['exac_frequency']
+                                                            }
+                                                          }
+                                                        )
+        any_query = True
+          
+      if query['genetic_models']:
+        mongo_query['$and'].append({'genetic_models': 
+                                        {'$in': query['genetic_models']}
+                                      }
+                                    )
+        any_query = True
+          
+      if query['hgnc_symbols']:
+        mongo_query['$and'].append({'hgnc_symbols': 
+                                      {'$in': query['hgnc_symbols']}
+                                    }
+                                  )
+        any_query = True
+        
+      # Since we will add an '$or' question here we have to be extra careful
+      if query['functional_annotations'] and query['region_annotations']:
+        mongo_query['$and'].append({'$or': [
+                            {'genes.functional_annotation' : {
+                                '$in': query['functional_annotations']
+                              }
+                            },
+                            {'genes.region_annotation' : {
+                                '$in': query['region_annotations']
+                              }
+                            }
+                          ]
+                        }
+                      )
+        any_query = True
+      
+      elif query['functional_annotations']:
+          mongo_query['$and'].append({'genes.functional_annotation': 
+                                        {'$in': query['functional_annotations']}
+                                        }
+                                      )
+          any_query = True
+        
+      elif query['region_annotations']:
+          mongo_query['$and'].append({'genes.region_annotation': 
+                                        {'$in': query['region_annotations']}
+                                        }
+                                      )
+          any_query = True
+      
+      if variant_ids:
+        mongo_query['$and'].append({'variant_id': 
+                                      {'$in': variant_ids}
+                                    }
+                                  )
+        any_query = True
+      
+      
+      if not any_query:
+        del mongo_query['$and']
+    
+      return mongo_query
 
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
     """
     Returns the number of variants specified in question for a specific case.
     If skip ≠ 0 skip the first n variants.
-
+    
     Arguments:
       case_id : A string that represents the case
       query   : A dictionary with querys for the database
-
+              
     Returns:
       A generator with the variants
-
+    
     """
-    # {
-    #   ’genetic_models’: None,
-    #   ’thousand_genomes_frequency’: None,
-    #   ’functional_annotations’: None,
-    #   ’local_frequency’: None,
-    #   ’exac_frequency’: None,
-    #   ’hgnc_symbol’: None,
-    #   ’region_annotations’: None
-    # }
-    #
-    #
-    # Clinical filter (sort of):
-    #
-    # {
-    #   ’genetic_models’: None,
-    #   ’thousand_genomes_frequency’: 0.01,
-    #   ’functional_annotations’: [u’transcript_ablation’, u’splice_donor_variant’, u’splice_acceptor_variant’, u’stop_gained’, u’frameshift_variant’, u’stop_lost’, u’initiator_codon_variant’, u’transcript_amplification’,],
-    #   ’local_frequency’: None,
-    # }
-    nr_of_variants = skip + nr_of_variants
-    # for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
-    #                                   case_specific + '.variant_rank')[skip:nr_of_variants]:
-    for variant in (Variant.objects(case_id=case_id)
+    if variant_ids:
+      nr_of_variants = len(variant_ids)
+    else:
+      nr_of_variants = skip + nr_of_variants
+    
+    mongo_query = self.build_query(case_id, query, variant_ids)
+    
+    for variant in (Variant.objects(__raw__=mongo_query)
+                           .order_by('variant_rank')
                            .skip(skip)
                            .limit(nr_of_variants)):
       yield variant
@@ -197,16 +271,26 @@ def cli(institute, case, thousand_g, hgnc_id):
       h = hashlib.md5()
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
-
-
+    
+    
     print('Institute: %s, Case: %s' % (institute, case))
     my_mongo = MongoAdapter(app='hej')
-
+    
+    query = {
+            'genetic_models':[],
+            'thousand_genomes_frequency':None,
+            'exac_frequency':None,
+            'hgnc_symbols': [],
+            'functional_annotations' : [],
+            'region_annotations' : []
+          }
+    
     ### FOR DEVELOPMENT ###
-
-    case_id = '_'.join([institute, family])
+    
+    case_id = '_'.join([institute, case])
+    print(case_id)
     my_case = my_mongo.case(case_id)
-
+    
     print('Case found:')
     pp(json.loads(my_case.to_json()))
     print('')
@@ -215,7 +299,7 @@ def cli(institute, case, thousand_g, hgnc_id):
     variant_count = 0
 
     numbers_matched = 0
-    for variant in my_mongo.variants(case_id):
+    for variant in my_mongo.variants(case_id, query):
       pp(json.loads(variant.to_json()))
       numbers_matched += 1
     print('Number of variants: %s' % (numbers_matched))

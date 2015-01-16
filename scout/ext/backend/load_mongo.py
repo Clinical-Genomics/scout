@@ -324,6 +324,10 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
   
   # Add the gene and tanscript information:
   mongo_variant['genes'] = get_genes(variant)
+  hgnc_symbols = set([])
+  for gene in mongo_variant.genes:
+    hgnc_symbols.add(gene.hgnc_symbol)
+  mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
   
   mongo_variant['ensemble_gene_ids'] = variant['info_dict'].get(
                               config_object['Ensembl_gene_id']['vcf_info_key'], 
