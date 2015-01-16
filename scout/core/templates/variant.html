@@ -3,7 +3,7 @@
 {% from '_macros.html' import compounds_table %}
 
 {% set page_title = 'Variant' %}
-{% set hgnc_symbol = variant.common.hgnc_symbols[0] %}
+{% set hgnc_symbol = variant.hgnc_symbols[0] %}
 
 {% block toolbar_left %}
   {{ super() }}
@@ -74,7 +74,7 @@
       <div class="md-label-icon">
         <core-icon icon="grade"></core-icon>
       </div>
-      <div class="md-label-text">{{ specific.variant_rank }}</div>
+      <div class="md-label-text">{{ variant.variant_rank }}</div>
     </div>
   </div>
 
@@ -84,7 +84,7 @@
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.chromosome }}: {{ variant.common.hgnc_symbols|join(',') }}
+        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(',') }}
       </div>
     </div>
 
@@ -98,7 +98,7 @@
         </li>
         <li>
           <strong>Ensembl</strong>:
-          {{ variant.common.ensemble_gene_ids|join(',') }}
+          {{ variant.ensemble_gene_ids|join(',') }}
         </li>
       </ul>
     </div>
@@ -121,7 +121,7 @@
         <core-icon icon="report"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.common.region_annotations|join(',') }}
+        {{ 'region annotations coming' }}
       </div>
     </div>
   </div>
@@ -132,7 +132,7 @@
         <core-icon icon="settings"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.common.functional_annotations|join(',') }}
+        {{ 'functional annotations coming' }}
       </div>
     </div>
   </div>
@@ -174,12 +174,12 @@
             <div class="dist-even">
               <div class="dist-even-item">
                 <div>Rank score</div>
-                <div>{{ specific.rank_score }}</div>
+                <div>{{ variant.rank_score }}</div>
               </div>
 
               <div class="dist-even-item">
                 <div>CADD score</div>
-                <div>{{ variant.common.cadd_score }}</div>
+                <div>{{ variant.cadd_score }}</div>
               </div>
             </div>
           </div>
@@ -205,13 +205,13 @@
           <div class="variant-list-item">
             <div>ThousandG</div>
             <div>
-              {{ variant.common.thousand_genomes_frequency|float|round(3) }}
+              {{ variant.thousand_genomes_frequency|float|round(3) }}
             </div>
           </div>
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.common.exac_frequency|round(3) }}</div>
+            <div>{{ variant.exac_frequency|round(3) }}</div>
           </div>
 
           <div class="variant-list-item">
@@ -232,10 +232,14 @@
 
           <div class="variant-list-item">
             <div>OMIM</div>
-            <omim-model v-with="
-              url: '{{ url_for('api.omim_inheritance',
-                               hgnc_symbol=hgnc_symbol) }}'">
-            </omim-model>
+            {% if hgnc_symbol %}
+              <omim-model v-with="
+                url: '{{ url_for('api.omim_inheritance',
+                                 hgnc_symbol=hgnc_symbol) }}'">
+              </omim-model>
+            {% else %}
+              No HGNC symbol
+            {% endif %}
           </div>
 
           <div class="variant-row-item">
@@ -244,7 +248,7 @@
             </div>
 
             <div class="variant-row-item-sublist">
-              {% for model in specific.genetic_models %}
+              {% for model in variant.genetic_models %}
                 <div class="variant-row-item-sublist-item">{{ model }}</div>
               {% endfor %}
             </div>
@@ -256,9 +260,15 @@
         <div class="md-card-header">OMIM</div>
 
         <div class="md-card-body-list">
-          <omim-summary v-ref="omim" v-with="
-            url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
-          "></omim-summary>
+          {% if hgnc_symbol %}
+              <omim-summary v-ref="omim" v-with="
+                url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
+              "></omim-summary>
+            {% else %}
+              <div v-show="!isFound" class="omim-summary-empty">
+                No HGNC symbol
+              </div>
+            {% endif %}
         </div>
       </div>
     </div>
@@ -270,11 +280,11 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Sift</div>
-            <div>{{ variant.common.sift_predictions|join(',') }}</div>
+            <div>{{ variant.sift_predictions|join(',') }}</div>
           </div>
           <div class="variant-list-item">
             <div>Polyphen</div>
-            <div>{{ variant.common.polyphen_predictions|join(',') }}</div>
+            <div>{{ variant.polyphen_predictions|join(',') }}</div>
           </div>
         </div>
       </div>
@@ -285,17 +295,17 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>PHAST</div>
-            <div>{{ variant.common.phast_conservation|join(',') or '-' }}</div>
+            <div>{{ variant.phast_conservation|join(',') or '-' }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>GERP</div>
-            <div>{{ variant.common.gerp_conservation|join(',') or '-' }}</div>
+            <div>{{ variant.gerp_conservation|join(',') or '-' }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>phyloP</div>
-            <div>{{ variant.common.phylop_conservation|join(',') or '-' }}</div>
+            <div>{{ variant.phylop_conservation|join(',') or '-' }}</div>
           </div>
         </div>
       </div>
@@ -321,7 +331,7 @@
             </thead>
 
             <tbody>
-              {% for individual in specific.samples %}
+              {% for individual in variant.samples %}
                 <tr>
                   <td class="text-center">{{ individual.sample }}</td>
                   <td class="text-center">{{ individual.genotype_call }}</td>
@@ -342,7 +352,7 @@
         <div class="md-card-header">Compounds</div>
 
         <div class="md-card-body">
-          {{ compounds_table(specific.compounds, institute_id, case_id) }}
+          {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
     </div>
@@ -369,7 +379,7 @@
             </thead>
 
             <tbody>
-              {% for transcript in variant.common.transcripts %}
+              {% for gene in variant.genes %}
                 <tr></tr>
               {% else %}
                 <tr>
@@ -385,15 +395,15 @@
     <div id="external-links" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-body">
-          <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.common.ensemble_gene_ids|join(',') }}">
+          <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensemble_gene_ids|join(',') }}">
             Ensembl
           </a>
 
-          <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.common.ensemble_gene_ids|join(',') }}">
+          <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensemble_gene_ids|join(',') }}">
             HPA
           </a>
 
-          <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.common.ensemble_gene_ids|join(',') }}">
+          <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensemble_gene_ids|join(',') }}">
             STRING
           </a>
 
@@ -401,7 +411,7 @@
             UCSC
           </a>
 
-          <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.common.hgnc_symbols|join(',') }}">
+          <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
             Entrez
           </a>
 
@@ -421,7 +431,7 @@
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
           <div class="activity-feed">
-            {% for event in specific.events|reverse %}
+            {% for event in variant.events|reverse %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
@@ -517,7 +527,7 @@
 
       <p>
         <strong>HGNC symbol(s)</strong>:
-        {{ variant.common.hgnc_symbols|join(', ') }}
+        {{ variant.hgnc_symbols|join(', ') }}
       </p>
 
       <p><strong>Database</strong>: {{ 'coming soon' }}</p>
@@ -530,7 +540,7 @@
       <p><strong>Amino acid change(s)</strong>:</p>
       <p>
         <ul>
-          {% for item in variant.common.protein_change %}
+          {% for item in variant.protein_change %}
             <li>{{ item }}</li>
           {% else %}
             <li>No protein predictions</li>
@@ -541,7 +551,7 @@
       <p><strong>GT call</strong></p>
       <p>
         <ul>
-          {% for individual in specific.samples %}
+          {% for individual in variant.samples %}
             <li>{{ individual.sample }}: {{ individual.genotype_call }}</li>
           {% endfor %}
         </ul>

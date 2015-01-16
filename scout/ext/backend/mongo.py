@@ -85,14 +85,14 @@ class MongoAdapter(BaseAdapter):
     """
     Returns the number of variants specified in question for a specific case.
     If skip ≠ 0 skip the first n variants.
-    
+
     Arguments:
       case_id : A string that represents the case
       query   : A dictionary with querys for the database
-      
+
     Returns:
       A generator with the variants
-      
+
     """
     # {
     #   ’genetic_models’: None,
@@ -116,36 +116,38 @@ class MongoAdapter(BaseAdapter):
     nr_of_variants = skip + nr_of_variants
     # for variant in Variant.objects(__raw__ = {case_specific: {'$exists' : True}}).order_by(
     #                                   case_specific + '.variant_rank')[skip:nr_of_variants]:
-    for variant in Variant.objects(case_id = case_id):
+    for variant in (Variant.objects(case_id=case_id)
+                           .skip(skip)
+                           .limit(nr_of_variants)):
       yield variant
 
   def variant(self, document_id):
     """
     Returns the specified variant.
-    
+
     Arguments:
       document_id : A md5 key that represents the variant
-    
+
     Returns:
       variant_object: A odm variant object
     """
-    
+
     try:
-      return Variant.objects(document_id = document_id)
+      return Variant.objects.get(document_id=document_id)
     except DoesNotExist:
       return None
 
   def next_variant(self, document_id):
     """
     Returns the next variant from the rank order.
-    
+
     Arguments:
       document_id : A md5 key that represents the variant
-    
+
     Returns:
       variant_object: A odm variant object
     """
-    
+
     previous_variant = Variant.objects(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
@@ -157,13 +159,13 @@ class MongoAdapter(BaseAdapter):
   def previous_variant(self, document_id):
     """
     Returns the next variant from the rank order
-    
+
     Arguments:
       document_id : A md5 key that represents the variant
-    
+
     Returns:
       variant_object: A odm variant object
-    
+
     """
     previous_variant = Variant.objects(document_id=document_id)
     rank = previous_variant.variant_rank or 0
@@ -172,7 +174,7 @@ class MongoAdapter(BaseAdapter):
       return Variant.objects(Q(case_id= case_id) & Q(variant_rank = rank-1))
     except DoesNotExist:
       return None
-    
+
 @click.command()
 @click.option('-i','--institute',
                 default='CMMS'
@@ -189,29 +191,29 @@ class MongoAdapter(BaseAdapter):
 def cli(institute, case, thousand_g, hgnc_id):
     """Test the vcf class."""
     import hashlib
-    
+
     def generate_md5_key(list_of_arguments):
       """Generate an md5-key from a list of arguments"""
       h = hashlib.md5()
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
-    
-    
+
+
     print('Institute: %s, Case: %s' % (institute, case))
     my_mongo = MongoAdapter(app='hej')
-    
+
     ### FOR DEVELOPMENT ###
-    
+
     case_id = '_'.join([institute, family])
     my_case = my_mongo.case(case_id)
-    
+
     print('Case found:')
     pp(json.loads(my_case.to_json()))
     print('')
-    
-    
+
+
     variant_count = 0
-    
+
     numbers_matched = 0
     for variant in my_mongo.variants(case_id):
       pp(json.loads(variant.to_json()))
