@@ -133,7 +133,7 @@ class MongoAdapter(BaseAdapter):
     """
 
     try:
-      return Variant.objects(document_id = document_id)
+      return Variant.objects.get(document_id=document_id)
     except DoesNotExist:
       return None
 

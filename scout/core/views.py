@@ -152,12 +152,10 @@ def variant(institute_id, case_id, variant_id):
   # very basic security check
   institute = validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
-  variant = store.variant(variant_id=variant_id)
+  variant = store.variant(document_id=variant_id)
 
-  prev_variant = store.previous_variant(variant_id=variant_id,
-                                        case_id=case.case_id)
-  next_variant = store.next_variant(variant_id=variant_id,
-                                    case_id=case.case_id)
+  prev_variant = {}  # store.previous_variant(document_id=variant_id)
+  next_variant = {}  # store.next_variant(document_id=variant_id)
 
   return dict(
     institute=institute,
@@ -166,7 +164,6 @@ def variant(institute_id, case_id, variant_id):
     case_id=case_id,
     variant_id=variant_id,
     variant=variant,
-    specific=variant.specific[case.id],
     prev_variant=prev_variant,
     next_variant=next_variant,
   )
