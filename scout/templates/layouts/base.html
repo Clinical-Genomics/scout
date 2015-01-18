@@ -34,21 +34,15 @@
     {% block js_top %}{% endblock %}
   </head>
 
-  <body class="unresolved">
+  <body class="{% block body_classes %}{% endblock %}">
     {% include "macros/_ask_user_to_update_ie.html" %}
 
     {% block body %}{% endblock %}
 
-    {% block js_btm %}
-      <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
-      <script src="{{ url_for('static', filename='bundle.js') }}"></script>
-
-      {% if config.DEBUG %}
-        <!-- include browser-sync script tag -->
-        {% include 'footer.html' %}
-      {% endif %}
-    {% endblock %}
+    {% if config.DEBUG %}
+      <!-- include browser-sync script tag -->
+      {% include 'footer.html' %}
+    {% endif %}
 
     {% block ga %}
       {% include "macros/_google_analytics.html" %}
