@@ -56,4 +56,5 @@
       'omim-summary': require './components/omim-summary.vue'
       'markdown-editor': require './components/markdown-editor.vue'
       'md-modal': require './components/md-modal.vue'
+      'model-matcher': require './components/model-matcher.vue'
 </script>

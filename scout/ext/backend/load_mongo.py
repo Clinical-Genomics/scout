@@ -38,7 +38,7 @@ from mongoengine import connect, DoesNotExist
 
 
 from .config_parser import ConfigParser
-from ...models import (Case, Individual, Institute, Variant, GTCall, 
+from ...models import (Case, Individual, Institute, Variant, GTCall,
                           Compound, Gene, Transcript)
 
 from vcf_parser import parser as vcf_parser
@@ -46,12 +46,12 @@ from ped_parser import FamilyParser
 
 from pprint import pprint as pp
 
-GENETIC_REGIONS = set(['exonic', 
-                        'splicing', 
-                        'ncRNA_exonic', 
-                        'intronic', 
-                        'ncRNA', 
-                        'upstream', 
+GENETIC_REGIONS = set(['exonic',
+                        'splicing',
+                        'ncRNA_exonic',
+                        'intronic',
+                        'ncRNA',
+                        'upstream',
                         'downstream',
                         '5UTR',
                         '3UTR'
@@ -100,12 +100,12 @@ SO_TERMS = {
 }
 
 # These are the valid region annotations
-GENETIC_REGIONS = set(['exonic', 
-                        'splicing', 
-                        'ncRNA_exonic', 
-                        'intronic', 
-                        'ncRNA', 
-                        'upstream', 
+GENETIC_REGIONS = set(['exonic',
+                        'splicing',
+                        'ncRNA_exonic',
+                        'intronic',
+                        'ncRNA',
+                        'upstream',
                         'downstream',
                         '5UTR',
                         '3UTR'
@@ -163,16 +163,16 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
 
   connect(mongo_db, host='localhost', port=27017, username=username,
           password=password)
-  
+
   if verbose:
-    print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\nmongo_db:\t%s\ninstitute:\t%s\n" % 
+    print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\nmongo_db:\t%s\ninstitute:\t%s\n" %
               (vcf_file, ped_file, config_file, family_type, mongo_db, institute_name), file=sys.stderr)
-  
+
   ######## Parse the config file to check for keys: ########
   config_object = ConfigParser(config_file)
-  
+
   ######## Add the institute to the mongo db: ########
-  
+
   institute = get_institute(institute_name)
   try:
     if Institute.objects.get(internal_id = institute.internal_id):
@@ -180,10 +180,10 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   except DoesNotExist:
     if verbose:
       print('New institute!', file=sys.stderr)
-    
-  
+
+
   ######## Get the case and add it to the mongo db: ########
-  
+
   individuals = []
   cases = get_case(ped_file, family_type, institute_name)
   for case in cases:
@@ -193,11 +193,11 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     for individual in case.individuals:
       individuals.append(individual.individual_id)
     case.save()
-  
+
   institute.save()
-  
+
   ######## Get the variants and add them to the mongo db: ########
-  
+
   variant_parser = vcf_parser.VCFParser(infile = vcf_file, split_variants = True)
   nr_of_variants = 0
   # for variant in variant_parser:
@@ -207,12 +207,12 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   #   print('')
   #   pp(variant['vep_info'])
   # sys.exit()
-  
+
   start_inserting_variants = datetime.now()
-  
+
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
-  
+
   for variant in variant_parser:
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
@@ -228,36 +228,36 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     #     mongo_variant.save()
     # except DoesNotExist:
     #   mongo_variant.save()
-    
+
     if verbose:
       if nr_of_variants % 1000 == 0:
         print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
-  
+
   if verbose:
     print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS, file=sys.stderr)
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-  
+
   return
 
 
 def get_mongo_variant(variant, individuals, case_id, config_object, variant_count):
   """
-  Take a variant and some additional information, convert it to mongo engine 
+  Take a variant and some additional information, convert it to mongo engine
   objects and put them in the proper format in the database.
-  
+
   Input:
     variant       : A Variant dictionary
     individuals   : A list with the id:s of the individuals
     case_id       : The md5 string that represents the ID for the case
     variant_count : The rank order of the variant in this case
     config_object : A config object with the information from the config file
-  
+
   Returns:
     mongo_variant : A variant parser into the proper mongo engine format.
-  
+
   """
-  
+
   #############################################################################################################
   #### Here is the start for parsing the variants                                                          ####
   #############################################################################################################
@@ -265,8 +265,8 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
   id_fields = [variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']]
   variant_id = generate_md5_key(id_fields)
   document_id = generate_md5_key(id_fields+case_id.split('_'))
-  
-  
+
+
   # Create the mongo variant object
   mongo_variant = Variant(
                           document_id = document_id,
@@ -278,7 +278,7 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
                           reference = variant['REF'],
                           alternative = variant['ALT']
                   )
-  # Get the rank score as specified in the config file. 
+  # Get the rank score as specified in the config file.
   # This is central for displaying variants in scout.
   try:
     mongo_variant['rank_score'] = float(
@@ -286,33 +286,33 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
     )
   except KeyError:
     mongo_variant['rank_score'] = 0.0
-  
+
   mongo_variant['variant_rank'] = variant_count
   mongo_variant['quality'] = float(variant['QUAL'])
   mongo_variant['filters'] = variant['FILTER'].split(';')
-  
+
   # Add the gt calls:
   gt_calls = []
   for individual in individuals:
     # This function returns an ODM GTCall object with the relevant information:
     gt_calls.append(get_genotype_information(
-                                          variant, 
-                                          config_object, 
+                                          variant,
+                                          config_object,
                                           individual
                                         )
                                       )
   mongo_variant['samples'] = gt_calls
-  
+
   # Add the compound information:
   mongo_variant['compounds'] = get_compounds(
-                                          variant, 
-                                          mongo_variant.rank_score, 
+                                          variant,
+                                          mongo_variant.rank_score,
                                           config_object
                                         )
-  
+
   # Add the inheritance patterns:
   models = variant['info_dict'].get(
-                            config_object['GeneticModels']['vcf_info_key'], 
+                            config_object['GeneticModels']['vcf_info_key'],
                             None
                           )
   if models:
@@ -321,74 +321,74 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
       for model in family_models.split(':')[-1].split('|'):
         genetic_models.append(model)
       mongo_variant['genetic_models'] = genetic_models
-  
+
   # Add the gene and tanscript information:
   mongo_variant['genes'] = get_genes(variant)
   hgnc_symbols = set([])
   for gene in mongo_variant.genes:
     hgnc_symbols.add(gene.hgnc_symbol)
-  mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
-  
+  #mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
+
   mongo_variant['ensemble_gene_ids'] = variant['info_dict'].get(
-                              config_object['Ensembl_gene_id']['vcf_info_key'], 
+                              config_object['Ensembl_gene_id']['vcf_info_key'],
                               []
                             )
   # Add a list with the dbsnp ids:
   mongo_variant['db_snp_ids'] = variant['ID'].split(';')
-  
+
   # Add the frequencies
   try:
     mongo_variant['thousand_genomes_frequency'] = float(
                                 variant['info_dict'].get(
-                                  config_object['1000GMAF']['vcf_info_key'], 
+                                  config_object['1000GMAF']['vcf_info_key'],
                                   ['0'])[0]
                                 )
   except ValueError:
     pass
-  
+
   try:
     mongo_variant['exac_frequency'] = float(
                                 variant['info_dict'].get(
-                                  config_object['EXAC']['vcf_info_key'], 
+                                  config_object['EXAC']['vcf_info_key'],
                                   ['0'])[0]
                                 )
   except ValueError:
     pass
-  
+
   # Add the severity predictions
   mongo_variant['cadd_score'] = float(
                           variant['info_dict'].get(
-                            config_object['CADD']['vcf_info_key'], 
+                            config_object['CADD']['vcf_info_key'],
                             ['0'])[0]
                           )
   # Add conservation annotation
   mongo_variant['gerp_conservation'] = variant['info_dict'].get(
-                                  config_object['Gerp']['vcf_info_key'], 
+                                  config_object['Gerp']['vcf_info_key'],
                                   []
                                 )
   mongo_variant['phast_conservation'] = variant['info_dict'].get(
-                                  config_object['PhastCons']['vcf_info_key'], 
+                                  config_object['PhastCons']['vcf_info_key'],
                                   []
                                 )
   mongo_variant['phylop_conservation'] = variant['info_dict'].get(
-                                  config_object['PhylopCons']['vcf_info_key'], 
+                                  config_object['PhylopCons']['vcf_info_key'],
                                   []
                                 )
-  
+
   # print('Variant:')
   # pp(json.loads(mongo_variant.to_json()))
   # print('')
-  
+
   return mongo_variant
 
 
 def generate_md5_key(list_of_arguments):
   """
   Generate an md5-key from a list of arguments.
-  
+
   Args:
     list_of_arguments: A list of strings
-  
+
   Returns:
     A md5-key object generated from the list of strings.
   """
@@ -405,10 +405,10 @@ def generate_md5_key(list_of_arguments):
 def get_institute(institute_name):
   """
   Take a institute name and return a institute object.
-  
+
   Args:
     institute_name: A string that represents the name of an institute
-  
+
   Returns:
     A mongoengine Institute object described in scout.models.institute.py
   """
@@ -417,13 +417,13 @@ def get_institute(institute_name):
 def get_case(ped_file, family_type, institute_name):
   """
   Take a case file and return the case on the specified format.
-  
+
   Args:
     ped_file    : The path to a ped file
     family_type : A string that describe the format of the ped file
     institute_name  : A string that represents the name of the institute
                       that the family belongs to.
-  
+
   Returns:
     cases : A list with mongo engine objects that describe the cases
             found in the pedigree file.
@@ -454,22 +454,22 @@ def get_case(ped_file, family_type, institute_name):
     mongo_case['individuals'] = individuals
     mongo_case['databases'] = list(databases)
     cases.append(mongo_case)
-    
+
   return cases
 
 def get_genotype_information(variant, config_object, individual):
   """
   Get the genotype information in the proper format and return ODM specified gt call.
-  
+
   Args:
     variant : A dictionary with the information about a variant
     genotype_collection : A list with the relevant genotype information for
                           each individual in the vcf file
     individual: A string that represents the individual id
-  
+
   Returns:
     mongo_gt_call : A mongo engine object with the gt-call information
-  
+
   """
   genotype_collection = config_object.categories['genotype_information']
   # Initiate a mongo engine gt call object
@@ -478,26 +478,26 @@ def get_genotype_information(variant, config_object, individual):
   for genotype_information in genotype_collection:
     if config_object[genotype_information]['vcf_format_key'] == 'GT':
       mongo_gt_call['genotype_call'] = variant['genotypes'][individual].genotype
-    
+
     elif config_object[genotype_information]['vcf_format_key'] == 'DP':
       mongo_gt_call['read_depth'] = variant['genotypes'][individual].depth_of_coverage
-    
+
     elif config_object[genotype_information]['vcf_format_key'] == 'AD':
       mongo_gt_call['allele_depths'] = [variant['genotypes'][individual].ref_depth,
                                         variant['genotypes'][individual].alt_depth]
-    
+
     elif config_object[genotype_information]['vcf_format_key'] == 'GQ':
       mongo_gt_call['genotype_quality'] = variant['genotypes'][individual].genotype_quality
-  
+
   return mongo_gt_call
 
 def get_transcript_information(vep_entry):
   """
   Create a mongo engine transcript object and fill it with the relevant information
-  
+
   Args:
     vep_entry : A vep entry parsed by vcf_parser
-  
+
   Returns:
     transcript  : A mongo engine transcript object
   """
@@ -517,44 +517,44 @@ def get_transcript_information(vep_entry):
     transcript.exon = vep_entry['EXON']
   if vep_entry.get('INTRON', None):
     transcript.intron = vep_entry['INTRON']
-  
+
   coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
   protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
-  
+
   # If there is a coding sequence entry we need to parse it:
   coding_sequence_name = None
   if len(coding_sequence_entry) > 1:
     coding_sequence_name = coding_sequence_entry[-1].split('.')[1]
-  
+
   if coding_sequence_name:
     transcript.coding_sequence_name = coding_sequence_name
-  
+
   # If there is a protein sequence entry we need to parse it:
   protein_sequence_name = None
   if len(protein_sequence_entry) > 1:
     protein_sequence_name = protein_sequence_entry[-1].split('.')[1]
-  
+
   if protein_sequence_name:
     transcript.protein_sequence_name = protein_sequence_name
-  
+
   for annotation in functional_annotations:
     region_annotation = SO_TERMS[annotation]['region']
     transcript.functional_annotation = annotation
     transcript.region_annotation = region_annotation
-  
+
   return transcript
-  
+
 
 def get_genes(variant):
   """
   Get the transcript information in the mongoengine format.
-  
+
   Args:
     variant : A Variant dictionary
-  
+
   Returns:
     mongo_genes: A list with mongo engine object that represents the genes
-  
+
   """
   genes = {}
   transcripts = []
@@ -567,7 +567,7 @@ def get_genes(variant):
   for vep_entry in variant['vep_info'].get(variant['ALT'], []):
     # We should first check if the variant is in a genetic region
     # If it is not we do not add any entry
-    
+
     functional_annotations = vep_entry.get('Consequence', '').split('&')
     # Check if any of the consequences are genetic
     genetic_region = False
@@ -576,15 +576,15 @@ def get_genes(variant):
       # If any of the functional annotations are genetic we wnat to show it
       if region in GENETIC_REGIONS:
         genetic_region = True
-    
+
     # If any of the annotations are in genetic regions we add the information.
     if genetic_region:
-      
+
       transcripts.append(get_transcript_information(vep_entry))
-  
+
   # We now need to find the most severe transcript for each gene:
   for transcript in transcripts:
-    
+
     transcript_id = transcript.transcript_id
     hgnc_symbol = transcript.hgnc_symbol
     rank = SO_TERMS[transcript.functional_annotation]['rank']
@@ -601,17 +601,17 @@ def get_genes(variant):
       if rank > best_rank:
         genes[hgnc_symbol]['most_severe_transcript'] = transcript
         best_rank = rank
-      
-  
+
+
   for gene in genes:
     most_severe = genes[gene]['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
     mongo_gene = Gene(hgnc_symbol=gene)
     # Add a list with the transcripts:
-    mongo_gene.transcripts = []    
+    mongo_gene.transcripts = []
     for transcript_id in genes[gene]['transcripts']:
       mongo_gene.transcripts.append(genes[gene]['transcripts'][transcript_id])
-    
+
     try:
       mongo_gene.functional_annotation = most_severe.functional_annotation
     except AttributeError:
@@ -630,22 +630,22 @@ def get_genes(variant):
       pass
     # Add the mongo engine gene to the dictionary
     mongo_genes.append(mongo_gene)
-  
+
   return mongo_genes
 
 def get_compounds(variant, rank_score, config_object):
   """
   Get a list with mongoengine compounds for this variant.
-  
+
   Arguments:
     variant : A Variant dictionary
     rank_score: The rank score for the variant
     config_object : A config object with the information from the config file
-  
+
   Returns:
     compounds : A list of mongo engine compound objects
   """
-  
+
   compounds = []
   for compound in variant['info_dict'].get(config_object['Compounds']['vcf_info_key'], []):
     try:
@@ -679,21 +679,21 @@ def get_compounds(variant, rank_score, config_object):
                 help="Path to the config file for loading the variants."
 )
 @click.option('-type', '--family_type',
-                type=click.Choice(['ped', 'alt', 'cmms', 'mip']), 
+                type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
                 default='ped',
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
 )
-@click.option('-db', '--mongo-db', 
+@click.option('-db', '--mongo-db',
                 default='variantDatabase'
 )
-@click.option('-u', '--username', 
+@click.option('-u', '--username',
                 type=str
 )
-@click.option('-p', '--password', 
+@click.option('-p', '--password',
                 type=str
 )
-@click.option('-v', '--verbose', 
+@click.option('-v', '--verbose',
                 is_flag=True,
                 help='Increase output verbosity.'
 )
@@ -725,7 +725,7 @@ def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
   if not config_file:
     print("Please provide a config file.(Use flag '-config/--config_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password, verbose=verbose)
 

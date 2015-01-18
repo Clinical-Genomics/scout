@@ -237,6 +237,9 @@ core-icon {
   background-color: rgba(#000, .05);
   border: 1px solid rgba(#000, .15);
   border-radius: 2px;
+
+  // link reset
+  text-decoration: none;
 }
 
 .md-label-icon {
@@ -281,6 +284,7 @@ core-icon {
   }
 }
 
+%md-badge,
 .md-badge {
   padding: .2rem .5rem;
   border-radius: 2px;
@@ -288,14 +292,20 @@ core-icon {
   color: #fff;
 }
 
-.is-safe {
+.md-badge--success {
+  @extend %md-badge;
+
   background-color: #7cb342;
 }
 
-.is-warning {
+.md-badge--warning {
+  @extend %md-badge;
+
   background-color: #ff5722;
 }
 
-.is-alert {
+.md-badge--fail {
+  @extend %md-badge;
+
   background-color: #f44336;
 }
