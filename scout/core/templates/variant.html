@@ -184,10 +184,12 @@
             </div>
           </div>
 
-          <div class="variant-list-item">
-            <div>Matches expected inheritance model</div>
-            <div class="md-badge">Yes</div>
-          </div>
+          <model-matcher
+            class="variant-list-item"
+            result="{{ variant.genetic_models | join(',') }}"
+            url="{{ url_for('api.omim_inheritance',
+                            hgnc_symbol=hgnc_symbol) }}">
+          </model-matcher>
 
           <div class="variant-list-item">
             <div>Frequency</div>
@@ -233,7 +235,7 @@
           <div class="variant-list-item">
             <div>OMIM</div>
             {% if hgnc_symbol %}
-              <omim-model v-with="
+              <omim-model v-ref="omimModel" v-with="
                 url: '{{ url_for('api.omim_inheritance',
                                  hgnc_symbol=hgnc_symbol) }}'">
               </omim-model>

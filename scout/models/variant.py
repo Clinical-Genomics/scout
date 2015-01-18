@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 
 from mongoengine import (
   Document, EmbeddedDocument, EmbeddedDocumentField, FloatField,
-  IntField, ListField, MapField, StringField
+  IntField, ListField, StringField
 )
 
 from .event import Event
@@ -85,6 +85,7 @@ FEATURE_TYPES = (
   'intergenic_variant'
 )
 
+
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   hgnc_symbol = StringField()
@@ -96,6 +97,7 @@ class Transcript(EmbeddedDocument):
   intron = StringField()
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
+
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
@@ -119,6 +121,7 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
+
 class Compound(EmbeddedDocument):
   variant_id = StringField(required=True)
   display_name = StringField(required=True)
@@ -126,6 +129,7 @@ class Compound(EmbeddedDocument):
   combined_score = FloatField(required=True)
   region_annotations = ListField(StringField())
   functional_annotations = ListField(StringField())
+
 
 class GTCall(EmbeddedDocument):
   sample = StringField()
@@ -136,6 +140,7 @@ class GTCall(EmbeddedDocument):
 
   def __unicode__(self):
     return self.sample
+
 
 class Variant(Document):
   # document_id is a md5 string created by institute_caseid_variantid:
