@@ -261,5 +261,23 @@ class Variant(Document):
 
     return self.position + (bases - 1)
 
+  @property
+  def frequency(self):
+    """Returns a judgement on the overall frequency of the variant.
+
+    Combines multiple metrics into a single call.
+    """
+    most_common_frequency = max(self.thousand_genomes_frequency,
+                                self.exac_frequency)
+
+    if most_common_frequency > .05:
+      return 'common'
+
+    elif most_common_frequency > .01:
+      return 'uncommon'
+
+    else:
+      return 'rare'
+
   def __unicode__(self):
     return self.display_name

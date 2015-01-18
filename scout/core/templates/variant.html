@@ -193,7 +193,10 @@
 
           <div class="variant-list-item">
             <div>Frequency</div>
-            <div class="md-badge">{{ 'coming soon' }}</div>
+
+            <div class="md-badge--{% if variant.frequency == 'common' %}fail{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %}">
+              {{ variant.frequency }}
+            </div>
           </div>
         </div>
       </div>
