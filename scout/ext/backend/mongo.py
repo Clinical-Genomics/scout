@@ -65,7 +65,7 @@ class MongoAdapter(BaseAdapter):
       return Case.objects(case_id = case_id)
     except DoesNotExist:
       return None
-  
+
 
   def build_query(self, case_id, query=None, variant_ids=None):
     """
@@ -79,15 +79,15 @@ class MongoAdapter(BaseAdapter):
          'hgnc_symbols': list,
          'region_annotations': list
        }
-    
+
     Arguments:
       case_id     : A string that represents the case
       query       : A dictionary with querys for the database
       variant_ids : A list of md5 strings that represents variant ids
-    
+
     Returns:
       mongo_query : A dictionary in the mongo query format
-    
+
     """
     mongo_query = {}
     # We will allways use the case id when we query the database
@@ -103,7 +103,7 @@ class MongoAdapter(BaseAdapter):
                                                             }
                                                           )
         any_query = True
-          
+
       if query['exac_frequency']:
         mongo_query['$and'].append({'exac_frequency':{
                                 '$lt': query['exac_frequency']
@@ -111,21 +111,21 @@ class MongoAdapter(BaseAdapter):
                                                           }
                                                         )
         any_query = True
-          
+
       if query['genetic_models']:
-        mongo_query['$and'].append({'genetic_models': 
+        mongo_query['$and'].append({'genetic_models':
                                         {'$in': query['genetic_models']}
                                       }
                                     )
         any_query = True
-          
+
       if query['hgnc_symbols']:
-        mongo_query['$and'].append({'hgnc_symbols': 
+        mongo_query['$and'].append({'hgnc_symbols':
                                       {'$in': query['hgnc_symbols']}
                                     }
                                   )
         any_query = True
-        
+
       # Since we will add an '$or' question here we have to be extra careful
       if query['functional_annotations'] and query['region_annotations']:
         mongo_query['$and'].append({'$or': [
@@ -141,54 +141,55 @@ class MongoAdapter(BaseAdapter):
                         }
                       )
         any_query = True
-      
+
       elif query['functional_annotations']:
-          mongo_query['$and'].append({'genes.functional_annotation': 
+          mongo_query['$and'].append({'genes.functional_annotation':
                                         {'$in': query['functional_annotations']}
                                         }
                                       )
           any_query = True
-        
+
       elif query['region_annotations']:
-          mongo_query['$and'].append({'genes.region_annotation': 
+          mongo_query['$and'].append({'genes.region_annotation':
                                         {'$in': query['region_annotations']}
                                         }
                                       )
           any_query = True
-      
+
       if variant_ids:
-        mongo_query['$and'].append({'variant_id': 
+        mongo_query['$and'].append({'variant_id':
                                       {'$in': variant_ids}
                                     }
                                   )
         any_query = True
-      
-      
+
+
       if not any_query:
         del mongo_query['$and']
-    
+
+      pp(mongo_query)
       return mongo_query
 
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
     """
     Returns the number of variants specified in question for a specific case.
     If skip ≠ 0 skip the first n variants.
-    
+
     Arguments:
       case_id : A string that represents the case
       query   : A dictionary with querys for the database
-              
+
     Returns:
       A generator with the variants
-    
+
     """
     if variant_ids:
       nr_of_variants = len(variant_ids)
     else:
       nr_of_variants = skip + nr_of_variants
-    
+
     mongo_query = self.build_query(case_id, query, variant_ids)
-    
+
     for variant in (Variant.objects(__raw__=mongo_query)
                            .order_by('variant_rank')
                            .skip(skip)
@@ -222,11 +223,11 @@ class MongoAdapter(BaseAdapter):
       variant_object: A odm variant object
     """
 
-    previous_variant = Variant.objects(document_id=document_id)
+    previous_variant = Variant.objects.get(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects(Q(case_id= case_id) & Q(variant_rank = rank+1))
+      return Variant.objects.get(Q(case_id= case_id) & Q(variant_rank = rank+1))
     except DoesNotExist:
       return None
 
@@ -241,11 +242,11 @@ class MongoAdapter(BaseAdapter):
       variant_object: A odm variant object
 
     """
-    previous_variant = Variant.objects(document_id=document_id)
+    previous_variant = Variant.objects.get(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects(Q(case_id= case_id) & Q(variant_rank = rank-1))
+      return Variant.objects.get(Q(case_id= case_id) & Q(variant_rank = rank-1))
     except DoesNotExist:
       return None
 
@@ -271,29 +272,30 @@ def cli(institute, case, thousand_g, hgnc_id):
       h = hashlib.md5()
       h.update(' '.join(list_of_arguments))
       return h.hexdigest()
-    
-    
+
+
     print('Institute: %s, Case: %s' % (institute, case))
     my_mongo = MongoAdapter(app='hej')
-    
+
     query = {
             'genetic_models':[],
             'thousand_genomes_frequency':None,
             'exac_frequency':None,
-            'hgnc_symbols': [],
+            'hgnc_symbols': ['CIDEA'],
             'functional_annotations' : [],
             'region_annotations' : []
           }
-    
+
     ### FOR DEVELOPMENT ###
-    
+
     case_id = '_'.join([institute, case])
     print(case_id)
     my_case = my_mongo.case(case_id)
-    
+
     print('Case found:')
     pp(json.loads(my_case.to_json()))
     print('')
+    pp(query)
 
 
     variant_count = 0

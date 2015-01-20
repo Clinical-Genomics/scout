@@ -154,8 +154,8 @@ def variant(institute_id, case_id, variant_id):
   case = get_document_or_404(Case, case_id)
   variant = store.variant(document_id=variant_id)
 
-  prev_variant = {}  # store.previous_variant(document_id=variant_id)
-  next_variant = {}  # store.next_variant(document_id=variant_id)
+  prev_variant = store.previous_variant(document_id=variant_id)
+  next_variant = store.next_variant(document_id=variant_id)
 
   return dict(
     institute=institute,
@@ -175,7 +175,7 @@ def pin_variant(institute_id, case_id, variant_id):
   # very basic security check
   validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
-  variant = store.variant(variant_id=variant_id)
+  variant = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
 
@@ -203,7 +203,7 @@ def unpin_variant(institute_id, case_id, variant_id):
   # very basic security check
   validate_user(current_user, institute_id)
   case = get_document_or_404(Case, case_id)
-  variant = store.variant(variant_id=variant_id)
+  variant = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
 
@@ -233,7 +233,7 @@ def email_sanger(institute_id, case_id, variant_id):
   institute = validate_user(current_user, institute_id)
 
   case = get_document_or_404(Case, case_id)
-  variant = store.variant(variant_id=variant_id)
+  variant = store.variant(document_id=variant_id)
   specific = variant.specific[case.id]
 
   recipients = institute.sanger_recipients
