@@ -234,12 +234,11 @@ def email_sanger(institute_id, case_id, variant_id):
 
   case = get_document_or_404(Case, case_id)
   variant = store.variant(document_id=variant_id)
-  specific = variant.specific[case.id]
 
   recipients = institute.sanger_recipients
   if len(recipients) == 0:
     flash('No sanger recipients added to the institute.')
-    return abort(404)
+    return abort(403)
 
   # build variant page URL
   variant_url = url_for('.variant', institute_id=institute_id,
@@ -249,7 +248,7 @@ def email_sanger(institute_id, case_id, variant_id):
   functions = ["<li>%s</li>" % function for function in
                variant.common.protein_change]
   gtcalls = ["<li>%s: %s</li>" % (individual.sample, individual.genotype_call)
-             for individual in specific.samples]
+             for individual in variant.samples]
 
   html = """
     <p>Case {case_id}: <a href='{url}'>{variant_id}</a></p>
@@ -299,7 +298,7 @@ def email_sanger(institute_id, case_id, variant_id):
 
   # add to variant
   event_kwargs['link'] = variant_url
-  specific.events.append(Event(**event_kwargs))
+  variant.events.append(Event(**event_kwargs))
   variant.save()
 
   return redirect(variant_url)
