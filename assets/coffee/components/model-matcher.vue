@@ -1,9 +1,7 @@
 <template>
   <div>Matches expected inheritance model</div>
 
-  <div v-show="isMatching" class="md-badge--success">Yes</div>
-
-  <div v-show="!isMatching" class="md-badge--fail">No</div>
+  <div class="md-badge--{{category}}">{{message}}</div>
 </template>
 
 <script lang="coffee">
@@ -22,14 +20,25 @@
       resultList: ->
         return @result.split ','
 
-      omimModels: ->
-        if @entry
-          return @entry.models
-        else
-          return []
-
       isMatching: ->
-        return @resultList == @omimModels
+        return @resultList == @entry.models
+
+      category: ->
+        if @entry
+          if @entry.models[0] is 'unknown'
+            return 'warning'
+          else if @isMatching
+            return 'success'
+          else
+            return 'fail'
+
+      message: ->
+        if @category is 'warning'
+          return 'N/A'
+        else if @category is 'success'
+          return 'Yes'
+        else
+          return 'No'
 
     filters:
       join: (list, separator) ->
@@ -39,5 +48,7 @@
       return {
         url: ''
         result: []
+        entry: null
+        isMatching: null
       }
 </script>
