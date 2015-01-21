@@ -40,10 +40,10 @@ class MongoAdapter(BaseAdapter):
     database = config.get('MONGODB_DB', 'variantDatabase')
     username = config.get('MONGODB_USERNAME', None)
     password = config.get('MONGODB_PASSWORD', None)
-    
+
     connect(database, host=host, port=port, username=username,
             password=password)
-    
+
     # self.case_collection = self.db.case
     # self.variant_collection = self.db.variant
 
@@ -225,8 +225,8 @@ class MongoAdapter(BaseAdapter):
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects.get(__raw__({'$and':[
-                                        {'case_id': case_id}, 
+      return Variant.objects.get(__raw__=({'$and':[
+                                        {'case_id': case_id},
                                         {'variant_rank': rank+1}
                                         ]
                                       }
@@ -250,8 +250,8 @@ class MongoAdapter(BaseAdapter):
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects.get(__raw__({'$and':[
-                                        {'case_id': case_id}, 
+      return Variant.objects.get(__raw__=({'$and':[
+                                        {'case_id': case_id},
                                         {'variant_rank': rank - 1}
                                         ]
                                       }
@@ -289,11 +289,11 @@ def cli(institute, case, thousand_g, exac, hgnc_id):
 
     print('Institute: %s, Case: %s' % (institute, case))
     my_mongo = MongoAdapter(app='hej')
-    
+
     hgnc_question = []
     for hgnc_symbol in hgnc_id:
       hgnc_question.append(hgnc_symbol)
-    
+
     query = {
             'genetic_models':None,
             'thousand_genomes_frequency':thousand_g,
