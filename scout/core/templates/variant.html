@@ -94,7 +94,7 @@
           <strong>Position</strong>: {{ variant.position }}
         </li>
         <li>
-          <strong>Full name</strong>: {{ 'coming soon!' }}
+          <strong>Full name</strong>: {{ 'Not yet implemented' }}
         </li>
         <li>
           <strong>Ensembl</strong>:
@@ -221,7 +221,7 @@
 
           <div class="variant-list-item">
             <div>Local</div>
-            <div>{{ 'coming soon' }}</div>
+            <div>{{ 'Not yet implemented' }}</div>
           </div>
         </div>
       </div>
@@ -232,7 +232,7 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Disease gene model</div>
-            <div>{{ 'coming soon' }}</div>
+            <div>{{ 'Not yet implemented' }}</div>
           </div>
 
           <div class="variant-list-item">
@@ -343,7 +343,7 @@
                   {% for number in individual.allele_depths %}
                     <td class="text-right">{{ number }}</td>
                   {% endfor %}
-                  <td class="text-right">{{ 'coming soon' }}</td>
+                  <td class="text-right">{{ individual.genotype_quality }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -389,7 +389,7 @@
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>{{ transcript.transcript_id }}</td>
                   <td>{{ transcript.functional_annotations|join(',') }}</td>
-                  <td>{{ 'coming: strand' }}</td>
+                  <td>{{ 'Not yet implemented' }}</td>
                   <td>{{ transcript.exon }}</td>
                   <td>{{ transcript.intron or '-' }}</td>
                   <td>{{ transcript.coding_sequence_name }}</td>
@@ -548,7 +548,7 @@
         {{ variant.hgnc_symbols|join(', ') }}
       </p>
 
-      <p><strong>Database</strong>: {{ 'coming soon' }}</p>
+      <p><strong>Database</strong>: {{ 'Not yet implemented' }}</p>
 
       <p>
         <strong>Chromosome position</strong>:
