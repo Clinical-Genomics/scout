@@ -47,4 +47,3 @@ class User(Document):
   # required for Flask-Admin interface
   def __unicode__(self):
     return self.name
-
