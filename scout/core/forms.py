@@ -21,10 +21,17 @@ def process_filters_form(form):
   # process HGNC symbols to list
   if form.hgnc_symbols.data:
     form.hgnc_symbols.data = [x.strip() for x in
-                              form.hgnc_symbols.data[0].split(',')]
+                              form.hgnc_symbols.data[0].split(',')
+                              if x]
   else:
     form.hgnc_symbols.data = []
 
+  # correct decimal fields
+  for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
+    field = getattr(form, field_name)
+
+    if field.data:
+      field.data = float(field.data)
 
 class DecimalField(_DecimalField):
   """Modify regular DecimalField to better handle text input from user.
