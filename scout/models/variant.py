@@ -125,11 +125,14 @@ class Compound(EmbeddedDocument):
   variant = ReferenceField('Variant')
   # This is the variant id
   display_name = StringField(required=True)
-  # This is the individual rank score for this variant
-  rank_score = FloatField(required=True)
   combined_score = FloatField(required=True)
   region_annotations = ListField(StringField())
   functional_annotations = ListField(StringField())
+
+  @property
+  def rank_score(self):
+    """Return the individual rank score for this variant."""
+    return self.variant.rank_score
 
 
 class GTCall(EmbeddedDocument):
