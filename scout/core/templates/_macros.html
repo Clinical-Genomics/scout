@@ -19,15 +19,15 @@
               url_for('core.variant',
                       institute_id=institute_id,
                       case_id=case_id,
-                      variant_id=compound.variant_id)
+                      variant_id=compound.variant.document_id)
             }}">
               {{ compound.display_name }}
             </a>
           </td>
           <td class="text-right">{{ compound.combined_score }}</td>
           <td class="text-right">{{ compound.rank_score }}</td>
-          <td>{{ compound.region_annotations|join(',') }}</td>
-          <td>{{ compound.functional_annotations|join(',') }}</td>
+          <td>{{ compound.variant.region_annotations|join(',') }}</td>
+          <td>{{ compound.variant.functional_annotations|join(',') }}</td>
         </tr>
       {% else %}
         <tr>
@@ -36,4 +36,4 @@
       {% endfor %}
     </tbody>
   </table>
-{% endmacro%}
+{% endmacro %}
