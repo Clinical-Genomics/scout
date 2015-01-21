@@ -33,8 +33,8 @@ import hashlib
 
 from datetime import datetime
 from six import string_types
-from pymongo import MongoClient
-from mongoengine import connect, DoesNotExist
+from pymongo import (ASCENDING, DESCENDING)
+from mongoengine import (connect, get_db, DoesNotExist)
 
 
 from .config_parser import ConfigParser
@@ -160,7 +160,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-
+  
   connect(mongo_db, host='localhost', port=27017, username=username,
           password=password)
 
@@ -200,14 +200,6 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
 
   variant_parser = vcf_parser.VCFParser(infile = vcf_file, split_variants = True)
   nr_of_variants = 0
-  # for variant in variant_parser:
-  #   for info in variant['info_dict']:
-  #     print(info)
-  #     print(variant['info_dict'][info])
-  #   print('')
-  #   pp(variant['vep_info'])
-  # sys.exit()
-
   start_inserting_variants = datetime.now()
 
   if verbose:
@@ -217,18 +209,6 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
     mongo_variant.save()
-    # try:
-    #   print(mongo_variant.specific[0].to_json())
-    #   if Variant.objects(variant_id = mongo_variant.variant_id):
-    #     Variant.objects(variant_id = mongo_variant.variant_id).update_one(
-    #           pull__specific__case_id = case_id)
-    #     Variant.objects(variant_id = mongo_variant.variant_id).update_one(
-    #           push__specific = mongo_variant.specific[0].to_json())
-    #   else:
-    #     mongo_variant.save()
-    # except DoesNotExist:
-    #   mongo_variant.save()
-
     if verbose:
       if nr_of_variants % 1000 == 0:
         print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
@@ -237,9 +217,34 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS, file=sys.stderr)
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-
+  
+  if verbose:
+    print('Updating indexes...', file=sys.stderr)
+  
+  ensure_indexes()
+  
   return
 
+
+def ensure_indexes():
+  """Function to check the necessary indexes."""
+  variant_database = get_db()
+  variant_collection = variant_database['variant']
+  variant_collection.ensure_index(
+                [
+                  ('case_id', ASCENDING), 
+                  ('variant_rank', ASCENDING)
+                ], 
+                background=True
+      )
+  variant_collection.ensure_index(
+                [
+                  ('thousand_genomes_frequency', ASCENDING),
+                  ('exac_frequency', ASCENDING),
+                  ('hgnc_symbols', ASCENDING),
+                ],
+                background=True
+      )
 
 def get_mongo_variant(variant, individuals, case_id, config_object, variant_count):
   """

@@ -40,10 +40,10 @@ class MongoAdapter(BaseAdapter):
     database = config.get('MONGODB_DB', 'variantDatabase')
     username = config.get('MONGODB_USERNAME', None)
     password = config.get('MONGODB_PASSWORD', None)
-
+    
     connect(database, host=host, port=port, username=username,
             password=password)
-
+    
     # self.case_collection = self.db.case
     # self.variant_collection = self.db.variant
 
@@ -166,8 +166,6 @@ class MongoAdapter(BaseAdapter):
 
       if not any_query:
         del mongo_query['$and']
-
-      pp(mongo_query)
       return mongo_query
 
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
@@ -227,7 +225,13 @@ class MongoAdapter(BaseAdapter):
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects.get(Q(case_id= case_id) & Q(variant_rank = rank+1))
+      return Variant.objects.get(__raw__({'$and':[
+                                        {'case_id': case_id}, 
+                                        {'variant_rank': rank+1}
+                                        ]
+                                      }
+                                    )
+                                  )
     except DoesNotExist:
       return None
 
@@ -246,7 +250,13 @@ class MongoAdapter(BaseAdapter):
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects.get(Q(case_id= case_id) & Q(variant_rank = rank-1))
+      return Variant.objects.get(__raw__({'$and':[
+                                        {'case_id': case_id}, 
+                                        {'variant_rank': rank - 1}
+                                        ]
+                                      }
+                                    )
+                                  )
     except DoesNotExist:
       return None
 
@@ -260,10 +270,13 @@ class MongoAdapter(BaseAdapter):
 @click.option('--thousand_g',
                 default=100.0
 )
-@click.option('--hgnc_id',
-                default=[]
+@click.option('--exac',
+                default=100.0
 )
-def cli(institute, case, thousand_g, hgnc_id):
+@click.option('--hgnc_id',
+                multiple=True
+)
+def cli(institute, case, thousand_g, exac, hgnc_id):
     """Test the vcf class."""
     import hashlib
 
@@ -276,14 +289,18 @@ def cli(institute, case, thousand_g, hgnc_id):
 
     print('Institute: %s, Case: %s' % (institute, case))
     my_mongo = MongoAdapter(app='hej')
-
+    
+    hgnc_question = []
+    for hgnc_symbol in hgnc_id:
+      hgnc_question.append(hgnc_symbol)
+    
     query = {
-            'genetic_models':[],
-            'thousand_genomes_frequency':None,
-            'exac_frequency':None,
-            'hgnc_symbols': ['CIDEA'],
-            'functional_annotations' : [],
-            'region_annotations' : []
+            'genetic_models':None,
+            'thousand_genomes_frequency':thousand_g,
+            'exac_frequency':exac,
+            'hgnc_symbols': hgnc_question,
+            'functional_annotations' : None,
+            'region_annotations' : None
           }
 
     ### FOR DEVELOPMENT ###
@@ -297,12 +314,15 @@ def cli(institute, case, thousand_g, hgnc_id):
     print('')
     pp(query)
 
-
+    print('Query:')
+    pp(query)
+    print('')
     variant_count = 0
 
     numbers_matched = 0
     for variant in my_mongo.variants(case_id, query):
       pp(json.loads(variant.to_json()))
+      print('')
       numbers_matched += 1
     print('Number of variants: %s' % (numbers_matched))
 
