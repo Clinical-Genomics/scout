@@ -14,8 +14,11 @@ TERMS_MAP = {
   'Autosomal dominant': 'AD',
   'X-linked dominant': 'XD',
   'X-linked recessive': 'XR',
-  'Autosomal dominant; Isolated cases': 'AD'
 }
+
+TERMS_BLACKLIST = [
+   'Isolated cases',
+]
 
 # markdown to HTML converter object
 # can't use Flask-Markdown object since it doesn't support ``init_app``
@@ -49,7 +52,12 @@ def omim_inheritance(hgnc_symbol):
     Response: jsonified ``dict`` of inheritance model terms
   """
   entry = omim.gene(hgnc_symbol)
-  models = set(phenotype['inheritance'] for phenotype in entry['phenotypes'])
+  models = set()
+  for phenotype in entry['phenotypes']:
+    if phenotype['inheritance'] is None: continue
+    models.update([model.strip('? ') for model in phenotype['inheritance'].split(';')])
+    models = models.difference(TERMS_BLACKLIST)
+
   terms = [TERMS_MAP.get(model_human, model_human) for model_human in models]
 
   return jsonify(models=terms)
