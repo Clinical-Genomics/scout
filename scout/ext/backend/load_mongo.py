@@ -638,11 +638,11 @@ def get_genes(variant):
       mongo_gene.transcripts.append(genes[gene]['transcripts'][transcript_id])
     
     try:
-      mongo_gene.functional_annotation = most_severe.functional_annotation
+      mongo_gene.functional_annotation = genes[gene]['most_severe_function']
     except AttributeError:
       pass
     try:
-      mongo_gene.region_annotation = most_severe.region_annotation
+      mongo_gene.region_annotation = genes[gene]['most_severe_region']
     except AttributeError:
       pass
     try:
@@ -655,7 +655,7 @@ def get_genes(variant):
       pass
     # Add the mongo engine gene to the dictionary
     mongo_genes.append(mongo_gene)
-    
+  
   return mongo_genes
 
 def get_compounds(variant, rank_score, case, config_object):
