@@ -215,7 +215,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   for variant in variant_parser:
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, individuals, case, config_object, nr_of_variants)
-    mongo_variant.save()
+    # mongo_variant.save()
     if verbose:
       if nr_of_variants % 1000 == 0:
         print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
@@ -553,11 +553,15 @@ def get_transcript_information(vep_entry):
 
   if protein_sequence_name:
     transcript.protein_sequence_name = protein_sequence_name
-
+  
+  functional = []
+  regional = []
   for annotation in functional_annotations:
-    region_annotation = SO_TERMS[annotation]['region']
-    transcript.functional_annotation = annotation
-    transcript.region_annotation = region_annotation
+    functional.append(annotation)
+    regional.append(SO_TERMS[annotation]['region'])
+  
+  transcript.functional_annotations = functional
+  transcript.region_annotations = regional
 
   return transcript
 
@@ -584,7 +588,6 @@ def get_genes(variant):
   for vep_entry in variant['vep_info'].get(variant['ALT'], []):
     # We should first check if the variant is in a genetic region
     # If it is not we do not add any entry
-
     functional_annotations = vep_entry.get('Consequence', '').split('&')
     # Check if any of the consequences are genetic
     genetic_region = False
@@ -593,33 +596,38 @@ def get_genes(variant):
       # If any of the functional annotations are genetic we wnat to show it
       if region in GENETIC_REGIONS:
         genetic_region = True
-
+    
     # If any of the annotations are in genetic regions we add the information.
     if genetic_region:
-
+    
       transcripts.append(get_transcript_information(vep_entry))
-
+  
   # We now need to find the most severe transcript for each gene:
   for transcript in transcripts:
-
     transcript_id = transcript.transcript_id
     hgnc_symbol = transcript.hgnc_symbol
-    rank = SO_TERMS[transcript.functional_annotation]['rank']
-    if hgnc_symbol not in genes:
-      genes[hgnc_symbol] = {
-                      'most_severe_transcript': transcript,
-                      'best_rank' : rank,
-                      'transcripts': {
+    for i, functional_annotation in enumerate(transcript.functional_annotations):
+      rank = SO_TERMS[functional_annotation]['rank']
+      
+      if hgnc_symbol not in genes:
+        genes[hgnc_symbol] = {
+                        'most_severe_transcript': transcript,
+                        'most_severe_function': functional_annotation,
+                        'most_severe_region': transcript.region_annotations[i],
+                        'best_rank' : rank,
+                        'transcripts': {
                                   transcript_id : transcript
-                                }
-                      }
-    else:
-      genes[hgnc_symbol]['transcripts'][transcript_id] = transcript
-      if rank > best_rank:
-        genes[hgnc_symbol]['most_severe_transcript'] = transcript
-        best_rank = rank
-
-
+                                  }
+                          }
+      else:
+        genes[hgnc_symbol]['transcripts'][transcript_id] = transcript
+        if rank < best_rank:
+          genes[hgnc_symbol]['most_severe_transcript'] = transcript
+          genes[hgnc_symbol]['most_severe_function'] = functional_annotation
+          genes[hgnc_symbol]['most_severe_region'] = transcript.region_annotations[i]
+          best_rank = rank
+  
+  
   for gene in genes:
     most_severe = genes[gene]['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
@@ -628,7 +636,7 @@ def get_genes(variant):
     mongo_gene.transcripts = []
     for transcript_id in genes[gene]['transcripts']:
       mongo_gene.transcripts.append(genes[gene]['transcripts'][transcript_id])
-
+    
     try:
       mongo_gene.functional_annotation = most_severe.functional_annotation
     except AttributeError:
@@ -647,7 +655,7 @@ def get_genes(variant):
       pass
     # Add the mongo engine gene to the dictionary
     mongo_genes.append(mongo_gene)
-
+    
   return mongo_genes
 
 def get_compounds(variant, rank_score, case, config_object):

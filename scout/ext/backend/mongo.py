@@ -97,20 +97,26 @@ class MongoAdapter(BaseAdapter):
       any_query = False
       mongo_query['$and'] = []
       if query['thousand_genomes_frequency']:
-        mongo_query['$and'].append({'thousand_genomes_frequency':{
-                                '$lt': query['thousand_genomes_frequency']
+        try:
+          mongo_query['$and'].append({'thousand_genomes_frequency':{
+                                '$lt': float(query['thousand_genomes_frequency'])
                                                               }
                                                             }
                                                           )
-        any_query = True
+          any_query = True
+        except TypeError:
+          pass
 
       if query['exac_frequency']:
-        mongo_query['$and'].append({'exac_frequency':{
-                                '$lt': query['exac_frequency']
+        try:
+          mongo_query['$and'].append({'exac_frequency':{
+                                '$lt': float(query['exac_frequency'])
                                                             }
                                                           }
                                                         )
-        any_query = True
+          any_query = True
+        except TypeError:
+          pass
 
       if query['genetic_models']:
         mongo_query['$and'].append({'genetic_models':
@@ -166,6 +172,7 @@ class MongoAdapter(BaseAdapter):
 
       if not any_query:
         del mongo_query['$and']
+      
       return mongo_query
 
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
@@ -296,13 +303,14 @@ def cli(institute, case, thousand_g, exac, hgnc_id):
 
     query = {
             'genetic_models':None,
-            'thousand_genomes_frequency':thousand_g,
-            'exac_frequency':exac,
-            'hgnc_symbols': hgnc_question,
+            'thousand_genomes_frequency':None,
+            'exac_frequency':None,
+            'hgnc_symbols': ['ACTN4'],
             'functional_annotations' : None,
             'region_annotations' : None
           }
-
+# ['missense_variant']
+# ['exonic']
     ### FOR DEVELOPMENT ###
 
     case_id = '_'.join([institute, case])
