@@ -215,7 +215,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   for variant in variant_parser:
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, individuals, case, config_object, nr_of_variants)
-    # mongo_variant.save()
+    mongo_variant.save()
     if verbose:
       if nr_of_variants % 1000 == 0:
         print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
