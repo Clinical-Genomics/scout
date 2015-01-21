@@ -219,7 +219,7 @@ class Variant(Document):
       functional_annotations = [gene.functional_annotation for gene in self.genes]
     else:
       for gene in self.genes:
-        functional_annotations.append(':'.join([gene.hgnc_symbol, gene.functional_annotation]))
+        functional_annotations.append(':'.join([gene.hgnc_symbol, gene.functional_annotation or '']))
     return functional_annotations
 
   @property
@@ -230,7 +230,7 @@ class Variant(Document):
       return [gene.region_annotation for gene in self.genes]
     else:
       for gene in self.genes:
-        region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation]))
+        region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation or '']))
     return region_annotations
 
   @property
