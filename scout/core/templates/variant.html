@@ -388,7 +388,7 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>{{ transcript.transcript_id }}</td>
-                  <td>{{ transcript.functional_annotation }}</td>
+                  <td>{{ transcript.functional_annotations|join(',') }}</td>
                   <td>{{ 'coming: strand' }}</td>
                   <td>{{ transcript.exon }}</td>
                   <td>{{ transcript.intron or '-' }}</td>
