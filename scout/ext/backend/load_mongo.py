@@ -34,7 +34,8 @@ import hashlib
 from datetime import datetime
 from six import string_types
 from pymongo import (ASCENDING, DESCENDING)
-from mongoengine import (connect, get_db, DoesNotExist)
+from mongoengine import connect, DoesNotExist
+from mongoengine.connection import get_db
 
 
 from .config_parser import ConfigParser
@@ -160,7 +161,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-  
+
   connect(mongo_db, host='localhost', port=27017, username=username,
           password=password)
 
@@ -217,12 +218,12 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS, file=sys.stderr)
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-  
+
   if verbose:
     print('Updating indexes...', file=sys.stderr)
-  
+
   ensure_indexes()
-  
+
   return
 
 
@@ -232,9 +233,9 @@ def ensure_indexes():
   variant_collection = variant_database['variant']
   variant_collection.ensure_index(
                 [
-                  ('case_id', ASCENDING), 
+                  ('case_id', ASCENDING),
                   ('variant_rank', ASCENDING)
-                ], 
+                ],
                 background=True
       )
   variant_collection.ensure_index(
