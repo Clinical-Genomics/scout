@@ -40,10 +40,10 @@ class MongoAdapter(BaseAdapter):
     database = config.get('MONGODB_DB', 'variantDatabase')
     username = config.get('MONGODB_USERNAME', None)
     password = config.get('MONGODB_PASSWORD', None)
-
+    
     connect(database, host=host, port=port, username=username,
             password=password)
-
+    
     # self.case_collection = self.db.case
     # self.variant_collection = self.db.variant
 
@@ -225,7 +225,7 @@ class MongoAdapter(BaseAdapter):
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects(__raw__({'$and':[
+      return Variant.objects.get(__raw__({'$and':[
                                         {'case_id': case_id}, 
                                         {'variant_rank': rank+1}
                                         ]
@@ -250,7 +250,7 @@ class MongoAdapter(BaseAdapter):
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     try:
-      return Variant.objects(__raw__({'$and':[
+      return Variant.objects.get(__raw__({'$and':[
                                         {'case_id': case_id}, 
                                         {'variant_rank': rank - 1}
                                         ]

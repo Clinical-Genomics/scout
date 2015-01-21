@@ -33,8 +33,8 @@ import hashlib
 
 from datetime import datetime
 from six import string_types
-from pymongo import (MongoClient, ASCENDING, DESCENDING)
-from mongoengine import connect, DoesNotExist
+from pymongo import (ASCENDING, DESCENDING)
+from mongoengine import (connect, get_db, DoesNotExist)
 
 
 from .config_parser import ConfigParser
@@ -218,8 +218,33 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
   
+  if verbose:
+    print('Updating indexes...', file=sys.stderr)
+  
+  ensure_indexes()
+  
   return
 
+
+def ensure_indexes():
+  """Function to check the necessary indexes."""
+  variant_database = get_db()
+  variant_collection = variant_database['variant']
+  variant_collection.ensure_index(
+                [
+                  ('case_id', ASCENDING), 
+                  ('variant_rank', ASCENDING)
+                ], 
+                background=True
+      )
+  variant_collection.ensure_index(
+                [
+                  ('thousand_genomes_frequency', ASCENDING),
+                  ('exac_frequency', ASCENDING),
+                  ('hgnc_symbols', ASCENDING),
+                ],
+                background=True
+      )
 
 def get_mongo_variant(variant, individuals, case_id, config_object, variant_count):
   """
