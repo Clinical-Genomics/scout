@@ -184,11 +184,17 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
 
 
   ######## Get the case and add it to the mongo db: ########
-
+  if verbose:
+    print('Cases found in %s' % ped_file, file=sys.stderr)
   individuals = []
   cases = get_case(ped_file, family_type, institute_name)
   for case in cases:
     case_id = case.case_id
+    case_name = case.display_name
+    
+    if verbose:
+      print('case id %s' % case_name, file=sys.stderr)
+    
     if case not in institute.cases:
       institute.cases.append(case)
     for individual in case.individuals:
@@ -208,7 +214,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
 
   for variant in variant_parser:
     nr_of_variants += 1
-    mongo_variant = get_mongo_variant(variant, individuals, case['case_id'], config_object, nr_of_variants)
+    mongo_variant = get_mongo_variant(variant, individuals, case, config_object, nr_of_variants)
     mongo_variant.save()
     if verbose:
       if nr_of_variants % 1000 == 0:
@@ -247,7 +253,7 @@ def ensure_indexes():
                 background=True
       )
 
-def get_mongo_variant(variant, individuals, case_id, config_object, variant_count):
+def get_mongo_variant(variant, individuals, case, config_object, variant_count):
   """
   Take a variant and some additional information, convert it to mongo engine
   objects and put them in the proper format in the database.
@@ -268,6 +274,9 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
   #### Here is the start for parsing the variants                                                          ####
   #############################################################################################################
   # Create the ID for the variant
+  case_id = case.case_id
+  case_name = case.display_name
+  
   id_fields = [variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']]
   variant_id = generate_md5_key(id_fields)
   document_id = generate_md5_key(id_fields+case_id.split('_'))
@@ -313,6 +322,7 @@ def get_mongo_variant(variant, individuals, case_id, config_object, variant_coun
   mongo_variant['compounds'] = get_compounds(
                                           variant,
                                           mongo_variant.rank_score,
+                                          case,
                                           config_object
                                         )
 
@@ -640,33 +650,41 @@ def get_genes(variant):
 
   return mongo_genes
 
-def get_compounds(variant, rank_score, config_object):
+def get_compounds(variant, rank_score, case, config_object):
   """
   Get a list with mongoengine compounds for this variant.
-
+  
   Arguments:
-    variant : A Variant dictionary
-    rank_score: The rank score for the variant
+    variant       : A Variant dictionary
+    rank_score    : The rank score for the variant
+    case_name     : A string that represents the name of the case
     config_object : A config object with the information from the config file
-
+  
   Returns:
-    compounds : A list of mongo engine compound objects
+    compounds     : A list of mongo engine compound objects
   """
-
+  case_id = case.case_id
+  case_name = case.display_name
+  
   compounds = []
-  for compound in variant['info_dict'].get(config_object['Compounds']['vcf_info_key'], []):
+  
+  for compound in variant['compound_variants'].get(case_name, []):
+    compound_name = compound['variant_id']
+    compound_id = generate_md5_key(compound_name.split('_')+case_id.split('_'))
     try:
-      splitted_compound = compound.split('>')
-      compound_name = splitted_compound[0]
-      compound_individual_score = float(splitted_compound[1])
-      mongo_compound = Compound(variant_id=generate_md5_key(compound_name.split('_')),
-                              display_name = compound_name,
-                              rank_score = compound_individual_score,
-                              combined_score = rank_score + compound_individual_score
-                              )
-      compounds.append(mongo_compound)
-    except IndexError:
-      pass
+      compound_score = float(compound['compound_score'])
+    except TypeError:
+      compound_score = 0.0
+    compound_individual_score = compound_score - rank_score
+    mongo_compound = Compound(
+                        variant=compound_id,
+                        display_name = compound_name,
+                        rank_score = compound_individual_score,
+                        combined_score = compound_score
+                      )
+    # pp(json.loads(mongo_compound.to_json()))
+    compounds.append(mongo_compound)
+  
   return compounds
 
 @click.command()

@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 
 from mongoengine import (
   Document, EmbeddedDocument, EmbeddedDocumentField, FloatField,
-  IntField, ListField, StringField
+  IntField, ListField, StringField, ReferenceField
 )
 
 from .event import Event
@@ -121,8 +121,11 @@ class Gene(EmbeddedDocument):
 
 
 class Compound(EmbeddedDocument):
-  variant_id = StringField(required=True)
+  # This must be the document_id for this variant
+  variant = ReferenceField('Variant')
+  # This is the variant id
   display_name = StringField(required=True)
+  # This is the individual rank score for this variant
   rank_score = FloatField(required=True)
   combined_score = FloatField(required=True)
   region_annotations = ListField(StringField())
