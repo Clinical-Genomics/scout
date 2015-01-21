@@ -164,6 +164,7 @@ class Variant(Document):
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:
+  hgnc_symbols = ListField(StringField())
   ensemble_gene_ids = ListField(StringField())
   # Frequencies:
   thousand_genomes_frequency = FloatField()
@@ -228,44 +229,6 @@ class Variant(Document):
       for gene in self.genes:
         region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation]))
     return region_annotations
-
-  @property
-  def hgnc_symbols(self):
-    """Returns a list with the hgnc id:s for this variant."""
-    return [gene.hgnc_symbol for gene in self.genes]
-
-  @property
-  def sift_predictions(self):
-    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
-    sift_predictions = []
-    if len(self.genes) == 1:
-      sift_predictions = [gene.sift_prediction for gene in self.genes]
-    else:
-      for gene in self.genes:
-        sift_predictions.append(':'.join([gene.hgnc_symbol, gene.sift_prediction or '-']))
-    return sift_predictions
-
-  @property
-  def polyphen_predictions(self):
-    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
-    polyphen_predictions = []
-    if len(self.genes) == 1:
-      polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
-    else:
-      for gene in self.genes:
-        polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
-    return polyphen_predictions
-
-  @property
-  def functional_annotations(self):
-    """Return a list with the functional annotation(s) for this variant. The most severe for each gene."""
-    functional_annotations = []
-    if len(self.genes) == 1:
-      functional_annotations = [gene.functional_annotation for gene in self.genes]
-    else:
-      for gene in self.genes:
-        functional_annotations.append(':'.join([gene.hgnc_symbol, gene.functional_annotation or '-']))
-    return functional_annotations
 
   @property
   def transcripts(self):
