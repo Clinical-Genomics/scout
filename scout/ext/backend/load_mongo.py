@@ -240,9 +240,9 @@ def ensure_indexes():
       )
   variant_collection.ensure_index(
                 [
+                  ('hgnc_symbols', ASCENDING),
                   ('thousand_genomes_frequency', ASCENDING),
                   ('exac_frequency', ASCENDING),
-                  ('hgnc_symbols', ASCENDING),
                 ],
                 background=True
       )
@@ -691,6 +691,11 @@ def get_compounds(variant, rank_score, config_object):
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
 )
+@click.option('-i', '--institute',
+                default='CMMS',
+                nargs=1,
+                help="Specify the institute that the file belongs to."
+)
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'
 )
@@ -705,7 +710,7 @@ def get_compounds(variant, rank_score, config_object):
                 help='Increase output verbosity.'
 )
 def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
-        password, verbose):
+        password, institute, verbose):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
   if not vcf_file:
@@ -734,7 +739,8 @@ def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
     sys.exit(0)
 
   my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type,
-                      mongo_db=mongo_db, username=username, password=password, verbose=verbose)
+                      mongo_db=mongo_db, username=username, password=password, 
+                      institute_name=institute, verbose=verbose)
 
 
 if __name__ == '__main__':
