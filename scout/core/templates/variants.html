@@ -194,10 +194,12 @@
 
         <!-- 1000 Genomes -->
 				<div class="variants-row-item text-right md-tooltip">
-          {% if variant.thousand_genomes_frequency %}
-            {{ variant.thousand_genomes_frequency|round(3) }}
-          {% else %}
+          {% if not variant.thousand_genomes_frequency %}
             -
+          {% elif variant.thousand_genomes_frequency < 0.0001 %}
+            &lt; 0.0001
+          {% else %}
+            {{ variant.thousand_genomes_frequency|round(4) }}
           {% endif %}
 
           <div class="md-tooltip-tip is-left">
@@ -205,10 +207,14 @@
               {% if variant.exac_frequency %}
                 <li>
                   <strong>ExAC</strong>
-                  {{ variant.exac_frequency|round(3) }}
+                  {% if variant.exac_frequency < 0.0001 %}
+                    &lt; 0.0001
+                  {% else %}
+                    {{ variant.exac_frequency|round(4) }}
+                  {% endif %}
                 </li>
               {% endif %}
-              <li><strong>Local</strong> {{ 'soon' }}</li>
+              <li><strong>Local</strong> {{ 'Not yet implemented' }}</li>
             </ul>
           </div>
         </div>
