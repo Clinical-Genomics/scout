@@ -443,31 +443,31 @@
     <div id="external-links" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-body">
-          <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensemble_gene_ids|join(',') }}">
             Ensembl
           </a>
 
-          <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensemble_gene_ids|join(',') }}">
             HPA
           </a>
 
-          <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensemble_gene_ids|join(',') }}">
             STRING
           </a>
 
-          <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
+          <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
             UCSC
           </a>
 
-          <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
             Entrez
           </a>
 
-          <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
+          <a target="_blank" class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
             OMIM
           </a>
 
-          <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
+          <a target="_blank" class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
             IGV
           </a>
         </div>
