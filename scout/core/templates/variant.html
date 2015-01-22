@@ -387,15 +387,45 @@
               {% for transcript in variant.transcripts %}
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
-                  <td>{{ transcript.transcript_id }}</td>
-                  <td>{{ transcript.functional_annotations|join(',') }}</td>
-                  <td>{{ 'Not yet implemented' }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.transcript_id }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.transcript_id }}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.functional_annotations|join(',') }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.functional_annotations|join(',') }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="dotdotdot">{{ 'Not yet implemented' }}</td>
                   <td>{{ transcript.exon }}</td>
                   <td>{{ transcript.intron or '-' }}</td>
                   <td>{{ transcript.coding_sequence_name }}</td>
                   <td>{{ transcript.protein_sequence_name }}</td>
                   <td>{{ transcript.sift_prediction }}</td>
-                  <td>{{ transcript.polyphen_prediction }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.polyphen_prediction }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.polyphen_prediction }}
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               {% else %}
                 <tr>
