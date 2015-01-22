@@ -40,6 +40,7 @@ md-modal {
   // add some extra distance to overlay
   @extend .md-shadow-1-half;
 
+  display: none;
   margin-top: -100%;
   min-width: 30rem;
 
