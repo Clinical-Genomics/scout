@@ -608,6 +608,10 @@
       <p><strong>Ordered by</strong>: {{ current_user.name }}</p>
 
       <div class="sanger-form-footer">
+        <div v-on="click: hideModal" class="md-button" title="Cancel Sanger">
+          Cancel
+        </div>
+
         <button class="md-button" type="submit" title="Order Sanger">
           Send
         </button>
