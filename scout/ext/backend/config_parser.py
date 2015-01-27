@@ -72,12 +72,6 @@ class ConfigParser(ConfigObj):
     # if result != True:
     #     print('Config file validation failed!')
     #     sys.exit(1)
-    self.collections = {'core':[],
-                        'common':[],
-                        'case':[],
-                        'config_info':[],
-                        'individual':[]
-                }
     self.categories = {'variant_position':[],
                       'variant_id':[],
                       'variant_information':[],
@@ -92,7 +86,6 @@ class ConfigParser(ConfigObj):
 
     self.plugins = [plugin for plugin in self.keys()]
     for plugin in self.plugins:
-      self.collections[self[plugin]['collection']].append(plugin)
       self.categories[self[plugin]['category']].append(plugin)
     
   def write_config(self, outfile):
@@ -123,14 +116,11 @@ class ConfigParser(ConfigObj):
 def read_config(config_file, outfile):
     """Parse the config file and print it to the output."""
     my_config_reader = ConfigParser(config_file)
-    print('Collections:\n' '-------------------')
-    for collection in my_config_reader.collections:
-      for adapter in my_config_reader.collections[collection]:
-        print('%s : %s' % (collection, adapter))
     print('\nCategories:\n' '-------------------')
     for category in my_config_reader.categories:
       for adapter in my_config_reader.categories[category]:
         print('%s : %s' % (category, adapter))
+        pp(my_config_reader[adapter])
     # for plugin in my_config_reader.plugins:
     #   print(type(my_config_reader[plugin].get('vcf_data_field_number', '0')))
       
