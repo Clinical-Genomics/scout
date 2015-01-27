@@ -52,3 +52,6 @@ instance
 
 # Node.js
 node_modules/
+
+# Textmate
+.tm_properties
