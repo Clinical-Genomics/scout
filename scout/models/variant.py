@@ -4,7 +4,7 @@
 "main concept of MongoDB is embed whenever possible"
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
-from __future__ import absolute_import, unicode_literals
+from __future__ import (absolute_import, unicode_literals, division)
 
 from mongoengine import (
   Document, EmbeddedDocument, EmbeddedDocumentField, FloatField,
@@ -12,9 +12,10 @@ from mongoengine import (
 )
 
 from .event import Event
+from .case import Case
 
+######## These are defined terms for different categories ########
 
-######## Common are attributes that is specific for the variant on this certain position ########
 
 CONSERVATION = (
   'NotConserved',
@@ -147,12 +148,20 @@ class GTCall(EmbeddedDocument):
 
 
 class Variant(Document):
-  # document_id is a md5 string created by institute_caseid_variantid:
+  # document_id is a md5 string created by institute_genelist_caseid_variantid:
   document_id = StringField(primary_key=True)
   # variant_id is a md5 string created by variant_id
   variant_id = StringField(required=True)
   # display name in variant_id (no md5)
   display_name = StringField(required=True)
+  # the variant can be either a reserchvariant or a clinical variant.
+  # for research variants we display all the available information while
+  # the clinical variants hae limited annotation fields.
+  variant_type = StringField(required=True, choices=(
+                                                  'research',
+                                                  'clinical'
+                                                  )
+                            )
   # case_id is a string like institute_caseid
   case_id = StringField(required=True)
   chromosome = StringField(required=True)
@@ -175,12 +184,24 @@ class Variant(Document):
   # Frequencies:
   thousand_genomes_frequency = FloatField()
   exac_frequency = FloatField()
+  local_frequency = FloatField()
   # Predicted deleteriousness:
   cadd_score = FloatField()
+  # Conservation:
   phast_conservation = ListField(StringField(choices=CONSERVATION))
   gerp_conservation = ListField(StringField(choices=CONSERVATION))
   phylop_conservation = ListField(StringField(choices=CONSERVATION))
+  # Database options:
+  gene_lists = ListField(StringField())
+  expected_inheritance = ListField(StringField())
+  disease_groups = ListField(StringField())
 
+  @property
+  def local_requency(self):
+    """Returns a float with the local freauency for this position."""
+    return (Variant.objects(variant_id=self.variant_id).count /
+              Case.objects.count())
+    
   @property
   def region_annotations(self):
     """Returns a list with region annotation(s)."""

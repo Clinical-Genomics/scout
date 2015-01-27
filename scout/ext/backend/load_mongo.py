@@ -20,7 +20,8 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 
 
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import (absolute_import, unicode_literals, print_function, 
+                        division)
 
 import sys
 import os
@@ -161,19 +162,23 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-
+  
   connect(mongo_db, host='localhost', port=27017, username=username,
           password=password)
-
+  
+  variant_database = get_db()
+  
+  
   if verbose:
     print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\nmongo_db:\t%s\ninstitute:\t%s\n" %
               (vcf_file, ped_file, config_file, family_type, mongo_db, institute_name), file=sys.stderr)
-
-  ######## Parse the config file to check for keys: ########
+  
+  
+  ######## Parse the config file to check for keys ########
   config_object = ConfigParser(config_file)
-
+  
   ######## Add the institute to the mongo db: ########
-
+  
   institute = get_institute(institute_name)
   try:
     if Institute.objects.get(internal_id = institute.internal_id):
@@ -181,8 +186,8 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   except DoesNotExist:
     if verbose:
       print('New institute!', file=sys.stderr)
-
-
+  
+  
   ######## Get the case and add it to the mongo db: ########
   if verbose:
     print('Cases found in %s' % ped_file, file=sys.stderr)
@@ -200,18 +205,18 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     for individual in case.individuals:
       individuals.append(individual.individual_id)
     case.save()
-
+  
   institute.save()
-
+  
   ######## Get the variants and add them to the mongo db: ########
-
+  
   variant_parser = vcf_parser.VCFParser(infile = vcf_file, split_variants = True)
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
-
+  
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
-
+  
   for variant in variant_parser:
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, individuals, case, config_object, nr_of_variants)
@@ -219,36 +224,79 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     if verbose:
       if nr_of_variants % 1000 == 0:
         print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
-
+  
   if verbose:
     print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS, file=sys.stderr)
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-
+  
+  
+  if verbose:
+    print('Updating local frequencies...', file=sys.stderr)
+    local_freq_start = datetime.now()
+  
+  # update_local_frequencies(variant_database)
+  
+  if verbose:
+    print('Time to update frequencies: %s' % (datetime.now()-local_freq_start),
+            file=sys.stderr)
+  
   if verbose:
     print('Updating indexes...', file=sys.stderr)
-
-  ensure_indexes()
-
+  
+  ensure_indexes(variant_database)
+  
   return
 
+def update_local_frequencies(variant_database):
+  """
+  Update the local frequencies for each variant in the database.
+  
+  For each document id in the database we find all variants with the same 
+  variant id. We count the number of variants and divide this number by the
+  total number of cases.
+  
+  Args:
+    variant_database  : A pymongo connection to the database
+  
+  """
+  variant_collection = variant_database['variant']
+  case_collection = variant_database['case']
+  number_of_cases = case_collection.count()
+  for variant in variant_collection.find():
+    variant_id = variant['variant_id']
+    variant['local_frequency'] = (variant_collection.find(
+                                    {
+                                        'variant_id':variant['variant_id']
+                                    }
+                                  ).count()) / number_of_cases
+  return
 
-def ensure_indexes():
+def ensure_indexes(variant_database):
   """Function to check the necessary indexes."""
-  variant_database = get_db()
   variant_collection = variant_database['variant']
   variant_collection.ensure_index(
                 [
                   ('case_id', ASCENDING),
-                  ('variant_rank', ASCENDING)
+                  ('variant_rank', ASCENDING),
+                  ('thousand_genomes_frequency', ASCENDING),
+                  ('gene_lists', ASCENDING)
                 ],
                 background=True
       )
   variant_collection.ensure_index(
                 [
                   ('hgnc_symbols', ASCENDING),
-                  ('thousand_genomes_frequency', ASCENDING),
                   ('exac_frequency', ASCENDING),
+                ],
+                background=True
+      )
+    
+  variant_collection.ensure_index(
+                [
+                  ('thousand_genomes_frequency', ASCENDING),
+                  ('gene.functional_annotation', ASCENDING),
+                  ('gene.region_annotation', ASCENDING)
                 ],
                 background=True
       )
@@ -277,36 +325,71 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
   case_id = case.case_id
   case_name = case.display_name
   
-  id_fields = [variant['CHROM'], variant['POS'], variant['REF'], variant['ALT']]
+  gene_lists = variant['info_dict'].get(
+          config_object['GeneLists']['vcf_info_key'], 
+          None
+          )
+  expected_inheritance = variant['info_dict'].get(
+          config_object['ExpectedInheritanceModels']['vcf_info_key'], 
+          []
+          )
+  # A variant can be a research variant or a clinical variant
+  # The annotations will differ between the two cases
+  if gene_lists:
+    variant_type = 'clinical'
+  else:
+    # pp(variant)
+    variant_type = 'research'
+    gene_lists = ['research']
+  
+  disease_groups = variant['info_dict'].get(
+          config_object['DiseaseGroups']['vcf_info_key'], 
+          []
+          )
+  
+  id_fields = [
+                variant['CHROM'], 
+                variant['POS'], 
+                variant['REF'], 
+                variant['ALT'], 
+                variant_type
+              ]
+  
   variant_id = generate_md5_key(id_fields)
   document_id = generate_md5_key(id_fields+case_id.split('_'))
 
+  # print(gene_lists)
+  # print(expected_inheritance)
 
   # Create the mongo variant object
   mongo_variant = Variant(
                           document_id = document_id,
                           variant_id = variant_id,
+                          variant_type = variant_type,
                           case_id = case_id,
                           display_name = '_'.join(id_fields),
                           chromosome = variant['CHROM'],
                           position = int(variant['POS']),
                           reference = variant['REF'],
-                          alternative = variant['ALT']
+                          alternative = variant['ALT'],
+                          gene_lists = gene_lists,
+                          expected_inheritance = expected_inheritance,
+                          disease_groups = disease_groups
                   )
+  
+  # pp(json.loads(mongo_variant.to_json()))
+  ################# Add the rank score and variant rank #################
   # Get the rank score as specified in the config file.
   # This is central for displaying variants in scout.
-  try:
-    mongo_variant['rank_score'] = float(
-      variant['info_dict'][config_object['RankScore']['vcf_info_key']][0]
+  mongo_variant['rank_score'] = float(
+      variant.get('rank_scores', {}).get(case_name, 0.0)
     )
-  except KeyError:
-    mongo_variant['rank_score'] = 0.0
-
+  
   mongo_variant['variant_rank'] = variant_count
   mongo_variant['quality'] = float(variant['QUAL'])
   mongo_variant['filters'] = variant['FILTER'].split(';')
-
-  # Add the gt calls:
+  
+  ################# Add gt calls #################
   gt_calls = []
   for individual in individuals:
     # This function returns an ODM GTCall object with the relevant information:
@@ -318,27 +401,28 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
                                       )
   mongo_variant['samples'] = gt_calls
 
-  # Add the compound information:
+  ################# Add the compound information #################
+  
   mongo_variant['compounds'] = get_compounds(
                                           variant,
                                           mongo_variant.rank_score,
                                           case,
+                                          variant_type,
                                           config_object
                                         )
-
-  # Add the inheritance patterns:
-  models = variant['info_dict'].get(
-                            config_object['GeneticModels']['vcf_info_key'],
-                            None
-                          )
-  if models:
-    genetic_models = []
-    for family_models in models:
-      for model in family_models.split(':')[-1].split('|'):
-        genetic_models.append(model)
-      mongo_variant['genetic_models'] = genetic_models
-
-  # Add the gene and tanscript information:
+  
+  ################# Add the inheritance patterns #################
+  
+  mongo_variant['genetic_models'] = variant.get(
+                                        'genetic_models', 
+                                        {}
+                                        ).get(
+                                            case_name, 
+                                            []
+                                            )
+  
+  ################# Add the gene and tanscript information #################
+  
   mongo_variant['genes'] = get_genes(variant)
   hgnc_symbols = set([])
   for gene in mongo_variant.genes:
@@ -350,10 +434,13 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
                               config_object['Ensembl_gene_id']['vcf_info_key'],
                               []
                             )
-  # Add a list with the dbsnp ids:
+  
+  ################# Add a list with the dbsnp ids #################
+  
   mongo_variant['db_snp_ids'] = variant['ID'].split(';')
-
-  # Add the frequencies
+  
+  ################# Add the frequencies #################
+  
   try:
     mongo_variant['thousand_genomes_frequency'] = float(
                                 variant['info_dict'].get(
@@ -362,7 +449,7 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
                                 )
   except ValueError:
     pass
-
+  
   try:
     mongo_variant['exac_frequency'] = float(
                                 variant['info_dict'].get(
@@ -371,7 +458,7 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
                                 )
   except ValueError:
     pass
-
+  
   # Add the severity predictions
   mongo_variant['cadd_score'] = float(
                           variant['info_dict'].get(
@@ -658,14 +745,15 @@ def get_genes(variant):
   
   return mongo_genes
 
-def get_compounds(variant, rank_score, case, config_object):
+def get_compounds(variant, rank_score, case, variant_type, config_object):
   """
   Get a list with mongoengine compounds for this variant.
   
   Arguments:
     variant       : A Variant dictionary
     rank_score    : The rank score for the variant
-    case_name     : A string that represents the name of the case
+    case          : A case object
+    variant_type  : 'research' or 'clinical'
     config_object : A config object with the information from the config file
   
   Returns:
@@ -678,7 +766,12 @@ def get_compounds(variant, rank_score, case, config_object):
   
   for compound in variant['compound_variants'].get(case_name, []):
     compound_name = compound['variant_id']
-    compound_id = generate_md5_key(compound_name.split('_')+case_id.split('_'))
+    # The compound id have to match the document id
+    compound_id = generate_md5_key(
+                            compound_name.split('_') +
+                            [variant_type] +
+                            case_id.split('_')
+                  )
     try:
       compound_score = float(compound['compound_score'])
     except TypeError:
@@ -690,7 +783,7 @@ def get_compounds(variant, rank_score, case, config_object):
                         rank_score = compound_individual_score,
                         combined_score = compound_score
                       )
-    # pp(json.loads(mongo_compound.to_json()))
+    
     compounds.append(mongo_compound)
   
   return compounds
