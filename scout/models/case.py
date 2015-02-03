@@ -67,7 +67,12 @@ class Case(Document):
   gene_lists = ListField(StringField())
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
+  hpo_terms = [{'id': 'HP:0001251', 'feature': 'Ataxia'}]
+
+  @property
+  def hpo_genes(self):
+    """Return the list of HGNC symbols that match annotated HPO terms."""
+    return ['ANKRD11', 'PORCN', 'POR2']
 
   def __unicode__(self):
     return self.display_name
-
