@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Simple OMIM REST API class."""
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
@@ -21,22 +22,19 @@ def format_entry(json_entry):
   # extract phenotypes for the gene
   phenotypes_raw = (item['phenotypeMap']
                     for item in gene_map.get('phenotypeMapList', []))
-  phenotypes = [{
-    'mim_number': phenotype.get('mimNumber'),
-    'phenotype': phenotype.get('phenotype'),
-    'mapping_key': phenotype.get('phenotypeMappingKey'),
-    'inheritance': phenotype.get('phenotypeInheritance')
-  } for phenotype in phenotypes_raw]
+  phenotypes = [{'mim_number': phenotype.get('mimNumber'),
+                 'phenotype': phenotype.get('phenotype'),
+                 'mapping_key': phenotype.get('phenotypeMappingKey'),
+                 'inheritance': phenotype.get('phenotypeInheritance')
+                } for phenotype in phenotypes_raw]
 
-  data = {
-    'prefix': json_entry.get('prefix'),
-    'mim_number': json_entry.get('mimNumber'),
-    'status': json_entry.get('status'),
-    'other_entities': other_entities,
-    'gene_symbol': gene_map.get('geneSymbols'),
-    'gene_name': gene_map.get('geneName'),
-    'phenotypes': phenotypes
-  }
+  data = {'prefix': json_entry.get('prefix'),
+          'mim_number': json_entry.get('mimNumber'),
+          'status': json_entry.get('status'),
+          'other_entities': other_entities,
+          'gene_symbol': gene_map.get('geneSymbols'),
+          'gene_name': gene_map.get('geneName'),
+          'phenotypes': phenotypes}
 
   if 'epochCreated' in json_entry:
     data['created_at'] = datetime.fromtimestamp(json_entry.get('epochCreated'))
@@ -86,14 +84,19 @@ class OMIM(object):
       str, dict: URL entry point and params as a ``dict``
     """
     url = "%s/%s" % (self.base_url, handler)
-    params = {
-      'apiKey': self.api_key,
-      'format': self.format
-    }
+    params = {'apiKey': self.api_key, 'format': self.format}
 
     return url, params
 
   def gene(self, hgnc_symbol):
+    """Search for a single gene by HGNC symbol.
+
+    Args:
+      hgnc_symbol (str): HGNC gene symbol
+
+    Returns:
+      dict: formatted response from OMIM
+    """
     entry = self.search_gene(hgnc_symbol)
 
     return format_entry(entry)
