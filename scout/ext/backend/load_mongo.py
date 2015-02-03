@@ -156,9 +156,10 @@ SO_TERMS = {
   'intergenic_variant': {'rank':36, 'region':'intergenic_variant'}
 }
 
-def load_mongo(vcf_file=None, ped_file=None, config_file=None,
+def load_mongo(vcf_file=None, ped_file=None, config_file=None, 
                family_type='ped', mongo_db='variantDatabase', institute_name='CMMS',
-               username=None, password=None, verbose = False):
+               variant_type='clinical', madeline_file=None, username=None, 
+               password=None, verbose = False):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
@@ -200,11 +201,17 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     if verbose:
       print('case id %s' % case_name, file=sys.stderr)
     
+    # Add the case to its institute
     if case not in institute.cases:
       institute.cases.append(case)
+    # Add the individuals of a case
     for individual in case.individuals:
       individuals.append(individual.individual_id)
-    case.save()
+    # Add the pedigree picture
+    if madeline_file:
+      with open(madeline_file, 'r') as f:
+        case.madeline_info = f.read()
+    
   
   institute.save()
   
@@ -214,12 +221,16 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
   
+  gene_lists = set([])
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
   
   for variant in variant_parser:
     nr_of_variants += 1
-    mongo_variant = get_mongo_variant(variant, individuals, case, config_object, nr_of_variants)
+    mongo_variant = get_mongo_variant(variant, variant_type, individuals, case, config_object, nr_of_variants)
+    for gene_list in mongo_variant['gene_lists']:
+      gene_lists.add(gene_list)
+    
     mongo_variant.save()
     if verbose:
       if nr_of_variants % 1000 == 0:
@@ -230,16 +241,10 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
   
+  case.gene_lists = list(gene_lists)
   
-  if verbose:
-    print('Updating local frequencies...', file=sys.stderr)
-    local_freq_start = datetime.now()
+  case.save()
   
-  # update_local_frequencies(variant_database)
-  
-  if verbose:
-    print('Time to update frequencies: %s' % (datetime.now()-local_freq_start),
-            file=sys.stderr)
   
   if verbose:
     print('Updating indexes...', file=sys.stderr)
@@ -279,6 +284,7 @@ def ensure_indexes(variant_database):
                 [
                   ('case_id', ASCENDING),
                   ('variant_rank', ASCENDING),
+                  ('variant_type', ASCENDING),
                   ('thousand_genomes_frequency', ASCENDING),
                   ('gene_lists', ASCENDING)
                 ],
@@ -301,13 +307,14 @@ def ensure_indexes(variant_database):
                 background=True
       )
 
-def get_mongo_variant(variant, individuals, case, config_object, variant_count):
+def get_mongo_variant(variant, variant_type, individuals, case, config_object, variant_count):
   """
   Take a variant and some additional information, convert it to mongo engine
   objects and put them in the proper format in the database.
 
   Input:
     variant       : A Variant dictionary
+    variant_type  : A string in ['clinical', 'research']
     individuals   : A list with the id:s of the individuals
     case_id       : The md5 string that represents the ID for the case
     variant_count : The rank order of the variant in this case
@@ -333,14 +340,6 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
           config_object['ExpectedInheritanceModels']['vcf_info_key'], 
           []
           )
-  # A variant can be a research variant or a clinical variant
-  # The annotations will differ between the two cases
-  if gene_lists:
-    variant_type = 'clinical'
-  else:
-    # pp(variant)
-    variant_type = 'research'
-    gene_lists = ['research']
   
   disease_groups = variant['info_dict'].get(
           config_object['DiseaseGroups']['vcf_info_key'], 

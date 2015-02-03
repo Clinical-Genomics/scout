@@ -92,6 +92,7 @@ class MongoAdapter(BaseAdapter):
     mongo_query = {}
     # We will allways use the case id when we query the database
     mongo_query['case_id'] = case_id
+    mongo_query['variant_type'] = query.get('variant_type', 'clinical')
     if query:
       # We need to check if there is any query specified in the input query
       any_query = False

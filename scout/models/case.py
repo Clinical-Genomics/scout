@@ -74,5 +74,7 @@ class Case(Document):
     """Return the list of HGNC symbols that match annotated HPO terms."""
     return ['ANKRD11', 'PORCN', 'POR2']
 
+  madeline_info = StringField()
+
   def __unicode__(self):
     return self.display_name
