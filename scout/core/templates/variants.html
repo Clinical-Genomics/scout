@@ -88,6 +88,15 @@
 
         <div class="variants-filters-group-list">
           {{ form.gene_lists(class="variants-filters-select") }}
+
+          <div class="list-item">
+            <a class="md-button"
+               href="{{ url_for('core.variants', institute_id=institute_id,
+                                case_id=case_id, hgnc_symbols=case.hpo_genes)
+                     }}">
+              HPO generated gene list
+            </a>
+          </div>
         </div>
       </div>
 
