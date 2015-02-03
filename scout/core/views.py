@@ -130,6 +130,8 @@ def variants(institute_id, case_id):
   # dynamically add choices to gene lists selection
   gene_lists = [(item, item) for item in case.gene_lists]
   form.gene_lists.choices = gene_lists
+  # make sure HGNC symbols are correctly handled
+  form.hgnc_symbols.data = request.args.getlist('hgnc_symbols')
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)

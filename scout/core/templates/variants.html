@@ -87,6 +87,14 @@
         </div>
 
         <div class="variants-filters-group-list">
+          <div class="list-item">
+            {% for subfield in form.variant_type %}
+              <div>{{ subfield }} {{ subfield.label }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="variants-filters-group-list">
           {{ form.gene_lists(class="variants-filters-select") }}
 
           <div class="list-item">
