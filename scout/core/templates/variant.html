@@ -387,15 +387,45 @@
               {% for transcript in variant.transcripts %}
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
-                  <td>{{ transcript.transcript_id }}</td>
-                  <td>{{ transcript.functional_annotations|join(',') }}</td>
-                  <td>{{ 'Not yet implemented' }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.transcript_id }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.transcript_id }}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.functional_annotations|join(',') }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.functional_annotations|join(',') }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="dotdotdot">{{ 'Not yet implemented' }}</td>
                   <td>{{ transcript.exon }}</td>
                   <td>{{ transcript.intron or '-' }}</td>
                   <td>{{ transcript.coding_sequence_name }}</td>
                   <td>{{ transcript.protein_sequence_name }}</td>
                   <td>{{ transcript.sift_prediction }}</td>
-                  <td>{{ transcript.polyphen_prediction }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.polyphen_prediction }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.polyphen_prediction }}
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               {% else %}
                 <tr>
@@ -413,31 +443,31 @@
     <div id="external-links" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-body">
-          <a class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensemble_gene_ids|join(',') }}">
             Ensembl
           </a>
 
-          <a class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensemble_gene_ids|join(',') }}">
             HPA
           </a>
 
-          <a class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensemble_gene_ids|join(',') }}">
             STRING
           </a>
 
-          <a class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
+          <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
             UCSC
           </a>
 
-          <a class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
             Entrez
           </a>
 
-          <a class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
+          <a target="_blank" class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
             OMIM
           </a>
 
-          <a class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
+          <a target="_blank" class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
             IGV
           </a>
         </div>
@@ -578,6 +608,10 @@
       <p><strong>Ordered by</strong>: {{ current_user.name }}</p>
 
       <div class="sanger-form-footer">
+        <div v-on="click: hideModal" class="md-button" title="Cancel Sanger">
+          Cancel
+        </div>
+
         <button class="md-button" type="submit" title="Order Sanger">
           Send
         </button>

@@ -21,7 +21,12 @@
         return @result.split ','
 
       isMatching: ->
-        return @resultList == @entry.models
+        for result in @resultList
+          for omimModel in @entry.models
+            if result.indexOf(omimModel) > -1
+              return yes
+
+        return no
 
       category: ->
         if @entry

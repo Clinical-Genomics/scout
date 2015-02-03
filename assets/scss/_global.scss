@@ -94,7 +94,7 @@ img {
 // Miscellaneous useful HTML classes
 // .left   { float: left !important; }
 // .right  { float: right !important; }
-.hide         { display: none; }
+.hide { display: none; }
 
 // Font smoothing
 // Antialiased font smoothing works best for light text on a dark background.
@@ -120,3 +120,19 @@ textarea { height: auto; min-height: 50px; }
 
 // Make select elements 100% width by default
 select { width: 100%; }
+
+// when ``overflow: auto`` isn't working
+.scrollable {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+// dotdotdot
+.dotdotdot {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -24,6 +24,9 @@
       showModal: ->
         @$.modal.show()
 
+      hideModal: ->
+        @$.modal.hide()
+
       updateSynopsis: (markdown) ->
         superagent
           .put "/api/v1#{location.pathname}/synopsis"
