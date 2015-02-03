@@ -18,6 +18,9 @@ setup(
     'Flask-Script',
     'path.py',
   ],
+  scripts=[
+    'scripts/wipe_and_load.py'
+  ]
   test_suite='tests',
   classifiers=[
     'Environment :: Web Environment',

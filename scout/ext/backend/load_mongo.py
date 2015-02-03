@@ -192,7 +192,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   ######## Get the case and add it to the mongo db: ########
   if verbose:
     print('Cases found in %s' % ped_file, file=sys.stderr)
-  individuals = []
+  ped_individuals = []
   cases = get_case(ped_file, family_type, institute_name)
   for case in cases:
     case_id = case.case_id
@@ -206,20 +206,25 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
       institute.cases.append(case)
     # Add the individuals of a case
     for individual in case.individuals:
-      individuals.append(individual.individual_id)
+      ped_individuals.append(individual.individual_id)
     # Add the pedigree picture
     if madeline_file:
       with open(madeline_file, 'r') as f:
         case.madeline_info = f.read()
     
-  
-  institute.save()
+  # institute.save()
   
   ######## Get the variants and add them to the mongo db: ########
   
   variant_parser = vcf_parser.VCFParser(infile = vcf_file, split_variants = True)
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
+  
+  # Check which individuals that exists in the vcf file:
+  individuals = []
+  for individual in ped_individuals:
+    if individual in variant_parser.individuals:
+      individuals.append(individual)
   
   gene_lists = set([])
   if verbose:
@@ -798,16 +803,27 @@ def get_compounds(variant, rank_score, case, variant_type, config_object):
                 type=click.Path(exists=True),
                 help="Path to the corresponding ped file."
 )
-@click.option('-config', 'config_file',
+@click.option('-config', '--config_file',
                 nargs=1,
                 type=click.Path(exists=True),
                 help="Path to the config file for loading the variants."
+)
+@click.option('-m', '--madeline',
+                nargs=1,
+                type=click.Path(exists=True),
+                help="Path to the madeline file with the pedigree."
 )
 @click.option('-type', '--family_type',
                 type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
                 default='ped',
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
+)
+@click.option('-vt', '--variant_type',
+                type=click.Choice(['clinical', 'research']),
+                default='clinical',
+                nargs=1,
+                help="Specify the type of the variants that is being loaded."
 )
 @click.option('-i', '--institute',
                 default='CMMS',
@@ -828,7 +844,7 @@ def get_compounds(variant, rank_score, case, variant_type, config_object):
                 help='Increase output verbosity.'
 )
 def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
-        password, institute, verbose):
+        variant_type, madeline, password, institute, verbose):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
   if not vcf_file:
@@ -858,6 +874,7 @@ def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
 
   my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password, 
+                      variant_type=variant_type, madeline_file=madeline, 
                       institute_name=institute, verbose=verbose)
 
 
