@@ -70,6 +70,10 @@ h3 {
   flex: 1;
 }
 
+.layout {
+  display: flex;
+}
+
 .is-hidden {
   display: none;
 }
@@ -286,12 +290,15 @@ core-icon {
   }
 }
 
-%md-badge,
-.md-badge {
+%md-badge {
   padding: .2rem .5rem;
   border-radius: 2px;
   background-color: rgba(#000, .5);
   color: #fff;
+}
+
+.md-badge {
+  @extend %md-badge;
 }
 
 .md-badge--success {

@@ -56,7 +56,7 @@
     <div class="md-tooltip-tip is-right">
       <div class="md-tooltip-content">
         You adopt a case to show that you <br>
-        assume some responsibility for it. <br>
+        assume responsibility for it. <br>
         Your name will show up in relation <br>
         to the case for all team members <br>
         to see.
@@ -157,7 +157,7 @@
     </div>
 
     <div id="synopsis+samples" class="case-segment-row">
-      <div id="case-synopsis" class="md-card">
+      <div id="case-synopsis" class="md-card is-main">
         <div class="md-card-header">Synopsis</div>
         <div class="md-card-body--padded">
           <markdown-editor v-ref="synopsisEditor" v-with='
@@ -185,6 +185,19 @@
               Edit
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- HPO/Phenotype list -->
+      <div id="case-phenotype" class="md-card is-aside">
+        <div class="md-card-header">Phenotype</div>
+        <div class="md-card-body-list">
+          {% for hpo_term in case.hpo_terms %}
+            <div class="list-item">
+              {{ hpo_term.feature }}
+              <small class="md-badge">{{ hpo_term.id }}</small>
+            </div>
+          {% endfor %}
         </div>
       </div>
     </div>
