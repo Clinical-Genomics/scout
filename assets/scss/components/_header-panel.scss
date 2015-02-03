@@ -16,6 +16,7 @@
 .md-header-panel-body {
   // cover the rest of the container vertically
   flex: 1;
-  // always be scrollabe if necessary
-  overflow: auto;
+  // always be scrollable (y) if necessary
+  overflow-y: auto;
+  overflow-x: hidden;
 }
