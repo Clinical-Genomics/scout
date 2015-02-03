@@ -86,13 +86,15 @@
           {{ form.gene_lists.label }}
         </div>
 
-        <div class="variants-filters-group-list">
-          <div class="list-item">
-            {% for subfield in form.variant_type %}
-              <div>{{ subfield }} {{ subfield.label }}</div>
-            {% endfor %}
+        {% if case.status == 'research' %}
+          <div class="variants-filters-group-list">
+            <div class="list-item">
+              {% for subfield in form.variant_type %}
+                <div>{{ subfield }} {{ subfield.label }}</div>
+              {% endfor %}
+            </div>
           </div>
-        </div>
+        {% endif %}
 
         <div class="variants-filters-group-list">
           {{ form.gene_lists(class="variants-filters-select") }}
