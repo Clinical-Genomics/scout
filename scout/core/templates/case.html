@@ -190,7 +190,11 @@
 
       <!-- HPO/Phenotype list -->
       <div id="case-phenotype" class="md-card is-aside">
-        <div class="md-card-header">Phenotype</div>
+        <div class="md-card-header">
+          Phenotype
+          (<a target="_blank"
+              href="http://compbio.charite.de/phenomizer/">phenomizer</a>)
+        </div>
         <div class="md-card-body-list">
           {% for hpo_term in case.hpo_terms %}
             <div class="list-item">
@@ -199,6 +203,10 @@
             </div>
           {% endfor %}
         </div>
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+          <input type="text" name="hpo_term" placeholder="HPO ID">
+          <button class="md-button-flat" type="submit">Add</button>
+        </form>
       </div>
     </div>
 

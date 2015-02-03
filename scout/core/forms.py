@@ -7,7 +7,7 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
 from wtforms import (DecimalField as _DecimalField, Field,
-                     SelectMultipleField)
+                     SelectMultipleField, RadioField)
 from wtforms.widgets import TextInput
 
 from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
@@ -18,13 +18,17 @@ FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
 
 
 def process_filters_form(form):
-  # process HGNC symbols to list
-  if form.hgnc_symbols.data:
-    form.hgnc_symbols.data = [x.strip() for x in
-                              form.hgnc_symbols.data[0].split(',')
-                              if x]
-  else:
-    form.hgnc_symbols.data = []
+  """Make some necessary corrections to the form data.
+
+  This should ideally be handled with ``form.validate_on_submit`` but
+  this will have to do in the mean time.
+  """
+  # make sure HGNC symbols are handled correctly
+  if len(form.hgnc_symbols.data) == 1:
+    if ',' in form.hgnc_symbols.data[0]:
+      form.hgnc_symbols.data = [x.strip() for x in
+                                form.hgnc_symbols.data[0].split(',')
+                                if x]
 
   # correct decimal fields
   for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
@@ -60,18 +64,14 @@ class ListField(Field):
     else:
       return ''
 
-  def process_formdata(self, valuelist):
-    if valuelist:
-      self.data = [x.strip() for x in valuelist[0].split(',')]
-
-    else:
-      self.data = []
-
 
 class FiltersForm(Form):
   # choices populated dynamically
   gene_lists = SelectMultipleField(choices=[])
   hgnc_symbols = ListField()
+  variant_type = RadioField(choices=[('clinical', 'clinical'),
+                                     ('research', 'research')],
+                            default='clinical')
 
   thousand_genomes_frequency = DecimalField('1000 Genomes')
   exac_frequency = DecimalField('ExAC')

@@ -106,6 +106,34 @@ def remove_assignee(institute_id, case_id):
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
+@core.route('/<institute_id>/<case_id>/hpo_terms', methods=['POST'])
+def case_phenotype(institute_id, case_id):
+  """Add a new HPO term to the case.
+
+  TODO: validate ID and fetch phenotype description before adding to case.
+  """
+  validate_user(current_user, institute_id)
+  case = get_document_or_404(Case, case_id)
+  case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+  if request.method == 'POST':
+
+    hpo_term = request.form['hpo_term']
+    if hpo_term not in case.hpo_terms:
+      # append the new HPO term (ID)
+      case.hpo_terms.append(hpo_term)
+
+      # create event
+      event = Event(link=case_url, author=current_user.to_dbref(),
+                    verb="added '{}' to the HPO terms".format(hpo_term),
+                    subject=case.display_name)
+      case.events.append(event)
+
+      case.save()
+
+  return redirect(case_url)
+
+
 @core.route('/<institute_id>/<case_id>/variants', methods=['GET', 'POST'])
 @templated('variants.html')
 @login_required
@@ -130,6 +158,8 @@ def variants(institute_id, case_id):
   # dynamically add choices to gene lists selection
   gene_lists = [(item, item) for item in case.gene_lists]
   form.gene_lists.choices = gene_lists
+  # make sure HGNC symbols are correctly handled
+  form.hgnc_symbols.data = request.args.getlist('hgnc_symbols')
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
