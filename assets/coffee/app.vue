@@ -17,10 +17,6 @@
             else
               @message = 'Status update failed.'
 
-      onGeneListChange: (e) ->
-        # similar behavior as clicking on a link
-        window.location.href = @geneListURL
-
       showModal: ->
         @$.modal.show()
 

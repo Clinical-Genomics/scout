@@ -32,17 +32,9 @@
   {{ super() }}
 
   <div class="md-label">
-    <div class="md-label-icon">Gene list</div>
+    <div class="md-label-icon">Gene lists</div>
     <div class="md-label-text">
-      <select v-model="geneListURL" v-on="change: onGeneListChange">
-        <!-- deselect option, TODO: retain filters! -->
-        <option value="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">All</option>
-        {% for gene_list in case.gene_lists %}
-          <option {% if gene_list == current_gene_list %}selected{% endif %} value="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, gene_list=gene_list) }}">
-            {{ gene_list }}
-          </option>
-        {% endfor %}
-      </select>
+      {{ current_gene_lists|join(',') or 'All' }}
     </div>
   </div>
 
@@ -90,7 +82,17 @@
       {{ form.csrf_token }}
 
       <div class="variants-filters-group">
-      <div class="variants-filters-group-label">Filters</div>
+        <div class="variants-filters-group-label">
+          {{ form.gene_lists.label }}
+        </div>
+
+        <div class="variants-filters-group-list">
+          {{ form.gene_lists(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">Filters</div>
 
         <div class="variants-filters-group-list">
           <div class="list-item">

@@ -33,6 +33,7 @@ def process_filters_form(form):
     if field.data:
       field.data = float(field.data)
 
+
 class DecimalField(_DecimalField):
   """Modify regular DecimalField to better handle text input from user.
 
@@ -68,6 +69,8 @@ class ListField(Field):
 
 
 class FiltersForm(Form):
+  # choices populated dynamically
+  gene_lists = SelectMultipleField(choices=[])
   hgnc_symbols = ListField()
 
   thousand_genomes_frequency = DecimalField('1000 Genomes')
