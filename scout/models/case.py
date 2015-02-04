@@ -8,15 +8,15 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
 from query_phenomizer import query
-from mongoengine import (
-  DateTimeField, Document, EmbeddedDocument, EmbeddedDocumentField,
-  IntField, ListField, ReferenceField, StringField
-)
+from mongoengine import (DateTimeField, Document, EmbeddedDocument,
+                         EmbeddedDocumentField, IntField, ListField,
+                         ReferenceField, StringField)
 
 from .event import Event
 
 
 class Individual(EmbeddedDocument):
+  """Represents an individual (sample) in a case (family)."""
   display_name = StringField()
   sex = StringField()
   phenotype = IntField()
@@ -29,21 +29,14 @@ class Individual(EmbeddedDocument):
   def sex_human(self):
     """Transform sex string into human readable form."""
     # pythonic switch statement
-    return {
-      '1': 'male',
-      '2': 'female'
-    }.get(self.sex, 'unknown')
+    return {'1': 'male', '2': 'female'}.get(self.sex, 'unknown')
 
   @property
   def phenotype_human(self):
     """Transform phenotype integer into human readable form."""
     # pythonic switch statement
-    return {
-      -9: 'missing',
-       0: 'missing',
-       1: 'unaffected',
-       2: 'affected'
-    }.get(self.phenotype, 'undefined')
+    terms = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
+    return terms.get(self.phenotype, 'undefined')
 
   def __unicode__(self):
     return self.display_name
@@ -55,6 +48,7 @@ class PhenotypeTerm(EmbeddedDocument):
 
 
 class Case(Document):
+  """Represents a case (family) of individuals (samples)."""
   # This is the md5 string id for the family:
   case_id = StringField(primary_key=True, required=True)
   display_name = StringField(required=True)
@@ -66,9 +60,9 @@ class Case(Document):
   last_updated = DateTimeField()
   suspects = ListField(ReferenceField('Variant'))
   synopsis = StringField(default='')
-  status = StringField(default='inactive', choices=[
-    'inactive', 'active', 'research', 'archived', 'solved'
-  ])
+  status = StringField(default='inactive', choices=['inactive', 'active',
+                                                    'research', 'archived',
+                                                    'solved'])
   events = ListField(EmbeddedDocumentField(Event))
   clinical_gene_lists = ListField(StringField())
   research_gene_lists = ListField(StringField())

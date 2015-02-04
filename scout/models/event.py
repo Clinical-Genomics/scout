@@ -32,12 +32,12 @@ Variant:
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from mongoengine import (
-  DateTimeField, EmbeddedDocument, ListField, ReferenceField, StringField
-)
+from mongoengine import (DateTimeField, EmbeddedDocument, ListField,
+                         ReferenceField, StringField)
 
 
 class Event(EmbeddedDocument):
+  """Embedded model for defining a general user generated event."""
   title = StringField()
   content = StringField()
   link = StringField()

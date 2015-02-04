@@ -29,12 +29,13 @@ def templated(template=None):
 
 def md5ify(list_of_arguments):
   """Generate an md5-key from a list of arguments"""
-  h = hashlib.md5()
-  h.update(' '.join(list_of_arguments))
-  return h.hexdigest()
+  hash_key = hashlib.md5()
+  hash_key.update(' '.join(list_of_arguments))
+  return hash_key.hexdigest()
 
 
 def get_document_or_404(model, display_name):
+  """Fetch a document from the database or return a 404 unless found."""
   try:
     return model.objects.get(display_name=display_name)
   except DoesNotExist:

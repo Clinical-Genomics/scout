@@ -6,10 +6,9 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import (absolute_import, unicode_literals, division)
 
-from mongoengine import (
-  Document, EmbeddedDocument, EmbeddedDocumentField, FloatField,
-  IntField, ListField, StringField, ReferenceField
-)
+from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
+                         FloatField, IntField, ListField, StringField,
+                         ReferenceField)
 
 from .event import Event
 from .case import Case
@@ -17,18 +16,10 @@ from .case import Case
 ######## These are defined terms for different categories ########
 
 
-CONSERVATION = (
-  'NotConserved',
-  'Conserved'
-)
-CONSEQUENCE = (
-  'deleterious',
-  'probably_damaging',
-  'possibly_damaging',
-  'tolerated',
-  'benign',
-  'unknown'
-)
+CONSERVATION = ('NotConserved', 'Conserved')
+
+CONSEQUENCE = ('deleterious', 'probably_damaging', 'possibly_damaging',
+               'tolerated', 'benign', 'unknown')
 
 SO_TERMS = (
   'transcript_ablation',
@@ -214,7 +205,7 @@ class Variant(Document):
       for entry in gene.expected_inheritance:
         for gene_model in entry.disease_models:
           expected_inheritance.add(gene_model)
-    
+
     return list(expected_inheritance)
 
   @property
@@ -227,7 +218,7 @@ class Variant(Document):
       for gene in self.genes:
         omim_annotations.append(':'.join([gene.hgnc_symbol, gene.omim_terms]))
     return region_annotations
-    
+
   @property
   def region_annotations(self):
     """Returns a list with region annotation(s)."""

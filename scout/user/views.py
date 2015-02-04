@@ -26,7 +26,7 @@ admin.add_view(ModelView(Variant))
 @login_required
 def profile(user_id):
   """View a user profile."""
-  user = User.objects.get(id=user_id)
+  user_model = User.objects.get(id=user_id)
 
   # fetch cases from the data store
-  return dict(user=user)
+  return dict(user=user_model)
