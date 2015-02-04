@@ -160,7 +160,8 @@ def variants(institute_id, case_id):
   gene_lists = [(item, item) for item in case.gene_lists]
   form.gene_lists.choices = gene_lists
   # make sure HGNC symbols are correctly handled
-  form.hgnc_symbols.data = request.args.getlist('hgnc_symbols')
+  form.hgnc_symbols.data = [gene for gene in
+                            request.args.getlist('hgnc_symbols') if gene]
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
