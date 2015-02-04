@@ -162,7 +162,7 @@ def variants(institute_id, case_id):
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in
                             request.args.getlist('hgnc_symbols') if gene]
-  form.variant_type.data = request.args.get('variant_type')
+  form.variant_type.data = request.args.get('variant_type', 'clinical')
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
