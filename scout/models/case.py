@@ -95,7 +95,10 @@ class Case(Document):
         }
     """
     hpo_terms = [hpo_term.hpo_id for hpo_term in self.phenotype_terms]
-    return query(hpo_terms)
+    try:
+      return query(hpo_terms)
+    except SystemExit:
+      return {}
 
   @property
   def hpo_gene_ids(self):
