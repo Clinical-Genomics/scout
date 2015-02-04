@@ -7,6 +7,7 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
+from query_phenomizer import query
 from mongoengine import (
   DateTimeField, Document, EmbeddedDocument, EmbeddedDocumentField,
   IntField, ListField, ReferenceField, StringField
@@ -49,7 +50,7 @@ class Individual(EmbeddedDocument):
 
 
 class PhenotypeTerm(EmbeddedDocument):
-  id = StringField()
+  hpo_id = StringField()
   feature = StringField()
 
 
@@ -76,8 +77,25 @@ class Case(Document):
 
   @property
   def hpo_genes(self):
-    """Return the list of HGNC symbols that match annotated HPO terms."""
-    return ['ANKRD11', 'PORCN', 'POR2']
+    """
+    Return the list of HGNC symbols that match annotated HPO terms.
+    
+    Returns:
+      query_result : A list of dictionaries on the form:
+        {
+            'p_value': float,
+            'gene_id': str,
+            'omim_id': int,
+            'orphanet_id': int,
+            'decipher_id': int,
+            'any_id': int,
+            'mode_of_inheritance':str,
+            'description': str,
+            'raw_line': str
+        }
+    """
+    hpo_terms = [hpo_term.hpo_id for hpo_term in self.phenotype_terms]
+    return query(hpo_terms)
 
   madeline_info = StringField()
 

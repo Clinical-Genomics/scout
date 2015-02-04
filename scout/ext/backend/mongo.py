@@ -97,6 +97,7 @@ class MongoAdapter(BaseAdapter):
       # We need to check if there is any query specified in the input query
       any_query = False
       mongo_query['$and'] = []
+      
       if query['thousand_genomes_frequency']:
         try:
           mongo_query['$and'].append({'thousand_genomes_frequency':{
@@ -118,21 +119,28 @@ class MongoAdapter(BaseAdapter):
           any_query = True
         except TypeError:
           pass
-
+      
       if query['genetic_models']:
         mongo_query['$and'].append({'genetic_models':
                                         {'$in': query['genetic_models']}
                                       }
                                     )
         any_query = True
-
+      
       if query['hgnc_symbols']:
         mongo_query['$and'].append({'hgnc_symbols':
                                       {'$in': query['hgnc_symbols']}
                                     }
                                   )
         any_query = True
-
+      
+      if query['gene_lists']:
+        mongo_query['$and'].append({'gene_lists':
+                                      {'$in': query['gene_lists']}
+                                    }
+                                  )
+        any_query = True
+      
       # Since we will add an '$or' question here we have to be extra careful
       if query['functional_annotations'] and query['region_annotations']:
         mongo_query['$and'].append({'$or': [
@@ -232,9 +240,11 @@ class MongoAdapter(BaseAdapter):
     previous_variant = Variant.objects.get(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
+    variant_type = previous_variant.variant_type
     try:
       return Variant.objects.get(__raw__=({'$and':[
                                         {'case_id': case_id},
+                                        {'variant_type': variant_type},
                                         {'variant_rank': rank+1}
                                         ]
                                       }
@@ -257,9 +267,11 @@ class MongoAdapter(BaseAdapter):
     previous_variant = Variant.objects.get(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
+    variant_type = previous_variant.variant_type
     try:
       return Variant.objects.get(__raw__=({'$and':[
                                         {'case_id': case_id},
+                                        {'variant_type': variant_type},
                                         {'variant_rank': rank - 1}
                                         ]
                                       }
