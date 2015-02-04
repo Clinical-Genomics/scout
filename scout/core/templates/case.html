@@ -137,21 +137,7 @@
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list">
-          {% for sample in case.individuals %}
-            <div class="case-sample-{{ sample.phenotype_human }}" title="{{ sample.phenotype_human }} {{ sample.sex_human }}">
-              <div class="case-sample-item--small">
-                <div class="case-sample-icon-{{ sample.sex_human }} is-{{ sample.phenotype_human }}"></div>
-              </div>
-
-              <div class="case-sample-item">
-                {{ sample.individual_id }}
-              </div>
-
-              <div class="case-sample-item--big">
-                {{ sample.capture_kit|join(',') }}
-              </div>
-            </div>
-          {% endfor %}
+          {{ case.madeline_info|safe }}
         </div>
       </div>
     </div>

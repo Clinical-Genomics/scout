@@ -140,7 +140,7 @@ def case_phenotype(institute_id, case_id):
 def variants(institute_id, case_id):
   """View all variants for a single case."""
   per_page = 50
-  gene_lists = request.args.getlist('gene_lists')
+  current_gene_lists = request.args.getlist('gene_lists')
 
   # fetch all variants for a specific case
   # very basic security check
@@ -176,7 +176,7 @@ def variants(institute_id, case_id):
               current_batch=(skip + per_page),
               form=form,
               severe_so_terms=SO_TERMS[:14],
-              current_gene_lists=gene_lists)
+              current_gene_lists=current_gene_lists)
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')

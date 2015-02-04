@@ -48,6 +48,11 @@ class Individual(EmbeddedDocument):
     return self.display_name
 
 
+class PhenotypeTerm(EmbeddedDocument):
+  id = StringField()
+  feature = StringField()
+
+
 class Case(Document):
   # This is the md5 string id for the family:
   case_id = StringField(primary_key=True, required=True)
@@ -67,7 +72,7 @@ class Case(Document):
   gene_lists = ListField(StringField())
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
-  hpo_terms = [{'id': 'HP:0001251', 'feature': 'Ataxia'}]
+  phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
 
   @property
   def hpo_genes(self):
