@@ -45,3 +45,4 @@ configobj
 requests
 python-dateutil
 arrow
+query_phenomizer

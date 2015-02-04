@@ -240,9 +240,11 @@ class MongoAdapter(BaseAdapter):
     previous_variant = Variant.objects.get(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
+    variant_type = previous_variant.variant_type
     try:
       return Variant.objects.get(__raw__=({'$and':[
                                         {'case_id': case_id},
+                                        {'variant_type': variant_type},
                                         {'variant_rank': rank+1}
                                         ]
                                       }
@@ -265,9 +267,11 @@ class MongoAdapter(BaseAdapter):
     previous_variant = Variant.objects.get(document_id=document_id)
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
+    variant_type = previous_variant.variant_type
     try:
       return Variant.objects.get(__raw__=({'$and':[
                                         {'case_id': case_id},
+                                        {'variant_type': variant_type},
                                         {'variant_rank': rank - 1}
                                         ]
                                       }
