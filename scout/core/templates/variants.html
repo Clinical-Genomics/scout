@@ -63,10 +63,10 @@
       Func. annotation
     </div>
     <div class="variants-header-item flex-big" title="Disease group">
-      Disease group
+      MIM Terms
     </div>
     <div class="variants-header-item" title="Disease gene model">
-      Disease gene model
+      Expected inheritance
     </div>
     <div class="variants-header-item flex-big" title="Inheritance models">
       Inheritance models
@@ -268,11 +268,13 @@
           {{ variant.functional_annotations|join(',') }}
         </div>
 
-        <!-- Disease group -->
+        <!-- MIM terms -->
         <div class="variants-row-item flex-big">{{ 'Not yet implemented' }}</div>
 
-        <!-- Disease gene model -->
-        <div class="variants-row-item">{{ 'Not yet implemented' }}</div>
+        <!-- Expected inheritance -->
+        <div class="variants-row-item">
+          {{ variant.expected_inheritance|join(',') }}
+        </div>
 
         <!-- Inheritance models -->
 				<div class="variants-row-list flex-big md-tooltip">
