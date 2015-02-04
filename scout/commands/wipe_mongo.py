@@ -22,26 +22,41 @@ from pymongo import MongoClient, Connection
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import _get_db
 
-from ..scout.ext.backend import load_mongo
 
-
-def drop_mongo(connection, mongo_db):
-  """Delete the mongo database."""
+def drop_mongo(mongo_db='variantDatabase', username=None, password=None, 
+              port=27017, host='localhost', verbose=False):
+  """Delete variants and users from the mongo database."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
+  
+  if verbose:
+    print('Trying to access collection %s' % mongo_db, file=sys.stderr)
+  
+  connection = connect(
+                    mongo_db, 
+                    host=host, 
+                    port=port, 
+                    username=username,
+                    password=password
+                    )
+  
   collections = connection.database_names()
   if mongo_db in collections:  
     db = connection[mongo_db]
     # Drop the case collection:
     case_collection = db['case']
-    print("Dropping collection 'case' ...")
+    if verbose:
+      print("Dropping collection 'case' ...")
     case_collection.drop()
-    print("Cases dropped.")
+    if verbose:
+      print("Cases dropped.")
     # Drop the variant collection:    
     variant_collection = db['variant']
-    print("Dropping collection 'variant...")
+    if verbose:
+      print("Dropping collection 'variant...")
     variant_collection.drop()
-    print("Variants dropped.")
+    if verbose:
+      print("Variants dropped.")
   else:
     print('%s does not exist in database.' % mongo_db)
     print('Existing connections: %s' % connection.database_names())
@@ -61,21 +76,26 @@ def drop_mongo(connection, mongo_db):
 @click.option('-p', '--password', 
                 type=str
 )
+@click.option('-port', '--port',
+                default=27017,
+                help='Specify the port where to look for the mongo database.'
+)
+@click.option('-h', '--host',
+                default='localhost',
+                help='Specify the host where to look for the mongo database.'
+)
 @click.option('-v', '--verbose', 
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def cli(mongo_db, username, password, verbose):
+def wipe_mongo(mongo_db, username, password, port, host, verbose):
   """Drop the mongo database given and rebuild it again."""
   if not mongo_db:
     print("Please specify a database to wipe and populate with flag '-db/--mongo-db'.")
     sys.exit(0)
   else:
-    print('Trying to access collection %s' % mongo_db, file=sys.stderr)
-    connection = Connection('localhost', 27017) # Connect to the database
-    drop_mongo(connection, mongo_db)
-    # load_mongo(connection, mongo_db)
+    drop_mongo(mongo_db, username, password, port, host, verbose)
   
 
 if __name__ == '__main__':
-    cli()
+    wipe_mongo()

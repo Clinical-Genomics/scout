@@ -156,15 +156,15 @@ SO_TERMS = {
   'intergenic_variant': {'rank':36, 'region':'intergenic_variant'}
 }
 
-def load_mongo(vcf_file=None, ped_file=None, config_file=None, 
+def load_mongo_db(vcf_file=None, ped_file=None, config_file=None, 
                family_type='ped', mongo_db='variantDatabase', institute_name='CMMS',
                variant_type='clinical', madeline_file=None, username=None, 
-               password=None, verbose = False):
+               password=None, port=27017, host='localhost',verbose = False):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
   
-  connect(mongo_db, host='localhost', port=27017, username=username,
+  connect(mongo_db, host=host, port=port, username=username,
           password=password)
   
   variant_database = get_db()
@@ -212,7 +212,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
       with open(madeline_file, 'r') as f:
         case.madeline_info = f.read()
     
-  # institute.save()
+  institute.save()
   
   ######## Get the variants and add them to the mongo db: ########
   
@@ -227,6 +227,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
       individuals.append(individual)
   
   gene_lists = set([])
+  
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
   
@@ -246,7 +247,8 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
   
-  case.gene_lists = list(gene_lists)
+  
+  case.gene_lists = list(set(case.gene_lists).union(gene_lists))
   
   case.save()
   

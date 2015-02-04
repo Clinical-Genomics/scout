@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -10,7 +10,11 @@ setup(
   description='Scout is a Flask template/bootstrap/boilerplate application.',
   author='Robin Andeer',
   author_email='robin.andeer@gmail.com',
-  packages=['scout'],
+  packages=find_packages(exclude=[
+                                  'tests/',
+                                  'scripts/'
+                                  ]
+                        ),
   include_package_data=True,
   zip_safe=False,
   install_requires=[
@@ -19,9 +23,9 @@ setup(
     'path.py',
   ],
   scripts=[
-    'scripts/wipe_and_load.py'
-  ]
-  test_suite='tests',
+    'scripts/scouttools',
+  ],
+  # test_suite='tests',
   classifiers=[
     'Environment :: Web Environment',
     'Intended Audience :: Developers',
