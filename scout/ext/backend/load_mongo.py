@@ -156,14 +156,15 @@ SO_TERMS = {
   'intergenic_variant': {'rank':36, 'region':'intergenic_variant'}
 }
 
-def load_mongo(vcf_file=None, ped_file=None, config_file=None,
+def load_mongo_db(vcf_file=None, ped_file=None, config_file=None, 
                family_type='ped', mongo_db='variantDatabase', institute_name='CMMS',
-               username=None, password=None, verbose = False):
+               variant_type='clinical', madeline_file=None, username=None, 
+               password=None, port=27017, host='localhost',verbose = False):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
   
-  connect(mongo_db, host='localhost', port=27017, username=username,
+  connect(mongo_db, host=host, port=port, username=username,
           password=password)
   
   variant_database = get_db()
@@ -191,7 +192,7 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   ######## Get the case and add it to the mongo db: ########
   if verbose:
     print('Cases found in %s' % ped_file, file=sys.stderr)
-  individuals = []
+  ped_individuals = []
   cases = get_case(ped_file, family_type, institute_name)
   for case in cases:
     case_id = case.case_id
@@ -200,12 +201,17 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     if verbose:
       print('case id %s' % case_name, file=sys.stderr)
     
+    # Add the case to its institute
     if case not in institute.cases:
       institute.cases.append(case)
+    # Add the individuals of a case
     for individual in case.individuals:
-      individuals.append(individual.individual_id)
-    case.save()
-  
+      ped_individuals.append(individual.individual_id)
+    # Add the pedigree picture
+    if madeline_file:
+      with open(madeline_file, 'r') as f:
+        case.madeline_info = f.read()
+    
   institute.save()
   
   ######## Get the variants and add them to the mongo db: ########
@@ -214,12 +220,23 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
   
+  # Check which individuals that exists in the vcf file:
+  individuals = []
+  for individual in ped_individuals:
+    if individual in variant_parser.individuals:
+      individuals.append(individual)
+  
+  gene_lists = set([])
+  
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
   
   for variant in variant_parser:
     nr_of_variants += 1
-    mongo_variant = get_mongo_variant(variant, individuals, case, config_object, nr_of_variants)
+    mongo_variant = get_mongo_variant(variant, variant_type, individuals, case, config_object, nr_of_variants)
+    for gene_list in mongo_variant['gene_lists']:
+      gene_lists.add(gene_list)
+    
     mongo_variant.save()
     if verbose:
       if nr_of_variants % 1000 == 0:
@@ -231,15 +248,10 @@ def load_mongo(vcf_file=None, ped_file=None, config_file=None,
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
   
   
-  if verbose:
-    print('Updating local frequencies...', file=sys.stderr)
-    local_freq_start = datetime.now()
+  case.gene_lists = list(set(case.gene_lists).union(gene_lists))
   
-  # update_local_frequencies(variant_database)
+  case.save()
   
-  if verbose:
-    print('Time to update frequencies: %s' % (datetime.now()-local_freq_start),
-            file=sys.stderr)
   
   if verbose:
     print('Updating indexes...', file=sys.stderr)
@@ -279,6 +291,7 @@ def ensure_indexes(variant_database):
                 [
                   ('case_id', ASCENDING),
                   ('variant_rank', ASCENDING),
+                  ('variant_type', ASCENDING),
                   ('thousand_genomes_frequency', ASCENDING),
                   ('gene_lists', ASCENDING)
                 ],
@@ -301,13 +314,14 @@ def ensure_indexes(variant_database):
                 background=True
       )
 
-def get_mongo_variant(variant, individuals, case, config_object, variant_count):
+def get_mongo_variant(variant, variant_type, individuals, case, config_object, variant_count):
   """
   Take a variant and some additional information, convert it to mongo engine
   objects and put them in the proper format in the database.
 
   Input:
     variant       : A Variant dictionary
+    variant_type  : A string in ['clinical', 'research']
     individuals   : A list with the id:s of the individuals
     case_id       : The md5 string that represents the ID for the case
     variant_count : The rank order of the variant in this case
@@ -333,14 +347,6 @@ def get_mongo_variant(variant, individuals, case, config_object, variant_count):
           config_object['ExpectedInheritanceModels']['vcf_info_key'], 
           []
           )
-  # A variant can be a research variant or a clinical variant
-  # The annotations will differ between the two cases
-  if gene_lists:
-    variant_type = 'clinical'
-  else:
-    # pp(variant)
-    variant_type = 'research'
-    gene_lists = ['research']
   
   disease_groups = variant['info_dict'].get(
           config_object['DiseaseGroups']['vcf_info_key'], 
@@ -799,16 +805,27 @@ def get_compounds(variant, rank_score, case, variant_type, config_object):
                 type=click.Path(exists=True),
                 help="Path to the corresponding ped file."
 )
-@click.option('-config', 'config_file',
+@click.option('-config', '--config_file',
                 nargs=1,
                 type=click.Path(exists=True),
                 help="Path to the config file for loading the variants."
+)
+@click.option('-m', '--madeline',
+                nargs=1,
+                type=click.Path(exists=True),
+                help="Path to the madeline file with the pedigree."
 )
 @click.option('-type', '--family_type',
                 type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
                 default='ped',
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
+)
+@click.option('-vt', '--variant_type',
+                type=click.Choice(['clinical', 'research']),
+                default='clinical',
+                nargs=1,
+                help="Specify the type of the variants that is being loaded."
 )
 @click.option('-i', '--institute',
                 default='CMMS',
@@ -829,7 +846,7 @@ def get_compounds(variant, rank_score, case, variant_type, config_object):
                 help='Increase output verbosity.'
 )
 def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
-        password, institute, verbose):
+        variant_type, madeline, password, institute, verbose):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
   if not vcf_file:
@@ -859,6 +876,7 @@ def cli(vcf_file, ped_file, config_file, family_type, mongo_db, username,
 
   my_vcf = load_mongo(vcf_file, ped_file, config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password, 
+                      variant_type=variant_type, madeline_file=madeline, 
                       institute_name=institute, verbose=verbose)
 
 
