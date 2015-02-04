@@ -182,10 +182,10 @@
               href="http://compbio.charite.de/phenomizer/">phenomizer</a>)
         </div>
         <div class="md-card-body-list">
-          {% for hpo_term in case.hpo_terms %}
+          {% for hpo_term in case.phenotype_terms %}
             <div class="list-item">
-              {{ hpo_term.feature }}
-              <small class="md-badge">{{ hpo_term.id }}</small>
+              {{ hpo_term.feature or 'Unknown' }}
+              <small class="md-badge">{{ hpo_term.hpo_id }}</small>
             </div>
           {% endfor %}
         </div>
