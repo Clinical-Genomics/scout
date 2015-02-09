@@ -8,7 +8,7 @@ from flask.ext.mail import Message
 
 from .forms import init_filters_form, SO_TERMS, process_filters_form
 from .utils import validate_user
-from ..models import Case, Event
+from ..models import Case, Event, PhenotypeTerm
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
 
@@ -106,7 +106,7 @@ def remove_assignee(institute_id, case_id):
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
-@core.route('/<institute_id>/<case_id>/hpo_terms', methods=['POST'])
+@core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
 def case_phenotype(institute_id, case_id):
   """Add a new HPO term to the case.
 
@@ -119,9 +119,10 @@ def case_phenotype(institute_id, case_id):
   if request.method == 'POST':
 
     hpo_term = request.form['hpo_term']
-    if hpo_term not in case.hpo_terms:
+    phenotype_term = PhenotypeTerm(hpo_id=hpo_term)
+    if phenotype_term not in case.phenotype_terms:
       # append the new HPO term (ID)
-      case.hpo_terms.append(hpo_term)
+      case.phenotype_terms.append(phenotype_term)
 
       # create event
       event = Event(link=case_url, author=current_user.to_dbref(),
@@ -159,7 +160,9 @@ def variants(institute_id, case_id):
   gene_lists = [(item, item) for item in case.gene_lists]
   form.gene_lists.choices = gene_lists
   # make sure HGNC symbols are correctly handled
-  form.hgnc_symbols.data = request.args.getlist('hgnc_symbols')
+  form.hgnc_symbols.data = [gene for gene in
+                            request.args.getlist('hgnc_symbols') if gene]
+  form.variant_type.data = request.args.get('variant_type', 'clinical')
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)

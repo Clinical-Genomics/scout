@@ -79,7 +79,7 @@ class Case(Document):
   def hpo_genes(self):
     """
     Return the list of HGNC symbols that match annotated HPO terms.
-    
+
     Returns:
       query_result : A list of dictionaries on the form:
         {
@@ -95,7 +95,14 @@ class Case(Document):
         }
     """
     hpo_terms = [hpo_term.hpo_id for hpo_term in self.phenotype_terms]
-    return query(hpo_terms)
+    try:
+      return query(hpo_terms)
+    except SystemExit:
+      return {}
+
+  @property
+  def hpo_gene_ids(self):
+    return [term['gene_id'] for term in self.hpo_genes if term['gene_id']]
 
   madeline_info = StringField()
 

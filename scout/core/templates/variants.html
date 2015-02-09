@@ -63,7 +63,7 @@
       Func. annotation
     </div>
     <div class="variants-header-item flex-big" title="Disease group">
-      MIM Terms
+      MIM terms
     </div>
     <div class="variants-header-item" title="Disease gene model">
       Expected inheritance
@@ -102,7 +102,8 @@
           <div class="list-item">
             <a class="md-button"
                href="{{ url_for('core.variants', institute_id=institute_id,
-                                case_id=case_id, hgnc_symbols=case.hpo_genes)
+                                case_id=case_id,
+                                hgnc_symbols=case.hpo_gene_ids)
                      }}">
               HPO generated gene list
             </a>
