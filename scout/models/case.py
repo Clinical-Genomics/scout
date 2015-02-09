@@ -70,7 +70,8 @@ class Case(Document):
     'inactive', 'active', 'research', 'archived', 'solved'
   ])
   events = ListField(EmbeddedDocumentField(Event))
-  gene_lists = ListField(StringField())
+  clinical_gene_lists = ListField(StringField())
+  research_gene_lists = ListField(StringField())
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))

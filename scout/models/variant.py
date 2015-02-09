@@ -111,6 +111,9 @@ class Transcript(EmbeddedDocument):
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
 
+class DiseaseModel(EmbeddedDocument):
+  omim_id = IntField(required=True)
+  disease_models = ListField()
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
@@ -119,6 +122,8 @@ class Gene(EmbeddedDocument):
   region_annotation = StringField(choices=FEATURE_TYPES)
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
+  omim_terms = ListField(IntField())
+  expected_inheritance = ListField(EmbeddedDocumentField(DiseaseModel))
 
 
 class Compound(EmbeddedDocument):
@@ -194,13 +199,34 @@ class Variant(Document):
   # Database options:
   gene_lists = ListField(StringField())
   expected_inheritance = ListField(StringField())
-  disease_groups = ListField(StringField())
 
   @property
   def local_requency(self):
     """Returns a float with the local freauency for this position."""
     return (Variant.objects(variant_id=self.variant_id).count /
               Case.objects.count())
+
+  @property
+  def expected_inheritance(self):
+    """Returns a list with expected inheritance model(s)."""
+    expected_inheritance = set([])
+    for gene in self.genes:
+      for entry in gene.expected_inheritance:
+        for gene_model in entry.disease_models:
+          expected_inheritance.add(gene_model)
+    
+    return list(expected_inheritance)
+
+  @property
+  def omim_annotations(self):
+    """Returns a list with omim id(s)."""
+    omim_annotations = []
+    if len(self.genes) == 1:
+      omim_annotations = [gene.omim_terms for gene in self.genes]
+    else:
+      for gene in self.genes:
+        omim_annotations.append(':'.join([gene.hgnc_symbol, gene.omim_terms]))
+    return region_annotations
     
   @property
   def region_annotations(self):

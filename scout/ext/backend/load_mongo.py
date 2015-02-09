@@ -41,7 +41,7 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from ...models import (Case, Individual, Institute, Variant, GTCall,
-                          Compound, Gene, Transcript)
+                          Compound, Gene, Transcript, DiseaseModel)
 
 from vcf_parser import parser as vcf_parser
 from ped_parser import FamilyParser
@@ -247,8 +247,10 @@ def load_mongo_db(vcf_file=None, ped_file=None, config_file=None,
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
   
-  
-  case.gene_lists = list(set(case.gene_lists).union(gene_lists))
+  if variant_type == 'clinical':
+    case.clinical_gene_lists = list(set(case.clinical_gene_lists).union(gene_lists))
+  if variant_type == 'research':
+    case.research_gene_lists = list(set(case.research_gene_lists).union(gene_lists))
   
   case.save()
   
@@ -348,10 +350,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
           []
           )
   
-  disease_groups = variant['info_dict'].get(
-          config_object['DiseaseGroups']['vcf_info_key'], 
-          []
-          )
   
   id_fields = [
                 variant['CHROM'], 
@@ -380,7 +378,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                           alternative = variant['ALT'],
                           gene_lists = gene_lists,
                           expected_inheritance = expected_inheritance,
-                          disease_groups = disease_groups
                   )
   
   # pp(json.loads(mongo_variant.to_json()))
@@ -673,6 +670,42 @@ def get_genes(variant):
   genes = {}
   transcripts = []
   mongo_genes = []
+  # omim terms is a dictionary with gene_ids as key and a list with 
+  # omim ids as value
+  omim_terms = {}
+  expected_inheritance_models = {}
+  # Fill the omim terms:
+  for annotation in variant['info_dict'].get('OMIM_morbid', []):
+    if annotation:
+      print(annotation, variant['variant_id'])
+      splitted_record = annotation.split(':')
+      try:
+        gene_id = splitted_record[0]
+        omim_term = int(splitted_record[1])
+        if gene_id in omim_terms:
+          omim_terms[gene_id].append(omim_term)
+        else:
+          omim_terms[gene_id] = [omim_term]
+      except ValueError:
+        pass
+  
+  for gene_annotation in variant['info_dict'].get('Phenotypic_disease_model', []):
+    if gene_annotation:
+      splitted_gene = gene_annotation.split(':')
+      print(splitted_gene)
+      gene_id = splitted_gene[0]
+      for omim_entry in splitted_gene[1].split('|'):
+        splitted_record = omim_entry.split('>')
+        disease_model = DiseaseModel(
+                              omim_id=int(splitted_record[0]),
+                              disease_models=splitted_record[1].split('/')
+                            )
+        if gene_id in expected_inheritance_models:
+          expected_inheritance_models[gene_id].append(disease_model)
+        else:
+          expected_inheritance_models[gene_id] = [disease_model]
+  
+  pp(expected_inheritance_models)
   # We need to keep track of the highest ranked gene in order to know what to
   # display in the variant overwiew in scout
   best_rank = None
@@ -725,6 +758,8 @@ def get_genes(variant):
     most_severe = genes[gene]['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
     mongo_gene = Gene(hgnc_symbol=gene)
+    mongo_gene.omim_terms = omim_terms.get(gene, [])
+    mongo_gene.expected_inheritance = expected_inheritance_models.get(gene,[])
     # Add a list with the transcripts:
     mongo_gene.transcripts = []
     for transcript_id in genes[gene]['transcripts']:
