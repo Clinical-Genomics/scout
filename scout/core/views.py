@@ -157,7 +157,7 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
-  gene_lists = [(item, item) for item in case.gene_lists]
+  gene_lists = [(item, item) for item in case.clinical_gene_lists]
   form.gene_lists.choices = gene_lists
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in

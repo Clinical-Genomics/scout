@@ -64,6 +64,7 @@ class Case(Document):
                                                     'research', 'archived',
                                                     'solved'])
   events = ListField(EmbeddedDocumentField(Event))
+  comments = ListField(EmbeddedDocumentField(Event))
   clinical_gene_lists = ListField(StringField())
   research_gene_lists = ListField(StringField())
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],

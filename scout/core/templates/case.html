@@ -196,31 +196,32 @@
       </div>
     </div>
 
-    <div id="activity" class="case-segment-row">
+    <div id="comments" class="case-segment-row">
+
       <div id="case-activity" class="md-card is-main">
-        <div class="md-card-header">Activity</div>
+        <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
           <div class="activity-feed">
-            {% for event in case.events|reverse %}
+            {% for comment in case.comments|reverse %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
-                    <strong>{{ event.author.name }}</strong>
-                    {{ event.verb }}
-                    <a href="{{ event.link }}">{{ event.subject }}</a>
+                    <strong>{{ comment.author.name }}</strong>
+                    {{ comment.verb }}
+                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
                     <span class="timestamp">
-                      {{ event.created_at|human_date }}
+                      {{ comment.created_at|human_date }}
                     </span>
                   </div>
 
-                  {% if event.author.id == current_user.id %}
+                  {% if comment.author.id == current_user.id %}
                     {% set form_id = 'delete-comment-%s' % loop.index %}
                     <form class="activity-feed-delete"
                           accept-charset="UTF-8"
-                          action="{{ url_for('api.event',
+                          action="{{ url_for('api.comment',
                                              institute_id=institute.display_name,
                                              case_id=case.display_name,
-                                             event_id=loop.index) }}"
+                                             comment_id=loop.index) }}"
                           method="DELETE">
                       <core-icon icon="highlight-remove"
                         class="activity-feed-delete-button"
@@ -231,11 +232,9 @@
                   {% endif %}
                 </div>
 
-                {% if event.content %}
-                  <div class="activity-feed-item-body">
-                    {{ event.content }}
-                  </div>
-                {% endif %}
+                <div class="activity-feed-item-body">
+                  {{ comment.content }}
+                </div>
               </div>
             {% else %}
               <div class="activity-feed-item">
@@ -251,7 +250,7 @@
       <form class="md-card is-aside"
             accept-charset="UTF-8"
             method="POST"
-            action="{{ url_for('api.event',
+            action="{{ url_for('api.comment',
                                institute_id=institute.display_name,
                                case_id=case.display_name) }}">
         <div class="md-card-body--padded">
@@ -273,11 +272,45 @@
       </form>
     </div>
 
-    <div id="dynamic-hpo-genes" class="case-segment-row">
-      <div class="md-card">
-        <div class="md-card-header">Dynamic HPO gene list</div>
+    <div id="activity+hpo-genes" class="case-segment-row">
+      <div id="case-activity" class="md-card is-main">
+        <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
-          {% for hpo_gene in case.hpo_genes %}
+          <div class="activity-feed">
+            {% for event in case.events|reverse %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ event.author.name }}</strong>
+                    {{ event.verb }}
+                    <a href="{{ event.link }}">{{ event.subject }}</a>
+                    <span class="timestamp">
+                      {{ event.created_at|human_date }}
+                    </span>
+                  </div>
+                </div>
+
+                {% if event.content %}
+                  <div class="activity-feed-item-body">
+                    {{ event.content }}
+                  </div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No case activity yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="md-card is-aside">
+        <div class="md-card-header">HPO gene list</div>
+        <div class="md-card-body-list">
+          {% for hpo_gene in case.hpo_genes[:10] %}
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
                 {{ hpo_gene.gene_id or 'Unknown' }}

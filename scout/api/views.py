@@ -138,14 +138,12 @@ def markdown():
 
 
 @api.route('/<institute_id>/<case_id>/event', methods=['POST'])
-@api.route('/<institute_id>/<case_id>/event/<int:event_id>',
-           methods=['GET'])
-def event(institute_id, case_id, event_id=None):
+def event(institute_id, case_id):
   case = get_document_or_404(Case, case_id)
 
   if request.method == 'POST':
 
-    event = Event(
+    event_document = Event(
       title=request.form.get('title'),
       content=request.form.get('content'),
       link=request.form.get('link'),
@@ -154,11 +152,40 @@ def event(institute_id, case_id, event_id=None):
       subject=request.form.get('subject'),
     )
 
-    case.events.append(event)
+    case.events.append(event_document)
 
-  elif request.method == 'GET':  # TODO: make this work with DELETE!
+  # persist changes
+  case.save()
+
+  if request.args.get('json'):
+    case_json = dumps(case.to_mongo())
+    return Response(case_json, mimetype='application/json; charset=utf-8')
+
+  else:
+    return redirect(request.referrer)
+
+
+@api.route('/<institute_id>/<case_id>/comment', methods=['POST'])
+@api.route('/<institute_id>/<case_id>/comment/<int:comment_id>',
+           methods=['GET'])
+def comment(institute_id, case_id, comment_id=None):
+  case = get_document_or_404(Case, case_id)
+
+  if request.method == 'POST':
+
+    comment_document = Event(title=request.form.get('title'),
+                             content=request.form.get('content'),
+                             link=request.form.get('link'),
+                             author=current_user.to_dbref(),
+                             verb=request.form.get('verb'),
+                             subject=request.form.get('subject'))
+
+    case.comments.append(comment_document)
+
+  elif request.method == 'GET':
+    # TODO: make this work with DELETE!
     # remove event by index, expects list to be reversed in template
-    case.events.pop(-event_id)
+    case.comments.pop(-comment_id)
 
   # persist changes
   case.save()
