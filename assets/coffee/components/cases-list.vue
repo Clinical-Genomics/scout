@@ -14,7 +14,8 @@
 
         <div class="md-item-subtitle">
           <a href="{{baseUrl}}/{{display_name}}/variants">Variants</a> |
-          <span>{{created_at.$date | fromNow}}</span>
+          <span>{{created_at.$date | fromNow}}</span> |
+          <span>{{status}}</span>
         </div>
       </div>
     </div>
