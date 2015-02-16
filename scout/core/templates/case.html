@@ -273,6 +273,23 @@
       </form>
     </div>
 
+    <div id="dynamic-hpo-genes" class="case-segment-row">
+      <div class="md-card">
+        <div class="md-card-header">Dynamic HPO gene list</div>
+        <div class="md-card-body-list">
+          {% for hpo_gene in case.hpo_genes %}
+            <div class="list-item" title="{{ hpo_gene.description }}">
+              <div>
+                {{ hpo_gene.gene_id or 'Unknown' }}
+                <small>{{ hpo_gene.omim_id }}</small>
+              </div>
+              <small class="md-badge">{{ hpo_gene.p_value }}</small>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
   </div>
 
 {% endblock %}
