@@ -80,11 +80,26 @@
     </div>
   </form>
 
-  <div class="md-label">
-    <div class="md-label-icon">
-      <core-icon icon="done-all"></core-icon>
+  <div class="md-tooltip">
+
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="done-all"></core-icon>
+      </div>
+      <div class="md-label-text">
+        MAF check:
+        <strong>{{ case.gender_check }}</strong>
+      </div>
     </div>
-    <div class="md-label-text">{{ case.gender_check }}</div>
+
+    <div class="md-tooltip-tip is-right">
+      <div class="md-tooltip-content">
+        Correct internal processing of each <br>
+        sample is confirmed through variant calling <br>
+        concordance. The result of said check is <br>
+        then shown here.
+      </div>
+    </div>
   </div>
 {% endblock %}
 
@@ -113,7 +128,7 @@
 
                 <div class="md-item-body">
                   <div class="md-item-title">
-                    {{variant.hgnc_symbols|join(', ')}}
+                    {{ variant.hgnc_symbols|join(', ') }}
                   </div>
                 </div>
               </a>
@@ -239,7 +254,7 @@
             {% else %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
-                  No case activity yet.
+                  No case comments yet.
                 </div>
               </div>
             {% endfor %}
@@ -289,12 +304,6 @@
                     </span>
                   </div>
                 </div>
-
-                {% if event.content %}
-                  <div class="activity-feed-item-body">
-                    {{ event.content }}
-                  </div>
-                {% endif %}
               </div>
             {% else %}
               <div class="activity-feed-item">
