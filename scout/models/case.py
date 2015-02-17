@@ -59,6 +59,7 @@ class Case(Document):
   updated_at = DateTimeField(default=datetime.now)
   last_updated = DateTimeField()
   suspects = ListField(ReferenceField('Variant'))
+  causative = ReferenceField('Variant')
   synopsis = StringField(default='')
   status = StringField(default='inactive', choices=['inactive', 'active',
                                                     'research', 'archived',

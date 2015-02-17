@@ -20,6 +20,19 @@
 
 {% block toolbar_secondary %}
 
+  {% if case.causative %}
+    <a href="{{ url_for('core.variant',
+                        institute_id=institute.display_name,
+                        case_id=case.display_name,
+                        variant_id=case.causative.id) }}"
+       class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="verified-user"></core-icon>
+      </div>
+      <div class="md-label-text">{{ case.causative.display_name }}</div>
+    </a>
+  {% endif %}
+
   <div class="md-tooltip">
 
     {% if case.assignee %}
@@ -115,7 +128,7 @@
       </div>
     </div>
 
-    <div class="md-tooltip-tip is-right">
+    <div class="md-tooltip-tip is-left">
       <div class="md-tooltip-content">
         Correct internal processing of each <br>
         sample is confirmed through variant calling <br>

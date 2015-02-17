@@ -280,7 +280,7 @@ def unpin_variant(institute_id, case_id, variant_id):
   case.events.append(Event(
     link=variant_url,
     author=current_user.to_dbref(),
-    verb="%s a variant suspect: " % verb,
+    verb="{} a variant suspect: ".format(verb),
     subject=variant_id,
   ))
 
@@ -288,6 +288,39 @@ def unpin_variant(institute_id, case_id, variant_id):
   case.save()
 
   return redirect(request.args.get('next') or request.referrer or variant_url)
+
+
+@core.route('/<institute_id>/<case_id>/<variant_id>/mark_causative',
+            methods=['POST'])
+def mark_causative(institute_id, case_id, variant_id):
+  """Mark a variant as confirmed causative."""
+  # very basic security check
+  validate_user(current_user, institute_id)
+  case = get_document_or_404(Case, case_id)
+  variant = store.variant(document_id=variant_id)
+  variant_url = url_for('.variant', institute_id=institute_id,
+                        case_id=case_id, variant_id=variant_id)
+  case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+  # mark the variant as causative in the case model
+  case.causative = variant
+
+  # add event
+  case.events.append(Event(
+    link=variant_url,
+    author=current_user.to_dbref(),
+    verb="marked a causative variant for case {}:".format(case.display_name),
+    subject=variant_id,
+  ))
+
+  # mark the case as solved
+  case.status = 'solved'
+
+  # persist changes
+  case.save()
+
+  # send the user back to the case the was marked as solved
+  return redirect(request.args.get('next') or request.referrer or case_url)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger',
