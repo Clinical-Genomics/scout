@@ -64,7 +64,7 @@
     </div>
   </div>
 
-  <form class="status-picker" action="POST">
+  <form class="status-picker" method="POST">
     <div class="md-label">
       <div class="md-label-icon">Status</div>
       <div class="md-label-text">
@@ -79,6 +79,22 @@
       </div>
     </div>
   </form>
+
+  {% if case.status not in ['research', 'solved'] %}
+    <form action="{{ url_for('core.open_research',
+                              institute_id=institute.display_name,
+                              case_id=case.display_name) }}"
+          class="case-open-research" method="POST">
+      <button type="submit" class="case-assign-icon">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="public"></core-icon>
+          </div>
+          <div class="md-label-text">Open research</div>
+        </div>
+      </button>
+    </form>
+  {% endif %}
 
   <div class="md-tooltip">
 

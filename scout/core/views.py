@@ -106,6 +106,33 @@ def remove_assignee(institute_id, case_id):
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
+@core.route('/<institute_id>/<case_id>/open_research', methods=['POST'])
+def open_research(institute_id, case_id):
+  """Open the research list for a case.
+
+  TODO: this should ping the admins to make necessary checks.
+  """
+  # very basic security check
+  validate_user(current_user, institute_id)
+  case_model = get_document_or_404(Case, case_id)
+
+  # set the case status to "research"
+  case_model.status = 'research'
+
+  # create event
+  event = Event(
+    link=url_for('.case', institute_id=institute_id, case_id=case_id),
+    author=current_user.to_dbref(),
+    verb='opened research mode for',
+    subject=case.display_name
+  )
+  case.events.append(event)
+
+  case_model.save()
+
+  return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
+
+
 @core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
 def case_phenotype(institute_id, case_id):
   """Add a new HPO term to the case.
