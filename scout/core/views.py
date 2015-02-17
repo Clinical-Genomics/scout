@@ -124,9 +124,9 @@ def open_research(institute_id, case_id):
     link=url_for('.case', institute_id=institute_id, case_id=case_id),
     author=current_user.to_dbref(),
     verb='opened research mode for',
-    subject=case.display_name
+    subject=case_model.display_name
   )
-  case.events.append(event)
+  case_model.events.append(event)
 
   case_model.save()
 
@@ -320,7 +320,7 @@ def mark_causative(institute_id, case_id, variant_id):
   case.save()
 
   # send the user back to the case the was marked as solved
-  return redirect(request.args.get('next') or request.referrer or case_url)
+  return redirect(case_url)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger',
