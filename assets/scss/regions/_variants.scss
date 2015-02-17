@@ -23,7 +23,7 @@ $variants-cell-padding: .6rem;
 }
 
 .variants-header {
-  @extend .is-secondary;
+  @extend %secondary-menubar;
 
 	display: flex;
 	position: relative;
