@@ -59,16 +59,19 @@ class Case(Document):
   updated_at = DateTimeField(default=datetime.now)
   last_updated = DateTimeField()
   suspects = ListField(ReferenceField('Variant'))
+  causative = ReferenceField('Variant')
   synopsis = StringField(default='')
   status = StringField(default='inactive', choices=['inactive', 'active',
                                                     'research', 'archived',
                                                     'solved'])
   events = ListField(EmbeddedDocumentField(Event))
+  comments = ListField(EmbeddedDocumentField(Event))
   clinical_gene_lists = ListField(StringField())
   research_gene_lists = ListField(StringField())
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
+  madeline_info = StringField()
 
   @property
   def hpo_genes(self):
@@ -98,8 +101,6 @@ class Case(Document):
   @property
   def hpo_gene_ids(self):
     return [term['gene_id'] for term in self.hpo_genes if term['gene_id']]
-
-  madeline_info = StringField()
 
   def __unicode__(self):
     return self.display_name

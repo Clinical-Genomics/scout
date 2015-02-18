@@ -23,7 +23,7 @@ $variants-cell-padding: .6rem;
 }
 
 .variants-header {
-  @extend .is-secondary;
+  @extend %secondary-menubar;
 
 	display: flex;
 	position: relative;
@@ -149,10 +149,13 @@ $variants-cell-padding: .6rem;
   max-width: 90%;
   margin: 1rem;
   display: block;
-  height: 10rem;
+  list-style: none;
+  padding: 0;
 
-  > option {
-    // just in case long options
-    overflow: auto;
+  > li {
+    margin-bottom: .7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

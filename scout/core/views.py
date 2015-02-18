@@ -106,8 +106,37 @@ def remove_assignee(institute_id, case_id):
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
+@core.route('/<institute_id>/<case_id>/open_research', methods=['POST'])
+def open_research(institute_id, case_id):
+  """Open the research list for a case.
+
+  TODO: this should ping the admins to make necessary checks.
+  """
+  # very basic security check
+  validate_user(current_user, institute_id)
+  case_model = get_document_or_404(Case, case_id)
+
+  # set the case status to "research"
+  case_model.status = 'research'
+
+  # create event
+  event = Event(
+    link=url_for('.case', institute_id=institute_id, case_id=case_id),
+    author=current_user.to_dbref(),
+    verb='opened research mode for',
+    subject=case_model.display_name
+  )
+  case_model.events.append(event)
+
+  case_model.save()
+
+  return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
+
+
 @core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
-def case_phenotype(institute_id, case_id):
+@core.route('/<institute_id>/<case_id>/phenotype_terms/<int:phenotype_id>',
+            methods=['POST'])
+def case_phenotype(institute_id, case_id, phenotype_id=None):
   """Add a new HPO term to the case.
 
   TODO: validate ID and fetch phenotype description before adding to case.
@@ -116,22 +145,28 @@ def case_phenotype(institute_id, case_id):
   case = get_document_or_404(Case, case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
-  if request.method == 'POST':
+  if phenotype_id:
+    # DELETE a phenotype from the list
+    action_verb = 'removed'
+    hpo_term = case.phenotype_terms.pop(phenotype_id - 1).hpo_id
 
+  else:
+    # POST a new phenotype to the list
+    action_verb = 'added'
     hpo_term = request.form['hpo_term']
     phenotype_term = PhenotypeTerm(hpo_id=hpo_term)
     if phenotype_term not in case.phenotype_terms:
       # append the new HPO term (ID)
       case.phenotype_terms.append(phenotype_term)
 
-      # create event
-      event = Event(link=case_url, author=current_user.to_dbref(),
-                    verb="added '{}' to the HPO terms".format(hpo_term),
-                    subject=case.display_name)
-      case.events.append(event)
+  # create event
+  event = Event(link=case_url, author=current_user.to_dbref(),
+                verb="{verb} HPO term '{term}' for"
+                     .format(verb=action_verb, term=hpo_term),
+                subject=case.display_name)
+  case.events.append(event)
 
-      case.save()
-
+  case.save()
   return redirect(case_url)
 
 
@@ -157,7 +192,7 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
-  gene_lists = [(item, item) for item in case.gene_lists]
+  gene_lists = [(item, item) for item in case.clinical_gene_lists]
   form.gene_lists.choices = gene_lists
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in
@@ -253,7 +288,7 @@ def unpin_variant(institute_id, case_id, variant_id):
   case.events.append(Event(
     link=variant_url,
     author=current_user.to_dbref(),
-    verb="%s a variant suspect: " % verb,
+    verb="{} a variant suspect: ".format(verb),
     subject=variant_id,
   ))
 
@@ -261,6 +296,39 @@ def unpin_variant(institute_id, case_id, variant_id):
   case.save()
 
   return redirect(request.args.get('next') or request.referrer or variant_url)
+
+
+@core.route('/<institute_id>/<case_id>/<variant_id>/mark_causative',
+            methods=['POST'])
+def mark_causative(institute_id, case_id, variant_id):
+  """Mark a variant as confirmed causative."""
+  # very basic security check
+  validate_user(current_user, institute_id)
+  case = get_document_or_404(Case, case_id)
+  variant = store.variant(document_id=variant_id)
+  variant_url = url_for('.variant', institute_id=institute_id,
+                        case_id=case_id, variant_id=variant_id)
+  case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+  # mark the variant as causative in the case model
+  case.causative = variant
+
+  # add event
+  case.events.append(Event(
+    link=variant_url,
+    author=current_user.to_dbref(),
+    verb="marked a causative variant for case {}:".format(case.display_name),
+    subject=variant_id,
+  ))
+
+  # mark the case as solved
+  case.status = 'solved'
+
+  # persist changes
+  case.save()
+
+  # send the user back to the case the was marked as solved
+  return redirect(case_url)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger',

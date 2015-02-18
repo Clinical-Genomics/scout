@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
 from wtforms import (DecimalField as _DecimalField, Field,
                      SelectMultipleField, RadioField)
-from wtforms.widgets import TextInput
+from wtforms import widgets
 
 from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
 from .._compat import text_type
@@ -55,7 +55,7 @@ class DecimalField(_DecimalField):
 
 
 class ListField(Field):
-  widget = TextInput()
+  widget = widgets.TextInput()
 
   def _value(self):
     if self.data:
@@ -65,9 +65,19 @@ class ListField(Field):
       return ''
 
 
+class MultiCheckboxField(SelectMultipleField):
+  """A multiple-select, except displays a list of checkboxes.
+
+  Iterating the field will produce subfields, allowing custom rendering
+  of the enclosed checkbox fields.
+  """
+  widget = widgets.ListWidget(prefix_label=False)
+  option_widget = widgets.CheckboxInput()
+
+
 class FiltersForm(Form):
   # choices populated dynamically
-  gene_lists = SelectMultipleField(choices=[])
+  gene_lists = MultiCheckboxField(choices=[])
   hgnc_symbols = ListField()
   variant_type = RadioField(choices=[('clinical', 'clinical'),
                                      ('research', 'research')],
@@ -76,9 +86,9 @@ class FiltersForm(Form):
   thousand_genomes_frequency = DecimalField('1000 Genomes')
   exac_frequency = DecimalField('ExAC')
 
-  region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
-  functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
-  genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
+  region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
+  functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
+  genetic_models = MultiCheckboxField(choices=GENETIC_MODELS)
 
 
 def init_filters_form(get_args):

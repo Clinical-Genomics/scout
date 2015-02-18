@@ -104,7 +104,7 @@ class Transcript(EmbeddedDocument):
 
 class DiseaseModel(EmbeddedDocument):
   omim_id = IntField(required=True)
-  disease_models = ListField()
+  disease_models = ListField(StringField())
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)

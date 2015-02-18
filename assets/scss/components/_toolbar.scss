@@ -36,12 +36,16 @@ $toolbar-bg-color: $primary-color;
   }
 }
 
-.is-secondary {
+%secondary-menubar {
   // keep just below md-toolbar (shadows etc.)
   z-index: 0;
 
   // distinguish from other toolbar(s)
   border-top: 1px solid rgba(#000, .15);
+}
+
+.is-secondary {
+  @extend %secondary-menubar;
 
   > * {
     margin: 0 .4rem;

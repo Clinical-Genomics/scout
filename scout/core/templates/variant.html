@@ -65,6 +65,16 @@
       </button>
     </form>
   {% endif %}
+
+  <form action="{{ url_for('core.mark_causative',
+                           institute_id=institute.display_name,
+                           case_id=case.display_name,
+                           variant_id=variant_id) }}"
+        method="POST">
+    <button type="submit" class="icon-button" title="Mark as causative">
+      <core-icon icon="verified-user"></core-icon>
+    </button>
+  </form>
 {% endblock %}
 
 {% block toolbar_secondary %}
