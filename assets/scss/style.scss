@@ -73,6 +73,12 @@ h3 {
   display: flex;
 }
 
+.layout-center {
+  @extend .layout;
+  justify-content: center;
+  align-items: center;
+}
+
 .is-hidden {
   display: none;
 }
@@ -217,13 +223,6 @@ core-icon {
 @import "regions/case";
 @import "regions/variants";
 @import "regions/variant";
-
-// case pedigree SVG
-// TODO: fix this!
-#svgDC {
-  display: table-cell;
-  margin: 0 auto -40px;
-}
 
 .md-title-box {
   :nth-child(2) {

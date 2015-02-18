@@ -187,7 +187,7 @@
 
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
-        <div class="md-card-body-list">
+        <div class="md-card-body-list layout-center">
           {{ case.madeline_info|safe }}
         </div>
       </div>
@@ -235,8 +235,18 @@
         <div class="md-card-body-list">
           {% for hpo_term in case.phenotype_terms %}
             <div class="list-item">
-              {{ hpo_term.feature or 'Unknown' }}
-              <small class="md-badge">{{ hpo_term.hpo_id }}</small>
+              <div>
+                {{ hpo_term.feature or hpo_term.hpo_id }}
+              </div>
+
+              <form action="{{ url_for('core.case_phenotype',
+                                       institute_id=institute.display_name,
+                                       case_id=case.display_name) }}"
+                    method="DELETE">
+                <button type="submit" class="md-button-flat" title="Remove term">
+                  <core-icon icon="close"></core-icon>
+                </button>
+              </form>
             </div>
           {% endfor %}
         </div>
@@ -355,11 +365,11 @@
       <div class="md-card is-aside">
         <div class="md-card-header">HPO gene list</div>
         <div class="md-card-body-list">
-          {% for hpo_gene in case.hpo_genes[:10] %}
+          {% for hpo_gene in (case.hpo_genes or [])[:10] %}
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
                 {{ hpo_gene.gene_id or 'Unknown' }}
-                <small>{{ hpo_gene.omim_id }}</small>
+                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}"><small>{{ hpo_gene.omim_id }}</small></a>
               </div>
               <small class="md-badge">{{ hpo_gene.p_value }}</small>
             </div>
