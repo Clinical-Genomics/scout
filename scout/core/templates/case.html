@@ -241,10 +241,11 @@
 
               <form action="{{ url_for('core.case_phenotype',
                                        institute_id=institute.display_name,
-                                       case_id=case.display_name) }}"
-                    method="DELETE">
-                <button type="submit" class="md-button-flat" title="Remove term">
-                  <core-icon icon="close"></core-icon>
+                                       case_id=case.display_name,
+                                       phenotype_id=loop.index) }}"
+                    method="POST">
+                <button type="submit" class="md-button-flat">
+                  <core-icon icon="highlight-remove"></core-icon>
                 </button>
               </form>
             </div>
@@ -369,7 +370,9 @@
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
                 {{ hpo_gene.gene_id or 'Unknown' }}
-                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}"><small>{{ hpo_gene.omim_id }}</small></a>
+                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}">
+                  <small>{{ hpo_gene.omim_id }}</small>
+                </a>
               </div>
               <small class="md-badge">{{ hpo_gene.p_value }}</small>
             </div>

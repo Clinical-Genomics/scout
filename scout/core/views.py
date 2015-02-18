@@ -134,7 +134,9 @@ def open_research(institute_id, case_id):
 
 
 @core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
-def case_phenotype(institute_id, case_id):
+@core.route('/<institute_id>/<case_id>/phenotype_terms/<int:phenotype_id>',
+            methods=['POST'])
+def case_phenotype(institute_id, case_id, phenotype_id=None):
   """Add a new HPO term to the case.
 
   TODO: validate ID and fetch phenotype description before adding to case.
@@ -143,22 +145,28 @@ def case_phenotype(institute_id, case_id):
   case = get_document_or_404(Case, case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
-  if request.method == 'POST':
+  if phenotype_id:
+    # DELETE a phenotype from the list
+    action_verb = 'removed'
+    hpo_term = case.phenotype_terms.pop(phenotype_id - 1).hpo_id
 
+  else:
+    # POST a new phenotype to the list
+    action_verb = 'added'
     hpo_term = request.form['hpo_term']
     phenotype_term = PhenotypeTerm(hpo_id=hpo_term)
     if phenotype_term not in case.phenotype_terms:
       # append the new HPO term (ID)
       case.phenotype_terms.append(phenotype_term)
 
-      # create event
-      event = Event(link=case_url, author=current_user.to_dbref(),
-                    verb="added '{}' to the HPO terms".format(hpo_term),
-                    subject=case.display_name)
-      case.events.append(event)
+  # create event
+  event = Event(link=case_url, author=current_user.to_dbref(),
+                verb="{verb} HPO term '{term}' for"
+                     .format(verb=action_verb, term=hpo_term),
+                subject=case.display_name)
+  case.events.append(event)
 
-      case.save()
-
+  case.save()
   return redirect(case_url)
 
 
