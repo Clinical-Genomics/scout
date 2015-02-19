@@ -25,10 +25,14 @@ def igv_init(institute_id, case_id, variant_id):
   case = get_document_or_404(Case, case_id)
   variant = store.variant(document_id=variant_id)
 
+  # sanity check to see if there's any reason to launch IGV
   if variant is None:
     return jsonify(error='Variant not found'), 406
 
+  # figure out where the variant/indel ends
   variant_end = variant.position + len(variant.alternative) - 1
+
+  # compose URL
   igv_url = build_igv_url(variant.chromosome, variant.position, variant_end,
                           case.vcf_file, case.bam_files)
 
