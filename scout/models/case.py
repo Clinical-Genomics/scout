@@ -24,6 +24,7 @@ class Individual(EmbeddedDocument):
   mother = StringField()
   individual_id = StringField()
   capture_kit = ListField(StringField())
+  bam_file = StringField()
 
   @property
   def sex_human(self):
@@ -72,6 +73,7 @@ class Case(Document):
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
   madeline_info = StringField()
+  vcf_file = StringField()
 
   @property
   def hpo_genes(self):
@@ -100,7 +102,14 @@ class Case(Document):
 
   @property
   def hpo_gene_ids(self):
+    """Parse out all HGNC symbols form the dynamic Phenomizer query."""
     return [term['gene_id'] for term in self.hpo_genes if term['gene_id']]
+
+  @property
+  def bam_files(self):
+    """Aggregate all BAM files across all individuals."""
+    return [individual.bam_file for individual in self.individuals
+            if individual.bam_file]
 
   def __unicode__(self):
     return self.display_name

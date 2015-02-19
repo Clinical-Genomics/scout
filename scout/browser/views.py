@@ -30,6 +30,6 @@ def igv_init(institute_id, case_id, variant_id):
 
   variant_end = variant.position + len(variant.alternative) - 1
   igv_url = build_igv_url(variant.chromosome, variant.position, variant_end,
-                      case.vcf_file, case.bam_files)
+                          case.vcf_file, case.bam_files)
 
   return redirect(igv_url)
