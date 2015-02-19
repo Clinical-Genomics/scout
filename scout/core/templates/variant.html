@@ -330,7 +330,7 @@
       <div class="md-card">
         <div class="md-card-header">GT call</div>
 
-        <div class="md-card-body">
+        <div class="md-card-body is-main">
           <table class="default-table">
             <thead>
               <tr>
@@ -365,16 +365,6 @@
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list layout-center">
           {{ case.madeline_info|safe }}
-        </div>
-      </div>
-    </div>
-
-    <div id="compounds" class="variant-segments-row">
-      <div class="md-card">
-        <div class="md-card-header">Compounds</div>
-
-        <div class="md-card-body">
-          {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
     </div>
@@ -453,6 +443,16 @@
               {% endfor %}
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="compounds" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Compounds</div>
+
+        <div class="md-card-body">
+          {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
     </div>
