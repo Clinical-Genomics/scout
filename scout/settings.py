@@ -36,7 +36,8 @@ class BaseConfig(object):
                 'scout.frontend.frontend',
                 'scout.login.login',
                 'scout.user.user',
-                'scout.api.api']
+                'scout.api.api',
+                'scout.browser.browser']
 
   EXTENSIONS = ['scout.extensions.store',
                 'scout.extensions.toolbar',

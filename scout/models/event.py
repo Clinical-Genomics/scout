@@ -48,6 +48,7 @@ class Event(EmbeddedDocument):
   subject = StringField()              # case 23
   action = StringField()
   tags = ListField(StringField())
+  institute = ReferenceField('Institute')
 
   # timestamps
   created_at = DateTimeField(default=datetime.now)

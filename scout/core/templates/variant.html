@@ -360,6 +360,13 @@
           </table>
         </div>
       </div>
+
+      <div id="case-samples" class="md-card is-aside">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list layout-center">
+          {{ case.madeline_info|safe }}
+        </div>
+      </div>
     </div>
 
     <div id="compounds" class="variant-segments-row">
@@ -477,7 +484,9 @@
             OMIM
           </a>
 
-          <a target="_blank" class="variant-link-external" href="https://clinical-db.scilifelab.se:8081/api/v1/variants/95079791/igv.xml?origin=https://clinical-db.scilifelab.se:8081">
+          <a target="_blank" class="variant-link-external"
+             href="{{ url_for('browser.igv_init', institute_id=institute_id,
+                              case_id=case_id, variant_id=variant_id) }}">
             IGV
           </a>
         </div>
