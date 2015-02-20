@@ -218,7 +218,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     print('Cases found in %s' % ped_file, file=sys.stderr)
   
   ped_individuals = []
-  cases = get_case(ped_file, family_type, scout_configs['institutes'])
+  cases = get_case(ped_file, family_type, scout_configs)
   
   for case in cases:
     case_id = case.case_id
@@ -554,15 +554,14 @@ def get_institute(institute_name):
   """
   return Institute(internal_id=institute_name, display_name=institute_name)
 
-def get_case(ped_file, family_type, institute_names):
+def get_case(ped_file, family_type, scout_configs):
   """
   Take a case file and return the case on the specified format.
 
   Args:
     ped_file    : The path to a ped file
     family_type : A string that describe the format of the ped file
-    institute_names (list): A list with names of the institutes
-                      that the family belongs to.
+    scout_configs (dict): A dictionary scout info.
 
   Returns:
     cases : A list with mongo engine objects that describe the cases
@@ -572,11 +571,13 @@ def get_case(ped_file, family_type, institute_names):
   case_parser = FamilyParser(ped_file, family_type=family_type)
   # Cases is a list that will hold all cases found in the ped file
   cases = []
+  institute_names = scout_configs['institutes']
   for case in case_parser.to_json():
     # Create a mongo engine case
     mongo_case = Case(case_id = '_'.join(['_'.join(institute_names), case['family_id']]))
     # We use the family id as display name for scout
     mongo_case['display_name'] = case['family_id']
+    mongo_case['vcf_file'] = scout_configs.get('vcf', '')
     individuals = []
     databases = set()
     for individual in case['individuals']:
@@ -587,6 +588,12 @@ def get_case(ped_file, family_type, institute_names):
       ind['sex'] = str(individual['sex'])
       ind['phenotype'] = individual['phenotype']
       ind['individual_id'] = individual['individual_id']
+      ind['bam_file'] = scout_configs.get(
+                                  'individuals', {}
+                                  ).get(
+                                  individual['individual_id'], {}
+                                  ).get('bam_path', '')
+      
       ind['capture_kit'] = individual.get('extra_info', {}).get('Capture_kit', '').split(',')
       for clinical_db in individual.get('extra_info', {}).get('Clinical_db', '').split(','):
         databases.add(clinical_db)
@@ -945,12 +952,12 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   if institute:
     setup_configs['institutes'] = [institute]
   
-  if not setup_configs['vcf']:
+  if not setup_configs.get('vcf', None):
     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
     sys.exit(0)
   
   # Check that the ped file is provided:
-  if not setup_configs['ped']:
+  if not setup_configs.get('ped', None):
     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
     sys.exit(0)
   
