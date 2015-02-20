@@ -176,7 +176,7 @@ class Variant(Document):
   db_snp_ids = ListField(StringField())
   # Gene ids:
   hgnc_symbols = ListField(StringField())
-  ensemble_gene_ids = ListField(StringField())
+  ensembl_gene_ids = ListField(StringField())
   # Frequencies:
   thousand_genomes_frequency = FloatField()
   exac_frequency = FloatField()

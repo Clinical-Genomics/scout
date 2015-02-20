@@ -20,11 +20,12 @@ import click
 
 import scout
 
+from pprint import pprint as pp
 from pymongo import MongoClient, Connection
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import _get_db
 
-from scout.ext.backend import load_mongo_db
+from scout.ext.backend import (load_mongo_db, ConfigParser)
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 
@@ -39,6 +40,11 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 type=click.Path(exists=True),
                 help="Path to the corresponding ped file."
 )
+@click.option('-scout_config', '--scout_config_file',
+                nargs=1,
+                type=click.Path(exists=True),
+                help="Path to the scout config file."
+)
 @click.option('-config', '--config_file',
                 nargs=1,
                 type=click.Path(exists=True),
@@ -52,7 +58,7 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 )
 @click.option('-type', '--family_type',
                 type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
-                default='ped',
+                default='cmms',
                 nargs=1,
                 help="Specify the file format of the ped (or ped like) file."
 )
@@ -88,40 +94,55 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def load_mongo(vcf_file, ped_file, config_file, family_type, mongo_db, username,
-        variant_type, madeline, password, institute, port, host, verbose):
+def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
+              mongo_db, username, variant_type, madeline, password, institute, 
+              port, host, verbose):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
-  if not vcf_file:
+  scout_configs = {}
+  
+  if scout_config_file:
+    scout_configs = ConfigParser(scout_config_file)
+  
+  if vcf_file:
+    scout_configs['vcf'] = vcf_file
+  
+  if ped_file:
+    scout_configs['ped'] = ped_file
+  
+  if madeline:
+    scout_configs['madeline'] = madeline
+  
+  if institute:
+    scout_configs['institutes'] = [institute]
+    
+  if not scout_configs.get('vcf', None):
     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
     sys.exit(0)
-  else:
-    splitted_vcf_file_name = os.path.splitext(vcf_file)
-    vcf_ending = splitted_vcf_file_name[-1]
-    if vcf_ending != '.vcf':
-      if vcf_ending == '.gz':
-        vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
-        if vcf_ending != '.vcf':
-          print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", file=sys.stderr)
-          sys.ext(0)
-      else:
-        if vcf_ending != '.vcf':
-          print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", file=sys.stderr)
-          sys.exit(0)
+  
   # Check that the ped file is provided:
-  if not ped_file:
+  if not scout_configs.get('ped', None):
     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
     sys.exit(0)
+  
   # Check that the config file is provided:
   if not config_file:
     print("Please provide a config file.(Use flag '-config/--config_file')", file=sys.stderr)
     sys.exit(0)
-
-  my_vcf = load_mongo_db(vcf_file, ped_file, config_file, family_type,
-                      mongo_db=mongo_db, username=username, password=password,
-                      variant_type=variant_type, madeline_file=madeline, 
-                      institute_name=institute, port=port, host=host, 
-                      verbose=verbose)
+  
+  
+  my_vcf = load_mongo_db(
+                          scout_configs, 
+                          config_file, 
+                          family_type,
+                          mongo_db=mongo_db, 
+                          username=username, 
+                          password=password,
+                          variant_type=variant_type, 
+                          port=port, 
+                          host=host, 
+                          verbose=verbose
+                        )
 
 
 if __name__ == '__main__':
