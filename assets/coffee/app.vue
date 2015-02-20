@@ -17,6 +17,16 @@
             else
               @message = 'Status update failed.'
 
+      onVariantRankChange: (e) ->
+        superagent
+          .put "/api/v1#{location.pathname}/manual_rank"
+          .send { manual_rank: @variantRank }
+          .end (res) =>
+            if res.ok
+              @message = 'Manual variant rank updated!'
+            else
+              @message = 'Manual variant rank update failed.'
+
       showModal: ->
         @$.modal.show()
 

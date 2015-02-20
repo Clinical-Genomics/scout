@@ -232,3 +232,26 @@ def variant_event(institute_id, case_id, variant_id, event_id=None):
 
   else:
     return redirect(request.referrer)
+
+
+@api.route('/<institute_id>/<case_id>/variants/<variant_id>/manual_rank',
+           methods=['PUT'])
+def manual_rank(institute_id, case_id, variant_id):
+  """Update the manual variant rank for a variant."""
+  variant = store.variant(document_id=variant_id)
+
+  # update the manual rank
+  new_manual_rank = int(request.json.get('manual_rank'))
+  variant.manual_rank = new_manual_rank
+
+  # log action event
+  variant.events.append(Event(
+    link=request.referrer,
+    author=current_user.to_dbref(),
+    verb="updated manual rank to {} for".format(new_manual_rank),
+    subject=variant.display_name,
+  ))
+
+  variant.save()
+
+  return jsonify(manual_rank=variant.manual_rank, ok=True)

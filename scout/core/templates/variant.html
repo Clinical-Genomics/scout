@@ -147,6 +147,25 @@
     </div>
   </div>
 
+  <div class="variant-header-item">
+    <form class="status-picker" method="POST">
+      <div class="md-label">
+        <div class="md-label-icon">Rank</div>
+        <div class="md-label-text">
+          <select v-model="variantRank" v-on="change: onVariantRankChange">
+            {% for rank in manual_rank_options %}
+              <option {% if rank == variant.manual_rank %}selected{% endif %}
+                      value="{{ rank }}">
+                {{ rank }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Separator -->
   <div class="flex"></div>
 
   <div class="md-toolbar-group">

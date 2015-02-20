@@ -193,12 +193,19 @@
 			<div class="variants-row">
 
         <!-- Rank position -->
-				<a class="variants-row-item text-right"
+				<a class="variants-row-item layout"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
                             case_id=case_id,
 					 									variant_id=variant.document_id) }}">
-          {{ variant.variant_rank }}
+
+          <div>{{ variant.variant_rank }}</div>
+
+          {% if variant.manual_rank %}
+            <small class="md-badge--{{ variant.manual_rank_level }}">
+              {{ variant.manual_rank }}
+            </small>
+          {% endif %}
 				</a>
 
         <!-- Rank score -->

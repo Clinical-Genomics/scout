@@ -71,6 +71,8 @@ h3 {
 
 .layout {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .layout-center {
@@ -306,19 +308,27 @@ core-icon {
   @extend %md-badge;
 }
 
+.md-badge--low {
+  @extend %md-badge;
+
+  background-color: hsl(200, 18, 46);
+}
+
 .md-badge--success {
   @extend %md-badge;
 
   background-color: #7cb342;
 }
 
-.md-badge--warning {
+.md-badge--warning,
+.md-badge--medium {
   @extend %md-badge;
 
   background-color: #ff5722;
 }
 
-.md-badge--fail {
+.md-badge--fail,
+.md-badge--high {
   @extend %md-badge;
 
   background-color: #f44336;
