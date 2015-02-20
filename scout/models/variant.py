@@ -190,6 +190,7 @@ class Variant(Document):
   # Database options:
   gene_lists = ListField(StringField())
   expected_inheritance = ListField(StringField())
+  manual_rank = IntField(choices=[1, 2, 3, 4, 5])
 
   @property
   def local_requency(self):
@@ -217,7 +218,7 @@ class Variant(Document):
     else:
       for gene in self.genes:
         omim_annotations.append(':'.join([gene.hgnc_symbol, gene.omim_terms]))
-    return region_annotations
+    return omim_annotations
 
   @property
   def region_annotations(self):
@@ -264,17 +265,6 @@ class Variant(Document):
     return functional_annotations
 
   @property
-  def region_annotations(self):
-    """Returns a list with region annotation(s)."""
-    region_annotations = []
-    if len(self.genes) == 1:
-      return [gene.region_annotation for gene in self.genes]
-    else:
-      for gene in self.genes:
-        region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation or '']))
-    return region_annotations
-
-  @property
   def transcripts(self):
     """Yield all transcripts as a flat iterator.
 
@@ -317,6 +307,12 @@ class Variant(Document):
 
     else:
       return 'rare'
+
+  @property
+  def manual_rank_level(self):
+    return {1: 'low', 2: 'low',
+            3: 'medium', 4: 'medium',
+            5: 'high'}.get(self.manual_rank, 'unknown')
 
   def __unicode__(self):
     return self.display_name

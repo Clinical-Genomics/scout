@@ -8,7 +8,7 @@ from flask.ext.mail import Message
 
 from .forms import init_filters_form, SO_TERMS, process_filters_form
 from .utils import validate_user
-from ..models import Case, Event, PhenotypeTerm
+from ..models import Case, Event, PhenotypeTerm, Variant
 from ..extensions import mail, store
 from ..helpers import templated, get_document_or_404
 
@@ -239,6 +239,7 @@ def variant(institute_id, case_id, variant_id):
     variant=variant,
     prev_variant=prev_variant,
     next_variant=next_variant,
+    manual_rank_options=Variant.manual_rank.choices
   )
 
 

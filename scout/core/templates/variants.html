@@ -173,7 +173,9 @@
                       case_id=case_id,
                       functional_annotations=severe_so_terms,
                       region_annotations=['exonic', 'splicing'],
-                      thousand_genomes_frequency=0.01) }}"
+                      thousand_genomes_frequency=0.01,
+                      gene_lists=current_gene_lists,
+                      hgnc_symbols=form.hgnc_symbols.data) }}"
            class="md-button">
           Clinical filter
         </a>
@@ -191,12 +193,19 @@
 			<div class="variants-row">
 
         <!-- Rank position -->
-				<a class="variants-row-item text-right"
+				<a class="variants-row-item layout"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
                             case_id=case_id,
 					 									variant_id=variant.document_id) }}">
-          {{ variant.variant_rank }}
+
+          <div>{{ variant.variant_rank }}</div>
+
+          {% if variant.manual_rank %}
+            <small class="md-badge--{{ variant.manual_rank_level }}">
+              {{ variant.manual_rank }}
+            </small>
+          {% endif %}
 				</a>
 
         <!-- Rank score -->
