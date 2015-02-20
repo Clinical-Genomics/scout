@@ -158,9 +158,16 @@
                                   case_id=case.display_name,
                                   variant_id=variant.id) }}"
                  class="md-item">
-                <div class="md-item-icon">
-                  <core-icon icon="bookmark"></core-icon>
-                </div>
+
+                {% if variant.manual_rank %}
+                  <small class="md-badge--{{ variant.manual_rank_level }}">
+                    {{ variant.manual_rank }}
+                  </small>
+                {% else %}
+                  <div class="md-item-icon">
+                    <core-icon icon="bookmark"></core-icon>
+                  </div>
+                {% endif %}
 
                 <div class="md-item-body">
                   <div class="md-item-title">
