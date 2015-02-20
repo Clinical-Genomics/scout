@@ -16,7 +16,7 @@ import sys
 import os
 import click
 
-from configobj import ConfigObj
+from configobj import ConfigObj, flatten_errors
 from validate import Validator
 
 from ped_parser import parser as ped_parser
@@ -24,69 +24,53 @@ from vcf_parser import parser as vcf_parser
 
 from pprint import pprint as pp
 
-#Validation scheme for scout config files
-SPEC = """
-collection = option('core','common','case', 'config_info', 'specific')
-categories = option('variant_position','variant_id','variant_information',allele_frequency','deleteriousness','inheritance_models','config_info','gene_identifier')
-vcf_field = option('CHROM', 'CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL','INFO', 'FORMAT', 'other', default='other')
-internal_record_key = string
-scout_record_alias = string
-vcf_data_field_type = option('string', 'int', 'float', 'list', default='string')
-vcf_data_field_number = int
-vcf_data_field_description = string
-vcf_data_field_separator = string
-""".split('\n')
-
-# canvas_border = integer(min=10, max=35, default=15)
-# colour1 = list(min=3, max=3, default=list('280', '0', '0'))
-# colour2 = list(min=3, max=3, default=list('255', '255', '0'))
-# colour3 = list(min=3, max=3, default=list('0', '255', '0'))
-# colour4 = list(min=3, max=3, default=list('255', '0', '0'))
-# colour5 = list(min=3, max=3, default=list('0', '0', '255'))
-# colour6 = list(min=3, max=3, default=list('160', '32', '240'))
-# colour7 = list(min=3, max=3, default=list('0', '255', '255'))
-# colour8 = list(min=3, max=3, default=list('255', '165', '0'))
-# colour9 = list(min=3, max=3, default=list('211', '211', '211'))
-# convert_quality = option('highest', 'high', 'normal', default='normal')
-# default_font = string
-# default_width = integer(min=1, max=12000, default=640)
-# default_height = integer(min=1, max=12000, default=480)
-# imagemagick_path = string
-# handle_size = integer(min=3, max=15, default=6)
-# language = option('English', 'English (United Kingdom)', 'Russian', 'Hindi', default='English')
-# print_title = boolean(default=True)
-# statusbar = boolean(default=True)
-# toolbar = boolean(default=True)
-# toolbox = option('icon', 'text', default='icon')
-# undo_sheets = integer(min=5, max=50, default=10)
-
-
-
 
 class ConfigParser(ConfigObj):
   """Class for holding information from config file"""
-  def __init__(self, config_file, indent_type='  ', encoding='utf-8'):
-    super(ConfigParser, self).__init__(infile=config_file, indent_type=indent_type, encoding=encoding)
-    # validator = Validator()
-    # result = self.validate(validator)
-    # if result != True:
-    #     print('Config file validation failed!')
-    #     sys.exit(1)
-    self.categories = {'variant_position':[],
-                      'variant_id':[],
-                      'variant_information':[],
-                      'allele_frequency':[],
-                      'conservation': [],
-                      'deleteriousness':[],
-                      'inheritance_models':[],
-                      'config_info':[],
-                      'gene_identifier':[],
-                      'genotype_information':[]
+  def __init__(self, config_file, indent_type='  ', encoding='utf-8', configspec=None):
+    if configspec:
+      super(ConfigParser, self).__init__(
+                                          infile=config_file, 
+                                          indent_type=indent_type, 
+                                          encoding=encoding,
+                                          configspec=configspec
+                                      )
+      validator = Validator()
+      results = self.validate(validator)
+      if results != True:
+        for (section_list, key, _) in flatten_errors(self, results):
+            if key is not None:
+              print('The "%s" key in the section "%s" failed validation' % (key, ', '.join(section_list)))
+            else:
+              print('The following section was missing:%s ' % ', '.join(section_list))
+          # print('Config file validation failed!')
+          # sys.exit(1)
+      
+    else:
+      super(ConfigParser, self).__init__(
+                                          infile=config_file, 
+                                          indent_type=indent_type, 
+                                          encoding=encoding,
+                                          configspec=configspec
+                                      )
+    
+    self.categories = {
+                  'variant_position':[],
+                  'variant_id':[],
+                  'variant_information':[],
+                  'allele_frequency':[],
+                  'conservation': [],
+                  'deleteriousness':[],
+                  'inheritance_models':[],
+                  'config_info':[],
+                  'gene_identifier':[],
+                  'genotype_information':[]
                 }
 
-    self.plugins = [plugin for plugin in self.keys()]
-    for plugin in self.plugins:
-      self.categories[self[plugin]['category']].append(plugin)
+    self.plugins = [plugin for plugin in self.get('VCF', {}).keys()]
+    if self.plugins:
+      for plugin in self.plugins:
+        self.categories[self['VCF'][plugin]['category']].append(plugin)
     
   def write_config(self, outfile):
     """Write the config file to a new file"""
@@ -109,18 +93,27 @@ class ConfigParser(ConfigObj):
                 nargs=1,
                 type=click.Path(exists=True)
 )
+@click.option('-s', '--config_spec',
+                nargs=1,
+                type=click.Path()
+)
 @click.option('-out', '--outfile',
                 nargs=1,
                 type=click.File('w')
 )
-def read_config(config_file, outfile):
+def read_config(config_file, config_spec, outfile):
     """Parse the config file and print it to the output."""
-    my_config_reader = ConfigParser(config_file)
+    my_config_reader = ConfigParser(config_file, configspec=config_spec)
     print('\nCategories:\n' '-------------------')
+    # pp(my_config_reader)
     for category in my_config_reader.categories:
-      for adapter in my_config_reader.categories[category]:
-        print('%s : %s' % (category, adapter))
-        pp(my_config_reader[adapter])
+      print(category)
+      for category_name in my_config_reader.categories[category]:
+        print('\t %s' %category_name)
+      # for adapter in my_config_reader.categories[category]:
+      #   print('%s : %s' % (category, adapter))
+      #   pp(dict(my_config_reader['VCF'][adapter]))
+        # print(type(my_config_reader['VCF'][adapter]))
     # for plugin in my_config_reader.plugins:
     #   print(type(my_config_reader[plugin].get('vcf_data_field_number', '0')))
       

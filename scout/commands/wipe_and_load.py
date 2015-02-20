@@ -20,12 +20,15 @@ import click
 
 import scout
 
+from pprint import pprint as pp
 from pymongo import MongoClient, Connection
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import _get_db
 
 from scout.commands.wipe_mongo import wipe_mongo
 from scout.commands.load_mongo import load_mongo
+
+from scout.ext.backend import ConfigParser
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 
@@ -95,99 +98,134 @@ def wipe_and_load(ctx, config_file, madeline, family_type, variant_type,
                   port=port, 
                   verbose=verbose
                   )
-  family_1_ped = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/1/1_pedigree.txt'
-                          )
-  family_1_clincal = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/1/1_500.selected.vcf'
-                          )
-  family_1_research = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/1/1_500.research.vcf'
-                          )
-  family_1_madeline = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/1/1ped.xml'
-                          )
   
-  family_coriell_ped = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/P575_coriell/P575-coriell_pedigree.txt'
-                          )
-  family_coriell_clincal = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/P575_coriell/P575-coriell_500.selected.vcf'
-                          )
-  family_coriell_research = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/P575_coriell/P575-coriell_500.research.vcf'
-                          )
-  family_coriell_madeline = os.path.join(
-                          BASE_PATH, 
-                          'tests/vcf_examples/P575_coriell/P575-coriellped.xml'
-                          )
+  scout_config_file_1_clinical = os.path.join(
+                                BASE_PATH,
+                                'tests/vcf_examples/1/scout_config_test_clinical.ini'
+                                )
+  scout_config_file_1_research = os.path.join(
+                                BASE_PATH,
+                                'tests/vcf_examples/1/scout_config_test_research.ini'
+                                )
+  scout_configs_1_clinical = ConfigParser(scout_config_file_1_clinical)
+  scout_configs_1_research = ConfigParser(scout_config_file_1_research)
+  
+  scout_configs_1_clinical['vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_1_clinical['vcf']
+                                        )
+  scout_configs_1_research['vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_1_research['vcf']
+                                        )
+  scout_configs_1_clinical['ped'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_1_clinical['ped']
+                                        )
+  scout_configs_1_research['ped'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_1_research['ped']
+                                        )
+  scout_configs_1_clinical['madeline'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_1_clinical['madeline']
+                                        )
+  scout_configs_1_research['madeline'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_1_research['madeline']
+                                        )
+  
+  scout_config_file_coriell_clinical = os.path.join(
+                                BASE_PATH,
+                                'tests/vcf_examples/P575_coriell/scout_config_test_clinical.ini'
+                                )
+  scout_config_file_coriell_research = os.path.join(
+                                BASE_PATH,
+                                'tests/vcf_examples/P575_coriell/scout_config_test_research.ini'
+                                )
+  
+  scout_configs_coriell_clinical = ConfigParser(scout_config_file_coriell_clinical)
+  scout_configs_coriell_research = ConfigParser(scout_config_file_coriell_research)
+  
+  
+  scout_configs_coriell_clinical['vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_coriell_clinical['vcf']
+                                        )
+  scout_configs_coriell_research['vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_coriell_research['vcf']
+                                        )
+  scout_configs_coriell_clinical['ped'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_coriell_clinical['ped']
+                                        )
+  scout_configs_coriell_research['ped'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_coriell_research['ped']
+                                        )
+  scout_configs_coriell_clinical['madeline'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_coriell_clinical['madeline']
+                                        )
+  scout_configs_coriell_research['madeline'] = os.path.join(
+                                          BASE_PATH,
+                                          scout_configs_coriell_research['madeline']
+                                        )
+
+
   # Load the family 1 research data:
-  ctx.invoke(load_mongo, 
-                  vcf_file=family_1_research, 
-                  ped_file=family_1_ped, 
+  ctx.invoke(load_mongo,
+                  vcf_file = scout_configs_1_research['vcf'],
+                  ped_file = scout_configs_1_research['ped'],
                   config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
                   variant_type='research', 
-                  madeline=family_1_madeline, 
                   password=password, 
-                  institute=institute, 
                   port=port, 
                   host=host, 
                   verbose=verbose
                   )
   # Load the family 1 clinical data:
-  ctx.invoke(load_mongo, 
-                  vcf_file=family_1_clincal, 
-                  ped_file=family_1_ped, 
+  ctx.invoke(load_mongo,
+                  vcf_file = scout_configs_1_clinical['vcf'],
+                  ped_file = scout_configs_1_clinical['ped'],
                   config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
                   variant_type='clinical', 
-                  madeline=family_1_madeline, 
                   password=password, 
-                  institute=institute, 
                   port=port, 
                   host=host, 
                   verbose=verbose
                   )
   # Load the family P575-coriell research data:
-  ctx.invoke(load_mongo, 
-                  vcf_file=family_coriell_research, 
-                  ped_file=family_coriell_ped, 
+  ctx.invoke(load_mongo,
+                  vcf_file = scout_configs_coriell_research['vcf'],
+                  ped_file = scout_configs_coriell_research['ped'],
                   config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
                   variant_type='research', 
-                  madeline=family_coriell_madeline, 
                   password=password, 
-                  institute=institute, 
                   port=port, 
                   host=host, 
                   verbose=verbose
                   )
   # Load the family P575-coriell clinical data:
-  ctx.invoke(load_mongo, 
-                  vcf_file=family_coriell_clincal, 
-                  ped_file=family_coriell_ped, 
+  ctx.invoke(load_mongo,
+                  vcf_file = scout_configs_coriell_research['vcf'],
+                  ped_file = scout_configs_coriell_research['ped'],
                   config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
                   variant_type='clinical', 
-                  madeline=family_coriell_madeline, 
                   password=password, 
-                  institute=institute, 
                   port=port, 
                   host=host, 
                   verbose=verbose
