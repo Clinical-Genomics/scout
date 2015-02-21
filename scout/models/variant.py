@@ -153,11 +153,8 @@ class Variant(Document):
   # the variant can be either a reserchvariant or a clinical variant.
   # for research variants we display all the available information while
   # the clinical variants hae limited annotation fields.
-  variant_type = StringField(required=True, choices=(
-                                                  'research',
-                                                  'clinical'
-                                                  )
-                            )
+  variant_type = StringField(required=True,
+                             choices=('research', 'clinical'))
   # case_id is a string like institute_caseid
   case_id = StringField(required=True)
   chromosome = StringField(required=True)
@@ -199,7 +196,7 @@ class Variant(Document):
               Case.objects.count())
 
   @property
-  def expected_inheritance(self):
+  def expected_inheritance_genes(self):
     """Returns a list with expected inheritance model(s)."""
     expected_inheritance = set([])
     for gene in self.genes:
