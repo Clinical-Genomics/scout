@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, jsonify, redirect
+from flask import abort, Blueprint, jsonify, redirect, request
 
 from ..extensions import store
 from ..helpers import get_document_or_404, send_file_partial
@@ -16,7 +16,11 @@ def remote_static(path):
   # new_resp.headers['content-length'] = resp.headers.get('content-length')
   # new_resp.headers['accept-ranges'] = resp.headers.get('accept-ranges')
   # new_resp.headers['Content-Type'] = 'application/octet-stream'
-  return send_file_partial(path)
+  range_header = request.headers.get('Range', None)
+  if not range_header and path.endswith('.bam'):
+    return abort(500)
+
+  return send_file_partial('/' + path)
 
 
 @browser.route('/<institute_id>/<case_id>/<variant_id>/igv')
