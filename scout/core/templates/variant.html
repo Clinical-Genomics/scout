@@ -108,7 +108,7 @@
         </li>
         <li>
           <strong>Ensembl</strong>:
-          {{ variant.ensemble_gene_ids|join(',') }}
+          {{ variant.ensembl_gene_ids|join(',') }}
         </li>
       </ul>
     </div>
@@ -479,15 +479,15 @@
     <div id="external-links" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-body">
-          <a target="_blank" class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
             Ensembl
           </a>
 
-          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensembl_gene_ids|join(',') }}">
             HPA
           </a>
 
-          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensemble_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensembl_gene_ids|join(',') }}">
             STRING
           </a>
 
