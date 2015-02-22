@@ -2,47 +2,34 @@
 
 {% set page_title = 'Cases' %}
 
-{% block toolbar_middle %}
-	{{ institute.name }}
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <div class="md-breadcrumb">{{ institute.display_name }}</div>
+    <core-icon
+      icon="chevron-right"
+      class="md-breadcrumb-separator">
+    </core-icon>
+    <div class="md-breadcrumb">cases</div>
+  </div>
 {% endblock %}
 
-{% block toolbar_bottom %}
-	<core-icon icon="search"></core-icon>
-	<input type="search" id="cases-search" class="cases-search-input">
+{% block toolbar_secondary %}
+	<div id="search-cases" class="cases-search">
+    <div class="cases-search-icon">
+      <core-icon icon="search"></core-icon>
+    </div>
+    <input v-model="casesSearchQuery" type="search" class="cases-search-input">
+  </div>
 {% endblock %}
 
 {% block content %}
-
-	<div class="cases-list">
-		{% for case in institute.cases %}
-
-			<div class="cases-item" layout horizontal center>
-
-				<paper-item class="cases-item-title"
-										icon="announcement"
-										label="{{ case.name }}"
-										flex>
-					<a href="{{ url_for('core.case',
-															institute_id=institute.id,
-															case_id=case.name) }}"></a>
-				</paper-item>
-
-				<div flex layout horizontal center justified>
-
-					<a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"
-	  				 class="cases-item-link">
-	  				Variants
-	  			</a>
-
-					<div class="cases-item-date" position="left">
-					  Updated {{ case.created_at | human_date }}
-					</div>
-
-				</div>
-
-			</div>
-
-		{% endfor %}
-	</div>
-
+	<div v-component="cases-list" class="cases-list" v-with="
+    url: '{{ url_for('api.cases', institute_id=institute_id) }}',
+    baseUrl: '{{ url_for('core.cases', institute_id=institute_id) }}',
+    filterKey: casesSearchQuery,
+    user_id: '{{ current_user.id }}'
+  ">
+  </div>
 {% endblock %}

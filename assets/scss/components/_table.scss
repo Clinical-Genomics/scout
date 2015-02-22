@@ -1,0 +1,45 @@
+// +-------------------------------------------------------------------+
+// |  Default table styles
+// +-------------------------------------------------------------------+
+.default-table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: .9em;
+
+  th {
+    color: $primary-color;
+    border-right: 1px solid rgba(#000, .1);
+    background-color: $primary-color-lightest;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  tr {
+    border-bottom: 1px solid rgba(#000, .1);
+
+    > td:first-child {
+      border-left: 0;
+    }
+
+    > td:last-child {
+      border-right: 0;
+    }
+  }
+
+  td, th {
+    padding: .5em 1em;
+  }
+
+  td {
+    border: 1px solid rgba(#000, .1);
+
+    // dotdotdot
+    white-space: nowrap;
+  }
+}
+
+.default-table-subcell {
+  font-size: .9em;
+}

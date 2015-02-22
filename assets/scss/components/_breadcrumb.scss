@@ -1,0 +1,25 @@
+// +-------------------------------------------------------------------+
+// | Breadcrumb
+// +-------------------------------------------------------------------+
+// require "./buttons"
+
+.md-breadcrumb-group {
+  align-items: center;
+  display: flex;
+
+  font-size: .9em;
+}
+
+.md-breadcrumb-separator {
+  // center align vertically
+  margin-top: -3px;
+}
+
+.md-breadcrumb-button {
+  @extend .md-button;
+
+  margin: 0;
+  // decrease default padding
+  padding-left: .5rem;
+  padding-right: .5rem;
+}

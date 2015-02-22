@@ -6,6 +6,7 @@
 // (usually 16px) for compatibility with browser-based text zoom or
 // user-set defaults.
 $base-font-size: 100% !default;
+$base-font-size-px: 16;
 
 // $base-line-height is 24px while $base-font-size is 16px
 $base-line-height: 1.5 !default;
@@ -27,6 +28,9 @@ $font-smoothing: antialiased !default;
 
 // Application Colors
 $primary-color: #00bcd4 !default;
+$primary-color-lighter: #b2ebf2 !default;
+$primary-color-lightest: #e0f7fa !default;
+
 $secondary-color: #0097a7 !default;
 $alert-color: #F04124 !default;
 $info-color: #A0D3E8 !default;
@@ -40,6 +44,10 @@ $global-rounded: 1000px !default;
 
 // We use this for default spacing
 $global-spacing: rem-calc(15);
+
+// Google Material Design "Swift Out" Easing
+// Ref: [jamesdelaneyie](http://codepen.io/jamesdelaneyie/pen/yidkA)
+$global-timing-function: cubic-bezier(.55, 0, .1, 1);
 
 
 
@@ -86,8 +94,7 @@ img {
 // Miscellaneous useful HTML classes
 // .left   { float: left !important; }
 // .right  { float: right !important; }
-.clearfix     { @include clearfix; }
-.hide         { display: none; }
+.hide { display: none; }
 
 // Font smoothing
 // Antialiased font smoothing works best for light text on a dark background.
@@ -113,3 +120,19 @@ textarea { height: auto; min-height: 50px; }
 
 // Make select elements 100% width by default
 select { width: 100%; }
+
+// when ``overflow: auto`` isn't working
+.scrollable {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+// dotdotdot
+.dotdotdot {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

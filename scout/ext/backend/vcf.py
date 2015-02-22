@@ -16,6 +16,7 @@ from pprint import pprint as pp
 
 class VcfAdapter(BaseAdapter):
   """docstring for API"""
+  
   def init_app(self, app, vcf_directory='tests/vcf_examples', config_file='configs/config_test.ini'):
     # get root path of the Flask app
     # project_root = '/'.join(app.root_path.split('/')[0:-1])
@@ -63,12 +64,12 @@ class VcfAdapter(BaseAdapter):
         if not (ped_file and vcf_file):
           raise SyntaxError('Wrong folder structure in vcf directories. '
                             'Could not find ped and/or vcf files. '
-                              'See documentation.')
+                            'See documentation.')
         # Store the path to variants as case id:s:
         case['id'] = case['family_id']
         case['vcf_path'] = vcf_file
         self._cases.append(case)
-
+    
     return
 
 

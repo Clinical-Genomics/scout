@@ -24,7 +24,7 @@
 					compound pairs, and solve cases as a team.
 				</p>
 			</div>
-			
+
 		</div>
 
 		<section id="feature-web-interface" class="landing-feature">
@@ -74,9 +74,12 @@
 		<section id="user-guide" class="landing-box">
 			<div class="user-guide-box">
 				<div class="user-guide-summary">
-					For more information read the comprahensive
+					For more information read the comprehensive
 				</div>
-				<div class="user-guide-btn">User Guide</div>
+				<a href="http://www.clinicalgenomics.se/scout/user-guide/pages/"
+           class="user-guide-btn">
+          User Guide
+        </a>
 				<div class="user-guide-project-info">
 					... or visit the <a href="https://github.com/Clinical-Genomics/scout">project GitHub repo</a>.
 				</div>
@@ -86,8 +89,13 @@
 		<section id="affiliations" class="landing-box">
 			<div class="landing-affiliations-summary">Developed at</div>
 			<div class="landing-affiliations">
-				<div class="landing-affiliation">SciLifeLab</div>
-				<div class="landing-affiliation">Karolinska Institutet</div>
+        <div class="landing-affiliation">
+          <img src="{{ url_for('static', filename='img/logo-scilifelab.png') }}">
+        </div>
+
+        <div class="landing-affiliation">
+          <img src="{{ url_for('static', filename='img/logo-karolinska.png') }}">
+        </div>
 			</div>
 		</section>
 

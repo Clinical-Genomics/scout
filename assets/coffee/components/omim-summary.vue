@@ -1,0 +1,43 @@
+<template>
+  <div v-show="!isFound" class="omim-summary-empty">
+    No OMIM entry found.
+  </div>
+
+  <div v-show="isFound" class="omim-summary">
+    <div v-show="!phenotypes" class="omim-summary-empty">
+      No phenotypes found for {{entry.gene_symbol}}.
+    </div>
+
+    <div v-repeat="entry.other_entities" class="omim-summary-entities">
+      {{$value}}
+    </div>
+
+    <div v-repeat="entry.phenotypes" class="omim-summary-phenotype">
+      <div class="omim-summary-phenotype-item">{{phenotype}}</div>
+      <div class="omim-summary-phenotype-item">
+        {{inheritance || 'unknown'}}
+      </div>
+      <div class="omim-summary-phenotype-item">{{mapping_key}}</div>
+    </div>
+  </div>
+</template>
+
+<script lang="coffee">
+  module.exports =
+    ready: ->
+      superagent.get @url, (res) =>
+        @entry = JSON.parse(res.text)
+        if @entry.gene_symbol
+          @isFound = yes
+
+    computed:
+      mimNumber: ->
+        return @entry.mim_number
+
+    data: ->
+      return {
+        url: null
+        entry: {}
+        isFound: no
+      }
+</script>

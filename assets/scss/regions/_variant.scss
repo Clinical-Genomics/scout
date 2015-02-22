@@ -1,0 +1,155 @@
+$variant-base-padding: 1rem;
+
+.variant-header-item {
+  font-size: .7em;
+}
+
+.variant-segments {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 90em;
+  padding: 2em 68px;
+}
+
+.variant-segments-row {
+  align-items: stretch;  // expand row items to same height
+  display: flex;
+
+  &:not(:last-child) {
+    margin-bottom: 1em;
+  }
+
+  > :not(:last-child) {
+    margin-right: 1rem;
+  }
+
+  > .is-main {
+    flex-basis: 70%;
+  }
+
+  > .is-aside {
+    flex-basis: 30%;
+  }
+}
+
+%variant-segment-base {
+  background-color: #fff;
+  box-shadow: 0 1px 3px -1px rgba(#000, .4);
+}
+
+.variant-segment-summary {
+  @extend %variant-segment-base;
+
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+
+  @media (min-width: 40em) {
+    width: 40rem;
+  }
+}
+
+.variant-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: .5rem 1rem;
+  font-size: .9rem;
+
+  white-space: nowrap;
+  overflow: auto;
+
+  border-bottom: 1px solid rgba(#000, .15);
+}
+
+.variant-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 $variant-base-padding;
+  font-size: .9rem;
+
+  border-bottom: 1px solid rgba(#000, .15);
+}
+
+.variant-row-item-sublist {
+  display: flex;
+  overflow: auto;
+}
+
+.variant-row-item-sublist-item {
+  padding: .5rem $variant-base-padding;
+  flex-shrink: 0;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+
+  &:not(:last-child) {
+    border-right: 1px solid rgba(#000, .1);
+  }
+}
+
+// +-------------------------------------------------------------------+
+// |  OMIM summary
+// +-------------------------------------------------------------------+
+.omim-summary-empty {
+  @extend .variant-list-item;
+}
+
+.omim-summary-entities {
+  @extend .variant-list-item;
+  font-size: .8em;
+}
+
+.omim-summary-phenotype {
+  @extend .variant-list-item;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  :not(:last-child) {
+    border-right: 1px solid rgba(#000, .1);
+  }
+}
+
+.omim-summary-phenotype-item {
+  flex-shrink: 0;
+  padding: .5em;
+
+  &:first-child {
+    padding-left: 0;
+  }
+}
+
+// +-------------------------------------------------------------------+
+// |  Variant links
+// +-------------------------------------------------------------------+
+.variant-link-external {
+  padding: 1rem $variant-base-padding;
+  flex: 1;
+
+  text-decoration: none;
+  text-align: center;
+  color: darken($primary-color, 10%);
+
+  &:hover {
+    background-color: rgba($primary-color, .1);
+  }
+
+  &:not(:last-child) {
+    border-right: 1px solid rgba(#000, .1);
+  }
+}
+
+.sanger-form-footer {
+  padding: .7rem 0;
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid rgba(#000, .2);
+}

@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+scout
+
+Script for using the scout tool
+
+Created by Måns Magnusson on 2015-02-04.
+Copyright (c) 2015 __TheScoutTeam__. All rights reserved.
+"""
+
+from __future__ import print_function, unicode_literals
+
+import sys
+import os
+import click
+import pkg_resources
+
+from pprint import pprint as pp
+from codecs import getwriter
+
+from scout.commands import (load_mongo, wipe_and_load, wipe_mongo)
+
+if sys.version_info < (3,0):
+    sys.stdout = getwriter('UTF-8')(sys.stdout)
+
+version = pkg_resources.require("scout")[0].version
+
+def print_version(ctx, param, value):
+    """Callback function for printing version and exiting
+    Args:
+        ctx (object) : Current context
+        param (object) : Click parameter(s)
+        value (boolean) : Click parameter was supplied or not
+    Returns:
+        None:
+    """
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo('scout version: ' + version)
+    ctx.exit()
+
+
+###         This is the main script         ###
+
+@click.group()
+@click.option('--version',
+                is_flag=True,
+                callback=print_version,
+                expose_value=False,
+                is_eager=True
+)
+def scouttools():
+    """
+    Tool for simulating structural variations.\n
+    For more information, please run:
+    svsim COMMAND --help \n
+        """
+    pass
+
+scouttools.add_command(load_mongo)
+scouttools.add_command(wipe_mongo)
+scouttools.add_command(wipe_and_load)
+
+if __name__ == '__main__':
+    scouttools()

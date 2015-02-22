@@ -1,0 +1,271 @@
+---
+1:
+  1:
+    AnalysisRunStatus: notFinished
+    HumanGenomeBuild:
+      Path: /mnt/hds/proj/cust003/develop/references/Homo_sapiens.GRCh37.d5.fasta
+      Source: GRCh
+      Version: 37
+    MostCompleteVCF:
+      Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk/1_sorted_pmd_rreal_brecal_gvcf_vrecal_BOTH.vcf
+    VCFParser:
+      RangeFile:
+        File: CMMS_External_Db_141126.txt
+      SelectFile:
+        Database:
+          cust000-FullList.txt_FullList:
+            Acronym: FullList
+            FileName: cust000-FullList.txt
+            Genome_build: GRCh37.p13
+            Version: 4.5
+          cust002-OMIM.txt_OMIM-141201:
+            Acronym: OMIM-141201
+            FileName: cust002-OMIM.txt
+            Genome_build: GRCh37.p13
+            Version: 13.0
+          cust002-SKD.txt_SKD:
+            Acronym: SKD
+            FileName: cust002-SKD.txt
+            Genome_build: GRCh37.p13
+            Version: 13.0
+          cust003-CMMS.txt_EP:
+            Acronym: EP
+            FileName: cust003-CMMS.txt
+            Genome_build: GRCh37.p13
+            Version: 3.3
+          cust003-CMMS.txt_IEM:
+            Acronym: IEM
+            FileName: cust003-CMMS.txt
+            Genome_build: GRCh37.p13
+            Version: 3.3
+          cust003-CMMS.txt_MIT:
+            Acronym: MIT
+            FileName: cust003-CMMS.txt
+            Genome_build: GRCh37.p13
+            Version: 3.3
+          cust004-PID.txt_PID:
+            Acronym: PID
+            FileName: cust004-PID.txt
+            Genome_build: GRCh37.p13
+            Version: 5.1
+        File: cust000-FullList.v1.1.txt
+        Version: 1.1
+    instanceTag:
+      - CMMS
+    pedigreeFile:
+      Path: /mnt/hds/proj/cust003/develop/exomes/1/1_pedigree.txt
+    pedigreeFileAnalysis:
+      Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1/qc_pedigree.yaml
+    program:
+      ChanjoBuild:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1
+        OutFile: 1.sqlite
+      GATK:
+        Version: 3.3-0
+      InbreedingFactor:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/samplecheck
+        OutFile: 1.het
+      PicardTools:
+        Version: 1.125
+      QCCollect:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1
+        OutFile: 1_qcmetrics.yaml
+      RankVariants:
+        Clinical:
+          Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk/1_sorted_pmd_rreal_brecal_gvcf_vrecal_vep_parsed_snpeff_ranked_BOTH.selected.vcf
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk
+        OutFile: 1_sorted_pmd_rreal_brecal_gvcf_vrecal_vep_parsed_snpeff_ranked_BOTH.selected.vcf
+        RankModel:
+          File: rank_model_cmms_v1.4.ini
+          Version: 1.4
+        Research:
+          Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk/1_sorted_pmd_rreal_brecal_gvcf_vrecal_vep_parsed_snpeff_ranked_BOTH.vcf
+      RelationCheck:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/samplecheck
+        OutFile: 1.mibs
+      SexCheck:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/samplecheck
+        OutFile: 1.sexcheck
+      SnpEff:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk
+        OutFile: 1_sorted_pmd_rreal_brecal_gvcf_vrecal_vep_parsed_snpeff_BOTH_1.selected.vcf
+      VCFParser:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk
+        OutFile: 1_sorted_pmd_rreal_brecal_gvcf_vrecal_vep_parsed_BOTH_1.vcf
+      VariantAnnotationBlock:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/info/
+        OutFile: VariantAnnotationBlock_1.1.stderr.txt
+      VariantEffectPredictor:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk
+        OutFile: 1_sorted_pmd_rreal_brecal_gvcf_vrecal_vep_BOTH_1.vcf_summary.html
+      pedigreeCheck:
+        OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1/mosaik/gatk
+        OutFile: 1_sorted_pmd_rreal_brecal_gvcf_vrecal_BOTH.vcf
+    researchEthicalApproval: notApproved
+  1-1-3A:
+    Capture_kit:
+      - Nimblegen_SeqCapEZExome.V2
+    Father: 0
+    GATKTargetPaddedBedIntervalLists: Nimblegen_SeqCapEZExome.V2.GRCh37_targets.bed.pad100.interval_list
+    MostCompleteBAM:
+      Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/gatk/1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal.bam
+    Mother: 0
+    Sex: 1
+    exomeTargetBedInfileLists: Nimblegen_SeqCapEZExome.V2.GRCh37_targets.bed.infile_list
+    exomeTargetPaddedBedInfileLists: Nimblegen_SeqCapEZExome.V2.GRCh37_targets.bed.pad100.infile_list
+    file:
+      1-1-3A.20100624_hiSeq20100624_X.lane1:
+        sequenceRunType: Paired-end
+      1-1-3A.20100624_hiSeq20100624_X.lane1_1:
+        ReadDirection:
+          - 1
+        date: 20100624
+        flow-cell: hiSeq20100624
+        lane: 1
+        originalFileName: 1_20100624_hiSeq20100624_1-1-3A_X_1.fastq.gz
+        originalFileNameNoEnding: 1_20100624_hiSeq20100624_1-1-3A_X_1
+        runBarcode: 20100624_hiSeq20100624_1_X
+        sampleBarcode: X
+        sequenceLength: 76
+      1-1-3A.20100624_hiSeq20100624_X.lane1_2:
+        ReadDirection:
+          - 2
+        date: 20100624
+        flow-cell: hiSeq20100624
+        lane: 1
+        originalFileName: 1_20100624_hiSeq20100624_1-1-3A_X_2.fastq.gz
+        originalFileNameNoEnding: 1_20100624_hiSeq20100624_1-1-3A_X_2
+        runBarcode: 20100624_hiSeq20100624_1_X
+        sampleBarcode: X
+        sequenceLength: 76
+    picardToolsMergeSamFilesPrevious: 0
+    program:
+      Bwa:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/bwa/info/
+          OutFile: BwaMem_1-1-3A.0.stderr.txt
+      CalculateHsMetrics:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/coveragereport
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_CalculateHsMetrics
+      ChanjoAnnotate:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          Bed:
+            Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/coveragereport/1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_coverage.bed
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/coveragereport
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_chanjoAnnotate.log
+      ChanjoSexCheck:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/coveragereport
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal.sexcheck
+      CollectMultipleMetrics:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/coveragereport
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal.alignment_summary_metrics
+      FastQC:
+        1_20100624_hiSeq20100624_1-1-3A_X_1.fastq.gz:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/fastqc/1_20100624_hiSeq20100624_1-1-3A_X_1_fastqc
+          OutFile: fastqc_data.txt
+        1_20100624_hiSeq20100624_1-1-3A_X_2.fastq.gz:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/fastqc/1_20100624_hiSeq20100624_1-1-3A_X_2_fastqc
+          OutFile: fastqc_data.txt
+      MarkDuplicates:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/coveragereport
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_metric
+      MosaikAligner:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/info/
+          OutFile: MosaikAlign_1-1-3A.1.stdout.txt
+      VariantEval_All:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/gatk/varianteval
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_gvcf_vrecal_BOTH.vcf.varianteval
+      VariantEval_Exome:
+        1-1-3A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-3A/mosaik/gatk/varianteval
+          OutFile: 1-1-3A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_gvcf_vrecal_BOTH_exome.vcf.varianteval
+  1-1-4A:
+    Capture_kit:
+      - Nimblegen_SeqCapEZExome.V2
+    Father: 0
+    GATKTargetPaddedBedIntervalLists: Nimblegen_SeqCapEZExome.V2.GRCh37_targets.bed.pad100.interval_list
+    MostCompleteBAM:
+      Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/gatk/1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal.bam
+    Mother: 0
+    Sex: 2
+    exomeTargetBedInfileLists: Nimblegen_SeqCapEZExome.V2.GRCh37_targets.bed.infile_list
+    exomeTargetPaddedBedInfileLists: Nimblegen_SeqCapEZExome.V2.GRCh37_targets.bed.pad100.infile_list
+    file:
+      1-1-4A.20100624_hiSeq20100624_X.lane1:
+        sequenceRunType: Paired-end
+      1-1-4A.20100624_hiSeq20100624_X.lane1_1:
+        ReadDirection:
+          - 1
+        date: 20100624
+        flow-cell: hiSeq20100624
+        lane: 1
+        originalFileName: 1_20100624_hiSeq20100624_1-1-4A_X_1.fastq.gz
+        originalFileNameNoEnding: 1_20100624_hiSeq20100624_1-1-4A_X_1
+        runBarcode: 20100624_hiSeq20100624_1_X
+        sampleBarcode: X
+        sequenceLength: 76
+      1-1-4A.20100624_hiSeq20100624_X.lane1_2:
+        ReadDirection:
+          - 2
+        date: 20100624
+        flow-cell: hiSeq20100624
+        lane: 1
+        originalFileName: 1_20100624_hiSeq20100624_1-1-4A_X_2.fastq.gz
+        originalFileNameNoEnding: 1_20100624_hiSeq20100624_1-1-4A_X_2
+        runBarcode: 20100624_hiSeq20100624_1_X
+        sampleBarcode: X
+        sequenceLength: 76
+    picardToolsMergeSamFilesPrevious: 0
+    program:
+      Bwa:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/bwa/info/
+          OutFile: BwaMem_1-1-4A.0.stderr.txt
+      CalculateHsMetrics:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/coveragereport
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_CalculateHsMetrics
+      ChanjoAnnotate:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          Bed:
+            Path: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/coveragereport/1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_coverage.bed
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/coveragereport
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_chanjoAnnotate.log
+      ChanjoSexCheck:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/coveragereport
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal.sexcheck
+      CollectMultipleMetrics:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/coveragereport
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal.alignment_summary_metrics
+      FastQC:
+        1_20100624_hiSeq20100624_1-1-4A_X_1.fastq.gz:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/fastqc/1_20100624_hiSeq20100624_1-1-4A_X_1_fastqc
+          OutFile: fastqc_data.txt
+        1_20100624_hiSeq20100624_1-1-4A_X_2.fastq.gz:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/fastqc/1_20100624_hiSeq20100624_1-1-4A_X_2_fastqc
+          OutFile: fastqc_data.txt
+      MarkDuplicates:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/coveragereport
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_metric
+      MosaikAligner:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/info/
+          OutFile: MosaikAlign_1-1-4A.1.stdout.txt
+      VariantEval_All:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/gatk/varianteval
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_gvcf_vrecal_BOTH.vcf.varianteval
+      VariantEval_Exome:
+        1-1-4A.20100624_hiSeq20100624_X.lane1:
+          OutDirectory: /mnt/hds/proj/cust003/develop/analysis/exomes/1-1-4A/mosaik/gatk/varianteval
+          OutFile: 1-1-4A.20100624_hiSeq20100624_X.lane1_sorted_pmd_rreal_brecal_gvcf_vrecal_BOTH_exome.vcf.varianteval
+

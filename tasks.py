@@ -3,17 +3,48 @@ from __future__ import absolute_import, unicode_literals
 from invoke import run, task
 from invoke.util import log
 
+from mongoengine import connect
+from scout.models import User, Whitelist, Institute
+
 
 @task
 def test():
   """test - run the test runner."""
-  run('python setup.py test', pty=True)
+  run('python -m pytest tests/', pty=True)
 
 
 @task(name='test-all')
 def testall():
   """test-all - run tests on every Python version with tox."""
   run('tox')
+
+
+@task(name='init-data')
+def init_data():
+  """Bootstrap the database with demo data."""
+  # load database with cases, variants, and a default institute
+  for case in [21, 22, 23, 31, 32, 33, 34, 51, 53, 54]:
+    run("python -m scout.ext.backend.load_mongo "
+        "./tests/vcf_examples/%(case)d/variants.vcf "
+        "./tests/vcf_examples/%(case)d/%(case)d_pedigree.txt "
+        "./configs/config_test.ini -type cmms" % dict(case=case))
+
+
+@task(name='add-user')
+def add_user(email, name='Paul Anderson'):
+  """Setup a new user for the database with a default institute."""
+  connect('variantDatabase', host='localhost', port=27017)
+
+  institute = Institute.objects.first()
+  Whitelist(email=email).save()
+  # create a default user
+  user = User(
+    email=email,
+    name=name,
+    roles=['admin'],
+    institutes=[institute]
+  )
+  user.save()
 
 
 @task
@@ -59,24 +90,7 @@ def publish(test=False):
   log.info('published new release')
 
 
-@task
-def setup():
-  """Setup virtualenv."""
-
-  run('mkvirtualenv scout')
-  run('workon scout')
-  run('pip install --editable .')
-
-
 @task()
 def d(host='0.0.0.0'):
   """Debug."""
   run("python manage.py runserver --host=%s --debug --reload" % host)
-
-
-@task
-def babel():
-  """Babel compile."""
-
-  run("python setup.py compile_catalog "
-      "--directory `find -name translations` --locale sv -f")

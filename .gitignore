@@ -36,28 +36,22 @@ nosetests.xml
 .project
 .pydevproject
 *.sublime-*
-dev
-.vagrant
+dev/
+.vagrant/
 
 # Complexity
 output/*.html
 output/*/index.html
 
 # Sphinx/MkDocs
-docs/_build
+docs/_build/
 site/
-
-# Cookiecutter
-output/
-
-myflaskapp/
-bower_components
 
 # Flask
 instance
 
 # Node.js
-node_modules
-scout/static/vendor/
+node_modules/
 
-instance/
+# Textmate
+.tm_properties

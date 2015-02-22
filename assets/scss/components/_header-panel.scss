@@ -1,0 +1,22 @@
+// +-------------------------------------------------------------------+
+// | Header Panel
+// +-------------------------------------------------------------------+
+.md-header-panel {
+  // take up the whole outer container
+  height: 100%;
+
+  // dist. content vertically
+  display: flex;
+  flex-direction: column;
+
+  // default styles
+  background-color: $body-fg;
+}
+
+.md-header-panel-body {
+  // cover the rest of the container vertically
+  flex: 1;
+  // always be scrollable (y) if necessary
+  overflow-y: auto;
+  overflow-x: hidden;
+}

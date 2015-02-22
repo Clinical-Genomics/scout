@@ -1,100 +1,389 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
 
 {% set page_title = 'Case' %}
 
-{% block toolbar_middle %}
-  <div class="case-header-links" horizontal center layout>
-    {% if case.assignee %}
-      <core-item class="case-header-link"
-                 icon="account-circle"
-                 label="{{ case.assignee.name }}">
-        <a href="{{ url_for('user.profile', user_id=case.assignee.id) }}"></a>
-      </core-item>
-    {% endif %}
-    <core-item class="case-header-link" icon="link" label="All variants">
-      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.name) }}"></a>
-    </core-item>
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <a href="{{ url_for('core.cases', institute_id=institute.display_name) }}" class="md-breadcrumb-button is-raised">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      icon="chevron-right"
+      class="md-breadcrumb-separator">
+    </core-icon>
+    <div class="md-breadcrumb">{{ case.display_name }}</div>
   </div>
 {% endblock %}
 
-{% block toolbar_bottom %}
-  <a href="{{ url_for('core.cases', institute_id=institute.id) }}">
-    {{ institute.name }}
-  </a>
-  <core-icon icon="chevron-right"></core-icon>
+{% block toolbar_secondary %}
 
-  <core-item icon="lock-open" label="Case {{ case.name }}"></core-item>
+  {% if case.causative %}
+    <a href="{{ url_for('core.variant',
+                        institute_id=institute.display_name,
+                        case_id=case.display_name,
+                        variant_id=case.causative.id) }}"
+       class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="verified-user"></core-icon>
+      </div>
+      <div class="md-label-text">{{ case.causative.display_name }}</div>
+    </a>
+  {% endif %}
+
+  <div class="md-tooltip">
+
+    {% if case.assignee %}
+      <form class="case-assign" action="{{ url_for('core.remove_assignee',
+                               institute_id=institute.display_name,
+                               case_id=case.display_name) }}"
+            method="POST">
+        <button type="submit" class="case-assign-icon">
+          <div class="md-label">
+            <div class="md-label-icon">
+              <core-icon icon="highlight-remove"></core-icon>
+            </div>
+            <div class="md-label-text">{{ case.assignee.name }}</div>
+          </div>
+        </button>
+      </form>
+    {% else %}
+      <form class="case-assign" action="{{ url_for('core.assign_self',
+                               institute_id=institute.display_name,
+                               case_id=case.display_name) }}"
+            method="POST">
+
+        <button type="submit" class="case-assign-icon">
+          <div class="md-label">
+            <div class="md-label-icon">
+              <core-icon icon="assignment-ind"></core-icon>
+            </div>
+            <div class="md-label-text">Adopt</div>
+          </div>
+        </button>
+      </form>
+    {% endif %}
+
+    <div class="md-tooltip-tip is-right">
+      <div class="md-tooltip-content">
+        You adopt a case to show that you <br>
+        assume responsibility for it. <br>
+        Your name will show up in relation <br>
+        to the case for all team members <br>
+        to see.
+      </div>
+    </div>
+  </div>
+
+  <form class="status-picker" method="POST">
+    <div class="md-label">
+      <div class="md-label-icon">Status</div>
+      <div class="md-label-text">
+        <select v-model="selected" v-on="change: onChange">
+          {% for status in statuses %}
+            <option {% if status == case.status %}selected{% endif %}
+                    value="{{ status }}">
+              {{ status|capitalize }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </form>
+
+  {% if case.status not in ['research', 'solved'] %}
+    <form action="{{ url_for('core.open_research',
+                              institute_id=institute.display_name,
+                              case_id=case.display_name) }}"
+          class="case-open-research" method="POST">
+      <button type="submit" class="case-assign-icon">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="public"></core-icon>
+          </div>
+          <div class="md-label-text">Open research</div>
+        </div>
+      </button>
+    </form>
+  {% endif %}
+
+  <a href="#" class="md-label">
+    <div class="md-label-icon">
+      <core-icon icon="assessment"></core-icon>
+    </div>
+    <div class="md-label-text">Coverage report</div>
+  </a>
+
+  <div class="md-tooltip">
+
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="done-all"></core-icon>
+      </div>
+      <div class="md-label-text">
+        MAF check:
+        <strong>{{ case.gender_check }}</strong>
+      </div>
+    </div>
+
+    <div class="md-tooltip-tip is-left">
+      <div class="md-tooltip-content">
+        Correct internal processing of each <br>
+        sample is confirmed through variant calling <br>
+        concordance. The result of said check is <br>
+        then shown here.
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block content %}
 
+  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button">
+    Go to all variants
+  </a>
+
   <div class="case-segments">
 
-    <div class="case-segment-row">
-      <div id="case-candidates" class="case-segment-full">
-        <div class="case-segment-title">Strong candidates</div>
-        <div class="case-segment-content">
-          <div class="case-candidate" horizontal layout center justified>
-            <paper-ripple fit></paper-ripple>
-            <div>
-              <core-icon icon="bookmark"></core-icon> KAI12
+    <div id="strong-candidates" class="case-segment-row">
+      <div id="case-candidates" class="md-card">
+        <div class="md-card-header">Strong candidates</div>
+        <div class="md-card-body-list">
+          {% for variant in case.suspects %}
+            <div class="list-item">
+              <a href="{{ url_for('core.variant',
+                                  institute_id=institute.display_name,
+                                  case_id=case.display_name,
+                                  variant_id=variant.id) }}"
+                 class="md-item">
+
+                {% if variant.manual_rank %}
+                  <small class="md-badge--{{ variant.manual_rank_level }}">
+                    {{ variant.manual_rank }}
+                  </small>
+                {% else %}
+                  <div class="md-item-icon">
+                    <core-icon icon="bookmark"></core-icon>
+                  </div>
+                {% endif %}
+
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    {{ variant.hgnc_symbols|join(', ') }}
+                  </div>
+                </div>
+              </a>
+
+              <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant.id) }}"
+                    method="POST">
+                <button type="submit" class="md-icon-button" title="Unpin">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
             </div>
-            <div class="case-candidate-user">
-              Pinned by <strong>Anna Wedell</strong>
-            </div>
-          </div>
-
-          <div class="case-candidate" horizontal layout center justified>
-            <paper-ripple fit></paper-ripple>
-            <div>
-              <core-icon icon="bookmark"></core-icon> POL2
-            </div>
-            <div class="case-candidate-user">
-              Pinned by <strong>Henrik Stranneheim</strong>
-            </div>
-          </div>
-        </div>
-        <div class="case-segment-notes">
-          Highly suspected variants to be disease causing.
-        </div>
-      </div>
-    </div>
-
-    <div class="case-segment-row">
-      <div id="case-readme" class="case-segment-main">
-        <div class="case-segment-title">README</div>
-        <div class="case-segment-content-text">
-          <h1>An exhibit of Markdown</h1>
-
-          <p>This note demonstrates some of what <a href="http://daringfireball.net/projects/markdown/">Markdown</a> is capable of doing.</p>
-
-          <p><em>Note: Feel free to play with this page. Unlike regular notes, this doesn’t automatically save itself.</em></p>
-
-          <h2>Basic formatting</h2>
-
-          <p>Paragraphs can be written like so. A paragraph is the basic block of Markdown. A paragraph is what text will turn into when there is no reason it should become anything else.</p>
-
-          <p>Paragraphs must be separated by a blank line. Basic formatting of <em>italics</em> and <strong>bold</strong> is supported. This <em>can be <strong>nested</strong> like</em> so.</p>
-        </div>
-      </div>
-
-      <div id="case-samples" class="case-segment-aside">
-        <div class="case-segment-title">Included samples</div>
-        <div class="case-segment-content">
-          {% for sample in case.samples %}
-            <paper-item icon="assignment-ind" label="{{ sample.name }}">
-              <a href="#"></a>
-            </paper-item>
+          {% else %}
+            <div class="list-item">No variants suspected yet.</div>
           {% endfor %}
         </div>
       </div>
+
+      <div id="case-samples" class="md-card">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list layout-center">
+          {{ case.madeline_info|safe }}
+        </div>
+      </div>
     </div>
 
-    <div class="case-segment-row">
-      <div id="case-activity" class="case-segment-full">
-        <div class="case-segment-title">Activity</div>
-        <div class="case-segment-content-text">
-          No recent activity.
+    <div id="synopsis+samples" class="case-segment-row">
+      <div id="case-synopsis" class="md-card is-main">
+        <div class="md-card-header">Synopsis</div>
+        <div class="md-card-body--padded">
+          <markdown-editor v-ref="synopsisEditor" v-with='
+            content: {{ case.synopsis|tojson|safe }},
+            onSave: updateSynopsis
+          '></markdown-editor>
+        </div>
+
+        <div class="md-card-footer">
+          <div class="md-button-group">
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.save"
+                 v-show="$.synopsisEditor.isEditing">
+              Save
+            </div>
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.cancel"
+                 v-show="$.synopsisEditor.isEditing">
+              Cancel
+            </div>
+
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.edit"
+                 v-show="!$.synopsisEditor.isEditing">
+              Edit
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HPO/Phenotype list -->
+      <div id="case-phenotype" class="md-card is-aside">
+        <div class="md-card-header">
+          Phenotype
+          (<a target="_blank"
+              href="http://compbio.charite.de/phenomizer/">phenomizer</a>)
+        </div>
+        <div class="md-card-body-list">
+          {% for hpo_term in case.phenotype_terms %}
+            <div class="list-item">
+              <div>
+                {{ hpo_term.feature or hpo_term.hpo_id }}
+              </div>
+
+              <form action="{{ url_for('core.case_phenotype',
+                                       institute_id=institute.display_name,
+                                       case_id=case.display_name,
+                                       phenotype_id=loop.index) }}"
+                    method="POST">
+                <button type="submit" class="md-button-flat">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+          <input type="text" name="hpo_term" placeholder="HPO ID">
+          <button class="md-button-flat" type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="comments" class="case-segment-row">
+
+      <div id="case-activity" class="md-card is-main">
+        <div class="md-card-header">Comments</div>
+        <div class="md-card-body-list">
+          <div class="activity-feed">
+            {% for comment in case.comments|reverse %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ comment.author.name }}</strong>
+                    {{ comment.verb }}
+                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
+                    <span class="timestamp">
+                      {{ comment.created_at|human_date }}
+                    </span>
+                  </div>
+
+                  {% if comment.author.id == current_user.id %}
+                    {% set form_id = 'delete-comment-%s' % loop.index %}
+                    <form class="activity-feed-delete"
+                          accept-charset="UTF-8"
+                          action="{{ url_for('api.comment',
+                                             institute_id=institute.display_name,
+                                             case_id=case.display_name,
+                                             comment_id=loop.index) }}"
+                          method="DELETE">
+                      <core-icon icon="highlight-remove"
+                        class="activity-feed-delete-button"
+                        onclick="document.querySelector('#{{ form_id }}').click();">
+                      </core-icon>
+                      <button id="{{ form_id }}" class="is-hidden"></button>
+                    </form>
+                  {% endif %}
+                </div>
+
+                <div class="activity-feed-item-body">
+                  {{ comment.content }}
+                </div>
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No case comments yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <form class="md-card is-aside"
+            accept-charset="UTF-8"
+            method="POST"
+            action="{{ url_for('api.comment',
+                               institute_id=institute.display_name,
+                               case_id=case.display_name) }}">
+        <div class="md-card-body--padded">
+          <input type="hidden"
+                 name="link"
+                 value="{{ url_for('core.case',
+                                   institute_id=institute.display_name,
+                                   case_id=case.display_name) }}">
+          <input type="hidden" name="verb" value="commented on">
+          <input type="hidden"
+                 name="subject"
+                 value="{{ case.display_name }}">
+          <textarea name="content"
+                    placeholder="Leave a comment"></textarea>
+        </div>
+        <div class="md-card-footer">
+          <button class="md-button-flat" type="submit">Comment</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="activity+hpo-genes" class="case-segment-row">
+      <div id="case-activity" class="md-card is-main">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
+          <div class="activity-feed">
+            {% for event in case.events|reverse %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ event.author.name }}</strong>
+                    {{ event.verb }}
+                    <a href="{{ event.link }}">{{ event.subject }}</a>
+                    <span class="timestamp">
+                      {{ event.created_at|human_date }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No case activity yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="md-card is-aside">
+        <div class="md-card-header">HPO gene list</div>
+        <div class="md-card-body-list">
+          {% for hpo_gene in (case.hpo_genes or [])[:10] %}
+            <div class="list-item" title="{{ hpo_gene.description }}">
+              <div>
+                {{ hpo_gene.gene_id or 'Unknown' }}
+                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}">
+                  <small>{{ hpo_gene.omim_id }}</small>
+                </a>
+              </div>
+              <small class="md-badge">{{ hpo_gene.p_value }}</small>
+            </div>
+          {% endfor %}
         </div>
       </div>
     </div>

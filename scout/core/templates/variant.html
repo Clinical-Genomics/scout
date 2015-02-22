@@ -1,13 +1,660 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
+{% from '_macros.html' import compounds_table %}
 
 {% set page_title = 'Variant' %}
+{% set hgnc_symbol = variant.hgnc_symbols[0] %}
 
-{% block toolbar_bottom %}
-	{{ variant.id }}
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      {{ case.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">
+      Variants
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <div class="md-breadcrumb">{{ variant.display_name }}</div>
+  </div>
+{% endblock %}
+
+{% block toolbar_right %}
+  {{ super() }}
+
+  <div v-on="click: showModal" class="icon-button" title="Order Sanger">
+    <core-icon icon="mail"></core-icon>
+  </div>
+
+  {% if variant not in case.suspects %}
+    <form action="{{ url_for('core.pin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Pin variant">
+        <core-icon icon="bookmark-outline"></core-icon>
+      </button>
+    </form>
+  {% else %}
+    <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Unpin variant">
+        <core-icon icon="bookmark"></core-icon>
+      </button>
+    </form>
+  {% endif %}
+
+  <form action="{{ url_for('core.mark_causative',
+                           institute_id=institute.display_name,
+                           case_id=case.display_name,
+                           variant_id=variant_id) }}"
+        method="POST">
+    <button type="submit" class="icon-button" title="Mark as causative">
+      <core-icon icon="verified-user"></core-icon>
+    </button>
+  </form>
+{% endblock %}
+
+{% block toolbar_secondary %}
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="grade"></core-icon>
+      </div>
+      <div class="md-label-text">{{ variant.variant_rank }}</div>
+    </div>
+  </div>
+
+  <div class="variant-header-item md-tooltip">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="room"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(',') }}
+      </div>
+    </div>
+
+    <div class="md-tooltip-tip is-bottom">
+      <ul>
+        <li>
+          <strong>Position</strong>: {{ variant.position }}
+        </li>
+        <li>
+          <strong>Full name</strong>: {{ 'Not yet implemented' }}
+        </li>
+        <li>
+          <strong>Ensembl</strong>:
+          {{ variant.ensembl_gene_ids|join(',') }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="swap-vert-circle"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.reference }} → {{ variant.alternative }}
+      </div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="report"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.region_annotations|join(',') }}
+      </div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="settings"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.functional_annotations|join(',') }}
+      </div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <form class="status-picker" method="POST">
+      <div class="md-label">
+        <div class="md-label-icon">Rank</div>
+        <div class="md-label-text">
+          <select v-model="variantRank" v-on="change: onVariantRankChange">
+            {% for rank in manual_rank_options %}
+              <option {% if rank == variant.manual_rank %}selected{% endif %}
+                      value="{{ rank }}">
+                {{ rank }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Separator -->
+  <div class="flex"></div>
+
+  <div class="md-toolbar-group">
+    {% if prev_variant %}
+      <a class="icon-button"
+         title="Previous variant"
+         href="{{ url_for('core.variant',
+                    institute_id=institute_id, case_id=case_id,
+                    variant_id=prev_variant.document_id) }}">
+        <core-icon icon="arrow-back"></core-icon>
+      </a>
+    {% endif %}
+
+    <a class="icon-button"
+       title="Next variant"
+       href="{{ url_for('core.variant',
+                  institute_id=institute_id, case_id=case_id,
+                  variant_id=next_variant.document_id) }}">
+      <core-icon icon="arrow-forward"></core-icon>
+    </a>
+  </div>
 {% endblock %}
 
 {% block content %}
-	<h1>{{ variant.id }}</h1>
 
-	<p>{{ variant.to_json() }}</p>
+  <div class="variant-segments">
+
+    <div id="summary" class="variant-segments-row">
+      <div id="summary" class="variant-segment-summary">
+        <div class="md-card-header">Summary</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-row-item">
+
+            <div class="dist-even">
+              <div class="dist-even-item">
+                <div>Rank score</div>
+                <div>{{ variant.rank_score }}</div>
+              </div>
+
+              <div class="dist-even-item">
+                <div>CADD score</div>
+                <div>{{ variant.cadd_score }}</div>
+              </div>
+            </div>
+          </div>
+
+          <model-matcher
+            class="variant-list-item"
+            result="{{ variant.genetic_models | join(',') }}"
+            url="{{ url_for('api.omim_inheritance',
+                            hgnc_symbol=hgnc_symbol) }}">
+          </model-matcher>
+
+          <div class="variant-list-item">
+            <div>Frequency</div>
+
+            <div class="md-badge--{% if variant.frequency == 'common' %}fail{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %}">
+              {{ variant.frequency }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="important-data" class="variant-segments-row">
+
+      <div id="frequency" class="md-card">
+        <div class="md-card-header">Frequency</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>ThousandG</div>
+            <div>
+              {{ variant.thousand_genomes_frequency|round(3) }}
+            </div>
+          </div>
+
+          <div class="variant-list-item">
+            <div title="Exome Aggregation Consortium">ExAC</div>
+            <div>{{ variant.exac_frequency|round(3) }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>Local</div>
+            <div>{{ 'Not yet implemented' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="inheritance-model" class="md-card">
+        <div class="md-card-header">Inheritance models</div>
+
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>Disease gene model</div>
+            <div>{{ 'Not yet implemented' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>OMIM</div>
+            {% if hgnc_symbol %}
+              <omim-model v-ref="omimModel" v-with="
+                url: '{{ url_for('api.omim_inheritance',
+                                 hgnc_symbol=hgnc_symbol) }}'">
+              </omim-model>
+            {% else %}
+              No HGNC symbol
+            {% endif %}
+          </div>
+
+          <div class="variant-row-item">
+            <div>
+              Matching
+            </div>
+
+            <div class="variant-row-item-sublist">
+              {% for model in variant.genetic_models %}
+                <div class="variant-row-item-sublist-item">{{ model }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="omim" class="md-card">
+        <div class="md-card-header">OMIM</div>
+
+        <div class="md-card-body-list">
+          {% if hgnc_symbol %}
+              <omim-summary v-ref="omim" v-with="
+                url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
+              "></omim-summary>
+            {% else %}
+              <div v-show="!isFound" class="omim-summary-empty">
+                No HGNC symbol
+              </div>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div id="details" class="variant-segments-row">
+      <div id="severities" class="md-card">
+        <div class="md-card-header">Severity</div>
+
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>Sift</div>
+            <div>{{ variant.sift_predictions|join(',') }}</div>
+          </div>
+          <div class="variant-list-item">
+            <div>Polyphen</div>
+            <div>{{ variant.polyphen_predictions|join(',') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="conservation" class="md-card">
+        <div class="md-card-header">Conservation</div>
+
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>PHAST</div>
+            <div>{{ variant.phast_conservation|join(',') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>GERP</div>
+            <div>{{ variant.gerp_conservation|join(',') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>phyloP</div>
+            <div>{{ variant.phylop_conservation|join(',') or '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gt-call" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">GT call</div>
+
+        <div class="md-card-body is-main">
+          <table class="default-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Sample</th>
+                <th rowspan="2">Genotype call (GT)</th>
+                <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+              </tr>
+              <tr>
+                <th class="default-table-subcell">Reference</th>
+                <th class="default-table-subcell">Alternative</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for individual in variant.samples %}
+                <tr>
+                  <td class="text-center">{{ individual.sample }}</td>
+                  <td class="text-center">{{ individual.genotype_call }}</td>
+                  {% for number in individual.allele_depths %}
+                    <td class="text-right">{{ number }}</td>
+                  {% endfor %}
+                  <td class="text-right">{{ individual.genotype_quality }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="case-samples" class="md-card is-aside">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list layout-center">
+          {{ case.madeline_info|safe }}
+        </div>
+      </div>
+    </div>
+
+    <div id="transcripts" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Transcripts</div>
+
+        <div class="md-card-body">
+          <table class="default-table">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Mutation type</th>
+                <th>Strand</th>
+                <th>Exon</th>
+                <th>Intron</th>
+                <th>cDNA</th>
+                <th>Amino acid</th>
+                <th>Sift</th>
+                <th>PolyPhen</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.transcript_id }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.transcript_id }}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.functional_annotations|join(',') }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.functional_annotations|join(',') }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="dotdotdot">{{ 'Not yet implemented' }}</td>
+                  <td>{{ transcript.exon }}</td>
+                  <td>{{ transcript.intron or '-' }}</td>
+                  <td>{{ transcript.coding_sequence_name }}</td>
+                  <td>{{ transcript.protein_sequence_name }}</td>
+                  <td>{{ transcript.sift_prediction }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.polyphen_prediction }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.polyphen_prediction }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="10">
+                    No protein change predictions available.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="compounds" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Compounds</div>
+
+        <div class="md-card-body">
+          {{ compounds_table(variant.compounds, institute_id, case_id) }}
+        </div>
+      </div>
+    </div>
+
+    <div id="external-links" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-body">
+          <a target="_blank" class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
+            Ensembl
+          </a>
+
+          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensembl_gene_ids|join(',') }}">
+            HPA
+          </a>
+
+          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensembl_gene_ids|join(',') }}">
+            STRING
+          </a>
+
+          <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
+            UCSC
+          </a>
+
+          <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
+            Entrez
+          </a>
+
+          <a target="_blank" class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
+            OMIM
+          </a>
+
+          <a target="_blank" class="variant-link-external"
+             href="{{ url_for('browser.igv_init', institute_id=institute_id,
+                              case_id=case_id, variant_id=variant_id) }}">
+            IGV
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div id="activity" class="variant-segments-row">
+      <div class="md-card is-main">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
+          <div class="activity-feed">
+            {% for event in variant.events|reverse %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ event.author.name }}</strong>
+                    {{ event.verb }}
+                    <a href="{{ event.link }}">{{ event.subject }}</a>
+                    <span class="timestamp">
+                      {{ event.created_at|human_date }}
+                    </span>
+                  </div>
+
+                  {% if event.author.id == current_user.id %}
+                    {% set form_id = 'delete-comment-%s' % loop.index %}
+                    <form class="activity-feed-delete"
+                          accept-charset="UTF-8"
+                          action="{{ url_for('api.variant_event',
+                                             institute_id=institute_id,
+                                             case_id=case_id,
+                                             variant_id=variant_id,
+                                             event_id=loop.index) }}"
+                          method="DELETE">
+                      <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" icon="highlight-remove"></core-icon>
+                      <button id="{{ form_id }}" class="is-hidden"></button>
+                    </form>
+                  {% endif %}
+                </div>
+
+                {% if event.content %}
+                  <div class="activity-feed-item-body">
+                    {{ event.content }}
+                  </div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No variant activity yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <form id="comment-box"
+            class="md-card is-aside"
+            accept-charset="UTF-8"
+            method="POST"
+            action="{{ url_for('api.variant_event',
+                            institute_id=institute_id,
+                            case_id=case_id,
+                            variant_id=variant_id) }}">
+        <div class="md-card-body--padded">
+          <input type="hidden"
+                 name="link"
+                 value="{{ url_for('core.variant',
+                                    institute_id=institute_id,
+                                    case_id=case_id,
+                                    variant_id=variant_id) }}">
+          <input type="hidden" name="verb" value="commented on">
+          <input type="hidden"
+                 name="subject"
+                 value="{{ variant.display_name }}">
+          <textarea name="content"
+                    placeholder="Leave a comment"></textarea>
+        </div>
+        <div class="md-card-footer">
+          <button class="md-button-flat" type="submit">Comment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SANGER EMAIL MODAL -->
+  <md-modal v-ref="modal" title="Order Sanger sequencing">
+    <form
+      action="{{ url_for('core.email_sanger',
+                         institute_id=institute_id,
+                         case_id=case_id,
+                         variant_id=variant.variant_id) }}"
+      method="POST"
+    >
+
+      <p>
+        <strong>Case {{ case_id }}</strong>:
+        <a href="{{ url_for('core.variant',
+                            institute_id=institute_id,
+                            case_id=case_id,
+                            variant_id=variant.variant_id) }}">
+          {{ variant.chromosome }}:{{ variant.position }}
+        </a>
+      </p>
+
+      <p>
+        <strong>HGNC symbol(s)</strong>:
+        {{ variant.hgnc_symbols|join(', ') }}
+      </p>
+
+      <p><strong>Database</strong>: {{ 'Not yet implemented' }}</p>
+
+      <p>
+        <strong>Chromosome position</strong>:
+        {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
+      </p>
+
+      <p><strong>Amino acid change(s)</strong>:</p>
+      <p>
+        <ul>
+          {% for item in variant.protein_change %}
+            <li>{{ item }}</li>
+          {% else %}
+            <li>No protein predictions</li>
+          {% endfor %}
+        </ul>
+      </p>
+
+      <p><strong>GT call</strong></p>
+      <p>
+        <ul>
+          {% for individual in variant.samples %}
+            <li>{{ individual.sample }}: {{ individual.genotype_call }}</li>
+          {% endfor %}
+        </ul>
+      </p>
+
+      <p><strong>Ordered by</strong>: {{ current_user.name }}</p>
+
+      <div class="sanger-form-footer">
+        <div v-on="click: hideModal" class="md-button" title="Cancel Sanger">
+          Cancel
+        </div>
+
+        <button class="md-button" type="submit" title="Order Sanger">
+          Send
+        </button>
+      </div>
+    </form>
+  </md-modal>
+
 {% endblock %}

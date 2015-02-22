@@ -38,7 +38,10 @@ login_manager.refresh_view = 'login.reauth'
 @login_manager.user_loader
 def load_user(user_id):
   """Returns the currently active user as an object."""
-  return User.objects.get(id=ObjectId(user_id))
+  try:
+    return User.objects.get(id=ObjectId(user_id))
+  except DoesNotExist:
+    return None
 
 
 @login.route('/login')
@@ -54,7 +57,7 @@ def reauth():
     flash('Reauthenticated', 'success')
 
   return redirect(
-    request.args.get('next') or request.referer or url_for('frontend.index'))
+    request.args.get('next') or request.referrer or url_for('frontend.index'))
 
 
 @login.route('/logout', methods=['POST'])
@@ -110,8 +113,8 @@ def authorized(oauth_response):
     user.location = google_data['locale']
 
     # add a default institute if it is specified
-    if faux_user.default_institute:
-      user.institutes.append(faux_user.default_institute)
+    if faux_user.institutes:
+      user.institutes = faux_user.institutes
 
     user.save()
 

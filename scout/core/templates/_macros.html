@@ -1,0 +1,43 @@
+{% macro compounds_table(compounds, institute_id, case_id,
+                         class_names=['default-table']) %}
+  <table class="{{ class_names|join(' ') }}">
+    <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Combined score</th>
+        <th>Rank score</th>
+        <th>Region annotation</th>
+        <th>Functional annotation</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for compound in compounds %}
+        <tr>
+          <td>
+            {% if compound.variant.document_id %}
+              <a href="{{
+                url_for('core.variant',
+                        institute_id=institute_id,
+                        case_id=case_id,
+                        variant_id=compound.variant.document_id)
+              }}">
+                {{ compound.display_name }}
+              </a>
+            {% else %}
+              {{ compound.display_name }}
+            {% endif %}
+          </td>
+          <td class="text-right">{{ compound.combined_score }}</td>
+          <td class="text-right">{{ compound.rank_score }}</td>
+          <td>{{ compound.variant.region_annotations|join(',') }}</td>
+          <td>{{ compound.variant.functional_annotations|join(',') }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5">No compounds.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}

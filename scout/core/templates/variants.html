@@ -1,65 +1,321 @@
 {% extends 'layouts/scroll-header.html' %}
+{% from '_macros.html' import compounds_table %}
 
 {% set page_title = 'Variants' %}
-{% set scroll_header_keywords = 'condenses keepCondensedHeader scrollAwayTopbar' %}
 
-{% block toolbar_middle %}
-	<a href="{{ url_for('core.cases', institute_id=institute_id) }}">Cases</a>
-	<core-icon icon="chevron-right"></core-icon>
-	<a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">Case {{ case_id }}</a>
-	<core-icon icon="chevron-right"></core-icon>
-	Variants
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <a class="md-breadcrumb-button is-raised"
+       href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      {{ case.display_name }}
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <div class="md-breadcrumb">Variants</div>
+  </div>
 {% endblock %}
 
-{% block toolbar_bottom_outer %}
-  <div class="toolbar-bottom variants-header bottom" layout horizontal>
+{% block toolbar_right %}
+  {{ super() }}
 
-    <div class="variants-header-item">CADD score</div>
-    <div class="variants-header-item">HGNC</div>
-    <div class="variants-header-item">1000 Genomes</div>
-    <div class="variants-header-item">Chromosome</div>
-    <div class="variants-header-item">dbSNP ID</div>
-    <div class="variants-header-item">Genetic models</div>
+  <div class="md-label">
+    <div class="md-label-icon">Gene lists</div>
+    <div class="md-label-text">
+      {{ current_gene_lists|join(',') or 'All' }}
+    </div>
+  </div>
+
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="icon-button">
+    <core-icon icon="fast-rewind"></core-icon>
+  </a>
+
+  <div v-on="click: showFilters" class="icon-button">
+    <core-icon icon="filter-list"></core-icon>
+  </div>
+{% endblock %}
+
+{% block toolbar_custom %}
+  <div class="variants-header">
+
+    <div class="variants-header-item" title="Rank position">Rank</div>
+    <div class="variants-header-item" title="Rank score">Score</div>
+    <div class="variants-header-item" title="Chromosome">Chr.</div>
+    <div class="variants-header-item flex-big" title="HGNC">HGNC</div>
+    <div class="variants-header-item" title="1000 Genomes">1000 Genomes</div>
+    <div class="variants-header-item" title="CADD score">CADD score</div>
+    <div class="variants-header-item" title="Gene annotation">
+      Gene annotation
+    </div>
+    <div class="variants-header-item flex-big" title="Func. annotation">
+      Func. annotation
+    </div>
+    <div class="variants-header-item flex-big" title="Disease group">
+      MIM terms
+    </div>
+    <div class="variants-header-item" title="Disease gene model">
+      Expected inheritance
+    </div>
+    <div class="variants-header-item flex-big" title="Inheritance models">
+      Inheritance models
+    </div>
 
   </div>
 {% endblock %}
 
 {% block content %}
 
-	<div class="variants-body">
+  <drawer-panel v-ref="filters" side="right">
+    <form method="GET">
+      {{ form.csrf_token }}
 
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.gene_lists.label }}
+        </div>
+
+        {% if case.status == 'research' %}
+          <div class="variants-filters-group-list">
+            <div class="list-item">
+              {% for subfield in form.variant_type %}
+                <div>{{ subfield }} {{ subfield.label }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="variants-filters-group-list">
+          {{ form.gene_lists(class="variants-filters-select") }}
+
+          <div class="list-item">
+            <a class="md-button"
+               href="{{ url_for('core.variants', institute_id=institute_id,
+                                case_id=case_id,
+                                hgnc_symbols=case.hpo_gene_ids)
+                     }}">
+              HPO generated gene list
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">Filters</div>
+
+        <div class="variants-filters-group-list">
+          <div class="list-item">
+            <div>{{ form.hgnc_symbols.label }}</div>
+            <div>{{ form.hgnc_symbols }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">Frequency cutoffs</div>
+
+        <div class="variants-filters-group-list">
+          <div class="list-item">
+            <div>{{ form.thousand_genomes_frequency.label }}</div>
+            <div>{{ form.thousand_genomes_frequency }}</div>
+          </div>
+
+          <div class="list-item">
+            <div>{{ form.exac_frequency.label }}</div>
+            <div>{{ form.exac_frequency }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.region_annotations.label }}
+        </div>
+
+        <div class="variant-filters-group-body">
+          {{ form.region_annotations(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.functional_annotations.label }}
+        </div>
+
+        <div class="variant-filters-group-body">
+          {{ form.functional_annotations(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-label">
+          {{ form.genetic_models.label }}
+        </div>
+
+        <div class="variant-filters-group-body">
+          {{ form.genetic_models(class="variants-filters-select") }}
+        </div>
+      </div>
+
+      <div class="variants-filter-buttons">
+        <a href="{{ url_for('core.variants', institute_id=institute_id,
+                      case_id=case_id,
+                      functional_annotations=severe_so_terms,
+                      region_annotations=['exonic', 'splicing'],
+                      thousand_genomes_frequency=0.01,
+                      gene_lists=current_gene_lists,
+                      hgnc_symbols=form.hgnc_symbols.data) }}"
+           class="md-button">
+          Clinical filter
+        </a>
+
+        <button class="md-button" type="submit">
+          Filter variants
+        </button>
+      </div>
+    </form>
+  </drawer-panel>
+
+	<div class="variants-body">
 		{% for variant in variants %}
 
-			<div class="variants-row" horizontal layout>
+			<div class="variants-row">
 
-				<a class="variants-row-item"
+        <!-- Rank position -->
+				<a class="variants-row-item layout"
 					 href="{{ url_for('core.variant',
-					 									variant_id=variant.id, case_id=case_id) }}">
-					<paper-ripple fit></paper-ripple>
-					{{ variant.cadd_score|join(', ') }}
+                            institute_id=institute_id,
+                            case_id=case_id,
+					 									variant_id=variant.document_id) }}">
+
+          <div>{{ variant.variant_rank }}</div>
+
+          {% if variant.manual_rank %}
+            <small class="md-badge--{{ variant.manual_rank_level }}">
+              {{ variant.manual_rank }}
+            </small>
+          {% endif %}
 				</a>
 
-				<div class="variants-row-item">
-					{{ (variant.hgnc_symbol or '-')|join(', ') }}
+        <!-- Rank score -->
+        <div class="variants-row-item text-right">
+          {{ variant.rank_score }}
+        </div>
+
+        <!-- Chromosome -->
+        <div class="variants-row-item">
+          {{ variant.chromosome }}
+        </div>
+
+        <!-- HGNC -->
+				<div class="variants-row-item flex-big">
+					{{ (variant.hgnc_symbols or ['-'])|join(', ') }}
 				</div>
 
-				<div class="variants-row-item">
-					{{ (variant.thousand_genomes_frequency or '-')|join(', ') }}
-				</div>
+        <!-- 1000 Genomes -->
+				<div class="variants-row-item text-right md-tooltip">
+          {% if not variant.thousand_genomes_frequency %}
+            -
+          {% elif variant.thousand_genomes_frequency < 0.0001 %}
+            &lt; 0.0001
+          {% else %}
+            {{ variant.thousand_genomes_frequency|round(4) }}
+          {% endif %}
 
-				<div class="variants-row-item">Chr{{ variant.chromosome }}</div>
+          <div class="md-tooltip-tip is-left">
+            <ul>
+              {% if variant.exac_frequency %}
+                <li>
+                  <strong>ExAC</strong>
+                  {% if variant.exac_frequency < 0.0001 %}
+                    &lt; 0.0001
+                  {% else %}
+                    {{ variant.exac_frequency|round(4) }}
+                  {% endif %}
+                </li>
+              {% endif %}
+              <li><strong>Local</strong> {{ 'Not yet implemented' }}</li>
+            </ul>
+          </div>
+        </div>
 
-				<div class="variants-row-item">
-					{{ (variant.db_snp_id)|join(', ') }}
-				</div>
+        <!-- CADD (severity) -->
+        <div class="variants-row-item text-right md-tooltip">
+          {{ variant.cadd_score or '-' }}
 
-				<div class="variants-row-item">
-					{{ (variant.genetic_models or '-')|join(', ') }}
+          <div class="md-tooltip-tip is-right">
+            <ul>
+              <li>
+                <strong>Sift</strong>
+                {{ (variant.sift_predictions or ['-'])|join(',') }}
+              </li>
+              <li>
+                <strong>PolyPhen</strong>
+                {{ (variant.polyphen_predictions or ['-'])|join(',') }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Gene annotation -->
+        <div class="variants-row-item is-scrollable">
+          {{ variant.region_annotations|join(',') }}
+        </div>
+
+        <!-- Func. annotation -->
+        <div class="variants-row-item is-scrollable flex-big">
+          {{ variant.functional_annotations|join(',') }}
+        </div>
+
+        <!-- MIM terms -->
+        <div class="variants-row-item flex-big">{{ 'Not yet implemented' }}</div>
+
+        <!-- Expected inheritance -->
+        <div class="variants-row-item">
+          {{ variant.expected_inheritance|join(',') }}
+        </div>
+
+        <!-- Inheritance models -->
+				<div class="variants-row-list flex-big md-tooltip">
+          <div class="list--horizontal">
+            {% for model in (variant.genetic_models or []) %}
+              <div class="variants-row-list-item">{{ model }}</div>
+            {% endfor %}
+          </div>
+
+          {% if variant.compounds %}
+            <div class="md-tooltip-tip is-left">
+              {{ compounds_table(
+                   variant.compounds,
+                   institute_id,
+                   case_id,
+                   class_names=['default-table', 'table-compounds-popup']) }}
+            </div>
+          {% endif %}
 				</div>
 
 			</div>
 		{% endfor %}
 
 	</div>
+
+  {% set get_args = request.args.to_dict() %}
+  {{ get_args.update({'skip': current_batch})|default('', True) }}
+  <a href="{{ url_for('core.variants', institute_id=institute_id,
+                      case_id=case_id, **get_args) }}"
+     class="variants-load-more is-raised">
+    Load more
+  </a>
 
 {% endblock %}

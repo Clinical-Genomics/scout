@@ -1,0 +1,5 @@
+#FamilyID	SampleID	Father	Mother	Sex	Phenotype	CMMSID	Tissue_origin	Isolation_kit	Isolation_date	Isolation_personnel	Medical_doctor	Inheritance_model	Phenotype_terms	CMMS_SeqID	SciLifeID	Capture_kit	Capture_date	Capture_personnel	Clustering_date	Sequencing_kit	Clinical_db	Proband	Consultand	Alive
+1	1-1-3A	1-2-1U	1-2-2U	1	2	09-11145	Fibroblasts	Qiagen Mini	Unknown	Unknown	Na	Na	Na	WES1	M.Bjursell_10_01	Nimblegen_SeqCapEZExome.V2	Na	Na	Na	Na	dbIEM.v1.1.txt	Yes	Yes	Yes
+1	1-1-4A	1-2-1U	1-2-2U	2	2	09-11146	Fibroblasts	Qiagen Mini	Unknown	Unknown	Na	Na	Na	WES1	M.Bjursell_10_01	Nimblegen_SeqCapEZExome.V2	Na	Na	Na	Na	dbIEM.v1.1.txt	No	Yes	Yes
+1	1-2-1U	0	0	1	1	09-11145	Fibroblasts	Qiagen Mini	Unknown	Unknown	Na	Na	Na	WES1	M.Bjursell_10_01	Nimblegen_SeqCapEZExome.V2	Na	Na	Na	Na	dbIEM.v1.1.txt	No	No	Yes
+1	1-2-2U	0	0	2	1	09-11146	Fibroblasts	Qiagen Mini	Unknown	Unknown	Na	Na	Na	WES1	M.Bjursell_10_01	Nimblegen_SeqCapEZExome.V2	Na	Na	Na	Na	dbIEM.v1.1.txt	No	No	Yes

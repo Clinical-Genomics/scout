@@ -1,4 +1,4 @@
-# Scout
+# Scout [![Build Status][travis-img]][travis-url]
 **Analyze VCFs quicker and easier.**
 
 Scout makes you life easier by letting you visualize mutiple VCFs in the browser. You can quickly triage variants in search of those sneeky disease causing mutations. Scout also connects your team by linking user comments to cases and variants. The project is completely open source.
@@ -9,6 +9,8 @@ Running server is as simple as:
 $ scout run
 Running on http://localhost:5000...
 ```
+
+![Case page demo](/artwork/case-demo.png)
 
 
 ## Installation
@@ -81,3 +83,7 @@ MIT. See the [LICENSE](LICENSE) file for more details.
 ## Contributing
 Anyone can help make this project better - read [CONTRIBUTION](CONTRIBUTION.md)
 to get started!
+
+
+[travis-img]: https://img.shields.io/travis/Clinical-Genomics/scout/develop.svg?style=flat
+[travis-url]: https://travis-ci.org/Clinical-Genomics/scout
