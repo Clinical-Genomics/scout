@@ -279,11 +279,17 @@
         </div>
 
         <!-- MIM terms -->
-        <div class="variants-row-item flex-big">{{ 'Not yet implemented' }}</div>
+        <div class="variants-row-item flex-big">
+          {% for omim_id, omim_link in variant.omim_annotation_links %}
+            <a href="{{ omim_link }}">{{ omim_id }}</a>
+          {% else %}
+            No associated MIM terms.
+          {% endfor %}
+        </div>
 
         <!-- Expected inheritance -->
         <div class="variants-row-item">
-          {{ variant.expected_inheritance|join(',') }}
+          {{ variant.expected_inheritance_genes|join(',') }}
         </div>
 
         <!-- Inheritance models -->

@@ -104,9 +104,6 @@
           <strong>Position</strong>: {{ variant.position }}
         </li>
         <li>
-          <strong>Full name</strong>: {{ 'Not yet implemented' }}
-        </li>
-        <li>
           <strong>Ensembl</strong>:
           {{ variant.ensembl_gene_ids|join(',') }}
         </li>
@@ -261,7 +258,7 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Disease gene model</div>
-            <div>{{ 'Not yet implemented' }}</div>
+            <div>{{ variant.expected_inheritance_genes|join(',') }}</div>
           </div>
 
           <div class="variant-list-item">
@@ -393,7 +390,7 @@
         <div class="md-card-header">Transcripts</div>
 
         <div class="md-card-body">
-          <table class="default-table">
+          <table class="default-table--flex">
             <thead>
               <tr>
                 <th>Gene</th>

@@ -5,6 +5,7 @@
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import (absolute_import, unicode_literals, division)
+from itertools import chain
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
@@ -209,13 +210,22 @@ class Variant(Document):
   @property
   def omim_annotations(self):
     """Returns a list with omim id(s)."""
-    omim_annotations = []
+    annotations = []
     if len(self.genes) == 1:
-      omim_annotations = [gene.omim_terms for gene in self.genes]
+      annotations = (gene.omim_terms for gene in self.genes)
     else:
-      for gene in self.genes:
-        omim_annotations.append(':'.join([gene.hgnc_symbol, gene.omim_terms]))
-    return omim_annotations
+      annotations = (':'.join([gene.hgnc_symbol, gene.omim_terms])
+                     for gene in self.genes)
+
+    # flatten the list of list of omim ids
+    return chain.from_iterable(annotations)
+
+  @property
+  def omim_annotation_links(self):
+    """Return a list of omim id links."""
+    base_url = 'http://www.omim.org/entry'
+    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
+            for omim_id in self.omim_annotations)
 
   @property
   def region_annotations(self):

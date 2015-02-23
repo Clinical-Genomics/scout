@@ -1,7 +1,8 @@
 // +-------------------------------------------------------------------+
 // |  Default table styles
 // +-------------------------------------------------------------------+
-.default-table {
+.default-table,
+%default-table {
   width: 100%;
   table-layout: fixed;
   font-size: .9em;
@@ -38,6 +39,12 @@
     // dotdotdot
     white-space: nowrap;
   }
+}
+
+.default-table--flex {
+  @extend %default-table;
+
+  table-layout: auto;
 }
 
 .default-table-subcell {
