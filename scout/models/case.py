@@ -23,7 +23,7 @@ class Individual(EmbeddedDocument):
   father = StringField()
   mother = StringField()
   individual_id = StringField()
-  capture_kit = ListField(StringField())
+  capture_kits = ListField(StringField())
   bam_file = StringField()
 
   @property
@@ -62,7 +62,6 @@ class Case(Document):
   display_name = StringField(required=True)
   assignee = ReferenceField('User')
   individuals = ListField(EmbeddedDocumentField(Individual))
-  databases = ListField(StringField())
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
   last_updated = DateTimeField()
@@ -74,13 +73,18 @@ class Case(Document):
                                                     'solved'])
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
+  
+  # This decides which gene lists that should be shown when the case is opened
+  default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
+  
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
   madeline_info = StringField()
   vcf_file = StringField()
+  
 
   @property
   def hpo_genes(self):

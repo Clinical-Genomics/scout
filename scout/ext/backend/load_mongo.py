@@ -41,7 +41,7 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from ...models import (Case, Individual, Institute, Variant, GTCall,
-                          Compound, Gene, Transcript, DiseaseModel)
+                          Compound, Gene, Transcript, OmimPhenotype, GeneList)
 
 from vcf_parser import parser as vcf_parser
 from ped_parser import FamilyParser
@@ -207,6 +207,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   for institute_name in scout_configs['institutes']:
     institutes.append(get_institute(institute_name))
   
+  # If the institute exists we work on the old one
   for i,institute in enumerate(institutes):
     try:
       if Institute.objects.get(internal_id = institute.internal_id):
@@ -216,35 +217,21 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
         print('New institute!', file=sys.stderr)
   
   
-  ######## Get the case and add it to the mongo db: ########
+  ######## Get the cases and add them to the mongo db: ########
+  
+  case = get_case(ped_file, family_type, scout_configs)
+  
   if verbose:
-    print('Cases found in %s' % ped_file, file=sys.stderr)
+    print('Case found in %s: %s' % (ped_file,case.display_name), file=sys.stderr)
   
-  ped_individuals = []
-  cases = get_case(ped_file, family_type, scout_configs)
-  
-  for case in cases:
-    case_id = case.case_id
-    case_name = case.display_name
-    
-    if verbose:
-      print('case id %s' % case_name, file=sys.stderr)
-    
-    # Add the case to its institute(s)
-    for institute in institutes:
-      if case not in institute.cases:
-        institute.cases.append(case)
-    
-    # Add the individuals of a case
-    for individual in case.individuals:
-      ped_individuals.append(individual.individual_id)
-    # Add the pedigree picture
-    if scout_configs.get('madeline', None):
-      with open(scout_configs['madeline'], 'r') as f:
-        case.madeline_info = f.read()
-  
+  # Add the case to its institute(s)
   for institute in institutes:
+    if case not in institute.cases:
+      institute.cases.append(case)
     institute.save()
+  
+  case.save()
+  
   
   ######## Get the variants and add them to the mongo db: ########
   
@@ -252,25 +239,32 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
   
+  
+  # Get the individuals to see which we should include in the analysis
+  ped_individuals = []
+  for individual in case.individuals:
+    ped_individuals.append(individual.individual_id)
+  
   # Check which individuals that exists in the vcf file:
   individuals = []
   for individual in ped_individuals:
     if individual in variant_parser.individuals:
       individuals.append(individual)
-  
-  gene_lists = set([])
+    else:
+      if verbose:
+        print("Individual %s is present in ped file but not in vcf!\n"
+              "Continuing analysis..." % individual, file=sys.stderr)
   
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
   
+  ########## If a rank score treshold is used check if it is below that treshold ##########
   for variant in variant_parser:
-    if not int(variant['rank_scores'][case.display_name]) > rank_score_treshold:
+    if not float(variant['rank_scores'][case.display_name]) > rank_score_treshold:
       break
     
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, variant_type, individuals, case, config_object, nr_of_variants)
-    for gene_list in mongo_variant['gene_lists']:
-      gene_lists.add(gene_list)
     
     mongo_variant.save()
     
@@ -282,14 +276,6 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     print('Variants in non genetic regions: %s' % NON_GENETIC_REGIONS, file=sys.stderr)
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-  
-  if variant_type == 'clinical':
-    case.clinical_gene_lists = list(set(case.clinical_gene_lists).union(gene_lists))
-  if variant_type == 'research':
-    case.research_gene_lists = list(set(case.research_gene_lists).union(gene_lists))
-  
-  case.save()
-  
   
   if verbose:
     print('Updating indexes...', file=sys.stderr)
@@ -377,16 +363,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   case_id = case.case_id
   case_name = case.display_name
   
-  gene_lists = variant['info_dict'].get(
-          config_object['VCF']['GeneLists']['vcf_info_key'], 
-          None
-          )
-  expected_inheritance = variant['info_dict'].get(
-          config_object['VCF']['ExpectedInheritanceModels']['vcf_info_key'], 
-          []
-          )
-  
-  
   id_fields = [
                 variant['CHROM'], 
                 variant['POS'], 
@@ -397,9 +373,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   
   variant_id = generate_md5_key(id_fields)
   document_id = generate_md5_key(id_fields+case_id.split('_'))
-
-  # print(gene_lists)
-  # print(expected_inheritance)
 
   # Create the mongo variant object
   mongo_variant = Variant(
@@ -412,26 +385,30 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                           position = int(variant['POS']),
                           reference = variant['REF'],
                           alternative = variant['ALT'],
-                          gene_lists = gene_lists,
-                          expected_inheritance = expected_inheritance,
+                          variant_rank = variant_count,
+                          quality = float(variant['QUAL']),
+                          filters = variant['FILTER'].split(';')
                   )
   
-  # pp(json.loads(mongo_variant.to_json()))
+  # If a variant belongs to any gene lists we check which ones
+  mongo_variant['gene_lists'] = variant['info_dict'].get(
+          config_object['VCF']['GeneLists']['vcf_info_key'], 
+          None
+          )
+  
   ################# Add the rank score and variant rank #################
   # Get the rank score as specified in the config file.
   # This is central for displaying variants in scout.
+  
   mongo_variant['rank_score'] = float(
       variant.get('rank_scores', {}).get(case_name, 0.0)
     )
   
-  mongo_variant['variant_rank'] = variant_count
-  mongo_variant['quality'] = float(variant['QUAL'])
-  mongo_variant['filters'] = variant['FILTER'].split(';')
-  
   ################# Add gt calls #################
   gt_calls = []
   for individual in individuals:
-    # This function returns an ODM GTCall object with the relevant information:
+    # This function returns an ODM GTCall object with the 
+    # relevant information for a individual:
     gt_calls.append(get_genotype_information(
                                           variant,
                                           config_object,
@@ -462,8 +439,12 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   
   ################# Add the gene and tanscript information #################
   
+  # Get genes return a list with ODM objects for each gene
   mongo_variant['genes'] = get_genes(variant)
   hgnc_symbols = set([])
+  
+  expected_inheritance = set([])
+    
   for gene in mongo_variant.genes:
     hgnc_symbols.add(gene.hgnc_symbol)
   
@@ -560,30 +541,71 @@ def get_institute(institute_name):
 def get_case(ped_file, family_type, scout_configs):
   """
   Take a case file and return the case on the specified format.
-
+  
+  Only one case per pedigree file is allowed.
+  
   Args:
     ped_file    : The path to a ped file
     family_type : A string that describe the format of the ped file
     scout_configs (dict): A dictionary scout info.
 
   Returns:
-    cases : A list with mongo engine objects that describe the cases
+    case : A mongo engine object that describe the case
             found in the pedigree file.
+  
   """
   # Use ped_parser to get information from the pedigree file
   case_parser = FamilyParser(ped_file, family_type=family_type)
-  # Cases is a list that will hold all cases found in the ped file
-  cases = []
+  # A case can belong to several institutes
   institute_names = scout_configs['institutes']
+  
   for case in case_parser.to_json():
     # Create a mongo engine case
     mongo_case = Case(case_id = '_'.join(['_'.join(institute_names), case['family_id']]))
     # We use the family id as display name for scout
     mongo_case['display_name'] = case['family_id']
+    # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('vcf', '')
+    # Add the pedigree picture
+    if scout_configs.get('madeline', None):
+      with open(scout_configs['madeline'], 'r') as f:
+        case['madeline_info'] = f.read()
+    
+    clinical_gene_lists = []
+    research_gene_lists = []
+    
+    for gene_list in scout_configs.get('gene_lists',{}):
+      list_info = scout_configs['gene_lists'][gene_list]
+      
+      list_type = list_info.get('type', 'clinical')
+      list_id = list_info.get('name', '')
+      version = float(list_info.get('version', 0))
+      date = list_info.get('date', '')
+      display_name = list_info.get('display_name', list_id)
+      
+      list_object = GeneList(
+                          list_id=list_id,
+                          version=version,
+                          date=date,
+                          display_name=display_name
+                          )
+      if list_type == 'clinical':
+        clinical_gene_lists.append(list_object)
+      else:
+        research_gene_lists.append(list_object)
+    
+    mongo_case['clinical_gene_lists'] = clinical_gene_lists
+    mongo_case['research_gene_lists'] = research_gene_lists
+    
     individuals = []
-    databases = set()
+    default_gene_lists = set()
     for individual in case['individuals']:
+      # Get info from configs for the individual
+      config_info = scout_configs.get(
+                                  'individuals', {}
+                                  ).get(
+                                  individual['individual_id'], {}
+                                  )
       ind = Individual()
       ind['father'] = individual['father']
       ind['mother'] = individual['mother']
@@ -591,21 +613,20 @@ def get_case(ped_file, family_type, scout_configs):
       ind['sex'] = str(individual['sex'])
       ind['phenotype'] = individual['phenotype']
       ind['individual_id'] = individual['individual_id']
-      ind['bam_file'] = scout_configs.get(
-                                  'individuals', {}
-                                  ).get(
-                                  individual['individual_id'], {}
-                                  ).get('bam_path', '')
+      # Path to the bam file for IGV:
+      ind['bam_file'] = config_info.get('bam_path', '')
       
-      ind['capture_kit'] = individual.get('extra_info', {}).get('Capture_kit', '').split(',')
+      ind['capture_kits'] = config_info.get('capture_kit', '').split(',')
+      
       for clinical_db in individual.get('extra_info', {}).get('Clinical_db', '').split(','):
-        databases.add(clinical_db)
+        default_gene_lists.add(clinical_db)
+      
       individuals.append(ind)
+    
     mongo_case['individuals'] = individuals
-    mongo_case['databases'] = list(databases)
-    cases.append(mongo_case)
+    mongo_case['default_gene_lists'] = list(default_gene_lists)
 
-  return cases
+  return mongo_case
 
 def get_genotype_information(variant, config_object, individual):
   """
@@ -713,11 +734,17 @@ def get_genes(variant):
   genes = {}
   transcripts = []
   mongo_genes = []
-  # omim terms is a dictionary with gene_ids as key and a list with 
-  # omim ids as value
+  
+  ######################################################################
+  ## There are two types of OMIM terms, one is the OMIM gene entry    ##
+  ## and one is for the phenotypic terms.                             ##
+  ## Each key in the 'omim_terms' dictionary reprecents a gene id.    ##
+  ## Values are a dictionary with 'omim_gene_id' = omim_gene_id and   ##
+  ## 'phenotypic_terms' = [list of OmimPhenotypeObjects]              ##
+  ######################################################################
+  
   omim_terms = {}
-  expected_inheritance_models = {}
-  # Fill the omim terms:
+  # Fill the omim gene id:s:
   for annotation in variant['info_dict'].get('OMIM_morbid', []):
     if annotation:
       splitted_record = annotation.split(':')
@@ -725,31 +752,42 @@ def get_genes(variant):
         gene_id = splitted_record[0]
         omim_term = int(splitted_record[1])
         if gene_id in omim_terms:
-          omim_terms[gene_id].append(omim_term)
+          omim_terms[gene_id]['omim_gene_id'] = omim_term
         else:
-          omim_terms[gene_id] = [omim_term]
+          omim_terms[gene_id] = {
+              'omim_gene_id': omim_term,
+              'phenotypic_terms': []
+          }
+      
       except ValueError:
         pass
   
+  # Fill the omim phenotype terms:  
   for gene_annotation in variant['info_dict'].get('Phenotypic_disease_model', []):
     if gene_annotation:
       splitted_gene = gene_annotation.split(':')
       gene_id = splitted_gene[0]
       for omim_entry in splitted_gene[1].split('|'):
         splitted_record = omim_entry.split('>')
+        
+        phenotype_id = int(splitted_record[0])
         inheritance_patterns = []
         if len(splitted_record) > 1:
           inheritance_patterns = splitted_record[1].split('/')
         
-        disease_model = DiseaseModel(
-                              omim_id=int(splitted_record[0]),
+        disease_model = OmimPhenotype(
+                              omim_id=phenotype_id,
                               disease_models=inheritance_patterns
                             )
-        if gene_id in expected_inheritance_models:
-          expected_inheritance_models[gene_id].append(disease_model)
+        
+        if gene_id in omim_terms:
+          omim_terms[gene_id]['phenotypic_terms'].append(disease_model)
         else:
-          expected_inheritance_models[gene_id] = [disease_model]
-  
+          omim_terms[gene_id] = {
+              'gene_terms': [],
+              'phenotypic_terms': [disease_model]
+          }
+            
   # We need to keep track of the highest ranked gene in order to know what to
   # display in the variant overwiew in scout
   best_rank = None
@@ -802,8 +840,14 @@ def get_genes(variant):
     most_severe = genes[gene]['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
     mongo_gene = Gene(hgnc_symbol=gene)
-    mongo_gene.omim_terms = omim_terms.get(gene, [])
-    mongo_gene.expected_inheritance = expected_inheritance_models.get(gene,[])
+    mongo_gene.omim_gene_entry = omim_terms.get(
+                                    gene, {}).get(
+                                      'omim_gene_id', None)
+    
+    mongo_gene.omim_phenotypes = omim_terms.get(
+                                    gene, {}).get(
+                                      'phenotypic_terms', [])
+    
     # Add a list with the transcripts:
     mongo_gene.transcripts = []
     for transcript_id in genes[gene]['transcripts']:
