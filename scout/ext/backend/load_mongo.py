@@ -166,7 +166,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
   
-  # Check if the vcf file is on the proper format
+  ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['vcf']
   splitted_vcf_file_name = os.path.splitext(vcf_file)
   vcf_ending = splitted_vcf_file_name[-1]
@@ -174,11 +174,13 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     if vcf_ending == '.gz':
       vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
       if vcf_ending != '.vcf':
-        print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", file=sys.stderr)
+        print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')",
+               file=sys.stderr)
         sys.ext(0)
     else:
       if vcf_ending != '.vcf':
-        print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", file=sys.stderr)
+        print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')", 
+                file=sys.stderr)
         sys.ext(0)
   
   ped_file = scout_configs['ped']

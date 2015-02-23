@@ -97,7 +97,12 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
               mongo_db, username, variant_type, madeline, password, institute, 
               port, host, verbose):
-  """Test the vcf class."""
+  """
+  Load the mongo database.
+  
+  Command line arguments will override what's in the config file.
+  
+  """
   # Check if vcf file exists and that it has the correct naming:
   scout_configs = {}
   
