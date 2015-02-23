@@ -103,7 +103,7 @@ class Transcript(EmbeddedDocument):
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
 
-class DiseaseModel(EmbeddedDocument):
+class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)
   disease_models = ListField(StringField())
 
@@ -114,8 +114,8 @@ class Gene(EmbeddedDocument):
   region_annotation = StringField(choices=FEATURE_TYPES)
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
-  omim_terms = ListField(IntField())
-  expected_inheritance = ListField(EmbeddedDocumentField(DiseaseModel))
+  omim_gene_entry = IntField()
+  omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
 
 
 class Compound(EmbeddedDocument):
@@ -201,8 +201,8 @@ class Variant(Document):
     """Returns a list with expected inheritance model(s)."""
     expected_inheritance = set([])
     for gene in self.genes:
-      for entry in gene.expected_inheritance:
-        for gene_model in entry.disease_models:
+      for omim_phenotype in gene.omim_phenotypes:
+        for gene_model in omim_phenotype.disease_models:
           expected_inheritance.add(gene_model)
 
     return list(expected_inheritance)
