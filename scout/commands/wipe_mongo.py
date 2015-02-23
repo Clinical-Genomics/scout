@@ -48,6 +48,11 @@ def drop_mongo(mongo_db='variantDatabase', username=None, password=None,
     if verbose:
       print("Dropping collection 'case' ...")
     case_collection.drop()
+    # Drop the institute collection:
+    institute_collection = db['institute']
+    if verbose:
+      print("Dropping collection 'institute' ...")
+    institute_collection.drop()
     if verbose:
       print("Cases dropped.")
     # Drop the variant collection:    

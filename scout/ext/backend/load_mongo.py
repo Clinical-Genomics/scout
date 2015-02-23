@@ -202,14 +202,15 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   
   ######## Add the institute to the mongo db: ########
   
+  # institutes is a list with institute objects
   institutes = []
-  for institute in scout_configs['institutes']:
-    institutes.append(get_institute(institute))
+  for institute_name in scout_configs['institutes']:
+    institutes.append(get_institute(institute_name))
   
-  for institute in institutes:
+  for i,institute in enumerate(institutes):
     try:
       if Institute.objects.get(internal_id = institute.internal_id):
-        institute = Institute.objects.get(internal_id = institute.internal_id)
+        institutes[i] = Institute.objects.get(internal_id = institute.internal_id)
     except DoesNotExist:
       if verbose:
         print('New institute!', file=sys.stderr)
@@ -229,7 +230,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     if verbose:
       print('case id %s' % case_name, file=sys.stderr)
     
-    # Add the case to its institute
+    # Add the case to its institute(s)
     for institute in institutes:
       if case not in institute.cases:
         institute.cases.append(case)
