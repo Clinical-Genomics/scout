@@ -10,7 +10,7 @@ from datetime import datetime
 from query_phenomizer import query
 from mongoengine import (DateTimeField, Document, EmbeddedDocument,
                          EmbeddedDocumentField, IntField, ListField,
-                         ReferenceField, StringField)
+                         ReferenceField, FloatField,StringField)
 
 from .event import Event
 
@@ -48,6 +48,13 @@ class PhenotypeTerm(EmbeddedDocument):
   feature = StringField()
 
 
+class GeneList(EmbeddedDocument):
+  list_id = StringField(required=True)
+  version = FloatField(required=True)
+  date = StringField(required=True)
+  display_name = StringField()
+
+
 class Case(Document):
   """Represents a case (family) of individuals (samples)."""
   # This is the md5 string id for the family:
@@ -67,8 +74,8 @@ class Case(Document):
                                                     'solved'])
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
-  clinical_gene_lists = ListField(StringField())
-  research_gene_lists = ListField(StringField())
+  clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
+  research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
