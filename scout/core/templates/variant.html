@@ -242,10 +242,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for transcript in variant.transcripts %}
+              {% for transcript in variant.refseq_transcripts %}
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
-                  <td>{{ transcript.transcript_id }}</td>
+                  <td>{{ transcript.refseq_ids|join(', ') }}</td>
                   <td>{{ transcript.protein_sequence_name or '' }}</td>
                 </tr>
               {% endfor %}

@@ -219,7 +219,7 @@ class Variant(Document):
       annotations = (str(gene.omim_gene_entry) for gene in self.genes
                      if gene.omim_gene_entry)
     else:
-      annotations = (':'.join([gene.hgnc_symbol, gene.omim_gene_entry])
+      annotations = (':'.join([gene.hgnc_symbol, str(gene.omim_gene_entry)])
                      for gene in self.genes)
 
     # flatten the list of list of omim ids
@@ -318,6 +318,13 @@ class Variant(Document):
       # loop over each child transcript for the gene
       for transcript in gene.transcripts:
         # yield the parent gene, child transcript combo
+        yield transcript
+
+  @property
+  def refseq_transcripts(self):
+    """Yield all transcripts with a RefSeq id."""
+    for transcript in self.transcripts:
+      if transcript.refseq_ids:
         yield transcript
 
   @property
