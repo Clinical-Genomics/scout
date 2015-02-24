@@ -93,6 +93,7 @@ GENETIC_MODELS = (
 
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
+  refseq_ids = ListField()
   hgnc_symbol = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)

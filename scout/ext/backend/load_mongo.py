@@ -788,7 +788,18 @@ def get_genes(variant):
               'gene_terms': [],
               'phenotypic_terms': [disease_model]
           }
-            
+  
+  # Conversion from ensembl to refseq:
+  ensembl_to_refseq = {}
+  for gene_info in variant['info_dict'].get('Ensembl_transcript_to_refseq_transcript', []):
+    splitted_gene = gene_info.split(':')
+    transcript_info = splitted_gene[1]
+    for transcript in transcript_info.split('|'):
+      splitted_transcript = transcript.split('>')
+      if len(splitted_transcript) > 1:
+        ensembl_id = splitted_transcript[0]
+        refseq_ids = splitted_transcript[1].split('/')
+        ensembl_to_refseq[ensembl_id] = refseq_ids
   # We need to keep track of the highest ranked gene in order to know what to
   # display in the variant overwiew in scout
   best_rank = None
@@ -815,6 +826,8 @@ def get_genes(variant):
   for transcript in transcripts:
     transcript_id = transcript.transcript_id
     hgnc_symbol = transcript.hgnc_symbol
+    # Add the refseq ids for each transcript
+    transcript['refseq_ids'] = ensembl_to_refseq.get(transcript_id,[])
     for i, functional_annotation in enumerate(transcript.functional_annotations):
       rank = SO_TERMS[functional_annotation]['rank']
       
