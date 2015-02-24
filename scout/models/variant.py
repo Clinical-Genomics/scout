@@ -233,6 +233,15 @@ class Variant(Document):
             for omim_id in self.omim_annotations)
 
   @property
+  def omim_inheritance_models(self):
+    """Return a list of OMIM inheritance models (phenotype based)."""
+    models = ((phenotype.disease_models for phenotype in gene.omim_phenotypes)
+              for gene in self.genes)
+
+    # untangle multiple nested list of list of lists...
+    return set(chain.from_iterable(chain.from_iterable(models)))
+
+  @property
   def region_annotations(self):
     """Returns a list with region annotation(s)."""
     region_annotations = []
@@ -270,6 +279,18 @@ class Variant(Document):
       for gene in self.genes:
         polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
     return polyphen_predictions
+
+  @property
+  def is_matching_inheritance(self):
+    """Match expected (OMIM) with annotated inheritance models."""
+    omim_models = self.omim_inheritance_models
+
+    for model in self.genetic_models:
+      for omim_model in omim_models:
+        if (model == omim_model) or (omim_model in model):
+          return True
+
+    return False
 
   @property
   def functional_annotations(self):

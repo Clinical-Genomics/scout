@@ -147,7 +147,7 @@
   <div class="variant-header-item">
     <form class="status-picker" method="POST">
       <div class="md-label">
-        <div class="md-label-icon">Rank</div>
+        <div class="md-label-icon">Priority</div>
         <div class="md-label-text">
           <select v-model="variantRank" v-on="change: onVariantRankChange">
             {% for rank in manual_rank_options %}
@@ -210,12 +210,15 @@
             </div>
           </div>
 
-          <model-matcher
-            class="variant-list-item"
-            result="{{ variant.genetic_models | join(',') }}"
-            url="{{ url_for('api.omim_inheritance',
-                            hgnc_symbol=hgnc_symbol) }}">
-          </model-matcher>
+          <div class="variant-list-item">
+            <div>Matches expected inheritance model</div>
+
+            {% if variant.is_matching_inheritance %}
+              <div class="md-badge--success">Yes</div>
+            {% else %}
+              <div class="md-badge--fail">No</div>
+            {% endif %}
+          </div>
 
           <div class="variant-list-item">
             <div>Frequency</div>
@@ -282,19 +285,12 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Disease gene model</div>
-            <div>{{ variant.expected_inheritance_genes|join(',') }}</div>
+            <div>{{ variant.expected_inheritance_genes|join(', ') }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>OMIM</div>
-            {% if hgnc_symbol %}
-              <omim-model v-ref="omimModel" v-with="
-                url: '{{ url_for('api.omim_inheritance',
-                                 hgnc_symbol=hgnc_symbol) }}'">
-              </omim-model>
-            {% else %}
-              No HGNC symbol
-            {% endif %}
+            {{ variant.omim_inheritance_models|join(', ') }}
           </div>
 
           <div class="variant-row-item">
