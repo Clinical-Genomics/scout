@@ -395,6 +395,7 @@
               <tr>
                 <th>Gene</th>
                 <th>Transcript</th>
+                <th>RefSeq</th>
                 <th>Mutation type</th>
                 <th>Strand</th>
                 <th>Exon</th>
@@ -411,15 +412,10 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <div class="md-tooltip">
-                      <div class="dotdotdot">
-                        {{ transcript.transcript_id }}
-                      </div>
-
-                      <div class="md-tooltip-tip is-bottom">
-                        {{ transcript.transcript_id }}
-                      </div>
-                    </div>
+                    <small>{{ transcript.transcript_id }}</small>
+                  </td>
+                  <td>
+                    <small>{{ transcript.refseq_ids|join(', ') }}</small>
                   </td>
                   <td>
                     <div class="md-tooltip">
@@ -432,7 +428,7 @@
                       </div>
                     </div>
                   </td>
-                  <td class="dotdotdot">{{ 'Not yet implemented' }}</td>
+                  <td class="text-center">{{ transcript.strand }}</td>
                   <td>{{ transcript.exon }}</td>
                   <td>{{ transcript.intron or '-' }}</td>
                   <td>{{ transcript.coding_sequence_name }}</td>

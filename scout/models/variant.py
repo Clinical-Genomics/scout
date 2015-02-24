@@ -91,9 +91,10 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
+
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
-  refseq_ids = ListField()
+  refseq_ids = ListField(StringField())
   hgnc_symbol = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
@@ -105,9 +106,11 @@ class Transcript(EmbeddedDocument):
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
 
+
 class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)
   disease_models = ListField(StringField())
+
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
@@ -226,7 +229,7 @@ class Variant(Document):
   def omim_annotation_links(self):
     """Return a list of omim id links."""
     base_url = 'http://www.omim.org/entry'
-    return ((omim_id, "{base}/{id}".format(base=base_url, id=str(omim_id)))
+    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
             for omim_id in self.omim_annotations)
 
   @property
@@ -242,7 +245,10 @@ class Variant(Document):
 
   @property
   def sift_predictions(self):
-    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
+    """Return a list with the sift prediction(s) for this variant.
+
+    The most severe for each gene.
+    """
     sift_predictions = []
     if len(self.genes) == 1:
       sift_predictions = [gene.sift_prediction for gene in self.genes]
@@ -253,7 +259,10 @@ class Variant(Document):
 
   @property
   def polyphen_predictions(self):
-    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
+    """Return a list with the polyphen prediction(s) for this variant.
+
+    The most severe for each gene.
+    """
     polyphen_predictions = []
     if len(self.genes) == 1:
       polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
