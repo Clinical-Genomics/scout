@@ -101,6 +101,7 @@ class Transcript(EmbeddedDocument):
   region_annotations = ListField(StringField(choices=FEATURE_TYPES))
   exon = StringField()
   intron = StringField()
+  strand = StringField()
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
 

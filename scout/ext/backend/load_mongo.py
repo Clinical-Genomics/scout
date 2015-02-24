@@ -689,6 +689,11 @@ def get_transcript_information(vep_entry):
     transcript.exon = vep_entry['EXON']
   if vep_entry.get('INTRON', None):
     transcript.intron = vep_entry['INTRON']
+  if vep_entry.get('STRAND', None):
+    if vep_entry['STRAND'] == '1':
+      transcript.strand = '+'
+    elif vep_entry['STRAND'] == '-1':
+      transcript.strand = '-'
 
   coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
   protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
