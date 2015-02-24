@@ -212,21 +212,21 @@ class Variant(Document):
   @property
   def omim_annotations(self):
     """Returns a list with omim id(s)."""
-    annotations = []
     if len(self.genes) == 1:
-      annotations = (gene.omim_terms for gene in self.genes)
+      annotations = (str(gene.omim_gene_entry) for gene in self.genes
+                     if gene.omim_gene_entry)
     else:
-      annotations = (':'.join([gene.hgnc_symbol, gene.omim_terms])
+      annotations = (':'.join([gene.hgnc_symbol, gene.omim_gene_entry])
                      for gene in self.genes)
 
     # flatten the list of list of omim ids
-    return chain.from_iterable(annotations)
+    return annotations
 
   @property
   def omim_annotation_links(self):
     """Return a list of omim id links."""
     base_url = 'http://www.omim.org/entry'
-    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
+    return ((omim_id, "{base}/{id}".format(base=base_url, id=str(omim_id)))
             for omim_id in self.omim_annotations)
 
   @property

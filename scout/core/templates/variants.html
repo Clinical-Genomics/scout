@@ -281,9 +281,11 @@
         <!-- MIM terms -->
         <div class="variants-row-item flex-big">
           {% for omim_id, omim_link in variant.omim_annotation_links %}
-            <a href="{{ omim_link }}">{{ omim_id }}</a>
-          {% else %}
-            No associated MIM terms.
+            {% if omim_id %}
+              <a href="{{ omim_link }}">{{ omim_id }}</a>
+            {% endif %}
+            {% else %}
+              No MIM terms.
           {% endfor %}
         </div>
 
