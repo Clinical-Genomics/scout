@@ -261,7 +261,7 @@ def pin_variant(institute_id, case_id, variant_id):
   case.events.append(Event(
     link=variant_url,
     author=current_user.to_dbref(),
-    verb="%s a variant suspect: " % verb,
+    verb="{} a variant suspect: ".format(verb),
     subject=variant_id,
   ))
 
@@ -352,9 +352,10 @@ def email_sanger(institute_id, case_id, variant_id):
                         case_id=case_id, variant_id=variant_id)
 
   hgnc_symbol = ', '.join(variant.common.hgnc_symbols)
-  functions = ["<li>%s</li>" % function for function in
+  functions = ["<li>{}</li>".format(function) for function in
                variant.common.protein_change]
-  gtcalls = ["<li>%s: %s</li>" % (individual.sample, individual.genotype_call)
+  gtcalls = ["<li>{}: {}</li>".format(individual.sample,
+                                      individual.genotype_call)
              for individual in variant.samples]
 
   html = """
