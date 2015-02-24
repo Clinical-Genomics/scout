@@ -220,7 +220,7 @@ class Variant(Document):
                      if gene.omim_gene_entry)
     else:
       annotations = (':'.join([gene.hgnc_symbol, str(gene.omim_gene_entry)])
-                     for gene in self.genes)
+                     for gene in self.genes if gene.omim_gene_entry)
 
     # flatten the list of list of omim ids
     return annotations

@@ -62,7 +62,7 @@
     <div class="variants-header-item flex-big" title="Func. annotation">
       Func. annotation
     </div>
-    <div class="variants-header-item" title="Disease group">
+    <div class="variants-header-item" title="MIM Terms">
       MIM terms
     </div>
     <div class="variants-header-item" title="Disease gene model">
@@ -279,13 +279,11 @@
         </div>
 
         <!-- MIM terms -->
-        <div class="variants-row-item">
+        <div class="variants-row-item is-scrollable">
           {% for omim_id, omim_link in variant.omim_annotation_links %}
             {% if omim_id %}
               <a href="{{ omim_link }}">{{ omim_id }}</a>
             {% endif %}
-            {% else %}
-              No MIM terms.
           {% endfor %}
         </div>
 
