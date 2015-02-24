@@ -13,7 +13,7 @@
         </a>
 
         <div class="md-item-subtitle">
-          <a href="{{baseUrl}}/{{display_name}}/variants">Variants</a> |
+          <a href="{{baseUrl}}/{{display_name}}/variants?{{ default_gene_lists | joinParams gene_lists }}">Variants</a> |
           <span>{{created_at.$date | fromNow}}</span> |
           <span>{{status}}</span>
         </div>
@@ -31,6 +31,9 @@
     filters:
       fromNow: (date) ->
         return moment(date).fromNow()
+
+      joinParams: (list, param) ->
+        return "#{param}=#{list.join("#{param}=&")}"
 
       isUpdated: (date) ->
         diff = -moment(date).diff()  # milliseconds

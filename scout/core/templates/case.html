@@ -141,7 +141,7 @@
 
 {% block content %}
 
-  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name) }}" class="case-variants-button">
+  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, gene_lists=case.default_gene_lists) }}" class="case-variants-button">
     Go to all variants
   </a>
 

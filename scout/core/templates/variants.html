@@ -50,19 +50,19 @@
 {% block toolbar_custom %}
   <div class="variants-header">
 
-    <div class="variants-header-item" title="Rank position">Rank</div>
-    <div class="variants-header-item" title="Rank score">Score</div>
-    <div class="variants-header-item" title="Chromosome">Chr.</div>
-    <div class="variants-header-item flex-big" title="HGNC">HGNC</div>
-    <div class="variants-header-item" title="1000 Genomes">1000 Genomes</div>
-    <div class="variants-header-item" title="CADD score">CADD score</div>
+    <div class="variants-header-item flex-small" title="Rank position">Rank</div>
+    <div class="variants-header-item flex-small" title="Rank score">Score</div>
+    <div class="variants-header-item flex-small" title="Chromosome">Chr.</div>
+    <div class="variants-header-item" title="HGNC">Gene</div>
+    <div class="variants-header-item" title="1000 Genomes">1000G</div>
+    <div class="variants-header-item flex-small" title="CADD score">CADD</div>
     <div class="variants-header-item" title="Gene annotation">
       Gene annotation
     </div>
     <div class="variants-header-item flex-big" title="Func. annotation">
       Func. annotation
     </div>
-    <div class="variants-header-item flex-big" title="Disease group">
+    <div class="variants-header-item" title="MIM Terms">
       MIM terms
     </div>
     <div class="variants-header-item" title="Disease gene model">
@@ -193,7 +193,7 @@
 			<div class="variants-row">
 
         <!-- Rank position -->
-				<a class="variants-row-item layout"
+				<a class="variants-row-item flex-small layout"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
                             case_id=case_id,
@@ -209,17 +209,17 @@
 				</a>
 
         <!-- Rank score -->
-        <div class="variants-row-item text-right">
+        <div class="variants-row-item flex-small text-right">
           {{ variant.rank_score }}
         </div>
 
         <!-- Chromosome -->
-        <div class="variants-row-item">
+        <div class="variants-row-item flex-small">
           {{ variant.chromosome }}
         </div>
 
         <!-- HGNC -->
-				<div class="variants-row-item flex-big">
+				<div class="variants-row-item">
 					{{ (variant.hgnc_symbols or ['-'])|join(', ') }}
 				</div>
 
@@ -251,7 +251,7 @@
         </div>
 
         <!-- CADD (severity) -->
-        <div class="variants-row-item text-right md-tooltip">
+        <div class="variants-row-item flex-small text-right md-tooltip">
           {{ variant.cadd_score or '-' }}
 
           <div class="md-tooltip-tip is-right">
@@ -279,17 +279,17 @@
         </div>
 
         <!-- MIM terms -->
-        <div class="variants-row-item flex-big">
+        <div class="variants-row-item is-scrollable">
           {% for omim_id, omim_link in variant.omim_annotation_links %}
-            <a href="{{ omim_link }}">{{ omim_id }}</a>
-          {% else %}
-            No associated MIM terms.
+            {% if omim_id %}
+              <a href="{{ omim_link }}">{{ omim_id }}</a>
+            {% endif %}
           {% endfor %}
         </div>
 
         <!-- Expected inheritance -->
         <div class="variants-row-item">
-          {{ variant.expected_inheritance_genes|join(',') }}
+          {{ variant.expected_inheritance_genes|join(', ') }}
         </div>
 
         <!-- Inheritance models -->
@@ -306,7 +306,8 @@
                    variant.compounds,
                    institute_id,
                    case_id,
-                   class_names=['default-table', 'table-compounds-popup']) }}
+                   class_names=['default-table--flex',
+                                'table-compounds-popup']) }}
             </div>
           {% endif %}
 				</div>

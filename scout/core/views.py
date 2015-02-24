@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from itertools import chain
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
@@ -192,8 +193,14 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
-  gene_lists = [(item, item) for item in case.clinical_gene_lists]
-  form.gene_lists.choices = gene_lists
+  gene_lists = [case.clinical_gene_lists]
+
+  if case.status == 'research':
+    gene_lists.append(case.research_gene_lists)
+
+  gene_list_names = [(item.list_id, item.display_name)
+                     for item in chain.from_iterable(gene_lists)]
+  form.gene_lists.choices = gene_list_names
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in
                             request.args.getlist('hgnc_symbols') if gene]
@@ -261,7 +268,7 @@ def pin_variant(institute_id, case_id, variant_id):
   case.events.append(Event(
     link=variant_url,
     author=current_user.to_dbref(),
-    verb="%s a variant suspect: " % verb,
+    verb="{} a variant suspect: ".format(verb),
     subject=variant_id,
   ))
 
@@ -352,9 +359,10 @@ def email_sanger(institute_id, case_id, variant_id):
                         case_id=case_id, variant_id=variant_id)
 
   hgnc_symbol = ', '.join(variant.common.hgnc_symbols)
-  functions = ["<li>%s</li>" % function for function in
+  functions = ["<li>{}</li>".format(function) for function in
                variant.common.protein_change]
-  gtcalls = ["<li>%s: %s</li>" % (individual.sample, individual.genotype_call)
+  gtcalls = ["<li>{}: {}</li>".format(individual.sample,
+                                      individual.genotype_call)
              for individual in variant.samples]
 
   html = """

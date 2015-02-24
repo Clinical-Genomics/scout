@@ -147,7 +147,7 @@
   <div class="variant-header-item">
     <form class="status-picker" method="POST">
       <div class="md-label">
-        <div class="md-label-icon">Rank</div>
+        <div class="md-label-icon">Priority</div>
         <div class="md-label-text">
           <select v-model="variantRank" v-on="change: onVariantRankChange">
             {% for rank in manual_rank_options %}
@@ -191,7 +191,7 @@
   <div class="variant-segments">
 
     <div id="summary" class="variant-segments-row">
-      <div id="summary" class="variant-segment-summary">
+      <div id="summary" class="md-card">
         <div class="md-card-header">Summary</div>
 
         <div class="variant-segment-content">
@@ -210,12 +210,15 @@
             </div>
           </div>
 
-          <model-matcher
-            class="variant-list-item"
-            result="{{ variant.genetic_models | join(',') }}"
-            url="{{ url_for('api.omim_inheritance',
-                            hgnc_symbol=hgnc_symbol) }}">
-          </model-matcher>
+          <div class="variant-list-item">
+            <div>Matches expected inheritance model</div>
+
+            {% if variant.is_matching_inheritance %}
+              <div class="md-badge--success">Yes</div>
+            {% else %}
+              <div class="md-badge--fail">No</div>
+            {% endif %}
+          </div>
 
           <div class="variant-list-item">
             <div>Frequency</div>
@@ -224,6 +227,30 @@
               {{ variant.frequency }}
             </div>
           </div>
+        </div>
+      </div>
+
+      <div id="transcript-overview" class="md-card">
+        <div class="md-card-header">Transcript overview</div>
+        <div class="md-card-body-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Amino acid</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for transcript in variant.refseq_transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>{{ transcript.refseq_ids|join(', ') }}</td>
+                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -258,25 +285,16 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Disease gene model</div>
-            <div>{{ variant.expected_inheritance_genes|join(',') }}</div>
+            <div>{{ variant.expected_inheritance_genes|join(', ') }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>OMIM</div>
-            {% if hgnc_symbol %}
-              <omim-model v-ref="omimModel" v-with="
-                url: '{{ url_for('api.omim_inheritance',
-                                 hgnc_symbol=hgnc_symbol) }}'">
-              </omim-model>
-            {% else %}
-              No HGNC symbol
-            {% endif %}
+            {{ variant.omim_inheritance_models|join(', ') }}
           </div>
 
           <div class="variant-row-item">
-            <div>
-              Matching
-            </div>
+            <div>Matching</div>
 
             <div class="variant-row-item-sublist">
               {% for model in variant.genetic_models %}
@@ -389,12 +407,13 @@
       <div class="md-card">
         <div class="md-card-header">Transcripts</div>
 
-        <div class="md-card-body">
+        <div class="md-card-body-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
                 <th>Gene</th>
                 <th>Transcript</th>
+                <th>RefSeq</th>
                 <th>Mutation type</th>
                 <th>Strand</th>
                 <th>Exon</th>
@@ -411,37 +430,46 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
+                    <small>{{ transcript.transcript_id }}</small>
+                  </td>
+                  <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        {{ transcript.transcript_id }}
+                        <small>
+                          {{ transcript.refseq_ids
+                              |join(', ')
+                              |truncate(15, True) }}
+                        </small>
                       </div>
 
                       <div class="md-tooltip-tip is-bottom">
-                        {{ transcript.transcript_id }}
+                        {{ transcript.refseq_ids|join(', ') }}
                       </div>
                     </div>
                   </td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        {{ transcript.functional_annotations|join(',') }}
+                        {{ transcript.functional_annotations
+                            |join(', ')
+                            |truncate(20, True) }}
                       </div>
 
                       <div class="md-tooltip-tip is-bottom">
-                        {{ transcript.functional_annotations|join(',') }}
+                        {{ transcript.functional_annotations|join(', ') }}
                       </div>
                     </div>
                   </td>
-                  <td class="dotdotdot">{{ 'Not yet implemented' }}</td>
-                  <td>{{ transcript.exon }}</td>
-                  <td>{{ transcript.intron or '-' }}</td>
-                  <td>{{ transcript.coding_sequence_name }}</td>
-                  <td>{{ transcript.protein_sequence_name }}</td>
-                  <td>{{ transcript.sift_prediction }}</td>
+                  <td class="text-center">{{ transcript.strand }}</td>
+                  <td>{{ transcript.exon or '' }}</td>
+                  <td>{{ transcript.intron or '' }}</td>
+                  <td>{{ transcript.coding_sequence_name or '' }}</td>
+                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                  <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        {{ transcript.polyphen_prediction }}
+                        {{ transcript.polyphen_prediction or '' }}
                       </div>
 
                       <div class="md-tooltip-tip is-bottom">
@@ -467,7 +495,7 @@
       <div class="md-card">
         <div class="md-card-header">Compounds</div>
 
-        <div class="md-card-body">
+        <div class="md-card-body-scrollable-big">
           {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>

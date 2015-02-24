@@ -91,9 +91,10 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
+
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
-  refseq_ids = ListField()
+  refseq_ids = ListField(StringField())
   hgnc_symbol = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
@@ -105,9 +106,11 @@ class Transcript(EmbeddedDocument):
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
 
+
 class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)
   disease_models = ListField(StringField())
+
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
@@ -212,15 +215,15 @@ class Variant(Document):
   @property
   def omim_annotations(self):
     """Returns a list with omim id(s)."""
-    annotations = []
     if len(self.genes) == 1:
-      annotations = (gene.omim_terms for gene in self.genes)
+      annotations = (str(gene.omim_gene_entry) for gene in self.genes
+                     if gene.omim_gene_entry)
     else:
-      annotations = (':'.join([gene.hgnc_symbol, gene.omim_terms])
-                     for gene in self.genes)
+      annotations = (':'.join([gene.hgnc_symbol, str(gene.omim_gene_entry)])
+                     for gene in self.genes if gene.omim_gene_entry)
 
     # flatten the list of list of omim ids
-    return chain.from_iterable(annotations)
+    return annotations
 
   @property
   def omim_annotation_links(self):
@@ -228,6 +231,15 @@ class Variant(Document):
     base_url = 'http://www.omim.org/entry'
     return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
             for omim_id in self.omim_annotations)
+
+  @property
+  def omim_inheritance_models(self):
+    """Return a list of OMIM inheritance models (phenotype based)."""
+    models = ((phenotype.disease_models for phenotype in gene.omim_phenotypes)
+              for gene in self.genes)
+
+    # untangle multiple nested list of list of lists...
+    return set(chain.from_iterable(chain.from_iterable(models)))
 
   @property
   def region_annotations(self):
@@ -242,7 +254,10 @@ class Variant(Document):
 
   @property
   def sift_predictions(self):
-    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
+    """Return a list with the sift prediction(s) for this variant.
+
+    The most severe for each gene.
+    """
     sift_predictions = []
     if len(self.genes) == 1:
       sift_predictions = [gene.sift_prediction for gene in self.genes]
@@ -253,7 +268,10 @@ class Variant(Document):
 
   @property
   def polyphen_predictions(self):
-    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
+    """Return a list with the polyphen prediction(s) for this variant.
+
+    The most severe for each gene.
+    """
     polyphen_predictions = []
     if len(self.genes) == 1:
       polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
@@ -261,6 +279,18 @@ class Variant(Document):
       for gene in self.genes:
         polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
     return polyphen_predictions
+
+  @property
+  def is_matching_inheritance(self):
+    """Match expected (OMIM) with annotated inheritance models."""
+    omim_models = self.omim_inheritance_models
+
+    for model in self.genetic_models:
+      for omim_model in omim_models:
+        if (model == omim_model) or (omim_model in model):
+          return True
+
+    return False
 
   @property
   def functional_annotations(self):
@@ -288,6 +318,13 @@ class Variant(Document):
       # loop over each child transcript for the gene
       for transcript in gene.transcripts:
         # yield the parent gene, child transcript combo
+        yield transcript
+
+  @property
+  def refseq_transcripts(self):
+    """Yield all transcripts with a RefSeq id."""
+    for transcript in self.transcripts:
+      if transcript.refseq_ids:
         yield transcript
 
   @property
