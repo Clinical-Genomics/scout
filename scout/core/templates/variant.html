@@ -191,7 +191,7 @@
   <div class="variant-segments">
 
     <div id="summary" class="variant-segments-row">
-      <div id="summary" class="variant-segment-summary">
+      <div id="summary" class="md-card">
         <div class="md-card-header">Summary</div>
 
         <div class="variant-segment-content">
@@ -224,6 +224,30 @@
               {{ variant.frequency }}
             </div>
           </div>
+        </div>
+      </div>
+
+      <div id="transcript-overview" class="md-card">
+        <div class="md-card-header">Transcript overview</div>
+        <div class="md-card-body-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Amino acid</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for transcript in variant.transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>{{ transcript.transcript_id }}</td>
+                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -274,9 +298,7 @@
           </div>
 
           <div class="variant-row-item">
-            <div>
-              Matching
-            </div>
+            <div>Matching</div>
 
             <div class="variant-row-item-sublist">
               {% for model in variant.genetic_models %}
@@ -389,7 +411,7 @@
       <div class="md-card">
         <div class="md-card-header">Transcripts</div>
 
-        <div class="md-card-body">
+        <div class="md-card-body-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -415,29 +437,43 @@
                     <small>{{ transcript.transcript_id }}</small>
                   </td>
                   <td>
-                    <small>{{ transcript.refseq_ids|join(', ') }}</small>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        <small>
+                          {{ transcript.refseq_ids
+                              |join(', ')
+                              |truncate(15, True) }}
+                        </small>
+                      </div>
+
+                      <div class="md-tooltip-tip is-bottom">
+                        {{ transcript.refseq_ids|join(', ') }}
+                      </div>
+                    </div>
                   </td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        {{ transcript.functional_annotations|join(',') }}
+                        {{ transcript.functional_annotations
+                            |join(', ')
+                            |truncate(20, True) }}
                       </div>
 
                       <div class="md-tooltip-tip is-bottom">
-                        {{ transcript.functional_annotations|join(',') }}
+                        {{ transcript.functional_annotations|join(', ') }}
                       </div>
                     </div>
                   </td>
                   <td class="text-center">{{ transcript.strand }}</td>
-                  <td>{{ transcript.exon }}</td>
-                  <td>{{ transcript.intron or '-' }}</td>
-                  <td>{{ transcript.coding_sequence_name }}</td>
-                  <td>{{ transcript.protein_sequence_name }}</td>
-                  <td>{{ transcript.sift_prediction }}</td>
+                  <td>{{ transcript.exon or '' }}</td>
+                  <td>{{ transcript.intron or '' }}</td>
+                  <td>{{ transcript.coding_sequence_name or '' }}</td>
+                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                  <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        {{ transcript.polyphen_prediction }}
+                        {{ transcript.polyphen_prediction or '' }}
                       </div>
 
                       <div class="md-tooltip-tip is-bottom">
@@ -463,7 +499,7 @@
       <div class="md-card">
         <div class="md-card-header">Compounds</div>
 
-        <div class="md-card-body">
+        <div class="md-card-body-scrollable-big">
           {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
