@@ -115,6 +115,8 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   clinical_1_config.filename = case_1_clinical_temp.name
   clinical_1_config.write()
   
+  # pp(dict(clinical_1_config))
+  # sys.exit()
   # Load the family 1 clinical data:
   ctx.invoke(load_mongo,
                   scout_config_file = case_1_clinical_temp.name,

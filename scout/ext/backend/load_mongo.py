@@ -567,9 +567,10 @@ def get_case(ped_file, family_type, scout_configs):
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('vcf', '')
     # Add the pedigree picture
-    if scout_configs.get('madeline', None):
+    madeline_file = scout_configs.get('madeline', None)
+    if madeline_file:
       with open(scout_configs['madeline'], 'r') as f:
-        case['madeline_info'] = f.read()
+        mongo_case['madeline_info'] = f.read()
     
     clinical_gene_lists = []
     research_gene_lists = []
