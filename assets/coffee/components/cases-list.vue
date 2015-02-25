@@ -13,7 +13,7 @@
         </a>
 
         <div class="md-item-subtitle">
-          <a href="{{baseUrl}}/{{display_name}}/variants?{{ default_gene_lists | joinParams gene_lists }}">Variants</a> |
+          <a href="{{baseUrl}}/{{display_name}}/variants?variant_type=clinical&{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a> |
           <span>{{created_at.$date | fromNow}}</span> |
           <span>{{status}}</span>
         </div>
@@ -33,7 +33,11 @@
         return moment(date).fromNow()
 
       joinParams: (list, param) ->
-        return "#{param}=#{list.join("#{param}=&")}"
+        if list.length > 1
+          return "#{param}=#{list.join("#{param}=&")}"
+        else
+          # avoid building an empty param variable
+          return ''
 
       isUpdated: (date) ->
         diff = -moment(date).diff()  # milliseconds
