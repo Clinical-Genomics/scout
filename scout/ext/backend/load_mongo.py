@@ -167,7 +167,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
   
   ####### Check if the vcf file is on the proper format #######
-  vcf_file = scout_configs['vcf']
+  vcf_file = scout_configs['load_vcf']
   splitted_vcf_file_name = os.path.splitext(vcf_file)
   vcf_ending = splitted_vcf_file_name[-1]
   if vcf_ending != '.vcf':
@@ -231,7 +231,6 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     institute.save()
   
   case.save()
-  
   
   ######## Get the variants and add them to the mongo db: ########
   
@@ -565,7 +564,7 @@ def get_case(ped_file, family_type, scout_configs):
     # We use the family id as display name for scout
     mongo_case['display_name'] = case['family_id']
     # Get the path of vcf from configs
-    mongo_case['vcf_file'] = scout_configs.get('vcf', '')
+    mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
     # Add the pedigree picture
     madeline_file = scout_configs.get('madeline', None)
     if madeline_file:
@@ -582,7 +581,7 @@ def get_case(ped_file, family_type, scout_configs):
       list_id = list_info.get('name', '')
       version = float(list_info.get('version', 0))
       date = list_info.get('date', '')
-      display_name = list_info.get('display_name', list_id)
+      display_name = list_info.get('full_name', list_id)
       
       list_object = GeneList(
                           list_id=list_id,

@@ -93,9 +93,14 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
                                 )
   clinical_1_config = ConfigParser(scout_config_file_1_clinical)
   
-  clinical_1_config['vcf'] = os.path.join(
+  clinical_1_config['load_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          clinical_1_config['vcf']
+                                          clinical_1_config['load_vcf']
+                                        )
+  
+  clinical_1_config['igv_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_1_config['igv_vcf']
                                         )
   
   clinical_1_config['ped'] = os.path.join(
@@ -138,9 +143,14 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   
   research_1_config = ConfigParser(scout_config_file_1_research)
   
-  research_1_config['vcf'] = os.path.join(
+  research_1_config['load_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          research_1_config['vcf']
+                                          research_1_config['load_vcf']
+                                        )
+  
+  research_1_config['igv_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          research_1_config['igv_vcf']
                                         )
   
   research_1_config['ped'] = os.path.join(
@@ -183,9 +193,14 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   
   clinical_coriell_config = ConfigParser(scout_config_file_coriell_clinical)
   
-  clinical_coriell_config['vcf'] = os.path.join(
+  clinical_coriell_config['load_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          clinical_coriell_config['vcf']
+                                          clinical_coriell_config['load_vcf']
+                                        )
+  
+  clinical_coriell_config['igv_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_coriell_config['igv_vcf']
                                         )
   
   clinical_coriell_config['ped'] = os.path.join(
@@ -228,9 +243,14 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   
   research_coriell_config = ConfigParser(scout_config_file_coriell_research)
   
-  research_coriell_config['vcf'] = os.path.join(
+  research_coriell_config['load_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          research_coriell_config['vcf']
+                                          research_coriell_config['load_vcf']
+                                        )
+  
+  research_coriell_config['igv_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          research_coriell_config['igv_vcf']
                                         )
   
   research_coriell_config['ped'] = os.path.join(
