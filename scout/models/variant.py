@@ -11,6 +11,7 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
                          ReferenceField)
 
+from .._compat import zip
 from .event import Event
 from .case import Case
 
@@ -110,6 +111,11 @@ class Transcript(EmbeddedDocument):
 class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)
   disease_models = ListField(StringField())
+
+  @property
+  def omim_link(self):
+    """Return a OMIM phenotype link."""
+    return "http://www.omim.org/entry/{}".format(self.omim_id)
 
 
 class Gene(EmbeddedDocument):
@@ -231,6 +237,13 @@ class Variant(Document):
     base_url = 'http://www.omim.org/entry'
     return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
             for omim_id in self.omim_annotations)
+
+  @property
+  def omim_phenotypes(self):
+    """Return a list of OMIM phenotypes with related gene information."""
+    for gene in self.genes:
+      for phenotype in gene.omim_phenotypes:
+        yield gene, phenotype
 
   @property
   def omim_inheritance_models(self):
