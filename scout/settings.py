@@ -73,7 +73,7 @@ class DevelopmentConfig(BaseConfig):
 
   # Chanjo Report
   ACCEPT_LANGUAGES = {'en': 'English', 'sv': 'Svenska'}
-  CHANJO_DB = '/vagarat/dev/demo/coverage.sqlite'
+  CHANJO_DB = '/vagrant/dev/demo/coverage.sqlite'
   CHANJO_DIALECT = 'sqlite'
 
 

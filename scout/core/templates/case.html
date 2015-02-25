@@ -109,7 +109,7 @@
     </form>
   {% endif %}
 
-  <a href="#" class="md-label">
+  <a href="{{ url_for('report.groups', filter_id=case.display_name) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>

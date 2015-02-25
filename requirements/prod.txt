@@ -32,7 +32,7 @@ Flask-SSLify
 pyOpenSSL==0.13
 
 # Chanjo coverage reports
-chanjo-report
+chanjo-report>=0.0.6
 
 # misc. extensions
 Flask-Markdown
