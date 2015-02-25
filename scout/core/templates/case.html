@@ -142,7 +142,7 @@
 {% block content %}
 
   <div class="layout">
-    <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, gene_lists=case.default_gene_lists, variant_type='clinical') }}" class="case-variants-button">
+    <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_gene_lists) }}" class="case-variants-button">
       Clinical variants
     </a>
 

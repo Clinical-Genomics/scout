@@ -13,7 +13,7 @@
         </a>
 
         <div class="md-item-subtitle">
-          <a href="{{baseUrl}}/{{display_name}}/variants?variant_type=clinical&{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a> |
+          <a href="{{baseUrl}}/{{display_name}}/clinical?{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a> |
           <span>{{created_at.$date | fromNow}}</span> |
           <span>{{status}}</span>
         </div>

@@ -25,7 +25,7 @@
       icon="chevron-right">
     </core-icon>
 
-    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant.variant_type) }}">
       Variants
     </a>
     <core-icon
