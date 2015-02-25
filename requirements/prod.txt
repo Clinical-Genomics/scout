@@ -31,6 +31,9 @@ Flask-OAuthlib==0.7.0
 Flask-SSLify
 pyOpenSSL==0.13
 
+# Chanjo coverage reports
+chanjo-report
+
 # misc. extensions
 Flask-Markdown
 Flask-Mail

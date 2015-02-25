@@ -87,11 +87,12 @@ class AppFactory(object):
 
   def _register_blueprints(self):
     """Configure blueprints in views."""
-    for blueprint_path in self.app.config.get('BLUEPRINTS', []):
+    for blueprint_path, url_prefix in self.app.config.get('BLUEPRINTS', []):
       module, object_name = get_imported_stuff_by_path(blueprint_path)
 
       if hasattr(module, object_name):
-        self.app.register_blueprint(getattr(module, object_name))
+        self.app.register_blueprint(getattr(module, object_name),
+                                    url_prefix=url_prefix)
 
       else:
         raise NoBlueprintException("No %s blueprint found" % object_name)
