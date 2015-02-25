@@ -454,7 +454,7 @@
                         </small>
                       </div>
 
-                      <div class="md-tooltip-tip is-bottom">
+                      <div class="md-tooltip-tip is-top">
                         {{ transcript.refseq_ids|join(', ') }}
                       </div>
                     </div>
@@ -467,7 +467,7 @@
                             |truncate(20, True) }}
                       </div>
 
-                      <div class="md-tooltip-tip is-bottom">
+                      <div class="md-tooltip-tip is-top">
                         {{ transcript.functional_annotations|join(', ') }}
                       </div>
                     </div>
@@ -484,7 +484,7 @@
                         {{ transcript.polyphen_prediction or '' }}
                       </div>
 
-                      <div class="md-tooltip-tip is-bottom">
+                      <div class="md-tooltip-tip is-top">
                         {{ transcript.polyphen_prediction }}
                       </div>
                     </div>
