@@ -306,13 +306,13 @@
       </div>
 
       <div id="omim" class="md-card">
-        <div class="md-card-header">OMIM</div>
+        <div class="md-card-header">OMIM phenotypes</div>
         <div class="md-card-body-scrollable">
           <table class="default-table--flex">
             <thead>
               <tr>
                 <th>Gene</th>
-                <th>OMIM ID</th>
+                <th>Phenotype</th>
                 <th>Inheritance models</th>
               </tr>
             </thead>
@@ -326,6 +326,10 @@
                     </a>
                   </td>
                   <td>{{ phenotype.disease_models|join(', ') }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="3">No OMIM phenotypes.</td>
                 </tr>
               {% endfor %}
             </tbody>
