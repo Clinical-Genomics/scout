@@ -289,7 +289,7 @@
           </div>
 
           <div class="variant-list-item">
-            <div>OMIM</div>
+            <div>OMIM summary</div>
             {{ variant.omim_inheritance_models|join(', ') }}
           </div>
 
@@ -307,17 +307,29 @@
 
       <div id="omim" class="md-card">
         <div class="md-card-header">OMIM</div>
-
-        <div class="md-card-body-list">
-          {% if hgnc_symbol %}
-              <omim-summary v-ref="omim" v-with="
-                url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
-              "></omim-summary>
-            {% else %}
-              <div v-show="!isFound" class="omim-summary-empty">
-                No HGNC symbol
-              </div>
-            {% endif %}
+        <div class="md-card-body-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>OMIM ID</th>
+                <th>Inheritance models</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gene, phenotype in variant.omim_phenotypes %}
+                <tr>
+                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a href="{{ phenotype.omim_link }}">
+                      {{ phenotype.omim_id }}
+                    </a>
+                  </td>
+                  <td>{{ phenotype.disease_models|join(', ') }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

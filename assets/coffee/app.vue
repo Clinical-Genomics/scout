@@ -61,7 +61,6 @@
       'drawer-panel': require './components/drawer-panel.vue'
       'core-icon': require './components/core-icon.vue'
       'cases-list': require './components/cases-list.vue'
-      'omim-summary': require './components/omim-summary.vue'
       'markdown-editor': require './components/markdown-editor.vue'
       'md-modal': require './components/md-modal.vue'
 </script>
