@@ -18,6 +18,12 @@ from .admin import AdminView
 admin = Admin(index_view=AdminView())
 
 # +--------------------------------------------------------------------+
+# | Flask-Babel
+# +--------------------------------------------------------------------+
+from flask.ext.babel import Babel
+babel = Babel()
+
+# +--------------------------------------------------------------------+
 # | Flask-MongoEngine
 # +--------------------------------------------------------------------+
 from flask.ext.mongoengine import MongoEngine

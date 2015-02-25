@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}" class="icon-button">
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=form.variant_type.data) }}" class="icon-button">
     <core-icon icon="fast-rewind"></core-icon>
   </a>
 
@@ -86,16 +86,6 @@
           {{ form.gene_lists.label }}
         </div>
 
-        {% if case.status == 'research' %}
-          <div class="variants-filters-group-list">
-            <div class="list-item">
-              {% for subfield in form.variant_type %}
-                <div>{{ subfield }} {{ subfield.label }}</div>
-              {% endfor %}
-            </div>
-          </div>
-        {% endif %}
-
         <div class="variants-filters-group-list">
           {{ form.gene_lists(class="variants-filters-select") }}
 
@@ -103,6 +93,7 @@
             <a class="md-button"
                href="{{ url_for('core.variants', institute_id=institute_id,
                                 case_id=case_id,
+                                variant_type=form.variant_type.data,
                                 hgnc_symbols=case.hpo_gene_ids)
                      }}">
               HPO generated gene list
@@ -171,6 +162,7 @@
       <div class="variants-filter-buttons">
         <a href="{{ url_for('core.variants', institute_id=institute_id,
                       case_id=case_id,
+                      variant_type=form.variant_type.data,
                       functional_annotations=severe_so_terms,
                       region_annotations=['exonic', 'splicing'],
                       thousand_genomes_frequency=0.01,
@@ -320,7 +312,7 @@
   {% set get_args = request.args.to_dict() %}
   {{ get_args.update({'skip': current_batch})|default('', True) }}
   <a href="{{ url_for('core.variants', institute_id=institute_id,
-                      case_id=case_id, **get_args) }}"
+                      case_id=case_id, variant_type=form.variant_type.data, **get_args) }}"
      class="variants-load-more is-raised">
     Load more
   </a>

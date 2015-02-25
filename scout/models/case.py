@@ -86,6 +86,11 @@ class Case(Document):
   vcf_file = StringField()
 
   @property
+  def is_research(self):
+    """Determine if the case is in research mode."""
+    return self.status == 'research'
+
+  @property
   def hpo_genes(self):
     """
     Return the list of HGNC symbols that match annotated HPO terms.
