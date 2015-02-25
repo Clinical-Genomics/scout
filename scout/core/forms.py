@@ -79,9 +79,6 @@ class FiltersForm(Form):
   # choices populated dynamically
   gene_lists = MultiCheckboxField(choices=[])
   hgnc_symbols = ListField()
-  variant_type = RadioField(choices=[('clinical', 'clinical'),
-                                     ('research', 'research')],
-                            default='clinical')
 
   thousand_genomes_frequency = DecimalField('1000 Genomes')
   exac_frequency = DecimalField('ExAC')
@@ -106,5 +103,9 @@ def init_filters_form(get_args):
 
     if field.data:
       field.data = field.data[0] if field.data[0] else None
+
+  form.gene_lists.data = [gene_list for gene_list
+                          in (form.gene_lists.data or [])
+                          if gene_list]
 
   return form

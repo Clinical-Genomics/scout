@@ -178,7 +178,8 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 def variants(institute_id, case_id, variant_type):
   """View all variants for a single case."""
   per_page = 50
-  current_gene_lists = request.args.getlist('gene_lists')
+  current_gene_lists = [gene_list for gene_list
+                        in request.args.getlist('gene_lists') if gene_list]
 
   # fetch all variants for a specific case
   # very basic security check
@@ -208,7 +209,6 @@ def variants(institute_id, case_id, variant_type):
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in
                             request.args.getlist('hgnc_symbols') if gene]
-  form.variant_type.data = variant_type
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
@@ -225,7 +225,8 @@ def variants(institute_id, case_id, variant_type):
               current_batch=(skip + per_page),
               form=form,
               severe_so_terms=SO_TERMS[:14],
-              current_gene_lists=current_gene_lists)
+              current_gene_lists=current_gene_lists,
+              variant_type=variant_type)
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
