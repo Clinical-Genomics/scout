@@ -25,7 +25,7 @@
       icon="chevron-right">
     </core-icon>
 
-    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id) }}">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant.variant_type) }}">
       Variants
     </a>
     <core-icon
@@ -289,7 +289,7 @@
           </div>
 
           <div class="variant-list-item">
-            <div>OMIM</div>
+            <div>OMIM summary</div>
             {{ variant.omim_inheritance_models|join(', ') }}
           </div>
 
@@ -306,18 +306,34 @@
       </div>
 
       <div id="omim" class="md-card">
-        <div class="md-card-header">OMIM</div>
-
-        <div class="md-card-body-list">
-          {% if hgnc_symbol %}
-              <omim-summary v-ref="omim" v-with="
-                url: '{{ url_for('api.omim_gene', hgnc_symbol=hgnc_symbol) }}'
-              "></omim-summary>
-            {% else %}
-              <div v-show="!isFound" class="omim-summary-empty">
-                No HGNC symbol
-              </div>
-            {% endif %}
+        <div class="md-card-header">OMIM phenotypes</div>
+        <div class="md-card-body-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Phenotype</th>
+                <th>Inheritance models</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gene, phenotype in variant.omim_phenotypes %}
+                <tr>
+                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a href="{{ phenotype.omim_link }}">
+                      {{ phenotype.omim_id }}
+                    </a>
+                  </td>
+                  <td>{{ phenotype.disease_models|join(', ') }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="3">No OMIM phenotypes.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -442,7 +458,7 @@
                         </small>
                       </div>
 
-                      <div class="md-tooltip-tip is-bottom">
+                      <div class="md-tooltip-tip is-top">
                         {{ transcript.refseq_ids|join(', ') }}
                       </div>
                     </div>
@@ -455,7 +471,7 @@
                             |truncate(20, True) }}
                       </div>
 
-                      <div class="md-tooltip-tip is-bottom">
+                      <div class="md-tooltip-tip is-top">
                         {{ transcript.functional_annotations|join(', ') }}
                       </div>
                     </div>
@@ -472,7 +488,7 @@
                         {{ transcript.polyphen_prediction or '' }}
                       </div>
 
-                      <div class="md-tooltip-tip is-bottom">
+                      <div class="md-tooltip-tip is-top">
                         {{ transcript.polyphen_prediction }}
                       </div>
                     </div>

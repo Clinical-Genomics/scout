@@ -32,12 +32,13 @@ class BaseConfig(object):
   MAIL_PASSWORD = 'yourpass'
   MAIL_DEFAULT_SENDER = MAIL_USERNAME
 
-  BLUEPRINTS = ['scout.core.core',
-                'scout.frontend.frontend',
-                'scout.login.login',
-                'scout.user.user',
-                'scout.api.api',
-                'scout.browser.browser']
+  BLUEPRINTS = [('scout.core.core', None),
+                ('scout.frontend.frontend', None),
+                ('scout.login.login', None),
+                ('scout.user.user', None),
+                ('scout.api.api', None),
+                ('scout.browser.browser', None),
+                ('chanjo_report.server.blueprints.report_bp', '/report')]
 
   EXTENSIONS = ['scout.extensions.store',
                 'scout.extensions.toolbar',
@@ -48,7 +49,9 @@ class BaseConfig(object):
                 'scout.extensions.ssl',
                 'scout.extensions.markdown',
                 'scout.extensions.mail',
-                'scout.extensions.omim']
+                'scout.extensions.omim',
+                'scout.extensions.babel',
+                'chanjo_report.server.extensions.api']
 
 
 class DevelopmentConfig(BaseConfig):
@@ -67,6 +70,11 @@ class DevelopmentConfig(BaseConfig):
                      'flask_debugtoolbar.panels.profiler.ProfilerDebugPanel',
                      # add the MongoDB panel
                      'flask.ext.mongoengine.panels.MongoDebugPanel']
+
+  # Chanjo Report
+  ACCEPT_LANGUAGES = {'en': 'English', 'sv': 'Svenska'}
+  CHANJO_DB = '/vagrant/dev/demo/coverage.sqlite'
+  CHANJO_DIALECT = 'sqlite'
 
 
 class TestConfig(BaseConfig):

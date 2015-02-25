@@ -171,10 +171,11 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   return redirect(case_url)
 
 
-@core.route('/<institute_id>/<case_id>/variants', methods=['GET', 'POST'])
+@core.route('/<institute_id>/<case_id>/<variant_type>',
+            methods=['GET', 'POST'])
 @templated('variants.html')
 @login_required
-def variants(institute_id, case_id):
+def variants(institute_id, case_id, variant_type):
   """View all variants for a single case."""
   per_page = 50
   current_gene_lists = request.args.getlist('gene_lists')
@@ -193,18 +194,21 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
-  gene_lists = [case.clinical_gene_lists]
+  if variant_type == 'research':
+    if case.is_research:
+      gene_lists = case.research_gene_lists
+    else:
+      # research mode not activated
+      return abort(403)
+  else:
+    gene_lists = case.clinical_gene_lists
 
-  if case.status == 'research':
-    gene_lists.append(case.research_gene_lists)
-
-  gene_list_names = [(item.list_id, item.display_name)
-                     for item in chain.from_iterable(gene_lists)]
+  gene_list_names = [(item.list_id, item.display_name) for item in gene_lists]
   form.gene_lists.choices = gene_list_names
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in
                             request.args.getlist('hgnc_symbols') if gene]
-  form.variant_type.data = request.args.get('variant_type', 'clinical')
+  form.variant_type.data = variant_type
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)

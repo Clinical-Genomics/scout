@@ -109,7 +109,7 @@
     </form>
   {% endif %}
 
-  <a href="#" class="md-label">
+  <a href="{{ url_for('report.groups', filter_id=case.display_name) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>
@@ -141,9 +141,17 @@
 
 {% block content %}
 
-  <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, gene_lists=case.default_gene_lists) }}" class="case-variants-button">
-    Go to all variants
-  </a>
+  <div class="layout">
+    <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_gene_lists) }}" class="case-variants-button">
+      Clinical variants
+    </a>
+
+    {% if case.is_research %}
+      <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+        Research variants
+      </a>
+    {% endif %}
+  </div>
 
   <div class="case-segments">
 
