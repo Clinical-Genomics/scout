@@ -176,12 +176,12 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
       if vcf_ending != '.vcf':
         print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')",
                file=sys.stderr)
-        sys.ext(0)
+        sys.exit(0)
     else:
       if vcf_ending != '.vcf':
         print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')",
                 file=sys.stderr)
-        sys.ext(0)
+        sys.exit(0)
 
   ped_file = scout_configs['ped']
 
@@ -208,7 +208,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     institutes.append(get_institute(institute_name))
 
   # If the institute exists we work on the old one
-  for i,institute in enumerate(institutes):
+  for i, institute in enumerate(institutes):
     try:
       if Institute.objects.get(internal_id = institute.internal_id):
         institutes[i] = Institute.objects.get(internal_id = institute.internal_id)
@@ -226,10 +226,11 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
           file=sys.stderr)
 
   # Add the case to its institute(s)
-  for institute in institutes:
-    if case not in institute.cases:
-      institute.cases.append(case)
-    institute.save()
+  for institute_object in institutes:
+    if case not in institute_object.cases:
+      institute_object.cases.append(case)
+
+    institute_object.save()
 
   case.save()
 
