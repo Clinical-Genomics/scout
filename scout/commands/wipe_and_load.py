@@ -20,6 +20,7 @@ import click
 
 import scout
 
+from tempfile import NamedTemporaryFile
 from pprint import pprint as pp
 from pymongo import MongoClient, Connection
 from mongoengine import connect, DoesNotExist
@@ -38,28 +39,6 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 type=click.Path(exists=True),
                 default=os.path.join(BASE_PATH, 'configs/config_test.ini'),
                 help="Path to the config file for loading the variants. Default configs/config_test.ini"
-)
-@click.option('-m', '--madeline',
-                nargs=1,
-                type=click.Path(exists=True),
-                help="Path to the madeline file with the pedigree."
-)
-@click.option('-type', '--family_type',
-                type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
-                default='ped',
-                nargs=1,
-                help="Specify the file format of the ped (or ped like) file."
-)
-@click.option('-vt', '--variant_type',
-                type=click.Choice(['clinical', 'research']),
-                default='clinical',
-                nargs=1,
-                help="Specify the type of the variants that is being loaded."
-)
-@click.option('-i', '--institute',
-                default='CMMS',
-                nargs=1,
-                help="Specify the institute that the file belongs to."
 )
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'
@@ -83,14 +62,19 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 help='Increase output verbosity.'
 )
 @click.pass_context
-def wipe_and_load(ctx, config_file, madeline, family_type, variant_type, 
-                  institute, mongo_db, username, password, port, host,
+def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
                   verbose):
-  """Drop the mongo database given and rebuild it again."""
+  """
+  Drop the mongo database given and rebuild it again with the test cases from 
+  tests/vcf_data/.
+  """
+  
   if not mongo_db:
-    print("Please specify a database to wipe and populate with flag '-db/--mongo-db'.")
+    print("Please specify a database to wipe and populate with flag"
+          " '-db/--mongo-db'.")
     sys.exit(0)
   
+  ######## Wipe cases and variants from the existing database ######
   ctx.invoke(wipe_mongo, 
                   mongo_db=mongo_db, 
                   username=username, 
@@ -99,113 +83,196 @@ def wipe_and_load(ctx, config_file, madeline, family_type, variant_type,
                   verbose=verbose
                   )
   
+  ######## Update the paths from the config file #########
+  
+  # Start with the clinical variants for test case 1:
+  
   scout_config_file_1_clinical = os.path.join(
                                 BASE_PATH,
                                 'tests/vcf_examples/1/scout_config_test_clinical.ini'
                                 )
+  clinical_1_config = ConfigParser(scout_config_file_1_clinical)
+  
+  clinical_1_config['load_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_1_config['load_vcf']
+                                        )
+  
+  clinical_1_config['igv_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_1_config['igv_vcf']
+                                        )
+  
+  clinical_1_config['ped'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_1_config['ped']
+                                        )
+  
+  clinical_1_config['madeline'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_1_config['madeline']
+                                        )
+  
+  # Save the updated information to a temporary file:
+  
+  case_1_clinical_temp = NamedTemporaryFile(delete=False)
+  case_1_clinical_temp.close()
+  clinical_1_config.filename = case_1_clinical_temp.name
+  clinical_1_config.write()
+  
+  # pp(dict(clinical_1_config))
+  # sys.exit()
+  # Load the family 1 clinical data:
+  ctx.invoke(load_mongo,
+                  scout_config_file = case_1_clinical_temp.name,
+                  config_file=config_file, 
+                  family_type='cmms', 
+                  mongo_db=mongo_db, 
+                  username=username,
+                  variant_type='clinical', 
+                  password=password, 
+                  port=port, 
+                  host=host, 
+                  verbose=verbose
+                  )
+  
   scout_config_file_1_research = os.path.join(
                                 BASE_PATH,
                                 'tests/vcf_examples/1/scout_config_test_research.ini'
                                 )
-  scout_configs_1_clinical = ConfigParser(scout_config_file_1_clinical)
-  scout_configs_1_research = ConfigParser(scout_config_file_1_research)
   
-  scout_configs_1_clinical['vcf'] = os.path.join(
+  research_1_config = ConfigParser(scout_config_file_1_research)
+  
+  research_1_config['load_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_1_clinical['vcf']
+                                          research_1_config['load_vcf']
                                         )
-  scout_configs_1_research['vcf'] = os.path.join(
+  
+  research_1_config['igv_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_1_research['vcf']
+                                          research_1_config['igv_vcf']
                                         )
-  scout_configs_1_clinical['ped'] = os.path.join(
+  
+  research_1_config['ped'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_1_clinical['ped']
+                                          research_1_config['ped']
                                         )
-  scout_configs_1_research['ped'] = os.path.join(
+  
+  research_1_config['madeline'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_1_research['ped']
+                                          research_1_config['madeline']
                                         )
-  scout_configs_1_clinical['madeline'] = os.path.join(
-                                          BASE_PATH,
-                                          scout_configs_1_clinical['madeline']
-                                        )
-  scout_configs_1_research['madeline'] = os.path.join(
-                                          BASE_PATH,
-                                          scout_configs_1_research['madeline']
-                                        )
+  
+  # Save the updated information to a temporary file:
+  
+  case_1_research_temp = NamedTemporaryFile(delete=False)
+  case_1_research_temp.close()
+  research_1_config.filename = case_1_research_temp.name
+  research_1_config.write()
+  
+  # Load the family 1 clinical data:
+  ctx.invoke(load_mongo,
+                  scout_config_file = case_1_research_temp.name,
+                  config_file=config_file, 
+                  family_type='cmms', 
+                  mongo_db=mongo_db, 
+                  username=username,
+                  variant_type='research', 
+                  password=password, 
+                  port=port, 
+                  host=host, 
+                  verbose=verbose
+                  )
+  
+  
   
   scout_config_file_coriell_clinical = os.path.join(
                                 BASE_PATH,
                                 'tests/vcf_examples/P575_coriell/scout_config_test_clinical.ini'
                                 )
+  
+  clinical_coriell_config = ConfigParser(scout_config_file_coriell_clinical)
+  
+  clinical_coriell_config['load_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_coriell_config['load_vcf']
+                                        )
+  
+  clinical_coriell_config['igv_vcf'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_coriell_config['igv_vcf']
+                                        )
+  
+  clinical_coriell_config['ped'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_coriell_config['ped']
+                                        )
+  
+  clinical_coriell_config['madeline'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_coriell_config['madeline']
+                                        )
+  
+  # Save the updated information to a temporary file:
+  
+  coriell_clinical_temp = NamedTemporaryFile(delete=False)
+  coriell_clinical_temp.close()
+  clinical_coriell_config.filename = coriell_clinical_temp.name
+  clinical_coriell_config.write()
+  
+  # Load the coriell family clinical data:
+  ctx.invoke(load_mongo,
+                  scout_config_file = coriell_clinical_temp.name,
+                  config_file=config_file, 
+                  family_type='cmms', 
+                  mongo_db=mongo_db, 
+                  username=username,
+                  variant_type='clinical', 
+                  password=password, 
+                  port=port, 
+                  host=host, 
+                  verbose=verbose
+                  )
+  
+  
   scout_config_file_coriell_research = os.path.join(
                                 BASE_PATH,
                                 'tests/vcf_examples/P575_coriell/scout_config_test_research.ini'
                                 )
   
-  scout_configs_coriell_clinical = ConfigParser(scout_config_file_coriell_clinical)
-  scout_configs_coriell_research = ConfigParser(scout_config_file_coriell_research)
   
+  research_coriell_config = ConfigParser(scout_config_file_coriell_research)
   
-  scout_configs_coriell_clinical['vcf'] = os.path.join(
+  research_coriell_config['load_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_coriell_clinical['vcf']
+                                          research_coriell_config['load_vcf']
                                         )
-  scout_configs_coriell_research['vcf'] = os.path.join(
+  
+  research_coriell_config['igv_vcf'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_coriell_research['vcf']
+                                          research_coriell_config['igv_vcf']
                                         )
-  scout_configs_coriell_clinical['ped'] = os.path.join(
+  
+  research_coriell_config['ped'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_coriell_clinical['ped']
+                                          research_coriell_config['ped']
                                         )
-  scout_configs_coriell_research['ped'] = os.path.join(
+  
+  research_coriell_config['madeline'] = os.path.join(
                                           BASE_PATH,
-                                          scout_configs_coriell_research['ped']
+                                          research_coriell_config['madeline']
                                         )
-  scout_configs_coriell_clinical['madeline'] = os.path.join(
-                                          BASE_PATH,
-                                          scout_configs_coriell_clinical['madeline']
-                                        )
-  scout_configs_coriell_research['madeline'] = os.path.join(
-                                          BASE_PATH,
-                                          scout_configs_coriell_research['madeline']
-                                        )
-
-
-  # Load the family 1 research data:
-  ctx.invoke(load_mongo,
-                  vcf_file = scout_configs_1_research['vcf'],
-                  ped_file = scout_configs_1_research['ped'],
-                  config_file=config_file, 
-                  family_type='cmms', 
-                  mongo_db=mongo_db, 
-                  username=username,
-                  variant_type='research', 
-                  password=password, 
-                  port=port, 
-                  host=host, 
-                  verbose=verbose
-                  )
+  
+  # Save the updated information to a temporary file:
+  
+  coriell_research_temp = NamedTemporaryFile(delete=False)
+  coriell_research_temp.close()
+  research_coriell_config.filename = coriell_research_temp.name
+  research_coriell_config.write()
+  
   # Load the family 1 clinical data:
   ctx.invoke(load_mongo,
-                  vcf_file = scout_configs_1_clinical['vcf'],
-                  ped_file = scout_configs_1_clinical['ped'],
-                  config_file=config_file, 
-                  family_type='cmms', 
-                  mongo_db=mongo_db, 
-                  username=username,
-                  variant_type='clinical', 
-                  password=password, 
-                  port=port, 
-                  host=host, 
-                  verbose=verbose
-                  )
-  # Load the family P575-coriell research data:
-  ctx.invoke(load_mongo,
-                  vcf_file = scout_configs_coriell_research['vcf'],
-                  ped_file = scout_configs_coriell_research['ped'],
+                  scout_config_file = coriell_research_temp.name,
                   config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
@@ -216,20 +283,7 @@ def wipe_and_load(ctx, config_file, madeline, family_type, variant_type,
                   host=host, 
                   verbose=verbose
                   )
-  # Load the family P575-coriell clinical data:
-  ctx.invoke(load_mongo,
-                  vcf_file = scout_configs_coriell_research['vcf'],
-                  ped_file = scout_configs_coriell_research['ped'],
-                  config_file=config_file, 
-                  family_type='cmms', 
-                  mongo_db=mongo_db, 
-                  username=username,
-                  variant_type='clinical', 
-                  password=password, 
-                  port=port, 
-                  host=host, 
-                  verbose=verbose
-                  )
+  
   
 
 if __name__ == '__main__':

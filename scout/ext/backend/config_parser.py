@@ -9,8 +9,7 @@ Created by Måns Magnusson on 2014-10-19.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 import sys
 import os
@@ -28,32 +27,24 @@ from pprint import pprint as pp
 class ConfigParser(ConfigObj):
   """Class for holding information from config file"""
   def __init__(self, config_file, indent_type='  ', encoding='utf-8', configspec=None):
+    super(ConfigParser, self).__init__(
+                                      infile=config_file, 
+                                      indent_type=indent_type, 
+                                      encoding=encoding,
+                                      configspec=configspec
+                                    )
     if configspec:
-      super(ConfigParser, self).__init__(
-                                          infile=config_file, 
-                                          indent_type=indent_type, 
-                                          encoding=encoding,
-                                          configspec=configspec
-                                      )
       validator = Validator()
       results = self.validate(validator)
       if results != True:
         for (section_list, key, _) in flatten_errors(self, results):
-            if key is not None:
-              print('The "%s" key in the section "%s" failed validation' % (key, ', '.join(section_list)))
-            else:
-              print('The following section was missing:%s ' % ', '.join(section_list))
-          # print('Config file validation failed!')
-          # sys.exit(1)
+          if key is not None:
+            print('The "%s" key in the section "%s" failed validation' % (key, ', '.join(section_list)))
+          else:
+            print('The following section was missing:%s ' % ', '.join(section_list))
+          print('Config file validation failed!')
+          sys.exit(1)
       
-    else:
-      super(ConfigParser, self).__init__(
-                                          infile=config_file, 
-                                          indent_type=indent_type, 
-                                          encoding=encoding,
-                                          configspec=configspec
-                                      )
-    
     self.categories = {
                   'variant_position':[],
                   'variant_id':[],
@@ -95,7 +86,7 @@ class ConfigParser(ConfigObj):
 )
 @click.option('-s', '--config_spec',
                 nargs=1,
-                type=click.Path()
+                type=click.Path(exists=True)
 )
 @click.option('-out', '--outfile',
                 nargs=1,
@@ -105,11 +96,16 @@ def read_config(config_file, config_spec, outfile):
     """Parse the config file and print it to the output."""
     my_config_reader = ConfigParser(config_file, configspec=config_spec)
     print('\nCategories:\n' '-------------------')
-    # pp(my_config_reader)
     for category in my_config_reader.categories:
       print(category)
       for category_name in my_config_reader.categories[category]:
         print('\t %s' %category_name)
+
+    # pp(dict(my_config_reader))
+    # print('\n\n')
+    # print(my_config_reader['individuals'])
+    # print('\n\n')
+    # print(my_config_reader['gene_lists'])
       # for adapter in my_config_reader.categories[category]:
       #   print('%s : %s' % (category, adapter))
       #   pp(dict(my_config_reader['VCF'][adapter]))

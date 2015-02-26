@@ -18,10 +18,6 @@ $variants-cell-padding: .6rem;
 	}
 }
 
-.flex-big {
-	flex: 3;
-}
-
 .variants-header {
   @extend %secondary-menubar;
 
@@ -39,6 +35,14 @@ $variants-cell-padding: .6rem;
 
 	color: #fff;
 	border-right-color: rgba(#000, .15);
+}
+
+.flex-big {
+  flex: 3;
+}
+
+.flex-small {
+  flex: .5;
 }
 
 .variants-body {

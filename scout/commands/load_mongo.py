@@ -97,7 +97,12 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
               mongo_db, username, variant_type, madeline, password, institute, 
               port, host, verbose):
-  """Test the vcf class."""
+  """
+  Load the mongo database.
+  
+  Command line arguments will override what's in the config file.
+  
+  """
   # Check if vcf file exists and that it has the correct naming:
   scout_configs = {}
   
@@ -105,7 +110,8 @@ def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type,
     scout_configs = ConfigParser(scout_config_file)
   
   if vcf_file:
-    scout_configs['vcf'] = vcf_file
+    scout_configs['load_vcf'] = vcf_file
+    scout_configs['igv_vcf'] = vcf_file
   
   if ped_file:
     scout_configs['ped'] = ped_file
@@ -116,7 +122,7 @@ def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type,
   if institute:
     scout_configs['institutes'] = [institute]
     
-  if not scout_configs.get('vcf', None):
+  if not scout_configs.get('load_vcf', None):
     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
     sys.exit(0)
   

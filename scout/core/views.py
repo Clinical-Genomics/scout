@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from itertools import chain
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
@@ -170,13 +171,15 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   return redirect(case_url)
 
 
-@core.route('/<institute_id>/<case_id>/variants', methods=['GET', 'POST'])
+@core.route('/<institute_id>/<case_id>/<variant_type>',
+            methods=['GET', 'POST'])
 @templated('variants.html')
 @login_required
-def variants(institute_id, case_id):
+def variants(institute_id, case_id, variant_type):
   """View all variants for a single case."""
   per_page = 50
-  current_gene_lists = request.args.getlist('gene_lists')
+  current_gene_lists = [gene_list for gene_list
+                        in request.args.getlist('gene_lists') if gene_list]
 
   # fetch all variants for a specific case
   # very basic security check
@@ -192,12 +195,20 @@ def variants(institute_id, case_id):
   # form submitted as GET
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
-  gene_lists = [(item, item) for item in case.clinical_gene_lists]
-  form.gene_lists.choices = gene_lists
+  if variant_type == 'research':
+    if case.is_research:
+      gene_lists = case.research_gene_lists
+    else:
+      # research mode not activated
+      return abort(403)
+  else:
+    gene_lists = case.clinical_gene_lists
+
+  gene_list_names = [(item.list_id, item.display_name) for item in gene_lists]
+  form.gene_lists.choices = gene_list_names
   # make sure HGNC symbols are correctly handled
   form.hgnc_symbols.data = [gene for gene in
                             request.args.getlist('hgnc_symbols') if gene]
-  form.variant_type.data = request.args.get('variant_type', 'clinical')
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
@@ -214,7 +225,8 @@ def variants(institute_id, case_id):
               current_batch=(skip + per_page),
               form=form,
               severe_so_terms=SO_TERMS[:14],
-              current_gene_lists=current_gene_lists)
+              current_gene_lists=current_gene_lists,
+              variant_type=variant_type)
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
@@ -261,7 +273,7 @@ def pin_variant(institute_id, case_id, variant_id):
   case.events.append(Event(
     link=variant_url,
     author=current_user.to_dbref(),
-    verb="%s a variant suspect: " % verb,
+    verb="{} a variant suspect: ".format(verb),
     subject=variant_id,
   ))
 
@@ -352,9 +364,10 @@ def email_sanger(institute_id, case_id, variant_id):
                         case_id=case_id, variant_id=variant_id)
 
   hgnc_symbol = ', '.join(variant.common.hgnc_symbols)
-  functions = ["<li>%s</li>" % function for function in
+  functions = ["<li>{}</li>".format(function) for function in
                variant.common.protein_change]
-  gtcalls = ["<li>%s: %s</li>" % (individual.sample, individual.genotype_call)
+  gtcalls = ["<li>{}: {}</li>".format(individual.sample,
+                                      individual.genotype_call)
              for individual in variant.samples]
 
   html = """

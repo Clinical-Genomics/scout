@@ -56,6 +56,18 @@ $card-bg-color: #fff;
   justify-content: space-between;
 }
 
+.md-card-body-scrollable {
+  max-height: 10rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.md-card-body-scrollable-big {
+  max-height: 20rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .md-card-body-list {}
 
 .md-card-body--padded {

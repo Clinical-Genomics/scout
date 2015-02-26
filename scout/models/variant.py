@@ -5,11 +5,13 @@
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import (absolute_import, unicode_literals, division)
+from itertools import chain
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
                          ReferenceField)
 
+from .._compat import zip
 from .event import Event
 from .case import Case
 
@@ -90,8 +92,10 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
+
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
+  refseq_ids = ListField(StringField())
   hgnc_symbol = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
@@ -99,12 +103,20 @@ class Transcript(EmbeddedDocument):
   region_annotations = ListField(StringField(choices=FEATURE_TYPES))
   exon = StringField()
   intron = StringField()
+  strand = StringField()
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
 
-class DiseaseModel(EmbeddedDocument):
+
+class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)
   disease_models = ListField(StringField())
+
+  @property
+  def omim_link(self):
+    """Return a OMIM phenotype link."""
+    return "http://www.omim.org/entry/{}".format(self.omim_id)
+
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
@@ -113,8 +125,8 @@ class Gene(EmbeddedDocument):
   region_annotation = StringField(choices=FEATURE_TYPES)
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
-  omim_terms = ListField(IntField())
-  expected_inheritance = ListField(EmbeddedDocumentField(DiseaseModel))
+  omim_gene_entry = IntField()
+  omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
 
 
 class Compound(EmbeddedDocument):
@@ -200,8 +212,8 @@ class Variant(Document):
     """Returns a list with expected inheritance model(s)."""
     expected_inheritance = set([])
     for gene in self.genes:
-      for entry in gene.expected_inheritance:
-        for gene_model in entry.disease_models:
+      for omim_phenotype in gene.omim_phenotypes:
+        for gene_model in omim_phenotype.disease_models:
           expected_inheritance.add(gene_model)
 
     return list(expected_inheritance)
@@ -209,13 +221,38 @@ class Variant(Document):
   @property
   def omim_annotations(self):
     """Returns a list with omim id(s)."""
-    omim_annotations = []
     if len(self.genes) == 1:
-      omim_annotations = [gene.omim_terms for gene in self.genes]
+      annotations = (str(gene.omim_gene_entry) for gene in self.genes
+                     if gene.omim_gene_entry)
     else:
-      for gene in self.genes:
-        omim_annotations.append(':'.join([gene.hgnc_symbol, gene.omim_terms]))
-    return omim_annotations
+      annotations = (':'.join([gene.hgnc_symbol, str(gene.omim_gene_entry)])
+                     for gene in self.genes if gene.omim_gene_entry)
+
+    # flatten the list of list of omim ids
+    return annotations
+
+  @property
+  def omim_annotation_links(self):
+    """Return a list of omim id links."""
+    base_url = 'http://www.omim.org/entry'
+    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
+            for omim_id in self.omim_annotations)
+
+  @property
+  def omim_phenotypes(self):
+    """Return a list of OMIM phenotypes with related gene information."""
+    for gene in self.genes:
+      for phenotype in gene.omim_phenotypes:
+        yield gene, phenotype
+
+  @property
+  def omim_inheritance_models(self):
+    """Return a list of OMIM inheritance models (phenotype based)."""
+    models = ((phenotype.disease_models for phenotype in gene.omim_phenotypes)
+              for gene in self.genes)
+
+    # untangle multiple nested list of list of lists...
+    return set(chain.from_iterable(chain.from_iterable(models)))
 
   @property
   def region_annotations(self):
@@ -230,7 +267,10 @@ class Variant(Document):
 
   @property
   def sift_predictions(self):
-    """Return a list with the sift prediction(s) for this variant. The most severe for each gene."""
+    """Return a list with the sift prediction(s) for this variant.
+
+    The most severe for each gene.
+    """
     sift_predictions = []
     if len(self.genes) == 1:
       sift_predictions = [gene.sift_prediction for gene in self.genes]
@@ -241,7 +281,10 @@ class Variant(Document):
 
   @property
   def polyphen_predictions(self):
-    """Return a list with the polyphen prediction(s) for this variant. The most severe for each gene."""
+    """Return a list with the polyphen prediction(s) for this variant.
+
+    The most severe for each gene.
+    """
     polyphen_predictions = []
     if len(self.genes) == 1:
       polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
@@ -249,6 +292,18 @@ class Variant(Document):
       for gene in self.genes:
         polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
     return polyphen_predictions
+
+  @property
+  def is_matching_inheritance(self):
+    """Match expected (OMIM) with annotated inheritance models."""
+    omim_models = self.omim_inheritance_models
+
+    for model in self.genetic_models:
+      for omim_model in omim_models:
+        if (model == omim_model) or (omim_model in model):
+          return True
+
+    return False
 
   @property
   def functional_annotations(self):
@@ -276,6 +331,13 @@ class Variant(Document):
       # loop over each child transcript for the gene
       for transcript in gene.transcripts:
         # yield the parent gene, child transcript combo
+        yield transcript
+
+  @property
+  def refseq_transcripts(self):
+    """Yield all transcripts with a RefSeq id."""
+    for transcript in self.transcripts:
+      if transcript.refseq_ids:
         yield transcript
 
   @property
