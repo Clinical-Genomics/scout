@@ -94,7 +94,7 @@
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(',') }}
+        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(', ') }}
       </div>
     </div>
 
@@ -105,7 +105,7 @@
         </li>
         <li>
           <strong>Ensembl</strong>:
-          {{ variant.ensembl_gene_ids|join(',') }}
+          {{ variant.ensembl_gene_ids|join(', ') }}
         </li>
       </ul>
     </div>
@@ -128,7 +128,7 @@
         <core-icon icon="report"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.region_annotations|join(',') }}
+        {{ variant.region_annotations|join(', ') }}
       </div>
     </div>
   </div>
@@ -139,7 +139,7 @@
         <core-icon icon="settings"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.functional_annotations|join(',') }}
+        {{ variant.functional_annotations|join(', ') }}
       </div>
     </div>
   </div>
@@ -245,7 +245,9 @@
               {% for transcript in variant.refseq_transcripts %}
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
-                  <td>{{ transcript.refseq_ids|join(', ') }}</td>
+                  <td title="{{ transcript.refseq_ids|join(', ') }}">
+                    {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
+                  </td>
                   <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
                 </tr>
               {% endfor %}

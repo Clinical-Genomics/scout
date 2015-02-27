@@ -347,8 +347,51 @@
       </form>
     </div>
 
-    <div id="activity+hpo-genes" class="case-segment-row">
-      <div id="case-activity" class="md-card is-main">
+    <div id="gene-lists+hpo-genes" class="case-segment-row">
+      <div id="clinical-gene-lists" class="md-card is-main">
+        <div class="md-card-header">Clinical gene lists</div>
+        <div class="md-card-body-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene list</th>
+                <th>Version</th>
+                <th>Last updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gene_list in case.clinical_gene_lists %}
+                <tr>
+                  <td>{{ gene_list.display_name }}</td>
+                  <td>{{ gene_list.version }}</td>
+                  <td>{{ gene_list.date }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="md-card is-aside">
+        <div class="md-card-header">HPO gene list</div>
+        <div class="md-card-body-list">
+          {% for hpo_gene in (case.hpo_genes or [])[:10] %}
+            <div class="list-item" title="{{ hpo_gene.description }}">
+              <div>
+                {{ hpo_gene.gene_id or 'Unknown' }}
+                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}" target="_blank">
+                  <small>{{ hpo_gene.omim_id }}</small>
+                </a>
+              </div>
+              <small class="md-badge">{{ hpo_gene.p_value }}</small>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="activity" class="case-segment-row">
+      <div id="case-activity" class="md-card">
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
           <div class="activity-feed">
@@ -373,23 +416,6 @@
               </div>
             {% endfor %}
           </div>
-        </div>
-      </div>
-
-      <div class="md-card is-aside">
-        <div class="md-card-header">HPO gene list</div>
-        <div class="md-card-body-list">
-          {% for hpo_gene in (case.hpo_genes or [])[:10] %}
-            <div class="list-item" title="{{ hpo_gene.description }}">
-              <div>
-                {{ hpo_gene.gene_id or 'Unknown' }}
-                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}" target="_blank">
-                  <small>{{ hpo_gene.omim_id }}</small>
-                </a>
-              </div>
-              <small class="md-badge">{{ hpo_gene.p_value }}</small>
-            </div>
-          {% endfor %}
         </div>
       </div>
     </div>
