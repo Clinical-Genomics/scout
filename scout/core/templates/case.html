@@ -342,7 +342,7 @@
                 <tr>
                   <td>{{ gene_list.display_name }}</td>
                   <td>{{ gene_list.version }}</td>
-                  <td>{{ gene_list.date }}</td>
+                  <td>{{ gene_list.date or '' }}</td>
                 </tr>
               {% endfor %}
             </tbody>
