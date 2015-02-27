@@ -118,7 +118,7 @@ def open_research(institute_id, case_id):
   case_model = get_document_or_404(Case, case_id)
 
   # set the case status to "research"
-  case_model.status = 'research'
+  case_model.is_research = True
 
   # create event
   event = Event(

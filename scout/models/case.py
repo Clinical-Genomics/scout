@@ -69,30 +69,28 @@ class Case(Document):
   suspects = ListField(ReferenceField('Variant'))
   causative = ReferenceField('Variant')
   synopsis = StringField(default='')
-  status = StringField(default='inactive', choices=['inactive', 'active',
-                                                    'research', 'archived',
-                                                    'solved'])
+  status = StringField(default='inactive',
+                       choices=['inactive', 'active', 'archived', 'solved'])
+  is_research = BooleanField()
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
-  
+
   # This decides which gene lists that should be shown when the case is opened
   default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
-  
+
   genome_build = StringField()
   genome_version = FloatField()
-  
+
   analysis_date = StringField()
-  
+
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
   madeline_info = StringField()
   vcf_file = StringField()
-  
-  is_research = BooleanField()
-  
+
   @property
   def hpo_genes(self):
     """

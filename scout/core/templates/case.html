@@ -77,23 +77,21 @@
     </div>
   </div>
 
-  <form class="status-picker" method="POST">
-    <div class="md-label">
-      <div class="md-label-icon">Status</div>
-      <div class="md-label-text">
-        <select v-model="selected" v-on="change: onChange">
-          {% for status in statuses %}
-            <option {% if status == case.status %}selected{% endif %}
-                    value="{{ status }}">
-              {{ status|capitalize }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
+  <div class="md-label">
+    <div class="md-label-icon">
+      <core-icon icon="label"></core-icon>
     </div>
-  </form>
+    <div class="md-label-text">{{ case.status|capitalize }}</div>
+  </div>
 
-  {% if case.status not in ['research', 'solved'] %}
+  {% if case.is_research %}
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="public"></core-icon>
+      </div>
+      <div class="md-label-text">Research opened</div>
+    </div>
+  {% else %}
     <form action="{{ url_for('core.open_research',
                               institute_id=institute.display_name,
                               case_id=case.display_name) }}"
