@@ -94,10 +94,10 @@
 
           <div class="list-item">
             <a class="md-button"
-               href="{{ url_for('core.variants', institute_id=institute_id,
+               href="{{ url_for('core.hpo_gene_list_redirect',
+                                institute_id=institute_id,
                                 case_id=case_id,
-                                variant_type=variant_type,
-                                hgnc_symbols=case.hpo_gene_ids)
+                                variant_type=variant_type)
                      }}">
               HPO generated gene list
             </a>
