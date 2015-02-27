@@ -10,7 +10,8 @@ from datetime import datetime
 from query_phenomizer import query
 from mongoengine import (DateTimeField, Document, EmbeddedDocument,
                          EmbeddedDocumentField, IntField, ListField,
-                         ReferenceField, FloatField, StringField)
+                         ReferenceField, FloatField, StringField,
+                         BooleanField)
 
 from .event import Event
 
@@ -89,12 +90,9 @@ class Case(Document):
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
   madeline_info = StringField()
   vcf_file = StringField()
-
-  @property
-  def is_research(self):
-    """Determine if the case is in research mode."""
-    return self.status == 'research'
-
+  
+  is_research = BooleanField()
+  
   @property
   def hpo_genes(self):
     """
