@@ -10,7 +10,7 @@
 
   <div class="md-breadcrumb-group flex">
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.cases', institute_id=institute_id) }}">
-      {{ institute.display_name }}
+      <small>{{ institute.display_name }}</small>
     </a>
     <core-icon
       class="md-breadcrumb-separator"
@@ -18,7 +18,7 @@
     </core-icon>
 
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-      {{ case.display_name }}
+      <small>{{ case.display_name }}</small>
     </a>
     <core-icon
       class="md-breadcrumb-separator"
@@ -26,14 +26,16 @@
     </core-icon>
 
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant.variant_type) }}">
-      Variants
+      <small>Variants</small>
     </a>
     <core-icon
       class="md-breadcrumb-separator"
       icon="chevron-right">
     </core-icon>
 
-    <div class="md-breadcrumb">{{ variant.display_name }}</div>
+    <div class="md-breadcrumb">
+      <small>{{ variant.display_name }}</small>
+    </div>
   </div>
 {% endblock %}
 
@@ -88,26 +90,14 @@
     </div>
   </div>
 
-  <div class="variant-header-item md-tooltip">
+  <div class="variant-header-item">
     <div class="md-label">
       <div class="md-label-icon">
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(',') }}
+        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(', ') }}
       </div>
-    </div>
-
-    <div class="md-tooltip-tip is-bottom">
-      <ul>
-        <li>
-          <strong>Position</strong>: {{ variant.position }}
-        </li>
-        <li>
-          <strong>Ensembl</strong>:
-          {{ variant.ensembl_gene_ids|join(',') }}
-        </li>
-      </ul>
     </div>
   </div>
 
@@ -128,7 +118,7 @@
         <core-icon icon="report"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.region_annotations|join(',') }}
+        {{ variant.region_annotations|join(', ') }}
       </div>
     </div>
   </div>
@@ -139,7 +129,7 @@
         <core-icon icon="settings"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.functional_annotations|join(',') }}
+        {{ variant.functional_annotations|join(', ') }}
       </div>
     </div>
   </div>
@@ -227,6 +217,16 @@
               {{ variant.frequency }}
             </div>
           </div>
+
+          <div class="variant-list-item">
+            <div>Position</div>
+            <div>{{ variant.position }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>Ensembl ID(s)</div>
+            <div>{{ variant.ensembl_gene_ids|join(', ') }}</div>
+          </div>
         </div>
       </div>
 
@@ -245,7 +245,9 @@
               {% for transcript in variant.refseq_transcripts %}
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
-                  <td>{{ transcript.refseq_ids|join(', ') }}</td>
+                  <td title="{{ transcript.refseq_ids|join(', ') }}">
+                    {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
+                  </td>
                   <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
                 </tr>
               {% endfor %}
@@ -345,11 +347,11 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>Sift</div>
-            <div>{{ variant.sift_predictions|join(',') }}</div>
+            <div>{{ variant.sift_predictions|join(', ') }}</div>
           </div>
           <div class="variant-list-item">
             <div>Polyphen</div>
-            <div>{{ variant.polyphen_predictions|join(',') }}</div>
+            <div>{{ variant.polyphen_predictions|join(', ') }}</div>
           </div>
         </div>
       </div>
@@ -360,17 +362,17 @@
         <div class="md-card-body-list">
           <div class="variant-list-item">
             <div>PHAST</div>
-            <div>{{ variant.phast_conservation|join(',') or '-' }}</div>
+            <div>{{ variant.phast_conservation|join(', ') or '-' }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>GERP</div>
-            <div>{{ variant.gerp_conservation|join(',') or '-' }}</div>
+            <div>{{ variant.gerp_conservation|join(', ') or '-' }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>phyloP</div>
-            <div>{{ variant.phylop_conservation|join(',') or '-' }}</div>
+            <div>{{ variant.phylop_conservation|join(', ') or '-' }}</div>
           </div>
         </div>
       </div>
@@ -522,13 +524,13 @@
                   <td>
                     <small>{{ transcript.transcript_id }}</small>
                   </td>
-                  <td>{{ transcript.protein_id }}</td>
-                  <td>{{ transcript.swiss_prot }}</td>
+                  <td>{{ transcript.protein_id or '' }}</td>
+                  <td>{{ transcript.swiss_prot or '' }}</td>
                   <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>{{ transcript.polyphen_prediction or '' }}</td>
-                  <td>{{ transcript.pfam }}</td>
-                  <td>{{ transcript.prosite }}</td>
-                  <td>{{ transcript.smart }}</td>
+                  <td>{{ transcript.pfam_domain or '' }}</td>
+                  <td>{{ transcript.prosite_profile or '' }}</td>
+                  <td>{{ transcript.smart_domain or '' }}</td>
                 </tr>
               {% else %}
                 <tr>
@@ -627,7 +629,7 @@
             {% else %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
-                  No variant activity yet.
+                  No variant comments yet.
                 </div>
               </div>
             {% endfor %}

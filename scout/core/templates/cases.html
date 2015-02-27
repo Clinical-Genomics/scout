@@ -6,12 +6,9 @@
   {{ super() }}
 
   <div class="md-breadcrumb-group flex">
-    <div class="md-breadcrumb">{{ institute.display_name }}</div>
-    <core-icon
-      icon="chevron-right"
-      class="md-breadcrumb-separator">
-    </core-icon>
-    <div class="md-breadcrumb">cases</div>
+    <div class="md-breadcrumb">
+      <small>{{ institute.display_name }}</small>
+    </div>
   </div>
 {% endblock %}
 
