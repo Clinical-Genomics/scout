@@ -97,8 +97,17 @@ class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   refseq_ids = ListField(StringField())
   hgnc_symbol = StringField()
+  
+  # Protein specific predictions
+  protein_id = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
+  swiss_prot = StringField()
+  pfam_domain = StringField()
+  prosite_profile = StringField()
+  smart_domain = StringField()
+  
+  biotype = StringField()
   functional_annotations = ListField(StringField(choices=SO_TERMS))
   region_annotations = ListField(StringField(choices=FEATURE_TYPES))
   exon = StringField()
@@ -181,6 +190,7 @@ class Variant(Document):
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = ListField(EmbeddedDocumentField(Compound))
   events = ListField(EmbeddedDocumentField(Event))
+  comments = ListField(EmbeddedDocumentField(Event))
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:

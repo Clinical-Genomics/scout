@@ -37,8 +37,7 @@ class BaseConfig(object):
                 ('scout.login.login', None),
                 ('scout.user.user', None),
                 ('scout.api.api', None),
-                ('scout.browser.browser', None),
-                ('chanjo_report.server.blueprints.report_bp', '/report')]
+                ('scout.browser.browser', None)]
 
   EXTENSIONS = ['scout.extensions.store',
                 'scout.extensions.toolbar',
@@ -50,8 +49,10 @@ class BaseConfig(object):
                 'scout.extensions.markdown',
                 'scout.extensions.mail',
                 'scout.extensions.omim',
-                'scout.extensions.babel',
-                'chanjo_report.server.extensions.api']
+                'scout.extensions.babel']
+
+  # settings for triggering opening of research mode
+  RESEARCH_MODE_RECIPIENT = 'example@domain.com'
 
 
 class DevelopmentConfig(BaseConfig):
@@ -70,11 +71,6 @@ class DevelopmentConfig(BaseConfig):
                      'flask_debugtoolbar.panels.profiler.ProfilerDebugPanel',
                      # add the MongoDB panel
                      'flask.ext.mongoengine.panels.MongoDebugPanel']
-
-  # Chanjo Report
-  ACCEPT_LANGUAGES = {'en': 'English', 'sv': 'Svenska'}
-  CHANJO_DB = '/vagrant/dev/demo/coverage.sqlite'
-  CHANJO_DIALECT = 'sqlite'
 
 
 class TestConfig(BaseConfig):

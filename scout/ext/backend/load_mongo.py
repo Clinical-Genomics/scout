@@ -43,7 +43,7 @@ from .config_parser import ConfigParser
 from ...models import (Case, Individual, Institute, Variant, GTCall,
                           Compound, Gene, Transcript, OmimPhenotype, GeneList)
 
-from vcf_parser import parser as vcf_parser
+from vcf_parser import VCFParser
 from ped_parser import FamilyParser
 
 from pprint import pprint as pp
@@ -215,37 +215,40 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     except DoesNotExist:
       if verbose:
         print('New institute!', file=sys.stderr)
-
-
+  
+  
   ######## Get the cases and add them to the mongo db: ########
-
+  
   case = get_case(ped_file, family_type, scout_configs)
-
+  
   if verbose:
     print('Case found in %s: %s' % (ped_file, case.display_name),
           file=sys.stderr)
-
+  
+  if variant_type == 'research':
+    case['is_research'] = True
+  
   # Add the case to its institute(s)
   for institute_object in institutes:
     if case not in institute_object.cases:
       institute_object.cases.append(case)
-
+  
     institute_object.save()
-
+  
   case.save()
-
+  
   ######## Get the variants and add them to the mongo db: ########
 
-  variant_parser = vcf_parser.VCFParser(infile=vcf_file, split_variants=True)
+  variant_parser = VCFParser(infile=vcf_file, split_variants=True)
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
-
-
+  
+  
   # Get the individuals to see which we should include in the analysis
   ped_individuals = []
   for individual in case.individuals:
     ped_individuals.append(individual.individual_id)
-
+  
   # Check which individuals that exists in the vcf file:
   individuals = []
   for individual in ped_individuals:
@@ -567,6 +570,11 @@ def get_case(ped_file, family_type, scout_configs):
     mongo_case['display_name'] = case['family_id']
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
+    # Add the genome build information
+    mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
+    mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
+    
+    mongo_case['analysis_date'] = scout_configs.get('analysis_date', '') 
     # Add the pedigree picture
     madeline_file = scout_configs.get('madeline', None)
     if madeline_file:
@@ -664,7 +672,7 @@ def get_genotype_information(variant, config_object, individual):
 
   return mongo_gt_call
 
-def get_transcript_information(vep_entry):
+def get_transcript_information(vep_entry, ensembl_to_refseq):
   """
   Create a mongo engine transcript object and fill it with the relevant information
 
@@ -680,12 +688,61 @@ def get_transcript_information(vep_entry):
   transcript_id = vep_entry.get('Feature', '').split(':')[0]
   # Create a mongo engine transcript object
   transcript = Transcript(transcript_id = transcript_id)
+  # Add the refseq ids
+  transcript.refseq_ids = ensembl_to_refseq.get(transcript_id, [])
+  # Add the gene identifier
   transcript.hgnc_symbol = vep_entry.get('SYMBOL', '').split('.')[0]
-  # Fill it with the available information
+  
+  ########### Fill it with the available information ###########
+  
+  ### Protein specific annotations ###
+  
+  ## Protein ID ##
+  if vep_entry.get('ENSP', None):
+    transcript.protein_id = vep_entry['ENSP']
+  
   if vep_entry.get('PolyPhen', None):
     transcript.polyphen_prediction = vep_entry['PolyPhen']
   if vep_entry.get('SIFT', None):
     transcript.sift_prediction = vep_entry['SIFT']
+  if vep_entry.get('SWISSPROT', None):
+    transcript.swiss_prot = vep_entry['SWISSPROT']
+  
+  if vep_entry.get('DOMAINS', None):
+    pfam_domains = vep_entry['DOMAINS'].split('&')
+    for annotation in pfam_domains:
+      annotation = annotation.split(':')
+      domain_name = annotation[0]
+      domain_id = annotation[1]
+      if domain_name == 'Pfam_domain':
+        transcript.pfam_domain = domain_id
+      elif domain_name == 'PROSITE_profiles':
+        transcript.prosite_profile = domain_id
+      elif domain_name == 'SMART_domains':
+        transcript.smart_domain = domain_id
+    
+  
+  coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
+  protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
+  
+  coding_sequence_name = None
+  if len(coding_sequence_entry) > 1:
+    coding_sequence_name = coding_sequence_entry[-1]
+
+  if coding_sequence_name:
+    transcript.coding_sequence_name = coding_sequence_name
+
+  protein_sequence_name = None
+  if len(protein_sequence_entry) > 1:
+    protein_sequence_name = protein_sequence_entry[-1]
+
+  if protein_sequence_name:
+    transcript.protein_sequence_name = protein_sequence_name
+  
+  
+  if vep_entry.get('BIOTYPE', None):
+    transcript.biotype = vep_entry['BIOTYPE']
+  
   if vep_entry.get('EXON', None):
     transcript.exon = vep_entry['EXON']
   if vep_entry.get('INTRON', None):
@@ -695,35 +752,16 @@ def get_transcript_information(vep_entry):
       transcript.strand = '+'
     elif vep_entry['STRAND'] == '-1':
       transcript.strand = '-'
-
-  coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
-  protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
-
-  # If there is a coding sequence entry we need to parse it:
-  coding_sequence_name = None
-  if len(coding_sequence_entry) > 1:
-    coding_sequence_name = coding_sequence_entry[-1].split('.')[1]
-
-  if coding_sequence_name:
-    transcript.coding_sequence_name = coding_sequence_name
-
-  # If there is a protein sequence entry we need to parse it:
-  protein_sequence_name = None
-  if len(protein_sequence_entry) > 1:
-    protein_sequence_name = protein_sequence_entry[-1].split('.')[1]
-
-  if protein_sequence_name:
-    transcript.protein_sequence_name = protein_sequence_name
-
+  
   functional = []
   regional = []
   for annotation in functional_annotations:
     functional.append(annotation)
     regional.append(SO_TERMS[annotation]['region'])
-
+  
   transcript.functional_annotations = functional
   transcript.region_annotations = regional
-
+  
   return transcript
 
 
@@ -741,61 +779,11 @@ def get_genes(variant):
   genes = {}
   transcripts = []
   mongo_genes = []
-
-  ######################################################################
-  ## There are two types of OMIM terms, one is the OMIM gene entry    ##
-  ## and one is for the phenotypic terms.                             ##
-  ## Each key in the 'omim_terms' dictionary reprecents a gene id.    ##
-  ## Values are a dictionary with 'omim_gene_id' = omim_gene_id and   ##
-  ## 'phenotypic_terms' = [list of OmimPhenotypeObjects]              ##
-  ######################################################################
-
-  omim_terms = {}
-  # Fill the omim gene id:s:
-  for annotation in variant['info_dict'].get('OMIM_morbid', []):
-    if annotation:
-      splitted_record = annotation.split(':')
-      try:
-        gene_id = splitted_record[0]
-        omim_term = int(splitted_record[1])
-        if gene_id in omim_terms:
-          omim_terms[gene_id]['omim_gene_id'] = omim_term
-        else:
-          omim_terms[gene_id] = {
-              'omim_gene_id': omim_term,
-              'phenotypic_terms': []
-          }
-
-      except ValueError:
-        pass
-
-  # Fill the omim phenotype terms:
-  for gene_annotation in variant['info_dict'].get('Phenotypic_disease_model', []):
-    if gene_annotation:
-      splitted_gene = gene_annotation.split(':')
-      gene_id = splitted_gene[0]
-      for omim_entry in splitted_gene[1].split('|'):
-        splitted_record = omim_entry.split('>')
-
-        phenotype_id = int(splitted_record[0])
-        inheritance_patterns = []
-        if len(splitted_record) > 1:
-          inheritance_patterns = splitted_record[1].split('/')
-
-        disease_model = OmimPhenotype(
-                              omim_id=phenotype_id,
-                              disease_models=inheritance_patterns
-                            )
-
-        if gene_id in omim_terms:
-          omim_terms[gene_id]['phenotypic_terms'].append(disease_model)
-        else:
-          omim_terms[gene_id] = {
-              'gene_terms': [],
-              'phenotypic_terms': [disease_model]
-          }
-
-  # Conversion from ensembl to refseq:
+  
+  
+  # Conversion from ensembl to refseq
+  # ensembl_to_refseq is a dictionary with ensembl transcript id as keys and
+  # a list of refseq ids as values
   ensembl_to_refseq = {}
   for gene_info in variant['info_dict'].get('Ensembl_transcript_to_refseq_transcript', []):
     splitted_gene = gene_info.split(':')
@@ -806,79 +794,102 @@ def get_genes(variant):
         ensembl_id = splitted_transcript[0]
         refseq_ids = splitted_transcript[1].split('/')
         ensembl_to_refseq[ensembl_id] = refseq_ids
-  # We need to keep track of the highest ranked gene in order to know what to
-  # display in the variant overwiew in scout
-  best_rank = None
-  # vep_info is a list of dictionarys with vep entrys
-  # Each vep entry represents a transcript so one transcript belongs to one gene
+  
+  # First we get all vep entrys that we find and put them under their 
+  # corresponding gene symbol in 'genes'
   for vep_entry in variant['vep_info'].get(variant['ALT'], []):
-    # We should first check if the variant is in a genetic region
-    # If it is not we do not add any entry
-    functional_annotations = vep_entry.get('Consequence', '').split('&')
-    # Check if any of the consequences are genetic
-    genetic_region = False
-    for annotation in functional_annotations:
-      region = SO_TERMS[annotation]['region']
-      # If any of the functional annotations are genetic we wnat to show it
-      if region in GENETIC_REGIONS:
-        genetic_region = True
-
-    # If any of the annotations are in genetic regions we add the information.
-    if genetic_region:
-
-      transcripts.append(get_transcript_information(vep_entry))
-
-  # We now need to find the most severe transcript for each gene:
-  for transcript in transcripts:
-    transcript_id = transcript.transcript_id
-    hgnc_symbol = transcript.hgnc_symbol
-    # Add the refseq ids for each transcript
-    transcript['refseq_ids'] = ensembl_to_refseq.get(transcript_id,[])
-    for i, functional_annotation in enumerate(transcript.functional_annotations):
-      rank = SO_TERMS[functional_annotation]['rank']
-
-      if hgnc_symbol not in genes:
-        genes[hgnc_symbol] = {
-                        'most_severe_transcript': transcript,
-                        'most_severe_function': functional_annotation,
-                        'most_severe_region': transcript.region_annotations[i],
-                        'best_rank' : rank,
-                        'transcripts': {
-                                  transcript_id : transcript
-                                  }
-                          }
-      else:
-        genes[hgnc_symbol]['transcripts'][transcript_id] = transcript
-        if rank < best_rank:
+      transcript = get_transcript_information(vep_entry, ensembl_to_refseq)
+      hgnc_symbol = transcript.hgnc_symbol
+      if hgnc_symbol:
+        if hgnc_symbol in genes:
+          genes[hgnc_symbol]['transcripts'][transcript.transcript_id] = transcript
+          for functional_annotation in transcript.functional_annotations:
+            new_rank = SO_TERMS[functional_annotation]['rank']
+            if new_rank < genes[hgnc_symbol]['best_rank']:
+              genes[hgnc_symbol]['best_rank'] = new_rank
+              genes[hgnc_symbol]['most_severe_transcript'] = transcript
+              genes[hgnc_symbol]['most_severe_function'] = functional_annotation
+              
+        else:
+          genes[hgnc_symbol] = {}
+          genes[hgnc_symbol]['transcripts'] = {}
+          genes[hgnc_symbol]['transcripts'][transcript.transcript_id] = transcript
           genes[hgnc_symbol]['most_severe_transcript'] = transcript
-          genes[hgnc_symbol]['most_severe_function'] = functional_annotation
-          genes[hgnc_symbol]['most_severe_region'] = transcript.region_annotations[i]
-          best_rank = rank
+          genes[hgnc_symbol]['omim_gene_id'] = None
+          genes[hgnc_symbol]['phenotypic_terms'] = []
+          genes[hgnc_symbol]['best_rank'] = 40
+          for functional_annotation in transcript.functional_annotations:
+            new_rank = SO_TERMS[functional_annotation]['rank']
+            if new_rank < genes[hgnc_symbol]['best_rank']:
+              genes[hgnc_symbol]['best_rank'] = new_rank
+              genes[hgnc_symbol]['most_severe_function'] = functional_annotation
+  
+  
+  ######################################################################
+  ## There are two types of OMIM terms, one is the OMIM gene entry    ##
+  ## and one is for the phenotypic terms.                             ##
+  ## Each key in the 'omim_terms' dictionary reprecents a gene id.    ##
+  ## Values are a dictionary with 'omim_gene_id' = omim_gene_id and   ##
+  ## 'phenotypic_terms' = [list of OmimPhenotypeObjects]              ##
+  ######################################################################
 
+  # Fill the omim gene id:s:
+  for annotation in variant['info_dict'].get('OMIM_morbid', []):
+    if annotation:
+      splitted_record = annotation.split(':')
+      try:
+        hgnc_symbol = splitted_record[0]
+        omim_term = int(splitted_record[1])
+        genes[hgnc_symbol]['omim_gene_id'] = omim_term
+      except ValueError:
+        pass
 
-  for gene in genes:
-    most_severe = genes[gene]['most_severe_transcript']
+  # Fill the omim phenotype terms:
+  for gene_annotation in variant['info_dict'].get('Phenotypic_disease_model', []):
+    if gene_annotation:
+      splitted_gene = gene_annotation.split(':')
+      hgnc_symbol = splitted_gene[0]
+      for omim_entry in splitted_gene[1].split('|'):
+        splitted_record = omim_entry.split('>')
+        
+        phenotype_id = int(splitted_record[0])
+        inheritance_patterns = []
+        if len(splitted_record) > 1:
+          inheritance_patterns = splitted_record[1].split('/')
+        
+        disease_model = OmimPhenotype(
+                              omim_id=phenotype_id,
+                              disease_models=inheritance_patterns
+                            )
+        
+        genes[hgnc_symbol]['phenotypic_terms'].append(disease_model)
+
+  for hgnc_symbol in genes:
+    gene_info = genes[hgnc_symbol]
+    most_severe = gene_info['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
-    mongo_gene = Gene(hgnc_symbol=gene)
-    mongo_gene.omim_gene_entry = omim_terms.get(
-                                    gene, {}).get(
-                                      'omim_gene_id', None)
+    mongo_gene = Gene(hgnc_symbol=hgnc_symbol)
+    mongo_gene.omim_gene_entry = gene_info.get(
+                                      'omim_gene_id', 
+                                      None
+                                      )
 
-    mongo_gene.omim_phenotypes = omim_terms.get(
-                                    gene, {}).get(
-                                      'phenotypic_terms', [])
+    mongo_gene.omim_phenotypes = gene_info.get(
+                                      'phenotypic_terms', 
+                                      []
+                                      )
 
     # Add a list with the transcripts:
     mongo_gene.transcripts = []
-    for transcript_id in genes[gene]['transcripts']:
-      mongo_gene.transcripts.append(genes[gene]['transcripts'][transcript_id])
+    for transcript_id in gene_info['transcripts']:
+      mongo_gene.transcripts.append(gene_info['transcripts'][transcript_id])
 
     try:
-      mongo_gene.functional_annotation = genes[gene]['most_severe_function']
+      mongo_gene.functional_annotation = gene_info['most_severe_function']
     except AttributeError:
       pass
     try:
-      mongo_gene.region_annotation = genes[gene]['most_severe_region']
+      mongo_gene.region_annotation = SO_TERMS[mongo_gene.functional_annotation]['region']
     except AttributeError:
       pass
     try:
@@ -1000,15 +1011,36 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   # Check if vcf file exists and that it has the correct naming:
 
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
-  # mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
-
+  mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
+  # vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
+  # for variant in vcf_parser:
+  #   print(variant['info_dict'].get('Ensembl_transcript_to_refseq_transcript', []))
+    # for allele in variant['vep_info']:
+    #   if allele != 'gene_ids':
+    #     # print(allele)
+    #     for transcript_info in variant['vep_info'][allele]:
+    #       print(transcript_info['SYMBOL'])
+          # if transcript_info.get('DOMAINS'):
+          #   pfam_domains = transcript_info.get('DOMAINS').split('&')
+          #   for annotation in pfam_domains:
+          #     annotation = annotation.split(':')
+          #     domain_name = annotation[0]
+          #     domain_id = annotation[1]
+          #     if domain_name == 'Pfam_domain':
+          #       print('Pfam ID:%s' % domain_id)
+          #     elif domain_name == 'PROSITE_profiles':
+          #       print('PROSITE ID:%s' % domain_id)
+          #     elif domain_name == 'SMART_domains':
+          #       print('SMART ID:%s' % domain_id)
+          #   print()
+  # sys.exit()
   setup_configs = {}
 
   if scout_config_file:
     setup_configs = ConfigParser(scout_config_file)
 
   if vcf_file:
-    setup_configs['vcf'] = vcf_file
+    setup_configs['load_vcf'] = vcf_file
 
   if ped_file:
     setup_configs['ped'] = ped_file
@@ -1019,7 +1051,7 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   if institute:
     setup_configs['institutes'] = [institute]
 
-  if not setup_configs.get('vcf', None):
+  if not setup_configs.get('load_vcf', None):
     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
     sys.exit(0)
 

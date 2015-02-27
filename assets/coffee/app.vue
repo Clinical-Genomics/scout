@@ -7,16 +7,6 @@
       showFilters: ->
         @$.filters.show()
 
-      onChange: (e) ->
-        superagent
-          .put "/api/v1#{location.pathname}/status"
-          .send { status: @selected }
-          .end (res) =>
-            if res.ok
-              @message = 'Status changed!'
-            else
-              @message = 'Status update failed.'
-
       onVariantRankChange: (e) ->
         superagent
           .put "/api/v1#{location.pathname}/manual_rank"

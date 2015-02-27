@@ -10,7 +10,8 @@ from datetime import datetime
 from query_phenomizer import query
 from mongoengine import (DateTimeField, Document, EmbeddedDocument,
                          EmbeddedDocumentField, IntField, ListField,
-                         ReferenceField, FloatField, StringField)
+                         ReferenceField, FloatField, StringField,
+                         BooleanField)
 
 from .event import Event
 
@@ -68,9 +69,9 @@ class Case(Document):
   suspects = ListField(ReferenceField('Variant'))
   causative = ReferenceField('Variant')
   synopsis = StringField(default='')
-  status = StringField(default='inactive', choices=['inactive', 'active',
-                                                    'research', 'archived',
-                                                    'solved'])
+  status = StringField(default='inactive',
+                       choices=['inactive', 'active', 'archived', 'solved'])
+  is_research = BooleanField()
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
 
@@ -79,16 +80,17 @@ class Case(Document):
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
 
+  genome_build = StringField()
+  genome_version = FloatField()
+
+  analysis_date = StringField()
+
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
   madeline_info = StringField()
   vcf_file = StringField()
-
-  @property
-  def is_research(self):
-    """Determine if the case is in research mode."""
-    return self.status == 'research'
+  coverage_report_path = StringField()
 
   @property
   def hpo_genes(self):
@@ -110,9 +112,14 @@ class Case(Document):
         }
     """
     hpo_terms = [hpo_term.hpo_id for hpo_term in self.phenotype_terms]
-    try:
-      return query(hpo_terms)
-    except SystemExit:
+
+    # skip querying Phenomizer unless at least one HPO terms exists
+    if hpo_terms:
+      try:
+        return query(hpo_terms)
+      except SystemExit:
+        return {}
+    else:
       return {}
 
   @property
