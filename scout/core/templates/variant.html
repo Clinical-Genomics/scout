@@ -430,14 +430,13 @@
                 <th>Gene</th>
                 <th>Transcript</th>
                 <th>RefSeq</th>
+                <th>Biotype</th>
                 <th>Mutation type</th>
                 <th>Strand</th>
                 <th>Exon</th>
                 <th>Intron</th>
                 <th>cDNA</th>
                 <th>Amino acid</th>
-                <th>Sift</th>
-                <th>PolyPhen</th>
               </tr>
             </thead>
 
@@ -463,6 +462,7 @@
                       </div>
                     </div>
                   </td>
+                  <td>{{ transcript.biotype or '' }}</td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
@@ -481,18 +481,54 @@
                   <td>{{ transcript.intron or '' }}</td>
                   <td>{{ transcript.coding_sequence_name or '' }}</td>
                   <td>{{ transcript.protein_sequence_name or '' }}</td>
-                  <td>{{ transcript.sift_prediction or '' }}</td>
-                  <td>
-                    <div class="md-tooltip">
-                      <div class="dotdotdot">
-                        {{ transcript.polyphen_prediction or '' }}
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="10">
+                    No protein change predictions available.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
                       </div>
-
-                      <div class="md-tooltip-tip is-top">
-                        {{ transcript.polyphen_prediction }}
                       </div>
                     </div>
+
+    <div id="proteins" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Proteins</div>
+
+        <div class="md-card-body-scrollable-big">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Protein</th>
+                <th>SWISS PROT</th>
+                <th>Sift</th>
+                <th>Polyphen</th>
+                <th>Pfam</th>
+                <th>ProSite</th>
+                <th>Smart</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>
+                    <small>{{ transcript.transcript_id }}</small>
                   </td>
+                  <td>{{ transcript.protein_id }}</td>
+                  <td>{{ transcript.swiss_prot }}</td>
+                  <td>{{ transcript.sift_prediction or '' }}</td>
+                  <td>{{ transcript.polyphen_prediction or '' }}</td>
+                  <td>{{ transcript.pfam }}</td>
+                  <td>{{ transcript.prosite }}</td>
+                  <td>{{ transcript.smart }}</td>
                 </tr>
               {% else %}
                 <tr>
