@@ -90,6 +90,7 @@ class Case(Document):
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
   madeline_info = StringField()
   vcf_file = StringField()
+  coverage_report_path = StringField()
 
   @property
   def hpo_genes(self):

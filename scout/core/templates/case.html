@@ -107,7 +107,7 @@
     </form>
   {% endif %}
 
-  <a href="{{ url_for('report.groups', filter_id=case.display_name) }}" class="md-label" target="_blank">
+  <a href="{{ url_for('browser.remote_static', path=case.coverage_report_path[1:]) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>
