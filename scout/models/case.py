@@ -113,9 +113,14 @@ class Case(Document):
         }
     """
     hpo_terms = [hpo_term.hpo_id for hpo_term in self.phenotype_terms]
-    try:
-      return query(hpo_terms)
-    except SystemExit:
+
+    # skip querying Phenomizer unless at least one HPO terms exists
+    if hpo_terms:
+      try:
+        return query(hpo_terms)
+      except SystemExit:
+        return {}
+    else:
       return {}
 
   @property
