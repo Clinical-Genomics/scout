@@ -47,6 +47,9 @@ $toolbar-bg-color: $primary-color;
 .is-secondary {
   @extend %secondary-menubar;
 
+  // make scrollable
+  overflow-x: auto;
+
   > * {
     margin: 0 .4rem;
   }

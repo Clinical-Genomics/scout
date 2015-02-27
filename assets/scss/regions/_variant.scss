@@ -2,6 +2,7 @@ $variant-base-padding: 1rem;
 
 .variant-header-item {
   font-size: .7em;
+  flex-shrink: 0;
 }
 
 .variant-segments {

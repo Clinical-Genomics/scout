@@ -8,13 +8,15 @@
 
   <div class="md-breadcrumb-group flex">
     <a href="{{ url_for('core.cases', institute_id=institute.display_name) }}" class="md-breadcrumb-button is-raised">
-      {{ institute.display_name }}
+      <small>{{ institute.display_name }}</small>
     </a>
     <core-icon
       icon="chevron-right"
       class="md-breadcrumb-separator">
     </core-icon>
-    <div class="md-breadcrumb">{{ case.display_name }}</div>
+    <div class="md-breadcrumb">
+      <small>{{ case.display_name }}</small>
+    </div>
   </div>
 {% endblock %}
 
