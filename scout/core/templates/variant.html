@@ -246,7 +246,7 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>{{ transcript.refseq_ids|join(', ') }}</td>
-                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                  <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -491,9 +491,9 @@
               {% endfor %}
             </tbody>
           </table>
-                      </div>
-                      </div>
-                    </div>
+        </div>
+      </div>
+    </div>
 
     <div id="proteins" class="variant-segments-row">
       <div class="md-card">
