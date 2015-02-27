@@ -224,7 +224,7 @@
           </div>
 
           <div class="variant-list-item">
-            <div>Ensembl IDs</div>
+            <div>Ensembl ID(s)</div>
             <div>{{ variant.ensembl_gene_ids|join(', ') }}</div>
           </div>
         </div>
@@ -524,13 +524,13 @@
                   <td>
                     <small>{{ transcript.transcript_id }}</small>
                   </td>
-                  <td>{{ transcript.protein_id }}</td>
-                  <td>{{ transcript.swiss_prot }}</td>
+                  <td>{{ transcript.protein_id or '' }}</td>
+                  <td>{{ transcript.swiss_prot or '' }}</td>
                   <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>{{ transcript.polyphen_prediction or '' }}</td>
-                  <td>{{ transcript.pfam_domain }}</td>
-                  <td>{{ transcript.prosite_profile }}</td>
-                  <td>{{ transcript.smart_domain }}</td>
+                  <td>{{ transcript.pfam_domain or '' }}</td>
+                  <td>{{ transcript.prosite_profile or '' }}</td>
+                  <td>{{ transcript.smart_domain or '' }}</td>
                 </tr>
               {% else %}
                 <tr>
