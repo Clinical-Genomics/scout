@@ -202,9 +202,9 @@ def comment(institute_id, case_id, comment_id=None):
 @api.route('/<institute_id>/<case_id>/<variant_id>/event/<int:event_id>',
            methods=['GET'])
 def variant_event(institute_id, case_id, variant_id, event_id=None):
+  """For now this route only handles variant comments."""
   case = get_document_or_404(Case, case_id)
-  variant = store.variant(variant_id=variant_id)
-  specific = variant.specific[case.id]
+  variant = store.variant(document_id=variant_id)
 
   if request.method == 'POST':
 
@@ -217,11 +217,11 @@ def variant_event(institute_id, case_id, variant_id, event_id=None):
       subject=request.form.get('subject'),
     )
 
-    specific.events.append(event)
+    variant.comments.append(event)
 
   elif request.method == 'GET':  # TODO: make this work with DELETE!
     # remove event by index, expects list to be reversed in template
-    specific.events.pop(-event_id)
+    variant.comments.pop(-event_id)
 
   # persist changes
   variant.save()
