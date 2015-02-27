@@ -38,8 +38,11 @@
     </div>
   </div>
 
-  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type) }}" class="icon-button">
-    <core-icon icon="fast-rewind"></core-icon>
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type) }}" class="md-label">
+    <div class="md-label-icon">
+      <core-icon icon="fast-rewind"></core-icon>
+    </div>
+    <div class="md-label-text"><small>Clear filters</small></div>
   </a>
 
   <div v-on="click: showFilters" class="icon-button">
