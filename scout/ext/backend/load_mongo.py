@@ -43,7 +43,7 @@ from .config_parser import ConfigParser
 from ...models import (Case, Individual, Institute, Variant, GTCall,
                           Compound, Gene, Transcript, OmimPhenotype, GeneList)
 
-from vcf_parser import parser as vcf_parser
+from vcf_parser import VCFParser
 from ped_parser import FamilyParser
 
 from pprint import pprint as pp
@@ -215,37 +215,40 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     except DoesNotExist:
       if verbose:
         print('New institute!', file=sys.stderr)
-
-
+  
+  
   ######## Get the cases and add them to the mongo db: ########
-
+  
   case = get_case(ped_file, family_type, scout_configs)
-
+  
   if verbose:
     print('Case found in %s: %s' % (ped_file, case.display_name),
           file=sys.stderr)
-
+  
+  if variant_type == 'research':
+    case['is_research'] = True
+  
   # Add the case to its institute(s)
   for institute_object in institutes:
     if case not in institute_object.cases:
       institute_object.cases.append(case)
-
+  
     institute_object.save()
-
+  
   case.save()
-
+  
   ######## Get the variants and add them to the mongo db: ########
 
-  variant_parser = vcf_parser.VCFParser(infile=vcf_file, split_variants=True)
+  variant_parser = VCFParser(infile=vcf_file, split_variants=True)
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
-
-
+  
+  
   # Get the individuals to see which we should include in the analysis
   ped_individuals = []
   for individual in case.individuals:
     ped_individuals.append(individual.individual_id)
-
+  
   # Check which individuals that exists in the vcf file:
   individuals = []
   for individual in ped_individuals:
@@ -567,6 +570,11 @@ def get_case(ped_file, family_type, scout_configs):
     mongo_case['display_name'] = case['family_id']
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
+    # Add the genome build information
+    mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
+    mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
+    
+    mongo_case['analysis_date'] = scout_configs.get('analysis_date', '') 
     # Add the pedigree picture
     madeline_file = scout_configs.get('madeline', None)
     if madeline_file:
@@ -702,7 +710,7 @@ def get_transcript_information(vep_entry):
   # If there is a coding sequence entry we need to parse it:
   coding_sequence_name = None
   if len(coding_sequence_entry) > 1:
-    coding_sequence_name = coding_sequence_entry[-1].split('.')[1]
+    coding_sequence_name = coding_sequence_entry[-1]
 
   if coding_sequence_name:
     transcript.coding_sequence_name = coding_sequence_name
@@ -1001,7 +1009,16 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
   # mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
-
+  # vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
+  # for variant in vcf_parser:
+  #   # pp(variant['vep_info'])
+  #   for allele in variant['vep_info']:
+  #     if allele != 'gene_ids':
+  #       print(allele)
+  #       for transcript_info in variant['vep_info'][allele]:
+  #         # pp(transcript_info)
+  #         pp(transcript_info.get('SWISSPROT'))
+  # sys.exit()
   setup_configs = {}
 
   if scout_config_file:
