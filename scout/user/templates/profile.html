@@ -47,11 +47,7 @@
           <div class="variant-list-item">
             <div>Admin</div>
             <div>
-              {% if user.has_role('admin') %}
-                Yes
-              {% else %}
-                No
-              {% endif %}
+              {{ 'Yes' if user.has_role('admin') else 'No' }}
             </div>
           </div>
         </div>

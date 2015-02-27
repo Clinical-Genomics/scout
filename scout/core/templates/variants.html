@@ -274,7 +274,7 @@
         <div class="variants-row-item is-scrollable">
           {% for omim_id, omim_link in variant.omim_annotation_links %}
             {% if omim_id %}
-              <a href="{{ omim_link }}">{{ omim_id }}</a>
+              <a target="_blank" href="{{ omim_link }}">{{ omim_id }}</a>
             {% endif %}
           {% endfor %}
         </div>
