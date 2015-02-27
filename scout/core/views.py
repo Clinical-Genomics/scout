@@ -114,19 +114,35 @@ def open_research(institute_id, case_id):
   TODO: this should ping the admins to make necessary checks.
   """
   # very basic security check
-  validate_user(current_user, institute_id)
+  institute = validate_user(current_user, institute_id)
   case_model = get_document_or_404(Case, case_id)
 
-  # set the case status to "research"
-  case_model.status = 'research'
+  # send email to trigger manual load of research variants
+  main_recipient = current_app.config['RESEARCH_MODE_RECIPIENT']
+
+  # this should send a JSON document to the SuSy API in the future
+  html = """
+    <p>{institute}: {case} ({case_id})</p>
+    <p>Requested by: {name}</p>
+  """.format(institute=institute.display_name, case=case_model.display_name,
+             case_id=case_model.id, name=current_user.name)
+
+  # compose and send the email message
+  msg = Message(subject=("SCOUT: open research mode for {}"
+                         .format(case_model.display_name)),
+                html=html,
+                sender=current_app.config['MAIL_USERNAME'],
+                recipients=[main_recipient],
+                # cc the sender of the email for confirmation
+                cc=[current_user.email])
+  mail.send(msg)
 
   # create event
-  event = Event(
-    link=url_for('.case', institute_id=institute_id, case_id=case_id),
-    author=current_user.to_dbref(),
-    verb='opened research mode for',
-    subject=case_model.display_name
-  )
+  event = Event(link=url_for('.case', institute_id=institute_id,
+                             case_id=case_id),
+                author=current_user.to_dbref(),
+                verb='opened research mode for',
+                subject=case_model.display_name)
   case_model.events.append(event)
 
   case_model.save()
@@ -227,6 +243,19 @@ def variants(institute_id, case_id, variant_type):
               severe_so_terms=SO_TERMS[:14],
               current_gene_lists=current_gene_lists,
               variant_type=variant_type)
+
+
+@core.route('/<institute_id>/<case_id>/<variant_type>/hpo_redirect')
+@login_required
+def hpo_gene_list_redirect(institute_id, case_id, variant_type):
+  # redirect user to variants list after querying HPO
+  validate_user(current_user, institute_id)
+  case_model = get_document_or_404(Case, case_id)
+
+  return redirect(url_for('.variants', institute_id=institute_id,
+                          case_id=case_id,
+                          variant_type=variant_type,
+                          hgnc_symbols=case_model.hpo_gene_ids))
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')

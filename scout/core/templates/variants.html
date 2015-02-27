@@ -38,8 +38,11 @@
     </div>
   </div>
 
-  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type) }}" class="icon-button">
-    <core-icon icon="fast-rewind"></core-icon>
+  <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type) }}" class="md-label">
+    <div class="md-label-icon">
+      <core-icon icon="fast-rewind"></core-icon>
+    </div>
+    <div class="md-label-text">Clear filters</div>
   </a>
 
   <div v-on="click: showFilters" class="icon-button">
@@ -91,10 +94,10 @@
 
           <div class="list-item">
             <a class="md-button"
-               href="{{ url_for('core.variants', institute_id=institute_id,
+               href="{{ url_for('core.hpo_gene_list_redirect',
+                                institute_id=institute_id,
                                 case_id=case_id,
-                                variant_type=variant_type,
-                                hgnc_symbols=case.hpo_gene_ids)
+                                variant_type=variant_type)
                      }}">
               HPO generated gene list
             </a>
@@ -274,7 +277,7 @@
         <div class="variants-row-item is-scrollable">
           {% for omim_id, omim_link in variant.omim_annotation_links %}
             {% if omim_id %}
-              <a href="{{ omim_link }}">{{ omim_id }}</a>
+              <a target="_blank" href="{{ omim_link }}">{{ omim_id }}</a>
             {% endif %}
           {% endfor %}
         </div>

@@ -246,7 +246,7 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>{{ transcript.refseq_ids|join(', ') }}</td>
-                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                  <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -321,7 +321,7 @@
                 <tr>
                   <td>{{ gene.hgnc_symbol }}</td>
                   <td>
-                    <a href="{{ phenotype.omim_link }}">
+                    <a href="{{ phenotype.omim_link }}" target="_blank">
                       {{ phenotype.omim_id }}
                     </a>
                   </td>
@@ -430,14 +430,13 @@
                 <th>Gene</th>
                 <th>Transcript</th>
                 <th>RefSeq</th>
+                <th>Biotype</th>
                 <th>Mutation type</th>
                 <th>Strand</th>
                 <th>Exon</th>
                 <th>Intron</th>
                 <th>cDNA</th>
                 <th>Amino acid</th>
-                <th>Sift</th>
-                <th>PolyPhen</th>
               </tr>
             </thead>
 
@@ -454,7 +453,7 @@
                         <small>
                           {{ transcript.refseq_ids
                               |join(', ')
-                              |truncate(30, True) }}
+                              |truncate(13, True) }}
                         </small>
                       </div>
 
@@ -463,6 +462,7 @@
                       </div>
                     </div>
                   </td>
+                  <td>{{ transcript.biotype or '' }}</td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
@@ -481,18 +481,54 @@
                   <td>{{ transcript.intron or '' }}</td>
                   <td>{{ transcript.coding_sequence_name or '' }}</td>
                   <td>{{ transcript.protein_sequence_name or '' }}</td>
-                  <td>{{ transcript.sift_prediction or '' }}</td>
-                  <td>
-                    <div class="md-tooltip">
-                      <div class="dotdotdot">
-                        {{ transcript.polyphen_prediction or '' }}
-                      </div>
-
-                      <div class="md-tooltip-tip is-top">
-                        {{ transcript.polyphen_prediction }}
-                      </div>
-                    </div>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="10">
+                    No protein change predictions available.
                   </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="proteins" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Proteins</div>
+
+        <div class="md-card-body-scrollable-big">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Protein</th>
+                <th>SWISS PROT</th>
+                <th>Sift</th>
+                <th>Polyphen</th>
+                <th>Pfam</th>
+                <th>ProSite</th>
+                <th>Smart</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>
+                    <small>{{ transcript.transcript_id }}</small>
+                  </td>
+                  <td>{{ transcript.protein_id }}</td>
+                  <td>{{ transcript.swiss_prot }}</td>
+                  <td>{{ transcript.sift_prediction or '' }}</td>
+                  <td>{{ transcript.polyphen_prediction or '' }}</td>
+                  <td>{{ transcript.pfam }}</td>
+                  <td>{{ transcript.prosite }}</td>
+                  <td>{{ transcript.smart }}</td>
                 </tr>
               {% else %}
                 <tr>
@@ -520,7 +556,7 @@
     <div id="external-links" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-body">
-          <a target="_blank" class="variant-link-external" href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
+          <a target="_blank" class="variant-link-external" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
             Ensembl
           </a>
 
@@ -540,10 +576,6 @@
             Entrez
           </a>
 
-          <a target="_blank" class="variant-link-external" href="http://www.omim.org/entry/{{mimNumber|client_filter}}">
-            OMIM
-          </a>
-
           <a target="_blank" class="variant-link-external"
              href="{{ url_for('browser.igv_init', institute_id=institute_id,
                               case_id=case_id, variant_id=variant_id) }}">
@@ -555,22 +587,22 @@
 
     <div id="activity" class="variant-segments-row">
       <div class="md-card is-main">
-        <div class="md-card-header">Activity</div>
+        <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
           <div class="activity-feed">
-            {% for event in variant.events|reverse %}
+            {% for comment in variant.comments|reverse %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
-                    <strong>{{ event.author.name }}</strong>
-                    {{ event.verb }}
-                    <a href="{{ event.link }}">{{ event.subject }}</a>
+                    <strong>{{ comment.author.name }}</strong>
+                    {{ comment.verb }}
+                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
                     <span class="timestamp">
-                      {{ event.created_at|human_date }}
+                      {{ comment.created_at|human_date }}
                     </span>
                   </div>
 
-                  {% if event.author.id == current_user.id %}
+                  {% if comment.author.id == current_user.id %}
                     {% set form_id = 'delete-comment-%s' % loop.index %}
                     <form class="activity-feed-delete"
                           accept-charset="UTF-8"
@@ -586,9 +618,9 @@
                   {% endif %}
                 </div>
 
-                {% if event.content %}
+                {% if comment.content %}
                   <div class="activity-feed-item-body">
-                    {{ event.content }}
+                    {{ comment.content }}
                   </div>
                 {% endif %}
               </div>

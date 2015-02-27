@@ -181,6 +181,7 @@ class Variant(Document):
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = ListField(EmbeddedDocumentField(Compound))
   events = ListField(EmbeddedDocumentField(Event))
+  comments = ListField(EmbeddedDocumentField(Event))
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:
