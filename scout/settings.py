@@ -53,6 +53,9 @@ class BaseConfig(object):
                 'scout.extensions.babel',
                 'chanjo_report.server.extensions.api']
 
+  # settings for triggering opening of research mode
+  RESEARCH_MODE_RECIPIENT = 'example@domain.com'
+
 
 class DevelopmentConfig(BaseConfig):
   """docstring for DefaultConfig"""
