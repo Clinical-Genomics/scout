@@ -73,12 +73,15 @@ class Case(Document):
                                                     'solved'])
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
-
+  
   # This decides which gene lists that should be shown when the case is opened
   default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
-
+  
+  genome_build = StringField()
+  genome_version = FloatField()
+  
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
