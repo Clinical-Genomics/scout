@@ -52,6 +52,7 @@ $toolbar-bg-color: $primary-color;
 
   > * {
     margin: 0 .4rem;
+    flex-shrink: 0;
   }
 }
 

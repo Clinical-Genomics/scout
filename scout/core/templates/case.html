@@ -35,49 +35,37 @@
     </a>
   {% endif %}
 
-  <div class="md-tooltip">
-
-    {% if case.assignee %}
-      <form class="case-assign" action="{{ url_for('core.remove_assignee',
-                               institute_id=institute.display_name,
-                               case_id=case.display_name) }}"
-            method="POST">
-        <button type="submit" class="case-assign-icon">
-          <div class="md-label">
-            <div class="md-label-icon">
-              <core-icon icon="highlight-remove"></core-icon>
-            </div>
-            <div class="md-label-text">{{ case.assignee.name }}</div>
+  {% if case.assignee %}
+    <form class="case-assign" action="{{ url_for('core.remove_assignee',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name) }}"
+          method="POST">
+      <button type="submit" class="case-assign-icon">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="highlight-remove"></core-icon>
           </div>
-        </button>
-      </form>
-    {% else %}
-      <form class="case-assign" action="{{ url_for('core.assign_self',
-                               institute_id=institute.display_name,
-                               case_id=case.display_name) }}"
-            method="POST">
+          <div class="md-label-text">{{ case.assignee.name }}</div>
+        </div>
+      </button>
+    </form>
+  {% else %}
+    <form class="case-assign" action="{{ url_for('core.assign_self',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name) }}"
+          method="POST"
+          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
 
-        <button type="submit" class="case-assign-icon">
-          <div class="md-label">
-            <div class="md-label-icon">
-              <core-icon icon="assignment-ind"></core-icon>
-            </div>
-            <div class="md-label-text">Adopt</div>
+      <button type="submit" class="case-assign-icon">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="assignment-ind"></core-icon>
           </div>
-        </button>
-      </form>
-    {% endif %}
-
-    <div class="md-tooltip-tip is-right">
-      <div class="md-tooltip-content">
-        You adopt a case to show that you <br>
-        assume responsibility for it. <br>
-        Your name will show up in relation <br>
-        to the case for all team members <br>
-        to see.
-      </div>
-    </div>
-  </div>
+          <div class="md-label-text">Adopt</div>
+        </div>
+      </button>
+    </form>
+  {% endif %}
 
   <div class="md-label">
     <div class="md-label-icon">
@@ -116,25 +104,13 @@
     <div class="md-label-text">Coverage report</div>
   </a>
 
-  <div class="md-tooltip">
-
-    <div class="md-label">
-      <div class="md-label-icon">
-        <core-icon icon="done-all"></core-icon>
-      </div>
-      <div class="md-label-text">
-        MAF check:
-        <strong>{{ case.gender_check }}</strong>
-      </div>
+  <div class="md-label" title="Correct internal processing of each sample is confirmed through variant calling concordance. The result of said check is then shown here.">
+    <div class="md-label-icon">
+      <core-icon icon="done-all"></core-icon>
     </div>
-
-    <div class="md-tooltip-tip is-left">
-      <div class="md-tooltip-content">
-        Correct internal processing of each <br>
-        sample is confirmed through variant calling <br>
-        concordance. The result of said check is <br>
-        then shown here.
-      </div>
+    <div class="md-label-text">
+      MAF check:
+      <strong>{{ case.gender_check }}</strong>
     </div>
   </div>
 {% endblock %}
