@@ -570,6 +570,8 @@ def get_case(ped_file, family_type, scout_configs):
     # Add the genome build information
     mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
     mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
+    
+    mongo_case['analysis_date'] = scout_configs.get('analysis_date', '') 
     # Add the pedigree picture
     madeline_file = scout_configs.get('madeline', None)
     if madeline_file:

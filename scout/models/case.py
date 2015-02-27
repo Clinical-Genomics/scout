@@ -82,6 +82,8 @@ class Case(Document):
   genome_build = StringField()
   genome_version = FloatField()
   
+  analysis_date = StringField()
+  
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
