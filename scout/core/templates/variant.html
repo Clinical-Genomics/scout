@@ -271,7 +271,11 @@
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.exac_frequency|round(3) }}</div>
+            <div>
+              <a href="{{ variant.exac_link }}">
+                {{ variant.exac_frequency|round(3) }}
+              </a>
+            </div>
           </div>
 
           <div class="variant-list-item">
@@ -525,12 +529,28 @@
                     <small>{{ transcript.transcript_id }}</small>
                   </td>
                   <td>{{ transcript.protein_id or '' }}</td>
-                  <td>{{ transcript.swiss_prot or '' }}</td>
+                  <td>
+                    <a href="{{ transcript.swiss_prot_link }}">
+                      {{ transcript.swiss_prot or '' }}
+                    </a>
+                  </td>
                   <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>{{ transcript.polyphen_prediction or '' }}</td>
-                  <td>{{ transcript.pfam_domain or '' }}</td>
-                  <td>{{ transcript.prosite_profile or '' }}</td>
-                  <td>{{ transcript.smart_domain or '' }}</td>
+                  <td>
+                    <a href="{{ transcript.pfam_domain }}">
+                      {{ transcript.pfam_domain or '' }}
+                    </a>
+                  </td>
+                  <td>
+                    <a href="{{ transcript.prosite_profile }}">
+                      {{ transcript.prosite_profile or '' }}
+                    </a>
+                  </td>
+                  <td>
+                    <a href="{{ transcript.smart_domain }}">
+                      {{ transcript.smart_domain or '' }}
+                    </a>
+                  </td>
                 </tr>
               {% else %}
                 <tr>
@@ -577,6 +597,15 @@
           <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
             Entrez
           </a>
+
+          <a target="_blank" class="variant-link-external" href="http://tools.genes.toronto.edu/">SPANAR</a>
+
+          {% for gene_id, gene_link in variant.reactome_links %}
+            <a target="_blank" class="variant-link-external"
+               href="{{ gene_link }}">
+              Reactome
+            </a>
+          {% endfor %}
 
           <a target="_blank" class="variant-link-external"
              href="{{ url_for('browser.igv_init', institute_id=institute_id,
@@ -682,7 +711,7 @@
                             institute_id=institute_id,
                             case_id=case_id,
                             variant_id=variant.variant_id) }}">
-          {{ variant.chromosome }}:{{ variant.position }}
+          {{ variant.id_string }}
         </a>
       </p>
 
@@ -691,23 +720,7 @@
         {{ variant.hgnc_symbols|join(', ') }}
       </p>
 
-      <p><strong>Database</strong>: {{ 'Not yet implemented' }}</p>
-
-      <p>
-        <strong>Chromosome position</strong>:
-        {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
-      </p>
-
-      <p><strong>Amino acid change(s)</strong>:</p>
-      <p>
-        <ul>
-          {% for item in variant.protein_change %}
-            <li>{{ item }}</li>
-          {% else %}
-            <li>No protein predictions</li>
-          {% endfor %}
-        </ul>
-      </p>
+      <p><strong>Databases</strong>: {{ variant.gene_lists|join(', ') }}</p>
 
       <p><strong>GT call</strong></p>
       <p>
