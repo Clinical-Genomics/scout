@@ -709,7 +709,7 @@
                             institute_id=institute_id,
                             case_id=case_id,
                             variant_id=variant.variant_id) }}">
-          {{ variant.chromosome }}:{{ variant.position }}
+          {{ variant.id_string }}
         </a>
       </p>
 
@@ -718,23 +718,7 @@
         {{ variant.hgnc_symbols|join(', ') }}
       </p>
 
-      <p><strong>Database</strong>: {{ 'Not yet implemented' }}</p>
-
-      <p>
-        <strong>Chromosome position</strong>:
-        {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
-      </p>
-
-      <p><strong>Amino acid change(s)</strong>:</p>
-      <p>
-        <ul>
-          {% for item in variant.protein_change %}
-            <li>{{ item }}</li>
-          {% else %}
-            <li>No protein predictions</li>
-          {% endfor %}
-        </ul>
-      </p>
+      <p><strong>Databases</strong>: {{ variant.gene_lists|join(', ') }}</p>
 
       <p><strong>GT call</strong></p>
       <p>
