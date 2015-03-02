@@ -598,6 +598,13 @@
             Entrez
           </a>
 
+          {% for gene_id, gene_link in variant.reactome_links %}
+            <a target="_blank" class="variant-link-external"
+               href="{{ gene_link }}">
+              Reactome
+            </a>
+          {% endfor %}
+
           <a target="_blank" class="variant-link-external"
              href="{{ url_for('browser.igv_init', institute_id=institute_id,
                               case_id=case_id, variant_id=variant_id) }}">
