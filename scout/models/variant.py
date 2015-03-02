@@ -97,7 +97,7 @@ class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   refseq_ids = ListField(StringField())
   hgnc_symbol = StringField()
-  
+
   # Protein specific predictions
   protein_id = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
@@ -106,7 +106,7 @@ class Transcript(EmbeddedDocument):
   pfam_domain = StringField()
   prosite_profile = StringField()
   smart_domain = StringField()
-  
+
   biotype = StringField()
   functional_annotations = ListField(StringField(choices=SO_TERMS))
   region_annotations = ListField(StringField(choices=FEATURE_TYPES))
@@ -115,6 +115,24 @@ class Transcript(EmbeddedDocument):
   strand = StringField()
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
+
+  @property
+  def swiss_prot_link(self):
+    return "http://www.uniprot.org/uniprot/{}".format(self.swiss_prot)
+
+  @property
+  def pfam_domain_link(self):
+    return "http://pfam.xfam.org/family/{}".format(self.pfam_domain)
+
+  @property
+  def prosite_profile_link(self):
+    return ("http://prosite.expasy.org/cgi-bin/prosite/prosite-search-ac?{}"
+            .format(self.prosite_profile))
+
+  @property
+  def smart_domain_link(self):
+    return ("http://smart.embl.de/smart/search.cgi?keywords={}"
+            .format(self.smart_domain))
 
 
 class OmimPhenotype(EmbeddedDocument):
