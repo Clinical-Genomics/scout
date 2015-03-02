@@ -401,5 +401,14 @@ class Variant(Document):
             3: 'medium', 4: 'medium',
             5: 'high'}.get(self.manual_rank, 'unknown')
 
+  @property
+  def exac_link(self):
+    """Compose link to ExAC website for a variant position."""
+    url_template = ("http://exac.broadinstitute.org/variant/"
+                    "{this.chromosome}-{this.position}-{this.reference}"
+                    "-{this.alternative}")
+
+    return url_template.format(this=self)
+
   def __unicode__(self):
     return self.display_name

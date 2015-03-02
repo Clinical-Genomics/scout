@@ -271,7 +271,11 @@
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.exac_frequency|round(3) }}</div>
+            <div>
+              <a href="{{ variant.exac_link }}">
+                {{ variant.exac_frequency|round(3) }}
+              </a>
+            </div>
           </div>
 
           <div class="variant-list-item">
