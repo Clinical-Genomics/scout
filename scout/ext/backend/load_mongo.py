@@ -690,8 +690,10 @@ def get_transcript_information(vep_entry, ensembl_to_refseq):
   transcript = Transcript(transcript_id = transcript_id)
   # Add the refseq ids
   transcript.refseq_ids = ensembl_to_refseq.get(transcript_id, [])
-  # Add the gene identifier
+  # Add the hgnc gene identifier
   transcript.hgnc_symbol = vep_entry.get('SYMBOL', '').split('.')[0]
+  # Add the ensembl gene identifier
+  transcript.ensembl_id = vep_entry.get('Gene', '')
   
   ########### Fill it with the available information ###########
   
@@ -780,7 +782,6 @@ def get_genes(variant):
   transcripts = []
   mongo_genes = []
   
-  
   # Conversion from ensembl to refseq
   # ensembl_to_refseq is a dictionary with ensembl transcript id as keys and
   # a list of refseq ids as values
@@ -818,6 +819,8 @@ def get_genes(variant):
           genes[hgnc_symbol]['omim_gene_id'] = None
           genes[hgnc_symbol]['phenotypic_terms'] = []
           genes[hgnc_symbol]['best_rank'] = 40
+          genes[hgnc_symbol]['ensembl_id'] = transcript.ensembl_id
+          
           for functional_annotation in transcript.functional_annotations:
             new_rank = SO_TERMS[functional_annotation]['rank']
             if new_rank < genes[hgnc_symbol]['best_rank']:
@@ -863,12 +866,13 @@ def get_genes(variant):
                             )
         
         genes[hgnc_symbol]['phenotypic_terms'].append(disease_model)
-
+  
   for hgnc_symbol in genes:
     gene_info = genes[hgnc_symbol]
     most_severe = gene_info['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
     mongo_gene = Gene(hgnc_symbol=hgnc_symbol)
+    mongo_gene.ensembl_gene_id = gene_info.get('ensembl_id', None)
     mongo_gene.omim_gene_entry = gene_info.get(
                                       'omim_gene_id', 
                                       None
@@ -1014,6 +1018,8 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
   # vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
   # for variant in vcf_parser:
+  #   get_genes(variant)
+  # sys.exit()
   #   print(variant['info_dict'].get('Ensembl_transcript_to_refseq_transcript', []))
     # for allele in variant['vep_info']:
     #   if allele != 'gene_ids':

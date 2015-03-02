@@ -147,6 +147,7 @@ class OmimPhenotype(EmbeddedDocument):
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
+  ensembl_gene_id = StringField()
   transcripts = ListField(EmbeddedDocumentField(Transcript))
   functional_annotation = StringField(choices=SO_TERMS)
   region_annotation = StringField(choices=FEATURE_TYPES)
