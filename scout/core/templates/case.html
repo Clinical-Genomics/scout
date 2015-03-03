@@ -328,7 +328,7 @@
     <div id="gene-lists+hpo-genes" class="case-segment-row">
       <div id="clinical-gene-lists" class="md-card is-main">
         <div class="md-card-header">Clinical gene lists</div>
-        <div class="md-card-body-scrollable">
+        <div class="md-card-body mod-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -352,7 +352,7 @@
 
       <div class="md-card is-aside">
         <div class="md-card-header">HPO gene list</div>
-        <div class="md-card-body-list">
+        <div class="md-card-body-list mod-scrollable-big">
           {% for hpo_gene in (case.hpo_genes or [])[:10] %}
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
