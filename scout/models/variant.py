@@ -164,6 +164,26 @@ class Gene(EmbeddedDocument):
 
     return url_template.format(self.ensembl_gene_id)
 
+  @property
+  def ensembl_link(self):
+    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?""g={}"
+            .format(self.ensembl_gene_id))
+
+  @property
+  def hpa_link(self):
+    return ("http://www.proteinatlas.org/search/{}"
+            .format(self.ensembl_gene_id))
+
+  @property
+  def string_link(self):
+    return ("http://string-db.org/newstring_cgi/show_network_section."
+            "pl?identifier={}".format(self.ensembl_gene_id))
+
+  @property
+  def entrez_link(self):
+    return ("http://www.ncbi.nlm.nih.gov/sites/gquery/?term={}"
+            .format(self.hgnc_symbol))
+
 
 class Compound(EmbeddedDocument):
   # This must be the document_id for this variant
@@ -422,6 +442,13 @@ class Variant(Document):
     url_template = ("http://exac.broadinstitute.org/variant/"
                     "{this.chromosome}-{this.position}-{this.reference}"
                     "-{this.alternative}")
+
+    return url_template.format(this=self)
+
+  @property
+  def ucsc_link(self):
+    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+                    "position=chr{this.chromosome}:{this.position}-{this.position}&dgv=pack&knownGene=pack&omimGene=pack")
 
     return url_template.format(this=self)
 

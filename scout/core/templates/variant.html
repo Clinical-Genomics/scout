@@ -582,10 +582,11 @@
             External links: {{ gene.hgnc_symbol }}
           </div>
           <div class="md-card-body">
-            {{ variant_links(hgnc_symbol=gene.hgnc_symbol,
-                             ensembl_gene_id=gene.ensembl_gene_id,
-                             chromosome=variant.chromosome,
-                             position=variant.position,
+            {{ variant_links(ensembl_link=gene.ensembl_link,
+                             hpa_link=gene.hpa_link,
+                             string_link=gene.string_link,
+                             ucsc_link=variant.ucsc_link,
+                             entrez_link=gene.entrez_link,
                              reactome_link=gene.reactome_link,
                              igv_link=url_for('browser.igv_init',
                                               institute_id=institute_id,
