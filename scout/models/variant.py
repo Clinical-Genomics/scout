@@ -134,6 +134,20 @@ class Transcript(EmbeddedDocument):
     return ("http://smart.embl.de/smart/search.cgi?keywords={}"
             .format(self.smart_domain))
 
+  @property
+  def refseq_links(self):
+    for refseq_id in self.refseq_ids:
+      yield (refseq_id,
+             "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id))
+
+  @property
+  def ensembl_link(self):
+    return "www.ensembl.org/id/{}".format(self.transcript_id)
+
+  @property
+  def ensembl_protein_link(self):
+    return "www.ensembl.org/id/{}".format(self.transcript_id)
+
 
 class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)

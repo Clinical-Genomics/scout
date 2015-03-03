@@ -3,7 +3,6 @@
 {% from '_macros.html' import compounds_table, variant_links %}
 
 {% set page_title = 'Variant' %}
-{% set hgnc_symbol = variant.hgnc_symbols[0] %}
 
 {% block toolbar_left %}
   {{ super() }}
@@ -220,12 +219,18 @@
 
           <div class="variant-list-item">
             <div>Position</div>
-            <div>{{ variant.position }}</div>
+            <div>{{ variant.chromosome }}:{{ variant.position }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>Ensembl ID(s)</div>
-            <div>{{ variant.ensembl_gene_ids|join(', ') }}</div>
+            <div>
+              {% for gene in variant.genes %}
+                <a href="{{ gene.ensembl_link }}">
+                  {{ gene.ensembl_gene_id }}
+                </a>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
@@ -354,7 +359,11 @@
             <div>{{ variant.sift_predictions|join(', ') }}</div>
           </div>
           <div class="variant-list-item">
-            <div>Polyphen</div>
+            <div>
+              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview">
+                Polyphen
+              </a>
+            </div>
             <div>{{ variant.polyphen_predictions|join(', ') }}</div>
           </div>
         </div>
@@ -451,16 +460,19 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <small>{{ transcript.transcript_id }}</small>
+                    <a href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
                   </td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        <small>
-                          {{ transcript.refseq_ids
-                              |join(', ')
-                              |truncate(13, True) }}
-                        </small>
+                        <!-- Show only the first two links! -->
+                        {% for refseq_id, refseq_link in (transcript.refseq_links|list)[:2] %}
+                          <a href="{{ refseq_link }}">
+                            <small>{{ refseq_id }}</small>
+                          </a>
+                        {% endfor %}
                       </div>
 
                       <div class="md-tooltip-tip is-top">
@@ -526,9 +538,14 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <small>{{ transcript.transcript_id }}</small>
+                    <a href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
                   </td>
-                  <td>{{ transcript.protein_id or '' }}</td>
+                  <td>
+                    <a href="{{ transcript.ensembl_protein_link }}">
+                      <small>{{ transcript.protein_id or '' }}</small>
+                    </a>
                   <td>
                     <a href="{{ transcript.swiss_prot_link }}">
                       {{ transcript.swiss_prot or '' }}
