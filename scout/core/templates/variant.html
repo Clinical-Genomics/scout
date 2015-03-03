@@ -1,9 +1,8 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
-{% from '_macros.html' import compounds_table %}
+{% from '_macros.html' import compounds_table, variant_links %}
 
 {% set page_title = 'Variant' %}
-{% set hgnc_symbol = variant.hgnc_symbols[0] %}
 
 {% block toolbar_left %}
   {{ super() }}
@@ -220,19 +219,25 @@
 
           <div class="variant-list-item">
             <div>Position</div>
-            <div>{{ variant.position }}</div>
+            <div>{{ variant.chromosome }}:{{ variant.position }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>Ensembl ID(s)</div>
-            <div>{{ variant.ensembl_gene_ids|join(', ') }}</div>
+            <div>
+              {% for gene in variant.genes %}
+                <a href="{{ gene.ensembl_link }}">
+                  {{ gene.ensembl_gene_id }}
+                </a>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
 
       <div id="transcript-overview" class="md-card">
         <div class="md-card-header">Transcript overview</div>
-        <div class="md-card-body-scrollable">
+        <div class="md-card-body mod-scrollable">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -313,7 +318,7 @@
 
       <div id="omim" class="md-card">
         <div class="md-card-header">OMIM phenotypes</div>
-        <div class="md-card-body-scrollable">
+        <div class="md-card-body mod-scrollable">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -354,7 +359,11 @@
             <div>{{ variant.sift_predictions|join(', ') }}</div>
           </div>
           <div class="variant-list-item">
-            <div>Polyphen</div>
+            <div>
+              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview">
+                Polyphen
+              </a>
+            </div>
             <div>{{ variant.polyphen_predictions|join(', ') }}</div>
           </div>
         </div>
@@ -429,7 +438,7 @@
       <div class="md-card">
         <div class="md-card-header">Transcripts</div>
 
-        <div class="md-card-body-scrollable-big">
+        <div class="md-card-body mod-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -451,16 +460,19 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <small>{{ transcript.transcript_id }}</small>
+                    <a href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
                   </td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        <small>
-                          {{ transcript.refseq_ids
-                              |join(', ')
-                              |truncate(13, True) }}
-                        </small>
+                        <!-- Show only the first two links! -->
+                        {% for refseq_id, refseq_link in (transcript.refseq_links|list)[:2] %}
+                          <a href="{{ refseq_link }}">
+                            <small>{{ refseq_id }}</small>
+                          </a>
+                        {% endfor %}
                       </div>
 
                       <div class="md-tooltip-tip is-top">
@@ -505,7 +517,7 @@
       <div class="md-card">
         <div class="md-card-header">Proteins</div>
 
-        <div class="md-card-body-scrollable-big">
+        <div class="md-card-body mod-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -526,9 +538,14 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <small>{{ transcript.transcript_id }}</small>
+                    <a href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
                   </td>
-                  <td>{{ transcript.protein_id or '' }}</td>
+                  <td>
+                    <a href="{{ transcript.ensembl_protein_link }}">
+                      <small>{{ transcript.protein_id or '' }}</small>
+                    </a>
                   <td>
                     <a href="{{ transcript.swiss_prot_link }}">
                       {{ transcript.swiss_prot or '' }}
@@ -569,52 +586,34 @@
       <div class="md-card">
         <div class="md-card-header">Compounds</div>
 
-        <div class="md-card-body-scrollable-big">
+        <div class="md-card-body mod-scrollable-big">
           {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
     </div>
 
-    <div id="external-links" class="variant-segments-row">
-      <div class="md-card">
-        <div class="md-card-body">
-          <a target="_blank" class="variant-link-external" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
-            Ensembl
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensembl_gene_ids|join(',') }}">
-            HPA
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensembl_gene_ids|join(',') }}">
-            STRING
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
-            UCSC
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
-            Entrez
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://tools.genes.toronto.edu/">SPANAR</a>
-
-          {% for gene_id, gene_link in variant.reactome_links %}
-            <a target="_blank" class="variant-link-external"
-               href="{{ gene_link }}">
-              Reactome
-            </a>
-          {% endfor %}
-
-          <a target="_blank" class="variant-link-external"
-             href="{{ url_for('browser.igv_init', institute_id=institute_id,
-                              case_id=case_id, variant_id=variant_id) }}">
-            IGV
-          </a>
+    {% for gene in variant.genes %}
+      <div id="external-links" class="variant-segments-row">
+        <div class="md-card">
+          <div class="md-card-header">
+            External links: {{ gene.hgnc_symbol }}
+          </div>
+          <div class="md-card-body">
+            {{ variant_links(ensembl_link=gene.ensembl_link,
+                             hpa_link=gene.hpa_link,
+                             string_link=gene.string_link,
+                             ucsc_link=variant.ucsc_link,
+                             entrez_link=gene.entrez_link,
+                             reactome_link=gene.reactome_link,
+                             igv_link=url_for('browser.igv_init',
+                                              institute_id=institute_id,
+                                              case_id=case_id,
+                                              variant_id=variant_id))
+            }}
+          </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
 
     <div id="activity" class="variant-segments-row">
       <div class="md-card is-main">
