@@ -81,8 +81,41 @@
 {% block content %}
 
   <drawer-panel v-ref="filters" side="right">
+    <form method="POST" action="{{ url_for('core.upload_gene_list') }}"
+          enctype="multipart/form-data">
+      <div class="variants-filters-group">
+        <div class="variants-filters-group-list">
+          <div class="variants-filters-group-label">
+            {{ upload_form.gene_list.label }}
+          </div>
+          <div class="list-item">
+            <div>{{ upload_form.gene_list }}</div>
+            <div><button type="submit">Upload</button></div>
+          </div>
+        </div>
+      </div>
+    </form>
+
     <form method="GET">
       {{ form.csrf_token }}
+
+      <div class="variants-filter-buttons">
+        <a href="{{ url_for('core.variants', institute_id=institute_id,
+                      case_id=case_id,
+                      variant_type=variant_type,
+                      functional_annotations=severe_so_terms,
+                      region_annotations=['exonic', 'splicing'],
+                      thousand_genomes_frequency=0.01,
+                      gene_lists=current_gene_lists,
+                      hgnc_symbols=form.hgnc_symbols.data) }}"
+           class="md-button">
+          Clinical filter
+        </a>
+
+        <button class="md-button" type="submit">
+          Filter variants
+        </button>
+      </div>
 
       <div class="variants-filters-group">
         <div class="variants-filters-group-label">
@@ -160,24 +193,6 @@
         <div class="variant-filters-group-body">
           {{ form.genetic_models(class="variants-filters-select") }}
         </div>
-      </div>
-
-      <div class="variants-filter-buttons">
-        <a href="{{ url_for('core.variants', institute_id=institute_id,
-                      case_id=case_id,
-                      variant_type=variant_type,
-                      functional_annotations=severe_so_terms,
-                      region_annotations=['exonic', 'splicing'],
-                      thousand_genomes_frequency=0.01,
-                      gene_lists=current_gene_lists,
-                      hgnc_symbols=form.hgnc_symbols.data) }}"
-           class="md-button">
-          Clinical filter
-        </a>
-
-        <button class="md-button" type="submit">
-          Filter variants
-        </button>
       </div>
     </form>
   </drawer-panel>
