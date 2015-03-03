@@ -1,6 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
-{% from '_macros.html' import compounds_table %}
+{% from '_macros.html' import compounds_table, variant_links %}
 
 {% set page_title = 'Variant' %}
 {% set hgnc_symbol = variant.hgnc_symbols[0] %}
@@ -575,46 +575,27 @@
       </div>
     </div>
 
-    <div id="external-links" class="variant-segments-row">
-      <div class="md-card">
-        <div class="md-card-body">
-          <a target="_blank" class="variant-link-external" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
-            Ensembl
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensembl_gene_ids|join(',') }}">
-            HPA
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensembl_gene_ids|join(',') }}">
-            STRING
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
-            UCSC
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
-            Entrez
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://tools.genes.toronto.edu/">SPANAR</a>
-
-          {% for gene_id, gene_link in variant.reactome_links %}
-            <a target="_blank" class="variant-link-external"
-               href="{{ gene_link }}">
-              Reactome
-            </a>
-          {% endfor %}
-
-          <a target="_blank" class="variant-link-external"
-             href="{{ url_for('browser.igv_init', institute_id=institute_id,
-                              case_id=case_id, variant_id=variant_id) }}">
-            IGV
-          </a>
+    {% for gene in variant.genes %}
+      <div id="external-links" class="variant-segments-row">
+        <div class="md-card">
+          <div class="md-card-header">
+            External links: {{ gene.hgnc_symbol }}
+          </div>
+          <div class="md-card-body">
+            {{ variant_links(hgnc_symbol=gene.hgnc_symbol,
+                             ensembl_gene_id=gene.ensembl_gene_id,
+                             chromosome=variant.chromosome,
+                             position=variant.position,
+                             reactome_link=gene.reactome_link,
+                             igv_link=url_for('browser.igv_init',
+                                              institute_id=institute_id,
+                                              case_id=case_id,
+                                              variant_id=variant_id))
+            }}
+          </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
 
     <div id="activity" class="variant-segments-row">
       <div class="md-card is-main">

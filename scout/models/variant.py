@@ -156,6 +156,14 @@ class Gene(EmbeddedDocument):
   omim_gene_entry = IntField()
   omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
 
+  @property
+  def reactome_link(self):
+    url_template = ("http://www.reactome.org/content/query?q={}&"
+                    "species=Homo+sapiens&species=Entries+without+species&"
+                    "cluster=true")
+
+    return url_template.format(self.ensembl_gene_id)
+
 
 class Compound(EmbeddedDocument):
   # This must be the document_id for this variant
@@ -416,15 +424,6 @@ class Variant(Document):
                     "-{this.alternative}")
 
     return url_template.format(this=self)
-
-  @property
-  def reactome_links(self):
-    for gene_id in self.ensembl_gene_ids:
-      url_template = ("http://www.reactome.org/content/query?q={}&"
-                      "species=Homo+sapiens&species=Entries+without+species&"
-                      "cluster=true")
-
-      yield gene_id, url_template.format(gene_id)
 
   def __unicode__(self):
     return self.display_name

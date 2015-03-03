@@ -30,8 +30,8 @@
           </td>
           <td class="text-right">{{ compound.combined_score }}</td>
           <td class="text-right">{{ compound.rank_score }}</td>
-          <td>{{ compound.variant.region_annotations|join(',') }}</td>
-          <td>{{ compound.variant.functional_annotations|join(',') }}</td>
+          <td>{{ compound.region_annotations|join(',') }}</td>
+          <td>{{ compound.functional_annotations|join(',') }}</td>
         </tr>
       {% else %}
         <tr>
@@ -40,4 +40,38 @@
       {% endfor %}
     </tbody>
   </table>
+{% endmacro %}
+
+{% macro variant_links(hgnc_symbol, ensembl_gene_id, chromosome, position, reactome_link, igv_link) %}
+  <a target="_blank" class="variant-link-external" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ ensembl_gene_id }}">
+    Ensembl
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ ensembl_gene_id }}">
+    HPA
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ ensembl_gene_id }}">
+    STRING
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ chromosome }}:{{ position }}-{{ position }}&dgv=pack&knownGene=pack&omimGene=pack">
+    UCSC
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ hgnc_symbol }}">
+    Entrez
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="http://tools.genes.toronto.edu/">SPANAR</a>
+
+  <a target="_blank" class="variant-link-external"
+     href="{{ reactome_link }}">
+    Reactome
+  </a>
+
+  <a target="_blank" class="variant-link-external"
+     href="{{ igv_link }}">
+    IGV
+  </a>
 {% endmacro %}
