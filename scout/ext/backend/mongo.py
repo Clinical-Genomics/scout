@@ -141,44 +141,29 @@ class MongoAdapter(BaseAdapter):
                                   )
         any_query = True
       
-      # Since we will add an '$or' question here we have to be extra careful
-      if query['functional_annotations'] and query['region_annotations']:
-        mongo_query['$and'].append({'$or': [
-                            {'genes.functional_annotation' : {
-                                '$in': query['functional_annotations']
-                              }
-                            },
-                            {'genes.region_annotation' : {
-                                '$in': query['region_annotations']
-                              }
-                            }
-                          ]
-                        }
-                      )
-        any_query = True
-
-      elif query['functional_annotations']:
+      
+      if query['functional_annotations']:
           mongo_query['$and'].append({'genes.functional_annotation':
                                         {'$in': query['functional_annotations']}
                                         }
                                       )
           any_query = True
-
-      elif query['region_annotations']:
+      
+      if query['region_annotations']:
           mongo_query['$and'].append({'genes.region_annotation':
                                         {'$in': query['region_annotations']}
                                         }
                                       )
           any_query = True
-
+      
       if variant_ids:
         mongo_query['$and'].append({'variant_id':
                                       {'$in': variant_ids}
                                     }
                                   )
         any_query = True
-
-
+      
+      
       if not any_query:
         del mongo_query['$and']
       

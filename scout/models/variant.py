@@ -92,12 +92,19 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
+ACMG_TERMS = (
+  'pathegenic',
+  'likely pathegenic',
+  'uncertain significance',
+  'likely benign',
+  'benign'
+)
 
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   refseq_ids = ListField(StringField())
   hgnc_symbol = StringField()
-  
+
   # Protein specific predictions
   protein_id = StringField()
   sift_prediction = StringField(choices=CONSEQUENCE)
@@ -106,7 +113,7 @@ class Transcript(EmbeddedDocument):
   pfam_domain = StringField()
   prosite_profile = StringField()
   smart_domain = StringField()
-  
+
   biotype = StringField()
   functional_annotations = ListField(StringField(choices=SO_TERMS))
   region_annotations = ListField(StringField(choices=FEATURE_TYPES))
@@ -115,6 +122,38 @@ class Transcript(EmbeddedDocument):
   strand = StringField()
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
+
+  @property
+  def swiss_prot_link(self):
+    return "http://www.uniprot.org/uniprot/{}".format(self.swiss_prot)
+
+  @property
+  def pfam_domain_link(self):
+    return "http://pfam.xfam.org/family/{}".format(self.pfam_domain)
+
+  @property
+  def prosite_profile_link(self):
+    return ("http://prosite.expasy.org/cgi-bin/prosite/prosite-search-ac?{}"
+            .format(self.prosite_profile))
+
+  @property
+  def smart_domain_link(self):
+    return ("http://smart.embl.de/smart/search.cgi?keywords={}"
+            .format(self.smart_domain))
+
+  @property
+  def refseq_links(self):
+    for refseq_id in self.refseq_ids:
+      yield (refseq_id,
+             "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id))
+
+  @property
+  def ensembl_link(self):
+    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
+
+  @property
+  def ensembl_protein_link(self):
+    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
 
 
 class OmimPhenotype(EmbeddedDocument):
@@ -129,6 +168,7 @@ class OmimPhenotype(EmbeddedDocument):
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
+  ensembl_gene_id = StringField()
   transcripts = ListField(EmbeddedDocumentField(Transcript))
   functional_annotation = StringField(choices=SO_TERMS)
   region_annotation = StringField(choices=FEATURE_TYPES)
@@ -136,6 +176,35 @@ class Gene(EmbeddedDocument):
   polyphen_prediction = StringField(choices=CONSEQUENCE)
   omim_gene_entry = IntField()
   omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
+  description = StringField()
+
+  @property
+  def reactome_link(self):
+    url_template = ("http://www.reactome.org/content/query?q={}&"
+                    "species=Homo+sapiens&species=Entries+without+species&"
+                    "cluster=true")
+
+    return url_template.format(self.ensembl_gene_id)
+
+  @property
+  def ensembl_link(self):
+    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?""g={}"
+            .format(self.ensembl_gene_id))
+
+  @property
+  def hpa_link(self):
+    return ("http://www.proteinatlas.org/search/{}"
+            .format(self.ensembl_gene_id))
+
+  @property
+  def string_link(self):
+    return ("http://string-db.org/newstring_cgi/show_network_section."
+            "pl?identifier={}".format(self.ensembl_gene_id))
+
+  @property
+  def entrez_link(self):
+    return ("http://www.ncbi.nlm.nih.gov/sites/gquery/?term={}"
+            .format(self.hgnc_symbol))
 
 
 class Compound(EmbeddedDocument):
@@ -144,8 +213,6 @@ class Compound(EmbeddedDocument):
   # This is the variant id
   display_name = StringField(required=True)
   combined_score = FloatField(required=True)
-  region_annotations = ListField(StringField())
-  functional_annotations = ListField(StringField())
 
   @property
   def rank_score(self):
@@ -210,6 +277,8 @@ class Variant(Document):
   gene_lists = ListField(StringField())
   expected_inheritance = ListField(StringField())
   manual_rank = IntField(choices=[1, 2, 3, 4, 5])
+
+  acmg_evaluation = StringField(choices=ACMG_TERMS)
 
   @property
   def local_requency(self):
@@ -352,12 +421,18 @@ class Variant(Document):
 
   @property
   def end_position(self):
-    # which alternative allele contains most bases
-    alt_bases = max([len(alt) for alt in self.alternatives])
+    # bases contained in alternative allele
+    alt_bases = len(self.alternative)
     # vs. reference allele
     bases = max(len(self.reference), alt_bases)
 
     return self.position + (bases - 1)
+
+  @property
+  def id_string(self):
+    """Compose standard ID string for a variant."""
+    return ("{this.chromosome}:{this.position} "
+            "{this.reference}/{this.alternative}".format(this=self))
 
   @property
   def frequency(self):
@@ -382,6 +457,23 @@ class Variant(Document):
     return {1: 'low', 2: 'low',
             3: 'medium', 4: 'medium',
             5: 'high'}.get(self.manual_rank, 'unknown')
+
+  @property
+  def exac_link(self):
+    """Compose link to ExAC website for a variant position."""
+    url_template = ("http://exac.broadinstitute.org/variant/"
+                    "{this.chromosome}-{this.position}-{this.reference}"
+                    "-{this.alternative}")
+
+    return url_template.format(this=self)
+
+  @property
+  def ucsc_link(self):
+    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+                    "position=chr{this.chromosome}:{this.position}-{this.position}&dgv=pack&knownGene=pack&omimGene=pack")
+
+    return url_template.format(this=self)
+
 
   def __unicode__(self):
     return self.display_name

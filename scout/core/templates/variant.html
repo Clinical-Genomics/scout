@@ -1,9 +1,8 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
-{% from '_macros.html' import compounds_table %}
+{% from '_macros.html' import compounds_table, variant_links %}
 
 {% set page_title = 'Variant' %}
-{% set hgnc_symbol = variant.hgnc_symbols[0] %}
 
 {% block toolbar_left %}
   {{ super() }}
@@ -220,19 +219,25 @@
 
           <div class="variant-list-item">
             <div>Position</div>
-            <div>{{ variant.position }}</div>
+            <div>{{ variant.chromosome }}:{{ variant.position }}</div>
           </div>
 
           <div class="variant-list-item">
             <div>Ensembl ID(s)</div>
-            <div>{{ variant.ensembl_gene_ids|join(', ') }}</div>
+            <div>
+              {% for gene in variant.genes %}
+                <a target="_blank" href="{{ gene.ensembl_link }}">
+                  {{ gene.ensembl_gene_id }}
+                </a>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
 
       <div id="transcript-overview" class="md-card">
         <div class="md-card-header">Transcript overview</div>
-        <div class="md-card-body-scrollable">
+        <div class="md-card-body mod-scrollable">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -271,7 +276,11 @@
 
           <div class="variant-list-item">
             <div title="Exome Aggregation Consortium">ExAC</div>
-            <div>{{ variant.exac_frequency|round(3) }}</div>
+            <div>
+              <a target="_blank" href="{{ variant.exac_link }}">
+                {{ variant.exac_frequency|round(3) }}
+              </a>
+            </div>
           </div>
 
           <div class="variant-list-item">
@@ -309,7 +318,7 @@
 
       <div id="omim" class="md-card">
         <div class="md-card-header">OMIM phenotypes</div>
-        <div class="md-card-body-scrollable">
+        <div class="md-card-body mod-scrollable">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -350,7 +359,11 @@
             <div>{{ variant.sift_predictions|join(', ') }}</div>
           </div>
           <div class="variant-list-item">
-            <div>Polyphen</div>
+            <div>
+              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview">
+                Polyphen
+              </a>
+            </div>
             <div>{{ variant.polyphen_predictions|join(', ') }}</div>
           </div>
         </div>
@@ -425,7 +438,7 @@
       <div class="md-card">
         <div class="md-card-header">Transcripts</div>
 
-        <div class="md-card-body-scrollable-big">
+        <div class="md-card-body mod-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -447,16 +460,19 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <small>{{ transcript.transcript_id }}</small>
+                    <a target="_blank" href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
                   </td>
                   <td>
                     <div class="md-tooltip">
                       <div class="dotdotdot">
-                        <small>
-                          {{ transcript.refseq_ids
-                              |join(', ')
-                              |truncate(13, True) }}
-                        </small>
+                        <!-- Show only the first two links! -->
+                        {% for refseq_id, refseq_link in (transcript.refseq_links|list)[:2] %}
+                          <a target="_blank" href="{{ refseq_link }}">
+                            <small>{{ refseq_id }}</small>
+                          </a>
+                        {% endfor %}
                       </div>
 
                       <div class="md-tooltip-tip is-top">
@@ -501,7 +517,7 @@
       <div class="md-card">
         <div class="md-card-header">Proteins</div>
 
-        <div class="md-card-body-scrollable-big">
+        <div class="md-card-body mod-scrollable-big">
           <table class="default-table--flex">
             <thead>
               <tr>
@@ -522,15 +538,36 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <small>{{ transcript.transcript_id }}</small>
+                    <a target="_blank" href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
                   </td>
-                  <td>{{ transcript.protein_id or '' }}</td>
-                  <td>{{ transcript.swiss_prot or '' }}</td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.ensembl_protein_link }}">
+                      <small>{{ transcript.protein_id or '' }}</small>
+                    </a>
+                  <td>
+                    <a target="_blank" href="{{ transcript.swiss_prot_link }}">
+                      {{ transcript.swiss_prot or '' }}
+                    </a>
+                  </td>
                   <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>{{ transcript.polyphen_prediction or '' }}</td>
-                  <td>{{ transcript.pfam_domain or '' }}</td>
-                  <td>{{ transcript.prosite_profile or '' }}</td>
-                  <td>{{ transcript.smart_domain or '' }}</td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.pfam_domain_link }}">
+                      {{ transcript.pfam_domain or '' }}
+                    </a>
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.prosite_profile }}">
+                      {{ transcript.prosite_profile or '' }}
+                    </a>
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.smart_domain }}">
+                      {{ transcript.smart_domain or '' }}
+                    </a>
+                  </td>
                 </tr>
               {% else %}
                 <tr>
@@ -549,43 +586,34 @@
       <div class="md-card">
         <div class="md-card-header">Compounds</div>
 
-        <div class="md-card-body-scrollable-big">
+        <div class="md-card-body mod-scrollable-big">
           {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
     </div>
 
-    <div id="external-links" class="variant-segments-row">
-      <div class="md-card">
-        <div class="md-card-body">
-          <a target="_blank" class="variant-link-external" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ variant.ensembl_gene_ids|join(',') }}">
-            Ensembl
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://www.proteinatlas.org/search/{{ variant.ensembl_gene_ids|join(',') }}">
-            HPA
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://string-db.org/newstring_cgi/show_network_section.pl?identifier={{ variant.ensembl_gene_ids|join(',') }}">
-            STRING
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack">
-            UCSC
-          </a>
-
-          <a target="_blank" class="variant-link-external" href="http://www.ncbi.nlm.nih.gov/sites/gquery/?term={{ variant.hgnc_symbols|join(',') }}">
-            Entrez
-          </a>
-
-          <a target="_blank" class="variant-link-external"
-             href="{{ url_for('browser.igv_init', institute_id=institute_id,
-                              case_id=case_id, variant_id=variant_id) }}">
-            IGV
-          </a>
+    {% for gene in variant.genes %}
+      <div id="external-links" class="variant-segments-row">
+        <div class="md-card">
+          <div class="md-card-header">
+            External links: {{ gene.hgnc_symbol }}
+          </div>
+          <div class="md-card-body">
+            {{ variant_links(ensembl_link=gene.ensembl_link,
+                             hpa_link=gene.hpa_link,
+                             string_link=gene.string_link,
+                             ucsc_link=variant.ucsc_link,
+                             entrez_link=gene.entrez_link,
+                             reactome_link=gene.reactome_link,
+                             igv_link=url_for('browser.igv_init',
+                                              institute_id=institute_id,
+                                              case_id=case_id,
+                                              variant_id=variant_id))
+            }}
+          </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
 
     <div id="activity" class="variant-segments-row">
       <div class="md-card is-main">
@@ -682,7 +710,7 @@
                             institute_id=institute_id,
                             case_id=case_id,
                             variant_id=variant.variant_id) }}">
-          {{ variant.chromosome }}:{{ variant.position }}
+          {{ variant.id_string }}
         </a>
       </p>
 
@@ -691,23 +719,7 @@
         {{ variant.hgnc_symbols|join(', ') }}
       </p>
 
-      <p><strong>Database</strong>: {{ 'Not yet implemented' }}</p>
-
-      <p>
-        <strong>Chromosome position</strong>:
-        {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
-      </p>
-
-      <p><strong>Amino acid change(s)</strong>:</p>
-      <p>
-        <ul>
-          {% for item in variant.protein_change %}
-            <li>{{ item }}</li>
-          {% else %}
-            <li>No protein predictions</li>
-          {% endfor %}
-        </ul>
-      </p>
+      <p><strong>Databases</strong>: {{ variant.gene_lists|join(', ') }}</p>
 
       <p><strong>GT call</strong></p>
       <p>

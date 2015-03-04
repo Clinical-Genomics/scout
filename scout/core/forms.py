@@ -6,6 +6,7 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
+from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
                      SelectMultipleField, RadioField)
 from wtforms import widgets
@@ -86,6 +87,10 @@ class FiltersForm(Form):
   region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
   functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
   genetic_models = MultiCheckboxField(choices=GENETIC_MODELS)
+
+
+class GeneListUpload(Form):
+  gene_list = FileField('Dynamic gene list upload')
 
 
 def init_filters_form(get_args):

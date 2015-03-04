@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from itertools import chain
+import io
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
+from werkzeug import secure_filename
 
-from .forms import init_filters_form, SO_TERMS, process_filters_form
+from .forms import (init_filters_form, SO_TERMS, process_filters_form,
+                    GeneListUpload)
 from .utils import validate_user
 from ..models import Case, Event, PhenotypeTerm, Variant
 from ..extensions import mail, store
@@ -187,6 +190,26 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   return redirect(case_url)
 
 
+@core.route('/upload-gene-list', methods=['POST'])
+@login_required
+def upload_gene_list():
+  """Upload HGNC symbols to dynamically generate a gene list."""
+  gene_list = request.files.get('gene_list')
+  if gene_list:
+    # file found
+    hgnc_symbols = [line.strip() for line in gene_list
+                    if not line.startswith('#')]
+
+  else:
+    hgnc_symbols = []
+
+  referrer_url = request.referrer.partition('?')[0]
+  new_url = "{}?hgnc_symbols={}".format(referrer_url, ','.join(hgnc_symbols))
+
+  # redirect to variants list without old filters
+  return redirect(new_url)
+
+
 @core.route('/<institute_id>/<case_id>/<variant_type>',
             methods=['GET', 'POST'])
 @templated('variants.html')
@@ -242,7 +265,8 @@ def variants(institute_id, case_id, variant_type):
               form=form,
               severe_so_terms=SO_TERMS[:14],
               current_gene_lists=current_gene_lists,
-              variant_type=variant_type)
+              variant_type=variant_type,
+              upload_form=GeneListUpload())
 
 
 @core.route('/<institute_id>/<case_id>/<variant_type>/hpo_redirect')

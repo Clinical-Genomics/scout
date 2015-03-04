@@ -41,3 +41,35 @@
     </tbody>
   </table>
 {% endmacro %}
+
+{% macro variant_links(ensembl_link, hpa_link, string_link, ucsc_link, entrez_link, reactome_link, igv_link) %}
+  <a target="_blank" class="variant-link-external" href="{{ ensembl_link }}">
+    Ensembl
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="{{ hpa_link }}">
+    HPA
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="{{ string_link }}">
+    STRING
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="{{ ucsc_link }}">
+    UCSC
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="{{ entrez_link }}">
+    Entrez
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="http://tools.genes.toronto.edu/">SPANAR</a>
+
+  <a target="_blank" class="variant-link-external" href="{{ reactome_link }}">
+    Reactome
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="{{ igv_link }}">
+    IGV
+  </a>
+{% endmacro %}
