@@ -282,11 +282,6 @@
               </a>
             </div>
           </div>
-
-          <div class="variant-list-item">
-            <div>Local</div>
-            <div>{{ 'Not yet implemented' }}</div>
-          </div>
         </div>
       </div>
 
@@ -294,21 +289,21 @@
         <div class="md-card-header">Inheritance models</div>
 
         <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>Disease gene model</div>
-            <div>{{ variant.expected_inheritance_genes|join(', ') }}</div>
-          </div>
+          <div class="variant-row-item">
+            <div>Variant</div>
 
-          <div class="variant-list-item">
-            <div>OMIM summary</div>
-            {{ variant.omim_inheritance_models|join(', ') }}
+            <div class="variant-row-item-sublist">
+              {% for model in variant.genetic_models|sort %}
+                <div class="variant-row-item-sublist-item">{{ model }}</div>
+              {% endfor %}
+            </div>
           </div>
 
           <div class="variant-row-item">
-            <div>Matching</div>
+            <div>OMIM</div>
 
             <div class="variant-row-item-sublist">
-              {% for model in variant.genetic_models %}
+              {% for model in variant.omim_inheritance_models|sort %}
                 <div class="variant-row-item-sublist-item">{{ model }}</div>
               {% endfor %}
             </div>
@@ -336,7 +331,7 @@
                       {{ phenotype.omim_id }}
                     </a>
                   </td>
-                  <td>{{ phenotype.disease_models|join(', ') }}</td>
+                  <td>{{ phenotype.disease_models|sort|join(', ') }}</td>
                 </tr>
               {% else %}
                 <tr>

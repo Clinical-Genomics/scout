@@ -287,17 +287,6 @@ class Variant(Document):
               Case.objects.count())
 
   @property
-  def expected_inheritance_genes(self):
-    """Returns a list with expected inheritance model(s)."""
-    expected_inheritance = set([])
-    for gene in self.genes:
-      for omim_phenotype in gene.omim_phenotypes:
-        for gene_model in omim_phenotype.disease_models:
-          expected_inheritance.add(gene_model)
-
-    return list(expected_inheritance)
-
-  @property
   def omim_annotations(self):
     """Returns a list with omim id(s)."""
     if len(self.genes) == 1:
