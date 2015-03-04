@@ -100,6 +100,7 @@ ACMG_TERMS = (
   'benign'
 )
 
+
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   refseq_ids = ListField(StringField())
@@ -149,10 +150,6 @@ class Transcript(EmbeddedDocument):
 
   @property
   def ensembl_link(self):
-    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
-
-  @property
-  def ensembl_protein_link(self):
     return "http://www.ensembl.org/id/{}".format(self.transcript_id)
 
 
@@ -285,17 +282,6 @@ class Variant(Document):
     """Returns a float with the local freauency for this position."""
     return (Variant.objects(variant_id=self.variant_id).count /
               Case.objects.count())
-
-  @property
-  def expected_inheritance_genes(self):
-    """Returns a list with expected inheritance model(s)."""
-    expected_inheritance = set([])
-    for gene in self.genes:
-      for omim_phenotype in gene.omim_phenotypes:
-        for gene_model in omim_phenotype.disease_models:
-          expected_inheritance.add(gene_model)
-
-    return list(expected_inheritance)
 
   @property
   def omim_annotations(self):

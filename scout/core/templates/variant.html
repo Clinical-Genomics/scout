@@ -221,17 +221,6 @@
             <div>Position</div>
             <div>{{ variant.chromosome }}:{{ variant.position }}</div>
           </div>
-
-          <div class="variant-list-item">
-            <div>Ensembl ID(s)</div>
-            <div>
-              {% for gene in variant.genes %}
-                <a target="_blank" href="{{ gene.ensembl_link }}">
-                  {{ gene.ensembl_gene_id }}
-                </a>
-              {% endfor %}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -282,11 +271,6 @@
               </a>
             </div>
           </div>
-
-          <div class="variant-list-item">
-            <div>Local</div>
-            <div>{{ 'Not yet implemented' }}</div>
-          </div>
         </div>
       </div>
 
@@ -294,21 +278,21 @@
         <div class="md-card-header">Inheritance models</div>
 
         <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>Disease gene model</div>
-            <div>{{ variant.expected_inheritance_genes|join(', ') }}</div>
-          </div>
+          <div class="variant-row-item">
+            <div>Variant</div>
 
-          <div class="variant-list-item">
-            <div>OMIM summary</div>
-            {{ variant.omim_inheritance_models|join(', ') }}
+            <div class="variant-row-item-sublist">
+              {% for model in variant.genetic_models|sort %}
+                <div class="variant-row-item-sublist-item">{{ model }}</div>
+              {% endfor %}
+            </div>
           </div>
 
           <div class="variant-row-item">
-            <div>Matching</div>
+            <div>OMIM</div>
 
             <div class="variant-row-item-sublist">
-              {% for model in variant.genetic_models %}
+              {% for model in variant.omim_inheritance_models|sort %}
                 <div class="variant-row-item-sublist-item">{{ model }}</div>
               {% endfor %}
             </div>
@@ -336,7 +320,7 @@
                       {{ phenotype.omim_id }}
                     </a>
                   </td>
-                  <td>{{ phenotype.disease_models|join(', ') }}</td>
+                  <td>{{ phenotype.disease_models|sort|join(', ') }}</td>
                 </tr>
               {% else %}
                 <tr>
@@ -430,6 +414,38 @@
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list layout-center">
           {{ case.madeline_info|safe }}
+        </div>
+      </div>
+    </div>
+
+    <div id="transcripts" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Genes</div>
+
+        <div class="md-card-body mod-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Ensembl ID</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for gene in variant.genes %}
+                <tr>
+                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a target="_blank" href="{{ gene.ensembl_link }}">
+                      {{ gene.ensembl_gene_id }}
+                    </a>
+                  </td>
+                  <td>{{ gene.description or '' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -543,9 +559,7 @@
                     </a>
                   </td>
                   <td>
-                    <a target="_blank" href="{{ transcript.ensembl_protein_link }}">
-                      <small>{{ transcript.protein_id or '' }}</small>
-                    </a>
+                    <small>{{ transcript.protein_id or '' }}</small>
                   <td>
                     <a target="_blank" href="{{ transcript.swiss_prot_link }}">
                       {{ transcript.swiss_prot or '' }}
@@ -559,12 +573,12 @@
                     </a>
                   </td>
                   <td>
-                    <a target="_blank" href="{{ transcript.prosite_profile }}">
+                    <a target="_blank" href="{{ transcript.prosite_profile_link }}">
                       {{ transcript.prosite_profile or '' }}
                     </a>
                   </td>
                   <td>
-                    <a target="_blank" href="{{ transcript.smart_domain }}">
+                    <a target="_blank" href="{{ transcript.smart_domain_link }}">
                       {{ transcript.smart_domain or '' }}
                     </a>
                   </td>
