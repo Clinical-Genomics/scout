@@ -221,17 +221,6 @@
             <div>Position</div>
             <div>{{ variant.chromosome }}:{{ variant.position }}</div>
           </div>
-
-          <div class="variant-list-item">
-            <div>Ensembl ID(s)</div>
-            <div>
-              {% for gene in variant.genes %}
-                <a target="_blank" href="{{ gene.ensembl_link }}">
-                  {{ gene.ensembl_gene_id }}
-                </a>
-              {% endfor %}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -425,6 +414,38 @@
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list layout-center">
           {{ case.madeline_info|safe }}
+        </div>
+      </div>
+    </div>
+
+    <div id="transcripts" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Genes</div>
+
+        <div class="md-card-body mod-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Ensembl ID</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for gene in variant.genes %}
+                <tr>
+                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a target="_blank" href="{{ gene.ensembl_link }}">
+                      {{ gene.ensembl_gene_id }}
+                    </a>
+                  </td>
+                  <td>{{ gene.description or '' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
