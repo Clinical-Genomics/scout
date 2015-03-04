@@ -113,6 +113,11 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
                                           clinical_1_config['madeline']
                                         )
   
+  clinical_1_config['coverage_report'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_1_config['coverage_report']
+                                        )
+
   # Save the updated information to a temporary file:
   
   case_1_clinical_temp = NamedTemporaryFile(delete=False)
@@ -161,6 +166,11 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   research_1_config['madeline'] = os.path.join(
                                           BASE_PATH,
                                           research_1_config['madeline']
+                                        )
+  
+  research_1_config['coverage_report'] = os.path.join(
+                                          BASE_PATH,
+                                          research_1_config['coverage_report']
                                         )
   
   # Save the updated information to a temporary file:
@@ -212,6 +222,10 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
                                           BASE_PATH,
                                           clinical_coriell_config['madeline']
                                         )
+  clinical_coriell_config['coverage_report'] = os.path.join(
+                                          BASE_PATH,
+                                          clinical_coriell_config['coverage_report']
+                                        )
   
   # Save the updated information to a temporary file:
   
@@ -261,6 +275,11 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   research_coriell_config['madeline'] = os.path.join(
                                           BASE_PATH,
                                           research_coriell_config['madeline']
+                                        )
+  
+  research_coriell_config['coverage_report'] = os.path.join(
+                                          BASE_PATH,
+                                          research_coriell_config['coverage_report']
                                         )
   
   # Save the updated information to a temporary file:

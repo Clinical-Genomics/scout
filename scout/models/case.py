@@ -88,8 +88,10 @@ class Case(Document):
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
+  # madeline info is a full xml file
   madeline_info = StringField()
   vcf_file = StringField()
+  
   coverage_report_path = StringField()
 
   @property

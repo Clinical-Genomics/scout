@@ -92,6 +92,13 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
+ACMG_TERMS = (
+  'pathegenic',
+  'likely pathegenic',
+  'uncertain significance',
+  'likely benign',
+  'benign'
+)
 
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
@@ -134,20 +141,6 @@ class Transcript(EmbeddedDocument):
     return ("http://smart.embl.de/smart/search.cgi?keywords={}"
             .format(self.smart_domain))
 
-  @property
-  def refseq_links(self):
-    for refseq_id in self.refseq_ids:
-      yield (refseq_id,
-             "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id))
-
-  @property
-  def ensembl_link(self):
-    return "www.ensembl.org/id/{}".format(self.transcript_id)
-
-  @property
-  def ensembl_protein_link(self):
-    return "www.ensembl.org/id/{}".format(self.transcript_id)
-
 
 class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)
@@ -169,34 +162,7 @@ class Gene(EmbeddedDocument):
   polyphen_prediction = StringField(choices=CONSEQUENCE)
   omim_gene_entry = IntField()
   omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
-
-  @property
-  def reactome_link(self):
-    url_template = ("http://www.reactome.org/content/query?q={}&"
-                    "species=Homo+sapiens&species=Entries+without+species&"
-                    "cluster=true")
-
-    return url_template.format(self.ensembl_gene_id)
-
-  @property
-  def ensembl_link(self):
-    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?""g={}"
-            .format(self.ensembl_gene_id))
-
-  @property
-  def hpa_link(self):
-    return ("http://www.proteinatlas.org/search/{}"
-            .format(self.ensembl_gene_id))
-
-  @property
-  def string_link(self):
-    return ("http://string-db.org/newstring_cgi/show_network_section."
-            "pl?identifier={}".format(self.ensembl_gene_id))
-
-  @property
-  def entrez_link(self):
-    return ("http://www.ncbi.nlm.nih.gov/sites/gquery/?term={}"
-            .format(self.hgnc_symbol))
+  description = StringField()
 
 
 class Compound(EmbeddedDocument):
@@ -271,6 +237,8 @@ class Variant(Document):
   gene_lists = ListField(StringField())
   expected_inheritance = ListField(StringField())
   manual_rank = IntField(choices=[1, 2, 3, 4, 5])
+  
+  acmg_evaluation = StringField(choices=ACMG_TERMS)
 
   @property
   def local_requency(self):
@@ -460,11 +428,13 @@ class Variant(Document):
     return url_template.format(this=self)
 
   @property
-  def ucsc_link(self):
-    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
-                    "position=chr{this.chromosome}:{this.position}-{this.position}&dgv=pack&knownGene=pack&omimGene=pack")
+  def reactome_links(self):
+    for gene_id in self.ensembl_gene_ids:
+      url_template = ("http://www.reactome.org/content/query?q={}&"
+                      "species=Homo+sapiens&species=Entries+without+species&"
+                      "cluster=true")
 
-    return url_template.format(this=self)
+      yield gene_id, url_template.format(gene_id)
 
   def __unicode__(self):
     return self.display_name

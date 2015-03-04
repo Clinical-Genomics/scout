@@ -56,6 +56,11 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 type=click.Path(exists=True),
                 help="Path to the madeline file with the pedigree."
 )
+@click.option('-r', '--coverage_report',
+                nargs=1,
+                type=click.Path(exists=True),
+                help="Path to the coverage report file."
+)
 @click.option('-type', '--family_type',
                 type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
                 default='cmms',
@@ -95,8 +100,8 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 help='Increase output verbosity.'
 )
 def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
-              mongo_db, username, variant_type, madeline, password, institute, 
-              port, host, verbose):
+              mongo_db, username, variant_type, madeline, coverage_report,
+              password, institute, port, host, verbose):
   """
   Load the mongo database.
   
@@ -118,6 +123,9 @@ def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type,
   
   if madeline:
     scout_configs['madeline'] = madeline
+
+  if coverage_report:
+    scout_configs['coverage_report'] = coverage_report
   
   if institute:
     scout_configs['institutes'] = [institute]
