@@ -74,17 +74,17 @@ class Case(Document):
   is_research = BooleanField()
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
-
+  
   # This decides which gene lists that should be shown when the case is opened
   default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
-
+  
   genome_build = StringField()
   genome_version = FloatField()
-
+  
   analysis_date = StringField()
-
+  
   gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                              default='unconfirmed')
   phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
@@ -93,12 +93,12 @@ class Case(Document):
   vcf_file = StringField()
   
   coverage_report_path = StringField()
-
+  
   @property
   def hpo_genes(self):
     """
     Return the list of HGNC symbols that match annotated HPO terms.
-
+  
     Returns:
       query_result : A list of dictionaries on the form:
         {
