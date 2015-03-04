@@ -148,7 +148,7 @@ def get_genes(variant):
         hgnc_symbol = splitted_record[0]
         omim_term = int(splitted_record[1])
         genes[hgnc_symbol]['omim_gene_id'] = omim_term
-      except ValueError, KeyError:
+      except (ValueError, KeyError):
         pass
 
   # Fill the omim phenotype terms:
