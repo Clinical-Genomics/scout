@@ -226,7 +226,7 @@
             <div>Ensembl ID(s)</div>
             <div>
               {% for gene in variant.genes %}
-                <a href="{{ gene.ensembl_link }}">
+                <a target="_blank" href="{{ gene.ensembl_link }}">
                   {{ gene.ensembl_gene_id }}
                 </a>
               {% endfor %}
@@ -460,7 +460,7 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <a href="{{ transcript.ensembl_link }}">
+                    <a target="_blank" href="{{ transcript.ensembl_link }}">
                       <small>{{ transcript.transcript_id }}</small>
                     </a>
                   </td>
@@ -469,7 +469,7 @@
                       <div class="dotdotdot">
                         <!-- Show only the first two links! -->
                         {% for refseq_id, refseq_link in (transcript.refseq_links|list)[:2] %}
-                          <a href="{{ refseq_link }}">
+                          <a target="_blank" href="{{ refseq_link }}">
                             <small>{{ refseq_id }}</small>
                           </a>
                         {% endfor %}
@@ -538,33 +538,33 @@
                 <tr>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
-                    <a href="{{ transcript.ensembl_link }}">
+                    <a target="_blank" href="{{ transcript.ensembl_link }}">
                       <small>{{ transcript.transcript_id }}</small>
                     </a>
                   </td>
                   <td>
-                    <a href="{{ transcript.ensembl_protein_link }}">
+                    <a target="_blank" href="{{ transcript.ensembl_protein_link }}">
                       <small>{{ transcript.protein_id or '' }}</small>
                     </a>
                   <td>
-                    <a href="{{ transcript.swiss_prot_link }}">
+                    <a target="_blank" href="{{ transcript.swiss_prot_link }}">
                       {{ transcript.swiss_prot or '' }}
                     </a>
                   </td>
                   <td>{{ transcript.sift_prediction or '' }}</td>
                   <td>{{ transcript.polyphen_prediction or '' }}</td>
                   <td>
-                    <a href="{{ transcript.pfam_domain_link }}">
+                    <a target="_blank" href="{{ transcript.pfam_domain_link }}">
                       {{ transcript.pfam_domain or '' }}
                     </a>
                   </td>
                   <td>
-                    <a href="{{ transcript.prosite_profile }}">
+                    <a target="_blank" href="{{ transcript.prosite_profile }}">
                       {{ transcript.prosite_profile or '' }}
                     </a>
                   </td>
                   <td>
-                    <a href="{{ transcript.smart_domain }}">
+                    <a target="_blank" href="{{ transcript.smart_domain }}">
                       {{ transcript.smart_domain or '' }}
                     </a>
                   </td>
