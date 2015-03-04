@@ -213,8 +213,6 @@ class Compound(EmbeddedDocument):
   # This is the variant id
   display_name = StringField(required=True)
   combined_score = FloatField(required=True)
-  region_annotations = ListField(StringField())
-  functional_annotations = ListField(StringField())
 
   @property
   def rank_score(self):

@@ -30,8 +30,8 @@
           </td>
           <td class="text-right">{{ compound.combined_score }}</td>
           <td class="text-right">{{ compound.rank_score }}</td>
-          <td>{{ compound.region_annotations|join(',') }}</td>
-          <td>{{ compound.functional_annotations|join(',') }}</td>
+          <td>{{ compound.variant.region_annotations|join(',') }}</td>
+          <td>{{ compound.variant.functional_annotations|join(',') }}</td>
         </tr>
       {% else %}
         <tr>
