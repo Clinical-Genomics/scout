@@ -13,3 +13,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changes
 - incorporate user feedback updates
 - big refactor of load scripts
+
+## [0.0.2-rc2] - 2015-03-04
+### Changes
+- add gene table with gene description
+- reorganize inheritance models box
+
+### Fixed
+- avoid overwriting gene list on "research" load
+- fix various bugs in external links

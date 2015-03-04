@@ -236,7 +236,7 @@ def variants(institute_id, case_id, variant_type):
   # dynamically add choices to gene lists selection
   if variant_type == 'research':
     if case.is_research:
-      gene_lists = case.research_gene_lists
+      gene_lists = case.all_gene_lists
     else:
       # research mode not activated
       return abort(403)

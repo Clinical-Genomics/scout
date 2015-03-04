@@ -40,7 +40,7 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
-from ...models import Institute
+from ...models import (Institute, Case)
 
 
 from vcf_parser import VCFParser
@@ -115,10 +115,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   if verbose:
     print('Case found in %s: %s' % (ped_file, case.display_name),
           file=sys.stderr)
-  
-  if variant_type == 'research':
-    case['is_research'] = True
-  
+
   # Add the case to its institute(s)
   for institute_object in institutes:
     if case not in institute_object.cases:
@@ -126,8 +123,19 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   
     institute_object.save()
   
-  case.save()
-  
+  try:
+    existing_case = Case.objects.get(case_id = case.case_id)
+    if variant_type=='research':
+      existing_case.research_gene_lists = case.research_gene_lists
+      existing_case.is_research = True
+    else:
+      existing_case.clinical_gene_lists = case.clinical_gene_lists
+    existing_case.save()
+  except DoesNotExist:
+    if verbose:
+      print('New case!', file=sys.stderr)
+    case.save()
+    
   ######## Get the variants and add them to the mongo db: ########
   
   variant_parser = VCFParser(infile=vcf_file, split_variants=True)

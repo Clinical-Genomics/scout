@@ -6,6 +6,7 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
+import itertools
 
 from query_phenomizer import query
 from mongoengine import (DateTimeField, Document, EmbeddedDocument,
@@ -91,7 +92,7 @@ class Case(Document):
   # madeline info is a full xml file
   madeline_info = StringField()
   vcf_file = StringField()
-  
+
   coverage_report_path = StringField()
 
   @property
@@ -134,6 +135,11 @@ class Case(Document):
     """Aggregate all BAM files across all individuals."""
     return [individual.bam_file for individual in self.individuals
             if individual.bam_file]
+
+  @property
+  def all_gene_lists(self):
+    """Yield all gene lists (both clinical and research)."""
+    return itertools.chain(self.clinical_gene_lists, self.research_gene_lists)
 
   def __unicode__(self):
     return self.display_name
