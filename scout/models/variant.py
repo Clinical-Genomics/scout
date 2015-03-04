@@ -149,11 +149,11 @@ class Transcript(EmbeddedDocument):
 
   @property
   def ensembl_link(self):
-    return "www.ensembl.org/id/{}".format(self.transcript_id)
+    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
 
   @property
   def ensembl_protein_link(self):
-    return "www.ensembl.org/id/{}".format(self.transcript_id)
+    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
 
 
 class OmimPhenotype(EmbeddedDocument):
