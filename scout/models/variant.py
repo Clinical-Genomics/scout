@@ -100,6 +100,7 @@ ACMG_TERMS = (
   'benign'
 )
 
+
 class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   refseq_ids = ListField(StringField())
@@ -149,10 +150,6 @@ class Transcript(EmbeddedDocument):
 
   @property
   def ensembl_link(self):
-    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
-
-  @property
-  def ensembl_protein_link(self):
     return "http://www.ensembl.org/id/{}".format(self.transcript_id)
 
 
