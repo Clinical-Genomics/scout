@@ -40,7 +40,7 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
-from ...models import Institute
+from ...models import (Institute, Case)
 
 
 from vcf_parser import VCFParser
