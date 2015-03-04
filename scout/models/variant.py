@@ -162,6 +162,7 @@ class Gene(EmbeddedDocument):
   polyphen_prediction = StringField(choices=CONSEQUENCE)
   omim_gene_entry = IntField()
   omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
+  description = StringField()
 
 
 class Compound(EmbeddedDocument):
