@@ -281,6 +281,7 @@ class Variant(Document):
   local_frequency = FloatField()
   # Predicted deleteriousness:
   cadd_score = FloatField()
+  clnsig = IntField()
   # Conservation:
   phast_conservation = ListField(StringField(choices=CONSERVATION))
   gerp_conservation = ListField(StringField(choices=CONSERVATION))

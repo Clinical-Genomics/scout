@@ -127,7 +127,13 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   hgnc_symbols = set([])
   ensembl_gene_ids = set([])
   
-  expected_inheritance = set([])
+  # Add the clinsig prediction
+  clnsig = variant.get('CLNSIG', None)
+  if clnsig:
+    try:
+      mongo_variant['clnsig'] = int(clnsig[0])
+    except (ValueError, IndexError):
+      pass
   
   for gene in mongo_variant.genes:
     hgnc_symbols.add(gene.hgnc_symbol)
