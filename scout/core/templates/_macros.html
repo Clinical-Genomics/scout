@@ -73,3 +73,28 @@
     IGV
   </a>
 {% endmacro %}
+
+{% macro activity_feed(events) %}
+  <div class="activity-feed">
+    {% for event in events %}
+      <div class="activity-feed-item">
+        <div class="activity-feed-item-event">
+          <div class="activity-feed-item-event-body">
+            <strong>{{ event.author.name }}</strong>
+            {{ event.verb }}
+            <a href="{{ event.link }}">{{ event.subject }}</a>
+            <span class="timestamp">
+              {{ event.created_at|human_date }}
+            </span>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="activity-feed-item">
+        <div class="activity-feed-item-event">
+          No case activity yet.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endmacro %}

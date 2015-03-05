@@ -1,6 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
-{% from '_macros.html' import compounds_table, variant_links %}
+{% from '_macros.html' import activity_feed, compounds_table, variant_links %}
 
 {% set page_title = 'Variant' %}
 
@@ -200,7 +200,7 @@
           </div>
 
           <div class="variant-list-item">
-            <div>Matches expected inheritance model</div>
+            <div>Matches OMIM inheritance</div>
 
             {% if variant.is_matching_inheritance %}
               <div class="md-badge--success">Yes</div>
@@ -629,7 +629,7 @@
       </div>
     {% endfor %}
 
-    <div id="activity" class="variant-segments-row">
+    <div id="comments" class="variant-segments-row">
       <div class="md-card is-main">
         <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
@@ -706,6 +706,15 @@
         </div>
       </form>
     </div>
+
+    <div id="activity" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
+          {{ activity_feed(variant.events|reverse) }}
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- SANGER EMAIL MODAL -->
@@ -714,7 +723,7 @@
       action="{{ url_for('core.email_sanger',
                          institute_id=institute_id,
                          case_id=case_id,
-                         variant_id=variant.variant_id) }}"
+                         variant_id=variant_id) }}"
       method="POST"
     >
 
@@ -723,7 +732,7 @@
         <a href="{{ url_for('core.variant',
                             institute_id=institute_id,
                             case_id=case_id,
-                            variant_id=variant.variant_id) }}">
+                            variant_id=variant_id) }}">
           {{ variant.id_string }}
         </a>
       </p>
@@ -734,6 +743,15 @@
       </p>
 
       <p><strong>Databases</strong>: {{ variant.gene_lists|join(', ') }}</p>
+
+      <p>
+        <strong>Amino acid change(s)</strong>:
+        <ul>
+          {% for transcript in variant.refseq_transcripts %}
+            <li>{{ transcript.stringify() }}</li>
+          {% endfor %}
+        </ul>
+      </p>
 
       <p><strong>GT call</strong></p>
       <p>

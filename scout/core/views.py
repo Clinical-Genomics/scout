@@ -416,9 +416,9 @@ def email_sanger(institute_id, case_id, variant_id):
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
 
-  hgnc_symbol = ', '.join(variant.common.hgnc_symbols)
+  hgnc_symbol = ', '.join(variant.hgnc_symbols)
   functions = ["<li>{}</li>".format(function) for function in
-               variant.common.protein_change]
+               variant.protein_changes]
   gtcalls = ["<li>{}: {}</li>".format(individual.sample,
                                       individual.genotype_call)
              for individual in variant.samples]
@@ -428,8 +428,8 @@ def email_sanger(institute_id, case_id, variant_id):
     <p>HGNC symbol: {hgnc_symbol}</p>
     <p>Database: {database_id}</p>
     <p>Chr position: {chromosome_position}</p>
-    <p>Amino acid change(s): <br> <ul>{functions}</ul></p>
-    <p>GT-call: <br> <ul>{gtcalls}</ul></p>
+    <p>Amino acid change(s): <br> <ul>{functions}</ul></p><br>
+    <p>GT-call: <br> <ul>{gtcalls}</ul></p><br>
     <p>Ordered by: {name}</p>
   """.format(
     case_id=case_id,
@@ -437,9 +437,7 @@ def email_sanger(institute_id, case_id, variant_id):
     variant_id=variant_id,
     hgnc_symbol=hgnc_symbol,
     database_id='coming soon',
-    chromosome_position="%s:%s-%s" % (variant.chromosome,
-                                      variant.position,
-                                      variant.end_position),
+    chromosome_position=variant.id_string,
     functions=''.join(functions),
     gtcalls=''.join(gtcalls),
     name=current_user.name
