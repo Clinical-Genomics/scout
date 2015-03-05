@@ -150,7 +150,8 @@ class Transcript(EmbeddedDocument):
 
   @property
   def ensembl_link(self):
-    return "http://www.ensembl.org/id/{}".format(self.transcript_id)
+    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t={}"
+            .format(self.transcript_id))
 
 
 class OmimPhenotype(EmbeddedDocument):
@@ -185,7 +186,7 @@ class Gene(EmbeddedDocument):
 
   @property
   def ensembl_link(self):
-    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?""g={}"
+    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={}"
             .format(self.ensembl_gene_id))
 
   @property
