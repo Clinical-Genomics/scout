@@ -95,7 +95,7 @@
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(', ') }}
+        {{ variant.chromosome }}:{{ variant.position }} ({{ variant.hgnc_symbols|join(', ') }})
       </div>
     </div>
   </div>
@@ -218,8 +218,8 @@
           </div>
 
           <div class="variant-list-item">
-            <div>Position</div>
-            <div>{{ variant.chromosome }}:{{ variant.position }}</div>
+            <div>CLINSIG</div>
+            <div>{{ variant.clnsig or '1' }}: {{ variant.clnsig_human }}</div>
           </div>
         </div>
       </div>
