@@ -5,7 +5,7 @@
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import (absolute_import, unicode_literals, division)
-from itertools import chain
+import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
@@ -123,6 +123,20 @@ class Transcript(EmbeddedDocument):
   strand = StringField()
   coding_sequence_name = StringField()
   protein_sequence_name = StringField()
+
+  @property
+  def refseq_ids_string(self):
+    return ', '.join(self.refseq_ids)
+
+  @property
+  def absolute_exon(self):
+    return self.exon.rpartition('/')[0]
+
+  def stringify(self):
+    return ("{this.hgnc_symbol}:{this.refseq_ids_string}"
+            ":exon{this.absolute_exon}:{this.coding_sequence_name}"
+            ":{this.protein_sequence_name}"
+            .format(this=self))
 
   @property
   def swiss_prot_link(self):
@@ -318,7 +332,9 @@ class Variant(Document):
               for gene in self.genes)
 
     # untangle multiple nested list of list of lists...
-    return set(chain.from_iterable(chain.from_iterable(models)))
+    return set(
+      itertools.chain.from_iterable(itertools.chain.from_iterable(models))
+    )
 
   @property
   def region_annotations(self):
@@ -407,6 +423,11 @@ class Variant(Document):
         yield transcript
 
   @property
+  def protein_changes(self):
+    for transcript in self.refseq_transcripts:
+      yield transcript.stringify()
+
+  @property
   def end_position(self):
     # bases contained in alternative allele
     alt_bases = len(self.alternative)
@@ -460,7 +481,6 @@ class Variant(Document):
                     "position=chr{this.chromosome}:{this.position}-{this.position}&dgv=pack&knownGene=pack&omimGene=pack")
 
     return url_template.format(this=self)
-
 
   def __unicode__(self):
     return self.display_name
