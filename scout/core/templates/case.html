@@ -1,5 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
+{% from '_macros.html' import activity_feed %}
 
 {% set page_title = 'Case' %}
 
@@ -372,28 +373,7 @@
       <div id="case-activity" class="md-card">
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
-          <div class="activity-feed">
-            {% for event in case.events|reverse %}
-              <div class="activity-feed-item">
-                <div class="activity-feed-item-event">
-                  <div class="activity-feed-item-event-body">
-                    <strong>{{ event.author.name }}</strong>
-                    {{ event.verb }}
-                    <a href="{{ event.link }}">{{ event.subject }}</a>
-                    <span class="timestamp">
-                      {{ event.created_at|human_date }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            {% else %}
-              <div class="activity-feed-item">
-                <div class="activity-feed-item-event">
-                  No case activity yet.
-                </div>
-              </div>
-            {% endfor %}
-          </div>
+          {{ activity_feed(case.events|reverse) }}
         </div>
       </div>
     </div>

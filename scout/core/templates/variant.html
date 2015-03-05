@@ -1,6 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
-{% from '_macros.html' import compounds_table, variant_links %}
+{% from '_macros.html' import activity_feed, compounds_table, variant_links %}
 
 {% set page_title = 'Variant' %}
 
@@ -629,7 +629,7 @@
       </div>
     {% endfor %}
 
-    <div id="activity" class="variant-segments-row">
+    <div id="comments" class="variant-segments-row">
       <div class="md-card is-main">
         <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
@@ -705,6 +705,15 @@
           <button class="md-button-flat" type="submit">Comment</button>
         </div>
       </form>
+    </div>
+
+    <div id="activity" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
+          {{ activity_feed(variant.events|reverse) }}
+        </div>
+      </div>
     </div>
   </div>
 
