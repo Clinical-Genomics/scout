@@ -10,7 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - add many more external links
 - add coverage reports as PDFs
 
-### Changes
+### Changed
 - incorporate user feedback updates
 - big refactor of load scripts
 
@@ -22,3 +22,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - avoid overwriting gene list on "research" load
 - fix various bugs in external links
+
+## [0.0.2-rc3] - 2015-03-05
+### Added
+- Activity log feed to variant view
+- Adds protein change strings to ODM and Sanger email
+
+### Changed
+- Extract activity log component to macro
+
+### Fixes
+- Make Ensembl transcript links use archive website
