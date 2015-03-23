@@ -1,0 +1,12 @@
+---
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - common
+    - Stouts.mongodb
+    - package
+
+  vars:
+    mongodb_conf_smallfiles: yes
+    mongodb_conf_bind_ip: "0.0.0.0"
