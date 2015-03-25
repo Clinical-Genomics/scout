@@ -47,8 +47,7 @@ class AppFactory(object):
     # initialize the application
     self.app_config = config
     self.app = Flask(app_name or DevelopmentConfig.PROJECT,
-                     instance_relative_config=True,
-                     **kwargs)
+                     instance_relative_config=True, **kwargs)
 
     self._configure_app(config_obj=config_obj)
     self._bind_extensions()
@@ -66,7 +65,7 @@ class AppFactory(object):
     # user custom config
     # http://flask.pocoo.org/docs/config/#instance-folders
     default_config = os.path.join(self.app.instance_path,
-                                  "%s.cfg" % self.app.name)
+                                  "{}.cfg".format(self.app.name))
     self.app.config.from_pyfile(self.app_config or default_config, silent=True)
 
   def _bind_extensions(self):
@@ -75,7 +74,7 @@ class AppFactory(object):
       module, object_name = get_imported_stuff_by_path(ext_path)
 
       if not hasattr(module, object_name):
-        raise NoExtensionException("No %s extension found" % object_name)
+        raise NoExtensionException("No {} extension found".format(object_name))
 
       extension = getattr(module, object_name)
 
@@ -95,7 +94,7 @@ class AppFactory(object):
                                     url_prefix=url_prefix)
 
       else:
-        raise NoBlueprintException("No %s blueprint found" % object_name)
+        raise NoBlueprintException("No {} blueprint found".format(object_name))
 
   def _register_context_processors(self):
     """Register extra contexts for Jinja templates."""

@@ -3,7 +3,9 @@ from __future__ import absolute_import, unicode_literals
 from flask import Blueprint, render_template, redirect, url_for
 from flask.ext.login import current_user
 
-frontend = Blueprint('frontend', __name__, template_folder='templates')
+frontend = Blueprint('frontend', __name__, template_folder='templates',
+                     static_folder='static',
+                     static_url_path='/frontend/static')
 
 
 @frontend.route('/')
