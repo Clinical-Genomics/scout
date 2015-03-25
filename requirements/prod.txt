@@ -35,6 +35,7 @@ pyOpenSSL==0.13
 #chanjo-report>=0.0.6
 
 # misc. extensions
+Flask-Babel
 Flask-Markdown
 Flask-Mail
 
@@ -42,7 +43,7 @@ Flask-Mail
 path.py
 configparser
 click
-ped_parser>=0.8.1
+ped-parser==1.2.4
 vcf_parser>=0.8.3
 configobj
 requests

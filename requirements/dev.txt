@@ -2,6 +2,8 @@
 -r prod.txt
 
 # testing
+ipython
+ipdb
 pytest
 coverage
 coveralls
