@@ -170,7 +170,12 @@
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list layout-center">
-          {{ case.madeline_info|safe }}
+          {% if case.individuals|length == 1 %}
+            <!-- Don't expect a pedigree visualization -->
+            <p>Single sample case: {{ case.individuals.0.display_name }}</p>
+          {% else %}
+            {{ case.madeline_info|safe }}
+          {% endif %}
         </div>
       </div>
     </div>
