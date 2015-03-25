@@ -1,5 +1,5 @@
 ---
-- name: install conda dependencies
+- name: install default dependencies
   pip: name={{ item }} state=latest
   with_items:
     - pip
