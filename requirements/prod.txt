@@ -38,6 +38,7 @@ pyOpenSSL==0.13
 Flask-Babel
 Flask-Markdown
 Flask-Mail
+Flask-DebugToolbar==0.9.0
 
 # utils
 path.py
