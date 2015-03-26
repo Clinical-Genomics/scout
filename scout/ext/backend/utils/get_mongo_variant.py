@@ -119,14 +119,14 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                                             case_name,
                                             []
                                             )
-  
+
   ################# Add the gene and tanscript information #################
-  
+
   # Get genes return a list with ODM objects for each gene
   mongo_variant['genes'] = get_genes(variant)
   hgnc_symbols = set([])
   ensembl_gene_ids = set([])
-  
+
   # Add the clinsig prediction
   clnsig = variant.get('CLNSIG', None)
   if clnsig:
@@ -134,15 +134,15 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
       mongo_variant['clnsig'] = int(clnsig[0])
     except (ValueError, IndexError):
       pass
-  
+
   for gene in mongo_variant.genes:
     hgnc_symbols.add(gene.hgnc_symbol)
     ensembl_gene_ids.add(gene.ensembl_gene_id)
-  
+
   mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
-  
+
   mongo_variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
-  
+
   ################# Add a list with the dbsnp ids #################
 
   mongo_variant['db_snp_ids'] = variant['ID'].split(';')
@@ -232,62 +232,62 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type, 
+def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         variant_type, institute, verbose):
   """
   Test generate mongo variants.
   """
-  
+
   from vcf_parser import VCFParser
   from ....models import Case
   from ..config_parser import ConfigParser
   from . import get_case
-  
+
   setup_configs = {}
-  
+
   if scout_config_file:
     setup_configs = ConfigParser(scout_config_file)
-  
+
   if vcf_file:
     setup_configs['load_vcf'] = vcf_file
-  
+
   if ped_file:
     setup_configs['ped'] = ped_file
-  
+
   if institute:
     setup_configs['institutes'] = [institute]
-  
+
   if not setup_configs.get('load_vcf', None):
     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   # Check that the ped file is provided:
   if not setup_configs.get('ped', None):
     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   # Check that the config file is provided:
   if not vcf_config_file:
     print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   config_object = ConfigParser(vcf_config_file)
-  
+
   my_case = get_case(setup_configs, family_type)
-  
+
   vcf_parser = VCFParser(infile=setup_configs['load_vcf'], split_variants=True)
-  
+
   individuals = vcf_parser.individuals
-  
+
   variant_count = 0
   for variant in vcf_parser:
     variant_count += 1
     mongo_variant = get_mongo_variant(
-                        variant, 
-                        variant_type, 
-                        individuals, 
-                        my_case, 
-                        config_object, 
+                        variant,
+                        variant_type,
+                        individuals,
+                        my_case,
+                        config_object,
                         variant_count
                       )
     print(mongo_variant.to_json())
