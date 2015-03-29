@@ -6,6 +6,7 @@ import os
 import arrow
 from flask import Flask, render_template
 from jinja2 import is_undefined
+from path import path as ipath
 from werkzeug.utils import import_string
 
 from .settings import DevelopmentConfig
@@ -107,6 +108,53 @@ class AppFactory(object):
       else:
         raise NoContextProcessorException("No {} context processor found"
                                           .format(object_name))
+
+  def _configure_logging(self):
+    """Configure file(info) and email(error) logging"""
+    if self.app.debug or self.app.testing:
+      # Skip debug and test mode; just check standard output
+      return
+
+    log_folder = self.app.config.get('LOG_FOLDER')
+    if log_folder is None:
+      default_log_folder = os.path.join(self.app.instance_path, 'logs')
+      self.app.config['LOG_FOLDER'] = default_log_folder
+
+    # make sure that all folders are in place
+    ipath(self.app.config['LOG_FOLDER']).makedirs_p()
+
+    import logging
+    from logging.handlers import SMTPHandler
+
+    # Set info level on logger which might be overwritten by handlers
+    # Suppress DEBUG messages
+    self.app.logger.setLevel(logging.INFO)
+
+    log_file_name = "{}.log".format(self.app.config['PROJECT'])
+    log_file = os.path.join(self.app.config['LOG_FOLDER'], log_file_name)
+
+    info_file_handler = logging.handlers.RotatingFileHandler(
+      log_file, maxBytes=100000, backupCount=10)
+    info_file_handler.setLevel(logging.INFO)
+    info_file_handler.setFormatter(logging.Formatter(
+      '%(asctime)s %(levelname)s: %(message)s '
+      '[in %(pathname)s:%(lineno)d]')
+    )
+    self.app.logger.addHandler(info_file_handler)
+
+    mail_handler = SMTPHandler(
+      self.app.config['MAIL_SERVER'],
+      self.app.config['MAIL_USERNAME'],
+      self.app.config['ADMINS'],
+      'O_ops... %s failed!' % self.app.config['PROJECT'],
+      (self.app.config['MAIL_USERNAME'], self.app.config['MAIL_PASSWORD'])
+    )
+    mail_handler.setLevel(logging.ERROR)
+    mail_handler.setFormatter(logging.Formatter(
+      '%(asctime)s %(levelname)s: %(message)s '
+      '[in %(pathname)s:%(lineno)d]')
+    )
+    self.app.logger.addHandler(mail_handler)
 
   def _configure_error_handlers(self):
     """Configure error handlers to the corresponding error pages."""

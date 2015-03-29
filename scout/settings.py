@@ -54,6 +54,12 @@ class BaseConfig(object):
   # settings for triggering opening of research mode
   RESEARCH_MODE_RECIPIENT = 'example@domain.com'
 
+  # default to storing logs under instance folder
+  LOG_FOLDER = os.path.abspath('./instance/logs')
+
+  # recipients of error log emails
+  ADMINS = ['yourmail@gmail.com']
+
 
 class DevelopmentConfig(BaseConfig):
   """docstring for DefaultConfig"""
