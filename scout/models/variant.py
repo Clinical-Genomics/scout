@@ -225,6 +225,7 @@ class Compound(EmbeddedDocument):
   variant = ReferenceField('Variant')
   # This is the variant id
   display_name = StringField(required=True)
+  rank_score = FloatField()
   combined_score = FloatField(required=True)
 
   @property

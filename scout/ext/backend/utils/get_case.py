@@ -19,6 +19,7 @@ import os
 import io
 import json
 import click
+from path import path
 
 from ..config_parser import ConfigParser
 from ....models import (Case, Individual, Institute, GeneList)
@@ -72,32 +73,32 @@ def get_case(scout_configs, family_type):
     # Add the genome build information
     mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
     mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
-    
-    mongo_case['analysis_date'] = scout_configs.get('analysis_date', '') 
-    
+
+    mongo_case['analysis_date'] = scout_configs.get('analysis_date', '')
+
     # Add the pedigree picture
-    madeline_file = scout_configs.get('madeline', None)
-    if madeline_file:
-      with open(madeline_file, 'r') as f:
-        mongo_case['madeline_info'] = f.read()
-    
+    madeline_file = path(scout_configs.get('madeline', '/__menoexist.tXt'))
+    if madeline_file.exists():
+      with madeline_file.open('r') as handle:
+        mongo_case['madeline_info'] = handle.read()
+
     # Add the coverage report
     coverage_report = scout_configs.get('coverage_report', None)
     if coverage_report:
       mongo_case['coverage_report_path'] = coverage_report
-    
+
     clinical_gene_lists = []
     research_gene_lists = []
-    
+
     for gene_list in scout_configs.get('gene_lists', {}):
       list_info = scout_configs['gene_lists'][gene_list]
-      
+
       list_type = list_info.get('type', 'clinical')
       list_id = list_info.get('name', '')
       version = float(list_info.get('version', 0))
       date = list_info.get('date', '')
       display_name = list_info.get('full_name', list_id)
-      
+
       list_object = GeneList(
                           list_id=list_id,
                           version=version,
@@ -179,28 +180,28 @@ def cli(ped_file, scout_config_file, family_type, madeline, institute, verbose):
   """
   Test get_case and get_institute.
   """
-  
+
   setup_configs = {}
-  
+
   if scout_config_file:
     setup_configs = ConfigParser(scout_config_file)
-  
+
   if ped_file:
     setup_configs['ped'] = ped_file
-  
+
   if madeline:
     setup_configs['madeline'] = madeline
-  
+
   if institute:
     setup_configs['institutes'] = [institute]
-  
+
   # Check that the ped file is provided:
   if not setup_configs.get('ped', None):
     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   mongo_case = get_case(setup_configs, family_type)
   print(mongo_case.to_json())
-  
+
 if __name__ == '__main__':
     cli()
