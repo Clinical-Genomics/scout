@@ -95,7 +95,7 @@
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.chromosome }}: {{ variant.hgnc_symbols|join(', ') }}
+        {{ variant.chromosome }}:{{ variant.position }} ({{ variant.hgnc_symbols|join(', ') }})
       </div>
     </div>
   </div>
@@ -218,8 +218,8 @@
           </div>
 
           <div class="variant-list-item">
-            <div>Position</div>
-            <div>{{ variant.chromosome }}:{{ variant.position }}</div>
+            <div>CLINSIG</div>
+            <div>{{ variant.clnsig or '1' }}: {{ variant.clnsig_human }}</div>
           </div>
         </div>
       </div>
@@ -344,7 +344,7 @@
           </div>
           <div class="variant-list-item">
             <div>
-              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview">
+              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview" target="_blank">
                 Polyphen
               </a>
             </div>
@@ -413,7 +413,12 @@
       <div id="case-samples" class="md-card is-aside">
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list layout-center">
-          {{ case.madeline_info|safe }}
+          {% if case.individuals|length == 1 %}
+            <!-- Don't expect a pedigree visualization -->
+            <p>Single sample case: {{ case.individuals.0.display_name }}</p>
+          {% else %}
+            {{ case.madeline_info|safe }}
+          {% endif %}
         </div>
       </div>
     </div>

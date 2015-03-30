@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 
@@ -224,6 +225,7 @@ class Compound(EmbeddedDocument):
   variant = ReferenceField('Variant')
   # This is the variant id
   display_name = StringField(required=True)
+  rank_score = FloatField()
   combined_score = FloatField(required=True)
 
   @property
@@ -281,6 +283,15 @@ class Variant(Document):
   local_frequency = FloatField()
   # Predicted deleteriousness:
   cadd_score = FloatField()
+  clnsig = IntField()
+  @property
+  def clnsig_human(self):
+    return {
+      0: 'Uncertain significance', 1: 'not provided', 2: 'Benign',
+      3: 'Likely benign', 4: 'Likely pathogenic', 5: 'Pathogenic',
+      6: 'drug response', 7: 'histocompatibility', 255: 'other'
+    }.get(self.clnsig, 'not provided')
+
   # Conservation:
   phast_conservation = ListField(StringField(choices=CONSERVATION))
   gerp_conservation = ListField(StringField(choices=CONSERVATION))

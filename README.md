@@ -10,7 +10,7 @@ $ scout run
 Running on http://localhost:5000...
 ```
 
-![Case page demo](/artwork/case-demo.png)
+![Case page demo](/artwork/scout-variant.png)
 
 
 ## Installation
@@ -22,16 +22,6 @@ $ pip install git+https://github.com/Clinical-Genomics/scout.git
 ```
 
 You also need to install MongoDB and run it as a background process.
-
-### Docker
-Scout supports Docker deployment. Docker let's you run arbitrary code without having to worry too much about dependencies. If you have Docker and Fig setup, spinning up a Scout instance is as easy as:
-
-```bash
-$ fig up
-```
-
-This will run the Scout server, MongoDB, and setup proper communication between them. You don't need to worry about anything else.
-
 
 ## Quickstart
 Run the following commands to bootstrap your development environment.
