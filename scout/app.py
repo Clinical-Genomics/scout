@@ -138,7 +138,7 @@ class AppFactory(object):
       log_file, maxBytes=100000, backupCount=10)
     info_log_handler.setLevel(logging.INFO)
     info_log_handler.setFormatter(logging.Formatter(
-      '%(asctime)s %(levelname)s: %(message)s '
+      '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
     self.app.logger.addHandler(info_log_handler)
@@ -158,11 +158,11 @@ class AppFactory(object):
     )
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(logging.Formatter(
-      '%(asctime)s %(levelname)s: %(message)s '
+      '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
     self.app.logger.addHandler(mail_handler)
-    self.app.logger.addHandler(werkzeug_log)
+    werkzeug_log.addHandler(mail_handler)
 
   def _configure_error_handlers(self):
     """Configure error handlers to the corresponding error pages."""
