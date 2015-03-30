@@ -162,6 +162,7 @@ class AppFactory(object):
       '[in %(pathname)s:%(lineno)d]')
     )
     self.app.logger.addHandler(mail_handler)
+    self.app.logger.addHandler(werkzeug_log)
 
   def _configure_error_handlers(self):
     """Configure error handlers to the corresponding error pages."""
