@@ -125,41 +125,42 @@ class AppFactory(object):
     ipath(self.app.config['LOG_FOLDER']).makedirs_p()
 
     import logging
-    from logging.handlers import SMTPHandler
-
-    # get logger
-    logger = logging.getLogger('werkzeug')
+    from .handlers import TlsSMTPHandler
 
     # Set info level on logger which might be overwritten by handlers
     # Suppress DEBUG messages
     self.app.logger.setLevel(logging.INFO)
 
-    log_file_name = "{}.log".format(self.app.config['PROJECT'])
+    log_file_name = "{}.log".format(self.app.name)
     log_file = os.path.join(self.app.config['LOG_FOLDER'], log_file_name)
 
-    info_file_handler = logging.handlers.RotatingFileHandler(
+    info_log_handler = logging.handlers.RotatingFileHandler(
       log_file, maxBytes=100000, backupCount=10)
-    info_file_handler.setLevel(logging.INFO)
-    info_file_handler.setFormatter(logging.Formatter(
+    info_log_handler.setLevel(logging.INFO)
+    info_log_handler.setFormatter(logging.Formatter(
       '%(asctime)s %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
-    logger.addHandler(info_file_handler)
-    self.app.logger.addHandler(info_file_handler)
+    self.app.logger.addHandler(info_log_handler)
 
-    mail_handler = SMTPHandler(
-      self.app.config['MAIL_SERVER'],
-      self.app.config['MAIL_USERNAME'],
-      self.app.config['ADMINS'],
-      'O_ops... %s failed!' % self.app.config['PROJECT'],
-      (self.app.config['MAIL_USERNAME'], self.app.config['MAIL_PASSWORD'])
+    # also write default Weekzeug log (INFO) to the main log-file
+    werkzeug_log = logging.getLogger('werkzeug')
+    werkzeug_log.setLevel(logging.INFO)
+    werkzeug_log.addHandler(info_log_handler)
+
+    mail_handler = TlsSMTPHandler(self.app.config['MAIL_SERVER'],
+                                  self.app.config['MAIL_PORT'],
+                                  self.app.config['MAIL_USERNAME'],
+                                  self.app.config['ADMINS'],
+                                  "O_ops... {} failed!".format(self.app.name),
+                                  (self.app.config['MAIL_USERNAME'],
+                                   self.app.config['MAIL_PASSWORD'])
     )
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(logging.Formatter(
       '%(asctime)s %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
-    logger.addHandler(mail_handler)
     self.app.logger.addHandler(mail_handler)
 
   def _configure_error_handlers(self):
