@@ -148,13 +148,13 @@ class AppFactory(object):
     werkzeug_log.setLevel(logging.INFO)
     werkzeug_log.addHandler(info_log_handler)
 
-    mail_handler = TlsSMTPHandler(self.app.config['MAIL_SERVER'],
-                                  self.app.config['MAIL_PORT'],
-                                  self.app.config['MAIL_USERNAME'],
-                                  self.app.config['ADMINS'],
-                                  "O_ops... {} failed!".format(self.app.name),
-                                  (self.app.config['MAIL_USERNAME'],
-                                   self.app.config['MAIL_PASSWORD'])
+    mail_handler = TlsSMTPHandler(
+        mailhost=self.app.config['MAIL_SERVER'],
+        fromaddr=self.app.config['MAIL_USERNAME'],
+        toaddrs=self.app.config['ADMINS'],
+        subject="O_ops... {} failed!".format(self.app.name),
+        credentials=(self.app.config['MAIL_USERNAME'],
+                     self.app.config['MAIL_PASSWORD'])
     )
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(logging.Formatter(
