@@ -127,6 +127,9 @@ class AppFactory(object):
     import logging
     from logging.handlers import SMTPHandler
 
+    # get logger
+    logger = logging.getLogger('werkzeug')
+
     # Set info level on logger which might be overwritten by handlers
     # Suppress DEBUG messages
     self.app.logger.setLevel(logging.INFO)
@@ -141,6 +144,7 @@ class AppFactory(object):
       '%(asctime)s %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
+    logger.addHandler(info_file_handler)
     self.app.logger.addHandler(info_file_handler)
 
     mail_handler = SMTPHandler(
@@ -155,6 +159,7 @@ class AppFactory(object):
       '%(asctime)s %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
+    logger.addHandler(mail_handler)
     self.app.logger.addHandler(mail_handler)
 
   def _configure_error_handlers(self):
