@@ -53,6 +53,7 @@ class AppFactory(object):
     self._configure_app(config_obj=config_obj)
     self._bind_extensions()
     self._register_blueprints()
+    self._configure_logging()
     self._configure_template_filters()
     self._configure_error_handlers()
 
