@@ -131,7 +131,7 @@ class Transcript(EmbeddedDocument):
 
   @property
   def absolute_exon(self):
-    return self.exon.rpartition('/')[0]
+    return (self.exon or '').rpartition('/')[0]
 
   def stringify(self):
     return ("{this.hgnc_symbol}:{this.refseq_ids_string}"
