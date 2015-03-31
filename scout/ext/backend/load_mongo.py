@@ -22,32 +22,24 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 from __future__ import (absolute_import, unicode_literals, print_function,
                         division)
-
 import sys
 import os
-
 import io
 import json
 import click
-
-
 
 from datetime import datetime
 from pymongo import (ASCENDING, DESCENDING)
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import get_db
-
+from vcf_parser import VCFParser
+from pprint import pprint as pp
+import scout
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
 from ...models import (Institute, Case)
-
-
-from vcf_parser import VCFParser
-
-from pprint import pprint as pp
-
-import scout
+from ..._compat import iteritems
 
 
 def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
@@ -74,17 +66,17 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
         print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')",
                 file=sys.stderr)
         sys.exit(0)
-  
+
   connect(mongo_db, host=host, port=port, username=username,
           password=password)
-  
+
   variant_database = get_db()
-  
+
   ped_file = scout_configs['ped']
-  
+
   if verbose:
     print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\n"
-          "mongo_db:\t%s\ninstitutes:\t%s\n" % (vcf_file, ped_file, 
+          "mongo_db:\t%s\ninstitutes:\t%s\n" % (vcf_file, ped_file,
           config_file, family_type, mongo_db, ','.join(scout_configs['institutes'])),
           file=sys.stderr)
 
@@ -106,12 +98,12 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     except DoesNotExist:
       if verbose:
         print('New institute!', file=sys.stderr)
-  
-  
+
+
   ######## Get the cases and add them to the mongo db: ########
-  
+
   case = get_case(scout_configs, family_type)
-  
+
   if verbose:
     print('Case found in %s: %s' % (ped_file, case.display_name),
           file=sys.stderr)
@@ -120,9 +112,9 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   for institute_object in institutes:
     if case not in institute_object.cases:
       institute_object.cases.append(case)
-  
+
     institute_object.save()
-  
+
   try:
     existing_case = Case.objects.get(case_id = case.case_id)
     if variant_type=='research':
@@ -135,27 +127,27 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
     if verbose:
       print('New case!', file=sys.stderr)
     case.save()
-    
+
   ######## Get the variants and add them to the mongo db: ########
-  
+
   variant_parser = VCFParser(infile=vcf_file, split_variants=True)
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
-  
+
   # Get the individuals to see which we should include in the analysis
-  ped_individuals = []
-  for individual in case.individuals:
-    ped_individuals.append(individual.individual_id)
-  
+  ped_individuals = {individual.individual_id: individual.display_name
+                     for individual in case.individuals}
+
   # Check which individuals that exists in the vcf file:
   individuals = []
-  for individual in ped_individuals:
-    if individual in variant_parser.individuals:
-      individuals.append(individual)
+  # loop over keys (internal ids)
+  for individual_id, display_name in iteritems(ped_individuals):
+    if individual_id in variant_parser.individuals:
+      individuals.append(display_name)
     else:
       if verbose:
         print("Individual %s is present in ped file but not in vcf!\n"
-              "Continuing analysis..." % individual, file=sys.stderr)
+              "Continuing analysis..." % individual_id, file=sys.stderr)
 
   if verbose:
     print('Start parsing variants...', file=sys.stderr)
@@ -164,25 +156,25 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   for variant in variant_parser:
     if not float(variant['rank_scores'][case.display_name]) > rank_score_treshold:
       break
-    
+
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, variant_type, individuals, case, config_object, nr_of_variants)
-    
+
     mongo_variant.save()
-    
+
     if verbose:
       if nr_of_variants % 1000 == 0:
         print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
-  
+
   if verbose:
     print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
     print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-  
+
   if verbose:
     print('Updating indexes...', file=sys.stderr)
-  
+
   ensure_indexes(variant_database)
-  
+
   return
 
 def update_local_frequencies(variant_database):
@@ -300,41 +292,41 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         verbose):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
-  
+
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
   mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
-  
+
   setup_configs = {}
-  
+
   if scout_config_file:
     setup_configs = ConfigParser(scout_config_file)
-  
+
   if vcf_file:
     setup_configs['load_vcf'] = vcf_file
-  
+
   if ped_file:
     setup_configs['ped'] = ped_file
-  
+
   if madeline:
     setup_configs['madeline'] = madeline
-  
+
   if institute:
     setup_configs['institutes'] = [institute]
-  
+
   if not setup_configs.get('load_vcf', None):
     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   # Check that the ped file is provided:
   if not setup_configs.get('ped', None):
     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   # Check that the config file is provided:
   if not vcf_config_file:
     print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
     sys.exit(0)
-  
+
   my_vcf = load_mongo_db(setup_configs, vcf_config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password,
                       variant_type=variant_type, verbose=verbose)

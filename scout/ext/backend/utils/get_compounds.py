@@ -38,23 +38,16 @@ def get_compounds(variant, case, variant_type):
   case_id = case.case_id
   case_name = case.display_name
 
-  rank_score = float(variant.get(
-                          'rank_scores',{}).get(
-                            case_name, '0'
-                          )
-                        )
   compounds = []
-
   for compound in variant['compound_variants'].get(case_name, []):
     compound_name = compound['variant_id']
     # The compound id have to match the document id
-    compound_id = generate_md5_key(
-                            compound_name.split('_') +
-                            [variant_type] +
-                            case_id.split('_')
-                  )
+    compound_id = generate_md5_key(compound_name.split('_') +
+                                   [variant_type] +
+                                   case_id.split('_'))
     try:
       compound_score = float(compound['compound_score'])
+
     except TypeError:
       compound_score = 0.0
 
