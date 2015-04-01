@@ -3,14 +3,15 @@
 """
 mongo.py
 
-This is the mongo adapter for scout, it is a communicator for quering and updating the mongodatabase.
+This is the mongo adapter for scout, it is a communicator for quering and 
+updating the mongodatabase.
 Implements BaseAdapter.
 
 Created by Måns Magnusson on 2014-11-17.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import (absolute_import, unicode_literals, print_function)
 
 import sys
 import os
