@@ -12,9 +12,6 @@ flake8
 # Management script
 Flask-Script
 
-# Debug toolbar
-Flask-DebugToolbar==0.9.0
-
 # packaging
 wheel>=0.23
 

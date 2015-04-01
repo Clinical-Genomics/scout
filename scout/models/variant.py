@@ -237,7 +237,7 @@ class GTCall(EmbeddedDocument):
   genotype_quality = IntField()
 
   def __unicode__(self):
-    return self.sample
+    return self.display_name
 
 
 class Variant(Document):

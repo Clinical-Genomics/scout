@@ -38,26 +38,26 @@ def get_genotype(variant, config_object, individual_id, display_name):
 
   """
   genotype_collection = config_object.categories['genotype_information']
-  
+
   # Initiate a mongo engine gt call object
-  mongo_gt_call = GTCall(sample_id=individual,
+  mongo_gt_call = GTCall(sample_id=individual_id,
                           display_name=display_name)
-  
+
   # Fill the onbject with the relevant information:
   for genotype_information in genotype_collection:
     if config_object['VCF'][genotype_information]['vcf_format_key'] == 'GT':
       mongo_gt_call['genotype_call'] = variant['genotypes'][individual_id].genotype
-    
+
     elif config_object['VCF'][genotype_information]['vcf_format_key'] == 'DP':
       mongo_gt_call['read_depth'] = variant['genotypes'][individual_id].depth_of_coverage
-    
+
     elif config_object['VCF'][genotype_information]['vcf_format_key'] == 'AD':
       mongo_gt_call['allele_depths'] = [variant['genotypes'][individual_id].ref_depth,
                                         variant['genotypes'][individual_id].alt_depth]
-    
+
     elif config_object['VCF'][genotype_information]['vcf_format_key'] == 'GQ':
       mongo_gt_call['genotype_quality'] = variant['genotypes'][individual_id].genotype_quality
-  
+
   return mongo_gt_call
 
 @click.command()
@@ -80,21 +80,21 @@ def cli(vcf_file, vcf_config_file, verbose):
   Test the get_genotype class."""
   from vcf_parser import VCFParser
   from ..config_parser import ConfigParser
-  
+
   if not vcf_config_file:
     print('Please provide a vcf config file')
     sys.exit()
-  
+
   if not vcf_file:
     print('Please provide a vcf file')
     sys.exit()
-  
+
   configs = ConfigParser(vcf_config_file)
-  
+
   vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
   individuals = vcf_parser.individuals
-  
-  
+
+
   for variant in vcf_parser:
     for individual in individuals:
       genotype_info = get_genotype_information(variant, configs, individual)
