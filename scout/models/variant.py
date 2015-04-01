@@ -131,7 +131,7 @@ class Transcript(EmbeddedDocument):
 
   @property
   def absolute_exon(self):
-    return self.exon.rpartition('/')[0]
+    return (self.exon or '').rpartition('/')[0]
 
   def stringify(self):
     return ("{this.hgnc_symbol}:{this.refseq_ids_string}"
@@ -225,24 +225,19 @@ class Compound(EmbeddedDocument):
   variant = ReferenceField('Variant')
   # This is the variant id
   display_name = StringField(required=True)
-  rank_score = FloatField()
   combined_score = FloatField(required=True)
-
-  @property
-  def rank_score(self):
-    """Return the individual rank score for this variant."""
-    return self.variant.rank_score
 
 
 class GTCall(EmbeddedDocument):
-  sample = StringField()
+  sample_id = StringField()
+  display_name = StringField()
   genotype_call = StringField()
   allele_depths = ListField(IntField())
   read_depth = IntField()
   genotype_quality = IntField()
 
   def __unicode__(self):
-    return self.sample
+    return self.display_name
 
 
 class Variant(Document):

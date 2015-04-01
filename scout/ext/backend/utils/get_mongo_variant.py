@@ -17,6 +17,7 @@ import os
 import click
 
 from ....models import (Variant)
+from ...._compat import iteritems
 
 from . import (get_genes, get_genotype, get_compounds, generate_md5_key)
 
@@ -31,7 +32,8 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   Input:
     variant       : A Variant dictionary
     variant_type  : A string in ['clinical', 'research']
-    individuals   : A list with the id:s of the individuals
+    individuals   : A dictionary with the id:s of the individuals as keys and
+                    display names as values
     case_id       : The md5 string that represents the ID for the case
     variant_count : The rank order of the variant in this case
     config_object : A config object with the information from the config file
@@ -91,13 +93,14 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
 
   ################# Add gt calls #################
   gt_calls = []
-  for individual in individuals:
+  for individual_id, display_name in iteritems(individuals):
     # This function returns an ODM GTCall object with the
     # relevant information for a individual:
     gt_calls.append(get_genotype(
                                   variant,
                                   config_object,
-                                  individual
+                                  individual_id,
+                                  display_name
                                 )
                             )
   mongo_variant['samples'] = gt_calls
