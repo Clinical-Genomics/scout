@@ -397,7 +397,7 @@
             <tbody>
               {% for individual in variant.samples %}
                 <tr>
-                  <td class="text-center">{{ individual.sample }}</td>
+                  <td class="text-center">{{ individual.display_name }}</td>
                   <td class="text-center">{{ individual.genotype_call }}</td>
                   {% for number in individual.allele_depths %}
                     <td class="text-right">{{ number }}</td>
