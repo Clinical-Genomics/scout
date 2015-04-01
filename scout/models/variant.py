@@ -229,7 +229,8 @@ class Compound(EmbeddedDocument):
 
 
 class GTCall(EmbeddedDocument):
-  sample = StringField()
+  sample_id = StringField()
+  display_name = StringField()
   genotype_call = StringField()
   allele_depths = ListField(IntField())
   read_depth = IntField()

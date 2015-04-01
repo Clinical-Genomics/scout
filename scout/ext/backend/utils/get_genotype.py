@@ -22,37 +22,41 @@ from pprint import pprint as pp
 from ....models import GTCall
 
 
-def get_genotype(variant, config_object, individual):
+def get_genotype(variant, config_object, individual_id, display_name):
   """
   Get the genotype information in the proper format and return ODM specified gt call.
 
   Args:
-    variant : A dictionary with the information about a variant
-    genotype_collection : A list with the relevant genotype information for
+    variant (dict): A dictionary with the information about a variant
+    genotype_collection (list) : A list with the relevant genotype information for
                           each individual in the vcf file
-    individual: A string that represents the individual id
+    individual_id (str): A string that represents the individual id
+    display_name (str): A string that represents the individual id
 
   Returns:
     mongo_gt_call : A mongo engine object with the gt-call information
 
   """
   genotype_collection = config_object.categories['genotype_information']
+  
   # Initiate a mongo engine gt call object
-  mongo_gt_call = GTCall(sample=individual)
+  mongo_gt_call = GTCall(sample_id=individual,
+                          display_name=display_name)
+  
   # Fill the onbject with the relevant information:
   for genotype_information in genotype_collection:
     if config_object['VCF'][genotype_information]['vcf_format_key'] == 'GT':
-      mongo_gt_call['genotype_call'] = variant['genotypes'][individual].genotype
+      mongo_gt_call['genotype_call'] = variant['genotypes'][individual_id].genotype
     
     elif config_object['VCF'][genotype_information]['vcf_format_key'] == 'DP':
-      mongo_gt_call['read_depth'] = variant['genotypes'][individual].depth_of_coverage
+      mongo_gt_call['read_depth'] = variant['genotypes'][individual_id].depth_of_coverage
     
     elif config_object['VCF'][genotype_information]['vcf_format_key'] == 'AD':
-      mongo_gt_call['allele_depths'] = [variant['genotypes'][individual].ref_depth,
-                                        variant['genotypes'][individual].alt_depth]
+      mongo_gt_call['allele_depths'] = [variant['genotypes'][individual_id].ref_depth,
+                                        variant['genotypes'][individual_id].alt_depth]
     
     elif config_object['VCF'][genotype_information]['vcf_format_key'] == 'GQ':
-      mongo_gt_call['genotype_quality'] = variant['genotypes'][individual].genotype_quality
+      mongo_gt_call['genotype_quality'] = variant['genotypes'][individual_id].genotype_quality
   
   return mongo_gt_call
 

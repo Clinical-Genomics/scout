@@ -138,12 +138,14 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   ped_individuals = {individual.individual_id: individual.display_name
                      for individual in case.individuals}
 
-  # Check which individuals that exists in the vcf file:
-  individuals = []
+  # Check which individuals that exists in the vcf file.
+  # Save the individuals in a dictionary with individual ids as keys
+  # and display names as values
+  individuals = {}
   # loop over keys (internal ids)
   for individual_id, display_name in iteritems(ped_individuals):
     if individual_id in variant_parser.individuals:
-      individuals.append(display_name)
+      individuals[individual_id] = display_name
     else:
       if verbose:
         print("Individual %s is present in ped file but not in vcf!\n"
