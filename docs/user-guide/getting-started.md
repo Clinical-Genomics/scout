@@ -12,8 +12,6 @@ As such there are some added features that try to support this process:
 
 - a case can be assigned to a user to delegate responsibility
 - various variants can be pinned as worth looking at for the whole team
-- a journal of sorts can be kept to summarize the progress and conclusions
 - a feed keeps track of any case related activity in one single place
-- a case can be progressed through a few different contextual stages
 
 A lot of time has been spent on the layout for the big list of variants as well as the single variant detail view. They are meant to give a quick overview to enable efficient scanning of the information. It is also in this direction they will evolve in the future.
