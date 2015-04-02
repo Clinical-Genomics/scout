@@ -18,9 +18,7 @@ To optimize query execution, parts of the database will require extensive custom
 
 
 ## Frontend
-Most data will be rendered server side. However, everyone needs a JavaScript abstraction layer these days and jQuery often isn't enough. Because the future is almost here and the audience is limited, **Polymer** will be used in Scout. This also means that we only plan to target the most recent version of all major browsers.
-
-The main benefit of Polymer is that it will let us decide what regions will be made interactive and what regions won't. Polymer also ties in nicely with material design which will influence the interface design a lot.
+Most data will be rendered server side. However, everyone needs a JavaScript abstraction layer these days and jQuery often isn't enough. To componentalize and avoid binding data into the DOM we use a simple MVVM framework called [Vue.js][vue].
 
 ### Stylesheets
 **SCSS** preprocessing is the closest thing to a standard (besided CSS) and allows fast libsass compilation. Compared to raw CSS it will increse readability and enable simple modularization of the code base.
@@ -33,11 +31,11 @@ The scripts will be written in either **JavaScript** or **CoffeeScript** (CS). C
 
 Gulp is reposible for:
 
-  - *vulcanizing* Polymer elements into a single HTML import ready file,
-  - comiling SCSS files both for custom Polymer elements and the global site styles,
-  - compiling CoffeeScript for custom Polymer elements,
-  - minifing and optimizing the assets for production,
-  - enabling live reload and style injection using **BrowserSync**,
-  - integrate with **bower** to download Polymer dependencies
+  - compiling CoffeeScript and SCSS files
+  - minifing and optimizing the assets for production
+  - enabling live reload and style injection using **BrowserSync**
 
 The build system will be tightly integrated with the Flask server setup to avoid adding more complexity than necessary (one extra process).
+
+
+[vue]: http://vuejs.org/
