@@ -64,6 +64,7 @@ def get_case(scout_configs, family_type):
   # A case can belong to several institutes
   institute_names = scout_configs.get('institutes', [])
   logger.info("Institutes found: {0}".format(','.join(institute_names)))
+  logger.info("Cases found in ped file: {0}".format(case_parser.families.keys()))
   if len(case_parser.families) != 1:
     raise SyntaxError("Only one case per ped file is allowed")
   for case_id in case_parser.families:

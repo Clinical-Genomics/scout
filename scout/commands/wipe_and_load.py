@@ -15,6 +15,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import sys
 import os
+import logging
 
 import click
 
@@ -68,10 +69,15 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   Drop the mongo database given and rebuild it again with the test cases from 
   tests/vcf_data/.
   """
+
+  logger = logging.getLogger(__name__)
+  scout_configs = {}
+  
+  logging.info("Running wipe_and_load")
   
   if not mongo_db:
-    print("Please specify a database to wipe and populate with flag"
-          " '-db/--mongo-db'.")
+    logger.warning("Please specify a database to wipe and populate with flag"\
+                   " '-db/--mongo-db'.")
     sys.exit(0)
   
   ######## Wipe cases and variants from the existing database ######
