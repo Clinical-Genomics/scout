@@ -19,6 +19,7 @@ import os
 import io
 import json
 import click
+import logging
 from path import path
 
 from ..config_parser import ConfigParser
@@ -49,7 +50,6 @@ def get_case(scout_configs, family_type):
   Only one case per pedigree file is allowed.
 
   Args:
-    ped_file    : The path to a ped file
     family_type : A string that describe the format of the ped file
     scout_configs (dict): A dictionary scout info.
 
@@ -58,16 +58,23 @@ def get_case(scout_configs, family_type):
             found in the pedigree file.
 
   """
+  logger = logging.getLogger(__name__)
   # Use ped_parser to get information from the pedigree file
   case_parser = FamilyParser(scout_configs['ped'], family_type=family_type)
   # A case can belong to several institutes
-  institute_names = scout_configs.get('institutes', None)
-
-  for case in case_parser.to_json():
+  institute_names = scout_configs.get('institutes', [])
+  logger.info("Institutes found: {0}".format(','.join(institute_names)))
+  if len(case_parser.families) != 1:
+    raise SyntaxError("Only one case per ped file is allowed")
+  for case_id in case_parser.families:
+    case = case_parser.families[case_id]
+    logger.info("Case found: {0}".format(case_id))
     # Create a mongo engine case
-    mongo_case = Case(case_id='_'.join(['_'.join(institute_names), case['family_id']]))
+    mongo_case_id = '_'.join(['_'.join(institute_names), case_id])
+    mongo_case = Case(case_id=mongo_case_id)
+    logger.debug("Setting case id to: {0}".format(mongo_case_id))
     # We use the family id as display name for scout
-    mongo_case['display_name'] = case['family_id']
+    mongo_case['display_name'] = case_id
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
     # Add the genome build information
@@ -115,26 +122,31 @@ def get_case(scout_configs, family_type):
 
     individuals = []
     default_gene_lists = set()
-    for individual in case['individuals']:
+    for individual_id in case.individuals:
+      individual = case.individuals[individual_id]
       # Get info from configs for the individual
       config_info = scout_configs.get(
                                   'individuals', {}
                                   ).get(
-                                  individual['individual_id'], {}
+                                  individual_id, {}
                                   )
       ind = Individual()
-      ind['father'] = individual['father']
-      ind['mother'] = individual['mother']
-      ind['display_name'] = individual['individual_id']
-      ind['sex'] = str(individual['sex'])
-      ind['phenotype'] = individual['phenotype']
-      ind['individual_id'] = individual['individual_id']
+      ind['individual_id'] = individual_id
+      ind['father'] = individual.father
+      ind['mother'] = individual.mother
+      display_name = individual.extra_info.get('display_name', None)
+      if display_name:
+        ind['display_name'] = display_name
+      else:
+        ind['display_name'] = individual_id
+      ind['sex'] = str(individual.sex)
+      ind['phenotype'] = individual.phenotype
       # Path to the bam file for IGV:
       ind['bam_file'] = config_info.get('bam_path', '')
 
       ind['capture_kits'] = config_info.get('capture_kit', [])
 
-      for clinical_db in individual.get('extra_info', {}).get('Clinical_db', '').split(','):
+      for clinical_db in individual.extra_info.get('Clinical_db', '').split(','):
         default_gene_lists.add(clinical_db)
 
       individuals.append(ind)
