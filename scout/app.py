@@ -125,7 +125,7 @@ class AppFactory(object):
     ipath(self.app.config['LOG_FOLDER']).makedirs_p()
 
     import logging
-    from .handlers import TlsSMTPHandler
+    from .log import TlsSMTPHandler
 
     # Set info level on logger which might be overwritten by handlers
     # Suppress DEBUG messages
