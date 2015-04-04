@@ -15,6 +15,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import sys
 import os
+import logging
 
 import click
 
@@ -24,14 +25,15 @@ from mongoengine.connection import _get_db
 
 
 def drop_mongo(mongo_db='variantDatabase', username=None, password=None, 
-              port=27017, host='localhost', verbose=False):
+              port=27017, host='localhost', logger=None):
   """Delete variants and users from the mongo database."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
+  if not logger:
+    logger = logging.getLogger(__name__)
   
-  if verbose:
-    print('Trying to access collection %s' % mongo_db, file=sys.stderr)
-  
+  logger.info('Trying to access collection {0}'.format(mongo_db))
+
   connection = connect(
                     mongo_db, 
                     host=host, 
@@ -39,37 +41,31 @@ def drop_mongo(mongo_db='variantDatabase', username=None, password=None,
                     username=username,
                     password=password
                     )
+
+  logger.debug('Connection successful')
   
   collections = connection.database_names()
   if mongo_db in collections:  
     db = connection[mongo_db]
     # Drop the case collection:
     case_collection = db['case']
-    if verbose:
-      print("Dropping collection 'case' ...")
+    logger.info("Dropping collection 'case'")
     case_collection.drop()
+    logger.debug("Case collection dropped")
     # Drop the institute collection:
     institute_collection = db['institute']
-    if verbose:
-      print("Dropping collection 'institute' ...")
+    logger.info("Dropping collection 'institute'")
     institute_collection.drop()
-    if verbose:
-      print("Cases dropped.")
+    logger.debug("Institute collection dropped")
     # Drop the variant collection:    
+    logger.info("Dropping collection 'variant'")
     variant_collection = db['variant']
-    if verbose:
-      print("Dropping collection 'variant...")
     variant_collection.drop()
-    if verbose:
-      print("Variants dropped.")
+    logger.debug("Variants dropped.")
   else:
-    print('%s does not exist in database.' % mongo_db)
-    print('Existing connections: %s' % connection.database_names())
+    logger.warning('{0} does not exist in database.'.format(mongo_db))
+    logger.info('Existing connections: {0}'.format(connection.database_names()))
   
-
-# def load_mongo(connection, mongo_db):
-#   """Populate the mongodatabase with test data"""
-#   pass
 
 @click.command()
 @click.option('-db', '--mongo-db', 
@@ -95,11 +91,15 @@ def drop_mongo(mongo_db='variantDatabase', username=None, password=None,
 )
 def wipe_mongo(mongo_db, username, password, port, host, verbose):
   """Drop the mongo database given and rebuild it again."""
+  logger = logging.getLogger(__name__)
+  
+  logger.info("Running wipe_mongo")
+  
   if not mongo_db:
-    print("Please specify a database to wipe and populate with flag '-db/--mongo-db'.")
+    logger.warning("Please specify a database to wipe and populate with flag '-db/--mongo-db'.")
     sys.exit(0)
   else:
-    drop_mongo(mongo_db, username, password, port, host, verbose)
+    drop_mongo(mongo_db, username, password, port, host, logger)
   
 
 if __name__ == '__main__':

@@ -15,6 +15,7 @@ from __future__ import (absolute_import, unicode_literals, print_function,)
 import sys
 import os
 import click
+import logging
 
 from ....models import (Variant)
 from ...._compat import iteritems
@@ -43,9 +44,8 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
 
   """
 
-  #############################################################################################################
-  #### Here is the start for parsing the variants                                                          ####
-  #############################################################################################################
+  logger = logging.getLogger(__name__)
+
   # Create the ID for the variant
   case_id = case.case_id
   case_name = case.display_name
