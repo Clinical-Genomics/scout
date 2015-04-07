@@ -9,19 +9,15 @@ Created by Måns Magnusson on 2014-10-19.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 """
 
-from __future__ import print_function, unicode_literals
+from __future__ import (print_function, unicode_literals, absolute_import)
 
 import sys
 import os
 import click
+import logging
 
 from configobj import ConfigObj, flatten_errors
-from validate import Validator
-
-from ped_parser import parser as ped_parser
-from vcf_parser import parser as vcf_parser
-
-from pprint import pprint as pp
+from validate import Validator, ValidateError
 
 
 class ConfigParser(ConfigObj):
@@ -33,17 +29,22 @@ class ConfigParser(ConfigObj):
                                       encoding=encoding,
                                       configspec=configspec
                                     )
+    logger = logging.getLogger(__name__)
     if configspec:
+      logger.info("Validator found")
       validator = Validator()
+      logger.info("Validating results")
       results = self.validate(validator)
       if results != True:
         for (section_list, key, _) in flatten_errors(self, results):
           if key is not None:
-            print('The "%s" key in the section "%s" failed validation' % (key, ', '.join(section_list)))
+            logger.error("The {0} key in the section {1} failed validation".format(
+              key, ', '.join(section_list))
+            )
           else:
-            print('The following section was missing:%s ' % ', '.join(section_list))
-          print('Config file validation failed!')
-          sys.exit(1)
+            logger.warning('The following section was missing:%s ' % ', '.join(section_list))
+          raise ValidateError('Config file validation failed!')
+          
       
     self.categories = {
                   'variant_position':[],
@@ -93,13 +94,20 @@ class ConfigParser(ConfigObj):
                 type=click.File('w')
 )
 def read_config(config_file, config_spec, outfile):
-    """Parse the config file and print it to the output."""
-    my_config_reader = ConfigParser(config_file, configspec=config_spec)
-    print('\nCategories:\n' '-------------------')
-    for category in my_config_reader.categories:
-      print(category)
-      for category_name in my_config_reader.categories[category]:
-        print('\t %s' %category_name)
+  """Parse the config file and print it to the output."""
+  from pprint import pprint as pp
+  # from ...log import init_log
+  logger = logging.getLogger("scout")
+  # init_log(logger, logfile, loglevel)
+  
+  my_config_reader = ConfigParser(config_file, configspec=config_spec)
+  pp(dict(my_config_reader))
+  print(my_config_reader.sections)
+  print('\nCategories:\n' '-------------------')
+  for category in my_config_reader.categories:
+    print(category)
+    for category_name in my_config_reader.categories[category]:
+      print('\t %s' %category_name)
 
     # pp(dict(my_config_reader))
     # print('\n\n')

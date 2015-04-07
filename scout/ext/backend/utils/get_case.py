@@ -61,32 +61,51 @@ def get_case(scout_configs, family_type):
   logger = logging.getLogger(__name__)
   # Use ped_parser to get information from the pedigree file
   case_parser = FamilyParser(scout_configs['ped'], family_type=family_type)
+  
+  try:
+    owner = scout_configs['owner']
+  except KeyError as e:
+    logger.error("Scout config must include a owner")
+    raise e
+  
+  collaborators = set(scout_configs.get('collaborators', []))
+  collaborators.add(owner)
   # A case can belong to several institutes
-  institute_names = scout_configs.get('institutes', [])
-  logger.info("Institutes found: {0}".format(','.join(institute_names)))
+  
+  logger.info("Collaborators found: {0}".format(','.join(collaborators)))
   logger.info("Cases found in ped file: {0}".format(case_parser.families.keys()))
   if len(case_parser.families) != 1:
     raise SyntaxError("Only one case per ped file is allowed")
   for case_id in case_parser.families:
     case = case_parser.families[case_id]
-    logger.info("Case found: {0}".format(case_id))
     # Create a mongo engine case
-    mongo_case_id = '_'.join(['_'.join(institute_names), case_id])
+    mongo_case_id = '_'.join([owner, case_id])
     mongo_case = Case(case_id=mongo_case_id)
     logger.debug("Setting case id to: {0}".format(mongo_case_id))
     # We use the family id as display name for scout
     mongo_case['display_name'] = case_id
+    logger.debug("Setting display name to: {0}".format(case_id))
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
+    logger.debug("Setting vcf file to: {0}".format(
+      scout_configs.get('igv_vcf', '')))
     # Add the genome build information
     mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
+    logger.debug("Setting genome build to: {0}".format(
+      scout_configs.get('human_genome_build', '')))
+    
     mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
+    logger.debug("Setting genome version to: {0}".format(
+      scout_configs.get('human_genome_version', '0')))
 
     mongo_case['analysis_date'] = scout_configs.get('analysis_date', '')
+    logger.debug("Setting analysis date to: {0}".format(
+      scout_configs.get('analysis_date', '')))
 
     # Add the pedigree picture
     madeline_file = path(scout_configs.get('madeline', '/__menoexist.tXt'))
     if madeline_file.exists():
+      logger.debug("Found madeline info")
       with madeline_file.open('r') as handle:
         mongo_case['madeline_info'] = handle.read()
 
@@ -94,6 +113,7 @@ def get_case(scout_configs, family_type):
     coverage_report = scout_configs.get('coverage_report', None)
     if coverage_report:
       mongo_case['coverage_report_path'] = coverage_report
+      logger.debug("Setting coverage report to: {0}".format(coverage_report))
 
     clinical_gene_lists = []
     research_gene_lists = []

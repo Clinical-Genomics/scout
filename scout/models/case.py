@@ -76,7 +76,13 @@ class Case(Document):
   """Represents a case (family) of individuals (samples)."""
   # This is the md5 string id for the family:
   case_id = StringField(primary_key=True, required=True)
+  # This is the string that will be shown in scout:
   display_name = StringField(required=True)
+  # This is the owner of the case
+  owner = StringField(required=True)
+  # These are the names of the collaborators that are allowed to view the
+  # case
+  collaborators = ListField(StringField)
   assignee = ReferenceField('User')
   individuals = ListField(EmbeddedDocumentField(Individual))
   created_at = DateTimeField(default=datetime.now)
