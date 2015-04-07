@@ -82,7 +82,8 @@ def get_genes(variant):
   # ensembl_to_refseq is a dictionary with ensembl transcript id as keys and
   # a list of refseq ids as values
   ensembl_to_refseq = {}
-  for gene_info in variant['info_dict'].get('Ensembl_transcript_to_refseq_transcript', []):
+  for gene_info in variant['info_dict'].get(
+    'Ensembl_transcript_to_refseq_transcript', []):
     splitted_gene = gene_info.split(':')
     transcript_info = splitted_gene[1]
     for transcript in transcript_info.split('|'):
