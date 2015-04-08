@@ -25,12 +25,12 @@ from mongoengine.connection import _get_db
 
 
 def drop_mongo(mongo_db='variantDatabase', username=None, password=None, 
-              port=27017, host='localhost', logger=None):
+              port=27017, host='localhost'):
   """Delete variants and users from the mongo database."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-  if not logger:
-    logger = logging.getLogger(__name__)
+  
+  logger = logging.getLogger(__name__)
   
   logger.info('Trying to access collection {0}'.format(mongo_db))
 
@@ -99,8 +99,12 @@ def wipe_mongo(mongo_db, username, password, port, host, verbose):
     logger.warning("Please specify a database to wipe and populate with flag '-db/--mongo-db'.")
     sys.exit(0)
   else:
-    drop_mongo(mongo_db, username, password, port, host, logger)
+    drop_mongo(mongo_db, username, password, port, host)
   
 
 if __name__ == '__main__':
-    wipe_mongo()
+  from ...log import init_log
+  logger = logging.getLogger("scout")
+  init_log(logger, logfile, loglevel)
+  
+  wipe_mongo()

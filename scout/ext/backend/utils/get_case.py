@@ -73,22 +73,35 @@ def get_case(scout_configs, family_type):
   # A case can belong to several institutes
   
   logger.info("Collaborators found: {0}".format(','.join(collaborators)))
-  logger.info("Cases found in ped file: {0}".format(case_parser.families.keys()))
+  logger.info("Cases found in ped file: {0}".format(
+    ', '.join(list(case_parser.families.keys()))))
+  
   if len(case_parser.families) != 1:
     raise SyntaxError("Only one case per ped file is allowed")
+  
   for case_id in case_parser.families:
     case = case_parser.families[case_id]
     # Create a mongo engine case
     mongo_case_id = '_'.join([owner, case_id])
     mongo_case = Case(case_id=mongo_case_id)
     logger.debug("Setting case id to: {0}".format(mongo_case_id))
+    
+    mongo_case['owner'] = owner
+    logger.debug("Setting owner to: {0}".format(owner))
+    
+    mongo_case['collaborators'] = list(collaborators)
+    logger.debug("Setting collaborators to: {0}".format(
+      ', '.join(collaborators)))
+    
     # We use the family id as display name for scout
     mongo_case['display_name'] = case_id
     logger.debug("Setting display name to: {0}".format(case_id))
+    
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
-    logger.debug("Setting vcf file to: {0}".format(
+    logger.debug("Setting igv vcf file to: {0}".format(
       scout_configs.get('igv_vcf', '')))
+    
     # Add the genome build information
     mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
     logger.debug("Setting genome build to: {0}".format(
@@ -119,6 +132,7 @@ def get_case(scout_configs, family_type):
     research_gene_lists = []
 
     for gene_list in scout_configs.get('gene_lists', {}):
+      logger.info("Found gene list {0}".format(gene_list))
       list_info = scout_configs['gene_lists'][gene_list]
 
       list_type = list_info.get('type', 'clinical')
@@ -133,16 +147,23 @@ def get_case(scout_configs, family_type):
                           date=date,
                           display_name=display_name
                           )
+      
       if list_type == 'clinical':
+        logger.info("Adding {0} to clinical gene lists".format(list_object))
         clinical_gene_lists.append(list_object)
       else:
+        logger.info("Adding {0} to research gene lists".format(list_object))
         research_gene_lists.append(list_object)
 
     mongo_case['clinical_gene_lists'] = clinical_gene_lists
     mongo_case['research_gene_lists'] = research_gene_lists
+    
+    default_gene_lists = scout_configs.get('default_gene_lists', [])
+    
+    mongo_case['default_gene_lists'] = list(default_gene_lists)
+    
 
     individuals = []
-    default_gene_lists = set()
     for individual_id in case.individuals:
       individual = case.individuals[individual_id]
       # Get info from configs for the individual
@@ -167,13 +188,9 @@ def get_case(scout_configs, family_type):
 
       ind['capture_kits'] = config_info.get('capture_kit', [])
 
-      for clinical_db in individual.extra_info.get('Clinical_db', '').split(','):
-        default_gene_lists.add(clinical_db)
-
       individuals.append(ind)
 
     mongo_case['individuals'] = individuals
-    mongo_case['default_gene_lists'] = list(default_gene_lists)
 
   return mongo_case
 

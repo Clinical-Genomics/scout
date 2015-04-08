@@ -45,6 +45,7 @@ from vcf_parser import VCFParser
 import scout
 
 
+
 def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
                   username=None, password=None, port=27017,
@@ -82,12 +83,16 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   variant_database = get_db()
 
   ped_file = scout_configs['ped']
+  owner = scout_configs['owner']
+  collaborators = set(scout_configs['collaborators'])
+  collaborators.add(owner)
 
   logger.info("Starting to load database with:"\
               "\nvcf_file:\t{0}\nped_file:\t{1}\nconfig_file:\t{2}\n"\
-              "family_type:\t{3}\nmongo_db:\t{4}\ninstitutes:\t{5}\n".format(
+              "family_type:\t{3}\nmongo_db:\t{4}\nowner:\t{5}\n"\
+              "collaborators{6}".format(
                 vcf_file, ped_file, config_file, family_type, mongo_db, 
-                ','.join(scout_configs['institutes'])))
+              owner, ','.join(collaborators)))
 
   ######## Parse the config file to check for keys ########
   logger.info("Parsing config file")
@@ -97,7 +102,7 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
 
   # institutes is a list with institute objects
   institutes = []
-  for institute_name in scout_configs['institutes']:
+  for institute_name in collaborators:
     institutes.append(get_institute(institute_name))
   logger.info("Institutes found: {0}".format(institutes))
 
@@ -398,19 +403,17 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         logfile, loglevel):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
-  from ...log import init_log
   from pprint import pprint as pp
-  
-  logger = logging.getLogger("scout")
-  init_log(logger, logfile, loglevel)
+  logger = logging.getLogger(__name__)
   
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
+  scout_validation_file = os.path.join(base_path, 'config_spec/scout_config.ini')
   mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
 
   setup_configs = {}
 
   if scout_config_file:
-    setup_configs = ConfigParser(scout_config_file)
+    setup_configs = ConfigParser(scout_config_file, configspec=scout_validation_file)
 
   if vcf_file:
     setup_configs['load_vcf'] = vcf_file
@@ -444,4 +447,7 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
 
 if __name__ == '__main__':
-    cli()
+  from ...log import init_log
+  logger = logging.getLogger("scout")
+  init_log(logger, logfile, loglevel)
+  cli()

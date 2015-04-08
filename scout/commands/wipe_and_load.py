@@ -73,7 +73,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   logger = logging.getLogger(__name__)
   scout_configs = {}
   
-  logging.info("Running wipe_and_load")
+  logger.info("Running wipe_and_load")
   
   if not mongo_db:
     logger.warning("Please specify a database to wipe and populate with flag"\
@@ -312,4 +312,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   
 
 if __name__ == '__main__':
-    wipe_and_load()
+  from ...log import init_log
+  logger = logging.getLogger("scout")
+  init_log(logger, logfile, loglevel)
+  wipe_and_load()

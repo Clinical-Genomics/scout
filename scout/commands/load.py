@@ -74,10 +74,9 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 nargs=1,
                 help="Specify the type of the variants that is being loaded."
 )
-@click.option('-i', '--institute',
-                default='CMMS',
+@click.option('-i', '--owner',
                 nargs=1,
-                help="Specify the institute that the file belongs to."
+                help="Specify the owner of the case."
 )
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'
@@ -102,7 +101,7 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 )
 def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
               mongo_db, username, variant_type, madeline, coverage_report,
-              password, institute, port, host, verbose):
+              password, owner, port, host, verbose):
   """
   Load the mongo database.
   
@@ -113,9 +112,12 @@ def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type,
   logger = logging.getLogger(__name__)
   scout_configs = {}
   
+  scout_validation_file = os.path.join(BASE_PATH, 'config_spec/scout_config.ini')
+  
+  
   logger.info("Running load_mongo")
   if scout_config_file:
-    scout_configs = ConfigParser(scout_config_file)
+    scout_configs = ConfigParser(scout_config_file, configspec=scout_validation_file)
     logger.info("Using scout config file {0}".format(scout_config_file))
   
   if vcf_file:
@@ -129,21 +131,18 @@ def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type,
   
   if madeline:
     logger.info("Using command line specified madeline file {0}".format(
-      madeline)
-    )
+      madeline))
     scout_configs['madeline'] = madeline
 
   if coverage_report:
     logger.info("Using command line specified coverage report {0}".format(
-      coverage_report)
-    )
+      coverage_report))
     scout_configs['coverage_report'] = coverage_report
   
-  if institute:
-    logger.info("Using command line specified institutes {0}".format(
-      institute)
-    )
-    scout_configs['institutes'] = [institute]
+  if owner:
+    logger.info("Using command line specified owner {0}".format(
+      institute))
+    scout_configs['owner'] = owner
     
   if not scout_configs.get('load_vcf', None):
     logger.warning("Please provide a vcf file.(Use flag '-vcf/--vcf_file')")

@@ -247,12 +247,12 @@ class Variant(Document):
   variant_id = StringField(required=True)
   # display name in variant_id (no md5)
   display_name = StringField(required=True)
-  # the variant can be either a reserchvariant or a clinical variant.
-  # for research variants we display all the available information while
+  # The variant can be either a reserch variant or a clinical variant.
+  # For research variants we display all the available information while
   # the clinical variants hae limited annotation fields.
   variant_type = StringField(required=True,
                              choices=('research', 'clinical'))
-  # case_id is a string like institute_caseid
+  # case_id is a string like owner_caseid
   case_id = StringField(required=True)
   chromosome = StringField(required=True)
   position = IntField(required=True)
