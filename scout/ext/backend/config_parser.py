@@ -30,6 +30,7 @@ class ConfigParser(ConfigObj):
                                       configspec=configspec
                                     )
     logger = logging.getLogger(__name__)
+    logger.info("Sections found: {0}".format(', '.join(self.sections)))
     if configspec:
       logger.info("Validator found")
       validator = Validator()
@@ -96,9 +97,7 @@ class ConfigParser(ConfigObj):
 def read_config(config_file, config_spec, outfile):
   """Parse the config file and print it to the output."""
   from pprint import pprint as pp
-  # from ...log import init_log
-  logger = logging.getLogger("scout")
-  # init_log(logger, logfile, loglevel)
+  logger = logging.getLogger(__name__)
   
   my_config_reader = ConfigParser(config_file, configspec=config_spec)
   pp(dict(my_config_reader))
@@ -126,4 +125,7 @@ def read_config(config_file, config_spec, outfile):
     
     
 if __name__ == '__main__':
-    read_config()
+  from ...log import init_log
+  logger = logging.getLogger(__name__)
+  init_log(logger, loglevel='DEBUG')
+  read_config()

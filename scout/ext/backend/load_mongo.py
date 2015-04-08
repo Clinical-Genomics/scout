@@ -46,7 +46,7 @@ import scout
 
 
 
-def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
+def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
                   username=None, password=None, port=27017,
                   rank_score_treshold = 0, host='localhost'):
@@ -61,58 +61,36 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   
   ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['load_vcf']
+  logger.info("Found a vcf for loading variants into scout: {0}".format(
+    vcf_file
+  ))
   splitted_vcf_file_name = os.path.splitext(vcf_file)
   vcf_ending = splitted_vcf_file_name[-1]
   if vcf_ending != '.vcf':
     if vcf_ending == '.gz':
       vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
       if vcf_ending != '.vcf':
-        logger.error("Please use the correct prefix of your vcf file"\
-                        "('.vcf/.vcf.gz')")
-        raise Exception
+        raise IOError("Please use the correct prefix of your vcf"\
+                        " file('.vcf/.vcf.gz')")
     else:
       if vcf_ending != '.vcf':
-        raise IOError("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')")
-  
-  logger.debug("Found a proper vcf file name: {0}".format(vcf_file))
-  
+        raise IOError("Please use the correct prefix of your vcf"\
+                        " file('.vcf/.vcf.gz')")
+  logger.debug("VCF have a proper file name")
+
   logger.info("Connecting to {0}".format(mongo_db))
   connect(mongo_db, host=host, port=port, username=username,
           password=password)
-  
+
   variant_database = get_db()
 
   ped_file = scout_configs['ped']
-  owner = scout_configs['owner']
-  collaborators = set(scout_configs['collaborators'])
-  collaborators.add(owner)
-
-  logger.info("Starting to load database with:"\
-              "\nvcf_file:\t{0}\nped_file:\t{1}\nconfig_file:\t{2}\n"\
-              "family_type:\t{3}\nmongo_db:\t{4}\nowner:\t{5}\n"\
-              "collaborators{6}".format(
-                vcf_file, ped_file, config_file, family_type, mongo_db, 
-              owner, ','.join(collaborators)))
+  logger.info("Found a ped file: {0}".format(ped_file))
 
   ######## Parse the config file to check for keys ########
   logger.info("Parsing config file")
-  config_object = ConfigParser(config_file)
+  config_object = ConfigParser(vcf_configs)
 
-  ######## Add the institute to the mongo db: ########
-
-  # institutes is a list with institute objects
-  institutes = []
-  for institute_name in collaborators:
-    institutes.append(get_institute(institute_name))
-  logger.info("Institutes found: {0}".format(institutes))
-
-  # If the institute exists we work on the old one
-  for i, institute in enumerate(institutes):
-    try:
-      if Institute.objects.get(internal_id = institute.internal_id):
-        institutes[i] = Institute.objects.get(internal_id = institute.internal_id)
-    except DoesNotExist:
-        logger.info('New institute!')
 
   ######## Get the cases and add them to the mongo db: ########
 
@@ -120,24 +98,24 @@ def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
   case = get_case(scout_configs, family_type)
 
   logger.info('Case found in {0}: {1}'.format(ped_file, case.display_name))
-  # Add the case to its institute(s)
-  logger.info("Adding cases to the institutes")
-  for institute_object in institutes:
-    if case not in institute_object.cases:
-      institute_object.cases.append(case)
-      logger.debug("Adding case {0} to institute {1}".format(
-        case, institute_object.internal_id))
-    else:
-      logger.info("Case {0} already found in institute {1}".format(
-        case, institute_object.internal_id))
+  
+  ######## Add the institute to the mongo db: ########
 
-    institute_object.save()
+  for institute_name in case['collaborators']:
+    institute = get_institute(institute_name)
+    logger.info("Institute found: {0}".format(institute))
+    try:
+      Institute.objects.get(internal_id = institute.internal_id)
+      logger.info("Institute {0} already in database".format(institute))
+    except DoesNotExist:
+      institute.save()
+      logger.info("Adding new institute {0} to database".format(institute))
 
   logger.info("Updating case in database")
   update_case(case, variant_type, logger)
 
   ######## Get the variants and add them to the mongo db: ########
-  
+
   logger.info("Setting up a variant parser")
   variant_parser = VCFParser(infile=vcf_file, split_variants=True)
   nr_of_variants = 0
@@ -407,6 +385,7 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   logger = logging.getLogger(__name__)
   
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
+  
   scout_validation_file = os.path.join(base_path, 'config_spec/scout_config.ini')
   mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
 
@@ -438,7 +417,7 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
   # Check that the config file is provided:
   if not vcf_config_file:
-    logger.warning("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')")
+    logger.warning("Please provide a vcf config file.(Use flag '-vcf_config/--vcf_config_file')")
     sys.exit(0)
 
   my_vcf = load_mongo_db(setup_configs, vcf_config_file, family_type,
