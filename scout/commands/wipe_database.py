@@ -89,7 +89,7 @@ def drop_mongo(mongo_db='variantDatabase', username=None, password=None,
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def wipe_mongo(mongo_db, username, password, port, host, verbose):
+def wipe(mongo_db, username, password, port, host, verbose):
   """Drop the mongo database given and rebuild it again."""
   logger = logging.getLogger(__name__)
   
@@ -107,4 +107,4 @@ if __name__ == '__main__':
   logger = logging.getLogger("scout")
   init_log(logger, logfile, loglevel)
   
-  wipe_mongo()
+  wipe()

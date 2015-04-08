@@ -99,7 +99,7 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
+def load(vcf_file, ped_file, scout_config_file, config_file, family_type, 
               mongo_db, username, variant_type, madeline, coverage_report,
               password, owner, port, host, verbose):
   """
