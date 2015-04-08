@@ -68,7 +68,11 @@ def get_case(scout_configs, family_type):
     logger.error("Scout config must include a owner")
     raise e
   
-  collaborators = set(scout_configs.get('collaborators', []))
+  collaborators = scout_configs.get('collaborators', None)
+  if collaborators:
+    collaborators = set(collaborators)
+  else:
+    collaborators = set()
   collaborators.add(owner)
   # A case can belong to several institutes
   

@@ -103,8 +103,7 @@ def wipe(mongo_db, username, password, port, host, verbose):
   
 
 if __name__ == '__main__':
-  from ...log import init_log
-  logger = logging.getLogger("scout")
-  init_log(logger, logfile, loglevel)
-  
+  from ..log import init_log
+  logger = logging.getLogger(__name__)
+  init_log(logger, loglevel="DEBUG")
   wipe()

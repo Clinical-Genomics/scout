@@ -102,14 +102,16 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   ######## Add the institute to the mongo db: ########
 
   for institute_name in case['collaborators']:
-    institute = get_institute(institute_name)
-    logger.info("Institute found: {0}".format(institute))
-    try:
-      Institute.objects.get(internal_id = institute.internal_id)
-      logger.info("Institute {0} already in database".format(institute))
-    except DoesNotExist:
-      institute.save()
-      logger.info("Adding new institute {0} to database".format(institute))
+    if institute_name:
+      print(institute_name, type(institute_name))
+      institute = get_institute(institute_name)
+      logger.info("Institute found: {0}".format(institute))
+      try:
+        Institute.objects.get(internal_id = institute.internal_id)
+        logger.info("Institute {0} already in database".format(institute))
+      except DoesNotExist:
+        institute.save()
+        logger.info("Adding new institute {0} to database".format(institute))
 
   logger.info("Updating case in database")
   update_case(case, variant_type, logger)
@@ -187,7 +189,7 @@ def update_case(case, variant_type, logger):
   case_id = case.case_id
   try:
     existing_case = Case.objects.get(case_id = case_id)
-    logger.info("Case {0} found in database".format(case_id))
+    logger.info("Case {0} already in database".format(case_id))
     if variant_type=='research':
       logger.info("Updating research gene list for case {0} to {1}".format(
         case_id, case.research_gene_lists

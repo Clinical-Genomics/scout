@@ -82,7 +82,7 @@ class Case(Document):
   owner = StringField(required=True)
   # These are the names of all the collaborators that are allowed to view the
   # case, including the owner
-  collaborators = ListField(StringField)
+  collaborators = ListField(StringField())
   assignee = ReferenceField('User')
   individuals = ListField(EmbeddedDocumentField(Individual))
   created_at = DateTimeField(default=datetime.now)
@@ -166,5 +166,6 @@ class Case(Document):
     return "Case(case_id={0}, display_name={1}, owner={2})".format(
       self.case_id, self.display_name, self.owner
     )
+  
   # def __unicode__(self):
   #   return self.display_name

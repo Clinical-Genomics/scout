@@ -72,5 +72,4 @@ cli.add_command(wipe)
 cli.add_command(wipe_and_load)
 
 if __name__ == '__main__':
-  print("HEJ")
   cli()

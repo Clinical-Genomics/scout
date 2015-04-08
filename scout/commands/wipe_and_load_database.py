@@ -27,8 +27,7 @@ from pymongo import MongoClient, Connection
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import _get_db
 
-from scout.commands import wipe
-from scout.commands import load
+from . import (wipe, load)
 
 from scout.ext.backend import ConfigParser
 
@@ -81,13 +80,14 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
     sys.exit(0)
   
   ######## Wipe cases and variants from the existing database ######
-  ctx.invoke(wipe, 
+  ctx.invoke(
+                  wipe, 
                   mongo_db=mongo_db, 
                   username=username, 
                   password=password, 
                   port=port, 
                   verbose=verbose
-                  )
+                )
   
   ######## Update the paths from the config file #########
   
@@ -136,7 +136,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   # Load the family 1 clinical data:
   ctx.invoke(load,
                   scout_config_file = case_1_clinical_temp.name,
-                  vcf_configs=config_file, 
+                  vcf_config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
@@ -189,7 +189,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   # Load the family 1 clinical data:
   ctx.invoke(load,
                   scout_config_file = case_1_research_temp.name,
-                  vcf_configs=config_file, 
+                  vcf_config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
@@ -243,7 +243,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   # Load the coriell family clinical data:
   ctx.invoke(load,
                   scout_config_file = coriell_clinical_temp.name,
-                  vcf_configs=config_file, 
+                  vcf_config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
@@ -298,7 +298,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   # Load the family 1 clinical data:
   ctx.invoke(load,
                   scout_config_file = coriell_research_temp.name,
-                  vcf_configs=config_file, 
+                  vcf_config_file=config_file, 
                   family_type='cmms', 
                   mongo_db=mongo_db, 
                   username=username,
@@ -312,7 +312,7 @@ def wipe_and_load(ctx, config_file, mongo_db, username, password, port, host,
   
 
 if __name__ == '__main__':
-  from ...log import init_log
+  from ..log import init_log
   logger = logging.getLogger("scout")
-  init_log(logger, logfile, loglevel)
+  init_log(logger, loglevel="INFO")
   wipe_and_load()

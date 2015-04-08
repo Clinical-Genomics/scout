@@ -46,7 +46,7 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 type=click.Path(exists=True),
                 help="Path to the scout config file."
 )
-@click.option('-c', '--config_file',
+@click.option('-c', '--vcf_config_file',
                 nargs=1,
                 type=click.Path(exists=True),
                 default=os.path.join(BASE_PATH, 'configs/config_test.ini'),
@@ -99,7 +99,7 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def load(vcf_file, ped_file, scout_config_file, config_file, family_type, 
+def load(vcf_file, ped_file, scout_config_file, vcf_config_file, family_type, 
               mongo_db, username, variant_type, madeline, coverage_report,
               password, owner, port, host, verbose):
   """
@@ -154,14 +154,14 @@ def load(vcf_file, ped_file, scout_config_file, config_file, family_type,
     sys.exit(0)
   
   # Check that the config file is provided:
-  if not config_file:
-    logger.warning("Please provide a config file.(Use flag '-config/--config_file')")
+  if not vcf_config_file:
+    logger.warning("Please provide a vcf config file.(Use flag '-config/--config_file')")
     sys.exit(0)
   
   
   my_vcf = load_mongo_db(
                           scout_configs, 
-                          config_file, 
+                          vcf_config_file, 
                           family_type,
                           mongo_db=mongo_db, 
                           username=username, 
