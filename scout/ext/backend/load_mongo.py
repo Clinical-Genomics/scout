@@ -103,7 +103,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   for institute_name in case['collaborators']:
     if institute_name:
-      print(institute_name, type(institute_name))
       institute = get_institute(institute_name)
       logger.info("Institute found: {0}".format(institute))
       try:
@@ -389,6 +388,8 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
   
   scout_validation_file = os.path.join(base_path, 'config_spec/scout_config.ini')
+  if not vcf_config_file:
+    vcf_config_file = os.path.join(base_path, 'configs/vcf_config.ini')
   mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
 
   setup_configs = {}

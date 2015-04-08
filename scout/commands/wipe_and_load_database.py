@@ -37,8 +37,8 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 @click.option('-config', '--config_file',
                 nargs=1,
                 type=click.Path(exists=True),
-                default=os.path.join(BASE_PATH, 'configs/config_test.ini'),
-                help="Path to the config file for loading the variants. Default configs/config_test.ini"
+                default=os.path.join(BASE_PATH, 'configs/vcf_config.ini'),
+                help="Path to the config file for loading the variants. Default configs/vcf_config.ini"
 )
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'

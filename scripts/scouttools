@@ -19,7 +19,7 @@ import pkg_resources
 from pprint import pprint as pp
 from codecs import getwriter
 
-from scout.commands import (load, wipe_and_load, wipe)
+from scout.commands import (load, wipe_and_load, wipe, delete_case)
 
 version = pkg_resources.require("scout")[0].version
 
@@ -70,6 +70,7 @@ def cli(logfile, loglevel):
 cli.add_command(load)
 cli.add_command(wipe)
 cli.add_command(wipe_and_load)
+cli.add_command(delete_case)
 
 if __name__ == '__main__':
   cli()
