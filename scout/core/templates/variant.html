@@ -648,11 +648,7 @@
                              string_link=gene.string_link,
                              ucsc_link=variant.ucsc_link,
                              entrez_link=gene.entrez_link,
-                             reactome_link=gene.reactome_link,
-                             igv_link=url_for('browser.igv_init',
-                                              institute_id=institute_id,
-                                              case_id=case_id,
-                                              variant_id=variant_id))
+                             reactome_link=gene.reactome_link)
             }}
           </div>
         </div>
