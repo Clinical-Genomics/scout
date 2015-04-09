@@ -294,7 +294,7 @@ class Variant(Document):
   # Database options:
   gene_lists = ListField(StringField())
   expected_inheritance = ListField(StringField())
-  manual_rank = IntField(choices=[1, 2, 3, 4, 5])
+  manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
 
   acmg_evaluation = StringField(choices=ACMG_TERMS)
 
