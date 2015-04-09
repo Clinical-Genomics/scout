@@ -60,6 +60,9 @@ class BaseConfig(object):
   # recipients of error log emails
   ADMINS = ['yourmail@gmail.com']
 
+  # time zone setting
+  TIME_ZONE = 'Europe/Stockholm'
+
 
 class DevelopmentConfig(BaseConfig):
   """docstring for DefaultConfig"""
