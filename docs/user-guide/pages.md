@@ -33,7 +33,7 @@ A quick link to get straight to the list of all clinical variants is also displa
 
 Sometimes you will also see a cyan colored dot to the left of the case ID. This is an indicator that there's been some recent activity in the case such as a new comment.
 
-A tag "ASSIGNED" will be displayed for each case that is assigned to you.
+Your name will be tagged for each case that is assigned to you. For cases that are assigned to other people you will see a tag "ASSIGNED".
 
 ----------
 
