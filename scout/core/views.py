@@ -370,31 +370,68 @@ def mark_causative(institute_id, case_id, variant_id):
   """Mark a variant as confirmed causative."""
   # very basic security check
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
-  variant = store.variant(document_id=variant_id)
+  case_model = get_document_or_404(Case, case_id)
+  variant_model = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   # mark the variant as causative in the case model
-  case.causative = variant
+  case_model.causative = variant_model
 
   # add event
-  case.events.append(Event(
-    link=variant_url,
-    author=current_user.to_dbref(),
-    verb="marked a causative variant for case {}:".format(case.display_name),
-    subject=variant_id,
-  ))
+  event = Event(link=variant_url,
+                author=current_user.to_dbref(),
+                verb=("marked a causative variant for case {}:"
+                      .format(case_model.display_name)),
+                subject=variant_id)
+  case_model.events.append(event)
+  variant_model.events.append(event)
 
   # mark the case as solved
-  case.status = 'solved'
+  case_model.status = 'solved'
 
   # persist changes
-  case.save()
+  case_model.save()
+  variant_model.save()
 
   # send the user back to the case the was marked as solved
   return redirect(case_url)
+
+
+@core.route('/<institute_id>/<case_id>/unmark_causative', methods=['POST'])
+def unmark_causative(institute_id, case_id):
+  """Remove a variant as confirmed causative for a case."""
+  # very basic security check
+  validate_user(current_user, institute_id)
+  case_model = get_document_or_404(Case, case_id)
+  case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+  # skip the host part of the URL to make it more flexible
+  variant_url = request.referrer.replace(request.host_url, '/')
+  variant_model = case_model.causative
+
+  # add event
+  event = Event(link=variant_url,
+                author=current_user.to_dbref(),
+                verb=("Removed the causative variant for case {}:"
+                      .format(case_model.display_name)),
+                subject=case_model.causative.document_id)
+  case_model.events.append(event)
+  variant_model.events.append(event)
+
+  # remove the variant as causative in the case model
+  case_model.causative = None
+
+  # mark the case as active again
+  case_model.status = 'active'
+
+  # persist changes
+  case_model.save()
+  variant_model.save()
+
+  # send the user back to the case the was marked as solved
+  return redirect(request.referrer or case_url)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger',
@@ -449,8 +486,7 @@ def email_sanger(institute_id, case_id, variant_id):
     sender=current_app.config['MAIL_USERNAME'],
     recipients=recipients,
     # cc the sender of the email for confirmation
-    cc=[current_user.email],
-    bcc=[current_app.config['MAIL_USERNAME']]
+    cc=[current_user.email]
   )
 
   # compose and send the email message

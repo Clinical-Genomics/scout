@@ -67,15 +67,40 @@
     </form>
   {% endif %}
 
-  <form action="{{ url_for('core.mark_causative',
-                           institute_id=institute.display_name,
-                           case_id=case.display_name,
-                           variant_id=variant_id) }}"
-        method="POST">
-    <button type="submit" class="icon-button" title="Mark as causative">
-      <core-icon icon="verified-user"></core-icon>
-    </button>
-  </form>
+  {% if case.is_solved %}
+    {% if variant == case.causative %}
+      <form action="{{ url_for('core.unmark_causative',
+                               institute_id=institute.display_name,
+                               case_id=case.display_name) }}"
+            method="POST">
+        <button type="submit" class="case-assign-icon" title="Reset causative">
+          <div class="md-label">
+            <div class="md-label-icon">
+              <core-icon icon="verified-user"></core-icon>
+            </div>
+            <div class="md-label-text">Reset causative</div>
+          </div>
+        </button>
+      </form>
+    {% endif %}
+  {% else %}
+    <form action="{{ url_for('core.mark_causative',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+
+      <button type="submit" class="case-assign-icon" title="Mark as causative">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="verified-user"></core-icon>
+          </div>
+          <div class="md-label-text">Mark causative</div>
+        </div>
+      </button>
+    </form>
+  {% endif %}
+
 {% endblock %}
 
 {% block toolbar_secondary %}
@@ -716,7 +741,7 @@
       <div class="md-card">
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
-          {{ activity_feed(variant.events|reverse) }}
+          {{ activity_feed(variant.events|reverse, context='variant') }}
         </div>
       </div>
     </div>

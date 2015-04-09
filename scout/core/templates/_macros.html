@@ -74,7 +74,7 @@
   </a>
 {% endmacro %}
 
-{% macro activity_feed(events) %}
+{% macro activity_feed(events, context='case') %}
   <div class="activity-feed">
     {% for event in events %}
       <div class="activity-feed-item">
@@ -92,7 +92,7 @@
     {% else %}
       <div class="activity-feed-item">
         <div class="activity-feed-item-event">
-          No case activity yet.
+          No {{ context }} activity yet.
         </div>
       </div>
     {% endfor %}
