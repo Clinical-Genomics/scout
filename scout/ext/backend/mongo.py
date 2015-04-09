@@ -57,8 +57,11 @@ class MongoAdapter(BaseAdapter):
     # self.config_object = ConfigParser(config_file)
 
 
-  def cases(self):
-    return Case.objects
+  def cases(self, collaborator = None):
+    if collaborator:
+      return Case.objects(collaborators = collaborator)
+    else:
+      return Case.objects()
 
   def case(self, case_id):
 

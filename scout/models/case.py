@@ -76,7 +76,13 @@ class Case(Document):
   """Represents a case (family) of individuals (samples)."""
   # This is the md5 string id for the family:
   case_id = StringField(primary_key=True, required=True)
+  # This is the string that will be shown in scout:
   display_name = StringField(required=True)
+  # This is the owner of the case
+  owner = StringField(required=True)
+  # These are the names of all the collaborators that are allowed to view the
+  # case, including the owner
+  collaborators = ListField(StringField())
   assignee = ReferenceField('User')
   individuals = ListField(EmbeddedDocumentField(Individual))
   created_at = DateTimeField(default=datetime.now)
@@ -156,5 +162,10 @@ class Case(Document):
     """Yield all gene lists (both clinical and research)."""
     return itertools.chain(self.clinical_gene_lists, self.research_gene_lists)
 
-  def __unicode__(self):
-    return self.display_name
+  def __repr__(self):
+    return "Case(case_id={0}, display_name={1}, owner={2})".format(
+      self.case_id, self.display_name, self.owner
+    )
+  
+  # def __unicode__(self):
+  #   return self.display_name

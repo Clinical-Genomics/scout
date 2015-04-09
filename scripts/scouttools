@@ -19,7 +19,7 @@ import pkg_resources
 from pprint import pprint as pp
 from codecs import getwriter
 
-from scout.commands import (load_mongo, wipe_and_load, wipe_mongo)
+from scout.commands import (load, wipe_and_load, wipe, delete_case)
 
 version = pkg_resources.require("scout")[0].version
 
@@ -57,7 +57,7 @@ def print_version(ctx, param, value):
                                         'CRITICAL']),
                     help="Set the level of log output."
 )
-def scouttools(logfile, loglevel):
+def cli(logfile, loglevel):
     """
     Tool for simulating structural variations.\n
     For more information, please run:
@@ -67,9 +67,10 @@ def scouttools(logfile, loglevel):
     from scout.log import init_log
     init_log(logger, logfile, loglevel)
 
-scouttools.add_command(load_mongo)
-scouttools.add_command(wipe_mongo)
-scouttools.add_command(wipe_and_load)
+cli.add_command(load)
+cli.add_command(wipe)
+cli.add_command(wipe_and_load)
+cli.add_command(delete_case)
 
 if __name__ == '__main__':
-    scouttools()
+  cli()

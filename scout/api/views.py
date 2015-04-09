@@ -74,7 +74,8 @@ def cases(institute_id):
     Response: jsonified MongoDB objects as a list
   """
   institute = Institute.objects.get(display_name=institute_id)
-  cases_json = dumps([case.to_mongo() for case in institute.cases])
+  case_models = store.cases(collaborator=institute_id)
+  cases_json = dumps([case.to_mongo() for case in case_models])
 
   return Response(cases_json, mimetype='application/json; charset=utf-8')
 
