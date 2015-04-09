@@ -26,7 +26,8 @@
     url: '{{ url_for('api.cases', institute_id=institute_id) }}',
     baseUrl: '{{ url_for('core.cases', institute_id=institute_id) }}',
     filterKey: casesSearchQuery,
-    user_id: '{{ current_user.id }}'
+    user_id: '{{ current_user.id }}',
+    user_name: '{{ current_user.first_name }}'
   ">
   </div>
 {% endblock %}
