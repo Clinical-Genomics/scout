@@ -16,9 +16,11 @@
       {% block main_drawer %}
         {{ core_item('Home', icon='home', href=url_for('frontend.index')) }}
 
-        {{ core_item('User Guide', icon='book', href='http://clinical-genomics.github.io/scout/user-guide/pages/', target="_blank") }}
+        {{ core_item('User Guide', icon='book', href='http://clinical-genomics.github.io/scout/user-guide/pages/', target='_blank') }}
 
-        {{ core_item('Changes', icon='history', href='https://github.com/Clinical-Genomics/scout', target="_blank") }}
+        {{ core_item('Changes', icon='history', href='https://github.com/Clinical-Genomics/scout', target='_blank') }}
+
+        {{ core_item('Open issues', icon='announcement', href='https://github.com/Clinical-Genomics/scout/issues', target='_blank') }}
 
         {% if current_user.has_role('admin') %}
           {{ core_item('Admin', icon='create', href='/admin') }}
