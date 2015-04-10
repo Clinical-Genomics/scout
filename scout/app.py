@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 from __future__ import absolute_import, unicode_literals
+import dateutil
 import os
 
 import arrow
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app
 from jinja2 import is_undefined
 from path import path as ipath
 from werkzeug.utils import import_string
@@ -185,7 +186,10 @@ class AppFactory(object):
     """Configure custom Jinja2 template filters."""
     @self.app.template_filter()
     def human_date(value):
-      return arrow.get(value).humanize()
+      time_zone = current_app.config['TIME_ZONE']
+      return (arrow.get(value)
+                   .replace(tzinfo=dateutil.tz.gettz(time_zone))
+                   .humanize())
 
     @self.app.template_filter()
     def format_date(value, format="%Y-%m-%d"):

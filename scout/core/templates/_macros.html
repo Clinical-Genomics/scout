@@ -68,13 +68,9 @@
   <a target="_blank" class="variant-link-external" href="{{ reactome_link }}">
     Reactome
   </a>
-
-  <a target="_blank" class="variant-link-external" href="{{ igv_link }}">
-    IGV
-  </a>
 {% endmacro %}
 
-{% macro activity_feed(events) %}
+{% macro activity_feed(events, context='case') %}
   <div class="activity-feed">
     {% for event in events %}
       <div class="activity-feed-item">
@@ -92,7 +88,7 @@
     {% else %}
       <div class="activity-feed-item">
         <div class="activity-feed-item-event">
-          No case activity yet.
+          No {{ context }} activity yet.
         </div>
       </div>
     {% endfor %}

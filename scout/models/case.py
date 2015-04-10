@@ -43,7 +43,7 @@ class Individual(EmbeddedDocument):
 
   def __unicode__(self):
     return self.display_name
-  
+
   def __repr__(self):
     return "Individual(individual_id={0}, display_name={1})".format(
       self.individual_id, self.display_name
@@ -53,7 +53,7 @@ class Individual(EmbeddedDocument):
 class PhenotypeTerm(EmbeddedDocument):
   hpo_id = StringField()
   feature = StringField()
-  
+
   def __repr__(self):
     return "PhenotypeTerm(hpo_id={0}, feature={1})".format(
       self.hpo_id, self.feature
@@ -65,7 +65,7 @@ class GeneList(EmbeddedDocument):
   version = FloatField(required=True)
   date = StringField(required=True)
   display_name = StringField()
-  
+
   def __repr__(self):
     return "GeneList(list_id={0}, version={1}, date={2}, display_name={3})".format(
       self.list_id, self.version, self.date, self.display_name
@@ -115,6 +115,11 @@ class Case(Document):
   vcf_file = StringField()
 
   coverage_report_path = StringField()
+
+  @property
+  def is_solved(self):
+      """Check if the case is marked as solved."""
+      return self.status == 'solved'
 
   @property
   def hpo_genes(self):

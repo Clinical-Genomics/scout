@@ -21,10 +21,10 @@ class Institute(Document):
 
   def __unicode__(self):
     return self.display_name
-  
+
   def __repr__(self):
     return "Institute(internal_id={0}, display_name={1}, "\
            "sanger_recipients={2}, created_at={3})".format(
-             self.internal_id, self.display_name, self.sanger_recipients, 
+             self.internal_id, self.display_name, self.sanger_recipients,
              self.created_at
              )
