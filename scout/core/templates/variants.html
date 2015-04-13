@@ -312,8 +312,9 @@
 
           {% if variant.compounds %}
             <div class="md-tooltip-tip is-left">
+              <!-- Limit compounds in this view for performance! -->
               {{ compounds_table(
-                   variant.compounds,
+                   variant.compounds[15],
                    institute_id,
                    case_id,
                    class_names=['default-table--flex',
