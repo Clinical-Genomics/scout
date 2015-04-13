@@ -10,7 +10,7 @@ import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
-                         ReferenceField)
+                         ReferenceField, SortedListField)
 
 from .._compat import zip
 from .event import Event
@@ -264,7 +264,8 @@ class Variant(Document):
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
-  compounds = ListField(EmbeddedDocumentField(Compound))
+  compounds = SortedListField(EmbeddedDocumentField(Compound),
+                              ordering='combined_score', reverse=True)
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
   genes = ListField(EmbeddedDocumentField(Gene))
