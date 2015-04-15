@@ -464,7 +464,7 @@ def email_sanger(institute_id, case_id, variant_id):
   hgnc_symbol = ', '.join(variant.hgnc_symbols)
   functions = ["<li>{}</li>".format(function) for function in
                variant.protein_changes]
-  gtcalls = ["<li>{}: {}</li>".format(individual.sample,
+  gtcalls = ["<li>{}: {}</li>".format(individual.display_name,
                                       individual.genotype_call)
              for individual in variant.samples]
 
