@@ -60,7 +60,8 @@ def get_case(scout_configs, family_type):
   """
   logger = logging.getLogger(__name__)
   # Use ped_parser to get information from the pedigree file
-  case_parser = FamilyParser(scout_configs['ped'], family_type=family_type)
+  case_parser = FamilyParser(open(scout_configs['ped'], 'r'), 
+                             family_type=family_type)
   
   try:
     owner = scout_configs['owner']
