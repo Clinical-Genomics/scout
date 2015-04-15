@@ -190,6 +190,16 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   return redirect(case_url)
 
 
+def read_lines(iterable):
+  """Handle both CR line endings and normal endings."""
+  new_lines = ((nested_line for nested_line in
+                line.rstrip().replace('\r', '\n').split('\n'))
+               for line in iterable if not line.startswith('#'))
+
+  # flatten nested lists
+  return (item for sublist in new_lines for item in sublist)
+
+
 @core.route('/upload-gene-list', methods=['POST'])
 @login_required
 def upload_gene_list():
@@ -197,8 +207,7 @@ def upload_gene_list():
   gene_list = request.files.get('gene_list')
   if gene_list:
     # file found
-    hgnc_symbols = [line.strip() for line in gene_list
-                    if not line.startswith('#')]
+    hgnc_symbols = read_lines(gene_list)
 
   else:
     hgnc_symbols = []
