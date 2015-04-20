@@ -22,167 +22,231 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 from __future__ import (absolute_import, unicode_literals, print_function,
                         division)
-
 import sys
 import os
-
 import io
 import json
 import click
-
-
+import logging
 
 from datetime import datetime
 from pymongo import (ASCENDING, DESCENDING)
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import get_db
 
-
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
 from ...models import (Institute, Case)
+from ..._compat import iteritems
 
 
 from vcf_parser import VCFParser
 
-from pprint import pprint as pp
-
 import scout
 
 
-def load_mongo_db(scout_configs, config_file=None, family_type='cmms',
+
+def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
                   username=None, password=None, port=27017,
-                  rank_score_treshold = 0, host='localhost',verbose = False):
+                  rank_score_treshold = 0, host='localhost'):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
 
+  logger = logging.getLogger(__name__)
+  # For testing only
+  if __name__ == '__main__':
+    logger = logging.getLogger("scout.ext.backend.load_mongo")
+
   ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['load_vcf']
+  logger.info("Found a vcf for loading variants into scout: {0}".format(
+    vcf_file
+  ))
   splitted_vcf_file_name = os.path.splitext(vcf_file)
   vcf_ending = splitted_vcf_file_name[-1]
   if vcf_ending != '.vcf':
     if vcf_ending == '.gz':
       vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
       if vcf_ending != '.vcf':
-        print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')",
-               file=sys.stderr)
-        sys.exit(0)
+        raise IOError("Please use the correct prefix of your vcf"\
+                        " file('.vcf/.vcf.gz')")
     else:
       if vcf_ending != '.vcf':
-        print("Please use the correct prefix of your vcf file('.vcf/.vcf.gz')",
-                file=sys.stderr)
-        sys.exit(0)
-  
+        raise IOError("Please use the correct prefix of your vcf"\
+                        " file('.vcf/.vcf.gz')")
+  logger.debug("VCF have a proper file name")
+
+  logger.info("Connecting to {0}".format(mongo_db))
   connect(mongo_db, host=host, port=port, username=username,
           password=password)
-  
+
   variant_database = get_db()
-  
+
   ped_file = scout_configs['ped']
-  
-  if verbose:
-    print("\nvcf_file:\t%s\nped_file:\t%s\nconfig_file:\t%s\nfamily_type:\t%s\n"
-          "mongo_db:\t%s\ninstitutes:\t%s\n" % (vcf_file, ped_file, 
-          config_file, family_type, mongo_db, ','.join(scout_configs['institutes'])),
-          file=sys.stderr)
+  logger.info("Found a ped file: {0}".format(ped_file))
 
   ######## Parse the config file to check for keys ########
-  config_object = ConfigParser(config_file)
+  logger.info("Parsing config file")
+  config_object = ConfigParser(vcf_configs)
+
+
+  ######## Get the cases and add them to the mongo db: ########
+
+  logger.info("Get the case from ped file")
+  case = get_case(scout_configs, family_type)
+
+  logger.info('Case found in {0}: {1}'.format(ped_file, case.display_name))
 
   ######## Add the institute to the mongo db: ########
 
-  # institutes is a list with institute objects
-  institutes = []
-  for institute_name in scout_configs['institutes']:
-    institutes.append(get_institute(institute_name))
+  for institute_name in case['collaborators']:
+    if institute_name:
+      institute = get_institute(institute_name)
+      logger.info("Institute found: {0}".format(institute))
+      try:
+        Institute.objects.get(internal_id = institute.internal_id)
+        logger.info("Institute {0} already in database".format(institute))
+      except DoesNotExist:
+        institute.save()
+        logger.info("Adding new institute {0} to database".format(institute))
 
-  # If the institute exists we work on the old one
-  for i, institute in enumerate(institutes):
-    try:
-      if Institute.objects.get(internal_id = institute.internal_id):
-        institutes[i] = Institute.objects.get(internal_id = institute.internal_id)
-    except DoesNotExist:
-      if verbose:
-        print('New institute!', file=sys.stderr)
-  
-  
-  ######## Get the cases and add them to the mongo db: ########
-  
-  case = get_case(scout_configs, family_type)
-  
-  if verbose:
-    print('Case found in %s: %s' % (ped_file, case.display_name),
-          file=sys.stderr)
+  logger.info("Updating case in database")
+  update_case(case, variant_type, logger)
 
-  # Add the case to its institute(s)
-  for institute_object in institutes:
-    if case not in institute_object.cases:
-      institute_object.cases.append(case)
-  
-    institute_object.save()
-  
-  try:
-    existing_case = Case.objects.get(case_id = case.case_id)
-    if variant_type=='research':
-      existing_case.research_gene_lists = case.research_gene_lists
-      existing_case.is_research = True
-    else:
-      existing_case.clinical_gene_lists = case.clinical_gene_lists
-    existing_case.save()
-  except DoesNotExist:
-    if verbose:
-      print('New case!', file=sys.stderr)
-    case.save()
-    
   ######## Get the variants and add them to the mongo db: ########
-  
+
+  logger.info("Setting up a variant parser")
   variant_parser = VCFParser(infile=vcf_file, split_variants=True)
   nr_of_variants = 0
   start_inserting_variants = datetime.now()
-  
-  # Get the individuals to see which we should include in the analysis
-  ped_individuals = []
-  for individual in case.individuals:
-    ped_individuals.append(individual.individual_id)
-  
-  # Check which individuals that exists in the vcf file:
-  individuals = []
-  for individual in ped_individuals:
-    if individual in variant_parser.individuals:
-      individuals.append(individual)
-    else:
-      if verbose:
-        print("Individual %s is present in ped file but not in vcf!\n"
-              "Continuing analysis..." % individual, file=sys.stderr)
 
-  if verbose:
-    print('Start parsing variants...', file=sys.stderr)
+  # Get the individuals to see which we should include in the analysis
+  ped_individuals = {individual.individual_id: individual.display_name
+                     for individual in case.individuals}
+
+  # Check which individuals that exists in the vcf file.
+  # Save the individuals in a dictionary with individual ids as keys
+  # and display names as values
+  individuals = {}
+  # loop over keys (internal ids)
+  logger.info("Checking which individuals in ped file exists in vcf")
+  for individual_id, display_name in iteritems(ped_individuals):
+    logger.debug("Checking individual {0}".format(individual_id))
+    if individual_id in variant_parser.individuals:
+      logger.debug("Individual {0} found".format(individual_id))
+      individuals[individual_id] = display_name
+    else:
+        logger.warning("Individual {0} is present in ped file but"\
+                      " not in vcf".format(individual_id))
+
+  logger.info('Start parsing variants')
 
   ########## If a rank score treshold is used check if it is below that treshold ##########
   for variant in variant_parser:
+    logger.debug("Parsing variant {0}".format(variant['variant_id']))
     if not float(variant['rank_scores'][case.display_name]) > rank_score_treshold:
+      logger.info("Lower rank score treshold reaced after {0}"\
+                  " variants".format(nr_of_variants))
       break
-    
+
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, variant_type, individuals, case, config_object, nr_of_variants)
-    
+
     mongo_variant.save()
-    
-    if verbose:
-      if nr_of_variants % 1000 == 0:
-        print('%s variants parsed!' % nr_of_variants, file=sys.stderr)
-  
-  if verbose:
-    print('%s variants inserted!' % nr_of_variants, file=sys.stderr)
-    print('Time to insert variants: %s' % (datetime.now() - start_inserting_variants), file=sys.stderr)
-  
-  if verbose:
-    print('Updating indexes...', file=sys.stderr)
-  
-  ensure_indexes(variant_database)
-  
+
+    if nr_of_variants % 1000 == 0:
+      logger.info('{0} variants parsed'.format(nr_of_variants))
+
+  logger.info("Parsing variants done")
+  logger.info("{0} variants inserted".format(nr_of_variants))
+  logger.info("Time to insert variants: {0}".format(
+    datetime.now() - start_inserting_variants
+  ))
+
+  logger.info("Updating indexes")
+
+  ensure_indexes(variant_database, logger)
+
+  return
+
+def update_case(case, variant_type, logger):
+  """
+  Update a case in in the mongo database.
+
+  If a case is already existing (in case of a rerun), we need to update
+  the existing one in a correct manner.
+
+  Othervise insert the case.
+
+  Arguments:
+    case (Case): A case object.
+    variant_type (str): 'research' or 'clinical'
+    logger (logging.logger): A logger object
+  """
+  case_id = case.case_id
+  try:
+    existing_case = Case.objects.get(case_id = case_id)
+    logger.info("Case {0} already in database".format(case_id))
+    if variant_type=='research':
+      logger.info("Updating research gene list for case {0} to {1}".format(
+        case_id, case.research_gene_lists
+      ))
+      existing_case.research_gene_lists = case.research_gene_lists
+      logger.info("Setting case {0} in research mode".format(case_id))
+      existing_case.is_research = True
+    else:
+      logger.info("Updating clinical gene list for case {0} to {1}".format(
+        case_id, case.clinical_gene_lists
+      ))
+      existing_case.clinical_gene_lists = case.clinical_gene_lists
+    logger.info("Updating individuals for case {0} to {1}".format(
+      case_id, case.individuals
+    ))
+    existing_case.individuals = case.individuals
+    logger.info("Updating time for case {0}".format(case_id))
+    existing_case.updated_at = case.updated_at
+
+    # This decides which gene lists that should be shown when the case is opened
+    logger.info("Updating default gene lists for case {0} to {1}".format(
+      case_id, case.default_gene_lists
+    ))
+    existing_case.default_gene_lists = case.default_gene_lists
+
+    logger.info("Updating genome build for case {0} to {1}".format(
+      case_id, case.genome_build
+    ))
+    existing_case.genome_build = case.genome_build
+    logger.info("Updating genome version for case {0} to {1}".format(
+      case_id, case.genome_version
+    ))
+    existing_case.genome_version = case.genome_version
+    logger.info("Updating analysis date for case {0} to {1}".format(
+      case_id, case.analysis_date
+    ))
+
+    existing_case.analysis_date = case.analysis_date
+
+    # madeline info is a full xml file
+    logger.info("Updating madeline file for case {0}".format(case_id))
+    existing_case.madeline_info = case.madeline_info
+    existing_case.vcf_file = case.vcf_file
+    logger.info("Updating vcf file for case {0} to {1}".format(
+      case_id, case.vcf_file
+    ))
+
+    existing_case.coverage_report_path = case.coverage_report_path
+    logger.info("Updating coverage report path for case {0} to {1}".format(
+      case_id, case.coverage_report_path
+    ))
+
+    existing_case.save()
+
+  except DoesNotExist:
+    logger.info('New case!')
+    case.save()
+
   return
 
 def update_local_frequencies(variant_database):
@@ -209,9 +273,17 @@ def update_local_frequencies(variant_database):
                                   ).count()) / number_of_cases
   return
 
-def ensure_indexes(variant_database):
-  """Function to check the necessary indexes."""
+def ensure_indexes(variant_database, logger):
+  """
+  Update all the necessary indexes.
+
+  Arguments:
+    variant_database (db_communicator)
+    logger (logging.logger)
+  """
+
   variant_collection = variant_database['variant']
+  logger.info("Updating first compound index")
   variant_collection.ensure_index(
                 [
                   ('case_id', ASCENDING),
@@ -222,6 +294,7 @@ def ensure_indexes(variant_database):
                 ],
                 background=True
       )
+  logger.info("Updating index with hgnc symbols and exac frequency")
   variant_collection.ensure_index(
                 [
                   ('hgnc_symbols', ASCENDING),
@@ -230,6 +303,8 @@ def ensure_indexes(variant_database):
                 background=True
       )
 
+  logger.info("Updating index with 1000G frequency, functional annotation"\
+              " and region annotation.")
   variant_collection.ensure_index(
                 [
                   ('thousand_genomes_frequency', ASCENDING),
@@ -291,54 +366,69 @@ def ensure_indexes(variant_database):
 @click.option('-p', '--password',
                 type=str
 )
-@click.option('-v', '--verbose',
-                is_flag=True,
-                help='Increase output verbosity.'
+@click.option('-l', '--logfile',
+                    type=click.Path(exists=False),
+                    help="Path to log file. If none logging is "\
+                          "printed to stderr."
+)
+@click.option('--loglevel',
+                    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR',
+                                        'CRITICAL']),
+                    help="Set the level of log output."
 )
 def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         mongo_db, username, variant_type, madeline, password, institute,
-        verbose):
+        logfile, loglevel):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
-  
+  from pprint import pprint as pp
+  logger = logging.getLogger(__name__)
+
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
+
+  scout_validation_file = os.path.join(base_path, 'config_spec/scout_config.ini')
+  if not vcf_config_file:
+    vcf_config_file = os.path.join(base_path, 'configs/vcf_config.ini')
   mongo_configs = os.path.join(base_path, 'instance/scout.cfg')
-  
+
   setup_configs = {}
-  
+
   if scout_config_file:
-    setup_configs = ConfigParser(scout_config_file)
-  
+    setup_configs = ConfigParser(scout_config_file, configspec=scout_validation_file)
+
   if vcf_file:
     setup_configs['load_vcf'] = vcf_file
-  
+
   if ped_file:
     setup_configs['ped'] = ped_file
-  
+
   if madeline:
     setup_configs['madeline'] = madeline
-  
+
   if institute:
     setup_configs['institutes'] = [institute]
-  
+
   if not setup_configs.get('load_vcf', None):
-    print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+    logger.warning("Please provide a vcf file.(Use flag '-vcf/--vcf_file')")
     sys.exit(0)
-  
+
   # Check that the ped file is provided:
   if not setup_configs.get('ped', None):
-    print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+    logger.warning("Please provide a ped file.(Use flag '-ped/--ped_file')")
     sys.exit(0)
-  
+
   # Check that the config file is provided:
   if not vcf_config_file:
-    print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
+    logger.warning("Please provide a vcf config file.(Use flag '-vcf_config/--vcf_config_file')")
     sys.exit(0)
-  
+
   my_vcf = load_mongo_db(setup_configs, vcf_config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password,
-                      variant_type=variant_type, verbose=verbose)
+                      variant_type=variant_type)
 
 
 if __name__ == '__main__':
-    cli()
+  from ...log import init_log
+  logger = logging.getLogger("scout")
+  init_log(logger, logfile, loglevel)
+  cli()

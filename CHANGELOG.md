@@ -2,7 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.2] - 2015-02-27
+## [1.0.0] - 2015-04-XX
+Codename: Sara Lund
+
+![Release 1.0](artwork/releases/release-1-0.jpg)
+
+### Added
+- Add email logging for unexpected errors
+- New command line tool for deleting case
+
+### Changed
+- Much improved logging overall
+- Updated documentation/usage guide
+- Removed non-working IGV link
+
+### Fixed
+- Show sample display name in GT call
+- Various small bug fixes
+- Make it easier to hover over popups
 
 ## [0.0.2-rc1] - 2015-03-04
 ### Added

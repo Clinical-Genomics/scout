@@ -99,7 +99,7 @@ def authorized(oauth_response):
   try:
     faux_user = Whitelist.objects.get(email=google_data['email'])
   except DoesNotExist:
-    flash('Your email is not on the whitelist, contact an administor.')
+    flash('Your email is not on the whitelist, contact an admin.')
     return abort(403)
 
   # get or create user from the database

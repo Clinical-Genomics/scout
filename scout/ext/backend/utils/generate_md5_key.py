@@ -32,16 +32,12 @@ def generate_md5_key(list_of_arguments):
   
   for arg in list_of_arguments:
     if not isinstance(arg, string_types):
-      
-      print("Error in generate_md5_key:\n" 
-            "Argument: %s is a %s" % (arg, type(arg)),
-            file=sys.stderr)
-      
-      sys.exit(1)
-  
+      raise SyntaxError("Error in generate_md5_key:" \
+                        "Argument: {0} is a {1}".format(arg, type(arg)))
+
   h = hashlib.md5()
   h.update(' '.join(list_of_arguments))
-  
+
   return h.hexdigest()
 
 @click.command()

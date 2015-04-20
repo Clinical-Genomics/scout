@@ -44,10 +44,20 @@ class Individual(EmbeddedDocument):
   def __unicode__(self):
     return self.display_name
 
+  def __repr__(self):
+    return "Individual(individual_id={0}, display_name={1})".format(
+      self.individual_id, self.display_name
+    )
+
 
 class PhenotypeTerm(EmbeddedDocument):
   hpo_id = StringField()
   feature = StringField()
+
+  def __repr__(self):
+    return "PhenotypeTerm(hpo_id={0}, feature={1})".format(
+      self.hpo_id, self.feature
+    )
 
 
 class GeneList(EmbeddedDocument):
@@ -56,17 +66,27 @@ class GeneList(EmbeddedDocument):
   date = StringField(required=True)
   display_name = StringField()
 
+  def __repr__(self):
+    return "GeneList(list_id={0}, version={1}, date={2}, display_name={3})".format(
+      self.list_id, self.version, self.date, self.display_name
+    )
+
 
 class Case(Document):
   """Represents a case (family) of individuals (samples)."""
   # This is the md5 string id for the family:
   case_id = StringField(primary_key=True, required=True)
+  # This is the string that will be shown in scout:
   display_name = StringField(required=True)
+  # This is the owner of the case
+  owner = StringField(required=True)
+  # These are the names of all the collaborators that are allowed to view the
+  # case, including the owner
+  collaborators = ListField(StringField())
   assignee = ReferenceField('User')
   individuals = ListField(EmbeddedDocumentField(Individual))
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
-  last_updated = DateTimeField()
   suspects = ListField(ReferenceField('Variant'))
   causative = ReferenceField('Variant')
   synopsis = StringField(default='')
@@ -94,6 +114,11 @@ class Case(Document):
   vcf_file = StringField()
 
   coverage_report_path = StringField()
+
+  @property
+  def is_solved(self):
+      """Check if the case is marked as solved."""
+      return self.status == 'solved'
 
   @property
   def hpo_genes(self):
@@ -141,5 +166,10 @@ class Case(Document):
     """Yield all gene lists (both clinical and research)."""
     return itertools.chain(self.clinical_gene_lists, self.research_gene_lists)
 
-  def __unicode__(self):
-    return self.display_name
+  def __repr__(self):
+    return "Case(case_id={0}, display_name={1}, owner={2})".format(
+      self.case_id, self.display_name, self.owner
+    )
+
+  # def __unicode__(self):
+  #   return self.display_name

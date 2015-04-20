@@ -9,7 +9,13 @@
 
           <div class="md-item-label">{{display_name}}</div>
 
-          <div v-show="assignee.$oid == user_id" class="tag">Assigned</div>
+          <template v-if="assignee">
+            <div v-show="assignee.$oid != user_id" class="tag">Assigned</div>
+
+            <div v-show="assignee.$oid == user_id" class="tag">
+              {{user_name}}
+            </div>
+          </template>
         </a>
 
         <div class="md-item-subtitle">
@@ -55,5 +61,6 @@
         cases: []
         url: ''
         user_id: ''
+        user_name: ''
       }
 </script>

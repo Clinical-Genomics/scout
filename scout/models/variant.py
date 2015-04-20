@@ -10,7 +10,7 @@ import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
-                         ReferenceField)
+                         ReferenceField, SortedListField)
 
 from .._compat import zip
 from .event import Event
@@ -131,7 +131,7 @@ class Transcript(EmbeddedDocument):
 
   @property
   def absolute_exon(self):
-    return self.exon.rpartition('/')[0]
+    return (self.exon or '').rpartition('/')[0]
 
   def stringify(self):
     return ("{this.hgnc_symbol}:{this.refseq_ids_string}"
@@ -225,24 +225,19 @@ class Compound(EmbeddedDocument):
   variant = ReferenceField('Variant')
   # This is the variant id
   display_name = StringField(required=True)
-  rank_score = FloatField()
   combined_score = FloatField(required=True)
-
-  @property
-  def rank_score(self):
-    """Return the individual rank score for this variant."""
-    return self.variant.rank_score
 
 
 class GTCall(EmbeddedDocument):
-  sample = StringField()
+  sample_id = StringField()
+  display_name = StringField()
   genotype_call = StringField()
   allele_depths = ListField(IntField())
   read_depth = IntField()
   genotype_quality = IntField()
 
   def __unicode__(self):
-    return self.sample
+    return self.display_name
 
 
 class Variant(Document):
@@ -252,12 +247,12 @@ class Variant(Document):
   variant_id = StringField(required=True)
   # display name in variant_id (no md5)
   display_name = StringField(required=True)
-  # the variant can be either a reserchvariant or a clinical variant.
-  # for research variants we display all the available information while
+  # The variant can be either a reserch variant or a clinical variant.
+  # For research variants we display all the available information while
   # the clinical variants hae limited annotation fields.
   variant_type = StringField(required=True,
                              choices=('research', 'clinical'))
-  # case_id is a string like institute_caseid
+  # case_id is a string like owner_caseid
   case_id = StringField(required=True)
   chromosome = StringField(required=True)
   position = IntField(required=True)
@@ -269,7 +264,8 @@ class Variant(Document):
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
-  compounds = ListField(EmbeddedDocumentField(Compound))
+  compounds = SortedListField(EmbeddedDocumentField(Compound),
+                              ordering='combined_score', reverse=True)
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
   genes = ListField(EmbeddedDocumentField(Gene))
@@ -299,7 +295,7 @@ class Variant(Document):
   # Database options:
   gene_lists = ListField(StringField())
   expected_inheritance = ListField(StringField())
-  manual_rank = IntField(choices=[1, 2, 3, 4, 5])
+  manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
 
   acmg_evaluation = StringField(choices=ACMG_TERMS)
 
@@ -311,7 +307,7 @@ class Variant(Document):
 
   @property
   def omim_annotations(self):
-    """Returns a list with omim id(s)."""
+    """Returns a list with OMIM id(s)."""
     if len(self.genes) == 1:
       annotations = (str(gene.omim_gene_entry) for gene in self.genes
                      if gene.omim_gene_entry)
@@ -324,10 +320,21 @@ class Variant(Document):
 
   @property
   def omim_annotation_links(self):
-    """Return a list of omim id links."""
+    """Return a list of OMIM id links."""
     base_url = 'http://www.omim.org/entry'
-    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
-            for omim_id in self.omim_annotations)
+
+    for omim_id_str in self.omim_annotations:
+      # handle cases with variant overlapping multiple genes
+      omim_id_parts = omim_id_str.split(':')
+      if len(omim_id_parts) == 1:
+        # single gene overlap
+        omim_id = omim_id_parts[0]
+
+      else:
+        # multiple genes
+        omim_id = omim_id_parts[1]
+
+      yield (omim_id_str, "{base}/{id}".format(base=base_url, id=omim_id))
 
   @property
   def omim_phenotypes(self):

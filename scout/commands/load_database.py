@@ -15,6 +15,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import sys
 import os
+import logging
 
 import click
 
@@ -40,12 +41,12 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 type=click.Path(exists=True),
                 help="Path to the corresponding ped file."
 )
-@click.option('-scout_config', '--scout_config_file',
+@click.option('-s', '--scout_config_file',
                 nargs=1,
                 type=click.Path(exists=True),
                 help="Path to the scout config file."
 )
-@click.option('-config', '--config_file',
+@click.option('-c', '--vcf_config_file',
                 nargs=1,
                 type=click.Path(exists=True),
                 default=os.path.join(BASE_PATH, 'configs/config_test.ini'),
@@ -61,7 +62,7 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 type=click.Path(exists=True),
                 help="Path to the coverage report file."
 )
-@click.option('-type', '--family_type',
+@click.option('-t', '--family_type',
                 type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
                 default='cmms',
                 nargs=1,
@@ -73,10 +74,9 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 nargs=1,
                 help="Specify the type of the variants that is being loaded."
 )
-@click.option('-i', '--institute',
-                default='CMMS',
+@click.option('-i', '--owner',
                 nargs=1,
-                help="Specify the institute that the file belongs to."
+                help="Specify the owner of the case."
 )
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'
@@ -99,63 +99,76 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 is_flag=True,
                 help='Increase output verbosity.'
 )
-def load_mongo(vcf_file, ped_file, scout_config_file, config_file, family_type, 
+def load(vcf_file, ped_file, scout_config_file, vcf_config_file, family_type,
               mongo_db, username, variant_type, madeline, coverage_report,
-              password, institute, port, host, verbose):
+              password, owner, port, host, verbose):
   """
   Load the mongo database.
-  
+
   Command line arguments will override what's in the config file.
-  
+
   """
   # Check if vcf file exists and that it has the correct naming:
+  logger = logging.getLogger(__name__)
   scout_configs = {}
-  
+
+  scout_validation_file = os.path.join(BASE_PATH, 'config_spec/scout_config.ini')
+
+
+  logger.info("Running load_mongo")
   if scout_config_file:
-    scout_configs = ConfigParser(scout_config_file)
-  
+    scout_configs = ConfigParser(scout_config_file, configspec=scout_validation_file)
+    logger.info("Using scout config file {0}".format(scout_config_file))
+
   if vcf_file:
     scout_configs['load_vcf'] = vcf_file
+    logger.info("Using command line specified vcf {0}".format(vcf_file))
     scout_configs['igv_vcf'] = vcf_file
-  
+
   if ped_file:
+    logger.info("Using command line specified ped file {0}".format(ped_file))
     scout_configs['ped'] = ped_file
-  
+
   if madeline:
+    logger.info("Using command line specified madeline file {0}".format(
+      madeline))
     scout_configs['madeline'] = madeline
 
   if coverage_report:
+    logger.info("Using command line specified coverage report {0}".format(
+      coverage_report))
     scout_configs['coverage_report'] = coverage_report
-  
-  if institute:
-    scout_configs['institutes'] = [institute]
-    
+
+  if owner:
+    logger.info("Using command line specified owner {0}".format(
+      institute))
+    scout_configs['owner'] = owner
+
   if not scout_configs.get('load_vcf', None):
-    print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+    logger.warning("Please provide a vcf file.(Use flag '-vcf/--vcf_file')")
     sys.exit(0)
-  
+
   # Check that the ped file is provided:
   if not scout_configs.get('ped', None):
-    print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+    logger.warning("Please provide a ped file.(Use flag '-ped/--ped_file')")
     sys.exit(0)
-  
+
   # Check that the config file is provided:
-  if not config_file:
-    print("Please provide a config file.(Use flag '-config/--config_file')", file=sys.stderr)
+  if not vcf_config_file:
+    logger.warning("Please provide a vcf config file.(Use flag '-config/--config_file')")
     sys.exit(0)
-  
-  
+
+
   my_vcf = load_mongo_db(
-                          scout_configs, 
-                          config_file, 
+                          scout_configs,
+                          vcf_config_file,
                           family_type,
-                          mongo_db=mongo_db, 
-                          username=username, 
+                          mongo_db=mongo_db,
+                          username=username,
                           password=password,
-                          variant_type=variant_type, 
-                          port=port, 
-                          host=host, 
-                          verbose=verbose
+                          variant_type=variant_type,
+                          port=port,
+                          host=host,
                         )
 
 

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 from __future__ import absolute_import, unicode_literals
+import dateutil
 import os
 
 import arrow
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app
 from jinja2 import is_undefined
 from path import path as ipath
 from werkzeug.utils import import_string
@@ -116,51 +117,42 @@ class AppFactory(object):
       # Skip debug and test mode; just check standard output
       return
 
-    log_folder = self.app.config.get('LOG_FOLDER')
-    if log_folder is None:
-      default_log_folder = os.path.join(self.app.instance_path, 'logs')
-      self.app.config['LOG_FOLDER'] = default_log_folder
-
-    # make sure that all folders are in place
-    ipath(self.app.config['LOG_FOLDER']).makedirs_p()
-
     import logging
-    from logging.handlers import SMTPHandler
-
-    # get logger
-    logger = logging.getLogger('werkzeug')
+    from .log import TlsSMTPHandler
 
     # Set info level on logger which might be overwritten by handlers
     # Suppress DEBUG messages
     self.app.logger.setLevel(logging.INFO)
 
-    log_file_name = "{}.log".format(self.app.config['PROJECT'])
-    log_file = os.path.join(self.app.config['LOG_FOLDER'], log_file_name)
-
-    info_file_handler = logging.handlers.RotatingFileHandler(
-      log_file, maxBytes=100000, backupCount=10)
-    info_file_handler.setLevel(logging.INFO)
-    info_file_handler.setFormatter(logging.Formatter(
-      '%(asctime)s %(levelname)s: %(message)s '
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(logging.Formatter(
+      '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
-    logger.addHandler(info_file_handler)
-    self.app.logger.addHandler(info_file_handler)
+    self.app.logger.addHandler(stream_handler)
 
-    mail_handler = SMTPHandler(
-      self.app.config['MAIL_SERVER'],
-      self.app.config['MAIL_USERNAME'],
-      self.app.config['ADMINS'],
-      'O_ops... %s failed!' % self.app.config['PROJECT'],
-      (self.app.config['MAIL_USERNAME'], self.app.config['MAIL_PASSWORD'])
+    # also write default Weekzeug log (INFO) to the main log-file
+    # note: this is only relevant when not running behind gunicorn
+    werkzeug_log = logging.getLogger('werkzeug')
+    werkzeug_log.setLevel(logging.INFO)
+    werkzeug_log.addHandler(stream_handler)
+
+    mail_handler = TlsSMTPHandler(
+        mailhost=self.app.config['MAIL_SERVER'],
+        fromaddr=self.app.config['MAIL_USERNAME'],
+        toaddrs=self.app.config['ADMINS'],
+        subject="O_ops... {} failed!".format(self.app.name),
+        credentials=(self.app.config['MAIL_USERNAME'],
+                     self.app.config['MAIL_PASSWORD'])
     )
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(logging.Formatter(
-      '%(asctime)s %(levelname)s: %(message)s '
+      '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
-    logger.addHandler(mail_handler)
     self.app.logger.addHandler(mail_handler)
+    werkzeug_log.addHandler(mail_handler)
 
   def _configure_error_handlers(self):
     """Configure error handlers to the corresponding error pages."""
@@ -183,7 +175,10 @@ class AppFactory(object):
     """Configure custom Jinja2 template filters."""
     @self.app.template_filter()
     def human_date(value):
-      return arrow.get(value).humanize()
+      time_zone = current_app.config['TIME_ZONE']
+      return (arrow.get(value)
+                   .replace(tzinfo=dateutil.tz.gettz(time_zone))
+                   .humanize())
 
     @self.app.template_filter()
     def format_date(value, format="%Y-%m-%d"):

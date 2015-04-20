@@ -62,7 +62,7 @@
           <div class="md-label-icon">
             <core-icon icon="assignment-ind"></core-icon>
           </div>
-          <div class="md-label-text">Adopt</div>
+          <div class="md-label-text">Assign yourself</div>
         </div>
       </button>
     </form>
@@ -83,19 +83,12 @@
       <div class="md-label-text">Research opened</div>
     </div>
   {% else %}
-    <form action="{{ url_for('core.open_research',
-                              institute_id=institute.display_name,
-                              case_id=case.display_name) }}"
-          class="case-open-research" method="POST">
-      <button type="submit" class="case-assign-icon">
-        <div class="md-label">
-          <div class="md-label-icon">
-            <core-icon icon="public"></core-icon>
-          </div>
-          <div class="md-label-text">Open research</div>
-        </div>
-      </button>
-    </form>
+    <div v-on="click: showModal" class="md-label clickable">
+      <div class="md-label-icon">
+        <core-icon icon="public"></core-icon>
+      </div>
+      <div class="md-label-text">Request research list</div>
+    </div>
   {% endif %}
 
   <a href="{{ url_for('browser.remote_static', path=(case.coverage_report_path or '')[1:]) }}" class="md-label" target="_blank">
@@ -169,6 +162,30 @@
 
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Sex</th>
+                <th>Phenotype</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for individual in case.individuals %}
+                <tr>
+                  <td>{{ individual.display_name }}</td>
+                  <td>{{ individual.sex_human }}</td>
+                  <td>{{ individual.phenotype_human }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="case-samples" class="md-card">
+        <div class="md-card-header">Pedigree</div>
         <div class="md-card-body-list layout-center">
           {% if case.individuals|length == 1 %}
             <!-- Don't expect a pedigree visualization -->
@@ -374,5 +391,17 @@
     </div>
 
   </div>
+
+  <!-- Request research list modal -->
+  <md-modal v-ref="modal" title="Request research list">
+    <form action="{{ url_for('core.open_research',
+                              institute_id=institute.display_name,
+                              case_id=case.display_name) }}"
+          class="case-open-research" method="POST">
+      <p>Please confirm that you want to have the list of research variants opened.</p>
+      <p>You also confirm that you have the relevant consent signed.</p>
+      <button type="submit" class="md-button">Confirm</button>
+    </form>
+  </md-modal>
 
 {% endblock %}

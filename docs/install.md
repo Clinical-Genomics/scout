@@ -44,13 +44,13 @@ find your "CLIENT ID" and "CLIENT SECRET". You also need to add some
 
 **REDIRECT URLS**:
 
-  - http://localhost:5000/authorized
-  - https://localhost:5000/authorized
+  - http://localhost:5023/authorized
+  - https://localhost:5023/authorized
 
 **JAVASCRIPT ORIGINS**:
 
-  - http://localhost:5000
-  - https://localhost:5000
+  - http://localhost:5023
+  - https://localhost:5023
 
 Remember that it might take a while for the tokens to start working.
 
@@ -71,18 +71,7 @@ the authentication details to the instance config.
 We use gulp.js to compile the statis assets (CSS, JS, etc.)
 
 ```bash
-$ gulp build
-```
-
-The included [invoke][invoke] tasks can help you to populate the database
-with some demo data. It's important that you use the correct email address
-when adding a user to the database.
-
-```bash
-# load variants, cases, and a default institute
-$ inv init-data
-# add user
-$ inv add-user --email="your.name@example.com" --name="Your Name"
+$ gulp build --production
 ```
 
 
@@ -94,22 +83,10 @@ in the admin interface.
 $ python manage.py -c "$(pwd)/configs/boilerplate.cfg" vagrant
 ```
 
-The user you created with ``inv add-user`` has admin rights. You can
-access the admin interface by visiting ``/admin``.
-
-```bash
-$ open http://localhost:5000/admin
-```
-
-Go to the tab "Institute" and add a few "Cases" before pressing "Submit".
-Exit the admin interface and you will now see the list of cases that you
-added to the default institute.
-
 That's it! Go and explore Scout.
 
 
 
 [google-console]: https://console.developers.google.com/project
-[invoke]: http://invoke.readthedocs.org/en/latest/
 [omim-register]: http://omim.org/api
 [vagrant]: https://www.vagrantup.com/

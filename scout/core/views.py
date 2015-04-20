@@ -190,6 +190,16 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   return redirect(case_url)
 
 
+def read_lines(iterable):
+  """Handle both CR line endings and normal endings."""
+  new_lines = ((nested_line for nested_line in
+                line.rstrip().replace('\r', '\n').split('\n'))
+               for line in iterable if not line.startswith('#'))
+
+  # flatten nested lists
+  return (item for sublist in new_lines for item in sublist)
+
+
 @core.route('/upload-gene-list', methods=['POST'])
 @login_required
 def upload_gene_list():
@@ -197,8 +207,7 @@ def upload_gene_list():
   gene_list = request.files.get('gene_list')
   if gene_list:
     # file found
-    hgnc_symbols = [line.strip() for line in gene_list
-                    if not line.startswith('#')]
+    hgnc_symbols = read_lines(gene_list)
 
   else:
     hgnc_symbols = []
@@ -229,6 +238,14 @@ def variants(institute_id, case_id, variant_type):
   # update case status if currently inactive
   if case.status == 'inactive':
     case.status = 'active'
+    case_link = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+    event = Event(link=case_link,
+                  author=current_user.to_dbref(),
+                  verb="updated the status to '{}' for".format(case.status),
+                  subject=case.display_name)
+    case.events.append(event)
+
     case.save()
 
   # form submitted as GET
@@ -370,31 +387,68 @@ def mark_causative(institute_id, case_id, variant_id):
   """Mark a variant as confirmed causative."""
   # very basic security check
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
-  variant = store.variant(document_id=variant_id)
+  case_model = get_document_or_404(Case, case_id)
+  variant_model = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   # mark the variant as causative in the case model
-  case.causative = variant
+  case_model.causative = variant_model
 
   # add event
-  case.events.append(Event(
-    link=variant_url,
-    author=current_user.to_dbref(),
-    verb="marked a causative variant for case {}:".format(case.display_name),
-    subject=variant_id,
-  ))
+  event = Event(link=variant_url,
+                author=current_user.to_dbref(),
+                verb=("marked a causative variant for case {}:"
+                      .format(case_model.display_name)),
+                subject=variant_id)
+  case_model.events.append(event)
+  variant_model.events.append(event)
 
   # mark the case as solved
-  case.status = 'solved'
+  case_model.status = 'solved'
 
   # persist changes
-  case.save()
+  case_model.save()
+  variant_model.save()
 
   # send the user back to the case the was marked as solved
   return redirect(case_url)
+
+
+@core.route('/<institute_id>/<case_id>/unmark_causative', methods=['POST'])
+def unmark_causative(institute_id, case_id):
+  """Remove a variant as confirmed causative for a case."""
+  # very basic security check
+  validate_user(current_user, institute_id)
+  case_model = get_document_or_404(Case, case_id)
+  case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+  # skip the host part of the URL to make it more flexible
+  variant_url = request.referrer.replace(request.host_url, '/')
+  variant_model = case_model.causative
+
+  # add event
+  event = Event(link=variant_url,
+                author=current_user.to_dbref(),
+                verb=("Removed the causative variant for case {}:"
+                      .format(case_model.display_name)),
+                subject=case_model.causative.document_id)
+  case_model.events.append(event)
+  variant_model.events.append(event)
+
+  # remove the variant as causative in the case model
+  case_model.causative = None
+
+  # mark the case as active again
+  case_model.status = 'active'
+
+  # persist changes
+  case_model.save()
+  variant_model.save()
+
+  # send the user back to the case the was marked as solved
+  return redirect(request.referrer or case_url)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/email-sanger',
@@ -419,7 +473,7 @@ def email_sanger(institute_id, case_id, variant_id):
   hgnc_symbol = ', '.join(variant.hgnc_symbols)
   functions = ["<li>{}</li>".format(function) for function in
                variant.protein_changes]
-  gtcalls = ["<li>{}: {}</li>".format(individual.sample,
+  gtcalls = ["<li>{}: {}</li>".format(individual.display_name,
                                       individual.genotype_call)
              for individual in variant.samples]
 
@@ -449,8 +503,7 @@ def email_sanger(institute_id, case_id, variant_id):
     sender=current_app.config['MAIL_USERNAME'],
     recipients=recipients,
     # cc the sender of the email for confirmation
-    cc=[current_user.email],
-    bcc=[current_app.config['MAIL_USERNAME']]
+    cc=[current_user.email]
   )
 
   # compose and send the email message

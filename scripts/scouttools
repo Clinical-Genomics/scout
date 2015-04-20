@@ -19,10 +19,7 @@ import pkg_resources
 from pprint import pprint as pp
 from codecs import getwriter
 
-from scout.commands import (load_mongo, wipe_and_load, wipe_mongo)
-
-if sys.version_info < (3,0):
-    sys.stdout = getwriter('UTF-8')(sys.stdout)
+from scout.commands import (load, wipe_and_load, wipe, delete_case)
 
 version = pkg_resources.require("scout")[0].version
 
@@ -50,17 +47,30 @@ def print_version(ctx, param, value):
                 expose_value=False,
                 is_eager=True
 )
-def scouttools():
+@click.option('-l', '--logfile',
+                    type=click.Path(exists=False),
+                    help="Path to log file. If none logging is "\
+                          "printed to stderr."
+)
+@click.option('--loglevel',
+                    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 
+                                        'CRITICAL']),
+                    help="Set the level of log output."
+)
+def cli(logfile, loglevel):
     """
     Tool for simulating structural variations.\n
     For more information, please run:
     svsim COMMAND --help \n
         """
-    pass
+    from scout import logger
+    from scout.log import init_log
+    init_log(logger, logfile, loglevel)
 
-scouttools.add_command(load_mongo)
-scouttools.add_command(wipe_mongo)
-scouttools.add_command(wipe_and_load)
+cli.add_command(load)
+cli.add_command(wipe)
+cli.add_command(wipe_and_load)
+cli.add_command(delete_case)
 
 if __name__ == '__main__':
-    scouttools()
+  cli()

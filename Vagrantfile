@@ -10,12 +10,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "hashicorp/precise64"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
   config.vm.network "forwarded_port", guest: 5000, host: 5023
+  config.vm.network "forwarded_port", guest: 4000, host: 4000
   config.vm.network "forwarded_port", guest: 3023, host: 3023
   config.vm.network "forwarded_port", guest: 27017, host: 27223
 
@@ -28,6 +29,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.playbook = "provision/playbook.yml"
   end
 
-  config.vm.provision "shell",
-    inline: "scouttools wipe_and_load -db scout --verbose"
+  # config.vm.provision "shell",
+  #   inline: "scouttools wipe_and_load -db scout --verbose"
 end
