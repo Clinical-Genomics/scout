@@ -53,12 +53,12 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-  
+
   logger = logging.getLogger(__name__)
   # For testing only
   if __name__ == '__main__':
     logger = logging.getLogger("scout.ext.backend.load_mongo")
-  
+
   ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['load_vcf']
   logger.info("Found a vcf for loading variants into scout: {0}".format(
@@ -98,7 +98,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   case = get_case(scout_configs, family_type)
 
   logger.info('Case found in {0}: {1}'.format(ped_file, case.display_name))
-  
+
   ######## Add the institute to the mongo db: ########
 
   for institute_name in case['collaborators']:
@@ -158,7 +158,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
     if nr_of_variants % 1000 == 0:
       logger.info('{0} variants parsed'.format(nr_of_variants))
-  
+
   logger.info("Parsing variants done")
   logger.info("{0} variants inserted".format(nr_of_variants))
   logger.info("Time to insert variants: {0}".format(
@@ -174,12 +174,12 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 def update_case(case, variant_type, logger):
   """
   Update a case in in the mongo database.
-  
+
   If a case is already existing (in case of a rerun), we need to update
   the existing one in a correct manner.
-  
+
   Othervise insert the case.
-  
+
   Arguments:
     case (Case): A case object.
     variant_type (str): 'research' or 'clinical'
@@ -207,7 +207,6 @@ def update_case(case, variant_type, logger):
     existing_case.individuals = case.individuals
     logger.info("Updating time for case {0}".format(case_id))
     existing_case.updated_at = case.updated_at
-    existing_case.last_updated = case.last_updated
 
     # This decides which gene lists that should be shown when the case is opened
     logger.info("Updating default gene lists for case {0} to {1}".format(
@@ -247,7 +246,7 @@ def update_case(case, variant_type, logger):
   except DoesNotExist:
     logger.info('New case!')
     case.save()
-  
+
   return
 
 def update_local_frequencies(variant_database):
@@ -277,12 +276,12 @@ def update_local_frequencies(variant_database):
 def ensure_indexes(variant_database, logger):
   """
   Update all the necessary indexes.
-  
+
   Arguments:
     variant_database (db_communicator)
     logger (logging.logger)
   """
-  
+
   variant_collection = variant_database['variant']
   logger.info("Updating first compound index")
   variant_collection.ensure_index(
@@ -373,7 +372,7 @@ def ensure_indexes(variant_database, logger):
                           "printed to stderr."
 )
 @click.option('--loglevel',
-                    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 
+                    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR',
                                         'CRITICAL']),
                     help="Set the level of log output."
 )
@@ -384,9 +383,9 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   # Check if vcf file exists and that it has the correct naming:
   from pprint import pprint as pp
   logger = logging.getLogger(__name__)
-  
+
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
-  
+
   scout_validation_file = os.path.join(base_path, 'config_spec/scout_config.ini')
   if not vcf_config_file:
     vcf_config_file = os.path.join(base_path, 'configs/vcf_config.ini')

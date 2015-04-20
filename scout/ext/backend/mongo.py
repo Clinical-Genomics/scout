@@ -3,7 +3,7 @@
 """
 mongo.py
 
-This is the mongo adapter for scout, it is a communicator for quering and 
+This is the mongo adapter for scout, it is a communicator for quering and
 updating the mongodatabase.
 Implements BaseAdapter.
 
@@ -59,14 +59,14 @@ class MongoAdapter(BaseAdapter):
 
   def cases(self, collaborator = None):
     if collaborator:
-      return Case.objects(collaborators = collaborator)
+      return Case.objects(collaborators=collaborator).order_by('-updated_at')
     else:
-      return Case.objects()
+      return Case.objects().order_by('-updated_at')
 
   def case(self, case_id):
 
     try:
-      return Case.objects(case_id = case_id)
+      return Case.objects(case_id=case_id)
     except DoesNotExist:
       return None
 
@@ -101,7 +101,7 @@ class MongoAdapter(BaseAdapter):
       # We need to check if there is any query specified in the input query
       any_query = False
       mongo_query['$and'] = []
-      
+
       if query['thousand_genomes_frequency']:
         try:
           mongo_query['$and'].append({'thousand_genomes_frequency':{
@@ -123,54 +123,54 @@ class MongoAdapter(BaseAdapter):
           any_query = True
         except TypeError:
           pass
-      
+
       if query['genetic_models']:
         mongo_query['$and'].append({'genetic_models':
                                         {'$in': query['genetic_models']}
                                       }
                                     )
         any_query = True
-      
+
       if query['hgnc_symbols']:
         mongo_query['$and'].append({'hgnc_symbols':
                                       {'$in': query['hgnc_symbols']}
                                     }
                                   )
         any_query = True
-      
+
       if query['gene_lists']:
         mongo_query['$and'].append({'gene_lists':
                                       {'$in': query['gene_lists']}
                                     }
                                   )
         any_query = True
-      
-      
+
+
       if query['functional_annotations']:
           mongo_query['$and'].append({'genes.functional_annotation':
                                         {'$in': query['functional_annotations']}
                                         }
                                       )
           any_query = True
-      
+
       if query['region_annotations']:
           mongo_query['$and'].append({'genes.region_annotation':
                                         {'$in': query['region_annotations']}
                                         }
                                       )
           any_query = True
-      
+
       if variant_ids:
         mongo_query['$and'].append({'variant_id':
                                       {'$in': variant_ids}
                                     }
                                   )
         any_query = True
-      
-      
+
+
       if not any_query:
         del mongo_query['$and']
-      
+
       return mongo_query
 
   def variants(self, case_id, query=None, variant_ids=None, nr_of_variants = 10, skip = 0):
