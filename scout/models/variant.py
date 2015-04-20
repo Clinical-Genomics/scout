@@ -10,7 +10,7 @@ import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
-                         ReferenceField)
+                         ReferenceField, SortedListField)
 
 from .._compat import zip
 from .event import Event
@@ -264,7 +264,8 @@ class Variant(Document):
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
-  compounds = ListField(EmbeddedDocumentField(Compound))
+  compounds = SortedListField(EmbeddedDocumentField(Compound),
+                              ordering='combined_score', reverse=True)
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
   genes = ListField(EmbeddedDocumentField(Gene))
@@ -306,7 +307,7 @@ class Variant(Document):
 
   @property
   def omim_annotations(self):
-    """Returns a list with omim id(s)."""
+    """Returns a list with OMIM id(s)."""
     if len(self.genes) == 1:
       annotations = (str(gene.omim_gene_entry) for gene in self.genes
                      if gene.omim_gene_entry)
@@ -319,10 +320,21 @@ class Variant(Document):
 
   @property
   def omim_annotation_links(self):
-    """Return a list of omim id links."""
+    """Return a list of OMIM id links."""
     base_url = 'http://www.omim.org/entry'
-    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
-            for omim_id in self.omim_annotations)
+
+    for omim_id_str in self.omim_annotations:
+      # handle cases with variant overlapping multiple genes
+      omim_id_parts = omim_id_str.split(':')
+      if len(omim_id_parts) == 1:
+        # single gene overlap
+        omim_id = omim_id_parts[0]
+
+      else:
+        # multiple genes
+        omim_id = omim_id_parts[1]
+
+      yield (omim_id_str, "{base}/{id}".format(base=base_url, id=omim_id))
 
   @property
   def omim_phenotypes(self):

@@ -1,3 +1,5 @@
+![Release 1.0](artwork/releases/release-1-0.jpg)
+
 # Scout [![Build Status][travis-img]][travis-url]
 **Analyze VCFs quicker and easier.**
 

@@ -117,14 +117,6 @@ class AppFactory(object):
       # Skip debug and test mode; just check standard output
       return
 
-    log_folder = self.app.config.get('LOG_FOLDER')
-    if log_folder is None:
-      default_log_folder = os.path.join(self.app.instance_path, 'logs')
-      self.app.config['LOG_FOLDER'] = default_log_folder
-
-    # make sure that all folders are in place
-    ipath(self.app.config['LOG_FOLDER']).makedirs_p()
-
     import logging
     from .log import TlsSMTPHandler
 
@@ -132,22 +124,19 @@ class AppFactory(object):
     # Suppress DEBUG messages
     self.app.logger.setLevel(logging.INFO)
 
-    log_file_name = "{}.log".format(self.app.name)
-    log_file = os.path.join(self.app.config['LOG_FOLDER'], log_file_name)
-
-    info_log_handler = logging.handlers.RotatingFileHandler(
-      log_file, maxBytes=100000, backupCount=10)
-    info_log_handler.setLevel(logging.INFO)
-    info_log_handler.setFormatter(logging.Formatter(
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(logging.Formatter(
       '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
       '[in %(pathname)s:%(lineno)d]')
     )
-    self.app.logger.addHandler(info_log_handler)
+    self.app.logger.addHandler(stream_handler)
 
     # also write default Weekzeug log (INFO) to the main log-file
+    # note: this is only relevant when not running behind gunicorn
     werkzeug_log = logging.getLogger('werkzeug')
     werkzeug_log.setLevel(logging.INFO)
-    werkzeug_log.addHandler(info_log_handler)
+    werkzeug_log.addHandler(stream_handler)
 
     mail_handler = TlsSMTPHandler(
         mailhost=self.app.config['MAIL_SERVER'],
