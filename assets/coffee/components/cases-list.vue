@@ -40,7 +40,7 @@
 
       joinParams: (list, param) ->
         if list.length > 1
-          return "#{param}=#{list.join("#{param}=&")}"
+          return "#{param}=#{list.join("&#{param}=")}"
         else
           # avoid building an empty param variable
           return ''
