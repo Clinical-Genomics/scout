@@ -300,12 +300,6 @@ class Variant(Document):
   acmg_evaluation = StringField(choices=ACMG_TERMS)
 
   @property
-  def local_requency(self):
-    """Returns a float with the local freauency for this position."""
-    return (Variant.objects(variant_id=self.variant_id).count /
-              Case.objects.count())
-
-  @property
   def omim_annotations(self):
     """Returns a list with OMIM id(s)."""
     if len(self.genes) == 1:
@@ -454,6 +448,7 @@ class Variant(Document):
 
     return self.position + (bases - 1)
 
+  # This is exactly the same as variant_id...
   @property
   def id_string(self):
     """Compose standard ID string for a variant."""
