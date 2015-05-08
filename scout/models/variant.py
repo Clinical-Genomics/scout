@@ -450,12 +450,6 @@ class Variant(Document):
 
   # This is exactly the same as variant_id...
   @property
-  def id_string(self):
-    """Compose standard ID string for a variant."""
-    return ("{this.chromosome}:{this.position} "
-            "{this.reference}/{this.alternative}".format(this=self))
-
-  @property
   def frequency(self):
     """Returns a judgement on the overall frequency of the variant.
 
