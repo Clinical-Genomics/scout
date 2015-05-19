@@ -34,7 +34,7 @@ Variant:
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from mongoengine import (DateTimeField, EmbeddedDocument, ListField,
+from mongoengine import (DateTimeField, Document, ListField,
                          ReferenceField, StringField)
 
 VERBS = (
@@ -49,7 +49,7 @@ VERBS = (
   "archive",
 )
 
-class Event(EmbeddedDocument):
+class Event(Document):
   """Embedded model for defining a general user generated event."""
   title = StringField()
   content = StringField()
