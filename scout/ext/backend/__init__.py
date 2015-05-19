@@ -6,10 +6,3 @@ from .vcf import VcfAdapter
 from .config_parser import ConfigParser
 from .mongo import MongoAdapter
 from .load_mongo import load_mongo_db
-
-STATUS = (
-  "active",
-  "inactive",
-  "solved",
-  "archived"
-)

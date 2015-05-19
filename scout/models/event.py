@@ -3,9 +3,10 @@
 scout.models.event
 ~~~~~~~~~~~~~~~~~~
 
-Define a combined embedded document to specify activity events and
-comments. The idea of this model is to be embedded under the model
-to which it belongs.
+Define a document to specify activity events and comments both for variants and
+cases.
+
+The frontend will use the user + verb + link to display the activity.
 
 The Event model is designed to cover a range of user generated events.
 
@@ -26,8 +27,9 @@ Case:
 Variant:
   - Comments
   - Sanger sequencing orders
-  - Pinning?
-  - Archivals?
+  - Pinning
+  - Archivals
+
 """
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
@@ -35,6 +37,20 @@ from datetime import datetime
 from mongoengine import (DateTimeField, EmbeddedDocument, ListField,
                          ReferenceField, StringField)
 
+VERBS = {
+  "status" : "updated the status for",
+  "assigned" : "was assigned to",
+  "unassigned" : "was unassigned from",
+  "open_research" : "opened research mode for",
+}
+
+VERBS = (
+  
+  )
+
+
+
+verbs[status]
 
 class Event(EmbeddedDocument):
   """Embedded model for defining a general user generated event."""
