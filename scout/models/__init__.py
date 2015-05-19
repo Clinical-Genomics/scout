@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, absolute_import, unicode_literals
+
+from .gene_list import (GeneList, PhenotypeTerm)
 from .case import *
 from .event import Event
 from .variant import *
