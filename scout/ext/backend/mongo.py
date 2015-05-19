@@ -269,6 +269,10 @@ class MongoAdapter(BaseAdapter):
     except DoesNotExist:
       return None
 
+  def add_event(self):
+    """Not sure if this is the right way.."""
+  pass
+
 @click.command()
 @click.option('-i','--institute',
                 default='CMMS'
