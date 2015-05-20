@@ -26,7 +26,7 @@ def remote_static(path):
 @browser.route('/<institute_id>/<case_id>/<variant_id>/igv.xml')
 def igv_init(institute_id, case_id, variant_id):
   """Redicect user to start an IGV session based on a variant."""
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant = store.variant(document_id=variant_id)
 
   # sanity check to see if there's any reason to launch IGV
