@@ -83,7 +83,7 @@ def cases(institute_id):
 @api.route('/<institute_id>/<case_id>/status', methods=['PUT'])
 def case_status(institute_id, case_id):
   """Update (PUT) status of a specific case."""
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   case.status = request.json.get('status', case.status)
 
   event = Event(
@@ -102,7 +102,7 @@ def case_status(institute_id, case_id):
 @api.route('/<institute_id>/<case_id>/synopsis', methods=['PUT'])
 def case_synopsis(institute_id, case_id):
   """Update (PUT) synopsis of a specific case."""
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   new_synopsis = request.json.get('synopsis', case.synopsis)
 
   if case.synopsis != new_synopsis:
@@ -140,7 +140,7 @@ def markdown():
 
 @api.route('/<institute_id>/<case_id>/event', methods=['POST'])
 def event(institute_id, case_id):
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   if request.method == 'POST':
 
@@ -170,7 +170,7 @@ def event(institute_id, case_id):
 @api.route('/<institute_id>/<case_id>/comment/<int:comment_id>',
            methods=['GET'])
 def comment(institute_id, case_id, comment_id=None):
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   if request.method == 'POST':
 
@@ -204,7 +204,7 @@ def comment(institute_id, case_id, comment_id=None):
            methods=['GET'])
 def variant_event(institute_id, case_id, variant_id, event_id=None):
   """For now this route only handles variant comments."""
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant = store.variant(document_id=variant_id)
 
   if request.method == 'POST':
