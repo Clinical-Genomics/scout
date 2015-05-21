@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - link(s) to SNPedia based on RS-numbers
 - new Jinja filter to "humanize" decimal numbers
+- show gene panels in variant view
 
 ### Changed
 - show cDNA change in transcript summary unless variant is exonic

@@ -242,6 +242,16 @@
             </div>
           </div>
 
+          <div class="variant-row-item">
+            <div>Gene panels</div>
+
+            <div class="variant-row-item-sublist">
+              {% for panel in variant.gene_lists %}
+                <div class="variant-row-item-sublist-item">{{ panel }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
           <div class="variant-list-item">
             <div>CLINSIG</div>
             <div>{{ variant.clnsig or '1' }}: {{ variant.clnsig_human }}</div>
