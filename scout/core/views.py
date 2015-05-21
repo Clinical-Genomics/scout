@@ -56,8 +56,7 @@ def case(institute_id, case_id):
   """View one specific case."""
   # very basic security check
   institute = validate_user(current_user, institute_id)
-
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   # fetch a single, specific case from the data store
   return dict(institute=institute, case=case, statuses=Case.status.choices)
@@ -67,7 +66,7 @@ def case(institute_id, case_id):
 def assign_self(institute_id, case_id):
   # very basic security check
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   # assign logged in user and persist changes
   case.assignee = current_user.to_dbref()
@@ -91,7 +90,7 @@ def assign_self(institute_id, case_id):
 def remove_assignee(institute_id, case_id):
   # very basic security check
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   # unassign user and persist changes
   case.assignee = None
@@ -118,7 +117,7 @@ def open_research(institute_id, case_id):
   """
   # very basic security check
   institute = validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   # send email to trigger manual load of research variants
   main_recipient = current_app.config['RESEARCH_MODE_RECIPIENT']
@@ -162,7 +161,7 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   TODO: validate ID and fetch phenotype description before adding to case.
   """
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   if phenotype_id:
@@ -190,6 +189,16 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
   return redirect(case_url)
 
 
+def read_lines(iterable):
+  """Handle both CR line endings and normal endings."""
+  new_lines = ((nested_line for nested_line in
+                line.rstrip().replace('\r', '\n').split('\n'))
+               for line in iterable if not line.startswith('#'))
+
+  # flatten nested lists
+  return (item for sublist in new_lines for item in sublist)
+
+
 @core.route('/upload-gene-list', methods=['POST'])
 @login_required
 def upload_gene_list():
@@ -197,8 +206,7 @@ def upload_gene_list():
   gene_list = request.files.get('gene_list')
   if gene_list:
     # file found
-    hgnc_symbols = [line.strip() for line in gene_list
-                    if not line.startswith('#')]
+    hgnc_symbols = read_lines(gene_list)
 
   else:
     hgnc_symbols = []
@@ -223,7 +231,7 @@ def variants(institute_id, case_id, variant_type):
   # fetch all variants for a specific case
   # very basic security check
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   skip = int(request.args.get('skip', 0))
 
   # update case status if currently inactive
@@ -282,7 +290,7 @@ def variants(institute_id, case_id, variant_type):
 def hpo_gene_list_redirect(institute_id, case_id, variant_type):
   # redirect user to variants list after querying HPO
   validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   return redirect(url_for('.variants', institute_id=institute_id,
                           case_id=case_id,
@@ -297,7 +305,7 @@ def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
   # very basic security check
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant = store.variant(document_id=variant_id)
 
   prev_variant = store.previous_variant(document_id=variant_id)
@@ -321,7 +329,7 @@ def pin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
   # very basic security check
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
@@ -349,7 +357,7 @@ def unpin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
   # very basic security check
   validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
@@ -378,7 +386,7 @@ def mark_causative(institute_id, case_id, variant_id):
   """Mark a variant as confirmed causative."""
   # very basic security check
   validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant_model = store.variant(document_id=variant_id)
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
@@ -412,7 +420,7 @@ def unmark_causative(institute_id, case_id):
   """Remove a variant as confirmed causative for a case."""
   # very basic security check
   validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   # skip the host part of the URL to make it more flexible
@@ -449,7 +457,7 @@ def email_sanger(institute_id, case_id, variant_id):
   # very basic security check
   institute = validate_user(current_user, institute_id)
 
-  case = get_document_or_404(Case, case_id)
+  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   variant = store.variant(document_id=variant_id)
 
   recipients = institute.sanger_recipients
@@ -464,7 +472,7 @@ def email_sanger(institute_id, case_id, variant_id):
   hgnc_symbol = ', '.join(variant.hgnc_symbols)
   functions = ["<li>{}</li>".format(function) for function in
                variant.protein_changes]
-  gtcalls = ["<li>{}: {}</li>".format(individual.sample,
+  gtcalls = ["<li>{}: {}</li>".format(individual.display_name,
                                       individual.genotype_call)
              for individual in variant.samples]
 
@@ -482,7 +490,7 @@ def email_sanger(institute_id, case_id, variant_id):
     variant_id=variant_id,
     hgnc_symbol=hgnc_symbol,
     database_id='coming soon',
-    chromosome_position=variant.id_string,
+    chromosome_position=variant.display_name,
     functions=''.join(functions),
     gtcalls=''.join(gtcalls),
     name=current_user.name

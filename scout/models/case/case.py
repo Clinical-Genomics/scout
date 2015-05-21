@@ -23,9 +23,6 @@ class Case(Document):
   individuals = ListField(EmbeddedDocumentField(Individual))
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
-  last_updated = DateTimeField()
-
-  # Information about variants connected to the case:
   suspects = ListField(ReferenceField('Variant'))
   causative = ReferenceField('Variant')
 
@@ -109,5 +106,5 @@ class Case(Document):
 
   def __repr__(self):
     return "Case(case_id={0}, display_name={1}, owner={2})".format(
-      self.case_id, self.display_name, self.owner
-    )
+      self.case_id, self.display_name, self.owner)
+

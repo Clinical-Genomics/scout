@@ -1,4 +1,42 @@
-from . import GTCall
+# -*- coding: utf-8 -*-
+"""
+
+"main concept of MongoDB is embed whenever possible"
+Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
+"""
+from __future__ import (absolute_import, unicode_literals, division)
+import itertools
+
+from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
+                         FloatField, IntField, ListField, StringField,
+                         ReferenceField, SortedListField)
+
+
+from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
+from scout._compat import zip
+from scout.models import (Event, Case)
+
+######## These are defined terms for different categories ########
+
+
+class Compound(EmbeddedDocument):
+  # This must be the document_id for this variant
+  variant = ReferenceField('Variant')
+  # This is the variant id
+  display_name = StringField(required=True)
+  combined_score = FloatField(required=True)
+
+
+class GTCall(EmbeddedDocument):
+  sample_id = StringField()
+  display_name = StringField()
+  genotype_call = StringField()
+  allele_depths = ListField(IntField())
+  read_depth = IntField()
+  genotype_quality = IntField()
+
+  def __unicode__(self):
+    return self.display_name
 
 
 class Variant(Document):
@@ -25,7 +63,8 @@ class Variant(Document):
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
-  compounds = ListField(EmbeddedDocumentField(Compound))
+  compounds = SortedListField(EmbeddedDocumentField(Compound),
+                              ordering='combined_score', reverse=True)
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))
   genes = ListField(EmbeddedDocumentField(Gene))
@@ -61,14 +100,8 @@ class Variant(Document):
   acmg_evaluation = StringField(choices=ACMG_TERMS)
 
   @property
-  def local_requency(self):
-    """Returns a float with the local freauency for this position."""
-    return (Variant.objects(variant_id=self.variant_id).count /
-              Case.objects.count())
-
-  @property
   def omim_annotations(self):
-    """Returns a list with omim id(s)."""
+    """Returns a list with OMIM id(s)."""
     if len(self.genes) == 1:
       annotations = (str(gene.omim_gene_entry) for gene in self.genes
                      if gene.omim_gene_entry)
@@ -81,10 +114,21 @@ class Variant(Document):
 
   @property
   def omim_annotation_links(self):
-    """Return a list of omim id links."""
+    """Return a list of OMIM id links."""
     base_url = 'http://www.omim.org/entry'
-    return ((omim_id, "{base}/{id}".format(base=base_url, id=omim_id))
-            for omim_id in self.omim_annotations)
+
+    for omim_id_str in self.omim_annotations:
+      # handle cases with variant overlapping multiple genes
+      omim_id_parts = omim_id_str.split(':')
+      if len(omim_id_parts) == 1:
+        # single gene overlap
+        omim_id = omim_id_parts[0]
+
+      else:
+        # multiple genes
+        omim_id = omim_id_parts[1]
+
+      yield (omim_id_str, "{base}/{id}".format(base=base_url, id=omim_id))
 
   @property
   def omim_phenotypes(self):
@@ -204,12 +248,7 @@ class Variant(Document):
 
     return self.position + (bases - 1)
 
-  @property
-  def id_string(self):
-    """Compose standard ID string for a variant."""
-    return ("{this.chromosome}:{this.position} "
-            "{this.reference}/{this.alternative}".format(this=self))
-
+  # This is exactly the same as variant_id...
   @property
   def frequency(self):
     """Returns a judgement on the overall frequency of the variant.

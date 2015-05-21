@@ -36,7 +36,7 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
-from ...models import (Institute, Case)
+from ...models import (Institute, Case, Variant)
 from ..._compat import iteritems
 
 
@@ -53,30 +53,17 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-  
+
   logger = logging.getLogger(__name__)
   # For testing only
   if __name__ == '__main__':
     logger = logging.getLogger("scout.ext.backend.load_mongo")
-  
+
   ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['load_vcf']
   logger.info("Found a vcf for loading variants into scout: {0}".format(
     vcf_file
   ))
-  splitted_vcf_file_name = os.path.splitext(vcf_file)
-  vcf_ending = splitted_vcf_file_name[-1]
-  if vcf_ending != '.vcf':
-    if vcf_ending == '.gz':
-      vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
-      if vcf_ending != '.vcf':
-        raise IOError("Please use the correct prefix of your vcf"\
-                        " file('.vcf/.vcf.gz')")
-    else:
-      if vcf_ending != '.vcf':
-        raise IOError("Please use the correct prefix of your vcf"\
-                        " file('.vcf/.vcf.gz')")
-  logger.debug("VCF have a proper file name")
 
   logger.info("Connecting to {0}".format(mongo_db))
   connect(mongo_db, host=host, port=port, username=username,
@@ -98,7 +85,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   case = get_case(scout_configs, family_type)
 
   logger.info('Case found in {0}: {1}'.format(ped_file, case.display_name))
-  
+
   ######## Add the institute to the mongo db: ########
 
   for institute_name in case['collaborators']:
@@ -113,13 +100,19 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
         logger.info("Adding new institute {0} to database".format(institute))
 
   logger.info("Updating case in database")
+
   update_case(case, variant_type, logger)
 
   ######## Get the variants and add them to the mongo db: ########
 
   logger.info("Setting up a variant parser")
-  variant_parser = VCFParser(infile=vcf_file, split_variants=True)
+  variant_parser = VCFParser(infile=vcf_file, split_variants=True, skip_info_check=True)
   nr_of_variants = 0
+
+  logger.info("Deleting old variants for case {0}".format(case.case_id))
+  Variant.objects(case_id=case.case_id, variant_type=variant_type).delete()
+  logger.debug("Variants deleted")
+
   start_inserting_variants = datetime.now()
 
   # Get the individuals to see which we should include in the analysis
@@ -158,7 +151,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
     if nr_of_variants % 1000 == 0:
       logger.info('{0} variants parsed'.format(nr_of_variants))
-  
+
   logger.info("Parsing variants done")
   logger.info("{0} variants inserted".format(nr_of_variants))
   logger.info("Time to insert variants: {0}".format(
@@ -174,12 +167,12 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 def update_case(case, variant_type, logger):
   """
   Update a case in in the mongo database.
-  
+
   If a case is already existing (in case of a rerun), we need to update
   the existing one in a correct manner.
-  
+
   Othervise insert the case.
-  
+
   Arguments:
     case (Case): A case object.
     variant_type (str): 'research' or 'clinical'
@@ -207,7 +200,6 @@ def update_case(case, variant_type, logger):
     existing_case.individuals = case.individuals
     logger.info("Updating time for case {0}".format(case_id))
     existing_case.updated_at = case.updated_at
-    existing_case.last_updated = case.last_updated
 
     # This decides which gene lists that should be shown when the case is opened
     logger.info("Updating default gene lists for case {0} to {1}".format(
@@ -247,7 +239,7 @@ def update_case(case, variant_type, logger):
   except DoesNotExist:
     logger.info('New case!')
     case.save()
-  
+
   return
 
 def update_local_frequencies(variant_database):
@@ -277,12 +269,12 @@ def update_local_frequencies(variant_database):
 def ensure_indexes(variant_database, logger):
   """
   Update all the necessary indexes.
-  
+
   Arguments:
     variant_database (db_communicator)
     logger (logging.logger)
   """
-  
+
   variant_collection = variant_database['variant']
   logger.info("Updating first compound index")
   variant_collection.ensure_index(
@@ -373,7 +365,7 @@ def ensure_indexes(variant_database, logger):
                           "printed to stderr."
 )
 @click.option('--loglevel',
-                    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 
+                    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR',
                                         'CRITICAL']),
                     help="Set the level of log output."
 )
@@ -383,10 +375,13 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
   from pprint import pprint as pp
-  logger = logging.getLogger(__name__)
-  
+  from ...log import init_log
+
+  logger = logging.getLogger("scout")
+  init_log(logger, logfile, loglevel)
+
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
-  
+
   scout_validation_file = os.path.join(base_path, 'config_spec/scout_config.ini')
   if not vcf_config_file:
     vcf_config_file = os.path.join(base_path, 'configs/vcf_config.ini')
@@ -429,7 +424,4 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
 
 if __name__ == '__main__':
-  from ...log import init_log
-  logger = logging.getLogger("scout")
-  init_log(logger, logfile, loglevel)
   cli()

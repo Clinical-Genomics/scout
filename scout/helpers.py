@@ -38,10 +38,10 @@ def md5ify(list_of_arguments):
   return hash_key.hexdigest()
 
 
-def get_document_or_404(model, display_name):
+def get_document_or_404(model, **filters):
   """Fetch a document from the database or return a 404 unless found."""
   try:
-    return model.objects.get(display_name=display_name)
+    return model.objects.get(**filters)
   except DoesNotExist:
     return abort(404)
 

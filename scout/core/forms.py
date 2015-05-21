@@ -81,8 +81,8 @@ class FiltersForm(Form):
   gene_lists = MultiCheckboxField(choices=[])
   hgnc_symbols = ListField()
 
-  thousand_genomes_frequency = DecimalField('1000 Genomes')
-  exac_frequency = DecimalField('ExAC')
+  thousand_genomes_frequency = DecimalField('1000 Genomes', places=None)
+  exac_frequency = DecimalField('ExAC', places=None)
 
   region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
   functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
