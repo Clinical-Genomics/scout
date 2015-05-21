@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - show cDNA change in transcript summary unless variant is exonic
+- moved compounds table further up the page
 
 ### Fixed
 - show the same level of detail for all frequencies on all pages

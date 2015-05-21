@@ -468,6 +468,16 @@
       </div>
     </div>
 
+    <div id="compounds" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Compounds</div>
+
+        <div class="md-card-body mod-scrollable-big">
+          {{ compounds_table(variant.compounds, institute_id, case_id) }}
+        </div>
+      </div>
+    </div>
+
     <div id="transcripts" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-header">Genes</div>
@@ -642,16 +652,6 @@
               {% endfor %}
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
-
-    <div id="compounds" class="variant-segments-row">
-      <div class="md-card">
-        <div class="md-card-header">Compounds</div>
-
-        <div class="md-card-body mod-scrollable-big">
-          {{ compounds_table(variant.compounds, institute_id, case_id) }}
         </div>
       </div>
     </div>
