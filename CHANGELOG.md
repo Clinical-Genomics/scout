@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - show cDNA change in transcript summary unless variant is exonic
 - moved compounds table further up the page
 - show dates for case uploads in ISO format
+- moved variant comments higher up on page
 
 ### Removed
 - drop dependency on moment.js
