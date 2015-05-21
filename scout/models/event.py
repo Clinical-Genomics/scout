@@ -94,8 +94,7 @@ class Event(Document):
       "pin" : "pinned variant",
       "unpin" : "removed pinned variant",
       "sanger" : "ordered sanger sequencing for",
-      "archove" : "archived",
-      "open_research" : "opened research mode for",
+      "archive" : "archived",
       "open_research" : "opened research mode for",
     }
     
