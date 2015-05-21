@@ -7,8 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - link(s) to SNPedia based on RS-numbers
 - new Jinja filter to "humanize" decimal numbers
 
+### Changed
+- show cDNA change in transcript summary unless variant is exonic
+
 ### Fixed
-- Show the same level of detail for all frequencies on all pages
+- show the same level of detail for all frequencies on all pages
 
 ## [1.0.2] - 2015-05-20
 ### Changed

@@ -269,7 +269,11 @@
               <tr>
                 <th>Gene</th>
                 <th>Transcript</th>
-                <th>Amino acid</th>
+                {% if variant.is_exonic() %}
+                  <th>Amino acid change</th>
+                {% else %}
+                  <th>cDNA change</th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
@@ -279,7 +283,11 @@
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
                   </td>
-                  <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
+                  {% if variant.is_exonic() %}
+                    <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
+                  {% else %}
+                    <td>{{ transcript.coding_sequence_name or '' }}</td>
+                  {% endif %}
                 </tr>
               {% endfor %}
             </tbody>

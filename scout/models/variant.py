@@ -299,6 +299,10 @@ class Variant(Document):
 
   acmg_evaluation = StringField(choices=ACMG_TERMS)
 
+  def is_exonic(self):
+    """Determine the variant is exonic."""
+    return 'exonic' in self.region_annotations
+
   @property
   def omim_annotations(self):
     """Returns a list with OMIM id(s)."""
