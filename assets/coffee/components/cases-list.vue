@@ -4,7 +4,7 @@
       <div class="md-card-body--padded">
         <a href="{{baseUrl}}/{{display_name}}" class="md-item">
           <div v-show="events.length" class="md-item-icon">
-            <div class="cases-indicator"></div>
+            <div class="dot-indicator"></div>
           </div>
 
           <div class="md-item-label">{{display_name}}</div>
@@ -20,7 +20,7 @@
 
         <div class="md-item-subtitle">
           <a href="{{baseUrl}}/{{display_name}}/clinical?{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a> |
-          <span>{{created_at.$date | fromNow}}</span> |
+          <span>{{created_at.$date | formatISO}}</span> |
           <span>{{status}}</span>
         </div>
       </div>
@@ -35,24 +35,16 @@
         @cases = JSON.parse(res.text)
 
     filters:
-      fromNow: (date) ->
-        return moment(date).fromNow()
+      formatISO: (date) ->
+        dateObj = new Date(date)
+        return dateObj.toISOString().slice(0, 10)
 
       joinParams: (list, param) ->
         if list.length > 1
-          return "#{param}=#{list.join("#{param}=&")}"
+          return "#{param}=#{list.join("&#{param}=")}"
         else
           # avoid building an empty param variable
           return ''
-
-      isUpdated: (date) ->
-        diff = -moment(date).diff()  # milliseconds
-        hh = Math.floor diff / 1000 / 60 / 60  # hours
-
-        if hh < 48
-          return yes
-        else
-          return no
 
     data: ->
       return {

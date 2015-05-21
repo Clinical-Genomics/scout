@@ -36,7 +36,7 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
-from ...models import (Institute, Case)
+from ...models import (Institute, Case, Variant)
 from ..._compat import iteritems
 
 
@@ -64,19 +64,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   logger.info("Found a vcf for loading variants into scout: {0}".format(
     vcf_file
   ))
-  splitted_vcf_file_name = os.path.splitext(vcf_file)
-  vcf_ending = splitted_vcf_file_name[-1]
-  if vcf_ending != '.vcf':
-    if vcf_ending == '.gz':
-      vcf_ending = os.path.splitext(splitted_vcf_file_name)[-1]
-      if vcf_ending != '.vcf':
-        raise IOError("Please use the correct prefix of your vcf"\
-                        " file('.vcf/.vcf.gz')")
-    else:
-      if vcf_ending != '.vcf':
-        raise IOError("Please use the correct prefix of your vcf"\
-                        " file('.vcf/.vcf.gz')")
-  logger.debug("VCF have a proper file name")
 
   logger.info("Connecting to {0}".format(mongo_db))
   connect(mongo_db, host=host, port=port, username=username,
@@ -113,13 +100,19 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
         logger.info("Adding new institute {0} to database".format(institute))
 
   logger.info("Updating case in database")
+
   update_case(case, variant_type, logger)
 
   ######## Get the variants and add them to the mongo db: ########
 
   logger.info("Setting up a variant parser")
-  variant_parser = VCFParser(infile=vcf_file, split_variants=True)
+  variant_parser = VCFParser(infile=vcf_file, split_variants=True, skip_info_check=True)
   nr_of_variants = 0
+
+  logger.info("Deleting old variants for case {0}".format(case.case_id))
+  Variant.objects(case_id=case.case_id, variant_type=variant_type).delete()
+  logger.debug("Variants deleted")
+
   start_inserting_variants = datetime.now()
 
   # Get the individuals to see which we should include in the analysis
@@ -382,7 +375,10 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
   from pprint import pprint as pp
-  logger = logging.getLogger(__name__)
+  from ...log import init_log
+
+  logger = logging.getLogger("scout")
+  init_log(logger, logfile, loglevel)
 
   base_path = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 
@@ -428,7 +424,4 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
 
 if __name__ == '__main__':
-  from ...log import init_log
-  logger = logging.getLogger("scout")
-  init_log(logger, logfile, loglevel)
   cli()

@@ -490,7 +490,7 @@ def email_sanger(institute_id, case_id, variant_id):
     variant_id=variant_id,
     hgnc_symbol=hgnc_symbol,
     database_id='coming soon',
-    chromosome_position=variant.id_string,
+    chromosome_position=variant.display_name,
     functions=''.join(functions),
     gtcalls=''.join(gtcalls),
     name=current_user.name
