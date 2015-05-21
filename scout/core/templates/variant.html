@@ -296,7 +296,7 @@
           <div class="variant-list-item">
             <div>ThousandG</div>
             <div>
-              {{ variant.thousand_genomes_frequency|round(3) }}
+              {{ variant.thousand_genomes_frequency|human_decimal }}
             </div>
           </div>
 
@@ -304,7 +304,7 @@
             <div title="Exome Aggregation Consortium">ExAC</div>
             <div>
               <a target="_blank" href="{{ variant.exac_link }}">
-                {{ variant.exac_frequency|round(3) }}
+                {{ variant.exac_frequency|human_decimal }}
               </a>
             </div>
           </div>
