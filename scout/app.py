@@ -3,6 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 import dateutil
 import os
+import urllib2
 
 import arrow
 from flask import Flask, render_template, current_app
@@ -232,3 +233,8 @@ class AppFactory(object):
       else:
         # round all other numbers
         return round(number, ndigits)
+
+    @self.app.template_filter()
+    def url_decode(string):
+      """Decode a string with encoded hex values."""
+      return urllib2.unquote(string)

@@ -294,9 +294,9 @@
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
                   </td>
                   {% if variant.is_exonic() %}
-                    <td>{{ (transcript.protein_sequence_name or '')|safe }}</td>
+                    <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
                   {% else %}
-                    <td>{{ transcript.coding_sequence_name or '' }}</td>
+                    <td>{{ (transcript.coding_sequence_name or '')|url_decode }}</td>
                   {% endif %}
                 </tr>
               {% endfor %}
@@ -655,8 +655,8 @@
                   <td class="text-center">{{ transcript.strand }}</td>
                   <td>{{ transcript.exon or '' }}</td>
                   <td>{{ transcript.intron or '' }}</td>
-                  <td>{{ transcript.coding_sequence_name or '' }}</td>
-                  <td>{{ transcript.protein_sequence_name or '' }}</td>
+                  <td>{{ (transcript.coding_sequence_name or '')|url_decode }}</td>
+                  <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
                 </tr>
               {% else %}
                 <tr>
