@@ -246,6 +246,18 @@
             <div>CLINSIG</div>
             <div>{{ variant.clnsig or '1' }}: {{ variant.clnsig_human }}</div>
           </div>
+
+          <div class="variant-row-item">
+            <div>SNPedia</div>
+
+            <div class="variant-row-item-sublist">
+              {% for rsnumber in variant.db_snp_ids %}
+                <a target="_blank" href="http://snpedia.com/index.php/{{ rsnumber }}" class="variant-row-item-sublist-item">
+                  {{ rsnumber }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
 
