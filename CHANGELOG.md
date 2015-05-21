@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - new Jinja filter to "humanize" decimal numbers
 - show gene panels in variant view
 - new Jinja filter for decoding URL encoding
+- add indicator to variants in list that have comments
 
 ### Changed
 - show cDNA change in transcript summary unless variant is exonic

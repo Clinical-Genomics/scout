@@ -4,7 +4,7 @@
       <div class="md-card-body--padded">
         <a href="{{baseUrl}}/{{display_name}}" class="md-item">
           <div v-show="events.length" class="md-item-icon">
-            <div class="cases-indicator"></div>
+            <div class="dot-indicator"></div>
           </div>
 
           <div class="md-item-label">{{display_name}}</div>
