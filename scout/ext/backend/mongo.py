@@ -19,11 +19,12 @@ import os
 import io
 import json
 import click
+import logging
 from mongoengine import connect, DoesNotExist, Q
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
-from ...models import (Variant, Compound, Case)
+from scoutmodels import (Variant, Compound, Case, Event)
 
 
 from pprint import pprint as pp
@@ -52,7 +53,8 @@ class MongoAdapter(BaseAdapter):
 
     if app:
       self.init_app(app)
-
+    
+    self.logger = logging.getLogger(__name__)
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
 
@@ -269,9 +271,383 @@ class MongoAdapter(BaseAdapter):
     except DoesNotExist:
       return None
 
-  def add_event(self):
-    """Not sure if this is the right way.."""
-  pass
+  def create_event(self, institute, case, user, link, category, verb, 
+                  subject, level='specific', variant_id="", content=""):
+    """
+    Create an Event with the parameters given.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): A Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      category (str): Case or Variant
+      verb (str): What type of event
+      subject (str): What is operated on
+      level (str): 'specific' or 'global'. Default is 'specific'
+      variant (Variant): A variant object
+      content (str): The content of the comment
+    
+    """
+    event = Event(
+      institute=institute,
+      case=case,
+      author=user,
+      link=link,
+      category=category,
+      verb=verb,
+      subject=subject,
+      level=level,
+      variant_id=variant_id,
+      content=content
+      )
+
+    self.logger.debug("Saving Event")
+    event.save()
+    self.logger.debug("Event Saved")
+    
+    return
+
+  def assign(self, institute, case, user, link):
+    """
+    Assign a user to a case.
+    
+    This function will create an Event to log that a person has been assigned
+    to a case. Also the "assignee" on the case will be updated.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+    """
+    self.logger.info("Creating event for assigning {0} to {1}".format(
+      user.name, case.display_name
+    ))
+    
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='assign',
+      subject=case.display_name
+    )
+    self.logger.info("Updating {0} to be assigned with {1}".format(
+      case.display_name, user.name
+    ))
+    case.assignee = user
+    case.save()
+    self.logger.debug("Case updated")
+    
+    return
+
+  def unassign(self, institute, case, user, link):
+    """
+    Unassign a user from a case.
+    
+    This function will create an Event to log that a person has been unassigned
+    from a case. Also the "assignee" on the case will be updated.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): A Case object
+      user (User): A User object (Should this be a user id?)
+      link (str): The url to be used in the event
+    """
+    self.logger.info("Creating event for unassigning {0} from {1}".format(
+      user.display_name, case.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='unassign',
+      subject=case.display_name
+    )
+    
+    self.logger.info("Updating {0} to be unassigned with {1}".format(
+      case.display_name, user.display_name
+    ))
+    case.assignee = None
+    case.save()
+    self.logger.debug("Case updated")
+    
+    return
+
+  def update_status(self, institute, case, user, status, link):
+    """
+    Update the status of a case.
+    
+    This function will create an Event to log that a user have updated the
+    status of a case. Also the status of the case will be updated.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): A Case object
+      user (User): A User object
+      status (str): The new status of the case
+      link (str): The url to be used in the event
+    
+    """
+    
+    self.logger.info("Creating event for assigning {0} to {1}".format(
+      user.display_name, case.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='status',
+      subject=case.display_name
+    )
+    
+    self.logger.info("Updating {0} to status {1}".format(
+      case.display_name, status
+    ))
+    case.status = status
+    case.save()
+    self.logger.debug("Case updated")
+    
+    return
+  
+  def update_synopsis(self, institute, case, user, link, content=""):
+    """
+    Create an Event for updating the synopsis for a case.
+    
+    This function will create an Event and update the synopsis for a case.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): A Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      content (str): The content for what should be added to the synopsis
+      
+    """
+    self.logger.info("Creating event for updating the synopsis for case {0}".format(
+      case.display_name
+    ))
+    
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='synopsis',
+      subject=case.display_name,
+      content=content
+    )
+    
+    self.logger.info("Updating the synopsis for case {0}".format(
+      case.display_name
+    ))
+    case.synopsis = content
+    
+    return
+
+  def archive_case(self, institute, case, user, link):
+    """
+    Create an event for archiving a case.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      
+    """
+    self.logger.info("Creating event for archiving case {0}".format(
+      case.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='archive',
+      subject=case.display_name,
+    )
+
+    return
+
+  def open_research(self, institute, case, user, link):
+    """
+    Create an event for opening the research list a case.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      
+    """
+    self.logger.info("Creating event for opening research for case"\
+                    " {0}".format(case.display_name))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='open_research',
+      subject=case.display_name,
+    )
+    self.logger.info("Setting is_research to 'True' in case {0}".format(
+      case.display_name
+    ))
+    case.is_research = True
+    case.save()
+    return
+
+
+  def comment(self, institute, case, user, link, variant=None,
+              content="", comment_level="specific"):
+    """
+    Add a comment to a variant or a case.
+    
+    This function will create an Event to log that a user have commented on
+    a variant. If a variant id is given it will be a variant comment.
+    A variant comment can be 'global' or specific. The global comments will be
+    shown for this variation in all cases while the specific comments will only
+    be shown for a specific case.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): A Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      content (str): The content of the comment
+      comment_level (str): Any one of 'specific' or 'global'.
+                           Default is 'specific'
+    
+    """
+    if variant:
+      self.logger.info("Creating event for a {0} comment on variant {1}".format(
+        comment_level, variant.display_name
+      )) 
+      self.create_event(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        category='variant',
+        verb='comment',
+        level=comment_level,
+        variant_id=variant.variant_id,
+        subject=variant.display_name,
+        content=content
+      )
+
+    else:
+      self.logger.info("Creating event for a comment on case {0}".format(
+        case.display_name
+      )) 
+
+      self.create_event(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        category='case',
+        verb='comment',
+        subject=case.display_name,
+        content=content
+      )
+    
+    return
+
+  def pin_variant(self, institute, case, user, link, variant):
+    """
+    Create an event for pinning a variant.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      
+    """
+    self.logger.info("Creating event for pinning variant {0}".format(
+      variant.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='variant',
+      verb='pin',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    return
+
+  def unpin_variant(self, institute, case, user, link, variant):
+    """
+    Create an event for unpinning a variant.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      
+    """
+    self.logger.info("Creating event for unpinning variant {0}".format(
+      variant.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='variant',
+      verb='unpin',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    return
+
+  def order_sanger(self, institute, case, user, link, variant):
+    """
+    Create an event for order sanger for a variant.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      
+    """
+    self.logger.info("Creating event for unpinning variant {0}".format(
+      variant.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='variant',
+      verb='sanger',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    return
 
 @click.command()
 @click.option('-i','--institute',

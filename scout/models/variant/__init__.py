@@ -1,6 +1,6 @@
 from __future__ import (print_function, absolute_import, unicode_literals)
 
-from .variant import Variant
+from .variant import Variant, Compound
 from .gene import Gene
 from .transcript import Transcript
 

@@ -6,6 +6,8 @@ scout.models.event
 Define a document to specify activity events and comments both for variants and
 cases.
 
+Events are stored in its own collection
+
 The frontend will use the user + verb + link to display the activity.
 
 The Event model is designed to cover a range of user generated events.
@@ -31,6 +33,7 @@ Variant:
   - Archivals
 
 """
+
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
@@ -47,40 +50,36 @@ VERBS = (
   "unpin",
   "sanger",
   "archive",
+  "open_research",
 )
 
 class Event(Document):
   """Embedded model for defining a general user generated event."""
-  title = StringField()
-  content = StringField()
-  link = StringField()
   # an event will allways belong to a institute and a case
   institute = ReferenceField('Institute', required=True)
   case_id = StringField(required=True)
-  # An event can belong to a variant
-  variant_id = StringField()
+  # All events will have url links
+  link = StringField()
+  # All events has to have a category
+  category = StringField(choices=('case', 'variant'), required=True)
+                             
+  # All events will have an author
+  author = ReferenceField('User', required=True)
+  # Subject is the string that will be displayed after 'display_info'
+  subject = StringField(required=True) # case 23 or 1_2343_A_C
   
-  category = StringField(required=True,
-                             choices=('case', 'variant'))
-  
+  verb = StringField(choices=VERBS)
   level = StringField(choices=('global', 'specific'), default='specific')
 
-  # metadata
-
-  author = ReferenceField('User') # George
-  verb = StringField(choices=VERBS)
+  # An event can belong to a variant
+  variant_id = StringField()
+  # This is the content of a comment
+  content = StringField()
   
-  # What about these two? subject and action...
-  subject = StringField() # case 23
-  action = StringField()
-  
-  tags = ListField(StringField())
-  institute = ReferenceField('Institute')
-
   # timestamps
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
-  
+
   def get_display_info(self):
     """
     Return the string that should be displayed based on the keyword
@@ -98,7 +97,7 @@ class Event(Document):
       "open_research" : "opened research mode for",
     }
     
-    return display_info[self.verb]
+    return display_info.get(self.verb, "")
   
   def is_edited(self):
     """

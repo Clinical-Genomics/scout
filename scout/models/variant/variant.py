@@ -65,8 +65,7 @@ class Variant(Document):
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = SortedListField(EmbeddedDocumentField(Compound),
                               ordering='combined_score', reverse=True)
-  events = ListField(EmbeddedDocumentField(Event))
-  comments = ListField(EmbeddedDocumentField(Event))
+  
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:
@@ -80,6 +79,16 @@ class Variant(Document):
   cadd_score = FloatField()
   clnsig = IntField()
   
+  @property
+  def has_comments(self):
+    """
+    Return True is there are any comments for this variant in the database
+    """
+    if Event.objects(verb='comment', variant_id=self.variant_id):
+      return True
+    
+    return False
+    
   @property
   def clnsig_human(self):
     return {

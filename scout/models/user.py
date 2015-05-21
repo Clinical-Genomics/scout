@@ -51,6 +51,11 @@ class User(Document):
     """Return the first name of the user."""
     return self.name.split(' ')[0]
 
+  @property
+  def display_name(self):
+    """Return the name of the user."""
+    return self.name
+
   # required for Flask-Admin interface
   def __unicode__(self):
     return self.name
