@@ -279,11 +279,7 @@
               <tr>
                 <th>Gene</th>
                 <th>Transcript</th>
-                {% if variant.is_exonic() %}
-                  <th>Amino acid change</th>
-                {% else %}
-                  <th>cDNA change</th>
-                {% endif %}
+                <th>HGVS Description</th>
               </tr>
             </thead>
             <tbody>
@@ -293,7 +289,7 @@
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
                   </td>
-                  {% if variant.is_exonic() %}
+                  {% if transcript.is_exonic() %}
                     <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
                   {% else %}
                     <td>{{ (transcript.coding_sequence_name or '')|url_decode }}</td>
