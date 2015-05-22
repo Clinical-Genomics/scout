@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from mongoengine import (StringField, ListField, ReferenceField,
-EmbeddedDocumentField, DateTimeField, BooleanField)
+EmbeddedDocumentField, DateTimeField, BooleanField, BinaryField)
 
 from . import Individual
 from . import STATUS
@@ -10,7 +10,7 @@ from scout.models.variant import Variant
 
 class Case(Document):
   """Represents a case (family) of individuals (samples)."""
-  # This is the md5 string id for the family:
+  # This is a string with the id for the family:
   case_id = StringField(primary_key=True, required=True)
   # This is the string that will be shown in scout:
   display_name = StringField(required=True)
@@ -51,7 +51,8 @@ class Case(Document):
   madeline_info = StringField()
   vcf_file = StringField()
 
-  coverage_report_path = StringField()
+  # The coverage report will be read as a binary blob
+  coverage_report_path = BinaryField()
 
   @property
   def is_solved(self):
