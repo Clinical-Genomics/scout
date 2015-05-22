@@ -3,12 +3,12 @@ from mongoengine import (StringField, IntField, ListField, EmbeddedDocument)
 
 class Individual(EmbeddedDocument):
   """Represents an individual (sample) in a case (family)."""
+  individual_id = StringField(required=True)
   display_name = StringField()
   sex = StringField()
   phenotype = IntField()
   father = StringField()
   mother = StringField()
-  individual_id = StringField()
   capture_kits = ListField(StringField())
   bam_file = StringField()
 
