@@ -16,6 +16,8 @@ from mongoengine import (DateTimeField, Document, EmbeddedDocument,
 
 from .event import Event
 
+STATUS_ORDER = ['inactive', 'active', 'archived', 'solved']
+
 
 class Individual(EmbeddedDocument):
   """Represents an individual (sample) in a case (family)."""
@@ -90,8 +92,7 @@ class Case(Document):
   suspects = ListField(ReferenceField('Variant'))
   causative = ReferenceField('Variant')
   synopsis = StringField(default='')
-  status = StringField(default='inactive',
-                       choices=['inactive', 'active', 'archived', 'solved'])
+  status = StringField(default='inactive', choices=STATUS_ORDER)
   is_research = BooleanField()
   events = ListField(EmbeddedDocumentField(Event))
   comments = ListField(EmbeddedDocumentField(Event))

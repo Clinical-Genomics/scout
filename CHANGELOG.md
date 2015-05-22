@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - handle multiple cases with same id
 
+## [1.0.1] - 2015-04-28
+### Fixed
+- Fix building URL parameters in cases list Vue component
+
 ## [1.0.0] - 2015-04-12
 Codename: Sara Lund
 
