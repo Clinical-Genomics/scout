@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from mongoengine import (StringField, IntField, ListField)
+from mongoengine import (StringField, IntField, ListField, EmbeddedDocument)
 
 class Individual(EmbeddedDocument):
   """Represents an individual (sample) in a case (family)."""

@@ -1,8 +1,4 @@
-from __future__ import (absolute_import, unicode_literals)
-
-from .case import Case
-from .individual import Individual
-
+from __future__ import unicode_literals
 
 STATUS = (
   "active",

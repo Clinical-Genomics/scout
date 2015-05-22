@@ -1,9 +1,10 @@
 from __future__ import (absolute_import, unicode_literals, division)
 
 from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField, 
-                        ListField, IntField,)
-from scout.models.variant import (Transcript, SO_TERMS, FEATURE_TYPES, 
-                                  CONSEQUENCE)
+                        ListField, IntField)
+
+from .transcript import Transcript
+from . import (SO_TERMS, FEATURE_TYPES, CONSEQUENCE)
 
 class OmimPhenotype(EmbeddedDocument):
   omim_id = IntField(required=True)

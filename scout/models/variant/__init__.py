@@ -1,11 +1,9 @@
-from __future__ import (print_function, absolute_import, unicode_literals)
-
-from .variant import Variant, Compound
-from .gene import Gene
-from .transcript import Transcript
+from __future__ import (unicode_literals)
 
 CONSEQUENCE = ('deleterious', 'probably_damaging', 'possibly_damaging',
                'tolerated', 'benign', 'unknown')
+
+CONSERVATION = ('NotConserved', 'Conserved')
 
 SO_TERMS = (
   'transcript_ablation',

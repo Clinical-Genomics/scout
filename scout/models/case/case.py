@@ -1,12 +1,14 @@
+from __future__ import (unicode_literals, absolute_import)
 from datetime import datetime
 
-from mongoengine import (StringField, ListField, ReferenceField,
-EmbeddedDocumentField, DateTimeField, BooleanField, BinaryField)
+from mongoengine import (Document, StringField, ListField, ReferenceField,
+EmbeddedDocumentField, DateTimeField, BooleanField, BinaryField, FloatField)
 
-from . import Individual
 from . import STATUS
-from scout.models import User, GeneList
-from scout.models.variant import Variant
+from .individual import Individual
+from .gene_list import GeneList, PhenotypeTerm
+
+from scout.models import (User, Variant)
 
 class Case(Document):
   """Represents a case (family) of individuals (samples)."""

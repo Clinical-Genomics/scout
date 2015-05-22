@@ -13,8 +13,11 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
 
 
 from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
+from .gene import Gene
+
 from scout._compat import zip
-from scout.models import (Event, Case)
+
+from scout.models import Event
 
 ######## These are defined terms for different categories ########
 
