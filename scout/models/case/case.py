@@ -6,9 +6,9 @@ EmbeddedDocumentField, DateTimeField, BooleanField, BinaryField, FloatField)
 
 from . import STATUS
 from .individual import Individual
-from .gene_list import GeneList, PhenotypeTerm
+from .gene_list import GeneList
 
-from scout.models import (User, Variant)
+from scout.models import (User, Variant, PhenotypeTerm)
 
 class Case(Document):
   """Represents a case (family) of individuals (samples)."""
@@ -33,7 +33,7 @@ class Case(Document):
 
   status = StringField(default='inactive',
                        choices=STATUS)
-  is_research = BooleanField()
+  is_research = BooleanField(default=False)
 
   # default_gene_lists specifies which gene lists that should be shown when 
   # the case is opened

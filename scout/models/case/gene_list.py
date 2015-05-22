@@ -1,15 +1,5 @@
 from mongoengine import (EmbeddedDocument, StringField, FloatField)
 
-class PhenotypeTerm(EmbeddedDocument):
-  hpo_id = StringField()
-  feature = StringField()
-
-  def __repr__(self):
-    return "PhenotypeTerm(hpo_id={0}, feature={1})".format(
-      self.hpo_id, self.feature
-    )
-
-
 class GeneList(EmbeddedDocument):
   list_id = StringField(required=True)
   version = FloatField(required=True)

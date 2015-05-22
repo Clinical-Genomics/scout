@@ -6,16 +6,7 @@ from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField,
 from .transcript import Transcript
 from . import (SO_TERMS, FEATURE_TYPES, CONSEQUENCE)
 
-class OmimPhenotype(EmbeddedDocument):
-  omim_id = IntField(required=True)
-  disease_models = ListField(StringField())
-
-  @property
-  def omim_link(self):
-    """Return a OMIM phenotype link."""
-    return "http://www.omim.org/entry/{}".format(self.omim_id)
-
-
+from scout.models import PhenotypeTerm
 
 class Gene(EmbeddedDocument):
   hgnc_symbol = StringField(required=True)
@@ -26,7 +17,7 @@ class Gene(EmbeddedDocument):
   sift_prediction = StringField(choices=CONSEQUENCE)
   polyphen_prediction = StringField(choices=CONSEQUENCE)
   omim_gene_entry = IntField()
-  omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
+  omim_phenotypes = ListField(EmbeddedDocumentField(PhenotypeTerm))
   description = StringField()
 
   @property
