@@ -7,29 +7,47 @@ from __future__ import (absolute_import, unicode_literals, division)
 
 from mongoengine import (EmbeddedDocument, StringField, ListField)
 
-from . import CONSEQUENCE, SO_TERMS, FEATURE_TYPES
+from . import (CONSEQUENCE, SO_TERMS, FEATURE_TYPES)
 
 class Transcript(EmbeddedDocument):
+  # The ensemble transcript id
   transcript_id = StringField(required=True)
+  # The refseq transcript id(s)
   refseq_ids = ListField(StringField())
+  # The hgnc gene id  
   hgnc_symbol = StringField()
 
-  # Protein specific predictions
+  ### Protein specific predictions ###
+  # The ensemble protein id
   protein_id = StringField()
+  # The sift consequence prediction for this transcript
   sift_prediction = StringField(choices=CONSEQUENCE)
+  # The polyphen consequence prediction for this transcript
   polyphen_prediction = StringField(choices=CONSEQUENCE)
+  # The swiss protein id for the product
   swiss_prot = StringField()
+  # The pfam id for the protein product
   pfam_domain = StringField()
+  # The prosite id for the product
   prosite_profile = StringField()
+  # The smart id for the product
   smart_domain = StringField()
 
+  # The biotype annotation for the transcript
   biotype = StringField()
+  # The functional annotations for the transcript
   functional_annotations = ListField(StringField(choices=SO_TERMS))
+  # The region annotations for the transcripts
   region_annotations = ListField(StringField(choices=FEATURE_TYPES))
+  # The exon number in the transcript e.g '2/7'
   exon = StringField()
+  # The intron number in the transcript e.g '4/6'
   intron = StringField()
+  # The strand of the transcript e.g '+'
   strand = StringField()
+  # the CDNA change of the transcript e.g 'c.95T>C'
   coding_sequence_name = StringField()
+  # The amino acid change on the transcript e.g. 'p.Phe32Ser'
   protein_sequence_name = StringField()
 
   @property

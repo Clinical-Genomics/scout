@@ -9,12 +9,19 @@ from . import (SO_TERMS, FEATURE_TYPES, CONSEQUENCE)
 from scout.models import PhenotypeTerm
 
 class Gene(EmbeddedDocument):
+  # The hgnc gene symbol
   hgnc_symbol = StringField(required=True)
+  # The ensembl gene id
   ensembl_gene_id = StringField()
+  # A list of Transcript objects
   transcripts = ListField(EmbeddedDocumentField(Transcript))
+  # This is the worst functional impact of all transcripts
   functional_annotation = StringField(choices=SO_TERMS)
+  # This is the region of the most severe functional impact
   region_annotation = StringField(choices=FEATURE_TYPES)
+  # This is most severe sift prediction of all transcripts
   sift_prediction = StringField(choices=CONSEQUENCE)
+  # This is most severe polyphen prediction of all transcripts
   polyphen_prediction = StringField(choices=CONSEQUENCE)
   omim_gene_entry = IntField()
   omim_phenotypes = ListField(EmbeddedDocumentField(PhenotypeTerm))

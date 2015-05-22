@@ -9,6 +9,7 @@ from .whitelist import Whitelist
 
 from .variant.variant import Variant
 from .variant.gene import Gene
+from .variant.transcript import Transcript
 
 from .case.gene_list import GeneList
 from .case.individual import Individual
