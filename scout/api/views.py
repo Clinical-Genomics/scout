@@ -87,23 +87,22 @@ def cases(institute_id):
   return Response(dumps(raw_models), mimetype='application/json; charset=utf-8')
 
 
-@api.route('/<institute_id>/<case_id>/status', methods=['PUT'])
+@api.route('/<institute_id>/<case_id>/status', methods=['POST'])
 def case_status(institute_id, case_id):
-  """Update (PUT) status of a specific case."""
+  """Update status of a specific case."""
   case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  case.status = request.json.get('status', case.status)
+  case.status = request.form.get('status', case.status)
 
   event = Event(
     link=url_for('core.case', institute_id=institute_id, case_id=case_id),
     author=current_user.to_dbref(),
-    verb="updated the status to '%s' for" % case.status,
+    verb="updated the status to '{}' for".format(case.status),
     subject=case.display_name,
   )
   case.events.append(event)
-
   case.save()
 
-  return jsonify(status=case.status, ok=True)
+  return redirect(request.referrer)
 
 
 @api.route('/<institute_id>/<case_id>/synopsis', methods=['PUT'])
