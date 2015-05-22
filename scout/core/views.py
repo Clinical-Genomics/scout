@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from itertools import chain
-import io
-
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
-from werkzeug import secure_filename
 
 from .forms import (init_filters_form, SO_TERMS, process_filters_form,
                     GeneListUpload)

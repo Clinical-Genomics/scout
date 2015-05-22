@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import itertools
+
 from bson.json_util import dumps
 from flask import Blueprint, jsonify, Response, request, redirect, url_for
 from flask.ext.login import current_user
 import markdown as md
 
+from ..models.case import STATUS_ORDER
 from ..extensions import omim, store
 from ..models import Institute, Case, Event
 from ..helpers import get_document_or_404
@@ -74,10 +77,14 @@ def cases(institute_id):
     Response: jsonified MongoDB objects as a list
   """
   institute = Institute.objects.get(display_name=institute_id)
-  case_models = store.cases(collaborator=institute_id)
-  cases_json = dumps([case.to_mongo() for case in case_models])
 
-  return Response(cases_json, mimetype='application/json; charset=utf-8')
+  case_models = store.cases(collaborator=institute_id)
+  non_archived = (case for case in case_models if case.status != 'archived')
+  case_models_sorted = sorted(non_archived,
+                              key=lambda case: STATUS_ORDER.index(case.status))
+  raw_models = [model.to_mongo() for model in case_models_sorted]
+
+  return Response(dumps(raw_models), mimetype='application/json; charset=utf-8')
 
 
 @api.route('/<institute_id>/<case_id>/status', methods=['PUT'])
