@@ -24,8 +24,7 @@ from mongoengine import connect, DoesNotExist, Q
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
-from scoutmodels import (Variant, Compound, Case, Event)
-
+from scout.models import (Variant, Compound, Case, Event)
 
 from pprint import pprint as pp
 
