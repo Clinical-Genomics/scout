@@ -5,4 +5,4 @@ from scout.models import Individual
 
 def test_individual():
   """docstring for test_individual"""
-  pass
+  individual = Individual()
