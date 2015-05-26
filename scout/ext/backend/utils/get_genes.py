@@ -147,7 +147,7 @@ def get_genes(variant):
       splitted_record = annotation.split(':')
       try:
         hgnc_symbol = splitted_record[0]
-        omim_term = int(splitted_record[1])
+        omim_term = splitted_record[1]
         genes[hgnc_symbol]['omim_gene_id'] = omim_term
       except (ValueError, KeyError):
         pass
