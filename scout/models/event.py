@@ -58,7 +58,7 @@ class Event(Document):
   """Embedded model for defining a general user generated event."""
   # an event will allways belong to a institute and a case
   institute = ReferenceField('Institute', required=True)
-  case_id = ReferenceField('Case', required=True)
+  case = ReferenceField('Case', required=True)
   # All events will have url links
   link = StringField()
   # All events has to have a category

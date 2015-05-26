@@ -291,7 +291,7 @@ class MongoAdapter(BaseAdapter):
     event = Event(
       institute=institute,
       case=case,
-      author=user,
+      author=user.to_dbref(),
       link=link,
       category=category,
       verb=verb,

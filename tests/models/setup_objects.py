@@ -28,6 +28,36 @@ def setup_user(**kwargs):
   )
   return user
 
+def setup_gene_list(**kwargs):
+  """
+  Setup an Phenotype term object
+  """
+  list_id = kwargs.get('list_id', "gene_list")
+  version = kwargs.get('version', 1.0)
+  date = kwargs.get('date', "20150522")
+  display_name = kwargs.get('display_name', "gene_list")
+  
+  gene_list = GeneList(
+    list_id=list_id,
+    version=version,
+    date=date,
+    display_name=display_name
+  )
+  return gene_list
+
+def setup_phenotype_term(**kwargs):
+  """
+  Setup an Phenotype term object
+  """
+  
+  term = PhenotypeTerm(
+    phenotype_id=kwargs.get('hpo_id', "1234"), 
+    feature=kwargs.get('feature', "NOC1"),
+    disease_models=kwargs.get('disease_models', ["AD"])
+  )
+  return term
+
+
 def setup_case(**kwargs):
   """
   Setup a Case object
@@ -50,18 +80,12 @@ def setup_case(**kwargs):
     genome_build = kwargs.get('genome_build', "GRCh"),
     genome_version = kwargs.get('genome_version', 38),
     gender_check = kwargs.get('gender_check', 'confirm'),
+    phenotype_terms = kwargs.get('phenotype_terms', [setup_phenotype_term()]),
+    madeline_info = kwargs.get('madeline_info', "XML text"),
+    vcf_file = kwargs.get('vcf_file', "path/to/variants.vcf")
+    coverage_report = kwargs.get('coverage_report', b"coverage info")
   )
   
-
-
-  # gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
-  #                            default='unconfirmed')
-  # phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
-  
-  # madeline_info = StringField()
-  # vcf_file = StringField()
-
-  # coverage_report_path = BinaryField()
   return case
 
 
