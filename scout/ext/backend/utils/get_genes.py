@@ -16,7 +16,7 @@ import sys
 import os
 import click
 
-from ....models import (Gene, OmimPhenotype, GeneList)
+from scout.models import (Gene, PhenotypeTerm, GeneList)
 
 from . import get_transcript
 
@@ -165,8 +165,8 @@ def get_genes(variant):
         if len(splitted_record) > 1:
           inheritance_patterns = splitted_record[1].split('/')
         
-        disease_model = OmimPhenotype(
-                              omim_id=phenotype_id,
+        disease_model = PhenotypeTerm(
+                              phenotype_id=phenotype_id,
                               disease_models=inheritance_patterns
                             )
         

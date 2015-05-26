@@ -36,9 +36,8 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
-from ...models import (Institute, Case, Variant)
-from ..._compat import iteritems
-
+from scout.models import (Institute, Case, Variant)
+from scout._compat import iteritems
 
 from vcf_parser import VCFParser
 

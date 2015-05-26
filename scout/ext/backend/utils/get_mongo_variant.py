@@ -17,8 +17,8 @@ import os
 import click
 import logging
 
-from ....models import (Variant)
-from ...._compat import iteritems
+from scout.models import (Variant)
+from scout._compat import iteritems
 
 from . import (get_genes, get_genotype, get_compounds, generate_md5_key)
 
