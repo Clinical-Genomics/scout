@@ -7,7 +7,6 @@ import os
 import arrow
 from flask import Flask, render_template, current_app
 from jinja2 import is_undefined
-from path import path as ipath
 from werkzeug.utils import import_string
 
 from .settings import DevelopmentConfig

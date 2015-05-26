@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from itertools import chain
-import io
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
-from werkzeug import secure_filename
+
+from scout.models import Case, Event, PhenotypeTerm, Variant
+from scout.extensions import mail, store
+from scout.helpers import templated, get_document_or_404
 
 from .forms import (init_filters_form, SO_TERMS, process_filters_form,
                     GeneListUpload)
 from .utils import validate_user
-from ..models import Case, Event, PhenotypeTerm, Variant
-from ..extensions import mail, store
-from ..helpers import templated, get_document_or_404
 
 core = Blueprint('core', __name__, template_folder='templates')
 
