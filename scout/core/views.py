@@ -231,21 +231,14 @@ def variants(institute_id, case_id, variant_type):
   # fetch all variants for a specific case
   # very basic security check
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
   skip = int(request.args.get('skip', 0))
 
   # update case status if currently inactive
-  if case.status == 'inactive':
-    case.status = 'active'
+  if case_model.status == 'inactive':
+    case_model.status = 'active'
     case_link = url_for('.case', institute_id=institute_id, case_id=case_id)
-
-    event = Event(link=case_link,
-                  author=current_user.to_dbref(),
-                  verb="updated the status to '{}' for".format(case.status),
-                  subject=case.display_name)
-    case.events.append(event)
-
-    case.save()
+    store.update_status(institute, case_model, current_user, 'active', case_link)
 
   # form submitted as GET
   form = init_filters_form(request.args)
