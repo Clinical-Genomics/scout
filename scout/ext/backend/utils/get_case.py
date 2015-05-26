@@ -126,20 +126,24 @@ def get_case(scout_configs, family_type):
 
     # Add the pedigree picture, this is a xml file that will be read and 
     # saved in the mongo database
-    madeline_file = path(scout_configs.get('madeline', '/__menoexist.tXt'))
-    if madeline_file.exists():
+    madeline_path = path(scout_configs.get('madeline', '/__menoexist.tXt'))
+    if madeline_path.exists():
       logger.debug("Found madeline info")
-      with madeline_file.open('r') as handle:
+      with madeline_path.open('r') as handle:
         mongo_case['madeline_info'] = handle.read()
         logger.debug("Madeline file was read succesfully")
+    else:
+      logger.info("No madeline file found. Skipping madeline file.")
 
     # Add the coverage report
-    coverage_report = scout_configs.get('coverage_report', None)
-    if coverage_report:
+    coverage_report_path = path(scout_configs.get('coverage_report', '/__menoexist.tXt'))
+    if coverage_report_path.exists():
       logger.debug("Found a coverage report")
       with coverage_report_path.open('rb') as handle:
         mongo_case['coverage_report_path'] = handle.read()
         logger.debug("Coverage was read succesfully")
+    else:
+      logger.info("No coverage report found. Skipping coverage report.")
 
     clinical_gene_lists = []
     research_gene_lists = []
