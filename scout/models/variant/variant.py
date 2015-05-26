@@ -62,6 +62,7 @@ class Variant(Document):
   alternative = StringField(required=True)
   rank_score = FloatField(required=True)
   variant_rank = IntField(required=True)
+  institute_id = StringField()
   quality = FloatField()
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))

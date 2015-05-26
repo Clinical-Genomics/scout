@@ -92,28 +92,28 @@ def get_case(scout_configs, family_type):
     mongo_case_id = '_'.join([owner, case_id])
     mongo_case = Case(case_id=mongo_case_id)
     logger.debug("Setting case id to: {0}".format(mongo_case_id))
-    
+
     mongo_case['owner'] = owner
     logger.debug("Setting owner to: {0}".format(owner))
-    
+
     mongo_case['collaborators'] = list(collaborators)
     logger.debug("Setting collaborators to: {0}".format(
       ', '.join(collaborators)))
-    
+
     # We use the family id as display name for scout
     mongo_case['display_name'] = case_id
     logger.debug("Setting display name to: {0}".format(case_id))
-    
+
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
     logger.debug("Setting igv vcf file to: {0}".format(
       scout_configs.get('igv_vcf', '')))
-    
+
     # Add the genome build information
     mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
     logger.debug("Setting genome build to: {0}".format(
       scout_configs.get('human_genome_build', '')))
-    
+
     # Get the genome version
     mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
     logger.debug("Setting genome version to: {0}".format(
@@ -164,7 +164,7 @@ def get_case(scout_configs, family_type):
                           date=date,
                           display_name=display_name
                           )
-      
+
       if list_type == 'clinical':
         logger.info("Adding {0} to clinical gene lists".format(list_object))
         clinical_gene_lists.append(list_object)
@@ -174,11 +174,10 @@ def get_case(scout_configs, family_type):
 
     mongo_case['clinical_gene_lists'] = clinical_gene_lists
     mongo_case['research_gene_lists'] = research_gene_lists
-    
+
     default_gene_lists = scout_configs.get('default_gene_lists', [])
-    
+
     mongo_case['default_gene_lists'] = list(default_gene_lists)
-    
 
     individuals = []
     for individual_id in case.individuals:
@@ -193,11 +192,7 @@ def get_case(scout_configs, family_type):
       ind['individual_id'] = individual_id
       ind['father'] = individual.father
       ind['mother'] = individual.mother
-      display_name = individual.extra_info.get('display_name', None)
-      if display_name:
-        ind['display_name'] = display_name
-      else:
-        ind['display_name'] = individual_id
+      ind['display_name'] = individual.extra_info.get('display_name', individual_id)
       ind['sex'] = str(individual.sex)
       ind['phenotype'] = individual.phenotype
       # Path to the bam file for IGV:

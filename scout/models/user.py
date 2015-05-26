@@ -42,10 +42,6 @@ class User(Document):
     """Check if user has been assigned a specific role."""
     return query_role in self.roles
 
-  def belongs_to(self, institute_id):
-    """Check if user belongs to a specific institute."""
-    return institute_id in self.institutes
-
   @property
   def first_name(self):
     """Return the first name of the user."""
