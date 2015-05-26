@@ -160,7 +160,7 @@ def get_genes(variant):
       for omim_entry in splitted_gene[1].split('|'):
         splitted_record = omim_entry.split('>')
         
-        phenotype_id = int(splitted_record[0])
+        phenotype_id = splitted_record[0]
         inheritance_patterns = []
         if len(splitted_record) > 1:
           inheritance_patterns = splitted_record[1].split('/')
