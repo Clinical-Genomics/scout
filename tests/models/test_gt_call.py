@@ -1,24 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from scout.models import GTCall
+from .setup_objects import setup_gt_call
 
 
-def setup_gt_call(**kwargs):
-  """
-  Setup an GTCall object object
-  """
-  gt_call = GTCall(
-    sample_id = kwargs.get('sample_id', '1'),
-    display_name = kwargs.get('display_name', '1'),
-    genotype_call = kwargs.get('genotype_call', '0/1'),
-    allele_depths = kwargs.get('allele_depths', [10,12]),
-    read_depth = kwargs.get('read_depth', 22),
-    genotype_quality = kwargs.get('genotype_quality', 55),
-  )
-
-  return gt_call
-  
 def test_gt_call():
   """
   Test the GTCall class

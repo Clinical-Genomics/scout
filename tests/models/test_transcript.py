@@ -1,36 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from scout.models import Transcript
+from .setup_objects import setup_transcript
 
 
-def setup_transcript(**kwargs):
-  """
-  Setup an Transcript object
-  """
-  transcript = Transcript(
-    transcript_id = kwargs.get('transcript_id', 'ENST001'),
-    refseq_ids = kwargs.get('refseq_ids', 'NM_001'),
-    hgnc_symbol = kwargs.get('hgnc_symbol', 'NOCL1'),
-    protein_id = kwargs.get('protein_id', 'ENSP001'),
-    sift_prediction = kwargs.get('sift_prediction', 'deleterious'),
-    polyphen_prediction = kwargs.get('polyphen_prediction', 'deleterious'),
-    swiss_prot = kwargs.get('swiss_prot', 'LRP2_HUMAN'),
-    pfam_domain = kwargs.get('pfam_domain', 'PF00648'),
-    prosite_profile = kwargs.get('pfam_domain', 'PS50203'),
-    smart_domain = kwargs.get('pfam_domain', 'SM00230'),
-    biotype = kwargs.get('biotype', 'protein_coding'),
-    functional_annotations = kwargs.get('functional_annotations', ['transcript_ablation']),
-    region_annotations = kwargs.get('region_annotations', ['exonic']),
-    exon = kwargs.get('exon', '2/7'),
-    intron = kwargs.get('intron', ''),
-    strand = kwargs.get('strand', '+'),
-    coding_sequence_name = kwargs.get('coding_sequence_name', 'c.95T>C'),
-    protein_sequence_name = kwargs.get('protein_sequence_name', 'p.Phe32Ser')
-  )
-
-  return transcript
-  
 def test_transcript():
   """
   Test the Transcript class

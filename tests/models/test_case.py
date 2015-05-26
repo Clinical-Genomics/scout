@@ -5,8 +5,6 @@ from datetime import datetime
 
 from .setup_objects import setup_case
 
-from scout.models import (Case, Individual, User)
-
 
 def test_case():
   """Test the case class"""
