@@ -140,7 +140,7 @@ def get_case(scout_configs, family_type):
     if coverage_report_path.exists():
       logger.debug("Found a coverage report")
       with coverage_report_path.open('rb') as handle:
-        mongo_case['coverage_report_path'] = handle.read()
+        mongo_case['coverage_report'] = handle.read()
         logger.debug("Coverage was read succesfully")
     else:
       logger.info("No coverage report found. Skipping coverage report.")

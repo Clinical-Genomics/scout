@@ -54,7 +54,7 @@ class Case(Document):
   vcf_file = StringField()
 
   # The coverage report will be read as a binary blob
-  coverage_report_path = BinaryField()
+  coverage_report = BinaryField()
 
   @property
   def is_solved(self):
