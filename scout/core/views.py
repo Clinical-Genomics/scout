@@ -244,13 +244,13 @@ def variants(institute_id, case_id, variant_type):
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
   if variant_type == 'research':
-    if case.is_research:
-      gene_lists = case.all_gene_lists
+    if case_model.is_research:
+      gene_lists = case_model.all_gene_lists
     else:
       # research mode not activated
       return abort(403)
   else:
-    gene_lists = case.clinical_gene_lists
+    gene_lists = case_model.clinical_gene_lists
 
   gene_list_names = [(item.list_id, item.display_name) for item in gene_lists]
   form.gene_lists.choices = gene_list_names
@@ -262,11 +262,11 @@ def variants(institute_id, case_id, variant_type):
   process_filters_form(form)
 
   # fetch list of variants
-  variants = store.variants(case.case_id, query=form.data,
+  variants = store.variants(case_model.case_id, query=form.data,
                             nr_of_variants=per_page, skip=skip)
 
   return dict(variants=variants,
-              case=case,
+              case=case_model,
               case_id=case_id,
               institute=institute,
               institute_id=institute_id,
