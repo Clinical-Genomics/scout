@@ -52,6 +52,9 @@ VERBS = (
   "sanger",
   "archive",
   "open_research",
+  "mark_causative",
+  "unmark_causative",
+  "manual_rank"
 )
 
 class Event(Document):
@@ -72,7 +75,7 @@ class Event(Document):
   verb = StringField(choices=VERBS)
   level = StringField(choices=('global', 'specific'), default='specific')
 
-  # An event can belong to a variant
+  # An event can belong to a variant. This is the id that looks like 1_34253_A_C.
   variant_id = StringField()
   # This is the content of a comment
   content = StringField()
@@ -97,6 +100,9 @@ class Event(Document):
       "sanger" : "ordered sanger sequencing for",
       "archive" : "archived",
       "open_research" : "opened research mode for",
+      "mark_causative" : "marked causative for",
+      "unmark_causative": "unmarked causative for",
+      "manual_rank": "updated manual rank for"
     }
     
     return display_info.get(self.verb, "")

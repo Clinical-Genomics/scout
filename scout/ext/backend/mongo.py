@@ -50,25 +50,31 @@ class MongoAdapter(BaseAdapter):
 
   def __init__(self, app=None):
 
+    self.logger = logging.getLogger(__name__)
+    
     if app:
+      self.logger.info("Initializing app")
       self.init_app(app)
     
-    self.logger = logging.getLogger(__name__)
+    
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
 
 
   def cases(self, collaborator = None):
+    self.logger.info("Fetch all cases")
     if collaborator:
+      self.logger.info("Use collaborator {0}".format(collaborator))
       return Case.objects(collaborators=collaborator).order_by('-updated_at')
     else:
       return Case.objects().order_by('-updated_at')
 
   def case(self, case_id):
-
+    self.logger.info("Fetch case {0}".format(case_id))
     try:
       return Case.objects(case_id=case_id)
     except DoesNotExist:
+      self.logger.warning("Could not find case {0}".format(case_id))
       return None
 
 
@@ -226,8 +232,10 @@ class MongoAdapter(BaseAdapter):
     Returns:
       variant_object: A odm variant object
     """
-
     previous_variant = Variant.objects.get(document_id=document_id)
+    self.logger.info("Fetching next variant for {0}".format(
+      previous_variant.display_name
+      ))
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     variant_type = previous_variant.variant_type
@@ -255,6 +263,9 @@ class MongoAdapter(BaseAdapter):
 
     """
     previous_variant = Variant.objects.get(document_id=document_id)
+    self.logger.info("Fetching previous variant for {0}".format(
+      previous_variant.display_name
+      ))
     rank = previous_variant.variant_rank or 0
     case_id = previous_variant.case_id
     variant_type = previous_variant.variant_type
@@ -269,6 +280,23 @@ class MongoAdapter(BaseAdapter):
                                   )
     except DoesNotExist:
       return None
+
+  
+
+  def delete_event(self, event_id):
+    """
+    Delete a event
+    
+    Arguments:
+      event_id (str): The database key for the event
+    """
+    self.logger.info("Deleting event{0}".format(
+      event_id
+      ))
+    Event.objects(id=event_id).delete()
+    self.logger.debug("Event {0} deleted".format(
+      event_id
+      ))
 
   def create_event(self, institute, case, user, link, category, verb, 
                   subject, level='specific', variant_id="", content=""):
@@ -393,8 +421,8 @@ class MongoAdapter(BaseAdapter):
     
     """
     
-    self.logger.info("Creating event for assigning {0} to {1}".format(
-      user.display_name, case.display_name
+    self.logger.info("Creating event for updating status of {0} to {1}".format(
+      case.display_name, status
     ))
     self.create_event(
       institute=institute,
@@ -448,6 +476,8 @@ class MongoAdapter(BaseAdapter):
       case.display_name
     ))
     case.synopsis = content
+    case.save()
+    self.logger.debug("Case updated")
     
     return
 
@@ -474,6 +504,13 @@ class MongoAdapter(BaseAdapter):
       verb='archive',
       subject=case.display_name,
     )
+
+    self.logger.info("Change status for case {0} to 'archived'".format(
+      case.display_name
+    ))
+    case.status = 'archived'
+    case.save()
+    self.logger.debug("Case updated")
 
     return
 
@@ -504,6 +541,8 @@ class MongoAdapter(BaseAdapter):
     ))
     case.is_research = True
     case.save()
+    self.logger.debug("Case updated")
+    
     return
 
 
@@ -632,7 +671,7 @@ class MongoAdapter(BaseAdapter):
       variant (Variant): A variant object
       
     """
-    self.logger.info("Creating event for unpinning variant {0}".format(
+    self.logger.info("Creating event for ordering sanger for variant {0}".format(
       variant.display_name
     ))
     self.create_event(
@@ -646,7 +685,118 @@ class MongoAdapter(BaseAdapter):
       subject=variant.display_name,
     )
 
+    self.logger.info("Creating event for ordering sanger for case {0}".format(
+      case.display_name
+    ))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='sanger',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
     return
+
+  def mark_causative(self, institute, case, user, link, variant):
+    """
+    Create an event for marking a variant causative.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      
+    """
+    self.logger.info("Creating event for marking variant {0} causative".format(
+      variant.display_name
+    ))
+    
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='variant',
+      verb='mark_causative',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    return
+
+  def unmark_causative(self, institute, case, user, link, variant):
+    """
+    Create an event for unmarking a variant causative.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      
+    """
+    self.logger.info("Creating event for unmarking variant {0} causative".format(
+      variant.display_name
+    ))
+    
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='variant',
+      verb='unmark_causative',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    return
+
+  def update_manual_rank(self, institute, case, user, link, variant, manual_rank):
+    """
+    Create an event for updating the manual rank of a variant.
+    This function will create a event and update the manual rank of the variant.
+    
+    Arguments:
+      institute (Institute): A Institute object
+      case (Case): Case object
+      user (User): A User object
+      link (str): The url to be used in the event
+      variant (Variant): A variant object
+      manual_rank (int): The new manual rank
+      
+    """
+    self.logger.info("Creating event for updating the manual rank for variant"\
+      " {0}".format(variant.display_name))
+    
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='variant',
+      verb='manual_rank',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+    self.logger.info("Setting manual rank to {0} for variant {1}".format(
+      manual_rank, variant.display_name
+    ))
+    variant.manual_rank = manual_rank
+    variant.save()
+    self.logger.debug("Variant updated")
+    
+
+    return
+
+
 
 @click.command()
 @click.option('-i','--institute',
