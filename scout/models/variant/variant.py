@@ -11,12 +11,9 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
                          ReferenceField, SortedListField)
 
-
 from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
 from .gene import Gene
-
 from scout._compat import zip
-
 from scout.models import Event
 
 ######## These are defined terms for different categories ########
@@ -62,14 +59,14 @@ class Variant(Document):
   alternative = StringField(required=True)
   rank_score = FloatField(required=True)
   variant_rank = IntField(required=True)
-  institute_id = StringField()
+  institute = ReferenceField('Institute', required=True)
   quality = FloatField()
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = SortedListField(EmbeddedDocumentField(Compound),
                               ordering='combined_score', reverse=True)
-  
+
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:
@@ -82,17 +79,18 @@ class Variant(Document):
   # Predicted deleteriousness:
   cadd_score = FloatField()
   clnsig = IntField()
-  
+
   @property
   def has_comments(self):
     """
     Return True is there are any comments for this variant in the database
     """
-    if Event.objects(verb='comment', variant_id=self.variant_id):
+    if Event.objects(verb='comment', variant_id=self.variant_id,
+                      institute=self.institute):
       return True
-    
+
     return False
-    
+
   @property
   def clnsig_human(self):
     return {

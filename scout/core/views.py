@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
 from flask.ext.login import login_required, current_user
@@ -231,7 +230,8 @@ def variants(institute_id, case_id, variant_type):
               institute_id=institute_id,
               current_batch=(skip + per_page),
               form=form,
-              severe_so_terms=SO_TERMS[:14],
+              severe_so_terms=SO_TERMS[:11] + ('incomplete_terminal_codon_variant',
+                                               'stop_retained_variant'),
               current_gene_lists=current_gene_lists,
               variant_type=variant_type,
               upload_form=GeneListUpload())

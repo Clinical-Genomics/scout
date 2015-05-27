@@ -14,7 +14,7 @@ class Transcript(EmbeddedDocument):
   transcript_id = StringField(required=True)
   # The refseq transcript id(s)
   refseq_ids = ListField(StringField())
-  # The hgnc gene id  
+  # The hgnc gene id
   hgnc_symbol = StringField()
 
   ### Protein specific predictions ###
@@ -57,6 +57,10 @@ class Transcript(EmbeddedDocument):
   @property
   def absolute_exon(self):
     return (self.exon or '').rpartition('/')[0]
+
+  def is_exonic(self):
+    """Determine if transcript is exonic or not."""
+    return 'exonic' in self.region_annotations
 
   def stringify(self):
     return ("{this.hgnc_symbol}:{this.refseq_ids_string}"

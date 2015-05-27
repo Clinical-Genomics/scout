@@ -3,6 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 import dateutil
 import os
+import urllib2
 
 import arrow
 from flask import Flask, render_template, current_app
@@ -205,3 +206,34 @@ class AppFactory(object):
       if type(value) is bool:
           value = repr(value).lower()
       return '{{{{{}}}}}'.format(value)
+
+    @self.app.template_filter()
+    def human_decimal(number, ndigits=4):
+      """Return a standard representation of a decimal number.
+
+      Args:
+        number (float): number to humanize
+        ndigits (int, optional): max number of digits to round to
+
+      Return:
+        str: humanized string of the decimal number
+      """
+      min_number = 10^-ndigits
+
+      if number is None:
+        # NaN
+        return '-'
+      elif number == 0:
+        # avoid confusion over what is rounded and what is actually 0
+        return 0
+      elif number < min_number:
+        # make human readable and sane
+        return "&lt; {}".format(min_number)
+      else:
+        # round all other numbers
+        return round(number, ndigits)
+
+    @self.app.template_filter()
+    def url_decode(string):
+      """Decode a string with encoded hex values."""
+      return urllib2.unquote(string)

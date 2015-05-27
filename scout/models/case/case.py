@@ -1,14 +1,17 @@
 from __future__ import (unicode_literals, absolute_import)
 from datetime import datetime
+import itertools
 
 from mongoengine import (Document, StringField, ListField, ReferenceField,
-EmbeddedDocumentField, DateTimeField, BooleanField, BinaryField, FloatField)
+                         EmbeddedDocumentField, DateTimeField, BooleanField,
+                         BinaryField, FloatField)
+import query_phenomizer
 
 from . import STATUS
 from .individual import Individual
 from .gene_list import GeneList
-
 from scout.models import (User, Variant, PhenotypeTerm)
+
 
 class Case(Document):
   """Represents a case (family) of individuals (samples)."""
@@ -16,7 +19,7 @@ class Case(Document):
   case_id = StringField(primary_key=True, required=True)
   # This is the string that will be shown in scout:
   display_name = StringField(required=True)
-  # This is the owner of the case
+  # This is the owner of the case. E.g. 'cust003'
   owner = StringField(required=True)
   # These are the names of all the collaborators that are allowed to view the
   # case, including the owner
@@ -30,12 +33,10 @@ class Case(Document):
 
   # The synopsis is a text blob
   synopsis = StringField(default='')
-
-  status = StringField(default='inactive',
-                       choices=STATUS)
+  status = StringField(default='inactive', choices=STATUS)
   is_research = BooleanField(default=False)
 
-  # default_gene_lists specifies which gene lists that should be shown when 
+  # default_gene_lists specifies which gene lists that should be shown when
   # the case is opened
   default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
@@ -86,7 +87,7 @@ class Case(Document):
     # skip querying Phenomizer unless at least one HPO terms exists
     if hpo_terms:
       try:
-        return query(hpo_terms)
+        return query_phenomizer.query(hpo_terms)
       except SystemExit:
         return {}
     else:
@@ -111,4 +112,3 @@ class Case(Document):
   def __repr__(self):
     return "Case(case_id={0}, display_name={1}, owner={2})".format(
       self.case_id, self.display_name, self.owner)
-

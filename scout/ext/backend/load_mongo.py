@@ -48,7 +48,7 @@ import scout
 def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
                   username=None, password=None, port=27017, host='localhost',
-                  rank_score_treshold = 0, variant_number_treshold = 5000):
+                  rank_score_threshold = 0, variant_number_threshold = 5000):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
@@ -135,17 +135,17 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   logger.info('Start parsing variants')
 
-  ########## If a rank score treshold is used check if it is below that treshold ##########
+  ########## If a rank score threshold is used check if it is below that threshold ##########
   for variant in variant_parser:
     logger.debug("Parsing variant {0}".format(variant['variant_id']))
-    if not float(variant['rank_scores'][case.display_name]) > rank_score_treshold:
-      logger.info("Lower rank score treshold reaced after {0}"\
+    if not float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
+      logger.info("Lower rank score threshold reaced after {0}"\
                   " variants".format(nr_of_variants))
       break
 
-    if not nr_of_variants > variant_number_treshold:
-      logger.info("Variant number treshold reached. ({0})".format(
-        variant_number_treshold))
+    if not nr_of_variants > variant_number_threshold:
+      logger.info("Variant number threshold reached. ({0})".format(
+        variant_number_threshold))
       break
 
 
@@ -355,12 +355,12 @@ def ensure_indexes(variant_database, logger):
                 nargs=1,
                 help="Specify the institute that the file belongs to."
 )
-@click.option('--rank_score_treshold',
+@click.option('--rank_score_threshold',
                 default=0,
                 nargs=1,
                 help="Specify the lowest rank score that should be used."
 )
-@click.option('--variant_number_treshold',
+@click.option('--variant_number_threshold',
                 default=5000,
                 nargs=1,
                 help="Specify the the maximum number of variants to load."
@@ -391,7 +391,7 @@ def ensure_indexes(variant_database, logger):
 )
 def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         mongo_db, username, variant_type, madeline, password, institute,
-        rank_score_treshold, variant_number_treshold,
+        rank_score_threshold, variant_number_threshold,
         logfile, loglevel):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
@@ -441,9 +441,9 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
   my_vcf = load_mongo_db(setup_configs, vcf_config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password,
-                      variant_type=variant_type, 
-                      rank_score_treshold=rank_score_treshold, 
-                      variant_number_treshold=variant_number_treshold)
+                      variant_type=variant_type,
+                      rank_score_threshold=rank_score_threshold,
+                      variant_number_threshold=variant_number_threshold)
 
 
 if __name__ == '__main__':

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import itertools
+
 from bson.json_util import dumps
 from flask import Blueprint, jsonify, Response, request, redirect, url_for
 from flask.ext.login import current_user
 import markdown as md
 
 from scout.core.utils import validate_user
+from ..models.case import STATUS as STATUS_ORDER
 from ..extensions import omim, store
 from ..models import Institute, Case, Event
 from ..helpers import get_document_or_404
@@ -75,29 +78,32 @@ def cases(institute_id):
     Response: jsonified MongoDB objects as a list
   """
   institute = Institute.objects.get(display_name=institute_id)
+
   case_models = store.cases(collaborator=institute_id)
-  cases_json = dumps([case.to_mongo() for case in case_models])
+  non_archived = (case for case in case_models if case.status != 'archived')
+  case_models_sorted = sorted(non_archived,
+                              key=lambda case: STATUS_ORDER.index(case.status))
+  raw_models = [model.to_mongo() for model in case_models_sorted]
 
-  return Response(cases_json, mimetype='application/json; charset=utf-8')
+  return Response(dumps(raw_models), mimetype='application/json; charset=utf-8')
 
 
-@api.route('/<institute_id>/<case_id>/status', methods=['PUT'])
+@api.route('/<institute_id>/<case_id>/status', methods=['POST'])
 def case_status(institute_id, case_id):
-  """Update (PUT) status of a specific case."""
+  """Update status of a specific case."""
   case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  case.status = request.json.get('status', case.status)
+  case.status = request.form.get('status', case.status)
 
   event = Event(
     link=url_for('core.case', institute_id=institute_id, case_id=case_id),
     author=current_user.to_dbref(),
-    verb="updated the status to '%s' for" % case.status,
+    verb="updated the status to '{}' for".format(case.status),
     subject=case.display_name,
   )
   case.events.append(event)
-
   case.save()
 
-  return jsonify(status=case.status, ok=True)
+  return redirect(request.referrer)
 
 
 @api.route('/<institute_id>/<case_id>/synopsis', methods=['PUT'])

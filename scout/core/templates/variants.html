@@ -216,6 +216,10 @@
               {{ variant.manual_rank }}
             </small>
           {% endif %}
+
+          {% if variant.comments %}
+            <div class="dot-indicator"></div>
+          {% endif %}
 				</a>
 
         <!-- Rank score -->
@@ -235,24 +239,14 @@
 
         <!-- 1000 Genomes -->
 				<div class="variants-row-item text-right md-tooltip">
-          {% if not variant.thousand_genomes_frequency %}
-            -
-          {% elif variant.thousand_genomes_frequency < 0.0001 %}
-            &lt; 0.0001
-          {% else %}
-            {{ variant.thousand_genomes_frequency|round(4) }}
-          {% endif %}
+          {{ variant.thousand_genomes_frequency|human_decimal }}
 
           <div class="md-tooltip-tip is-left">
             <ul>
               {% if variant.exac_frequency %}
                 <li>
                   <strong>ExAC</strong>
-                  {% if variant.exac_frequency < 0.0001 %}
-                    &lt; 0.0001
-                  {% else %}
-                    {{ variant.exac_frequency|round(4) }}
-                  {% endif %}
+                  {{ variant.exac_frequency|human_decimal }}
                 </li>
               {% endif %}
               <li><strong>Local</strong> {{ 'Not yet implemented' }}</li>
