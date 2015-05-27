@@ -2,6 +2,27 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - *planned*
+### Added
+- link(s) to SNPedia based on RS-numbers
+- new Jinja filter to "humanize" decimal numbers
+- show gene panels in variant view
+- new Jinja filter for decoding URL encoding
+- add indicator to variants in list that have comments
+
+### Changed
+- show cDNA change in transcript summary unless variant is exonic
+- moved compounds table further up the page
+- show dates for case uploads in ISO format
+- moved variant comments higher up on page
+
+### Removed
+- drop dependency on moment.js
+
+### Fixed
+- show the same level of detail for all frequencies on all pages
+- properly decode URL encoded symbols in amino acid/cDNA change strings
+
 ## [1.0.2] - 2015-05-20
 ### Changed
 - update case fetching function

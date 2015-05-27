@@ -51,14 +51,6 @@
   text-decoration: none;
 }
 
-.cases-indicator {
-  display: inline-block;
-  height: 12px;
-  width: 12px;
-  border-radius: 100%;
-  background-color: #00bcd4;
-}
-
 .cases-item-bonus {
   @extend %cases-item-base;
 

@@ -139,6 +139,10 @@ class Transcript(EmbeddedDocument):
             ":{this.protein_sequence_name}"
             .format(this=self))
 
+  def is_exonic(self):
+    """Determine the variant is exonic."""
+    return 'exonic' in self.region_annotations
+
   @property
   def swiss_prot_link(self):
     return "http://www.uniprot.org/uniprot/{}".format(self.swiss_prot)
