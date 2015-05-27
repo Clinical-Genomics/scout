@@ -146,7 +146,6 @@ def event(institute_id, case_id):
   if request.method == 'POST':
 
     event_document = Event(
-      title=request.form.get('title'),
       content=request.form.get('content'),
       link=request.form.get('link'),
       author=current_user.to_dbref(),
@@ -167,33 +166,34 @@ def event(institute_id, case_id):
     return redirect(request.referrer)
 
 
-@api.route('/<institute_id>/<case_id>/comment', methods=['POST'])
-@api.route('/<institute_id>/<case_id>/comment/<int:comment_id>',
-           methods=['GET'])
-def comment(institute_id, case_id, comment_id=None):
+@api.route('/<institute_id>/<case_id>/events/<event_id>', methods=['POST'])
+def delete_event(institute_id, case_id, event_id=None):
+  validate_user(current_user, institute_id)
+  store.delete_event(event_id)
+  return redirect(request.referrer)
+
+
+@api.route('/<institute_id>/<case_id>/events', methods=['POST'])
+def create_event(institute_id, case_id):
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
-  if request.method == 'POST':
+  link = request.form.get('link')
+  content = request.form.get('content')
+  variant_id = request.args.get('variant_id')
 
-    link = request.form.get('link')
-    content = request.form.get('content')
-    store.comment(institute, case, current_user, link=link, content=content)
-
-  elif request.method == 'GET':
-    # TODO: make this work with DELETE!
-    # remove event by index, expects list to be reversed in template
-    case.comments.pop(-comment_id)
-
-  # persist changes
-  case.save()
-
-  if request.args.get('json'):
-    case_json = dumps(case.to_mongo())
-    return Response(case_json, mimetype='application/json; charset=utf-8')
+  if variant_id:
+    # create a variant comment
+    variant_model = store.variant(variant_id)
+    level = request.form.get('level', 'specific')
+    store.comment(institute, case_model, current_user, link, variant=variant_model,
+                  content=content, comment_level=level)
 
   else:
-    return redirect(request.referrer)
+    # create a case comment
+    store.comment(institute, case_model, current_user, link, content=content)
+
+  return redirect(request.referrer)
 
 
 @api.route('/<institute_id>/<case_id>/<variant_id>/event', methods=['POST'])

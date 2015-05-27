@@ -273,8 +273,6 @@
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
                     <strong>{{ comment.author.name }}</strong>
-                    {{ comment.verb }}
-                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
                     <span class="timestamp">
                       {{ comment.created_at|human_date }}
                     </span>
@@ -284,11 +282,11 @@
                     {% set form_id = 'delete-comment-%s' % loop.index %}
                     <form class="activity-feed-delete"
                           accept-charset="UTF-8"
-                          action="{{ url_for('api.comment',
+                          action="{{ url_for('api.delete_event',
                                              institute_id=institute.display_name,
                                              case_id=case.display_name,
-                                             comment_id=loop.index) }}"
-                          method="DELETE">
+                                             event_id=comment.id) }}"
+                          method="POST">
                       <core-icon icon="highlight-remove"
                         class="activity-feed-delete-button"
                         onclick="document.querySelector('#{{ form_id }}').click();">
@@ -317,7 +315,7 @@
         <div class="md-card-body--padded">
           <div class="feed-toolbar">
             <form class="comment-box"
-                  action="{{ url_for('api.comment', institute_id=institute_id, case_id=case_id) }}"
+                  action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id) }}"
                   method="POST">
               <input type="hidden" name="link"
                      value="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
@@ -380,7 +378,7 @@
       <div id="case-activity" class="md-card">
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
-          {{ activity_feed(case.events|reverse) }}
+          {{ activity_feed(case_events|reverse) }}
         </div>
       </div>
     </div>

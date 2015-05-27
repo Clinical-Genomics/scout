@@ -19,7 +19,7 @@ from mongoengine import connect, DoesNotExist
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
-from scout.models import (Variant, Case, Event)
+from scout.models import (Variant, Case, Event, Institute)
 
 from pprint import pprint as pp
 
@@ -55,7 +55,11 @@ class MongoAdapter(BaseAdapter):
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
 
-  def cases(self, collaborator = None):
+  def institute(self, institute_id):
+    """Fetch an Institute from the  database."""
+    return Institute.objects.get(internal_id=institute_id)
+
+  def cases(self, collaborator=None):
     self.logger.info("Fetch all cases")
     if collaborator:
       self.logger.info("Use collaborator {0}".format(collaborator))
@@ -63,17 +67,51 @@ class MongoAdapter(BaseAdapter):
     else:
       return Case.objects().order_by('-updated_at')
 
-  def case(self, case_id):
+  def case(self, institute_id, case_id):
     self.logger.info("Fetch case {0}".format(case_id))
     try:
-      return Case.objects(case_id=case_id)
+      return Case.objects.get(owner=institute_id, display_name=case_id)
     except DoesNotExist:
       self.logger.warning("Could not find case {0}".format(case_id))
       return None
 
-  def comments(self, case, variant_id=None, level=None):
-    """Fetch comments from the database."""
-    return Event.objects(case=case, category='case')
+  def events(self, institute, case=None, variant_id=None, level=None,
+             comments=False):
+    """Fetch events from the database.
+
+    Args:
+      case (Case, optional): case object
+      variant_id (str, optional): global variant id
+      level (str, optional): restrict comments to 'specific' or 'global'
+      comments (bool, optional): restrict events to include only comments
+
+    Returns:
+      list: filtered query returning matching events
+    """
+    filters = {'case': case, 'institute': institute}
+
+    if variant_id:
+      # restrict to only variant events
+      filters['variant_id'] = variant_id
+      filters['category'] = 'variant'
+
+      if level:
+        # filter on specific/global (implicit: only comments)
+        filters['level'] = level
+
+        if level == 'global':
+          # don't restrict to case
+          del filters['case']
+
+    else:
+      # restrict to case events
+      filters['category'] = 'case'
+
+    if comments:
+      # restrict events to only comments
+      filters['verb'] = 'comment'
+
+    return Event.objects(**filters)
 
   def build_query(self, case_id, query=None, variant_ids=None):
     """
@@ -377,7 +415,7 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Updating {0} to be assigned with {1}".format(
       case.display_name, user.name
     ))
-    case.assignee = user
+    case.assignee = user.to_dbref()
     case.save()
     self.logger.debug("Case updated")
 
@@ -630,6 +668,11 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Creating event for pinning variant {0}".format(
       variant.display_name
     ))
+
+    # add variant to list of pinned references in the case model
+    case.suspects.append(variant)
+    case.save()
+
     self.create_event(
       institute=institute,
       case=case,
@@ -658,6 +701,11 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Creating event for unpinning variant {0}".format(
       variant.display_name
     ))
+
+    # remove variant from list of references in the case model
+    case.suspects.remove(variant)
+    case.save()
+
     self.create_event(
       institute=institute,
       case=case,
