@@ -281,8 +281,24 @@ class MongoAdapter(BaseAdapter):
     except DoesNotExist:
       return None
 
-  
+  def update_dynamic_gene_list(self, case, gene_list):
+    """
+    Update the dynamic gene list for a case
+    
+    Arguments:
+      case (Case): The case that should be updated
+      gene_list (list): The list of genes that should be added
+    
+    """
+    self.logger.info("Updating the dynamic gene list for case {0} to {1}".format(
+      case.display_name, ', '.join(gene_list)
+    ))
+    case.dynamic_gene_list = gene_list
+    case.save()
+    self.logger.debug("Case updated")
 
+    return
+    
   def delete_event(self, event_id):
     """
     Delete a event

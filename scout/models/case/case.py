@@ -40,6 +40,7 @@ class Case(Document):
   default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
+  dynamic_gene_list = ListField(StringField())
 
   genome_build = StringField()
   genome_version = FloatField()
