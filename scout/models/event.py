@@ -83,7 +83,7 @@ class Event(Document):
   # timestamps
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
-
+  
   @property
   def display_info(self):
     """

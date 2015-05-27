@@ -62,7 +62,7 @@ class Variant(Document):
   alternative = StringField(required=True)
   rank_score = FloatField(required=True)
   variant_rank = IntField(required=True)
-  institute_id = StringField()
+  institute = ReferenceField('Institute', required=True)
   quality = FloatField()
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
@@ -88,7 +88,8 @@ class Variant(Document):
     """
     Return True is there are any comments for this variant in the database
     """
-    if Event.objects(verb='comment', variant_id=self.variant_id):
+    if Event.objects(verb='comment', variant_id=self.variant_id, 
+                      institute=self.institute):
       return True
     
     return False

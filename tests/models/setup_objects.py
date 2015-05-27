@@ -155,6 +155,7 @@ def setup_variant(**kwargs):
     variant_rank = kwargs.get('variant_rank', 1),
     quality = kwargs.get('quality', 88),
     filters = kwargs.get('filters', ['PASS']),
+    institute = kwargs.get('institute', setup_institute()),
     samples = kwargs.get('samples', []),
     genetic_models = kwargs.get('genetic_models', ['AD', 'AD_dn']),
     compounds = kwargs.get('compounds', []),

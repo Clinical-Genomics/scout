@@ -16,7 +16,7 @@ class Case(Document):
   case_id = StringField(primary_key=True, required=True)
   # This is the string that will be shown in scout:
   display_name = StringField(required=True)
-  # This is the owner of the case
+  # This is the owner of the case. E.g. 'cust003'
   owner = StringField(required=True)
   # These are the names of all the collaborators that are allowed to view the
   # case, including the owner
