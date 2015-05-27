@@ -16,7 +16,7 @@ import sys
 import os
 import click
 
-from ....models import (Gene, OmimPhenotype, GeneList)
+from scout.models import (Gene, PhenotypeTerm, GeneList)
 
 from . import get_transcript
 
@@ -147,7 +147,7 @@ def get_genes(variant):
       splitted_record = annotation.split(':')
       try:
         hgnc_symbol = splitted_record[0]
-        omim_term = int(splitted_record[1])
+        omim_term = splitted_record[1]
         genes[hgnc_symbol]['omim_gene_id'] = omim_term
       except (ValueError, KeyError):
         pass
@@ -160,13 +160,13 @@ def get_genes(variant):
       for omim_entry in splitted_gene[1].split('|'):
         splitted_record = omim_entry.split('>')
         
-        phenotype_id = int(splitted_record[0])
+        phenotype_id = splitted_record[0]
         inheritance_patterns = []
         if len(splitted_record) > 1:
           inheritance_patterns = splitted_record[1].split('/')
         
-        disease_model = OmimPhenotype(
-                              omim_id=phenotype_id,
+        disease_model = PhenotypeTerm(
+                              phenotype_id=phenotype_id,
                               disease_models=inheritance_patterns
                             )
         

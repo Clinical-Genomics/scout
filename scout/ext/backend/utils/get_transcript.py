@@ -17,7 +17,7 @@ import os
 
 import click
 
-from ....models import Transcript
+from scout.models import Transcript
 from pprint import pprint as pp
 
 

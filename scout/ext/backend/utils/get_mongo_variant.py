@@ -17,8 +17,8 @@ import os
 import click
 import logging
 
-from ....models import (Variant)
-from ...._compat import iteritems
+from scout.models import (Variant, Institute)
+from scout._compat import iteritems
 
 from . import (get_genes, get_genotype, get_compounds, generate_md5_key)
 
@@ -31,12 +31,12 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   objects and put them in the proper format in the database.
 
   Input:
-    variant       : A Variant dictionary
-    variant_type  : A string in ['clinical', 'research']
-    individuals   : A dictionary with the id:s of the individuals as keys and
+    variant (dict): A Variant dictionary
+    variant_type  (str): A string in ['clinical', 'research']
+    individuals   (dict): A dictionary with the id:s of the individuals as keys and
                     display names as values
-    case_id       : The md5 string that represents the ID for the case
-    variant_count : The rank order of the variant in this case
+    case (Case): The Case object that the variant belongs to
+    variant_count (int): The rank order of the variant in this case
     config_object : A config object with the information from the config file
 
   Returns:
@@ -49,6 +49,9 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
   # Create the ID for the variant
   case_id = case.case_id
   case_name = case.display_name
+  
+  
+  institute = Institute.objects.get(display_name=case.owner)
 
   id_fields = [
                 variant['CHROM'],
@@ -74,7 +77,8 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                           alternative = variant['ALT'],
                           variant_rank = variant_count,
                           quality = float(variant['QUAL']),
-                          filters = variant['FILTER'].split(';')
+                          filters = variant['FILTER'].split(';'),
+                          institute = institute
                   )
 
   # If a variant belongs to any gene lists we check which ones

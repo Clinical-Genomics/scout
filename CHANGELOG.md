@@ -9,12 +9,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - show gene panels in variant view
 - new Jinja filter for decoding URL encoding
 - add indicator to variants in list that have comments
+- add variant number threshold and rank score threshold to load function
+- add event methods to mongo adapter
+- add tests for models
 
 ### Changed
 - show cDNA change in transcript summary unless variant is exonic
 - moved compounds table further up the page
 - show dates for case uploads in ISO format
 - moved variant comments higher up on page
+- updated documentation for pages
+- read in coverage report as blob in database
+- change ``OmimPhenotype`` to ``PhenotypeTerm``
+- reorganize models sub-package
+- move events (and comments) to separate collection
 
 ### Removed
 - drop dependency on moment.js
@@ -22,6 +30,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - show the same level of detail for all frequencies on all pages
 - properly decode URL encoded symbols in amino acid/cDNA change strings
+- fixed issue with wipe permissions in MongoDB
 
 ## [1.0.2] - 2015-05-20
 ### Changed

@@ -23,7 +23,7 @@ import logging
 from path import path
 
 from ..config_parser import ConfigParser
-from ....models import (Case, Individual, Institute, GeneList)
+from scout.models import (Case, Individual, Institute, GeneList)
 
 from vcf_parser import VCFParser
 from ped_parser import FamilyParser
@@ -62,21 +62,23 @@ def get_case(scout_configs, family_type):
   # Use ped_parser to get information from the pedigree file
   case_parser = FamilyParser(open(scout_configs['ped'], 'r'), 
                              family_type=family_type)
-  
+
+  # Check if there is a owner of the case
   try:
     owner = scout_configs['owner']
   except KeyError as e:
     logger.error("Scout config must include a owner")
     raise e
-  
+
+  # Check if there are any collaborators for the case, a case can belong to
+  # several institutes
   collaborators = scout_configs.get('collaborators', None)
   if collaborators:
     collaborators = set(collaborators)
   else:
     collaborators = set()
   collaborators.add(owner)
-  # A case can belong to several institutes
-  
+
   logger.info("Collaborators found: {0}".format(','.join(collaborators)))
   logger.info("Cases found in ped file: {0}".format(
     ', '.join(list(case_parser.families.keys()))))
@@ -90,48 +92,58 @@ def get_case(scout_configs, family_type):
     mongo_case_id = '_'.join([owner, case_id])
     mongo_case = Case(case_id=mongo_case_id)
     logger.debug("Setting case id to: {0}".format(mongo_case_id))
-    
+
     mongo_case['owner'] = owner
     logger.debug("Setting owner to: {0}".format(owner))
-    
+
     mongo_case['collaborators'] = list(collaborators)
     logger.debug("Setting collaborators to: {0}".format(
       ', '.join(collaborators)))
-    
+
     # We use the family id as display name for scout
     mongo_case['display_name'] = case_id
     logger.debug("Setting display name to: {0}".format(case_id))
-    
+
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_configs.get('igv_vcf', '')
     logger.debug("Setting igv vcf file to: {0}".format(
       scout_configs.get('igv_vcf', '')))
-    
+
     # Add the genome build information
     mongo_case['genome_build'] = scout_configs.get('human_genome_build', '')
     logger.debug("Setting genome build to: {0}".format(
       scout_configs.get('human_genome_build', '')))
-    
+
+    # Get the genome version
     mongo_case['genome_version'] = float(scout_configs.get('human_genome_version', '0'))
     logger.debug("Setting genome version to: {0}".format(
       scout_configs.get('human_genome_version', '0')))
 
+    # Check the analysis date
     mongo_case['analysis_date'] = scout_configs.get('analysis_date', '')
     logger.debug("Setting analysis date to: {0}".format(
       scout_configs.get('analysis_date', '')))
 
-    # Add the pedigree picture
-    madeline_file = path(scout_configs.get('madeline', '/__menoexist.tXt'))
-    if madeline_file.exists():
+    # Add the pedigree picture, this is a xml file that will be read and 
+    # saved in the mongo database
+    madeline_path = path(scout_configs.get('madeline', '/__menoexist.tXt'))
+    if madeline_path.exists():
       logger.debug("Found madeline info")
-      with madeline_file.open('r') as handle:
+      with madeline_path.open('r') as handle:
         mongo_case['madeline_info'] = handle.read()
+        logger.debug("Madeline file was read succesfully")
+    else:
+      logger.info("No madeline file found. Skipping madeline file.")
 
     # Add the coverage report
-    coverage_report = scout_configs.get('coverage_report', None)
-    if coverage_report:
-      mongo_case['coverage_report_path'] = coverage_report
-      logger.debug("Setting coverage report to: {0}".format(coverage_report))
+    coverage_report_path = path(scout_configs.get('coverage_report', '/__menoexist.tXt'))
+    if coverage_report_path.exists():
+      logger.debug("Found a coverage report")
+      with coverage_report_path.open('rb') as handle:
+        mongo_case['coverage_report'] = handle.read()
+        logger.debug("Coverage was read succesfully")
+    else:
+      logger.info("No coverage report found. Skipping coverage report.")
 
     clinical_gene_lists = []
     research_gene_lists = []
@@ -152,7 +164,7 @@ def get_case(scout_configs, family_type):
                           date=date,
                           display_name=display_name
                           )
-      
+
       if list_type == 'clinical':
         logger.info("Adding {0} to clinical gene lists".format(list_object))
         clinical_gene_lists.append(list_object)
@@ -162,11 +174,10 @@ def get_case(scout_configs, family_type):
 
     mongo_case['clinical_gene_lists'] = clinical_gene_lists
     mongo_case['research_gene_lists'] = research_gene_lists
-    
+
     default_gene_lists = scout_configs.get('default_gene_lists', [])
-    
+
     mongo_case['default_gene_lists'] = list(default_gene_lists)
-    
 
     individuals = []
     for individual_id in case.individuals:
@@ -181,11 +192,7 @@ def get_case(scout_configs, family_type):
       ind['individual_id'] = individual_id
       ind['father'] = individual.father
       ind['mother'] = individual.mother
-      display_name = individual.extra_info.get('display_name', None)
-      if display_name:
-        ind['display_name'] = display_name
-      else:
-        ind['display_name'] = individual_id
+      ind['display_name'] = individual.extra_info.get('display_name', individual_id)
       ind['sex'] = str(individual.sex)
       ind['phenotype'] = individual.phenotype
       # Path to the bam file for IGV:

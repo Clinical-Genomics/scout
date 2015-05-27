@@ -17,7 +17,7 @@ import os
 
 import click
 
-from ....models import Compound
+from scout.models import Compound
 from . import generate_md5_key
 
 def get_compounds(variant, case, variant_type):

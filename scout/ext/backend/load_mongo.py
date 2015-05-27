@@ -36,9 +36,8 @@ from mongoengine.connection import get_db
 
 from .config_parser import ConfigParser
 from .utils import (get_case, get_institute, get_mongo_variant)
-from ...models import (Institute, Case, Variant)
-from ..._compat import iteritems
-
+from scout.models import (Institute, Case, Variant)
+from scout._compat import iteritems
 
 from vcf_parser import VCFParser
 
@@ -48,8 +47,8 @@ import scout
 
 def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
-                  username=None, password=None, port=27017,
-                  rank_score_treshold = 0, host='localhost'):
+                  username=None, password=None, port=27017, host='localhost',
+                  rank_score_threshold = 0, variant_number_threshold = 5000):
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
@@ -136,13 +135,19 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   logger.info('Start parsing variants')
 
-  ########## If a rank score treshold is used check if it is below that treshold ##########
+  ########## If a rank score threshold is used check if it is below that threshold ##########
   for variant in variant_parser:
     logger.debug("Parsing variant {0}".format(variant['variant_id']))
-    if not float(variant['rank_scores'][case.display_name]) > rank_score_treshold:
-      logger.info("Lower rank score treshold reaced after {0}"\
+    if not float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
+      logger.info("Lower rank score threshold reaced after {0}"\
                   " variants".format(nr_of_variants))
       break
+
+    if not nr_of_variants > variant_number_threshold:
+      logger.info("Variant number threshold reached. ({0})".format(
+        variant_number_threshold))
+      break
+
 
     nr_of_variants += 1
     mongo_variant = get_mongo_variant(variant, variant_type, individuals, case, config_object, nr_of_variants)
@@ -229,9 +234,9 @@ def update_case(case, variant_type, logger):
       case_id, case.vcf_file
     ))
 
-    existing_case.coverage_report_path = case.coverage_report_path
-    logger.info("Updating coverage report path for case {0} to {1}".format(
-      case_id, case.coverage_report_path
+    existing_case.coverage_report = case.coverage_report
+    logger.info("Updating coverage report path for case {0}".format(
+      case_id
     ))
 
     existing_case.save()
@@ -350,6 +355,21 @@ def ensure_indexes(variant_database, logger):
                 nargs=1,
                 help="Specify the institute that the file belongs to."
 )
+@click.option('--rank_score_threshold',
+                default=0,
+                nargs=1,
+                help="Specify the lowest rank score that should be used."
+)
+@click.option('--variant_number_threshold',
+                default=5000,
+                nargs=1,
+                help="Specify the the maximum number of variants to load."
+)
+@click.option('-i', '--institute',
+                default='CMMS',
+                nargs=1,
+                help="Specify the institute that the file belongs to."
+)
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'
 )
@@ -371,6 +391,7 @@ def ensure_indexes(variant_database, logger):
 )
 def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         mongo_db, username, variant_type, madeline, password, institute,
+        rank_score_threshold, variant_number_threshold,
         logfile, loglevel):
   """Test the vcf class."""
   # Check if vcf file exists and that it has the correct naming:
@@ -420,7 +441,9 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
 
   my_vcf = load_mongo_db(setup_configs, vcf_config_file, family_type,
                       mongo_db=mongo_db, username=username, password=password,
-                      variant_type=variant_type)
+                      variant_type=variant_type,
+                      rank_score_threshold=rank_score_threshold,
+                      variant_number_threshold=variant_number_threshold)
 
 
 if __name__ == '__main__':
