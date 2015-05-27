@@ -72,7 +72,17 @@
     <div class="md-label-icon">
       <core-icon icon="label"></core-icon>
     </div>
-    <div class="md-label-text">{{ case.status|capitalize }}</div>
+
+    <form class="md-label-text" action="{{ url_for('api.case_status',institute_id=institute.display_name,case_id=case.display_name) }}" method="POST">
+      {{ case.status|capitalize }}
+
+      {% if case.status != 'archived' %}
+        <input type="hidden" name="status" readonly value="archived">
+        <button class="case-assign-icon" type="submit">
+          <small><strong>(ARCHIVE)</strong></small>
+        </button>
+      {% endif %}
+    </form>
   </div>
 
   {% if case.is_research %}
