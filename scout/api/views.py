@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, Response, request, redirect, url_for
 from flask.ext.login import current_user
 import markdown as md
 
+from scout.core.utils import validate_user
 from ..extensions import omim, store
 from ..models import Institute, Case, Event
 from ..helpers import get_document_or_404
@@ -170,18 +171,14 @@ def event(institute_id, case_id):
 @api.route('/<institute_id>/<case_id>/comment/<int:comment_id>',
            methods=['GET'])
 def comment(institute_id, case_id, comment_id=None):
+  institute = validate_user(current_user, institute_id)
   case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   if request.method == 'POST':
 
-    comment_document = Event(title=request.form.get('title'),
-                             content=request.form.get('content'),
-                             link=request.form.get('link'),
-                             author=current_user.to_dbref(),
-                             verb=request.form.get('verb'),
-                             subject=request.form.get('subject'))
-
-    case.comments.append(comment_document)
+    link = request.form.get('link')
+    content = request.form.get('content')
+    store.comment(institute, case, current_user, link=link, content=content)
 
   elif request.method == 'GET':
     # TODO: make this work with DELETE!

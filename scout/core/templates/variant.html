@@ -709,7 +709,7 @@
         <div class="md-card-body--padded">
           <div class="feed-toolbar">
             <form class="comment-box"
-                  action="{{ url_for('api.comment', institute_id="", case_id="") }}"
+                  action="{{ url_for('api.variant_event', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}"
                   method="POST">
               <input type="hidden" name="link"
                      value="{{ url_for('core.case', institute_id="", case_id="") }}">

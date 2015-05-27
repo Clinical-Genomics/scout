@@ -54,10 +54,13 @@ def case(institute_id, case_id):
   """View one specific case."""
   # very basic security check
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+
+  case_comments = store.comments(case_model)
 
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=case, statuses=Case.status.choices)
+  return dict(institute=institute, case=case_model, statuses=Case.status.choices,
+              case_comments=case_comments, institute_id=institute_id, case_id=case_id)
 
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
