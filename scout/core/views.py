@@ -277,20 +277,6 @@ def variants(institute_id, case_id, variant_type):
               upload_form=GeneListUpload())
 
 
-@core.route('/<institute_id>/<case_id>/<variant_type>/hpo_redirect')
-@login_required
-def hpo_gene_list_redirect(institute_id, case_id, variant_type):
-  # redirect user to variants list after querying HPO
-  validate_user(current_user, institute_id)
-  case_model = store.case(institute_id, case_id)
-
-  return redirect(url_for('.variants',
-                          institute_id=institute_id,
-                          case_id=case_id,
-                          variant_type=variant_type,
-                          hgnc_symbols=case_model.hpo_gene_ids))
-
-
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
 @templated('variant.html')
 @login_required
