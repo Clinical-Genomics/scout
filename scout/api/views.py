@@ -91,7 +91,11 @@ def case_status(institute_id, case_id):
 
   status = request.form.get('status', case_model.status)
   link = url_for('core.case', institute_id=institute_id, case_id=case_id)
-  store.update_status(institute, case_model, current_user, status, link)
+
+  if status == 'archive':
+    store.archive_case(institute, case_model, current_user, status, link)
+  else:
+    store.update_status(institute, case_model, current_user, status, link)
 
   return redirect(request.referrer)
 

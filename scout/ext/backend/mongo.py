@@ -484,9 +484,7 @@ class MongoAdapter(BaseAdapter):
       subject=case.display_name
     )
 
-    self.logger.info("Updating {0} to status {1}".format(
-      case.display_name, status
-    ))
+    self.logger.info("Updating {0} to status {1}".format(case.display_name, status))
     case.status = status
     case.save()
     self.logger.debug("Case updated")
