@@ -304,7 +304,7 @@
 
     <div id="important-data" class="variant-segments-row">
 
-      <div id="frequency" class="md-card">
+      <div id="frequency" class="md-card is-main">
         <div class="md-card-header">Frequency</div>
         <div class="md-card-body-list">
           <div class="variant-list-item">
@@ -321,6 +321,42 @@
                 {{ variant.exac_frequency|human_decimal }}
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="severities+conservation" class="md-card">
+        <div class="md-card-header">Severity</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>Sift</div>
+            <div>{{ variant.sift_predictions|join(', ') }}</div>
+          </div>
+          <div class="variant-list-item">
+            <div>
+              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview" target="_blank">
+                Polyphen
+              </a>
+            </div>
+            <div>{{ variant.polyphen_predictions|join(', ') }}</div>
+          </div>
+        </div>
+
+        <div class="md-card-header">Conservation</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>PHAST</div>
+            <div>{{ variant.phast_conservation|join(', ') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>GERP</div>
+            <div>{{ variant.gerp_conservation|join(', ') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>phyloP</div>
+            <div>{{ variant.phylop_conservation|join(', ') or '-' }}</div>
           </div>
         </div>
       </div>
@@ -385,42 +421,6 @@
     </div>
 
     <div id="details" class="variant-segments-row">
-      <div id="severities+conservation" class="md-card is-aside">
-        <div class="md-card-header">Severity</div>
-        <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>Sift</div>
-            <div>{{ variant.sift_predictions|join(', ') }}</div>
-          </div>
-          <div class="variant-list-item">
-            <div>
-              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview" target="_blank">
-                Polyphen
-              </a>
-            </div>
-            <div>{{ variant.polyphen_predictions|join(', ') }}</div>
-          </div>
-        </div>
-
-        <div class="md-card-header">Conservation</div>
-        <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>PHAST</div>
-            <div>{{ variant.phast_conservation|join(', ') or '-' }}</div>
-          </div>
-
-          <div class="variant-list-item">
-            <div>GERP</div>
-            <div>{{ variant.gerp_conservation|join(', ') or '-' }}</div>
-          </div>
-
-          <div class="variant-list-item">
-            <div>phyloP</div>
-            <div>{{ variant.phylop_conservation|join(', ') or '-' }}</div>
-          </div>
-        </div>
-      </div>
-
       <div id="comments" class="md-card is-main">
         <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
@@ -478,7 +478,7 @@
                   method="POST">
               <input type="hidden" name="link"
                      value="{{ url_for('core.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">
-              <textarea class="comment-box-input" name="content" placeholder="Write comment..."></textarea>
+              <textarea class="comment-box-input" name="content" placeholder="Leave a comment"></textarea>
               <div class="comment-box-toolbar">
                 <div class="comment-box-toolbar-setting">
                   <input name="level" type="checkbox" value="global">

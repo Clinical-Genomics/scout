@@ -178,7 +178,7 @@ class Variant(Document):
     """
     sift_predictions = []
     if len(self.genes) == 1:
-      sift_predictions = [gene.sift_prediction for gene in self.genes]
+      sift_predictions = [(gene.sift_prediction or '-') for gene in self.genes]
     else:
       for gene in self.genes:
         sift_predictions.append(':'.join([gene.hgnc_symbol, gene.sift_prediction or '-']))
@@ -192,7 +192,7 @@ class Variant(Document):
     """
     polyphen_predictions = []
     if len(self.genes) == 1:
-      polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
+      polyphen_predictions = [(gene.polyphen_prediction or '-') for gene in self.genes]
     else:
       for gene in self.genes:
         polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
