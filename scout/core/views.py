@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
-                   url_for)
+                   url_for, make_response)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
 import query_phenomizer
 
-from scout.models import Case, Event, PhenotypeTerm, Variant
+from scout.models import Case, Variant
 from scout.extensions import mail, store
 from scout.helpers import templated
 
@@ -171,6 +171,19 @@ def hpo_genes(phenotype_terms):
       return None
   else:
     return None
+
+
+@core.route('/<institute_id>/<case_id>/coverage_report', methods=['GET'])
+def coverage_report(institute_id, case_id):
+  """Serve coverage report for a case directly from the database."""
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
+
+  response = make_response(case_model.coverage_report)
+  response.headers['Content-Type'] = 'application/pdf'
+  filename = "{}.coverage.pdf".format(case_model.display_name)
+  response.headers['Content-Disposition'] = "inline; filename={}.pdf".format(filename)
+  return response
 
 
 def read_lines(iterable):

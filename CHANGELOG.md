@@ -19,7 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - show dates for case uploads in ISO format
 - moved variant comments higher up on page
 - updated documentation for pages
-- read in coverage report as blob in database
+- read in coverage report as blob in database and serve directly
 - change ``OmimPhenotype`` to ``PhenotypeTerm``
 - reorganize models sub-package
 - move events (and comments) to separate collection
