@@ -213,12 +213,11 @@
           <div>{{ variant.variant_rank }}</div>
 
           {% if variant.manual_rank %}
-            <small class="md-badge--{{ variant.manual_rank_level }}">
+            <small><span class="md-badge--{{ variant.manual_rank_level }}">
               {{ variant.manual_rank }}
-            </small>
-          {% endif %}
-
-          {% if variant.comments %}
+            </span></small>
+          {% elif variant.has_comments %}
+            <!-- At least show if there are any comments written -->
             <div class="dot-indicator"></div>
           {% endif %}
 				</a>
