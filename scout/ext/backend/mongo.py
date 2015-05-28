@@ -19,7 +19,7 @@ from mongoengine import connect, DoesNotExist
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
-from scout.models import (Variant, Case, Event, Institute)
+from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm)
 
 from pprint import pprint as pp
 
@@ -325,9 +325,7 @@ class MongoAdapter(BaseAdapter):
       gene_list (list): The list of genes that should be added
 
     """
-    self.logger.info("Updating the dynamic gene list for case {0} to {1}".format(
-      case.display_name, ', '.join(gene_list)
-    ))
+    self.logger.info("Updating the dynamic gene list for case %s", case.display_name)
     case.dynamic_gene_list = gene_list
     case.save()
     self.logger.debug("Case updated")
@@ -593,6 +591,44 @@ class MongoAdapter(BaseAdapter):
 
     return
 
+  def add_phenotype(self, institute, case, user, link, phenotype_id):
+    """Add a new HPO phenotype to a case."""
+    phenotype_term = PhenotypeTerm(phenotype_id=phenotype_id)
+    self.logger.info("Adding new HPO term to case %s", case.display_name)
+    # append the new HPO term (ID)
+    case.phenotype_terms.append(phenotype_term)
+
+    case.save()
+    self.logger.debug("Case updated")
+
+    self.logger.info("Creating event for adding phenotype term for case %s",
+                     case.display_name)
+    self.create_event(institute=institute, case=case, user=user, link=link,
+                      category='case', verb='add_phenotype',
+                      subject=case.display_name,)
+
+    return
+
+  def remove_phenotype(self, institute, case, user, link, phenotype_id):
+    """Remove an existing HPO phenotype from a case."""
+    self.logger.info("Removing HPO term from case %s", case.display_name)
+
+    # remove the new HPO term (ID)
+    for phenotype in case.phenotype_terms:
+      if phenotype.phenotype_id == phenotype_id:
+        case.phenotype_terms.remove(phenotype)
+        break
+
+    case.save()
+    self.logger.debug("Case updated")
+
+    self.logger.info("Creating event for removing phenotype term from case %s",
+                     case.display_name)
+    self.create_event(institute=institute, case=case, user=user, link=link,
+                      category='case', verb='remove_phenotype',
+                      subject=case.display_name)
+
+    return
 
   def comment(self, institute, case, user, link, variant=None,
               content="", comment_level="specific"):

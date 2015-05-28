@@ -54,7 +54,9 @@ VERBS = (
   "open_research",
   "mark_causative",
   "unmark_causative",
-  "manual_rank"
+  "manual_rank",
+  "add_phenotype",
+  "remove_phenotype"
 )
 
 class Event(Document):
@@ -66,12 +68,12 @@ class Event(Document):
   link = StringField()
   # All events has to have a category
   category = StringField(choices=('case', 'variant'), required=True)
-                             
+
   # All events will have an author
   author = ReferenceField('User', required=True)
   # Subject is the string that will be displayed after 'display_info'
   subject = StringField(required=True) # case 23 or 1_2343_A_C
-  
+
   verb = StringField(choices=VERBS)
   level = StringField(choices=('global', 'specific'), default='specific')
 
@@ -79,11 +81,11 @@ class Event(Document):
   variant_id = StringField()
   # This is the content of a comment
   content = StringField()
-  
+
   # timestamps
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
-  
+
   @property
   def display_info(self):
     """
@@ -102,11 +104,13 @@ class Event(Document):
       "open_research" : "opened research mode for",
       "mark_causative" : "marked causative for",
       "unmark_causative": "unmarked causative for",
-      "manual_rank": "updated manual rank for"
+      "manual_rank": "updated manual rank for",
+      "add_phenotype": "added HPO term for",
+      "remove_phenotype": "removed HPO term for"
     }
-    
+
     return display_info.get(self.verb, "")
-  
+
   @property
   def is_edited(self):
     """

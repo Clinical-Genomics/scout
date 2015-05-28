@@ -4,13 +4,12 @@ import itertools
 
 from mongoengine import (Document, StringField, ListField, ReferenceField,
                          EmbeddedDocumentField, DateTimeField, BooleanField,
-                         BinaryField, FloatField)
-import query_phenomizer
+                         BinaryField, FloatField, DictField)
 
 from . import STATUS
 from .individual import Individual
 from .gene_list import GeneList
-from scout.models import (User, Variant, PhenotypeTerm)
+from scout.models import PhenotypeTerm
 
 
 class Case(Document):
@@ -41,7 +40,7 @@ class Case(Document):
   default_gene_lists = ListField(StringField())
   clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
   research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
-  dynamic_gene_list = ListField(StringField())
+  dynamic_gene_list = ListField(DictField())
 
   genome_build = StringField()
   genome_version = FloatField()
@@ -64,39 +63,9 @@ class Case(Document):
       return self.status == 'solved'
 
   @property
-  def hpo_genes(self):
-    """
-    Return the list of HGNC symbols that match annotated HPO terms.
-
-    Returns:
-      query_result : A list of dictionaries on the form:
-        {
-            'p_value': float,
-            'gene_id': str,
-            'omim_id': int,
-            'orphanet_id': int,
-            'decipher_id': int,
-            'any_id': int,
-            'mode_of_inheritance':str,
-            'description': str,
-            'raw_line': str
-        }
-    """
-    hpo_terms = [hpo_term.hpo_id for hpo_term in self.phenotype_terms]
-
-    # skip querying Phenomizer unless at least one HPO terms exists
-    if hpo_terms:
-      try:
-        return query_phenomizer.query(hpo_terms)
-      except SystemExit:
-        return {}
-    else:
-      return {}
-
-  @property
   def hpo_gene_ids(self):
     """Parse out all HGNC symbols form the dynamic Phenomizer query."""
-    return [term['gene_id'] for term in self.hpo_genes if term['gene_id']]
+    return [term['gene_id'] for term in self.dynamic_gene_list if term['gene_id']]
 
   @property
   def bam_files(self):

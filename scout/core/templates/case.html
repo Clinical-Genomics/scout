@@ -250,13 +250,13 @@
           {% for hpo_term in case.phenotype_terms %}
             <div class="list-item">
               <div>
-                {{ hpo_term.feature or hpo_term.hpo_id }}
+                {{ hpo_term.feature or hpo_term.phenotype_id }}
               </div>
 
               <form action="{{ url_for('core.case_phenotype',
                                        institute_id=institute.display_name,
                                        case_id=case.display_name,
-                                       phenotype_id=loop.index) }}"
+                                       phenotype_id=hpo_term.phenotype_id) }}"
                     method="POST">
                 <button type="submit" class="md-button-flat">
                   <core-icon icon="highlight-remove"></core-icon>
@@ -369,7 +369,7 @@
       <div class="md-card is-aside">
         <div class="md-card-header">HPO gene list</div>
         <div class="md-card-body-list mod-scrollable-big">
-          {% for hpo_gene in (case.hpo_genes or [])[:10] %}
+          {% for hpo_gene in case.dynamic_gene_list[:10] %}
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
                 {{ hpo_gene.gene_id or 'Unknown' }}

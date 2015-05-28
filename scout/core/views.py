@@ -4,6 +4,7 @@ from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
+import query_phenomizer
 
 from scout.models import Case, Event, PhenotypeTerm, Variant
 from scout.extensions import mail, store
@@ -115,7 +116,7 @@ def open_research(institute_id, case_id):
 
 
 @core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
-@core.route('/<institute_id>/<case_id>/phenotype_terms/<int:phenotype_id>',
+@core.route('/<institute_id>/<case_id>/phenotype_terms/<phenotype_id>',
             methods=['POST'])
 def case_phenotype(institute_id, case_id, phenotype_id=None):
   """Add a new HPO term to the case.
@@ -128,27 +129,48 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 
   if phenotype_id:
     # DELETE a phenotype from the list
-    action_verb = 'removed'
-    hpo_term = case_model.phenotype_terms.pop(phenotype_id - 1).hpo_id
+    store.remove_phenotype(institute, case_model, current_user, case_url, phenotype_id)
 
   else:
     # POST a new phenotype to the list
-    action_verb = 'added'
     hpo_term = request.form['hpo_term']
-    phenotype_term = PhenotypeTerm(hpo_id=hpo_term)
-    if phenotype_term not in case_model.phenotype_terms:
-      # append the new HPO term (ID)
-      case_model.phenotype_terms.append(phenotype_term)
+    store.add_phenotype(institute, case_model, current_user, case_url, hpo_term)
 
-  # create event
-  event = Event(link=case_url, author=current_user.to_dbref(),
-                verb="{verb} HPO term '{term}' for"
-                     .format(verb=action_verb, term=hpo_term),
-                subject=case_model.display_name)
-  case_model.events.append(event)
+  # fetch genes to update dynamic gene list
+  genes = hpo_genes(case_model.phenotype_terms)
+  store.update_dynamic_gene_list(case_model, genes)
 
-  case_model.save()
   return redirect(case_url)
+
+
+def hpo_genes(phenotype_terms):
+  """Return the list of HGNC symbols that match annotated HPO terms.
+
+  Returns:
+    query_result: a list of dictionaries on the form
+      {
+        'p_value': float,
+        'gene_id': str,
+        'omim_id': int,
+        'orphanet_id': int,
+        'decipher_id': int,
+        'any_id': int,
+        'mode_of_inheritance': str,
+        'description': str,
+        'raw_line': str
+      }
+  """
+  hpo_terms = [phenotype_term.phenotype_id for phenotype_term in phenotype_terms]
+
+  # skip querying Phenomizer unless at least one HPO terms exists
+  if hpo_terms:
+    try:
+      results = query_phenomizer.query(hpo_terms)
+      return [result for result in results if result['p_value'] is not None]
+    except SystemExit:
+      return None
+  else:
+    return None
 
 
 def read_lines(iterable):
