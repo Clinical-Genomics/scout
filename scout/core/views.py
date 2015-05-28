@@ -7,7 +7,7 @@ from flask.ext.mail import Message
 
 from scout.models import Case, Event, PhenotypeTerm, Variant
 from scout.extensions import mail, store
-from scout.helpers import templated, get_document_or_404
+from scout.helpers import templated
 
 from .forms import (init_filters_form, SO_TERMS, process_filters_form,
                     GeneListUpload)
@@ -51,6 +51,7 @@ def case(institute_id, case_id):
 
   # fetch a single, specific case from the data store
   case_model = store.case(institute_id, case_id)
+
   case_comments = store.events(institute, case=case_model, comments=True)
   case_events = store.events(institute, case=case_model)
 
@@ -121,32 +122,32 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 
   TODO: validate ID and fetch phenotype description before adding to case.
   """
-  validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   if phenotype_id:
     # DELETE a phenotype from the list
     action_verb = 'removed'
-    hpo_term = case.phenotype_terms.pop(phenotype_id - 1).hpo_id
+    hpo_term = case_model.phenotype_terms.pop(phenotype_id - 1).hpo_id
 
   else:
     # POST a new phenotype to the list
     action_verb = 'added'
     hpo_term = request.form['hpo_term']
     phenotype_term = PhenotypeTerm(hpo_id=hpo_term)
-    if phenotype_term not in case.phenotype_terms:
+    if phenotype_term not in case_model.phenotype_terms:
       # append the new HPO term (ID)
-      case.phenotype_terms.append(phenotype_term)
+      case_model.phenotype_terms.append(phenotype_term)
 
   # create event
   event = Event(link=case_url, author=current_user.to_dbref(),
                 verb="{verb} HPO term '{term}' for"
                      .format(verb=action_verb, term=hpo_term),
-                subject=case.display_name)
-  case.events.append(event)
+                subject=case_model.display_name)
+  case_model.events.append(event)
 
-  case.save()
+  case_model.save()
   return redirect(case_url)
 
 
@@ -191,6 +192,10 @@ def variants(institute_id, case_id, variant_type):
   # fetch all variants for a specific case
   institute = validate_user(current_user, institute_id)
   case_model = store.case(institute_id, case_id)
+
+  if case_model is None:
+    abort(404)
+
   skip = int(request.args.get('skip', 0))
 
   # update case status if currently inactive
@@ -260,9 +265,10 @@ def variant(institute_id, case_id, variant_id):
   case_model = store.case(institute_id, case_id)
   variant_model = store.variant(document_id=variant_id)
 
-  comments = store.events(institute, case=case_model, variant_id=variant_id,
+  comments = store.events(institute, case=case_model,
+                          variant_id=variant_model.variant_id,
                           comments=True)
-  events = store.events(institute, case=case_model, variant_id=variant_id)
+  events = store.events(institute, case=case_model, variant_id=variant_model.variant_id)
 
   prev_variant = store.previous_variant(document_id=variant_id)
   next_variant = store.next_variant(document_id=variant_id)
@@ -292,7 +298,7 @@ def pin_variant(institute_id, case_id, variant_id):
 def unpin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
   institute = validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = store.case(institute_id, case_id)
   variant_model = store.variant(document_id=variant_id)
   link = url_for('.variant', institute_id=institute_id, case_id=case_id,
                  variant_id=variant_id)
@@ -304,31 +310,14 @@ def unpin_variant(institute_id, case_id, variant_id):
             methods=['POST'])
 def mark_causative(institute_id, case_id, variant_id):
   """Mark a variant as confirmed causative."""
-  validate_user(current_user, institute_id)
+  institute = validate_user(current_user, institute_id)
   case_model = store.case(institute_id, case_id)
   variant_model = store.variant(document_id=variant_id)
-  variant_url = url_for('.variant', institute_id=institute_id,
+  link = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
-  # mark the variant as causative in the case model
-  case_model.causative = variant_model
-
-  # add event
-  event = Event(link=variant_url,
-                author=current_user.to_dbref(),
-                verb=("marked a causative variant for case {}:"
-                      .format(case_model.display_name)),
-                subject=variant_id)
-  case_model.events.append(event)
-  variant_model.events.append(event)
-
-  # mark the case as solved
-  case_model.status = 'solved'
-
-  # persist changes
-  case_model.save()
-  variant_model.save()
+  store.mark_causative(institute, case_model, current_user, link, variant_model)
 
   # send the user back to the case the was marked as solved
   return redirect(case_url)
@@ -338,32 +327,14 @@ def mark_causative(institute_id, case_id, variant_id):
 def unmark_causative(institute_id, case_id):
   """Remove a variant as confirmed causative for a case."""
   # very basic security check
-  validate_user(current_user, institute_id)
+  institute = validate_user(current_user, institute_id)
   case_model = store.case(institute_id, case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   # skip the host part of the URL to make it more flexible
-  variant_url = request.referrer.replace(request.host_url, '/')
+  link = request.referrer.replace(request.host_url, '/')
   variant_model = case_model.causative
-
-  # add event
-  event = Event(link=variant_url,
-                author=current_user.to_dbref(),
-                verb=("Removed the causative variant for case {}:"
-                      .format(case_model.display_name)),
-                subject=case_model.causative.document_id)
-  case_model.events.append(event)
-  variant_model.events.append(event)
-
-  # remove the variant as causative in the case model
-  case_model.causative = None
-
-  # mark the case as active again
-  case_model.status = 'active'
-
-  # persist changes
-  case_model.save()
-  variant_model.save()
+  store.unmark_causative(institute, case_model, current_user, link, variant_model)
 
   # send the user back to the case the was marked as solved
   return redirect(request.referrer or case_url)
@@ -427,19 +398,7 @@ def email_sanger(institute_id, case_id, variant_id):
   msg = Message(**kwargs)
   mail.send(msg)
 
-  # add events
-  event_kwargs = dict(
-    link=url_for('.case', institute_id=institute_id, case_id=case_id),
-    author=current_user.to_dbref(),
-    verb="ordered Sanger sequencing for %s" % hgnc_symbol,
-    subject=variant_id,
-  )
-  case_model.events.append(Event(**event_kwargs))
-  case_model.save()
-
-  # add to variant
-  event_kwargs['link'] = variant_url
-  variant_model.events.append(Event(**event_kwargs))
-  variant_model.save()
+  link = url_for('.case', institute_id=institute_id, case_id=case_id)
+  store.order_sanger(institute, case_model, current_user, link, variant_model)
 
   return redirect(variant_url)

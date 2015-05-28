@@ -430,11 +430,12 @@
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
                     <strong>{{ comment.author.name }}</strong>
-                    {{ comment.verb }}
-                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
                     <span class="timestamp">
                       {{ comment.created_at|human_date }}
                     </span>
+                    {% if comment.level == 'global' %}
+                      <small><span class="md-badge--low">GLOBAL</span></small>
+                    {% endif %}
                   </div>
 
                   {% if comment.author.id == current_user.id %}
@@ -445,7 +446,7 @@
                                              institute_id=institute_id,
                                              case_id=case_id,
                                              event_id=comment.id) }}"
-                          method="DELETE">
+                          method="POST">
                       <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" icon="highlight-remove"></core-icon>
                       <button id="{{ form_id }}" class="is-hidden"></button>
                     </form>
@@ -476,7 +477,7 @@
                   action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}"
                   method="POST">
               <input type="hidden" name="link"
-                     value="{{ url_for('core.case', institute_id="", case_id="") }}">
+                     value="{{ url_for('core.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">
               <textarea class="comment-box-input" name="content" placeholder="Write comment..."></textarea>
               <div class="comment-box-toolbar">
                 <div class="comment-box-toolbar-setting">

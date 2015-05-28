@@ -773,10 +773,30 @@ class MongoAdapter(BaseAdapter):
       variant (Variant): A variant object
 
     """
-    self.logger.info("Creating event for marking variant {0} causative".format(
-      variant.display_name
-    ))
+    # mark the variant as causative in the case model
+    case.causative = variant
 
+    # mark the case as solved
+    case.status = 'solved'
+
+    # persist changes
+    case.save()
+
+    self.logger.info("Creating case event for marking {0} causative"
+                     .format(variant.display_name))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='mark_causative',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    self.logger.info("Creating variant event for marking {0} causative"
+                     .format(case.display_name))
     self.create_event(
       institute=institute,
       case=case,
@@ -802,9 +822,27 @@ class MongoAdapter(BaseAdapter):
       variant (Variant): A variant object
 
     """
-    self.logger.info("Creating event for unmarking variant {0} causative".format(
-      variant.display_name
-    ))
+    # remove the variant as causative in the case model
+    case.causative = None
+
+    # mark the case as active again
+    case.status = 'active'
+
+    # persist changes
+    case.save()
+
+    self.logger.info("Creating events for unmarking variant {0} causative"
+                     .format(variant.display_name))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='unmark_causative',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
 
     self.create_event(
       institute=institute,

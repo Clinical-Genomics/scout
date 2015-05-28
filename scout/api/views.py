@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import itertools
 
 from bson.json_util import dumps
 from flask import Blueprint, jsonify, Response, request, redirect, url_for
@@ -10,8 +9,6 @@ import markdown as md
 from scout.core.utils import validate_user
 from ..models.case import STATUS as STATUS_ORDER
 from ..extensions import omim, store
-from ..models import Institute, Case, Event
-from ..helpers import get_document_or_404
 
 TERMS_MAP = {
   'Autosomal recessive': 'AR',
@@ -27,7 +24,6 @@ TERMS_BLACKLIST = [
 # markdown to HTML converter object
 # can't use Flask-Markdown object since it doesn't support ``init_app``
 mkd = md.Markdown()
-
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 
 
@@ -77,8 +73,7 @@ def cases(institute_id):
   Returns:
     Response: jsonified MongoDB objects as a list
   """
-  institute = Institute.objects.get(display_name=institute_id)
-
+  institute = validate_user(current_user, institute_id)
   case_models = store.cases(collaborator=institute_id)
   non_archived = (case for case in case_models if case.status != 'archived')
   case_models_sorted = sorted(non_archived,
@@ -91,17 +86,12 @@ def cases(institute_id):
 @api.route('/<institute_id>/<case_id>/status', methods=['POST'])
 def case_status(institute_id, case_id):
   """Update status of a specific case."""
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  case.status = request.form.get('status', case.status)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
 
-  event = Event(
-    link=url_for('core.case', institute_id=institute_id, case_id=case_id),
-    author=current_user.to_dbref(),
-    verb="updated the status to '{}' for".format(case.status),
-    subject=case.display_name,
-  )
-  case.events.append(event)
-  case.save()
+  status = request.form.get('status', case_model.status)
+  link = url_for('core.case', institute_id=institute_id, case_id=case_id)
+  store.update_status(institute, case_model, current_user, status, link)
 
   return redirect(request.referrer)
 
@@ -109,23 +99,17 @@ def case_status(institute_id, case_id):
 @api.route('/<institute_id>/<case_id>/synopsis', methods=['PUT'])
 def case_synopsis(institute_id, case_id):
   """Update (PUT) synopsis of a specific case."""
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  new_synopsis = request.json.get('synopsis', case.synopsis)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
+  new_synopsis = request.json.get('synopsis', case_model.synopsis)
 
-  if case.synopsis != new_synopsis:
+  if case_model.synopsis != new_synopsis:
     # create event only if synopsis was actually changed
-    event = Event(
-      link=url_for('core.case', institute_id=institute_id, case_id=case_id),
-      author=current_user.to_dbref(),
-      verb='edited synopsis for',
-      subject=case.display_name,
-    )
-    case.events.append(event)
+    link = url_for('core.case', institute_id=institute_id, case_id=case_id)
+    store.update_synopsis(institute, case_model, current_user, link,
+                          content=new_synopsis)
 
-  case.synopsis = new_synopsis
-  case.save()
-
-  return jsonify(synopsis=case.synopsis, ok=True)
+  return jsonify(synopsis=case_model.synopsis, ok=True)
 
 
 @api.route('/markdown', methods=['POST'])
@@ -145,44 +129,10 @@ def markdown():
   return jsonify(html=html_string)
 
 
-@api.route('/<institute_id>/<case_id>/event', methods=['POST'])
-def event(institute_id, case_id):
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-
-  if request.method == 'POST':
-
-    event_document = Event(
-      content=request.form.get('content'),
-      link=request.form.get('link'),
-      author=current_user.to_dbref(),
-      verb=request.form.get('verb'),
-      subject=request.form.get('subject'),
-    )
-
-    case.events.append(event_document)
-
-  # persist changes
-  case.save()
-
-  if request.args.get('json'):
-    case_json = dumps(case.to_mongo())
-    return Response(case_json, mimetype='application/json; charset=utf-8')
-
-  else:
-    return redirect(request.referrer)
-
-
-@api.route('/<institute_id>/<case_id>/events/<event_id>', methods=['POST'])
-def delete_event(institute_id, case_id, event_id=None):
-  validate_user(current_user, institute_id)
-  store.delete_event(event_id)
-  return redirect(request.referrer)
-
-
 @api.route('/<institute_id>/<case_id>/events', methods=['POST'])
 def create_event(institute_id, case_id):
   institute = validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = store.case(institute_id, case_id)
 
   link = request.form.get('link')
   content = request.form.get('content')
@@ -202,60 +152,26 @@ def create_event(institute_id, case_id):
   return redirect(request.referrer)
 
 
-@api.route('/<institute_id>/<case_id>/<variant_id>/event', methods=['POST'])
-@api.route('/<institute_id>/<case_id>/<variant_id>/event/<int:event_id>',
-           methods=['GET'])
-def variant_event(institute_id, case_id, variant_id, event_id=None):
-  """For now this route only handles variant comments."""
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  variant = store.variant(document_id=variant_id)
-
-  if request.method == 'POST':
-
-    event = Event(
-      title=request.form.get('title'),
-      content=request.form.get('content'),
-      link=request.form.get('link'),
-      author=current_user.to_dbref(),
-      verb=request.form.get('verb'),
-      subject=request.form.get('subject'),
-    )
-
-    variant.comments.append(event)
-
-  elif request.method == 'GET':  # TODO: make this work with DELETE!
-    # remove event by index, expects list to be reversed in template
-    variant.comments.pop(-event_id)
-
-  # persist changes
-  variant.save()
-
-  if request.args.get('json'):
-    document_json = dumps(variant.to_mongo())
-    return Response(document_json, mimetype='application/json; charset=utf-8')
-
-  else:
-    return redirect(request.referrer)
+@api.route('/<institute_id>/<case_id>/events/<event_id>', methods=['POST'])
+def delete_event(institute_id, case_id, event_id=None):
+  validate_user(current_user, institute_id)
+  store.delete_event(event_id)
+  return redirect(request.referrer)
 
 
 @api.route('/<institute_id>/<case_id>/variants/<variant_id>/manual_rank',
            methods=['PUT'])
 def manual_rank(institute_id, case_id, variant_id):
   """Update the manual variant rank for a variant."""
-  variant = store.variant(document_id=variant_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
+  variant_model = store.variant(document_id=variant_id)
 
   # update the manual rank
   new_manual_rank = int(request.json.get('manual_rank'))
-  variant.manual_rank = new_manual_rank
+  link = request.referrer
 
-  # log action event
-  variant.events.append(Event(
-    link=request.referrer,
-    author=current_user.to_dbref(),
-    verb="updated manual rank to {} for".format(new_manual_rank),
-    subject=variant.display_name,
-  ))
+  store.update_manual_rank(institute, case_model, current_user, link,
+                           variant_model, new_manual_rank)
 
-  variant.save()
-
-  return jsonify(manual_rank=variant.manual_rank, ok=True)
+  return jsonify(manual_rank=variant_model.manual_rank, ok=True)
