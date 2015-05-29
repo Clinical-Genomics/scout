@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - add variant number threshold and rank score threshold to load function
 - add event methods to mongo adapter
 - add tests for models
+- show badge "old" if comment was written for a previous analysis
 
 ### Changed
 - show cDNA change in transcript summary unless variant is exonic

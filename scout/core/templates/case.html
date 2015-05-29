@@ -286,6 +286,9 @@
                     <span class="timestamp">
                       {{ comment.created_at|human_date }}
                     </span>
+                    {% if comment.created_at < case.updated_at %}
+                      <small><span class="md-badge--warning">OLD</span></small>
+                    {% endif %}
                   </div>
 
                   {% if comment.author.id == current_user.id %}

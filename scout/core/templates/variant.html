@@ -436,6 +436,9 @@
                     {% if comment.level == 'global' %}
                       <small><span class="md-badge--low">GLOBAL</span></small>
                     {% endif %}
+                    {% if comment.created_at < case.updated_at %}
+                      <small><span class="md-badge--warning">OLD</span></small>
+                    {% endif %}
                   </div>
 
                   {% if comment.author.id == current_user.id %}
