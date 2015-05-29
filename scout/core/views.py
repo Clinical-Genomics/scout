@@ -258,6 +258,8 @@ def variants(institute_id, case_id, variant_type):
 
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
+  # add variant type to query
+  form.data['variant_type'] = variant_type
 
   # fetch list of variants
   variant_models = store.variants(case_model.case_id, query=form.data,

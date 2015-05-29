@@ -585,8 +585,6 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Setting is_research to 'True' in case {0}".format(
       case.display_name
     ))
-    case.is_research = True
-    case.save()
     self.logger.debug("Case updated")
 
     return
