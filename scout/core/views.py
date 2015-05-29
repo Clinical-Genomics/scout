@@ -110,7 +110,7 @@ def open_research(institute_id, case_id):
   mail.send(msg)
 
   link = url_for('.case', institute_id=institute_id, case_id=case_id)
-  store.open_research(institute, case, current_user, link)
+  store.open_research(institute, case_model, current_user, link)
 
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
