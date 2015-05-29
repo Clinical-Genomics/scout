@@ -12,19 +12,14 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
 from __future__ import (absolute_import, unicode_literals, print_function)
-
-import sys
-import os
-
-import io
 import json
 import click
 import logging
-from mongoengine import connect, DoesNotExist, Q
+from mongoengine import connect, DoesNotExist
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
-from scout.models import (Variant, Compound, Case, Event)
+from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm)
 
 from pprint import pprint as pp
 
@@ -51,17 +46,20 @@ class MongoAdapter(BaseAdapter):
   def __init__(self, app=None):
 
     self.logger = logging.getLogger(__name__)
-    
+
     if app:
       self.logger.info("Initializing app")
       self.init_app(app)
-    
-    
+
+    self.logger = logging.getLogger(__name__)
     # combine path to the local development fixtures
     # self.config_object = ConfigParser(config_file)
 
+  def institute(self, institute_id):
+    """Fetch an Institute from the  database."""
+    return Institute.objects.get(internal_id=institute_id)
 
-  def cases(self, collaborator = None):
+  def cases(self, collaborator=None):
     self.logger.info("Fetch all cases")
     if collaborator:
       self.logger.info("Use collaborator {0}".format(collaborator))
@@ -69,14 +67,51 @@ class MongoAdapter(BaseAdapter):
     else:
       return Case.objects().order_by('-updated_at')
 
-  def case(self, case_id):
+  def case(self, institute_id, case_id):
     self.logger.info("Fetch case {0}".format(case_id))
     try:
-      return Case.objects(case_id=case_id)
+      return Case.objects.get(owner=institute_id, display_name=case_id)
     except DoesNotExist:
       self.logger.warning("Could not find case {0}".format(case_id))
       return None
 
+  def events(self, institute, case=None, variant_id=None, level=None,
+             comments=False):
+    """Fetch events from the database.
+
+    Args:
+      case (Case, optional): case object
+      variant_id (str, optional): global variant id
+      level (str, optional): restrict comments to 'specific' or 'global'
+      comments (bool, optional): restrict events to include only comments
+
+    Returns:
+      list: filtered query returning matching events
+    """
+    filters = {'case': case, 'institute': institute}
+
+    if variant_id:
+      # restrict to only variant events
+      filters['variant_id'] = variant_id
+      filters['category'] = 'variant'
+
+      if level:
+        # filter on specific/global (implicit: only comments)
+        filters['level'] = level
+
+        if level == 'global':
+          # don't restrict to case
+          del filters['case']
+
+    else:
+      # restrict to case events
+      filters['category'] = 'case'
+
+    if comments:
+      # restrict events to only comments
+      filters['verb'] = 'comment'
+
+    return Event.objects(**filters)
 
   def build_query(self, case_id, query=None, variant_ids=None):
     """
@@ -284,25 +319,23 @@ class MongoAdapter(BaseAdapter):
   def update_dynamic_gene_list(self, case, gene_list):
     """
     Update the dynamic gene list for a case
-    
+
     Arguments:
       case (Case): The case that should be updated
       gene_list (list): The list of genes that should be added
-    
+
     """
-    self.logger.info("Updating the dynamic gene list for case {0} to {1}".format(
-      case.display_name, ', '.join(gene_list)
-    ))
+    self.logger.info("Updating the dynamic gene list for case %s", case.display_name)
     case.dynamic_gene_list = gene_list
     case.save()
     self.logger.debug("Case updated")
 
     return
-    
+
   def delete_event(self, event_id):
     """
     Delete a event
-    
+
     Arguments:
       event_id (str): The database key for the event
     """
@@ -314,11 +347,11 @@ class MongoAdapter(BaseAdapter):
       event_id
       ))
 
-  def create_event(self, institute, case, user, link, category, verb, 
-                  subject, level='specific', variant_id="", content=""):
+  def create_event(self, institute, case, user, link, category, verb,
+                   subject, level='specific', variant_id="", content=""):
     """
     Create an Event with the parameters given.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): A Case object
@@ -330,7 +363,7 @@ class MongoAdapter(BaseAdapter):
       level (str): 'specific' or 'global'. Default is 'specific'
       variant (Variant): A variant object
       content (str): The content of the comment
-    
+
     """
     event = Event(
       institute=institute,
@@ -348,16 +381,16 @@ class MongoAdapter(BaseAdapter):
     self.logger.debug("Saving Event")
     event.save()
     self.logger.debug("Event Saved")
-    
+
     return
 
   def assign(self, institute, case, user, link):
     """
     Assign a user to a case.
-    
+
     This function will create an Event to log that a person has been assigned
     to a case. Also the "assignee" on the case will be updated.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
@@ -367,7 +400,7 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Creating event for assigning {0} to {1}".format(
       user.name, case.display_name
     ))
-    
+
     self.create_event(
       institute=institute,
       case=case,
@@ -380,19 +413,19 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Updating {0} to be assigned with {1}".format(
       case.display_name, user.name
     ))
-    case.assignee = user
+    case.assignee = user.to_dbref()
     case.save()
     self.logger.debug("Case updated")
-    
+
     return
 
   def unassign(self, institute, case, user, link):
     """
     Unassign a user from a case.
-    
+
     This function will create an Event to log that a person has been unassigned
     from a case. Also the "assignee" on the case will be updated.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): A Case object
@@ -411,32 +444,31 @@ class MongoAdapter(BaseAdapter):
       verb='unassign',
       subject=case.display_name
     )
-    
+
     self.logger.info("Updating {0} to be unassigned with {1}".format(
       case.display_name, user.display_name
     ))
     case.assignee = None
     case.save()
     self.logger.debug("Case updated")
-    
+
     return
 
   def update_status(self, institute, case, user, status, link):
     """
     Update the status of a case.
-    
+
     This function will create an Event to log that a user have updated the
     status of a case. Also the status of the case will be updated.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): A Case object
       user (User): A User object
       status (str): The new status of the case
       link (str): The url to be used in the event
-    
+
     """
-    
     self.logger.info("Creating event for updating status of {0} to {1}".format(
       case.display_name, status
     ))
@@ -449,34 +481,32 @@ class MongoAdapter(BaseAdapter):
       verb='status',
       subject=case.display_name
     )
-    
-    self.logger.info("Updating {0} to status {1}".format(
-      case.display_name, status
-    ))
+
+    self.logger.info("Updating {0} to status {1}".format(case.display_name, status))
     case.status = status
     case.save()
     self.logger.debug("Case updated")
-    
+
     return
-  
+
   def update_synopsis(self, institute, case, user, link, content=""):
     """
     Create an Event for updating the synopsis for a case.
-    
+
     This function will create an Event and update the synopsis for a case.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): A Case object
       user (User): A User object
       link (str): The url to be used in the event
       content (str): The content for what should be added to the synopsis
-      
+
     """
     self.logger.info("Creating event for updating the synopsis for case {0}".format(
       case.display_name
     ))
-    
+
     self.create_event(
       institute=institute,
       case=case,
@@ -487,26 +517,26 @@ class MongoAdapter(BaseAdapter):
       subject=case.display_name,
       content=content
     )
-    
+
     self.logger.info("Updating the synopsis for case {0}".format(
       case.display_name
     ))
     case.synopsis = content
     case.save()
     self.logger.debug("Case updated")
-    
+
     return
 
   def archive_case(self, institute, case, user, link):
     """
     Create an event for archiving a case.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
-      
+
     """
     self.logger.info("Creating event for archiving case {0}".format(
       case.display_name
@@ -533,13 +563,13 @@ class MongoAdapter(BaseAdapter):
   def open_research(self, institute, case, user, link):
     """
     Create an event for opening the research list a case.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
-      
+
     """
     self.logger.info("Creating event for opening research for case"\
                     " {0}".format(case.display_name))
@@ -558,21 +588,59 @@ class MongoAdapter(BaseAdapter):
     case.is_research = True
     case.save()
     self.logger.debug("Case updated")
-    
+
     return
 
+  def add_phenotype(self, institute, case, user, link, phenotype_id):
+    """Add a new HPO phenotype to a case."""
+    phenotype_term = PhenotypeTerm(phenotype_id=phenotype_id)
+    self.logger.info("Adding new HPO term to case %s", case.display_name)
+    # append the new HPO term (ID)
+    case.phenotype_terms.append(phenotype_term)
+
+    case.save()
+    self.logger.debug("Case updated")
+
+    self.logger.info("Creating event for adding phenotype term for case %s",
+                     case.display_name)
+    self.create_event(institute=institute, case=case, user=user, link=link,
+                      category='case', verb='add_phenotype',
+                      subject=case.display_name,)
+
+    return
+
+  def remove_phenotype(self, institute, case, user, link, phenotype_id):
+    """Remove an existing HPO phenotype from a case."""
+    self.logger.info("Removing HPO term from case %s", case.display_name)
+
+    # remove the new HPO term (ID)
+    for phenotype in case.phenotype_terms:
+      if phenotype.phenotype_id == phenotype_id:
+        case.phenotype_terms.remove(phenotype)
+        break
+
+    case.save()
+    self.logger.debug("Case updated")
+
+    self.logger.info("Creating event for removing phenotype term from case %s",
+                     case.display_name)
+    self.create_event(institute=institute, case=case, user=user, link=link,
+                      category='case', verb='remove_phenotype',
+                      subject=case.display_name)
+
+    return
 
   def comment(self, institute, case, user, link, variant=None,
               content="", comment_level="specific"):
     """
     Add a comment to a variant or a case.
-    
+
     This function will create an Event to log that a user have commented on
     a variant. If a variant id is given it will be a variant comment.
     A variant comment can be 'global' or specific. The global comments will be
     shown for this variation in all cases while the specific comments will only
     be shown for a specific case.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): A Case object
@@ -582,12 +650,12 @@ class MongoAdapter(BaseAdapter):
       content (str): The content of the comment
       comment_level (str): Any one of 'specific' or 'global'.
                            Default is 'specific'
-    
+
     """
     if variant:
       self.logger.info("Creating event for a {0} comment on variant {1}".format(
         comment_level, variant.display_name
-      )) 
+      ))
       self.create_event(
         institute=institute,
         case=case,
@@ -604,7 +672,7 @@ class MongoAdapter(BaseAdapter):
     else:
       self.logger.info("Creating event for a comment on case {0}".format(
         case.display_name
-      )) 
+      ))
 
       self.create_event(
         institute=institute,
@@ -616,24 +684,29 @@ class MongoAdapter(BaseAdapter):
         subject=case.display_name,
         content=content
       )
-    
+
     return
 
   def pin_variant(self, institute, case, user, link, variant):
     """
     Create an event for pinning a variant.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
       variant (Variant): A variant object
-      
+
     """
     self.logger.info("Creating event for pinning variant {0}".format(
       variant.display_name
     ))
+
+    # add variant to list of pinned references in the case model
+    case.suspects.append(variant)
+    case.save()
+
     self.create_event(
       institute=institute,
       case=case,
@@ -650,18 +723,23 @@ class MongoAdapter(BaseAdapter):
   def unpin_variant(self, institute, case, user, link, variant):
     """
     Create an event for unpinning a variant.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
       variant (Variant): A variant object
-      
+
     """
     self.logger.info("Creating event for unpinning variant {0}".format(
       variant.display_name
     ))
+
+    # remove variant from list of references in the case model
+    case.suspects.remove(variant)
+    case.save()
+
     self.create_event(
       institute=institute,
       case=case,
@@ -678,14 +756,14 @@ class MongoAdapter(BaseAdapter):
   def order_sanger(self, institute, case, user, link, variant):
     """
     Create an event for order sanger for a variant.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
       variant (Variant): A variant object
-      
+
     """
     self.logger.info("Creating event for ordering sanger for variant {0}".format(
       variant.display_name
@@ -720,19 +798,39 @@ class MongoAdapter(BaseAdapter):
   def mark_causative(self, institute, case, user, link, variant):
     """
     Create an event for marking a variant causative.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
       variant (Variant): A variant object
-      
+
     """
-    self.logger.info("Creating event for marking variant {0} causative".format(
-      variant.display_name
-    ))
-    
+    # mark the variant as causative in the case model
+    case.causative = variant
+
+    # mark the case as solved
+    case.status = 'solved'
+
+    # persist changes
+    case.save()
+
+    self.logger.info("Creating case event for marking {0} causative"
+                     .format(variant.display_name))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='mark_causative',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
+    self.logger.info("Creating variant event for marking {0} causative"
+                     .format(case.display_name))
     self.create_event(
       institute=institute,
       case=case,
@@ -749,19 +847,37 @@ class MongoAdapter(BaseAdapter):
   def unmark_causative(self, institute, case, user, link, variant):
     """
     Create an event for unmarking a variant causative.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
       user (User): A User object
       link (str): The url to be used in the event
       variant (Variant): A variant object
-      
+
     """
-    self.logger.info("Creating event for unmarking variant {0} causative".format(
-      variant.display_name
-    ))
-    
+    # remove the variant as causative in the case model
+    case.causative = None
+
+    # mark the case as active again
+    case.status = 'active'
+
+    # persist changes
+    case.save()
+
+    self.logger.info("Creating events for unmarking variant {0} causative"
+                     .format(variant.display_name))
+    self.create_event(
+      institute=institute,
+      case=case,
+      user=user,
+      link=link,
+      category='case',
+      verb='unmark_causative',
+      variant_id=variant.variant_id,
+      subject=variant.display_name,
+    )
+
     self.create_event(
       institute=institute,
       case=case,
@@ -779,7 +895,7 @@ class MongoAdapter(BaseAdapter):
     """
     Create an event for updating the manual rank of a variant.
     This function will create a event and update the manual rank of the variant.
-    
+
     Arguments:
       institute (Institute): A Institute object
       case (Case): Case object
@@ -787,11 +903,11 @@ class MongoAdapter(BaseAdapter):
       link (str): The url to be used in the event
       variant (Variant): A variant object
       manual_rank (int): The new manual rank
-      
+
     """
     self.logger.info("Creating event for updating the manual rank for variant"\
       " {0}".format(variant.display_name))
-    
+
     self.create_event(
       institute=institute,
       case=case,
@@ -808,7 +924,7 @@ class MongoAdapter(BaseAdapter):
     variant.manual_rank = manual_rank
     variant.save()
     self.logger.debug("Variant updated")
-    
+
 
     return
 

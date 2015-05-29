@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - add variant number threshold and rank score threshold to load function
 - add event methods to mongo adapter
 - add tests for models
+- show badge "old" if comment was written for a previous analysis
 
 ### Changed
 - show cDNA change in transcript summary unless variant is exonic
@@ -19,7 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - show dates for case uploads in ISO format
 - moved variant comments higher up on page
 - updated documentation for pages
-- read in coverage report as blob in database
+- read in coverage report as blob in database and serve directly
 - change ``OmimPhenotype`` to ``PhenotypeTerm``
 - reorganize models sub-package
 - move events (and comments) to separate collection

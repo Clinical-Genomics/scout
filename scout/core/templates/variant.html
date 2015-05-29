@@ -304,7 +304,7 @@
 
     <div id="important-data" class="variant-segments-row">
 
-      <div id="frequency" class="md-card">
+      <div id="frequency" class="md-card is-main">
         <div class="md-card-header">Frequency</div>
         <div class="md-card-body-list">
           <div class="variant-list-item">
@@ -321,6 +321,42 @@
                 {{ variant.exac_frequency|human_decimal }}
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="severities+conservation" class="md-card">
+        <div class="md-card-header">Severity</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>Sift</div>
+            <div>{{ variant.sift_predictions|join(', ') }}</div>
+          </div>
+          <div class="variant-list-item">
+            <div>
+              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview" target="_blank">
+                Polyphen
+              </a>
+            </div>
+            <div>{{ variant.polyphen_predictions|join(', ') }}</div>
+          </div>
+        </div>
+
+        <div class="md-card-header">Conservation</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>PHAST</div>
+            <div>{{ variant.phast_conservation|join(', ') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>GERP</div>
+            <div>{{ variant.gerp_conservation|join(', ') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>phyloP</div>
+            <div>{{ variant.phylop_conservation|join(', ') or '-' }}</div>
           </div>
         </div>
       </div>
@@ -368,7 +404,7 @@
                   <td>{{ gene.hgnc_symbol }}</td>
                   <td>
                     <a href="{{ phenotype.omim_link }}" target="_blank">
-                      {{ phenotype.omim_id }}
+                      {{ phenotype.phenotype_id }}
                     </a>
                   </td>
                   <td>{{ phenotype.disease_models|sort|join(', ') }}</td>
@@ -385,68 +421,35 @@
     </div>
 
     <div id="details" class="variant-segments-row">
-      <div id="severities+conservation" class="md-card is-aside">
-        <div class="md-card-header">Severity</div>
-        <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>Sift</div>
-            <div>{{ variant.sift_predictions|join(', ') }}</div>
-          </div>
-          <div class="variant-list-item">
-            <div>
-              <a href="http://genetics.bwh.harvard.edu/pph2/dokuwiki/overview" target="_blank">
-                Polyphen
-              </a>
-            </div>
-            <div>{{ variant.polyphen_predictions|join(', ') }}</div>
-          </div>
-        </div>
-
-        <div class="md-card-header">Conservation</div>
-        <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>PHAST</div>
-            <div>{{ variant.phast_conservation|join(', ') or '-' }}</div>
-          </div>
-
-          <div class="variant-list-item">
-            <div>GERP</div>
-            <div>{{ variant.gerp_conservation|join(', ') or '-' }}</div>
-          </div>
-
-          <div class="variant-list-item">
-            <div>phyloP</div>
-            <div>{{ variant.phylop_conservation|join(', ') or '-' }}</div>
-          </div>
-        </div>
-      </div>
-
       <div id="comments" class="md-card is-main">
         <div class="md-card-header">Comments</div>
-        <div class="md-card-body-list mod-scrollable">
+        <div class="md-card-body-list">
           <div class="activity-feed">
-            {% for comment in variant.comments|reverse %}
+            {% for comment in comments|reverse %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
                     <strong>{{ comment.author.name }}</strong>
-                    {{ comment.verb }}
-                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
                     <span class="timestamp">
                       {{ comment.created_at|human_date }}
                     </span>
+                    {% if comment.level == 'global' %}
+                      <small><span class="md-badge--low">GLOBAL</span></small>
+                    {% endif %}
+                    {% if comment.created_at < case.updated_at %}
+                      <small><span class="md-badge--warning">OLD</span></small>
+                    {% endif %}
                   </div>
 
                   {% if comment.author.id == current_user.id %}
                     {% set form_id = 'delete-comment-%s' % loop.index %}
                     <form class="activity-feed-delete"
                           accept-charset="UTF-8"
-                          action="{{ url_for('api.variant_event',
+                          action="{{ url_for('api.delete_event',
                                              institute_id=institute_id,
                                              case_id=case_id,
-                                             variant_id=variant_id,
-                                             event_id=loop.index) }}"
-                          method="DELETE">
+                                             event_id=comment.id) }}"
+                          method="POST">
                       <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" icon="highlight-remove"></core-icon>
                       <button id="{{ form_id }}" class="is-hidden"></button>
                     </form>
@@ -470,32 +473,29 @@
         </div>
       </div>
 
-      <form id="comment-box"
-            class="md-card is-aside"
-            accept-charset="UTF-8"
-            method="POST"
-            action="{{ url_for('api.variant_event',
-                            institute_id=institute_id,
-                            case_id=case_id,
-                            variant_id=variant_id) }}">
+      <div id="comment-box" class="md-card is-aside">
         <div class="md-card-body--padded">
-          <input type="hidden"
-                 name="link"
-                 value="{{ url_for('core.variant',
-                                    institute_id=institute_id,
-                                    case_id=case_id,
-                                    variant_id=variant_id) }}">
-          <input type="hidden" name="verb" value="commented on">
-          <input type="hidden"
-                 name="subject"
-                 value="{{ variant.display_name }}">
-          <textarea name="content"
-                    placeholder="Leave a comment"></textarea>
+          <div class="feed-toolbar">
+            <form class="comment-box"
+                  action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}"
+                  method="POST">
+              <input type="hidden" name="link"
+                     value="{{ url_for('core.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">
+              <textarea class="comment-box-input" name="content" placeholder="Leave a comment"></textarea>
+              <div class="comment-box-toolbar">
+                <div class="comment-box-toolbar-setting">
+                  <input name="level" type="checkbox" value="global">
+                  <label for="level">Comment globally</label>
+                </div>
+
+                <div class="comment-box-toolbar-action">
+                  <button class="md-button" type="submit">Comment</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="md-card-footer">
-          <button class="md-button-flat" type="submit">Comment</button>
-        </div>
-      </form>
+      </div>
     </div>
 
     <div id="gt-call" class="variant-segments-row">
@@ -757,7 +757,7 @@
       <div class="md-card">
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
-          {{ activity_feed(variant.events|reverse, context='variant') }}
+          {{ activity_feed(events|reverse, context='variant') }}
         </div>
       </div>
     </div>

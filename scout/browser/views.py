@@ -2,8 +2,7 @@
 from flask import abort, Blueprint, jsonify, redirect, request
 
 from ..extensions import store
-from ..helpers import get_document_or_404, send_file_partial
-from ..models import Case
+from ..helpers import send_file_partial
 from .utils import build_igv_url
 
 browser = Blueprint('browser', __name__, template_folder='templates')
@@ -26,7 +25,7 @@ def remote_static(path):
 @browser.route('/<institute_id>/<case_id>/<variant_id>/igv.xml')
 def igv_init(institute_id, case_id, variant_id):
   """Redicect user to start an IGV session based on a variant."""
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = store.case(institute_id, case_id)
   variant = store.variant(document_id=variant_id)
 
   # sanity check to see if there's any reason to launch IGV

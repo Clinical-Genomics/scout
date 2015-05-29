@@ -101,7 +101,7 @@
     </div>
   {% endif %}
 
-  <a href="{{ url_for('browser.remote_static', path=(case.coverage_report_path or '')[1:]) }}" class="md-label" target="_blank">
+  <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>
@@ -250,13 +250,13 @@
           {% for hpo_term in case.phenotype_terms %}
             <div class="list-item">
               <div>
-                {{ hpo_term.feature or hpo_term.hpo_id }}
+                {{ hpo_term.feature or hpo_term.phenotype_id }}
               </div>
 
               <form action="{{ url_for('core.case_phenotype',
                                        institute_id=institute.display_name,
                                        case_id=case.display_name,
-                                       phenotype_id=loop.index) }}"
+                                       phenotype_id=hpo_term.phenotype_id) }}"
                     method="POST">
                 <button type="submit" class="md-button-flat">
                   <core-icon icon="highlight-remove"></core-icon>
@@ -278,27 +278,28 @@
         <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
           <div class="activity-feed">
-            {% for comment in case.comments|reverse %}
+            {% for comment in case_comments|reverse %}
               <div class="activity-feed-item">
                 <div class="activity-feed-item-event">
                   <div class="activity-feed-item-event-body">
                     <strong>{{ comment.author.name }}</strong>
-                    {{ comment.verb }}
-                    <a href="{{ comment.link }}">{{ comment.subject }}</a>
                     <span class="timestamp">
                       {{ comment.created_at|human_date }}
                     </span>
+                    {% if comment.created_at < case.updated_at %}
+                      <small><span class="md-badge--warning">OLD</span></small>
+                    {% endif %}
                   </div>
 
                   {% if comment.author.id == current_user.id %}
                     {% set form_id = 'delete-comment-%s' % loop.index %}
                     <form class="activity-feed-delete"
                           accept-charset="UTF-8"
-                          action="{{ url_for('api.comment',
+                          action="{{ url_for('api.delete_event',
                                              institute_id=institute.display_name,
                                              case_id=case.display_name,
-                                             comment_id=loop.index) }}"
-                          method="DELETE">
+                                             event_id=comment.id) }}"
+                          method="POST">
                       <core-icon icon="highlight-remove"
                         class="activity-feed-delete-button"
                         onclick="document.querySelector('#{{ form_id }}').click();">
@@ -323,29 +324,24 @@
         </div>
       </div>
 
-      <form class="md-card is-aside"
-            accept-charset="UTF-8"
-            method="POST"
-            action="{{ url_for('api.comment',
-                               institute_id=institute.display_name,
-                               case_id=case.display_name) }}">
+      <div class="md-card is-aside">
         <div class="md-card-body--padded">
-          <input type="hidden"
-                 name="link"
-                 value="{{ url_for('core.case',
-                                   institute_id=institute.display_name,
-                                   case_id=case.display_name) }}">
-          <input type="hidden" name="verb" value="commented on">
-          <input type="hidden"
-                 name="subject"
-                 value="{{ case.display_name }}">
-          <textarea name="content"
-                    placeholder="Leave a comment"></textarea>
+          <div class="feed-toolbar">
+            <form class="comment-box"
+                  action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id) }}"
+                  method="POST">
+              <input type="hidden" name="link"
+                     value="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+              <textarea class="comment-box-input" name="content" placeholder="Leave a comment"></textarea>
+              <div class="comment-box-toolbar">
+                <div class="comment-box-toolbar-action">
+                  <button class="md-button" type="submit">Comment</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="md-card-footer">
-          <button class="md-button-flat" type="submit">Comment</button>
-        </div>
-      </form>
+      </div>
     </div>
 
     <div id="gene-lists+hpo-genes" class="case-segment-row">
@@ -376,7 +372,7 @@
       <div class="md-card is-aside">
         <div class="md-card-header">HPO gene list</div>
         <div class="md-card-body-list mod-scrollable-big">
-          {% for hpo_gene in (case.hpo_genes or [])[:10] %}
+          {% for hpo_gene in case.dynamic_gene_list[:10] %}
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
                 {{ hpo_gene.gene_id or 'Unknown' }}
@@ -395,7 +391,7 @@
       <div id="case-activity" class="md-card">
         <div class="md-card-header">Activity</div>
         <div class="md-card-body-list">
-          {{ activity_feed(case.events|reverse) }}
+          {{ activity_feed(case_events|reverse) }}
         </div>
       </div>
     </div>

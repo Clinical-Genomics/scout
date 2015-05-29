@@ -127,11 +127,12 @@
 
           <div class="list-item">
             <a class="md-button"
-               href="{{ url_for('core.hpo_gene_list_redirect',
-                                institute_id=institute_id,
-                                case_id=case_id,
-                                variant_type=variant_type)
-                     }}">
+               href="{{ url_for('core.variants',
+                             institute_id=institute_id,
+                             case_id=case_id,
+                             variant_type=variant_type,
+                             gene_lists=current_gene_lists,
+                             hgnc_symbols=case.hpo_gene_ids) }}">
               HPO generated gene list
             </a>
           </div>
@@ -212,12 +213,11 @@
           <div>{{ variant.variant_rank }}</div>
 
           {% if variant.manual_rank %}
-            <small class="md-badge--{{ variant.manual_rank_level }}">
+            <small><span class="md-badge--{{ variant.manual_rank_level }}">
               {{ variant.manual_rank }}
-            </small>
-          {% endif %}
-
-          {% if variant.comments %}
+            </span></small>
+          {% elif variant.has_comments %}
+            <!-- At least show if there are any comments written -->
             <div class="dot-indicator"></div>
           {% endif %}
 				</a>
