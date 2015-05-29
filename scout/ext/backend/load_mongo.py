@@ -143,7 +143,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   " variants".format(nr_of_variants))
       break
 
-    if not nr_of_variants > variant_number_threshold:
+    if nr_of_variants > variant_number_threshold:
       logger.info("Variant number threshold reached. ({0})".format(
         variant_number_threshold))
       break
