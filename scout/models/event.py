@@ -38,8 +38,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 
-from mongoengine import (DateTimeField, Document, ListField,
-                         ReferenceField, StringField)
+from mongoengine import (DateTimeField, Document, ReferenceField, StringField)
 
 VERBS = (
   "assign",
@@ -58,6 +57,7 @@ VERBS = (
   "add_phenotype",
   "remove_phenotype"
 )
+
 
 class Event(Document):
   """Embedded model for defining a general user generated event."""

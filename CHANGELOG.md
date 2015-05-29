@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.0] - *planned*
+## [1.1.0] - 2015-05-29
 ### Added
 - link(s) to SNPedia based on RS-numbers
 - new Jinja filter to "humanize" decimal numbers
