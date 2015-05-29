@@ -176,28 +176,30 @@
     </form>
   </div>
 
-  <!-- Separator -->
-  <div class="flex"></div>
+  {% if variant.variant_type == 'research' %}
+    <!-- Separator -->
+    <div class="flex"></div>
 
-  <div class="md-toolbar-group">
-    {% if prev_variant %}
+    <div class="md-toolbar-group">
+      {% if prev_variant %}
+        <a class="icon-button"
+           title="Previous variant"
+           href="{{ url_for('core.variant',
+                      institute_id=institute_id, case_id=case_id,
+                      variant_id=prev_variant.document_id) }}">
+          <core-icon icon="arrow-back"></core-icon>
+        </a>
+      {% endif %}
+
       <a class="icon-button"
-         title="Previous variant"
+         title="Next variant"
          href="{{ url_for('core.variant',
                     institute_id=institute_id, case_id=case_id,
-                    variant_id=prev_variant.document_id) }}">
-        <core-icon icon="arrow-back"></core-icon>
+                    variant_id=next_variant.document_id) }}">
+        <core-icon icon="arrow-forward"></core-icon>
       </a>
-    {% endif %}
-
-    <a class="icon-button"
-       title="Next variant"
-       href="{{ url_for('core.variant',
-                  institute_id=institute_id, case_id=case_id,
-                  variant_id=next_variant.document_id) }}">
-      <core-icon icon="arrow-forward"></core-icon>
-    </a>
-  </div>
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}

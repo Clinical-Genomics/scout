@@ -24,6 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - change ``OmimPhenotype`` to ``PhenotypeTerm``
 - reorganize models sub-package
 - move events (and comments) to separate collection
+- only display prev/next links for the research list
 
 ### Removed
 - drop dependency on moment.js
