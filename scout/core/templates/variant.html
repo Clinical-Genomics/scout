@@ -244,15 +244,17 @@
             </div>
           </div>
 
-          <div class="variant-row-item">
-            <div>Gene panels</div>
+          {% if variant_type == 'clinical' %}
+            <div class="variant-row-item">
+              <div>Gene panels</div>
 
-            <div class="variant-row-item-sublist">
-              {% for panel in variant.gene_lists %}
-                <div class="variant-row-item-sublist-item">{{ panel }}</div>
-              {% endfor %}
+              <div class="variant-row-item-sublist">
+                {% for panel in variant.gene_lists %}
+                  <div class="variant-row-item-sublist-item">{{ panel }}</div>
+                {% endfor %}
+              </div>
             </div>
-          </div>
+          {% endif %}
 
           <div class="variant-list-item">
             <div>CLINSIG</div>
@@ -377,15 +379,17 @@
             </div>
           </div>
 
-          <div class="variant-row-item">
-            <div>OMIM</div>
+          {% if variant_type == 'clinical' %}
+            <div class="variant-row-item">
+              <div>OMIM</div>
 
-            <div class="variant-row-item-sublist">
-              {% for model in variant.omim_inheritance_models|sort %}
-                <div class="variant-row-item-sublist-item">{{ model }}</div>
-              {% endfor %}
+              <div class="variant-row-item-sublist">
+                {% for model in variant.omim_inheritance_models|sort %}
+                  <div class="variant-row-item-sublist-item">{{ model }}</div>
+                {% endfor %}
+              </div>
             </div>
-          </div>
+          {% endif %}
         </div>
       </div>
 
