@@ -15,7 +15,7 @@ from __future__ import (absolute_import, unicode_literals, print_function)
 import json
 import click
 import logging
-from mongoengine import connect, DoesNotExist
+from mongoengine import connect, DoesNotExist, Q
 
 from . import BaseAdapter
 from .config_parser import ConfigParser
@@ -88,30 +88,35 @@ class MongoAdapter(BaseAdapter):
     Returns:
       list: filtered query returning matching events
     """
-    filters = {'case': case, 'institute': institute}
+    # add basic filters
+    filters = [Q(institute=institute)]
 
     if variant_id:
       # restrict to only variant events
-      filters['variant_id'] = variant_id
-      filters['category'] = 'variant'
+      filters.append(Q(category='variant'))
+      filters.append(Q(variant_id=variant_id))
 
       if level:
         # filter on specific/global (implicit: only comments)
-        filters['level'] = level
+        filters.append(Q(level=level))
 
-        if level == 'global':
-          # don't restrict to case
-          del filters['case']
+        if level != 'global':
+          # restrict to case
+          filters.append(Q(case=case))
+      else:
+        # return both global and specific comments for the variant
+        filters.append(Q(case=case) | Q(level='global'))
 
     else:
       # restrict to case events
-      filters['category'] = 'case'
+      filters.append(Q(category='case'))
 
     if comments:
       # restrict events to only comments
-      filters['verb'] = 'comment'
+      filters.append(Q(verb='comment'))
 
-    return Event.objects(**filters)
+    query = reduce(lambda old_filter, next_filter: old_filter & next_filter, filters)
+    return Event.objects.filter(query)
 
   def build_query(self, case_id, query=None, variant_ids=None):
     """
