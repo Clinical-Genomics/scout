@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from itertools import chain
-import io
-
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
-                   url_for)
+                   url_for, make_response)
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Message
-from werkzeug import secure_filename
+import query_phenomizer
+
+from scout.models import Case, Variant
+from scout.extensions import mail, store
+from scout.helpers import templated
 
 from .forms import (init_filters_form, SO_TERMS, process_filters_form,
                     GeneListUpload)
 from .utils import validate_user
-from ..models import Case, Event, PhenotypeTerm, Variant
-from ..extensions import mail, store
-from ..helpers import templated, get_document_or_404
 
 core = Blueprint('core', __name__, template_folder='templates')
 
@@ -39,13 +37,9 @@ def institutes():
 def cases(institute_id):
   """View all cases.
 
-  The purpose of this page is to display all cases related to an
-  institute. It should also give an idea of which
+  The purpose of this page is to display all cases related to an institute.
   """
-  # very basic security check
   institute = validate_user(current_user, institute_id)
-
-  # fetch cases from the data store
   return dict(institute=institute, institute_id=institute_id)
 
 
@@ -53,71 +47,47 @@ def cases(institute_id):
 @templated('case.html')
 @login_required
 def case(institute_id, case_id):
-  """View one specific case."""
-  # very basic security check
+  """View a specific case."""
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
 
   # fetch a single, specific case from the data store
-  return dict(institute=institute, case=case, statuses=Case.status.choices)
+  case_model = store.case(institute_id, case_id)
+
+  case_comments = store.events(institute, case=case_model, comments=True)
+  case_events = store.events(institute, case=case_model)
+
+  return dict(institute=institute, case=case_model, statuses=Case.status.choices,
+              case_comments=case_comments, case_events=case_events,
+              institute_id=institute_id, case_id=case_id)
 
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
 def assign_self(institute_id, case_id):
-  # very basic security check
-  validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
 
-  # assign logged in user and persist changes
-  case.assignee = current_user.to_dbref()
-
-  # create event
-  event = Event(
-    link=url_for('.case', institute_id=institute_id, case_id=case_id),
-    author=current_user.to_dbref(),
-    verb='was assigned to',
-    subject=case.display_name
-  )
-  case.events.append(event)
-
-  # persist changes
-  case.save()
+  link = url_for('.case', institute_id=institute_id, case_id=case_id)
+  store.assign(institute, case_model, current_user, link)
 
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
 @core.route('/<institute_id>/<case_id>/unassign', methods=['POST'])
 def remove_assignee(institute_id, case_id):
-  # very basic security check
-  validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
 
-  # unassign user and persist changes
-  case.assignee = None
-
-  # create event
-  event = Event(
-    link=url_for('.case', institute_id=institute_id, case_id=case_id),
-    author=current_user.to_dbref(),
-    verb='was unassigned from',
-    subject=case.display_name
-  )
-  case.events.append(event)
-
-  case.save()
+  link = url_for('.case', institute_id=institute_id, case_id=case_id)
+  store.unassign(institute, case_model, current_user, link)
 
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
 @core.route('/<institute_id>/<case_id>/open_research', methods=['POST'])
 def open_research(institute_id, case_id):
-  """Open the research list for a case.
-
-  TODO: this should ping the admins to make necessary checks.
-  """
-  # very basic security check
+  """Open the research list for a case."""
   institute = validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = store.case(institute_id, case_id)
 
   # send email to trigger manual load of research variants
   main_recipient = current_app.config['RESEARCH_MODE_RECIPIENT']
@@ -139,54 +109,81 @@ def open_research(institute_id, case_id):
                 cc=[current_user.email])
   mail.send(msg)
 
-  # create event
-  event = Event(link=url_for('.case', institute_id=institute_id,
-                             case_id=case_id),
-                author=current_user.to_dbref(),
-                verb='opened research mode for',
-                subject=case_model.display_name)
-  case_model.events.append(event)
-
-  case_model.save()
+  link = url_for('.case', institute_id=institute_id, case_id=case_id)
+  store.open_research(institute, case_model, current_user, link)
 
   return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
 @core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
-@core.route('/<institute_id>/<case_id>/phenotype_terms/<int:phenotype_id>',
+@core.route('/<institute_id>/<case_id>/phenotype_terms/<phenotype_id>',
             methods=['POST'])
 def case_phenotype(institute_id, case_id, phenotype_id=None):
   """Add a new HPO term to the case.
 
   TODO: validate ID and fetch phenotype description before adding to case.
   """
-  validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   if phenotype_id:
     # DELETE a phenotype from the list
-    action_verb = 'removed'
-    hpo_term = case.phenotype_terms.pop(phenotype_id - 1).hpo_id
+    store.remove_phenotype(institute, case_model, current_user, case_url, phenotype_id)
 
   else:
     # POST a new phenotype to the list
-    action_verb = 'added'
     hpo_term = request.form['hpo_term']
-    phenotype_term = PhenotypeTerm(hpo_id=hpo_term)
-    if phenotype_term not in case.phenotype_terms:
-      # append the new HPO term (ID)
-      case.phenotype_terms.append(phenotype_term)
+    store.add_phenotype(institute, case_model, current_user, case_url, hpo_term)
 
-  # create event
-  event = Event(link=case_url, author=current_user.to_dbref(),
-                verb="{verb} HPO term '{term}' for"
-                     .format(verb=action_verb, term=hpo_term),
-                subject=case.display_name)
-  case.events.append(event)
+  # fetch genes to update dynamic gene list
+  genes = hpo_genes(case_model.phenotype_terms)
+  store.update_dynamic_gene_list(case_model, genes)
 
-  case.save()
   return redirect(case_url)
+
+
+def hpo_genes(phenotype_terms):
+  """Return the list of HGNC symbols that match annotated HPO terms.
+
+  Returns:
+    query_result: a list of dictionaries on the form
+      {
+        'p_value': float,
+        'gene_id': str,
+        'omim_id': int,
+        'orphanet_id': int,
+        'decipher_id': int,
+        'any_id': int,
+        'mode_of_inheritance': str,
+        'description': str,
+        'raw_line': str
+      }
+  """
+  hpo_terms = [phenotype_term.phenotype_id for phenotype_term in phenotype_terms]
+
+  # skip querying Phenomizer unless at least one HPO terms exists
+  if hpo_terms:
+    try:
+      results = query_phenomizer.query(hpo_terms)
+      return [result for result in results if result['p_value'] is not None]
+    except SystemExit:
+      return None
+  else:
+    return None
+
+
+@core.route('/<institute_id>/<case_id>/coverage_report', methods=['GET'])
+def coverage_report(institute_id, case_id):
+  """Serve coverage report for a case directly from the database."""
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
+
+  response = make_response(case_model.coverage_report)
+  response.headers['Content-Type'] = 'application/pdf'
+  filename = "{}.coverage.pdf".format(case_model.display_name)
+  response.headers['Content-Disposition'] = "inline; filename={}.pdf".format(filename)
+  return response
 
 
 def read_lines(iterable):
@@ -218,8 +215,7 @@ def upload_gene_list():
   return redirect(new_url)
 
 
-@core.route('/<institute_id>/<case_id>/<variant_type>',
-            methods=['GET', 'POST'])
+@core.route('/<institute_id>/<case_id>/<variant_type>', methods=['GET', 'POST'])
 @templated('variants.html')
 @login_required
 def variants(institute_id, case_id, variant_type):
@@ -229,35 +225,30 @@ def variants(institute_id, case_id, variant_type):
                         in request.args.getlist('gene_lists') if gene_list]
 
   # fetch all variants for a specific case
-  # very basic security check
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  case_model = store.case(institute_id, case_id)
+
+  if case_model is None:
+    abort(404)
+
   skip = int(request.args.get('skip', 0))
 
   # update case status if currently inactive
-  if case.status == 'inactive':
-    case.status = 'active'
-    case_link = url_for('.case', institute_id=institute_id, case_id=case_id)
-
-    event = Event(link=case_link,
-                  author=current_user.to_dbref(),
-                  verb="updated the status to '{}' for".format(case.status),
-                  subject=case.display_name)
-    case.events.append(event)
-
-    case.save()
+  if case_model.status == 'inactive':
+    link = url_for('.case', institute_id=institute_id, case_id=case_id)
+    store.update_status(institute, case_model, current_user, 'active', link)
 
   # form submitted as GET
   form = init_filters_form(request.args)
   # dynamically add choices to gene lists selection
   if variant_type == 'research':
-    if case.is_research:
-      gene_lists = case.all_gene_lists
+    if case_model.is_research:
+      gene_lists = case_model.all_gene_lists
     else:
       # research mode not activated
       return abort(403)
   else:
-    gene_lists = case.clinical_gene_lists
+    gene_lists = case_model.clinical_gene_lists
 
   gene_list_names = [(item.list_id, item.display_name) for item in gene_lists]
   form.gene_lists.choices = gene_list_names
@@ -268,34 +259,26 @@ def variants(institute_id, case_id, variant_type):
   # preprocess some of the results before submitting query to adapter
   process_filters_form(form)
 
-  # fetch list of variants
-  variants = store.variants(case.case_id, query=form.data,
-                            nr_of_variants=per_page, skip=skip)
+  # add variant type to query
+  query = dict(**form.data)
+  query['variant_type'] = variant_type
 
-  return dict(variants=variants,
-              case=case,
+  # fetch list of variants
+  variant_models = store.variants(case_model.case_id, query=query,
+                                  nr_of_variants=per_page, skip=skip)
+
+  return dict(variants=variant_models,
+              case=case_model,
               case_id=case_id,
               institute=institute,
               institute_id=institute_id,
               current_batch=(skip + per_page),
               form=form,
-              severe_so_terms=SO_TERMS[:14],
+              severe_so_terms=SO_TERMS[:11] + ('incomplete_terminal_codon_variant',
+                                               'stop_retained_variant'),
               current_gene_lists=current_gene_lists,
               variant_type=variant_type,
               upload_form=GeneListUpload())
-
-
-@core.route('/<institute_id>/<case_id>/<variant_type>/hpo_redirect')
-@login_required
-def hpo_gene_list_redirect(institute_id, case_id, variant_type):
-  # redirect user to variants list after querying HPO
-  validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-
-  return redirect(url_for('.variants', institute_id=institute_id,
-                          case_id=case_id,
-                          variant_type=variant_type,
-                          hgnc_symbols=case_model.hpo_gene_ids))
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
@@ -303,113 +286,63 @@ def hpo_gene_list_redirect(institute_id, case_id, variant_type):
 @login_required
 def variant(institute_id, case_id, variant_id):
   """View a single variant in a single case."""
-  # very basic security check
   institute = validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  variant = store.variant(document_id=variant_id)
+  case_model = store.case(institute_id, case_id)
+  variant_model = store.variant(document_id=variant_id)
+
+  comments = store.events(institute, case=case_model,
+                          variant_id=variant_model.variant_id,
+                          comments=True)
+  events = store.events(institute, case=case_model, variant_id=variant_model.variant_id)
 
   prev_variant = store.previous_variant(document_id=variant_id)
   next_variant = store.next_variant(document_id=variant_id)
 
-  return dict(
-    institute=institute,
-    institute_id=institute_id,
-    case=case,
-    case_id=case_id,
-    variant_id=variant_id,
-    variant=variant,
-    prev_variant=prev_variant,
-    next_variant=next_variant,
-    manual_rank_options=Variant.manual_rank.choices
-  )
+  return dict(institute=institute, institute_id=institute_id,
+              case=case_model, case_id=case_id,
+              variant=variant_model, variant_id=variant_id,
+              comments=comments, events=events,
+              prev_variant=prev_variant, next_variant=next_variant,
+              manual_rank_options=Variant.manual_rank.choices)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])
 def pin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
-  # very basic security check
-  validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  variant = store.variant(document_id=variant_id)
-  variant_url = url_for('.variant', institute_id=institute_id,
-                        case_id=case_id, variant_id=variant_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
+  variant_model = store.variant(document_id=variant_id)
 
-  # add variant to list of pinned variants in the case model
-  case.suspects.append(variant)
-  verb = 'added'
-
-  # add event
-  case.events.append(Event(
-    link=variant_url,
-    author=current_user.to_dbref(),
-    verb="{} a variant suspect: ".format(verb),
-    subject=variant_id,
-  ))
-
-  # persist changes
-  case.save()
-
-  return redirect(request.args.get('next') or request.referrer or variant_url)
+  link = url_for('.variant', institute_id=institute_id, case_id=case_id,
+                 variant_id=variant_id)
+  store.pin_variant(institute, case_model, current_user, link, variant_model)
+  return redirect(request.args.get('next') or request.referrer or link)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/unpin', methods=['POST'])
 def unpin_variant(institute_id, case_id, variant_id):
   """Pin or unpin a variant from the list of suspects."""
-  # very basic security check
-  validate_user(current_user, institute_id)
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  variant = store.variant(document_id=variant_id)
-  variant_url = url_for('.variant', institute_id=institute_id,
-                        case_id=case_id, variant_id=variant_id)
-
-  # remove an already existing pinned variant
-  case.suspects.remove(variant)
-  verb = 'removed'
-
-  # add event
-  case.events.append(Event(
-    link=variant_url,
-    author=current_user.to_dbref(),
-    verb="{} a variant suspect: ".format(verb),
-    subject=variant_id,
-  ))
-
-  # persist changes
-  case.save()
-
-  return redirect(request.args.get('next') or request.referrer or variant_url)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
+  variant_model = store.variant(document_id=variant_id)
+  link = url_for('.variant', institute_id=institute_id, case_id=case_id,
+                 variant_id=variant_id)
+  store.unpin_variant(institute, case_model, current_user, link, variant_model)
+  return redirect(request.args.get('next') or request.referrer or link)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/mark_causative',
             methods=['POST'])
 def mark_causative(institute_id, case_id, variant_id):
   """Mark a variant as confirmed causative."""
-  # very basic security check
-  validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
   variant_model = store.variant(document_id=variant_id)
-  variant_url = url_for('.variant', institute_id=institute_id,
+  link = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
-  # mark the variant as causative in the case model
-  case_model.causative = variant_model
-
-  # add event
-  event = Event(link=variant_url,
-                author=current_user.to_dbref(),
-                verb=("marked a causative variant for case {}:"
-                      .format(case_model.display_name)),
-                subject=variant_id)
-  case_model.events.append(event)
-  variant_model.events.append(event)
-
-  # mark the case as solved
-  case_model.status = 'solved'
-
-  # persist changes
-  case_model.save()
-  variant_model.save()
+  store.mark_causative(institute, case_model, current_user, link, variant_model)
 
   # send the user back to the case the was marked as solved
   return redirect(case_url)
@@ -419,32 +352,14 @@ def mark_causative(institute_id, case_id, variant_id):
 def unmark_causative(institute_id, case_id):
   """Remove a variant as confirmed causative for a case."""
   # very basic security check
-  validate_user(current_user, institute_id)
-  case_model = get_document_or_404(Case, owner=institute_id, display_name=case_id)
+  institute = validate_user(current_user, institute_id)
+  case_model = store.case(institute_id, case_id)
   case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
   # skip the host part of the URL to make it more flexible
-  variant_url = request.referrer.replace(request.host_url, '/')
+  link = request.referrer.replace(request.host_url, '/')
   variant_model = case_model.causative
-
-  # add event
-  event = Event(link=variant_url,
-                author=current_user.to_dbref(),
-                verb=("Removed the causative variant for case {}:"
-                      .format(case_model.display_name)),
-                subject=case_model.causative.document_id)
-  case_model.events.append(event)
-  variant_model.events.append(event)
-
-  # remove the variant as causative in the case model
-  case_model.causative = None
-
-  # mark the case as active again
-  case_model.status = 'active'
-
-  # persist changes
-  case_model.save()
-  variant_model.save()
+  store.unmark_causative(institute, case_model, current_user, link, variant_model)
 
   # send the user back to the case the was marked as solved
   return redirect(request.referrer or case_url)
@@ -456,9 +371,8 @@ def unmark_causative(institute_id, case_id):
 def email_sanger(institute_id, case_id, variant_id):
   # very basic security check
   institute = validate_user(current_user, institute_id)
-
-  case = get_document_or_404(Case, owner=institute_id, display_name=case_id)
-  variant = store.variant(document_id=variant_id)
+  case_model = store.case(institute_id, case_id)
+  variant_model = store.variant(document_id=variant_id)
 
   recipients = institute.sanger_recipients
   if len(recipients) == 0:
@@ -469,12 +383,12 @@ def email_sanger(institute_id, case_id, variant_id):
   variant_url = url_for('.variant', institute_id=institute_id,
                         case_id=case_id, variant_id=variant_id)
 
-  hgnc_symbol = ', '.join(variant.hgnc_symbols)
+  hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
   functions = ["<li>{}</li>".format(function) for function in
-               variant.protein_changes]
+               variant_model.protein_changes]
   gtcalls = ["<li>{}: {}</li>".format(individual.display_name,
                                       individual.genotype_call)
-             for individual in variant.samples]
+             for individual in variant_model.samples]
 
   html = """
     <p>Case {case_id}: <a href='{url}'>{variant_id}</a></p>
@@ -490,7 +404,7 @@ def email_sanger(institute_id, case_id, variant_id):
     variant_id=variant_id,
     hgnc_symbol=hgnc_symbol,
     database_id='coming soon',
-    chromosome_position=variant.id_string,
+    chromosome_position=variant_model.display_name,
     functions=''.join(functions),
     gtcalls=''.join(gtcalls),
     name=current_user.name
@@ -509,19 +423,7 @@ def email_sanger(institute_id, case_id, variant_id):
   msg = Message(**kwargs)
   mail.send(msg)
 
-  # add events
-  event_kwargs = dict(
-    link=url_for('.case', institute_id=institute_id, case_id=case_id),
-    author=current_user.to_dbref(),
-    verb="ordered Sanger sequencing for %s" % hgnc_symbol,
-    subject=variant_id,
-  )
-  case.events.append(Event(**event_kwargs))
-  case.save()
-
-  # add to variant
-  event_kwargs['link'] = variant_url
-  variant.events.append(Event(**event_kwargs))
-  variant.save()
+  link = url_for('.case', institute_id=institute_id, case_id=case_id)
+  store.order_sanger(institute, case_model, current_user, link, variant_model)
 
   return redirect(variant_url)

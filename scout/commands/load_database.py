@@ -78,6 +78,17 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 nargs=1,
                 help="Specify the owner of the case."
 )
+@click.option('--rank_score_threshold',
+                default=0,
+                nargs=1,
+                help="Specify the lowest rank score that should be used."
+)
+@click.option('--variant_number_threshold',
+                default=5000,
+                nargs=1,
+                help="Specify the the maximum number of variants to load."
+)
+
 @click.option('-db', '--mongo-db',
                 default='variantDatabase'
 )
@@ -101,7 +112,8 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
 )
 def load(vcf_file, ped_file, scout_config_file, vcf_config_file, family_type,
               mongo_db, username, variant_type, madeline, coverage_report,
-              password, owner, port, host, verbose):
+              password, owner, port, host, verbose,
+              rank_score_threshold, variant_number_threshold):
   """
   Load the mongo database.
 
@@ -169,6 +181,8 @@ def load(vcf_file, ped_file, scout_config_file, vcf_config_file, family_type,
                           variant_type=variant_type,
                           port=port,
                           host=host,
+                          rank_score_threshold=rank_score_threshold,
+                          variant_number_threshold=variant_number_threshold
                         )
 
 

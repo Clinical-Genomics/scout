@@ -44,27 +44,23 @@ def drop_mongo(mongo_db='variantDatabase', username=None, password=None,
 
   logger.debug('Connection successful')
   
-  collections = connection.database_names()
-  if mongo_db in collections:  
-    db = connection[mongo_db]
-    # Drop the case collection:
-    case_collection = db['case']
-    logger.info("Dropping collection 'case'")
-    case_collection.drop()
-    logger.debug("Case collection dropped")
-    # Drop the institute collection:
-    institute_collection = db['institute']
-    logger.info("Dropping collection 'institute'")
-    institute_collection.drop()
-    logger.debug("Institute collection dropped")
-    # Drop the variant collection:    
-    logger.info("Dropping collection 'variant'")
-    variant_collection = db['variant']
-    variant_collection.drop()
-    logger.debug("Variants dropped.")
-  else:
-    logger.warning('{0} does not exist in database.'.format(mongo_db))
-    logger.info('Existing connections: {0}'.format(connection.database_names()))
+  # We assume that the collection exists
+  db = connection[mongo_db]
+  # Drop the case collection:
+  case_collection = db['case']
+  logger.info("Dropping collection 'case'")
+  case_collection.drop()
+  logger.debug("Case collection dropped")
+  # Drop the institute collection:
+  institute_collection = db['institute']
+  logger.info("Dropping collection 'institute'")
+  institute_collection.drop()
+  logger.debug("Institute collection dropped")
+  # Drop the variant collection:    
+  logger.info("Dropping collection 'variant'")
+  variant_collection = db['variant']
+  variant_collection.drop()
+  logger.debug("Variants dropped.")
   
 
 @click.command()

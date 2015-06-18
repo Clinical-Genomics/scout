@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 
@@ -12,212 +11,12 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
                          ReferenceField, SortedListField)
 
-from .._compat import zip
-from .event import Event
-from .case import Case
+from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
+from .gene import Gene
+from scout._compat import zip
+from scout.models import Event
 
 ######## These are defined terms for different categories ########
-
-
-CONSERVATION = ('NotConserved', 'Conserved')
-
-CONSEQUENCE = ('deleterious', 'probably_damaging', 'possibly_damaging',
-               'tolerated', 'benign', 'unknown')
-
-SO_TERMS = (
-  'transcript_ablation',
-  'splice_donor_variant',
-  'splice_acceptor_variant',
-  'stop_gained',
-  'frameshift_variant',
-  'stop_lost',
-  'initiator_codon_variant',
-  'transcript_amplification',
-  'inframe_insertion',
-  'inframe_deletion',
-  'missense_variant',
-  'splice_region_variant',
-  'incomplete_terminal_codon_variant',
-  'stop_retained_variant',
-  'synonymous_variant',
-  'coding_sequence_variant',
-  'mature_miRNA_variant',
-  '5_prime_UTR_variant',
-  '3_prime_UTR_variant',
-  'non_coding_exon_variant',
-  'non_coding_transcript_exon_variant',
-  'non_coding_transcript_variant',
-  'nc_transcript_variant',
-  'intron_variant',
-  'NMD_transcript_variant',
-  'non_coding_transcript_variant',
-  'upstream_gene_variant',
-  'downstream_gene_variant',
-  'TFBS_ablation',
-  'TFBS_amplification',
-  'TF_binding_site_variant',
-  'regulatory_region_ablation',
-  'regulatory_region_amplification',
-  'regulatory_region_variant',
-  'feature_elongation',
-  'feature_truncation',
-  'intergenic_variant'
-)
-
-FEATURE_TYPES = (
-  'exonic',
-  'splicing',
-  'ncRNA_exonic',
-  'intronic',
-  'ncRNA',
-  'upstream',
-  '5UTR',
-  '3UTR',
-  'downstream',
-  'TFBS',
-  'regulatory_region',
-  'genomic_feature',
-  'intergenic_variant'
-)
-
-GENETIC_MODELS = (
-  ('AR_hom', 'Autosomal Recessive Homozygote'),
-  ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),
-  ('AR_comp', 'Autosomal Recessive Compound'),
-  ('AR_comp_dn', 'Autosomal Recessive Compound De Novo'),
-  ('AD', 'Autosomal Dominant'),
-  ('AD_dn', 'Autosomal Dominant De Novo'),
-  ('XR', 'X Linked Recessive'),
-  ('XR_dn', 'X Linked Recessive De Novo'),
-  ('XD', 'X Linked Dominant'),
-  ('XD_dn', 'X Linked Dominant De Novo'),
-)
-
-ACMG_TERMS = (
-  'pathegenic',
-  'likely pathegenic',
-  'uncertain significance',
-  'likely benign',
-  'benign'
-)
-
-
-class Transcript(EmbeddedDocument):
-  transcript_id = StringField(required=True)
-  refseq_ids = ListField(StringField())
-  hgnc_symbol = StringField()
-
-  # Protein specific predictions
-  protein_id = StringField()
-  sift_prediction = StringField(choices=CONSEQUENCE)
-  polyphen_prediction = StringField(choices=CONSEQUENCE)
-  swiss_prot = StringField()
-  pfam_domain = StringField()
-  prosite_profile = StringField()
-  smart_domain = StringField()
-
-  biotype = StringField()
-  functional_annotations = ListField(StringField(choices=SO_TERMS))
-  region_annotations = ListField(StringField(choices=FEATURE_TYPES))
-  exon = StringField()
-  intron = StringField()
-  strand = StringField()
-  coding_sequence_name = StringField()
-  protein_sequence_name = StringField()
-
-  @property
-  def refseq_ids_string(self):
-    return ', '.join(self.refseq_ids)
-
-  @property
-  def absolute_exon(self):
-    return (self.exon or '').rpartition('/')[0]
-
-  def stringify(self):
-    return ("{this.hgnc_symbol}:{this.refseq_ids_string}"
-            ":exon{this.absolute_exon}:{this.coding_sequence_name}"
-            ":{this.protein_sequence_name}"
-            .format(this=self))
-
-  @property
-  def swiss_prot_link(self):
-    return "http://www.uniprot.org/uniprot/{}".format(self.swiss_prot)
-
-  @property
-  def pfam_domain_link(self):
-    return "http://pfam.xfam.org/family/{}".format(self.pfam_domain)
-
-  @property
-  def prosite_profile_link(self):
-    return ("http://prosite.expasy.org/cgi-bin/prosite/prosite-search-ac?{}"
-            .format(self.prosite_profile))
-
-  @property
-  def smart_domain_link(self):
-    return ("http://smart.embl.de/smart/search.cgi?keywords={}"
-            .format(self.smart_domain))
-
-  @property
-  def refseq_links(self):
-    for refseq_id in self.refseq_ids:
-      yield (refseq_id,
-             "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id))
-
-  @property
-  def ensembl_link(self):
-    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t={}"
-            .format(self.transcript_id))
-
-
-class OmimPhenotype(EmbeddedDocument):
-  omim_id = IntField(required=True)
-  disease_models = ListField(StringField())
-
-  @property
-  def omim_link(self):
-    """Return a OMIM phenotype link."""
-    return "http://www.omim.org/entry/{}".format(self.omim_id)
-
-
-class Gene(EmbeddedDocument):
-  hgnc_symbol = StringField(required=True)
-  ensembl_gene_id = StringField()
-  transcripts = ListField(EmbeddedDocumentField(Transcript))
-  functional_annotation = StringField(choices=SO_TERMS)
-  region_annotation = StringField(choices=FEATURE_TYPES)
-  sift_prediction = StringField(choices=CONSEQUENCE)
-  polyphen_prediction = StringField(choices=CONSEQUENCE)
-  omim_gene_entry = IntField()
-  omim_phenotypes = ListField(EmbeddedDocumentField(OmimPhenotype))
-  description = StringField()
-
-  @property
-  def reactome_link(self):
-    url_template = ("http://www.reactome.org/content/query?q={}&"
-                    "species=Homo+sapiens&species=Entries+without+species&"
-                    "cluster=true")
-
-    return url_template.format(self.ensembl_gene_id)
-
-  @property
-  def ensembl_link(self):
-    return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={}"
-            .format(self.ensembl_gene_id))
-
-  @property
-  def hpa_link(self):
-    return ("http://www.proteinatlas.org/search/{}"
-            .format(self.ensembl_gene_id))
-
-  @property
-  def string_link(self):
-    return ("http://string-db.org/newstring_cgi/show_network_section."
-            "pl?identifier={}".format(self.ensembl_gene_id))
-
-  @property
-  def entrez_link(self):
-    return ("http://www.ncbi.nlm.nih.gov/sites/gquery/?term={}"
-            .format(self.hgnc_symbol))
 
 
 class Compound(EmbeddedDocument):
@@ -260,14 +59,14 @@ class Variant(Document):
   alternative = StringField(required=True)
   rank_score = FloatField(required=True)
   variant_rank = IntField(required=True)
+  institute = ReferenceField('Institute', required=True)
   quality = FloatField()
   filters = ListField(StringField())
   samples = ListField(EmbeddedDocumentField(GTCall))
   genetic_models = ListField(StringField(choices=GENETIC_MODELS))
   compounds = SortedListField(EmbeddedDocumentField(Compound),
                               ordering='combined_score', reverse=True)
-  events = ListField(EmbeddedDocumentField(Event))
-  comments = ListField(EmbeddedDocumentField(Event))
+
   genes = ListField(EmbeddedDocumentField(Gene))
   db_snp_ids = ListField(StringField())
   # Gene ids:
@@ -280,6 +79,18 @@ class Variant(Document):
   # Predicted deleteriousness:
   cadd_score = FloatField()
   clnsig = IntField()
+
+  @property
+  def has_comments(self):
+    """
+    Return True is there are any comments for this variant in the database
+    """
+    if Event.objects(verb='comment', variant_id=self.variant_id,
+                      institute=self.institute):
+      return True
+
+    return False
+
   @property
   def clnsig_human(self):
     return {
@@ -298,12 +109,6 @@ class Variant(Document):
   manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
 
   acmg_evaluation = StringField(choices=ACMG_TERMS)
-
-  @property
-  def local_requency(self):
-    """Returns a float with the local freauency for this position."""
-    return (Variant.objects(variant_id=self.variant_id).count /
-              Case.objects.count())
 
   @property
   def omim_annotations(self):
@@ -373,7 +178,7 @@ class Variant(Document):
     """
     sift_predictions = []
     if len(self.genes) == 1:
-      sift_predictions = [gene.sift_prediction for gene in self.genes]
+      sift_predictions = [(gene.sift_prediction or '-') for gene in self.genes]
     else:
       for gene in self.genes:
         sift_predictions.append(':'.join([gene.hgnc_symbol, gene.sift_prediction or '-']))
@@ -387,7 +192,7 @@ class Variant(Document):
     """
     polyphen_predictions = []
     if len(self.genes) == 1:
-      polyphen_predictions = [gene.polyphen_prediction for gene in self.genes]
+      polyphen_predictions = [(gene.polyphen_prediction or '-') for gene in self.genes]
     else:
       for gene in self.genes:
         polyphen_predictions.append(':'.join([gene.hgnc_symbol, gene.polyphen_prediction or '-']))
@@ -454,12 +259,7 @@ class Variant(Document):
 
     return self.position + (bases - 1)
 
-  @property
-  def id_string(self):
-    """Compose standard ID string for a variant."""
-    return ("{this.chromosome}:{this.position} "
-            "{this.reference}/{this.alternative}".format(this=self))
-
+  # This is exactly the same as variant_id...
   @property
   def frequency(self):
     """Returns a judgement on the overall frequency of the variant.

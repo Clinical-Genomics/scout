@@ -19,7 +19,7 @@ import click
 
 from pprint import pprint as pp
 
-from ....models import GTCall
+from scout.models import GTCall
 
 
 def get_genotype(variant, config_object, individual_id, display_name):

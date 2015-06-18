@@ -42,7 +42,7 @@
   </table>
 {% endmacro %}
 
-{% macro variant_links(ensembl_link, hpa_link, string_link, ucsc_link, entrez_link, reactome_link, igv_link) %}
+{% macro variant_links(ensembl_link, hpa_link, string_link, ucsc_link, entrez_link, reactome_link) %}
   <a target="_blank" class="variant-link-external" href="{{ ensembl_link }}">
     Ensembl
   </a>
@@ -77,7 +77,7 @@
         <div class="activity-feed-item-event">
           <div class="activity-feed-item-event-body">
             <strong>{{ event.author.name }}</strong>
-            {{ event.verb }}
+            {{ event.display_info }}
             <a href="{{ event.link }}">{{ event.subject }}</a>
             <span class="timestamp">
               {{ event.created_at|human_date }}

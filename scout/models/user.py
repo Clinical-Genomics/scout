@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-
 "main concept of MongoDB is embed whenever possible"
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
@@ -42,14 +41,15 @@ class User(Document):
     """Check if user has been assigned a specific role."""
     return query_role in self.roles
 
-  def belongs_to(self, institute_id):
-    """Check if user belongs to a specific institute."""
-    return institute_id in self.institutes
-
   @property
   def first_name(self):
     """Return the first name of the user."""
     return self.name.split(' ')[0]
+
+  @property
+  def display_name(self):
+    """Return the name of the user."""
+    return self.name
 
   # required for Flask-Admin interface
   def __unicode__(self):
