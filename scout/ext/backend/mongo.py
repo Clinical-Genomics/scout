@@ -111,6 +111,10 @@ class MongoAdapter(BaseAdapter):
       # restrict to case events
       filters.append(Q(category='case'))
 
+      if case:
+        # restrict to case only
+        filters.append(Q(case=case))
+
     if comments:
       # restrict events to only comments
       filters.append(Q(verb='comment'))
