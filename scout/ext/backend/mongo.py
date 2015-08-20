@@ -70,7 +70,8 @@ class MongoAdapter(BaseAdapter):
   def case(self, institute_id, case_id):
     self.logger.info("Fetch case {0}".format(case_id))
     try:
-      return Case.objects.get(owner=institute_id, display_name=case_id)
+      return Case.objects.get(collaborators__contains=institute_id,
+                              display_name=case_id)
     except DoesNotExist:
       self.logger.warning("Could not find case {0}".format(case_id))
       return None

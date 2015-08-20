@@ -12,6 +12,8 @@ Flask-Admin==1.0.8
 
 # Database
 Flask-MongoEngine==0.7.1
+mongoengine==0.8.8
+pymongo==2.8.1
 
 # Forms
 Flask-WTF==0.10.2
