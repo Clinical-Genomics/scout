@@ -234,10 +234,9 @@ def update_case(case, variant_type, logger):
       case_id, case.vcf_file
     ))
 
-    existing_case.coverage_report = case.coverage_report
-    logger.info("Updating coverage report path for case {0}".format(
-      case_id
-    ))
+    if case.coverage_report:
+      existing_case.coverage_report = case.coverage_report
+    logger.info("Updating coverage report for case {0}".format(case_id))
 
     existing_case.save()
 
