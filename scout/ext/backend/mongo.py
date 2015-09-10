@@ -63,9 +63,9 @@ class MongoAdapter(BaseAdapter):
     self.logger.info("Fetch all cases")
     if collaborator:
       self.logger.info("Use collaborator {0}".format(collaborator))
-      return Case.objects(collaborators=collaborator).order_by('-updated_at')
+      return Case.objects(collaborators=collaborator).order_by('-created_at')
     else:
-      return Case.objects().order_by('-updated_at')
+      return Case.objects().order_by('-created_at')
 
   def case(self, institute_id, case_id):
     self.logger.info("Fetch case {0}".format(case_id))

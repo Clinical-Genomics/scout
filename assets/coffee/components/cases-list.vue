@@ -19,7 +19,13 @@
         </a>
 
         <div class="md-item-subtitle">
-          <a href="{{baseUrl}}/{{display_name}}/clinical?{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a> |
+          <template v-if="is_research">
+            <a href="{{baseUrl}}/{{display_name}}/research">Research variants</a>
+          </template>
+          <template v-if="!is_research">
+            <a href="{{baseUrl}}/{{display_name}}/clinical?{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a>
+          </template>
+           |
           <span>{{created_at.$date | formatISO}}</span> |
           <span>{{status}}</span>
         </div>

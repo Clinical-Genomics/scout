@@ -76,10 +76,7 @@ def cases(institute_id):
   institute = validate_user(current_user, institute_id)
   case_models = store.cases(collaborator=institute_id)
   non_archived = (case for case in case_models if case.status != 'archived')
-  case_models_sorted = sorted(non_archived,
-                              key=lambda case: STATUS_ORDER.index(case.status))
-  raw_models = [model.to_mongo() for model in case_models_sorted]
-
+  raw_models = [model.to_mongo() for model in case_models]
   return Response(dumps(raw_models), mimetype='application/json; charset=utf-8')
 
 
