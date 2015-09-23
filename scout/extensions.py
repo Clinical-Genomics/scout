@@ -2,7 +2,6 @@
 """Extensions module. Each extension is initialized in the app factory
 located in app.py
 """
-from __future__ import absolute_import, unicode_literals
 
 # +--------------------------------------------------------------------+
 # | Flask-DebugToolbar
@@ -83,8 +82,9 @@ ctx = SSL.Context(SSL.SSLv23_METHOD)
 def ssl(app):
   """Proxy function to setup Flask-SSLify extension."""
   # Setup SSL: http://flask.pocoo.org/snippets/111/
-  ctx.use_privatekey_file(app.config.get('SSL_KEY_PATH'))
-  ctx.use_certificate_file(app.config.get('SSL_CERT_PATH'))
+  if not app.debug:
+    ctx.use_privatekey_file(app.config.get('SSL_KEY_PATH'))
+    ctx.use_certificate_file(app.config.get('SSL_CERT_PATH'))
 
   # https://github.com/kennethreitz/flask-sslify
   # Force SSL. Redirect all incoming requests to HTTPS.

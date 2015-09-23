@@ -3,14 +3,37 @@
 "main concept of MongoDB is embed whenever possible"
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
-from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
+from flask.ext.login import AnonymousUserMixin
+from flask import current_app
 from mongoengine import (DateTimeField, Document, EmailField, ListField,
                          ReferenceField, StringField)
 
+from .institute import Institute
 
-class User(Document):
+
+class LoginUserMixin(object):
+  def has_role(self, query_role):
+    """Check if user has been assigned a specific role."""
+    return query_role in self.roles
+
+  @property
+  def first_name(self):
+    """Return the first name of the user."""
+    return self.name.split(' ')[0]
+
+  @property
+  def display_name(self):
+    """Return the name of the user."""
+    return self.name
+
+  # required for Flask-Admin interface
+  def __unicode__(self):
+    return self.name
+
+
+class User(Document, LoginUserMixin):
   """Represent a Scout user that can belong to multiple instututes."""
   email = EmailField(required=True, unique=True)
   name = StringField(max_length=40, required=True)
@@ -37,20 +60,14 @@ class User(Document):
     # the id property is assigned each model automatically
     return str(self.id)
 
-  def has_role(self, query_role):
-    """Check if user has been assigned a specific role."""
-    return query_role in self.roles
 
-  @property
-  def first_name(self):
-    """Return the first name of the user."""
-    return self.name.split(' ')[0]
-
-  @property
-  def display_name(self):
-    """Return the name of the user."""
-    return self.name
-
-  # required for Flask-Admin interface
-  def __unicode__(self):
-    return self.name
+class AnonymousUser(AnonymousUserMixin, LoginUserMixin):
+  def __init__(self):
+    self.name = 'Paul T. Anderson'
+    self.email = 'pt@anderson.com'
+    if current_app.config.get('LOGIN_DISABLED'):
+      self.roles = ['admin']
+      self.institutes = Institute.objects()
+    else:
+      self.roles = []
+      self.institutes = []

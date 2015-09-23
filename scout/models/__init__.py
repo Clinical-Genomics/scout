@@ -3,7 +3,7 @@ from __future__ import (print_function, absolute_import, unicode_literals)
 
 from .phenotype_term import PhenotypeTerm
 from .event import Event
-from .user import User
+from .user import AnonymousUser, User
 from .institute import Institute
 from .whitelist import Whitelist
 

@@ -22,13 +22,13 @@ core = Blueprint('core', __name__, template_folder='templates')
 @login_required
 def institutes():
   """View all institutes that the current user belongs to."""
-  if len(current_user.institutes) == 1:
+  institute_objs = current_user.institutes
+  if len(institute_objs) == 1:
     # there no choice of institutes to make, redirect to only institute
-    institute = current_user.institutes[0]
+    institute = institute_objs[0]
     return redirect(url_for('.cases', institute_id=institute.display_name))
-
   else:
-    return dict(institutes=current_user.institutes)
+    return dict(institutes=institute_objs)
 
 
 @core.route('/<institute_id>')
@@ -234,7 +234,8 @@ def variants(institute_id, case_id, variant_type):
   skip = int(request.args.get('skip', 0))
 
   # update case status if currently inactive
-  if case_model.status == 'inactive':
+  if (case_model.status == 'inactive' and not
+      current_app.config.get('LOGIN_DISABLED')):
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
     store.update_status(institute, case_model, current_user, 'active', link)
 
