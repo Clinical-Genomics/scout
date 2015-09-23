@@ -9,9 +9,6 @@ coverage
 coveralls
 flake8
 
-# Management script
-Flask-Script
-
 # packaging
 wheel>=0.23
 

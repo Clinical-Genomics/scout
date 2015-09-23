@@ -1,12 +1,16 @@
 ---
 - hosts: all
   remote_user: vagrant
-  sudo: yes
   roles:
-    - common
-    - Stouts.mongodb
-    - package
+    # - common
+    # - { role: "Stouts.mongodb", sudo: yes }
+    # - { role: "nodesource.node", sudo: yes }
+    # - robinandeer.miniconda
+    - scout-dev
 
   vars:
     mongodb_conf_smallfiles: yes
-    mongodb_conf_bind_ip: "0.0.0.0"
+    mongodb_conf_bind_ip: 0.0.0.0
+
+    miniconda_modify_path: yes
+    miniconda_home: /home/vagrant/miniconda
