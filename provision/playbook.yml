@@ -2,10 +2,10 @@
 - hosts: all
   remote_user: vagrant
   roles:
-    # - common
-    # - { role: "Stouts.mongodb", sudo: yes }
-    # - { role: "nodesource.node", sudo: yes }
-    # - robinandeer.miniconda
+    - common
+    - { role: "Stouts.mongodb", sudo: yes }
+    - { role: "nodesource.node", sudo: yes }
+    - robinandeer.miniconda
     - scout-dev
 
   vars:

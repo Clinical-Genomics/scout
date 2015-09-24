@@ -1,14 +1,14 @@
 ---
-# - set_fact:
-#     pip_exe: "{{ miniconda_home }}/envs/prod/bin/pip"
+- set_fact:
+    pip_exe: "{{ miniconda_home }}/envs/prod/bin/pip"
 
-# - name: install package for development
-#   pip: executable="{{ pip_exe }}" extra_args="--editable"
-#        name="/vagrant"
+- name: install package for development
+  pip: executable="{{ pip_exe }}" extra_args="--editable"
+       name="/vagrant"
 
-# - name: install dev dependencies
-#   pip: requirements=/vagrant/requirements/dev.txt
-#        executable="{{ pip_exe }}"
+- name: install dev dependencies
+  pip: requirements=/vagrant/requirements/dev.txt
+       executable="{{ pip_exe }}"
 
 - name: copy demo config file
   copy: src=demo.cfg dest=/home/vagrant/demo.cfg
