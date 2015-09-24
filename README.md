@@ -5,13 +5,6 @@
 
 Scout makes you life easier by letting you visualize mutiple VCFs in the browser. You can quickly triage variants in search of those sneeky disease causing mutations. Scout also connects your team by linking user comments to cases and variants. The project is completely open source.
 
-Running server is as simple as:
-
-```bash
-$ scout run
-Running on http://localhost:5000...
-```
-
 ![Case page demo](/artwork/scout-variant.png)
 
 
@@ -26,23 +19,15 @@ $ pip install git+https://github.com/Clinical-Genomics/scout.git
 You also need to install MongoDB and run it as a background process.
 
 ## Quickstart
-Run the following commands to bootstrap your development environment.
+Run the following commands to bootstrap your development environment. Make sure you've installed Ansible and Vagrant.
 
 ```bash
-# it's always a good idea to work in a virtual environment
-$ mkvirtualenv scout && workon scout
-$ git clone https://github.com/Clinical-Genomics/scout.git
-$ cd scout
-$ pip install -r requirements/dev.txt
-```
-
-This doesn't mean that everything will work just like that. You also need some Google OAuth keys and other secret stuff. The config should be stored in a config file:
-
-```
-/scout
-  /instance
-    scout-dev.cfg  <-- put config here!
-  /scout
+$ ansible-galaxy install robinandeer.miniconda
+$ ansible-galaxy install nodesource.node
+$ ansible-galaxy install Stouts.mongodb
+$ vagrant up
+# Mac specific
+$ open http://localhost:5023/
 ```
 
 When you have the instance folder in place you can start Flask like so:
