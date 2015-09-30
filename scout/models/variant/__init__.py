@@ -5,6 +5,7 @@ CONSEQUENCE = ('deleterious', 'probably_damaging', 'possibly_damaging',
 
 CONSERVATION = ('NotConserved', 'Conserved')
 
+
 SO_TERMS = (
   'transcript_ablation',
   'splice_donor_variant',
@@ -12,11 +13,13 @@ SO_TERMS = (
   'stop_gained',
   'frameshift_variant',
   'stop_lost',
+  'start_lost',
   'initiator_codon_variant',
   'transcript_amplification',
   'inframe_insertion',
   'inframe_deletion',
   'missense_variant',
+  'protein_altering_variant',
   'splice_region_variant',
   'incomplete_terminal_codon_variant',
   'stop_retained_variant',
