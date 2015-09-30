@@ -1,7 +1,8 @@
 from __future__ import (unicode_literals)
 
-CONSEQUENCE = ('deleterious', 'probably_damaging', 'possibly_damaging',
-               'tolerated', 'benign', 'unknown')
+CONSEQUENCE = ('deleterious', 'deleterious_low_confidence', 'probably_damaging',
+               'possibly_damaging', 'tolerated', 'tolerated_low_confidence',
+               'benign', 'unknown')
 
 CONSERVATION = ('NotConserved', 'Conserved')
 
