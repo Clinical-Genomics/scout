@@ -1,38 +1,47 @@
 {
   "name": "scout",
   "version": "1.0.0",
-  "description": "VCF visualizer.",
+  "description": "VCF visualizer web intreface",
+  "main": "Gulpfile.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "dependencies": {
+    "browser-sync": "^2.9.7",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.0.2",
+    "gulp-if": "^2.0.0",
+    "vue": "^0.12.16"
+  },
+  "devDependencies": {
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.10.0",
+    "css-loader": "^0.19.0",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-sass": "^2.0.4",
+    "gulp-uglify": "^1.4.1",
+    "gulp-util": "^3.0.6",
+    "html-loader": "^0.3.0",
+    "style-loader": "^0.12.4",
+    "vue-loader": "^3.0.3",
+    "webpack-stream": "^2.1.1",
+    "yargs": "^3.26.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Clinical-Genomics/scout.git"
+    "url": "git+https://robinandeer@github.com/Clinical-Genomics/scout.git"
   },
+  "keywords": [
+    "genomics"
+  ],
+  "author": "Robin Andeer",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Clinical-Genomics/scout/issues"
   },
-  "private": true,
-  "main": "gulpfile.js",
-  "scripts": {
-    "start": "gulp"
-  },
-  "homepage": "https://github.com/Clinical-Genomics/scout",
-  "author": "Robin Andeer <robin.andeer@scilifelab.se>",
-  "license": "MIT",
-  "dependencies": {
-    "vue": "^0.11.0"
-  },
-  "devDependencies": {
-    "browser-sync": "^1.6.5",
-    "coffee-script": "^1.8.0",
-    "gulp": "^3.8.10",
-    "gulp-autoprefixer": "^1.0.1",
-    "gulp-if": "^1.2.5",
-    "gulp-minify-css": "^0.3.11",
-    "gulp-sass": "^1.0.0",
-    "gulp-uglify": "^1.0.1",
-    "gulp-util": "^3.0.1",
-    "gulp-webpack": "^1.0.0",
-    "vue-loader": "^0.3.0",
-    "webpack": "^1.4.13",
-    "yargs": "^1.3.3"
-  }
+  "homepage": "https://github.com/Clinical-Genomics/scout#readme"
 }
