@@ -12,7 +12,7 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 import click
 
 from scout.models import Transcript
-from . import SO_TERMS
+from .constants import SO_TERMS
 
 
 def get_transcript(vep_entry, ensembl_to_refseq={}):

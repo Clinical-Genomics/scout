@@ -13,7 +13,8 @@ import click
 
 from scout.models import (Gene, PhenotypeTerm)
 
-from . import get_transcript, SO_TERMS
+from . import get_transcript
+from .constants import SO_TERMS
 
 
 def get_genes(variant):
