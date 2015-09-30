@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.1.2] - 2015-09-07
 ## Fixed
 - avoid replacing coverage report with none
+- update SO terms, refactored
 
 ## [1.1.1] - 2015-08-20
 ## Fixed
