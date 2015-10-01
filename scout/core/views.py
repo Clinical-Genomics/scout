@@ -267,6 +267,9 @@ def variants(institute_id, case_id, variant_type):
   variant_models = store.variants(case_model.case_id, query=query,
                                   nr_of_variants=per_page, skip=skip)
 
+  so_cutoff = SO_TERMS.index('stop_retained_variant')
+  severe_so_terms = SO_TERMS[:so_cutoff]
+  query_dict = {key: request.args.getlist(key) for key in request.args.keys()}
   return dict(variants=variant_models,
               case=case_model,
               case_id=case_id,
@@ -274,11 +277,11 @@ def variants(institute_id, case_id, variant_type):
               institute_id=institute_id,
               current_batch=(skip + per_page),
               form=form,
-              severe_so_terms=SO_TERMS[:11] + ('incomplete_terminal_codon_variant',
-                                               'stop_retained_variant'),
+              severe_so_terms=severe_so_terms,
               current_gene_lists=current_gene_lists,
               variant_type=variant_type,
-              upload_form=GeneListUpload())
+              upload_form=GeneListUpload(),
+              query_dict=query_dict)
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')

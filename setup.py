@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
   name='scout',
-  version='1.1.2',
+  version='1.1.3',
   url='https://github.com/Clinical-Genomics/scout',
   description='Scout is a Flask template/bootstrap/boilerplate application.',
   author='Robin Andeer',
