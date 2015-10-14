@@ -10,12 +10,12 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
 import click
+import logging
 
 from scout.models import (Gene, PhenotypeTerm)
 
 from . import get_transcript
 from .constants import SO_TERMS
-
 
 def get_genes(variant):
   """
@@ -86,7 +86,6 @@ def get_genes(variant):
               genes[hgnc_symbol]['best_rank'] = new_rank
               genes[hgnc_symbol]['most_severe_function'] = functional_annotation
 
-
   ######################################################################
   ## There are two types of OMIM terms, one is the OMIM gene entry    ##
   ## and one is for the phenotypic terms.                             ##
@@ -111,20 +110,21 @@ def get_genes(variant):
     if gene_annotation:
       splitted_gene = gene_annotation.split(':')
       hgnc_symbol = splitted_gene[0]
-      for omim_entry in splitted_gene[1].split('|'):
-        splitted_record = omim_entry.split('>')
-
-        phenotype_id = splitted_record[0]
-        inheritance_patterns = []
-        if len(splitted_record) > 1:
-          inheritance_patterns = splitted_record[1].split('/')
-
-        disease_model = PhenotypeTerm(
-                              phenotype_id=phenotype_id,
-                              disease_models=inheritance_patterns
-                            )
-
-        genes[hgnc_symbol]['phenotypic_terms'].append(disease_model)
+      if hgnc_symbol in genes:
+        for omim_entry in splitted_gene[1].split('|'):
+          splitted_record = omim_entry.split('>')
+        
+          phenotype_id = splitted_record[0]
+          inheritance_patterns = []
+          if len(splitted_record) > 1:
+            inheritance_patterns = splitted_record[1].split('/')
+        
+          disease_model = PhenotypeTerm(
+                                phenotype_id=phenotype_id,
+                                disease_models=inheritance_patterns
+                              )
+        
+          genes[hgnc_symbol]['phenotypic_terms'].append(disease_model)
 
   for hgnc_symbol in genes:
     gene_info = genes[hgnc_symbol]
@@ -184,14 +184,21 @@ def cli(vcf_file, verbose):
   """
   Test generating genes.
   """
-
+  import sys
+  from pprint import pprint as pp
   from vcf_parser import VCFParser
-
+  if not vcf_file:
+    sys.exit("Please provide a vcf file")
   vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
+  
   for variant in vcf_parser:
-    genes = get_genes(variant)
-    for gene in genes:
-      print(gene.to_json())
+    try:
+      genes = get_genes(variant)
+    except KeyError as e:
+      pp(variant)
+      raise e
+    # for gene in genes:
+    #   print(gene.to_json())
 
 
 if __name__ == '__main__':
