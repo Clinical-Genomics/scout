@@ -192,11 +192,8 @@ def cli(vcf_file, verbose):
   vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
   
   for variant in vcf_parser:
-    try:
-      genes = get_genes(variant)
-    except KeyError as e:
-      pp(variant)
-      raise e
+    genes = get_genes(variant)
+    pp(variant)
     # for gene in genes:
     #   print(gene.to_json())
 
