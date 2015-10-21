@@ -43,7 +43,7 @@ from vcf_parser import VCFParser
 
 import scout
 
-
+logger = logging.getLogger(__name__)
 
 def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
@@ -53,7 +53,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
 
-  logger = logging.getLogger(__name__)
   # For testing only
   if __name__ == '__main__':
     logger = logging.getLogger("scout.ext.backend.load_mongo")

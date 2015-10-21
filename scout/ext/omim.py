@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Simple OMIM REST API class."""
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
 from datetime import datetime
 
 import requests

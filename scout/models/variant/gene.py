@@ -1,4 +1,4 @@
-from __future__ import (absolute_import, unicode_literals, division)
+from __future__ import (absolute_import, division)
 
 from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField, 
                         ListField, IntField, BooleanField)
