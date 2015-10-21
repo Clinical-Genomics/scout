@@ -50,6 +50,9 @@
                |
               <span>{{ case.updated_at|format_date }}</span> |
               <span>{{ case.status }}</span>
+              {% if case.is_rerun %}
+                | <span class="md-badge--success">RERUN</span>
+              {% endif %}
             </div>
           </div>
         </div>
