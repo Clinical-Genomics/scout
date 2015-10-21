@@ -81,6 +81,10 @@ class Variant(Document):
   clnsig = IntField()
 
   @property
+  def reduced_penetrance_genes(self):
+    return (gene for gene in self.genes if gene.reduced_penetrance)
+
+  @property
   def has_comments(self):
     """
     Return True is there are any comments for this variant in the database
