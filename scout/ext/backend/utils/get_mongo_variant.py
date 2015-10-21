@@ -60,8 +60,10 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                 variant['ALT'],
                 variant_type
               ]
-
+  
+  # This is the common variant id
   variant_id = generate_md5_key(id_fields)
+  # This is the specific variant id, unique
   document_id = generate_md5_key(id_fields+case_id.split('_'))
 
   # Create the mongo variant object
