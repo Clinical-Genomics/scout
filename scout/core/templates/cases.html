@@ -2,6 +2,42 @@
 
 {% set page_title = 'Cases' %}
 
+{% macro case_box(case, institute_id) %}
+<div class="md-card">
+  <div class="md-card-body--padded">
+    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case.display_name) }}" class="md-item">
+      {% if case.events %}
+        <div class="md-item-icon">
+          <div class="dot-indicator"></div>
+        </div>
+      {% endif %}
+
+      <div class="md-item-label">{{ case.display_name }}</div>
+
+      {% if case.assignee %}
+        <div class="tag">{{ case.assignee.first_name }}</div>
+      {% endif %}
+    </a>
+
+    <div class="md-item-subtitle">
+      {% if case.is_research %}
+        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
+      {% else %}
+        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_gene_lists) }}">Clinical variants</a>
+      {% endif %}
+       |
+      <span>{{ case.updated_at|format_date }}</span> |
+      {% if case.analysis_type %}
+        <span class="md-badge">{{ case.analysis_type }}</span>
+      {% endif %}
+      {% if case.is_rerun %}
+        <span class="md-badge--success">rerun</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% block toolbar_left %}
   {{ super() }}
 
@@ -13,53 +49,48 @@
 {% endblock %}
 
 {% block toolbar_secondary %}
-	<div id="search-cases" class="cases-search">
+  <form id="search-cases" class="cases-search" action="{{ url_for('core.cases', institute_id=institute_id) }}" method="GET" accept-charset="utf-8">
     <div class="cases-search-icon">
       <core-icon icon="search"></core-icon>
     </div>
-    <input v-model="casesSearchQuery" type="search" class="cases-search-input">
-  </div>
+    <input name="query" type="search" class="cases-search-input">
+  </form>
 {% endblock %}
 
 {% block content %}
   <div class="cases-list">
     <div class="md-card-list">
-      {% for case in cases %}
-        <div class="md-card">
-          <div class="md-card-body--padded">
-            <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case.display_name) }}" class="md-item">
-              {% if case.events %}
-                <div class="md-item-icon">
-                  <div class="dot-indicator"></div>
-                </div>
-              {% endif %}
+      {% if cases.inactive %}
+        <h3>Inactive</h3>
+        {% for case in cases.inactive %}
+          {{ case_box(case, institute_id) }}
+        {% endfor %}
+      {% endif %}
 
-              <div class="md-item-label">{{ case.display_name }}</div>
+      {% if cases.active %}
+        <h3>Active</h3>
+        {% for case in cases.active %}
+          {{ case_box(case, institute_id) }}
+        {% endfor %}
+      {% endif %}
 
-              {% if case.assignee %}
-                <div class="tag">{{ case.assignee.first_name }}</div>
-              {% endif %}
-            </a>
+      {% if cases.solved %}
+        <h3>Solved</h3>
+        {% for case in cases.solved %}
+          {{ case_box(case, institute_id) }}
+        {% endfor %}
+      {% endif %}
 
-            <div class="md-item-subtitle">
-              {% if case.is_research %}
-                <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
-              {% else %}
-                <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_gene_lists) }}">Clinical variants</a>
-              {% endif %}
-               |
-              <span>{{ case.updated_at|format_date }}</span> |
-              {% if case.analysis_type %}
-                <span class="md-badge">{{ case.analysis_type }}</span>
-              {% endif %}
-              <span class="md-badge--low">{{ case.status }}</span>
-              {% if case.is_rerun %}
-                <span class="md-badge--success">rerun</span>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      {% endfor %}
+      {% if cases.archived %}
+        <h3>Archived</h3>
+        {% for case in cases.archived %}
+          {{ case_box(case, institute_id) }}
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="layout-center" style="margin-top: 2rem;">
+      <small>Found: <strong>{{ found_cases }}</strong> cases</small>
     </div>
   </div>
 {% endblock %}
