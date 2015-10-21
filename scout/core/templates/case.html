@@ -78,13 +78,18 @@
       <core-icon icon="label"></core-icon>
     </div>
 
-    <form class="md-label-text" action="{{ url_for('api.case_status',institute_id=institute.display_name,case_id=case.display_name) }}" method="POST">
+    <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
       {{ case.status|capitalize }}
 
       {% if case.status != 'archived' %}
         <input type="hidden" name="status" readonly value="archived">
         <button class="case-assign-icon" type="submit">
           <small><strong>(ARCHIVE)</strong></small>
+        </button>
+      {% else %}
+        <input type="hidden" name="status" readonly value="active">
+        <button class="case-assign-icon" type="submit">
+          <small><strong>(UNARCHIVE)</strong></small>
         </button>
       {% endif %}
     </form>
