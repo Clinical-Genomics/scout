@@ -367,7 +367,6 @@
 
       <div id="inheritance-model" class="md-card">
         <div class="md-card-header">Inheritance models</div>
-
         <div class="md-card-body-list">
           <div class="variant-row-item">
             <div>Variant</div>
@@ -391,6 +390,20 @@
             </div>
           {% endif %}
         </div>
+
+        <div class="md-card-header">Reduced penetrance</div>
+          <div class="md-card-body-list">
+            {% for gene in variant.reduced_penetrance_genes %}
+              <div class="variant-list-item">
+                <div>{{ gene.hgnc_symbol }}</div>
+                <div>YES</div>
+              </div>
+            {% else %}
+              <div class="variant-list-item">
+                <div>No annotations.</div>
+              </div>
+            {% endfor %}
+          </div>
       </div>
 
       <div id="omim" class="md-card">
