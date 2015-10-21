@@ -6,7 +6,7 @@ sass = require 'gulp-sass'
 autoprefixer = require 'gulp-autoprefixer'
 browserSync = require 'browser-sync'
 reload = browserSync.reload
-webpack = require 'gulp-webpack'
+webpack = require 'webpack-stream'
 webpackConfig = require './webpack.config.js'
 minify = require 'gulp-minify-css'
 uglify = require 'gulp-uglify'
@@ -37,10 +37,8 @@ gulp.task 'css', ->
 
 # bundle Vue.js template and scripts
 gulp.task 'webpack', ->
-	myConfig = Object.create webpackConfig
-
 	gulp.src 'assets/coffee/main.js'
-		.pipe webpack myConfig
+		.pipe webpack webpackConfig
 		.pipe gulpif argv.production, uglify()
 		.pipe gulp.dest 'build/'
 		.pipe reload { stream: yes }

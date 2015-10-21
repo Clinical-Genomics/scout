@@ -3,8 +3,9 @@ module.exports = {
     filename: 'bundle.js',
   },
   module: {
-    loaders: [
-      { test: /\.vue$/, loader: 'vue' },
-    ]
-  }
+    loaders: [{
+      test: /\.vue$/,
+      loader: 'vue'
+    }]
+  },
 }

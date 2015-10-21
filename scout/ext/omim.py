@@ -72,7 +72,7 @@ class OMIM(object):
     Args:
       app (Flask): initialized Flask app instance
     """
-    self.api_key = app.config['OMIM_API_KEY']
+    self.api_key = app.config.get('OMIM_API_KEY')
 
   def base(self, handler):
     """Compose url and universal params for any request handler.

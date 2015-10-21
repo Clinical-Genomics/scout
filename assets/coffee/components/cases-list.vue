@@ -26,7 +26,7 @@
             <a href="{{baseUrl}}/{{display_name}}/clinical?{{ default_gene_lists | joinParams gene_lists }}">Clinical variants</a>
           </template>
            |
-          <span>{{created_at.$date | formatISO}}</span> |
+          <span>{{updated_at.$date | formatISO}}</span> |
           <span>{{status}}</span>
         </div>
       </div>

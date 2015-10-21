@@ -10,9 +10,15 @@
 				<div class="landing-header-title">Scout</div>
 			</div>
 
-			<a href="{{ url_for('login.signin') }}" class="landing-header-login">
-				Sign in
-			</a>
+      {% if config.LOGIN_DISABLED %}
+        <a href="{{ url_for('core.institutes') }}" class="landing-header-login">
+          Go to scout
+        </a>
+      {% else %}
+        <a href="{{ url_for('login.signin') }}" class="landing-header-login">
+          Sign in
+        </a>
+      {% endif %}
 		</header>
 
 		<div class="landing-hero">

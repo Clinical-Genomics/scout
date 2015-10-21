@@ -3,10 +3,6 @@
   sudo: yes
   apt: update_cache=yes cache_valid_time=3600
 
-- name: upgrade apt
-  sudo: yes
-  apt: upgrade=yes
-
 - name: install basic packages
   sudo: yes
   apt: name={{ item }} state=latest

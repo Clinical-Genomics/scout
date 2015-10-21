@@ -19,7 +19,7 @@ from flask_oauthlib.client import OAuthException
 from mongoengine.queryset import DoesNotExist
 
 from ..extensions import google, login_manager
-from ..models import User, Whitelist
+from ..models import User, Whitelist, AnonymousUser
 
 
 login = Blueprint('login', __name__, template_folder='templates')
@@ -34,6 +34,8 @@ def get_google_token():
 login_manager.login_view = 'login.signin'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.refresh_view = 'login.reauth'
+login_manager.anonymous_user = AnonymousUser
+
 
 @login_manager.user_loader
 def load_user(user_id):

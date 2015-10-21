@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from flask.ext.login import current_user
 from flask.ext.admin import AdminIndexView, expose
 from flask.ext.admin.contrib.mongoengine import ModelView
@@ -10,7 +8,7 @@ class AuthMixin(object):
   """All admin views should subclass AuthMixin."""
   def is_accessible(self):
     """Check if the current user should have access to the view."""
-    return current_user.is_authenticated() and current_user.has_role('admin')
+    return current_user.has_role('admin')
 
 
 class AdminView(AuthMixin, AdminIndexView):
