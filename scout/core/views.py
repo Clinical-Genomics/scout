@@ -40,7 +40,9 @@ def cases(institute_id):
     The purpose of this page is to display all cases related to an institute.
     """
     institute = validate_user(current_user, institute_id)
-    return dict(institute=institute, institute_id=institute_id)
+    case_models = store.cases(collaborator=institute_id)
+    return dict(institute=institute, institute_id=institute_id,
+                cases=case_models)
 
 
 @core.route('/<institute_id>/<case_id>')
