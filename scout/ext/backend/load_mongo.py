@@ -20,8 +20,8 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 
 
-from __future__ import (absolute_import, unicode_literals, print_function,
-                        division)
+from __future__ import (absolute_import, print_function, division)
+
 import sys
 import os
 import io
@@ -43,7 +43,7 @@ from vcf_parser import VCFParser
 
 import scout
 
-
+logger = logging.getLogger(__name__)
 
 def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
@@ -53,7 +53,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
 
-  logger = logging.getLogger(__name__)
   # For testing only
   if __name__ == '__main__':
     logger = logging.getLogger("scout.ext.backend.load_mongo")
@@ -105,7 +104,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   ######## Get the variants and add them to the mongo db: ########
 
   logger.info("Setting up a variant parser")
-  variant_parser = VCFParser(infile=vcf_file, split_variants=True, skip_info_check=True)
+  variant_parser = VCFParser(infile=vcf_file)
   nr_of_variants = 0
 
   logger.info("Deleting old variants for case {0}".format(case.case_id))

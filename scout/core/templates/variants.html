@@ -218,7 +218,7 @@
             <small><span class="md-badge--{{ variant.manual_rank_level }}">
               {{ variant.manual_rank }}
             </span></small>
-          {% elif variant.has_comments %}
+          {% elif variant.has_comments(case) %}
             <!-- At least show if there are any comments written -->
             <div class="dot-indicator"></div>
           {% endif %}

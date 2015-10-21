@@ -10,7 +10,7 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
 
-from __future__ import (absolute_import, unicode_literals, print_function,)
+from __future__ import (absolute_import, print_function,)
 
 import sys
 import os
@@ -60,8 +60,10 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                 variant['ALT'],
                 variant_type
               ]
-
+  
+  # This is the common variant id
   variant_id = generate_md5_key(id_fields)
+  # This is the specific variant id, unique
   document_id = generate_md5_key(id_fields+case_id.split('_'))
 
   # Create the mongo variant object
@@ -265,12 +267,12 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
     setup_configs['institutes'] = [institute]
 
   if not setup_configs.get('load_vcf', None):
-    print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+    print("Please provide a vcf file.(Use flag '-f/--vcf_file')", file=sys.stderr)
     sys.exit(0)
 
   # Check that the ped file is provided:
   if not setup_configs.get('ped', None):
-    print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+    print("Please provide a ped file.(Use flag '-p/--ped_file')", file=sys.stderr)
     sys.exit(0)
 
   # Check that the config file is provided:

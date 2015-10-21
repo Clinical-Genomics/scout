@@ -427,7 +427,7 @@ def email_sanger(institute_id, case_id, variant_id):
   msg = Message(**kwargs)
   mail.send(msg)
 
-  link = url_for('.case', institute_id=institute_id, case_id=case_id)
-  store.order_sanger(institute, case_model, current_user, link, variant_model)
+  store.order_sanger(institute, case_model, current_user, variant_url,
+                     variant_model)
 
   return redirect(variant_url)

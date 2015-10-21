@@ -17,15 +17,17 @@ from scout.models import (Gene, PhenotypeTerm)
 from . import get_transcript
 from .constants import SO_TERMS
 
+logger = logging.getLogger(__name__)
+
 def get_genes(variant):
   """
   Get the transcript information in the mongoengine format.
 
   Args:
-    variant : A Variant dictionary
+    variant (dict): A Variant dictionary
 
   Returns:
-    mongo_genes: A list with mongo engine object that represents the genes
+    mongo_genes (list): A list with mongo engine object that represents the genes
 
   """
   genes = {}
@@ -63,6 +65,7 @@ def get_genes(variant):
       if hgnc_symbol:
         if hgnc_symbol in genes:
           genes[hgnc_symbol]['transcripts'][transcript.transcript_id] = transcript
+          # Check most severe transcript
           for functional_annotation in transcript.functional_annotations:
             new_rank = SO_TERMS[functional_annotation]['rank']
             if new_rank < genes[hgnc_symbol]['best_rank']:
@@ -104,7 +107,7 @@ def get_genes(variant):
         genes[hgnc_symbol]['omim_gene_id'] = omim_term
       except (ValueError, KeyError):
         pass
-
+  
   # Fill the omim phenotype terms:
   for gene_annotation in variant['info_dict'].get('Phenotypic_disease_model', []):
     if gene_annotation:
@@ -125,12 +128,19 @@ def get_genes(variant):
                               )
         
           genes[hgnc_symbol]['phenotypic_terms'].append(disease_model)
-
+  
+  
+  reduced_penetrance = set(variant['info_dict'].get('Reduced_penetrance', []))
+  
   for hgnc_symbol in genes:
     gene_info = genes[hgnc_symbol]
     most_severe = gene_info['most_severe_transcript']
     # Create a mongo engine gene object for each gene found in the variant
     mongo_gene = Gene(hgnc_symbol=hgnc_symbol)
+    
+    if hgnc_symbol in reduced_penetrance:
+      mongo_gene.reduced_penetrance = True
+    
     mongo_gene.description = gene_descriptions.get(hgnc_symbol)
     mongo_gene.ensembl_gene_id = gene_info.get('ensembl_id', None)
     mongo_gene.omim_gene_entry = gene_info.get(
@@ -192,11 +202,8 @@ def cli(vcf_file, verbose):
   vcf_parser = VCFParser(infile=vcf_file, split_variants=True)
   
   for variant in vcf_parser:
-    try:
-      genes = get_genes(variant)
-    except KeyError as e:
-      pp(variant)
-      raise e
+    genes = get_genes(variant)
+    pp(variant)
     # for gene in genes:
     #   print(gene.to_json())
 

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from mongoengine import (StringField, IntField, ListField, EmbeddedDocument)
 
 class Individual(EmbeddedDocument):
