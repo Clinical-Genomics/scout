@@ -4,7 +4,7 @@
 "main concept of MongoDB is embed whenever possible"
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
-from __future__ import (absolute_import, unicode_literals, division)
+from __future__ import (absolute_import, division)
 import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,

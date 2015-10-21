@@ -11,7 +11,7 @@ Created by Måns Magnusson on 2014-11-17.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
-from __future__ import (absolute_import, unicode_literals, print_function)
+from __future__ import (absolute_import, print_function)
 import json
 import click
 import logging
