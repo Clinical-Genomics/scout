@@ -10,7 +10,7 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
 
-from __future__ import (absolute_import, unicode_literals, print_function,)
+from __future__ import (absolute_import, print_function,)
 
 import sys
 import os
@@ -267,12 +267,12 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
     setup_configs['institutes'] = [institute]
 
   if not setup_configs.get('load_vcf', None):
-    print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+    print("Please provide a vcf file.(Use flag '-f/--vcf_file')", file=sys.stderr)
     sys.exit(0)
 
   # Check that the ped file is provided:
   if not setup_configs.get('ped', None):
-    print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+    print("Please provide a ped file.(Use flag '-p/--ped_file')", file=sys.stderr)
     sys.exit(0)
 
   # Check that the config file is provided:

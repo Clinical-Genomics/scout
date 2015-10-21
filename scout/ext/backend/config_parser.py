@@ -9,7 +9,7 @@ Created by Måns Magnusson on 2014-10-19.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 """
 
-from __future__ import (print_function, unicode_literals, absolute_import)
+from __future__ import (print_function, absolute_import)
 
 import sys
 import os
