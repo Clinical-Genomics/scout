@@ -49,7 +49,7 @@ def cases(institute_id):
         case_groups[case_model.status].append(case_model)
 
     return dict(institute=institute, institute_id=institute_id,
-                cases=case_groups, found_cases=len(case_models))
+                cases=case_groups, found_cases=len(case_models), query=query)
 
 
 @core.route('/<institute_id>/<case_id>')
