@@ -59,13 +59,20 @@ class MongoAdapter(BaseAdapter):
     """Fetch an Institute from the  database."""
     return Institute.objects.get(internal_id=institute_id)
 
-  def cases(self, collaborator=None):
+  def cases(self, collaborator=None, query=None):
     self.logger.info("Fetch all cases")
     if collaborator:
       self.logger.info("Use collaborator {0}".format(collaborator))
-      return Case.objects(collaborators=collaborator).order_by('-updated_at')
+      case_query = Case.objects(collaborators=collaborator)
     else:
-      return Case.objects().order_by('-updated_at')
+      case_query = Case.objects
+
+    if query:
+      # filter cases by matching display name of case or individuals
+      case_query = case_query.filter(Q(display_name__contains=query) |
+                                     Q(individuals__display_name__contains=query))
+
+    return case_query.order_by('-updated_at')
 
   def case(self, institute_id, case_id):
     self.logger.info("Fetch case {0}".format(case_id))
