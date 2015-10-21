@@ -49,9 +49,12 @@
               {% endif %}
                |
               <span>{{ case.updated_at|format_date }}</span> |
-              <span>{{ case.status }}</span>
+              {% if case.analysis_type %}
+                <span class="md-badge">{{ case.analysis_type }}</span>
+              {% endif %}
+              <span class="md-badge--low">{{ case.status }}</span>
               {% if case.is_rerun %}
-                | <span class="md-badge--success">RERUN</span>
+                <span class="md-badge--success">rerun</span>
               {% endif %}
             </div>
           </div>
