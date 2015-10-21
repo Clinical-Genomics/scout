@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, unicode_literals, division)
 
 from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField, 
-                        ListField, IntField)
+                        ListField, IntField, BooleanField)
 
 from .transcript import Transcript
 from . import (SO_TERMS, FEATURE_TYPES, CONSEQUENCE)
@@ -26,6 +26,7 @@ class Gene(EmbeddedDocument):
   omim_gene_entry = IntField()
   omim_phenotypes = ListField(EmbeddedDocumentField(PhenotypeTerm))
   description = StringField()
+  reduced_penetrance = BooleanField()
 
   @property
   def reactome_link(self):
