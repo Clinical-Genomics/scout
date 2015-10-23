@@ -19,8 +19,7 @@ class AdminView(AuthMixin, AdminIndexView):
 
 
 # customized admin views
-class UserView(ModelView):
+class UserModelView(ModelView):
   """Slightly customized admin view for the user model."""
   column_filters = ['name', 'email', 'created_at', 'location']
-
   column_searchable_list = ('name', 'email')
