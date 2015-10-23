@@ -45,7 +45,7 @@
             {% endblock %}
 
             {% block toolbar_right %}
-              <a class="md-label" href="{{ url_for('user.profile', user_id=current_user.id) }}">
+              <a class="md-label" href="{{ url_for('profile.profile', user_id=current_user.id) }}">
                 <div class="md-label-icon">
                   <core-icon icon="account-circle"></core-icon>
                 </div>
