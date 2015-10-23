@@ -83,7 +83,7 @@
 
       {% if case.status != 'archived' %}
         <input type="hidden" name="status" readonly value="archived">
-        <button class="case-assign-icon" type="submit">
+        <button class="case-assign-icon" type="submit" onclick="return confirm('Are you sure?')">
           <small><strong>(ARCHIVE)</strong></small>
         </button>
       {% else %}
