@@ -18,10 +18,10 @@ import logging
 from mongoengine import connect, DoesNotExist, Q
 
 from . import BaseAdapter
-from .config_parser import ConfigParser
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm)
 
 from pprint import pprint as pp
+
 
 class MongoAdapter(BaseAdapter):
   """Adapter for cummunication between the scout server and a mongo database."""

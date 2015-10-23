@@ -9,10 +9,6 @@ Created by Måns Magnusson on 2015-01-14.
 Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 
 """
-
-
-from __future__ import absolute_import, unicode_literals, print_function
-
 import sys
 import os
 import logging
@@ -20,12 +16,6 @@ import logging
 import click
 
 import scout
-
-from pprint import pprint as pp
-from pymongo import MongoClient, Connection
-from mongoengine import connect, DoesNotExist
-from mongoengine.connection import _get_db
-
 from scout.ext.backend import (load_mongo_db, ConfigParser)
 
 BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
