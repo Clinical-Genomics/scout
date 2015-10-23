@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (EmbeddedDocument, StringField, ListField)
 
+
 class PhenotypeTerm(EmbeddedDocument):
   phenotype_id = StringField()
   feature = StringField()
   disease_models = ListField(StringField())
+
+  @property
+  def hpo_link(self):
+      """Return a HPO link."""
+      return ("http://compbio.charite.de/hpoweb/showterm?id={}"
+              .format(self.phenotype_id))
 
   @property
   def omim_link(self):

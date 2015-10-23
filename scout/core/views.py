@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for, make_response)
 from flask.ext.login import login_required, current_user
@@ -147,9 +146,14 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 
     else:
         # POST a new phenotype to the list
-        hpo_term = request.form['hpo_term']
-        store.add_phenotype(institute, case_model, current_user, case_url,
-                            hpo_term)
+        phenotype_term = request.form['hpo_term']
+        if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
+            store.add_phenotype(institute, case_model, current_user, case_url,
+                                hpo_term=phenotype_term)
+        else:
+            # assume omim id
+            store.add_phenotype(institute, case_model, current_user, case_url,
+                                omim_term=phenotype_term)
 
     # fetch genes to update dynamic gene list
     genes = hpo_genes(case_model.phenotype_terms)
