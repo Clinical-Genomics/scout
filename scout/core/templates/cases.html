@@ -53,7 +53,7 @@
     <div class="cases-search-icon">
       <core-icon icon="search"></core-icon>
     </div>
-    <input value="{{ query }}" name="query" type="search" class="cases-search-input">
+    <input value="{{ query or '' }}" name="query" type="search" class="cases-search-input">
   </form>
 {% endblock %}
 
