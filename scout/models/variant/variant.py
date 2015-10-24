@@ -9,7 +9,7 @@ import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
-                         ReferenceField, SortedListField)
+                         ReferenceField, SortedListField, Q)
 
 from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
 from .gene import Gene
@@ -84,16 +84,16 @@ class Variant(Document):
   def reduced_penetrance_genes(self):
     return (gene for gene in self.genes if gene.reduced_penetrance)
 
-  @property
-  def has_comments(self):
+  def has_comments(self, case):
     """
     Return True is there are any comments for this variant in the database
     """
-    if Event.objects(verb='comment', variant_id=self.variant_id,
-                      institute=self.institute):
-      return True
+    events = Event.objects.filter(Q(verb='comment') &
+                                  Q(variant_id=self.variant_id) &
+                                  Q(institute=self.institute) &
+                                  (Q(case=case) | Q(level='global')))
 
-    return False
+    return True if events else False
 
   @property
   def clnsig_human(self):
