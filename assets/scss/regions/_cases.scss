@@ -4,17 +4,7 @@
   height: 2.8rem;
   display: flex;
   align-items: center;
-
-  background-color: rgba(#000, .05);
-  border-radius: 2px;
-
-  &:hover {
-    background-color: rgba(#000, .1);
-  }
-
-  > :first-child {
-    margin-right: .8rem;
-  }
+  margin: 0;
 }
 
 .cases-search-icon {
@@ -22,8 +12,14 @@
 }
 
 .cases-search-input {
-  width: 100%;
-  background-color: transparent;
+  flex: 1;
+  background-color: rgba(#000, .05);
+  border-radius: 2px;
+  padding: .5rem;
+
+  &:hover {
+    background-color: rgba(#000, .1);
+  }
 }
 
 // content

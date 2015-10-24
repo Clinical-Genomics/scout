@@ -36,6 +36,11 @@
     </a>
   {% endif %}
 
+  <div class="md-label">
+    <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
+    <div class="md-label-text">{{ case.analysis_type }}</div>
+  </div>
+
   {% if case.assignee %}
     <form class="case-assign" action="{{ url_for('core.remove_assignee',
                              institute_id=institute.display_name,
@@ -73,13 +78,18 @@
       <core-icon icon="label"></core-icon>
     </div>
 
-    <form class="md-label-text" action="{{ url_for('api.case_status',institute_id=institute.display_name,case_id=case.display_name) }}" method="POST">
+    <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
       {{ case.status|capitalize }}
 
       {% if case.status != 'archived' %}
         <input type="hidden" name="status" readonly value="archived">
-        <button class="case-assign-icon" type="submit">
+        <button class="case-assign-icon" type="submit" onclick="return confirm('Are you sure?')">
           <small><strong>(ARCHIVE)</strong></small>
+        </button>
+      {% else %}
+        <input type="hidden" name="status" readonly value="active">
+        <button class="case-assign-icon" type="submit">
+          <small><strong>(UNARCHIVE)</strong></small>
         </button>
       {% endif %}
     </form>
