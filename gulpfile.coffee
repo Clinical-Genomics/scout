@@ -35,7 +35,7 @@ gulp.task 'css', ->
 
 # bundle Vue.js template and scripts
 gulp.task 'webpack', ->
-	gulp.src 'assets/coffee/main.js'
+	gulp.src 'assets/coffee/*.js'
 		.pipe webpack webpackConfig
 		.pipe gulpif argv.production, uglify()
 		.pipe gulp.dest 'build/'
