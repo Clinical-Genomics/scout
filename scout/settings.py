@@ -40,6 +40,7 @@ class BaseConfig(object):
                 ('scout.user.user', None),
                 ('scout.api.api', None),
                 ('scout.browser.browser', None),
+                ('scout.pileup.pileup_bp', None),
                 ('chanjo_report.server.blueprints.report_bp', '/reports')]
 
   EXTENSIONS = ['scout.extensions.store',
