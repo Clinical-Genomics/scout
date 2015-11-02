@@ -104,6 +104,12 @@
     </div>
     <div class="md-label-text">Coverage report</div>
   </a>
+
+  {% if case.rank_model_version %}
+      <div class="md-label">
+          <div class="md-label-text">Rank model: {{ case.rank_model_version }}</div>
+      </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}

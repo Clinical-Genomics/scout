@@ -46,6 +46,7 @@ class Case(Document):
     genome_version = FloatField()
 
     analysis_date = StringField()
+    rank_model_version = StringField()
 
     gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                                default='unconfirmed')
