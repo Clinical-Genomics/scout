@@ -365,7 +365,9 @@
             <tbody>
               {% for gene_list in case.clinical_gene_lists %}
                 <tr>
-                  <td>{{ gene_list.display_name }}</td>
+                  <td>
+                      <a href="{{ url_for('core.gene_panel', institute_id=institute_id, case_id=case_id, panel_id=gene_list.list_id, version=gene_list.version) }}">{{ gene_list.display_name }}</a>
+                  </td>
                   <td>{{ gene_list.version }}</td>
                   <td>{{ gene_list.date or '' }}</td>
                 </tr>

@@ -1,0 +1,38 @@
+{% extends 'layouts/scroll-header.html' %}
+
+{% set page_title = 'Gene panel' %}
+
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <a href="{{ url_for('core.cases', institute_id=institute.display_name) }}" class="md-breadcrumb-button is-raised">
+      <small>{{ institute.display_name }}</small>
+    </a>
+
+    <core-icon icon="chevron-right" class="md-breadcrumb-separator">
+    </core-icon>
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      <small>{{ case.display_name }}</small>
+    </a>
+
+    <core-icon icon="chevron-right" class="md-breadcrumb-separator">
+    </core-icon>
+    <div class="md-breadcrumb">
+      <small>{{ panel.display_name }}</small>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="md-card">
+    <div class="md-card-header">Included genes</div>
+    <div class="md-card-body-list">
+      {% for gene_id in panel.genes %}
+        <div class="list-item">
+          {{ gene_id }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

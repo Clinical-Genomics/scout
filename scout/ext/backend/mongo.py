@@ -274,6 +274,10 @@ class MongoAdapter(BaseAdapter):
     except DoesNotExist:
       return None
 
+  def gene_panel(self, panel_id, version):
+      """Fetch a gene panel from the database."""
+      return dict()
+
   def next_variant(self, document_id):
     """
     Returns the next variant from the rank order.
