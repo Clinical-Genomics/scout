@@ -373,8 +373,9 @@ def mark_causative(institute_id, case_id, variant_id):
     return redirect(case_url)
 
 
-@core.route('/<institute_id>/<case_id>/unmark_causative', methods=['POST'])
-def unmark_causative(institute_id, case_id):
+@core.route('/<institute_id>/<case_id>/<variant_id>/unmark_causative',
+            methods=['POST'])
+def unmark_causative(institute_id, case_id, variant_id):
     """Remove a variant as confirmed causative for a case."""
     # very basic security check
     institute = validate_user(current_user, institute_id)
@@ -383,7 +384,7 @@ def unmark_causative(institute_id, case_id):
 
     # skip the host part of the URL to make it more flexible
     link = request.referrer.replace(request.host_url, '/')
-    variant_model = case_model.causative
+    variant_model = store.variant(document_id=variant_id)
     store.unmark_causative(institute, case_model, current_user, link,
                            variant_model)
 
