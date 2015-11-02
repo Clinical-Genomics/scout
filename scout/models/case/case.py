@@ -10,6 +10,7 @@ from . import STATUS
 from .individual import Individual
 from .gene_list import GeneList
 from scout.models import PhenotypeTerm
+from scout.constants import ANALYSIS_TYPES
 
 
 class Case(Document):
@@ -47,6 +48,7 @@ class Case(Document):
 
     analysis_date = StringField()
     rank_model_version = StringField()
+    analysis_type = StringField(choices=ANALYSIS_TYPES)
 
     gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
                                default='unconfirmed')
