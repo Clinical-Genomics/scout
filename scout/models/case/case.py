@@ -28,7 +28,7 @@ class Case(Document):
     created_at = DateTimeField(default=datetime.now)
     updated_at = DateTimeField(default=datetime.now)
     suspects = ListField(ReferenceField('Variant'))
-    causative = ReferenceField('Variant')
+    causatives = ListField(ReferenceField('Variant'))
 
     # The synopsis is a text blob
     synopsis = StringField(default='')

@@ -67,11 +67,11 @@
     </form>
   {% endif %}
 
-  {% if case.is_solved %}
-    {% if variant == case.causative %}
+  {% if variant in case.causatives %}
       <form action="{{ url_for('core.unmark_causative',
                                institute_id=institute.display_name,
-                               case_id=case.display_name) }}"
+                               case_id=case.display_name,
+                               variant_id=variant.id) }}"
             method="POST">
         <button type="submit" class="case-assign-icon" title="Reset causative">
           <div class="md-label">
@@ -82,7 +82,6 @@
           </div>
         </button>
       </form>
-    {% endif %}
   {% else %}
     <form action="{{ url_for('core.mark_causative',
                              institute_id=institute.display_name,
