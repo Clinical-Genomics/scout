@@ -70,6 +70,18 @@ def case(institute_id, case_id):
                 case_id=case_id)
 
 
+@core.route('/<institute_id>/<case_id>/panels/<panel_id>/<version>')
+@templated('gene-panel.html')
+@login_required
+def gene_panel(institute_id, case_id, panel_id, version):
+    """Show the list of genes associated with a gene panel."""
+    institute_model = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    gene_panel = store.gene_panel(panel_id, version)
+    return dict(institute=institute_model, case=case_model,
+                panel=gene_panel)
+
+
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
 def assign_self(institute_id, case_id):
     institute = validate_user(current_user, institute_id)
