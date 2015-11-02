@@ -312,6 +312,18 @@ core-icon {
 
 .md-badge {
   @extend %md-badge;
+
+  &.is-wgs {
+    background-color: #e91e63;
+  }
+
+  &.is-wes {
+    background-color: #00bcd4;
+  }
+
+  &.is-mixed {
+    background-color: #673ab7;
+  }
 }
 
 .md-badge--low {
