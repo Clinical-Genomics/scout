@@ -12,7 +12,7 @@
 
     <core-icon icon="chevron-right" class="md-breadcrumb-separator">
     </core-icon>
-    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute.display_name, case_id=case.display_name) }}">
       <small>{{ case.display_name }}</small>
     </a>
 
@@ -22,6 +22,19 @@
       <small>{{ panel.display_name }}</small>
     </div>
   </div>
+{% endblock %}
+
+{% block toolbar_secondary %}
+  {% for gene_panel in case.clinical_gene_lists %}
+    <a class="md-label" href="{{ url_for('core.gene_panel', institute_id=institute.display_name, case_id=case.display_name, panel_id=gene_panel.list_id, version=gene_panel.version) }}">
+      {% if gene_panel == panel %}
+        <div class="md-label-icon">
+          <core-icon icon="arrow-forward"></core-icon>
+        </div>
+      {% endif %}
+      <div class="md-label-text">{{ gene_panel.display_name }}</div>
+    </a>
+  {% endfor %}
 {% endblock %}
 
 {% block content %}
