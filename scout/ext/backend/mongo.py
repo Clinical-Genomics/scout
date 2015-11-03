@@ -44,7 +44,6 @@ class MongoAdapter(BaseAdapter):
     # self.variant_collection = self.db.variant
 
   def __init__(self, app=None):
-
     self.logger = logging.getLogger(__name__)
 
     if app:
@@ -823,7 +822,7 @@ class MongoAdapter(BaseAdapter):
 
     """
     # mark the variant as causative in the case model
-    case.causative = variant
+    case.causatives.append(variant)
 
     # mark the case as solved
     case.status = 'solved'
@@ -872,7 +871,7 @@ class MongoAdapter(BaseAdapter):
 
     """
     # remove the variant as causative in the case model
-    case.causative = None
+    case.causatives.remove(variant)
 
     # mark the case as active again
     case.status = 'active'
