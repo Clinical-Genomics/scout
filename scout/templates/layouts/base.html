@@ -39,11 +39,6 @@
 
     {% block body %}{% endblock %}
 
-    {% if config.DEBUG %}
-      <!-- include browser-sync script tag -->
-      {% include 'footer.html' %}
-    {% endif %}
-
     {% block ga %}
       {% include "macros/_google_analytics.html" %}
     {% endblock %}
