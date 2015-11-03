@@ -16,11 +16,9 @@ argv = require('yargs').argv
 
 # browser-sync task, only cares about compiled CSS
 gulp.task 'browser-sync', ->
-	browserSync
-    port: 3023
-		files: ['build/*.css', 'build/*.js']
-		proxy:
-			port: 5023
+    browserSync
+        files: ['build/*.css', 'build/*.js']
+        proxy: 'localhost:5023'
 
 
 # CSS task - finds and compiles all SCSS files
