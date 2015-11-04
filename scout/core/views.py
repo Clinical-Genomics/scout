@@ -141,19 +141,22 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 
     if phenotype_id:
         # DELETE a phenotype from the list
-        store.remove_phenotype(institute, case_model, current_user, case_url,
-                               phenotype_id)
-
+        store.remove_phenotype(institute, case_model, current_user,
+                               case_url, phenotype_id)
     else:
-        # POST a new phenotype to the list
-        phenotype_term = request.form['hpo_term']
-        if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
-            store.add_phenotype(institute, case_model, current_user, case_url,
-                                hpo_term=phenotype_term)
-        else:
-            # assume omim id
-            store.add_phenotype(institute, case_model, current_user, case_url,
-                                omim_term=phenotype_term)
+        try:
+            # POST a new phenotype to the list
+            phenotype_term = request.form['hpo_term']
+            if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
+                store.add_phenotype(institute, case_model, current_user,
+                                    case_url, hpo_term=phenotype_term)
+            else:
+                # assume omim id
+                store.add_phenotype(institute, case_model, current_user,
+                                    case_url, omim_term=phenotype_term)
+        except ValueError:
+            return abort(400, ("unable to add phenotype term: {}"
+                               .format(phenotype_id)))
 
     # fetch genes to update dynamic gene list
     genes = hpo_genes(case_model.phenotype_terms)

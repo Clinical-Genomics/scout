@@ -7,7 +7,6 @@ from flask.ext.login import current_user
 import markdown as md
 
 from scout.core.utils import validate_user
-from ..models.case import STATUS as STATUS_ORDER
 from ..extensions import omim, store
 
 TERMS_MAP = {
