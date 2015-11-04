@@ -134,6 +134,11 @@ def get_mongo_case(case, scout_config):
     mongo_case['genome_build'] = scout_config.get('human_genome_build', '')
     logger.debug("Setting genome build to: {0}".format(
       scout_config.get('human_genome_build', '')))
+
+    # Add the genome build information
+    mongo_case['rank_model_version'] = scout_config.get('rank_model_version', '')
+    logger.debug("Setting rank model version to: {0}".format(
+      scout_config.get('rank_model_version', '')))
     
     # Get the genome version
     mongo_case['genome_version'] = float(scout_config.get('human_genome_version', '0'))
