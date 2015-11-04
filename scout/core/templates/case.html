@@ -386,8 +386,9 @@
           {% for hpo_term in case.phenotype_terms %}
             <div class="list-item">
               <div>
+                {{ hpo_term.feature }}
                 <a href="{{ hpo_term.hpo_link }}" target="_blank">
-                  {{ hpo_term.feature or hpo_term.phenotype_id }}
+                  <small>{{ hpo_term.phenotype_id }}</small>
                 </a>
               </div>
 
