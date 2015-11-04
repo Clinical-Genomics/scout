@@ -257,7 +257,16 @@
 
           <div class="variant-list-item">
             <div>CLINSIG</div>
-            <div>{{ variant.clnsig or '1' }}: {{ variant.clnsig_human }}</div>
+            <div>
+              {{ variant.clnsig or '1' }}:
+              {% if variant.clnsig %}
+                <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ variant.clnsig_acc }}">
+                  {{ variant.clnsig_human }}
+                </a>
+              {% else %}
+                {{ variant.clnsig_human }}
+              {% endif %}
+            </div>
           </div>
 
           <div class="variant-row-item">
