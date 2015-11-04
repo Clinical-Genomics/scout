@@ -34,7 +34,7 @@ Flask-SSLify
 pyOpenSSL==0.13
 
 # Chanjo coverage reports
-#chanjo-report>=0.0.6
+chanjo-report>=2.0.1
 
 # misc. extensions
 Flask-Babel

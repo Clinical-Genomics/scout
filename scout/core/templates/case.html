@@ -98,7 +98,7 @@
     </div>
   {% endif %}
 
-  <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
+  <a href="{{ url_for('report.group', group_id=case.display_name) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>
