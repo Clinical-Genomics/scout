@@ -18,6 +18,7 @@ import logging
 from mongoengine import connect, DoesNotExist, Q
 
 from . import BaseAdapter
+import phizz
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm)
 
 from pprint import pprint as pp
@@ -605,12 +606,23 @@ class MongoAdapter(BaseAdapter):
 
     return
 
-  def add_phenotype(self, institute, case, user, link, phenotype_id):
-    """Add a new HPO phenotype to a case."""
-    phenotype_term = PhenotypeTerm(phenotype_id=phenotype_id)
-    self.logger.info("Adding new HPO term to case %s", case.display_name)
-    # append the new HPO term (ID)
-    case.phenotype_terms.append(phenotype_term)
+  def add_phenotype(self, institute, case, user, link, hpo_term=None,
+                    omim_term=None):
+    """Add a new HPO phenotypes to a case."""
+    if hpo_term:
+        hpo_results = phizz.query_hpo([hpo_term])
+    elif omim_term:
+        hpo_results = phizz.query_disease([omim_term])
+    else:
+        raise ValueError('Must supply either hpo or omim term')
+
+    for hpo_result in hpo_results:
+      phenotype_term = PhenotypeTerm(phenotype_id=hpo_result['hpo_term'],
+                                     feature=hpo_result['description'])
+
+      self.logger.info("Adding new HPO term to case %s", case.display_name)
+      # append the new HPO term (ID)
+      case.phenotype_terms.append(phenotype_term)
 
     case.save()
     self.logger.debug("Case updated")
@@ -620,7 +632,6 @@ class MongoAdapter(BaseAdapter):
     self.create_event(institute=institute, case=case, user=user, link=link,
                       category='case', verb='add_phenotype',
                       subject=case.display_name,)
-
     return
 
   def remove_phenotype(self, institute, case, user, link, phenotype_id):
