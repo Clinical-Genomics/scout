@@ -404,7 +404,7 @@
           {% endfor %}
         </div>
         <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
-          <input type="text" name="hpo_term" placeholder="HPO or OMIM id">
+          <input type="text" name="hpo_term" placeholder="HP:XXX or OMIM:XXX">
           <button class="md-button-flat" type="submit">Add</button>
         </form>
       </div>
