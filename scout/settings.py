@@ -36,7 +36,8 @@ class BaseConfig(object):
                 ('scout.login.login', None),
                 ('scout.user.user', None),
                 ('scout.api.api', None),
-                ('scout.browser.browser', None)]
+                ('scout.browser.browser', None),
+                ('chanjo_report.server.blueprints.report_bp', '/reports')]
 
   EXTENSIONS = ['scout.extensions.store',
                 'scout.extensions.toolbar',
@@ -48,10 +49,13 @@ class BaseConfig(object):
                 'scout.extensions.markdown',
                 'scout.extensions.mail',
                 'scout.extensions.omim',
-                'scout.extensions.babel']
+                'scout.extensions.babel',
+                'chanjo_report.server.extensions.api']
 
   # settings for triggering opening of research mode
   RESEARCH_MODE_RECIPIENT = 'example@domain.com'
+
+  CHANJO_URI = 'sqlite:////vagrant/DEV/coverage.sqlite3'
 
   # default to storing logs under instance folder
   LOG_FOLDER = os.path.abspath('./instance/logs')
