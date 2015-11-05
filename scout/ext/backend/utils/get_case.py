@@ -23,9 +23,9 @@ import logging
 from path import path
 
 from ..config_parser import ConfigParser
-from scout.models import (Case, Individual, Institute, GeneList)
+from scout.models import (Case, Individual, Institute)
+from . import get_gene_lists
 
-from vcf_parser import VCFParser
 from ped_parser import FamilyParser
 
 from pprint import pprint as pp
@@ -75,7 +75,6 @@ def get_individual(case, ind_id, scout_config):
     mongo_individual['capture_kits'] = config_info.get('capture_kit', [])
 
     return mongo_individual
-    
 
 def get_mongo_case(case, scout_config):
     """Create a mongoengine case
@@ -177,39 +176,35 @@ def get_mongo_case(case, scout_config):
     else:
         logger.info("No coverage report found. Skipping coverage report.")
     
-    clinical_gene_lists = []
-    research_gene_lists = []
+    clinical_panels = []
+    research_panels = []
     
     for gene_list in scout_config.get('gene_lists', {}):
         logger.info("Found gene list {0}".format(gene_list))
         list_info = scout_config['gene_lists'][gene_list]
-
+        
+        list_path = list_info.get('file')
         list_type = list_info.get('type', 'clinical')
-        list_id = list_info.get('name', '')
-        version = float(list_info.get('version', 0))
-        date = list_info.get('date', '')
-        display_name = list_info.get('full_name', list_id)
         
-        list_object = GeneList(
-            list_id=list_id,
-            version=version,
-            date=date,
-            display_name=display_name
-        )
+        panels = get_gene_lists(list_path, owner)
         
-        if list_type == 'clinical':
-            logger.info("Adding {0} to clinical gene lists".format(list_object))
-            clinical_gene_lists.append(list_object)
-        else:
-            logger.info("Adding {0} to research gene lists".format(list_object))
-            research_gene_lists.append(list_object)
+        for panel in panels:
+            panel.save()
+            if list_type == 'clinical':
+                logger.info("Adding {0} to clinical gene lists".format(
+                    panel.panel_name))
+                clinical_panels.append(panel)
+            else:
+                logger.info("Adding {0} to research gene lists".format(
+                    panel.panel_name))
+                research_panels.append(panel)
         
-        mongo_case['clinical_gene_lists'] = clinical_gene_lists
-        mongo_case['research_gene_lists'] = research_gene_lists
+        mongo_case['clinical_panels'] = clinical_panels
+        mongo_case['research_panels'] = research_panels
         
-        default_gene_lists = scout_config.get('default_gene_lists', [])
+        default_panels = scout_config.get('default_gene_lists', [])
         
-        mongo_case['default_gene_lists'] = list(default_gene_lists)
+        mongo_case['default_panels'] = list(default_panels)
     
     return mongo_case
     

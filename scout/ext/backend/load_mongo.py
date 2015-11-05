@@ -99,7 +99,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   logger.info("Updating case in database")
 
-  update_case(case, variant_type, logger)
+  update_case(case, variant_type)
 
   ######## Get the variants and add them to the mongo db: ########
 
@@ -168,7 +168,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   return
 
-def update_case(case, variant_type, logger):
+def update_case(case, variant_type):
   """
   Update a case in in the mongo database.
 
@@ -180,7 +180,6 @@ def update_case(case, variant_type, logger):
   Arguments:
     case (Case): A case object.
     variant_type (str): 'research' or 'clinical'
-    logger (logging.logger): A logger object
   """
   case_id = case.case_id
   try:
