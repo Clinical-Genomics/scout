@@ -1,7 +1,8 @@
-from mongoengine import (EmbeddedDocument, ListField, StringField, FloatField)
+from mongoengine import (Document,ListField, StringField, FloatField)
 
-class GeneList(EmbeddedDocument):
-  list_id = StringField(required=True)
+class GenePanel(Document):
+  institute = StringField(required=True)
+  panel_name = StringField(required=True)
   version = FloatField(required=True)
   date = StringField(required=True)
   display_name = StringField()

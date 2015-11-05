@@ -8,7 +8,7 @@ from mongoengine import (Document, StringField, ListField, ReferenceField,
 
 from . import STATUS
 from .individual import Individual
-from .gene_list import GeneList
+from .gene_list import GenePanel
 from scout.models import PhenotypeTerm
 from scout.constants import ANALYSIS_TYPES
 
@@ -38,9 +38,9 @@ class Case(Document):
 
     # default_gene_lists specifies which gene lists that should be shown when
     # the case is opened
-    default_gene_lists = ListField(StringField())
-    clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
-    research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
+    default_panels = ListField(StringField())
+    clinical_panels = ListField(ReferenceField(GenePanel))
+    research_panels = ListField(ReferenceField(GenePanel))
     dynamic_gene_list = ListField(DictField())
 
     genome_build = StringField()
