@@ -82,7 +82,7 @@ class Case(Document):
                 if individual.bam_file]
 
     @property
-    def all_gene_lists(self):
+    def all_panels(self):
         """Yield all gene lists (both clinical and research)."""
         return itertools.chain(self.clinical_panels,
                                self.research_panels)
