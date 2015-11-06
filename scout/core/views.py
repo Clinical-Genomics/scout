@@ -70,6 +70,21 @@ def case(institute_id, case_id):
                 case_id=case_id)
 
 
+@core.route('/<institute_id>/<case_id>/panels/<panel_id>')
+@templated('gene-panel.html')
+@login_required
+def gene_panel(institute_id, case_id, panel_id):
+    """Show the list of genes associated with a gene panel."""
+    institute_model = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+
+    for panel in case_model.clinical_panels:
+        if panel.panel_name == panel_id:
+            gene_panel = panel
+    return dict(institute=institute_model, case=case_model,
+                panel=gene_panel)
+
+
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
 def assign_self(institute_id, case_id):
     institute = validate_user(current_user, institute_id)
@@ -275,9 +290,9 @@ def variants(institute_id, case_id, variant_type):
             # research mode not activated
             return abort(403)
     else:
-        gene_lists = case_model.clinical_gene_lists
+        gene_lists = case_model.clinical_panels
 
-    gene_list_names = [(item.list_id, item.display_name) for item
+    gene_list_names = [(item.panel_name, item.display_name) for item
                        in gene_lists]
     form.gene_lists.choices = gene_list_names
     # make sure HGNC symbols are correctly handled

@@ -14,7 +14,7 @@ user = Blueprint('profile', __name__, template_folder='templates')
 class CaseView(ModelView):
     column_exclude_list = ['coverage_report', 'madeline_info']
     form_columns = ['display_name', 'owner', 'collaborators', 'individuals',
-                    'status', 'is_research', 'default_gene_lists',
+                    'status', 'is_research', 'default_panels',
                     'gender_check']
 
 

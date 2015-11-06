@@ -8,7 +8,7 @@ from mongoengine import (Document, StringField, ListField, ReferenceField,
 
 from . import STATUS
 from .individual import Individual
-from .gene_list import GeneList
+from .gene_list import GenePanel
 from scout.models import PhenotypeTerm
 from scout.constants import ANALYSIS_TYPES
 
@@ -36,11 +36,11 @@ class Case(Document):
     status = StringField(default='inactive', choices=STATUS)
     is_research = BooleanField(default=False)
 
-    # default_gene_lists specifies which gene lists that should be shown when
+    # default_panels specifies which gene lists that should be shown when
     # the case is opened
-    default_gene_lists = ListField(StringField())
-    clinical_gene_lists = ListField(EmbeddedDocumentField(GeneList))
-    research_gene_lists = ListField(EmbeddedDocumentField(GeneList))
+    default_panels = ListField(StringField())
+    clinical_panels = ListField(ReferenceField(GenePanel))
+    research_panels = ListField(ReferenceField(GenePanel))
     dynamic_gene_list = ListField(DictField())
 
     genome_build = StringField()
@@ -84,8 +84,8 @@ class Case(Document):
     @property
     def all_gene_lists(self):
         """Yield all gene lists (both clinical and research)."""
-        return itertools.chain(self.clinical_gene_lists,
-                               self.research_gene_lists)
+        return itertools.chain(self.clinical_panels,
+                               self.research_panels)
 
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"

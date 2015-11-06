@@ -38,7 +38,7 @@ def setup_gene_list(**kwargs):
   version = kwargs.get('version', 1.0)
   date = kwargs.get('date', "20150522")
   display_name = kwargs.get('display_name', "gene_list")
-  
+
   gene_list = GeneList(
     list_id=list_id,
     version=version,
@@ -51,9 +51,9 @@ def setup_phenotype_term(**kwargs):
   """
   Setup an Phenotype term object
   """
-  
+
   term = PhenotypeTerm(
-    phenotype_id=kwargs.get('hpo_id', "1234"), 
+    phenotype_id=kwargs.get('hpo_id', "1234"),
     feature=kwargs.get('feature', "NOC1"),
     disease_models=kwargs.get('disease_models', ["AD"])
   )
@@ -88,9 +88,9 @@ def setup_case(**kwargs):
     synopsis=kwargs.get('synopsis', "This is a synopsis"),
     status=kwargs.get('status', "inactive"),
     is_research=kwargs.get('is_research', False),
-    default_gene_lists = kwargs.get('default_gene_lists', ['List_1']),
-    clinical_gene_lists = kwargs.get('clinical_gene_lists', [setup_gene_list()]),
-    research_gene_lists = kwargs.get('research_gene_lists', [setup_gene_list()]),
+    default_panels = kwargs.get('default_panels', ['List_1']),
+    clinical_panels = kwargs.get('clinical_panels', [setup_gene_list()]),
+    research_panels = kwargs.get('research_panels', [setup_gene_list()]),
     genome_build = kwargs.get('genome_build', "GRCh"),
     genome_version = kwargs.get('genome_version', 38),
     gender_check = kwargs.get('gender_check', 'confirm'),
@@ -99,7 +99,7 @@ def setup_case(**kwargs):
     vcf_file = kwargs.get('vcf_file', "path/to/variants.vcf"),
     coverage_report = kwargs.get('coverage_report', b"coverage info")
   )
-  
+
   return case
 
 def setup_individual(**kwargs):
@@ -116,7 +116,7 @@ def setup_individual(**kwargs):
     capture_kits = kwargs.get('capture_kits', ['Nimblegen']),
     bam_file = kwargs.get('bam_file', 'path/to/bam')
   )
-  
+
   return individual
 
 def setup_gt_call(**kwargs):
@@ -140,7 +140,7 @@ def setup_variant(**kwargs):
   Setup a Variant object
   """
   variant_id = kwargs.get('variant_id', '1_132_A_C')
-  
+
   variant = Variant(
     document_id = kwargs.get('document_id', 'institute_genelist_caseid_variantid'),
     variant_id = generate_md5_key(variant_id.split('_')),
@@ -200,7 +200,7 @@ def setup_gene(**kwargs):
     omim_phenotypes = kwargs.get('omim_phenotypes', [setup_phenotype_term()]),
     description = kwargs.get('description', "Description of gene")
   )
-  
+
   return gene
 
 def setup_transcript(**kwargs):

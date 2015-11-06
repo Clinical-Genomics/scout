@@ -8,3 +8,4 @@ from .generate_md5_key import generate_md5_key
 from .get_genes import get_genes
 from .get_compounds import get_compounds
 from .get_mongo_variant import get_mongo_variant
+from .get_gene_lists import get_gene_lists
