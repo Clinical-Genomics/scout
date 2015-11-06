@@ -53,10 +53,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
 
-  # For testing only
-  if __name__ == '__main__':
-    logger = logging.getLogger("scout.ext.backend.load_mongo")
-
   ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['load_vcf']
   logger.info("Found a vcf for loading variants into scout: {0}".format(
@@ -187,16 +183,16 @@ def update_case(case, variant_type):
     logger.info("Case {0} already in database".format(case_id))
     if variant_type=='research':
       logger.info("Updating research gene list for case {0} to {1}".format(
-        case_id, case.research_gene_lists
+        case_id, case.research_panels
       ))
-      existing_case.research_gene_lists = case.research_gene_lists
+      existing_case.research_panels = case.research_panels
       logger.info("Setting case {0} in research mode".format(case_id))
       existing_case.is_research = True
     else:
       logger.info("Updating clinical gene list for case {0} to {1}".format(
-        case_id, case.clinical_gene_lists
+        case_id, case.clinical_panels
       ))
-      existing_case.clinical_gene_lists = case.clinical_gene_lists
+      existing_case.clinical_panels = case.clinical_panels
     logger.info("Updating individuals for case {0} to {1}".format(
       case_id, case.individuals
     ))
@@ -206,9 +202,9 @@ def update_case(case, variant_type):
 
     # This decides which gene lists that should be shown when the case is opened
     logger.info("Updating default gene lists for case {0} to {1}".format(
-      case_id, case.default_gene_lists
+      case_id, case.default_panels
     ))
-    existing_case.default_gene_lists = case.default_gene_lists
+    existing_case.default_panels = case.default_panels
 
     logger.info("Updating genome build for case {0} to {1}".format(
       case_id, case.genome_build
