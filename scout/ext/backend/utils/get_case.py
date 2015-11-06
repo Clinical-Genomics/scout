@@ -10,9 +10,8 @@ Created by Måns Magnusson on 2014-11-10.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
-
 from __future__ import (absolute_import, print_function,)
-
+import codecs
 import sys
 import os
 
@@ -24,7 +23,7 @@ from path import path
 
 from ..config_parser import ConfigParser
 from scout.models import (Case, Individual, Institute)
-from . import get_gene_lists
+from .get_gene_lists import get_gene_lists
 
 from ped_parser import FamilyParser
 
@@ -40,19 +39,19 @@ def get_institute(institute_name):
               institute_name: A string that represents the name of an institute
 
           Returns:
-              A mongoengine Institute object described in 
+              A mongoengine Institute object described in
               scout.models.institute.py
     """
     return Institute(internal_id=institute_name, display_name=institute_name)
 
 def get_individual(case, ind_id, scout_config):
     """Take a case and a individual id and return a mongo individual
-    
+
         Args:
             case (Family): a ped_parser Family object
             ind_id (str): A individual id
             scout_configs : A ConfigObj object
-        
+
         mongo_individual (Individual): A mongo individual
     """
     individual = case.individuals[ind_id]
@@ -78,11 +77,11 @@ def get_individual(case, ind_id, scout_config):
 
 def get_mongo_case(case, scout_config):
     """Create a mongoengine case
-    
+
         Args:
             case (Family): a ped_parser Family object
             scout_configs : A ConfigObj object
-        
+
         Returns:
             mongo_case (Case): A mongo case
     """
@@ -92,7 +91,7 @@ def get_mongo_case(case, scout_config):
     except KeyError as e:
         logger.error("Scout config must include a owner")
         raise e
-    
+
     case_id = case.family_id
     # Check if there are any collaborators for the case, a case can belong to
     # several institutes
@@ -102,33 +101,33 @@ def get_mongo_case(case, scout_config):
             collaborators = set(collaborators)
         else:
             collaborators = set([collaborators])
-    
+
     collaborators.add(owner)
 
     logger.info("Collaborators found: {0}".format(','.join(collaborators)))
 
     # Create a mongoengine case
     mongo_case_id = '_'.join([owner, case_id])
-    
+
     mongo_case = Case(case_id=mongo_case_id)
     logger.debug("Setting case id to: {0}".format(mongo_case_id))
-    
+
     mongo_case['owner'] = owner
     logger.debug("Setting owner to: {0}".format(owner))
-    
+
     mongo_case['collaborators'] = list(collaborators)
     logger.debug("Setting collaborators to: {0}".format(
       ', '.join(collaborators)))
-    
+
     # We use the family id as display name for scout
     mongo_case['display_name'] = case_id
     logger.debug("Setting display name to: {0}".format(case_id))
-    
+
     # Get the path of vcf from configs
     mongo_case['vcf_file'] = scout_config.get('igv_vcf', '')
     logger.debug("Setting igv vcf file to: {0}".format(
       scout_config.get('igv_vcf', '')))
-    
+
     # Add the genome build information
     mongo_case['genome_build'] = scout_config.get('human_genome_build', '')
     logger.debug("Setting genome build to: {0}".format(
@@ -143,21 +142,21 @@ def get_mongo_case(case, scout_config):
     mongo_case['analysis_type'] = scout_config.get('analysis_type', '').lower()
     logger.debug("Setting analysis type to: {0}".format(
       scout_config.get('analysis_type', '').lower()))
-    
+
     # Get the genome version
     mongo_case['genome_version'] = float(scout_config.get('human_genome_version', '0'))
     logger.debug("Setting genome version to: {0}".format(
       scout_config.get('human_genome_version', '0')))
-    
+
     # Check the analysis date
     mongo_case['analysis_date'] = scout_config.get('analysis_date', '')
     logger.debug("Setting analysis date to: {0}".format(
       scout_config.get('analysis_date', '')))
-    
-    # Add the pedigree picture, this is a xml file that will be read and 
+
+    # Add the pedigree picture, this is a xml file that will be read and
     # saved in the mongo database
     madeline_path = path(scout_config.get('madeline', '/__menoexist.tXt'))
-    
+
     if madeline_path.exists():
         logger.debug("Found madeline info")
         with madeline_path.open('r') as handle:
@@ -165,7 +164,7 @@ def get_mongo_case(case, scout_config):
             logger.debug("Madeline file was read succesfully")
     else:
         logger.info("No madeline file found. Skipping madeline file.")
-    
+
     # Add the coverage report
     coverage_report_path = path(scout_config.get('coverage_report', '/__menoexist.tXt'))
     if coverage_report_path.exists():
@@ -175,19 +174,20 @@ def get_mongo_case(case, scout_config):
             logger.debug("Coverage was read succesfully")
     else:
         logger.info("No coverage report found. Skipping coverage report.")
-    
+
     clinical_panels = []
     research_panels = []
-    
+
     for gene_list in scout_config.get('gene_lists', {}):
         logger.info("Found gene list {0}".format(gene_list))
         list_info = scout_config['gene_lists'][gene_list]
-        
+
         list_path = list_info.get('file')
         list_type = list_info.get('type', 'clinical')
-        
-        panels = get_gene_lists(list_path, owner)
-        
+
+        with codecs.open(list_path, 'r') as list_lines:
+            panels = get_gene_lists(list_lines, owner)
+
         for panel in panels:
             panel.save()
             if list_type == 'clinical':
@@ -198,64 +198,64 @@ def get_mongo_case(case, scout_config):
                 logger.info("Adding {0} to research gene lists".format(
                     panel.panel_name))
                 research_panels.append(panel)
-        
+
         mongo_case['clinical_panels'] = clinical_panels
         mongo_case['research_panels'] = research_panels
-        
-        default_panels = scout_config.get('default_gene_lists', [])
-        
+
+        default_panels = scout_config.get('default_panels', [])
+
         mongo_case['default_panels'] = list(default_panels)
-    
+
     return mongo_case
-    
+
 def get_case(scout_configs, family_type):
     """
     Take a case file and return the case on the specified format.
-    
+
     Only one case per pedigree file is allowed.
-    
+
     Args:
       family_type : A string that describe the format of the ped file
       scout_configs (dict): A dictionary scout info.
-    
+
     Returns:
       case : A mongo engine object that describe the case
               found in the pedigree file.
-    
+
     """
     # Use ped_parser to get information from the pedigree file
-    case_parser = FamilyParser(open(scout_configs['ped'], 'r'), 
+    case_parser = FamilyParser(open(scout_configs['ped'], 'r'),
                                family_type=family_type)
-    
+
     if len(case_parser.families) != 1:
         raise SyntaxError("Only one case per ped file is allowed")
-    
+
     case_id = list(case_parser.families.keys())[0]
     case = case_parser.families[case_id]
 
     mongo_case = get_mongo_case(
-        case=case, 
+        case=case,
         scout_config=scout_configs
     )
 
     individuals = []
     affected_individuals = case.affected_individuals
-    
+
     for ind_id in affected_individuals:
         individuals.append(get_individual(
-            case=case, 
-            ind_id=ind_id, 
+            case=case,
+            ind_id=ind_id,
             scout_config=scout_configs
         ))
 
     for ind_id in case.individuals:
         if ind_id not in affected_individuals:
             individuals.append(get_individual(
-                case=case, 
-                ind_id=ind_id, 
+                case=case,
+                ind_id=ind_id,
                 scout_config=scout_configs
             ))
-    
+
     mongo_case['individuals'] = individuals
 
     return mongo_case
@@ -301,16 +301,16 @@ def cli(ped_file, scout_config_file, family_type, madeline, institute, verbose):
 
     if scout_config_file:
         setup_configs = ConfigParser(scout_config_file)
-      
+
     if ped_file:
         setup_configs['ped'] = ped_file
-      
+
     if madeline:
         setup_configs['madeline'] = madeline
-      
+
     if institute:
         setup_configs['institutes'] = [institute]
-      
+
     # Check that the ped file is provided:
     if not setup_configs.get('ped', None):
         print("Please provide a ped file.(Use flag '-p/--ped_file')", file=sys.stderr)
