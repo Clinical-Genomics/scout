@@ -95,9 +95,9 @@ def get_mongo_case(case, scout_config):
     case_id = case.family_id
     # Check if there are any collaborators for the case, a case can belong to
     # several institutes
-    collaborators = scout_config.get('collaborators', set())
+    collaborators = scout_config.get('collaborators') or set()
     if collaborators:
-        if type(collaborators) == type(list()):
+        if isinstance(collaborators, list):
             collaborators = set(collaborators)
         else:
             collaborators = set([collaborators])
