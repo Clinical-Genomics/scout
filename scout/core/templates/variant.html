@@ -243,17 +243,14 @@
             </div>
           </div>
 
-          {% if variant_type == 'clinical' %}
-            <div class="variant-row-item">
+          <div class="variant-row-item">
               <div>Gene panels</div>
-
               <div class="variant-row-item-sublist">
-                {% for panel in variant.gene_lists %}
+              {% for panel in variant.gene_lists %}
                   <div class="variant-row-item-sublist-item">{{ panel }}</div>
-                {% endfor %}
+              {% endfor %}
               </div>
-            </div>
-          {% endif %}
+          </div>
 
           <div class="variant-list-item">
             <div>CLINSIG</div>
