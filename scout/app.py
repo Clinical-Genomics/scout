@@ -218,7 +218,7 @@ class AppFactory(object):
       Return:
         str: humanized string of the decimal number
       """
-      min_number = 10^-ndigits
+      min_number = 10**-ndigits
 
       if number is None:
         # NaN
@@ -228,7 +228,7 @@ class AppFactory(object):
         return 0
       elif number < min_number:
         # make human readable and sane
-        return "&lt; {}".format(min_number)
+        return "< {}".format(min_number)
       else:
         # round all other numbers
         return round(number, ndigits)
