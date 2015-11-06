@@ -26,48 +26,46 @@ from pprint import pprint as pp
 
 # These are the valid SO terms with corresponfing severity rank
 def get_mongo_variant(variant, variant_type, individuals, case, config_object, variant_count):
-  """
-  Take a variant and some additional information, convert it to mongo engine
-  objects and put them in the proper format in the database.
+    """
+    Take a variant and some additional information, convert it to mongo engine
+    objects and put them in the proper format in the database.
+    
+    Input:
+      variant (dict): A Variant dictionary
+      variant_type  (str): A string in ['clinical', 'research']
+      individuals   (dict): A dictionary with the id:s of the individuals as keys and
+                      display names as values
+      case (Case): The Case object that the variant belongs to
+      variant_count (int): The rank order of the variant in this case
+      config_object : A config object with the information from the config file
+    
+    Returns:
+      mongo_variant : A variant parser into the proper mongo engine format.
+    
+    """
 
-  Input:
-    variant (dict): A Variant dictionary
-    variant_type  (str): A string in ['clinical', 'research']
-    individuals   (dict): A dictionary with the id:s of the individuals as keys and
-                    display names as values
-    case (Case): The Case object that the variant belongs to
-    variant_count (int): The rank order of the variant in this case
-    config_object : A config object with the information from the config file
+    logger = logging.getLogger(__name__)
 
-  Returns:
-    mongo_variant : A variant parser into the proper mongo engine format.
+    # Create the ID for the variant
+    case_id = case.case_id
+    case_name = case.display_name
+    
+    
+    institute = Institute.objects.get(display_name=case.owner)
+      
+    id_fields = [
+                  variant['CHROM'],
+                  variant['POS'],
+                  variant['REF'],
+                  variant['ALT'],
+                  variant_type
+                ]
+      
+    variant_id = generate_md5_key(id_fields)
+    document_id = generate_md5_key(id_fields+case_id.split('_'))
 
-  """
-
-  logger = logging.getLogger(__name__)
-
-  # Create the ID for the variant
-  case_id = case.case_id
-  case_name = case.display_name
-  
-  
-  institute = Institute.objects.get(display_name=case.owner)
-
-  id_fields = [
-                variant['CHROM'],
-                variant['POS'],
-                variant['REF'],
-                variant['ALT'],
-                variant_type
-              ]
-  
-  # This is the common variant id
-  variant_id = generate_md5_key(id_fields)
-  # This is the specific variant id, unique
-  document_id = generate_md5_key(id_fields+case_id.split('_'))
-
-  # Create the mongo variant object
-  mongo_variant = Variant(
+    # Create the mongo variant object
+    mongo_variant = Variant(
                           document_id = document_id,
                           variant_id = variant_id,
                           variant_type = variant_type,
@@ -83,45 +81,45 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                           institute = institute
                   )
 
-  # If a variant belongs to any gene lists we check which ones
-  mongo_variant['gene_lists'] = variant['info_dict'].get(
+    # If a variant belongs to any gene lists we check which ones
+    mongo_variant['gene_lists'] = variant['info_dict'].get(
           config_object['VCF']['GeneLists']['vcf_info_key'],
           None
           )
 
-  ################# Add the rank score and variant rank #################
-  # Get the rank score as specified in the config file.
-  # This is central for displaying variants in scout.
+    ################# Add the rank score and variant rank #################
+    # Get the rank score as specified in the config file.
+    # This is central for displaying variants in scout.
 
-  mongo_variant['rank_score'] = float(
+    mongo_variant['rank_score'] = float(
       variant.get('rank_scores', {}).get(case_name, 0.0)
     )
 
-  ################# Add gt calls #################
-  gt_calls = []
-  for individual_id, display_name in iteritems(individuals):
-    # This function returns an ODM GTCall object with the
-    # relevant information for a individual:
-    gt_calls.append(get_genotype(
-                                  variant,
-                                  config_object,
-                                  individual_id,
-                                  display_name
+    ################# Add gt calls #################
+    gt_calls = []
+    for individual_id, display_name in iteritems(individuals):
+        # This function returns an ODM GTCall object with the
+        # relevant information for a individual:
+        gt_calls.append(get_genotype(
+                                      variant,
+                                      config_object,
+                                      individual_id,
+                                      display_name
+                                    )
                                 )
-                            )
-  mongo_variant['samples'] = gt_calls
+    mongo_variant['samples'] = gt_calls
 
-  ################# Add the compound information #################
+    ################# Add the compound information #################
 
-  mongo_variant['compounds'] = get_compounds(
+    mongo_variant['compounds'] = get_compounds(
                                           variant,
                                           case,
                                           variant_type
                                         )
+                                    
+    ################# Add the inheritance patterns #################
 
-  ################# Add the inheritance patterns #################
-
-  mongo_variant['genetic_models'] = variant.get(
+    mongo_variant['genetic_models'] = variant.get(
                                         'genetic_models',
                                         {}
                                         ).get(
@@ -129,74 +127,76 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                                             []
                                             )
 
-  ################# Add the gene and tanscript information #################
+    ################# Add the gene and tanscript information #################
 
-  # Get genes return a list with ODM objects for each gene
-  mongo_variant['genes'] = get_genes(variant)
-  hgnc_symbols = set([])
-  ensembl_gene_ids = set([])
+    # Get genes return a list with ODM objects for each gene
+    mongo_variant['genes'] = get_genes(variant)
+    hgnc_symbols = set([])
+    ensembl_gene_ids = set([])
+    
+    # Add the clinsig prediction
+    clnsig = variant.get('CLNSIG', None)
+    if clnsig:
+        for clnsig_entry in clnsig.split('|'):
+            try:
+                if int(clnsig_entry) == 5:
+                    mongo_variant['clnsig'] = 5
+            except (ValueError, IndexError):
+                pass
 
-  # Add the clinsig prediction
-  clnsig = variant.get('CLNSIG', None)
-  if clnsig:
+    for gene in mongo_variant.genes:
+        hgnc_symbols.add(gene.hgnc_symbol)
+        ensembl_gene_ids.add(gene.ensembl_gene_id)
+
+    mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
+
+    mongo_variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
+
+    ################# Add a list with the dbsnp ids #################
+
+    mongo_variant['db_snp_ids'] = variant['ID'].split(';')
+
+    ################# Add the frequencies #################
+
     try:
-      mongo_variant['clnsig'] = int(clnsig[0])
-    except (ValueError, IndexError):
-      pass
-
-  for gene in mongo_variant.genes:
-    hgnc_symbols.add(gene.hgnc_symbol)
-    ensembl_gene_ids.add(gene.ensembl_gene_id)
-
-  mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
-
-  mongo_variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
-
-  ################# Add a list with the dbsnp ids #################
-
-  mongo_variant['db_snp_ids'] = variant['ID'].split(';')
-
-  ################# Add the frequencies #################
-
-  try:
-    mongo_variant['thousand_genomes_frequency'] = float(
+        mongo_variant['thousand_genomes_frequency'] = float(
                                 variant['info_dict'].get(
                                   config_object['VCF']['1000GMAF']['vcf_info_key'],
                                   ['0'])[0]
                                 )
-  except ValueError:
-    pass
+    except ValueError:
+        pass
 
-  try:
-    mongo_variant['exac_frequency'] = float(
+    try:
+        mongo_variant['exac_frequency'] = float(
                                 variant['info_dict'].get(
                                   config_object['VCF']['EXAC']['vcf_info_key'],
                                   ['0'])[0]
                                 )
-  except ValueError:
-    pass
+    except ValueError:
+        pass
 
-  # Add the severity predictions
-  mongo_variant['cadd_score'] = float(
+    # Add the severity predictions
+    mongo_variant['cadd_score'] = float(
                           variant['info_dict'].get(
                             config_object['VCF']['CADD']['vcf_info_key'],
                             ['0'])[0]
                           )
-  # Add conservation annotation
-  mongo_variant['gerp_conservation'] = variant['info_dict'].get(
+    # Add conservation annotation
+    mongo_variant['gerp_conservation'] = variant['info_dict'].get(
                                   config_object['VCF']['Gerp']['vcf_info_key'],
                                   []
                                 )
-  mongo_variant['phast_conservation'] = variant['info_dict'].get(
+    mongo_variant['phast_conservation'] = variant['info_dict'].get(
                                   config_object['VCF']['PhastCons']['vcf_info_key'],
                                   []
                                 )
-  mongo_variant['phylop_conservation'] = variant['info_dict'].get(
+    mongo_variant['phylop_conservation'] = variant['info_dict'].get(
                                   config_object['VCF']['PhylopCons']['vcf_info_key'],
                                   []
                                 )
 
-  return mongo_variant
+    return mongo_variant
 
 
 @click.command()
@@ -243,64 +243,68 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
 )
 def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
         variant_type, institute, verbose):
-  """
-  Test generate mongo variants.
-  """
+    """
+    Test generate mongo variants.
+    """
+      
+    from vcf_parser import VCFParser
+    from ....models import Case
+    from ..config_parser import ConfigParser
+    from . import get_case
+      
+    setup_configs = {}
+      
+    if scout_config_file:
+        setup_configs = ConfigParser(scout_config_file)
+      
+    print(scout_config_file)
+    print(setup_configs)
+    
+    if vcf_file:
+        setup_configs['load_vcf'] = vcf_file
+      
+    if ped_file:
+        setup_configs['ped'] = ped_file
+      
+    if institute:
+        setup_configs['institutes'] = [institute]
+      
+    if not setup_configs.get('load_vcf', None):
+        print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+        sys.exit(0)
+      
+    # Check that the ped file is provided:
+    if not setup_configs.get('ped', None):
+        print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+        sys.exit(0)
+      
+    # Check that the config file is provided:
+    if not vcf_config_file:
+        print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
+        sys.exit(0)
 
-  from vcf_parser import VCFParser
-  from ....models import Case
-  from ..config_parser import ConfigParser
-  from . import get_case
-
-  setup_configs = {}
-
-  if scout_config_file:
-    setup_configs = ConfigParser(scout_config_file)
-
-  if vcf_file:
-    setup_configs['load_vcf'] = vcf_file
-
-  if ped_file:
-    setup_configs['ped'] = ped_file
-
-  if institute:
-    setup_configs['institutes'] = [institute]
-
-  if not setup_configs.get('load_vcf', None):
-    print("Please provide a vcf file.(Use flag '-f/--vcf_file')", file=sys.stderr)
-    sys.exit(0)
-
-  # Check that the ped file is provided:
-  if not setup_configs.get('ped', None):
-    print("Please provide a ped file.(Use flag '-p/--ped_file')", file=sys.stderr)
-    sys.exit(0)
-
-  # Check that the config file is provided:
-  if not vcf_config_file:
-    print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
-    sys.exit(0)
-
-  config_object = ConfigParser(vcf_config_file)
-
-  my_case = get_case(setup_configs, family_type)
-
-  vcf_parser = VCFParser(infile=setup_configs['load_vcf'], split_variants=True)
-
-  individuals = vcf_parser.individuals
-
-  variant_count = 0
-  for variant in vcf_parser:
-    variant_count += 1
-    mongo_variant = get_mongo_variant(
-                        variant,
-                        variant_type,
-                        individuals,
-                        my_case,
-                        config_object,
-                        variant_count
-                      )
-    print(mongo_variant.to_json())
-
+    config_object = ConfigParser(vcf_config_file)
+      
+    my_case = get_case(setup_configs, family_type)
+      
+    vcf_parser = VCFParser(infile=setup_configs['load_vcf'], split_variants=True)
+      
+    individuals = vcf_parser.individuals
+      
+    variant_count = 0
+    for variant in vcf_parser:
+        print(variant['info_dict'].get('CLNSIG'))
+      # variant_count += 1
+      # mongo_variant = get_mongo_variant(
+      #                     variant,
+      #                     variant_type,
+      #                     individuals,
+      #                     my_case,
+      #                     config_object,
+      #                     variant_count
+      #                   )
+      # print(mongo_variant.to_json())
+      
 
 if __name__ == '__main__':
     cli()
