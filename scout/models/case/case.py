@@ -60,6 +60,19 @@ class Case(Document):
     # The coverage report will be read as a binary blob
     coverage_report = BinaryField()
 
+    def default_panel_objs(self):
+        """Match gene panels with default references."""
+        for panel in self.clinical_panels:
+            if panel.panel_name in self.default_panels:
+                yield panel
+
+    def default_genes(self):
+        """Combine all gene ids for default gene panels."""
+        distinct_genes = set()
+        for panel in self.default_panel_objs():
+            distinct_genes.update(panel.genes)
+        return distinct_genes
+
     @property
     def is_solved(self):
         """Check if the case is marked as solved."""
