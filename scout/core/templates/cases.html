@@ -23,7 +23,7 @@
       {% if case.is_research %}
         <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
       {% else %}
-        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_gene_lists) }}">Clinical variants</a>
+        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
       {% endif %}
        |
       <span>{{ case.updated_at|format_date }}</span> |
