@@ -76,6 +76,8 @@ def cases(institute_id):
   case_models = store.cases(collaborator=institute_id)
   non_archived = (case for case in case_models if case.status != 'archived')
   raw_models = [model.to_mongo() for model in case_models]
+  for raw_model in raw_models:
+    del raw_model['coverage_report']
   return Response(dumps(raw_models), mimetype='application/json; charset=utf-8')
 
 
