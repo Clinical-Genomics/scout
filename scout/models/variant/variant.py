@@ -79,6 +79,7 @@ class Variant(Document):
   # Predicted deleteriousness:
   cadd_score = FloatField()
   clnsig = IntField()
+  clnsigacc = StringField()
 
   @property
   def reduced_penetrance_genes(self):
