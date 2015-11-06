@@ -1,12 +1,16 @@
-{% extends 'layouts/scroll-header.html' %}
+{% extends 'layouts/base.html' %}
 
+{% block css_style %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('pileup.static', filename='pileup.css') }}">
+{% endblock %}
 
-{% block content %}
+{% block body %}
     <div id="pileup-viewer"></div>
 {% endblock %}
 
 {% block js_btm %}
     {{ super() }}
+
     <script type="text/javascript" charset="utf-8">
         var div = document.getElementById('pileup-viewer');
         var p = pileup.create(div, {
