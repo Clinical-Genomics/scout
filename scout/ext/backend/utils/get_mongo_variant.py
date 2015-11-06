@@ -136,13 +136,18 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
     
     # Add the clinsig prediction
     clnsig = variant.get('CLNSIG', None)
+    clnsig_accession = variant.get('SnpSift_CLNACC', None)
     if clnsig:
-        for clnsig_entry in clnsig.split('|'):
-            try:
+        clnsig = clnsig[0].split('|')
+        try:
+            for index, clnsig_entry in enumerate(clnsig):
                 if int(clnsig_entry) == 5:
                     mongo_variant['clnsig'] = 5
-            except (ValueError, IndexError):
-                pass
+                    if clnsig_accession:
+                        clnsig_accession = clnsig_accession[0].split('|')
+                        mongo_variant['clnsigacc'] = clnsig_accession[index]
+        except (ValueError, IndexError):
+            pass
 
     for gene in mongo_variant.genes:
         hgnc_symbols.add(gene.hgnc_symbol)
@@ -263,29 +268,29 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
     if vcf_file:
         setup_configs['load_vcf'] = vcf_file
       
-    if ped_file:
-        setup_configs['ped'] = ped_file
-      
-    if institute:
-        setup_configs['institutes'] = [institute]
-      
-    if not setup_configs.get('load_vcf', None):
-        print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
-        sys.exit(0)
-      
-    # Check that the ped file is provided:
-    if not setup_configs.get('ped', None):
-        print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
-        sys.exit(0)
-      
-    # Check that the config file is provided:
-    if not vcf_config_file:
-        print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
-        sys.exit(0)
-
-    config_object = ConfigParser(vcf_config_file)
-      
-    my_case = get_case(setup_configs, family_type)
+    # if ped_file:
+    #     setup_configs['ped'] = ped_file
+    #
+    # if institute:
+    #     setup_configs['institutes'] = [institute]
+    #
+    # if not setup_configs.get('load_vcf', None):
+    #     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
+    #     sys.exit(0)
+    #
+    # # Check that the ped file is provided:
+    # if not setup_configs.get('ped', None):
+    #     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
+    #     sys.exit(0)
+    #
+    # # Check that the config file is provided:
+    # if not vcf_config_file:
+    #     print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
+    #     sys.exit(0)
+    #
+    # config_object = ConfigParser(vcf_config_file)
+    #
+    # my_case = get_case(setup_configs, family_type)
       
     vcf_parser = VCFParser(infile=setup_configs['load_vcf'], split_variants=True)
       
@@ -293,7 +298,12 @@ def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
       
     variant_count = 0
     for variant in vcf_parser:
-        print(variant['info_dict'].get('CLNSIG'))
+         clnsig = variant['info_dict'].get('CLNSIG')
+         if clnsig:
+             clnsig = clnsig[0]
+             print(clnsig.split('|'))
+             print(variant['info_dict'].get('SnpSift_CLNACC'))
+        
       # variant_count += 1
       # mongo_variant = get_mongo_variant(
       #                     variant,
