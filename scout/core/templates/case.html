@@ -98,7 +98,7 @@
     </div>
   {% endif %}
 
-  <a href="{{ url_for('report.group', group_id=case.display_name) }}" class="md-label" target="_blank">
+  <a href="{{ url_for('report.group', group_id=case.display_name, level=case.coverage_cutoff, panel_name=panel_names|join(', '), gene_ids=case.default_genes()|join(',')) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>

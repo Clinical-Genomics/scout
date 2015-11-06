@@ -64,10 +64,14 @@ def case(institute_id, case_id):
     case_comments = store.events(institute, case=case_model, comments=True)
     case_events = store.events(institute, case=case_model)
 
+    # default coverage report
+    default_panel_names = [panel.panel_name for panel
+                           in case_model.default_panel_objs()]
+
     return dict(institute=institute, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
-                case_id=case_id)
+                case_id=case_id, panel_names=default_panel_names)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
