@@ -258,7 +258,8 @@
                 </div>
 
                 <div class="md-item-body">
-                  {{ variant.display_name }}
+                  {{ variant.hgnc_symbols|join(', ') }}
+                  <span class="md-badge"><small>{{ variant.display_name }}</small></span>
                 </div>
               </a>
 
