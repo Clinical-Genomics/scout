@@ -243,17 +243,14 @@
             </div>
           </div>
 
-          {% if variant_type == 'clinical' %}
-            <div class="variant-row-item">
+          <div class="variant-row-item">
               <div>Gene panels</div>
-
               <div class="variant-row-item-sublist">
-                {% for panel in variant.gene_lists %}
+              {% for panel in variant.gene_lists %}
                   <div class="variant-row-item-sublist-item">{{ panel }}</div>
-                {% endfor %}
+              {% endfor %}
               </div>
-            </div>
-          {% endif %}
+          </div>
 
           <div class="variant-list-item">
             <div>CLINSIG</div>
@@ -546,7 +543,7 @@
 
             <tbody>
               {% for individual in variant.samples %}
-                <tr>
+                <tr class="{{ individuals[individual.sample_id].phenotype_human }}">
                   <td class="text-center">{{ individual.display_name }}</td>
                   <td class="text-center">{{ individual.genotype_call }}</td>
                   {% for number in individual.allele_depths %}

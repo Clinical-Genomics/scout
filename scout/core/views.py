@@ -285,7 +285,7 @@ def variants(institute_id, case_id, variant_type):
     # dynamically add choices to gene lists selection
     if variant_type == 'research':
         if case_model.is_research:
-            gene_lists = case_model.all_gene_lists
+            gene_lists = case_model.all_panels
         else:
             # research mode not activated
             return abort(403)
@@ -342,6 +342,9 @@ def variant(institute_id, case_id, variant_id):
     events = store.events(institute, case=case_model,
                           variant_id=variant_model.variant_id)
 
+    individuals = {individual.individual_id: individual
+                   for individual in case_model.individuals}
+
     prev_variant = store.previous_variant(document_id=variant_id)
     next_variant = store.next_variant(document_id=variant_id)
     return dict(institute=institute, institute_id=institute_id,
@@ -349,7 +352,8 @@ def variant(institute_id, case_id, variant_id):
                 variant=variant_model, variant_id=variant_id,
                 comments=comments, events=events,
                 prev_variant=prev_variant, next_variant=next_variant,
-                manual_rank_options=Variant.manual_rank.choices)
+                manual_rank_options=Variant.manual_rank.choices,
+                individuals=individuals)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])

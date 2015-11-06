@@ -142,7 +142,7 @@
             </thead>
             <tbody>
               {% for individual in case.individuals %}
-                <tr>
+                <tr class="{{ individual.phenotype_human }}">
                   <td>{{ individual.display_name }}</td>
                   <td>{{ individual.sex_human }}</td>
                   <td>{{ individual.phenotype_human }}</td>
@@ -258,7 +258,8 @@
                 </div>
 
                 <div class="md-item-body">
-                  {{ variant.display_name }}
+                  {{ variant.hgnc_symbols|join(', ') }}
+                  <span class="md-badge"><small>{{ variant.display_name }}</small></span>
                 </div>
               </a>
 
