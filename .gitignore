@@ -29,7 +29,6 @@ pip-log.txt
 nosetests.xml
 
 # si
-*.mo
 
 # Mr Developer
 .mr.developer.cfg
