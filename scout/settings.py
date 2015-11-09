@@ -31,6 +31,9 @@ class BaseConfig(object):
   MAIL_PASSWORD = 'yourpass'
   MAIL_DEFAULT_SENDER = MAIL_USERNAME
 
+  REPORT_LANGUAGE = 'en'
+  ACCEPT_LANGUAGES = ['en', 'sv']
+
   BLUEPRINTS = [('scout.core.core', None),
                 ('scout.frontend.frontend', None),
                 ('scout.login.login', None),
