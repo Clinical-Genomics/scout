@@ -65,7 +65,7 @@ def case(institute_id, case_id):
     case_events = store.events(institute, case=case_model)
 
     # default coverage report
-    default_panel_names = [panel.panel_name for panel
+    default_panel_names = [panel.name_and_version for panel
                            in case_model.default_panel_objs()]
 
     return dict(institute=institute, case=case_model,
