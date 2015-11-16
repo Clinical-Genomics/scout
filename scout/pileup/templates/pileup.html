@@ -14,7 +14,7 @@
     <script type="text/javascript" charset="utf-8">
         var div = document.getElementById('pileup-viewer');
         var p = pileup.create(div, {
-          range: { contig: 'chr17', start: 7512384, stop: 7512544 },
+          range: { contig: 'chr21', start: 43053191, stop: 43053291 },
           tracks: [
             {
               viz: pileup.viz.genome(),
@@ -27,8 +27,8 @@
             {
               viz: pileup.viz.pileup(),
               data: pileup.formats.bam({
-                url: '{{ url_for("static", filename=bam_file) }}',
-                indexUrl: '{{ url_for("static", filename=(bam_file + ".bai")) }}'
+                url: '{{ url_for("browser.remote_static", file=bam_file) }}',
+                indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
               }),
               cssClass: 'normal',
               name: 'Alignments'
