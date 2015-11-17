@@ -8,5 +8,13 @@ pileup_bp = Blueprint('pileup', __name__, template_folder='templates',
 @pileup_bp.route('/pileup')
 def viewer():
     """Visualize BAM alignments."""
-    bam_file = request.args.get('bam')
-    return render_template('pileup.html', bam_file=bam_file)
+    bam_files = request.args.getlist('bam')
+    vcf_file = request.args['vcf']
+    position = {
+        'contig': request.args['contig'],
+        'start': request.args['start'],
+        'stop': request.args['stop']
+    }
+
+    return render_template('pileup.html', bam_files=bam_files,
+                           vcf_file=vcf_file, position=position)

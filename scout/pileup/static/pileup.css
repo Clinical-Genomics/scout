@@ -4,6 +4,10 @@
  * You are encouraged to override anything you like.
  */
 
+input[type=text], select {
+    width: initial;
+}
+
 #pileup-viewer {
     position: absolute;
     left: 10px;

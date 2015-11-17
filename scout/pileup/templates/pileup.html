@@ -14,7 +14,7 @@
     <script type="text/javascript" charset="utf-8">
         var div = document.getElementById('pileup-viewer');
         var p = pileup.create(div, {
-          range: { contig: 'chr21', start: 43053191, stop: 43053291 },
+          range: { contig: '{{ position.contig }}', start: {{ position.start }}, stop: {{ position.stop }} },
           tracks: [
             {
               viz: pileup.viz.genome(),
@@ -25,14 +25,38 @@
               name: 'Reference'
             },
             {
-              viz: pileup.viz.pileup(),
-              data: pileup.formats.bam({
-                url: '{{ url_for("browser.remote_static", file=bam_file) }}',
-                indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
+              viz: pileup.viz.scale(),
+              name: 'Scale'
+            },
+            {
+              viz: pileup.viz.location(),
+              name: 'Location'
+            },
+            {
+              viz: pileup.viz.variants(),
+              data: pileup.formats.vcf({
+                url: '{{ url_for("browser.remote_static", file=vcf_file) }}'
               }),
-              cssClass: 'normal',
-              name: 'Alignments'
-            }
+              name: 'Variants'
+            },
+            {
+              viz: pileup.viz.genes(),
+              data: pileup.formats.bigBed({
+                url: 'http://www.biodalliance.org/datasets/ensGene.bb'
+              }),
+              name: 'Genes'
+            },
+            {% for bam_file in bam_files %}
+              {
+                viz: pileup.viz.pileup(),
+                data: pileup.formats.bam({
+                  url: '{{ url_for("browser.remote_static", file=bam_file) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
+                }),
+                cssClass: 'normal',
+                name: 'Alignments'
+              },
+            {% endfor %}
           ]
         });
     </script>
