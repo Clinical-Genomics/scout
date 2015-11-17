@@ -2,8 +2,7 @@
 from flask import abort, Blueprint, jsonify, redirect, request
 
 from ..extensions import store
-from ..helpers import send_file_partial
-from .utils import build_igv_url
+from ..range import send_file_partial
 
 browser = Blueprint('browser', __name__, template_folder='templates')
 
@@ -18,9 +17,6 @@ def remote_static():
     return abort(500)
 
   new_resp = send_file_partial(file_path)
-  new_resp.headers['Content-Type'] = 'application/octet-stream'
-  new_resp.headers['Accept-Ranges'] = 'bytes'
-
   return new_resp
 
 
