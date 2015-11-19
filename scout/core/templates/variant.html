@@ -114,14 +114,14 @@
   </div>
 
   <div class="variant-header-item">
-    <div class="md-label">
+    <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">
       <div class="md-label-icon">
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
         {{ variant.chromosome }}:{{ variant.position }} ({{ variant.hgnc_symbols|join(', ') }})
       </div>
-    </div>
+    </a>
   </div>
 
   <div class="variant-header-item">

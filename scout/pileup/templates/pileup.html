@@ -1,0 +1,63 @@
+{% extends 'layouts/base.html' %}
+
+{% block css_style %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('pileup.static', filename='pileup.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div id="pileup-viewer"></div>
+{% endblock %}
+
+{% block js_btm %}
+    {{ super() }}
+
+    <script type="text/javascript" charset="utf-8">
+        var div = document.getElementById('pileup-viewer');
+        var p = pileup.create(div, {
+          range: { contig: '{{ position.contig }}', start: {{ position.start }}, stop: {{ position.stop }} },
+          tracks: [
+            {
+              viz: pileup.viz.genome(),
+              isReference: true,
+              data: pileup.formats.twoBit({
+                url: 'http://www.biodalliance.org/datasets/hg19.2bit'
+              }),
+              name: 'Reference'
+            },
+            {
+              viz: pileup.viz.scale(),
+              name: 'Scale'
+            },
+            {
+              viz: pileup.viz.location(),
+              name: 'Location'
+            },
+            {
+              viz: pileup.viz.variants(),
+              data: pileup.formats.vcf({
+                url: '{{ url_for("browser.remote_static", file=vcf_file) }}'
+              }),
+              name: 'Variants'
+            },
+            {
+              viz: pileup.viz.genes(),
+              data: pileup.formats.bigBed({
+                url: 'http://www.biodalliance.org/datasets/ensGene.bb'
+              }),
+              name: 'Genes'
+            },
+            {% for bam_file in bam_files %}
+              {
+                viz: pileup.viz.pileup(),
+                data: pileup.formats.bam({
+                  url: '{{ url_for("browser.remote_static", file=bam_file) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
+                }),
+                cssClass: 'normal',
+                name: 'Alignments'
+              },
+            {% endfor %}
+          ]
+        });
+    </script>
+{% endblock %}

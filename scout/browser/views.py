@@ -2,24 +2,22 @@
 from flask import abort, Blueprint, jsonify, redirect, request
 
 from ..extensions import store
-from ..helpers import send_file_partial
-from .utils import build_igv_url
+from ..range import send_file_partial
 
 browser = Blueprint('browser', __name__, template_folder='templates')
 
 
-@browser.route('/remote/static/<path:path>', methods=['OPTIONS', 'GET'])
-def remote_static(path):
+@browser.route('/remote/static', methods=['OPTIONS', 'GET'])
+def remote_static():
   """Stream *large* static files with special requirements."""
-  # new_resp.status_code = resp.status_code
-  # new_resp.headers['content-length'] = resp.headers.get('content-length')
-  # new_resp.headers['accept-ranges'] = resp.headers.get('accept-ranges')
-  # new_resp.headers['Content-Type'] = 'application/octet-stream'
-  range_header = request.headers.get('Range', None)
-  #if not range_header and path.endswith('.bam'):
-  #  return abort(500)
+  file_path = request.args.get('file')
 
-  return send_file_partial('/' + path)
+  range_header = request.headers.get('Range', None)
+  if not range_header and file_path.endswith('.bam'):
+    return abort(500)
+
+  new_resp = send_file_partial(file_path)
+  return new_resp
 
 
 @browser.route('/<institute_id>/<case_id>/<variant_id>/igv.xml')
