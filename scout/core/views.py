@@ -64,6 +64,12 @@ def case(institute_id, case_id):
     case_comments = store.events(institute, case=case_model, comments=True)
     case_events = store.events(institute, case=case_model)
 
+    # map internal + external sample ids
+    sample_map = {"alt_".format(sample.individual_id): sample.display_name
+                  for sample in case_model.individuals}
+    group_id = "alt_{case.owner}_{case.display_name}".format(case=case_model)
+    sample_map[group_id] = case_model.display_name
+
     # default coverage report
     default_panel_names = [panel.name_and_version for panel
                            in case_model.default_panel_objs()]
@@ -71,7 +77,8 @@ def case(institute_id, case_id):
     return dict(institute=institute, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
-                case_id=case_id, panel_names=default_panel_names)
+                case_id=case_id, panel_names=default_panel_names,
+                sample_map=sample_map)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')

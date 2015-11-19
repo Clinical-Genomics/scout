@@ -98,7 +98,7 @@
     </div>
   {% endif %}
 
-  <a href="{{ url_for('report.group', group_id=case.display_name, level=case.coverage_cutoff, panel_name=panel_names|join(', '), gene_ids=case.default_genes()|join(',')) }}" class="md-label" target="_blank">
+  <a href="{{ url_for('report.group', group_id=case.display_name, level=case.coverage_cutoff, panel_name=panel_names|join(', '), gene_ids=case.default_genes()|join(','), **sample_map) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>
@@ -135,7 +135,7 @@
           <table class="default-table--flex">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Sample</th>
                 <th>Sex</th>
                 <th>Phenotype</th>
               </tr>
@@ -143,7 +143,7 @@
             <tbody>
               {% for individual in case.individuals %}
                 <tr class="{{ individual.phenotype_human }}">
-                  <td>{{ individual.display_name }}</td>
+                  <td>{{ individual.individual_id }}</td>
                   <td>{{ individual.sex_human }}</td>
                   <td>{{ individual.phenotype_human }}</td>
                 </tr>
