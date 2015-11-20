@@ -23,10 +23,12 @@
 
 {% block toolbar_secondary %}
 
-  <div class="md-label">
-    <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
-    <div class="md-label-text">{{ case.analysis_type }}</div>
-  </div>
+  {% if case.analysis_type %}
+    <div class="md-label">
+      <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
+      <div class="md-label-text">{{ case.analysis_type }}</div>
+    </div>
+  {% endif %}
 
   {% if case.assignee %}
     <form class="case-assign" action="{{ url_for('core.remove_assignee',
