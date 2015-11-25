@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
-logger = logging.getLogger(__name__)
+from pkg_resources import get_distribution
 
-__version__ = '1.1.3'
+__version__ = get_distribution(__package__).version
