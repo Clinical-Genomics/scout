@@ -27,7 +27,7 @@ from scout.ext.backend.utils import (build_query)
 
 logger = logging.getLogger(__name__)
 
-class MongoAdapter(EventHandler):
+class MongoAdapter(EventHandler, VariantHandler):
     """Adapter for cummunication with a mongo database."""
     
     def init_app(self, app):
@@ -46,7 +46,7 @@ class MongoAdapter(EventHandler):
             password=password
         )
 
-    def connect_to_database(database, host='localhost', port=27017, 
+    def connect_to_database(self, database, host='localhost', port=27017, 
         username=None, password=None):
         """Connect to a mongo database
         
@@ -81,8 +81,12 @@ class MongoAdapter(EventHandler):
             An Institute object
         """
         logger.info("Fetching institute {0}".format(
-            institute.display_name))
-        return Institute.objects.get(internal_id=institute_id)
+            institute_id))
+        try:
+            result = Institute.objects.get(internal_id=institute_id)
+        except DoesNotExist:
+            result = None
+        return result
 
     def cases(self, collaborator=None, query=None):
         """Fetches all cases from the backend.
@@ -119,7 +123,8 @@ class MongoAdapter(EventHandler):
             A single Case
         """
         
-        logger.info("Fetch case {0}".format(case_id))
+        logger.info("Fetch case {0} from institute {1}".format(
+            case_id, institute_id))
         try:
             return Case.objects.get(
                 collaborators__contains=institute_id,

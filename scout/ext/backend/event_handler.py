@@ -55,11 +55,12 @@ class EventHandler(object):
         event.save()
         logger.debug("Event Saved")
 
-      def events(self, institute, case=None, variant_id=None, level=None, 
-                  comments=False):
+    def events(self, institute, case=None, variant_id=None, level=None, 
+                comments=False):
         """Fetch events from the database.
 
           Args:
+              institute (Institute): a institute object
               case (Case, optional): case object
               variant_id (str, optional): global variant id
               level (str, optional): restrict comments to 'specific' or 'global'
@@ -76,28 +77,27 @@ class EventHandler(object):
             filters.append(Q(category='variant'))
             filters.append(Q(variant_id=variant_id))
         
-        if level:
-            # filter on specific/global (implicit: only comments)
-            filters.append(Q(level=level))
+            if level:
+                # filter on specific/global (implicit: only comments)
+                filters.append(Q(level=level))
 
-            if level != 'global':
-                # restrict to case
-                filters.append(Q(case=case))
+                if level != 'global':
+                    # restrict to case
+                    filters.append(Q(case=case))
             else:
                 # return both global and specific comments for the variant
                 filters.append(Q(case=case) | Q(level='global'))
+        else:
+            # restrict to case events
+            filters.append(Q(category='case'))
 
-            else:
-                # restrict to case events
-                filters.append(Q(category='case'))
+            if case:
+                # restrict to case only
+                filters.append(Q(case=case))
 
-                if case:
-                    # restrict to case only
-                    filters.append(Q(case=case))
-
-                    if comments:
-                        # restrict events to only comments
-                        filters.append(Q(verb='comment'))
+        if comments:
+            # restrict events to only comments
+            filters.append(Q(verb='comment'))
 
         query = reduce(lambda old_filter, next_filter: old_filter & next_filter, filters)
         return Event.objects.filter(query)
@@ -452,8 +452,8 @@ class EventHandler(object):
             subject=variant.display_name,
         )
 
-      def unpin_variant(self, institute, case, user, link, variant):
-          """Create an event for unpinning a variant.
+    def unpin_variant(self, institute, case, user, link, variant):
+        """Create an event for unpinning a variant.
 
           Arguments:
               institute (Institute): A Institute object
@@ -461,30 +461,29 @@ class EventHandler(object):
               user (User): A User object
               link (str): The url to be used in the event
               variant (Variant): A variant object
-          """
+        """
         
-          logger.info("Creating event for unpinning variant {0}".format(
-                              variant.display_name))
+        logger.info("Creating event for unpinning variant {0}".format(
+                      variant.display_name))
 
-          logger.info("Remove variant from list of references in the case"\
+        logger.info("Remove variant from list of references in the case"\
                       " model")
-          case.suspects.remove(variant)
-          case.save()
+        case.suspects.remove(variant)
+        case.save()
 
-          create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='variant',
-              verb='unpin',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
-          return
+        create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='unpin',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
 
-      def order_sanger(self, institute, case, user, link, variant):
-          """Create an event for order sanger for a variant
+    def order_sanger(self, institute, case, user, link, variant):
+        """Create an event for order sanger for a variant
 
           Arguments:
               institute (Institute): A Institute object
@@ -492,38 +491,38 @@ class EventHandler(object):
               user (User): A User object
               link (str): The url to be used in the event
               variant (Variant): A variant object
-          """
+        """
         
-          logger.info("Creating event for ordering sanger for"\
-          " variant {0}".format(variant.display_name))
-        
-          self.create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='variant',
-              verb='sanger',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
+        logger.info("Creating event for ordering sanger for"\
+        " variant {0}".format(variant.display_name))
 
-          logger.info("Creating event for ordering sanger for case"\
-          " {0}".format(case.display_name))
-        
-          self.create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='case',
-              verb='sanger',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='sanger',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
 
-      def mark_causative(self, institute, case, user, link, variant):
-          """Create an event for marking a variant causative.
+        logger.info("Creating event for ordering sanger for case"\
+        " {0}".format(case.display_name))
+        
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='sanger',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
+
+    def mark_causative(self, institute, case, user, link, variant):
+        """Create an event for marking a variant causative.
 
           Arguments:
             institute (Institute): A Institute object
@@ -531,51 +530,51 @@ class EventHandler(object):
             user (User): A User object
             link (str): The url to be used in the event
             variant (Variant): A variant object
-          """
-          display_name = variant.display_name
-          logger.info("Mark variant {0} as causative in the case {1}".format(
-              display_name, case.display_name))
+        """
+        display_name = variant.display_name
+        logger.info("Mark variant {0} as causative in the case {1}".format(
+            display_name, case.display_name))
         
-          logger.info("Adding variant to causatives in case {0}".format(
-              case.display_name))
-          case.causatives.append(variant)
+        logger.info("Adding variant to causatives in case {0}".format(
+            case.display_name))
+        case.causatives.append(variant)
 
-          logger.info("Marking case {0} as solved".format(
-              case.display_name))
-          case.status = 'solved'
-          # persist changes
-          case.save()
+        logger.info("Marking case {0} as solved".format(
+            case.display_name))
+        case.status = 'solved'
+        # persist changes
+        case.save()
 
-          logger.info("Creating case event for marking {0}"\
-                      " causative".format(variant.display_name))
+        logger.info("Creating case event for marking {0}"\
+                    " causative".format(variant.display_name))
         
-          self.create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='case',
-              verb='mark_causative',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='mark_causative',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
 
-          logger.info("Creating variant event for marking {0}"\
-                           " causative".format(case.display_name))
+        logger.info("Creating variant event for marking {0}"\
+                         " causative".format(case.display_name))
         
-          self.create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='variant',
-              verb='mark_causative',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='mark_causative',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
 
     def unmark_causative(self, institute, case, user, link, variant):
-          """Create an event for unmarking a variant causative
+        """Create an event for unmarking a variant causative
 
           Arguments:
               institute (Institute): A Institute object
@@ -584,47 +583,47 @@ class EventHandler(object):
               link (str): The url to be used in the event
               variant (Variant): A variant object
 
-          """
-          display_name = variant.display_name
-          logger.info("Remove variant {0} as causative in case {1}".format(
-              display_name, case.display_name))
+        """
+        display_name = variant.display_name
+        logger.info("Remove variant {0} as causative in case {1}".format(
+            display_name, case.display_name))
         
-          case.causatives.remove(variant)
+        case.causatives.remove(variant)
 
-          # mark the case as active again
-          if len(case.causatives) == 0:
-              logger.info("Marking case as 'active'")
-              case.status = 'active'
+        # mark the case as active again
+        if len(case.causatives) == 0:
+            logger.info("Marking case as 'active'")
+            case.status = 'active'
 
-          # persist changes
-          case.save()
+        # persist changes
+        case.save()
 
-          logger.info("Creating events for unmarking variant {0} "\
-                      "causative".format(display_name))
+        logger.info("Creating events for unmarking variant {0} "\
+                    "causative".format(display_name))
 
-          self.create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='case',
-              verb='unmark_causative',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='unmark_causative',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
 
-          self.create_event(
-              institute=institute,
-              case=case,
-              user=user,
-              link=link,
-              category='variant',
-              verb='unmark_causative',
-              variant_id=variant.variant_id,
-              subject=variant.display_name,
-          )
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='unmark_causative',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
 
-      def update_manual_rank(self, institute, case, user, link, variant, 
+    def update_manual_rank(self, institute, case, user, link, variant, 
                               manual_rank):
         """Create an event for updating the manual rank of a variant
           
