@@ -2,5 +2,5 @@
 site_name: Scout Docs
 repo_url: https://github.com/Clinical-Genomics/scout
 dev_addr: "0.0.0.0:4000"
-theme: bootstrap
+theme: readthedocs
 docs_dir: docs
