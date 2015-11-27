@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, absolute_import
 
+from .build_mongo_query import build_query
 from .get_case import get_institute, get_case
 from .get_genotype import get_genotype
 from .get_transcript import get_transcript
