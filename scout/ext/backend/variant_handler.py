@@ -1,6 +1,7 @@
 import logging
 
-from scout.models import (Variant, DoesNotExist)
+from scout.models import (Variant,)
+from mongoengine import (DoesNotExist)
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ class VariantHandler(object):
                  nr_of_variants=10, skip=0):
         """Returns variants specified in question for a specific case.
             
-        If skip ≠ 0 skip the first n variants.
+        If skip not equal to 0 skip the first n variants.
 
         Arguments:
             case_id(str): A string that represents the case
@@ -27,9 +28,10 @@ class VariantHandler(object):
 
         mongo_query = build_query(case_id, query, variant_ids)
         
-        result = Variant.objects(__raw__=mongo_query).order_by('variant_rank')
-                    .skip(skip)
-                    .limit(nr_of_variants)
+        result = Variant.objects(
+            __raw__=mongo_query).order_by(
+                'variant_rank').skip(
+                    skip).limit(nr_of_variants)
         
         for variant in result:
             yield variant
