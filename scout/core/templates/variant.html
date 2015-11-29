@@ -114,7 +114,7 @@
   </div>
 
   <div class="variant-header-item">
-    <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">
+    <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">
       <div class="md-label-icon">
         <core-icon icon="room"></core-icon>
       </div>
