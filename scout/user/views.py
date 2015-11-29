@@ -12,10 +12,11 @@ user = Blueprint('profile', __name__, template_folder='templates')
 
 
 class CaseView(ModelView):
-    column_exclude_list = ['coverage_report', 'madeline_info']
+    column_exclude_list = ['coverage_report', 'madeline_info',
+                           'dynamic_gene_list']
     form_columns = ['display_name', 'owner', 'collaborators', 'individuals',
                     'status', 'is_research', 'default_panels',
-                    'gender_check']
+                    'gender_check', 'clinical_panels', 'phenotype_terms']
 
 
 class VariantView(ModelView):
