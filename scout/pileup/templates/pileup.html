@@ -11,7 +11,7 @@
 {% block js_btm %}
     {{ super() }}
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('pileup.static', filename='pileup.min.js') }}">
+    <script type="text/javascript" href="{{ url_for('pileup.static', filename='pileup.min.js') }}"></script>
 
     <script type="text/javascript" charset="utf-8">
         var div = document.getElementById('pileup-viewer');
