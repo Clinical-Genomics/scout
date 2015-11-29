@@ -26,8 +26,8 @@ msgstr "Kvalitetsrapport"
 msgid "clinical sequencing"
 msgstr "klinisk sekvensering"
 
-msgid "Based on the genes in"
-msgstr "Baserat på generna i"
+msgid "Based on gene panel"
+msgstr "Baserat på genpanel"
 
 msgid "Cutoff"
 msgstr "Gränsvärde"
@@ -47,23 +47,35 @@ msgstr "Medeltäckningsgrad"
 msgid "Transcript coverage"
 msgstr "Täckning av transkript"
 
+msgid "at"
+msgstr "vid"
+
 msgid "Fully covered transcripts"
 msgstr "Helt täckta transkript"
 
-msgid "Incomplete transcripts"
-msgstr "Ofullständiga transkript"
+msgid "Incomplete"
+msgstr "Ofullständiga"
 
-msgid "Gender prediction from sequencing data"
-msgstr "Könsbestämning utifrån sekvenseringsdata"
+msgid "Incompletely covered"
+msgstr "Ofullständigt täckta"
 
-msgid "Gender"
+msgid "transcripts"
+msgstr "transkript"
+
+msgid "genes"
+msgstr "gener"
+
+msgid "Sex"
 msgstr "Kön"
+
+msgid "according to sequence data"
+msgstr "enligt sekvensdata"
 
 msgid "Chromosome"
 msgstr "Kromosom"
 
-msgid "Generated"
-msgstr "Skapad"
+msgid "Analyzed at"
+msgstr "Analysdatum"
 
 msgid "End of report"
 msgstr "Slut på rapport"
@@ -74,6 +86,12 @@ msgstr "Förklaringar"
 
 msgid "General"
 msgstr "Allmänt"
+
+msgid "is used for coverage analysis based on read alignment."
+msgstr "används för täckningsanalys baserat på sekvensmappning."
+
+msgid "Duplicates, reads with mapping quality less than 10 as well as bases with a base quality less than 10 are not included in the analysis."
+msgstr "Duplikat, läsningar med en mappningskvalitet mindre än 10 samt baser med en baskvalitet mindre än 10 inkluderas ej i analysen."
 
 msgid "The parts of the genome that has been analyzed"
 msgstr "De delar av genomet som har analyserats"
@@ -107,13 +125,13 @@ msgstr "har gjorts på transkriptnivå"
 
 
 msgid "Coverage"
+msgstr "Medelsekvensdjup"
+
+msgid "Completeness"
 msgstr "Täckningsgrad"
 
-msgid "An alternative measure of sequence depth"
-msgstr "Ett alternativt mått på sekvensdjup"
-
-msgid "It is defined as the ratio of bases"
-msgstr "Det definieras som andelen baser"
+msgid "defined as the ratio of bases"
+msgstr "definieras som andelen baser"
 
 msgid "sequenced deeper than a specified cutoff"
 msgstr "som är sekvenserade med ett djup över en specificerad gräns"
@@ -128,17 +146,14 @@ msgid "and is found i the "Cutoff" column (first table)"
 msgstr "och återfinns i kolumnen "Gränsvärde" (första tabellen)"
 
 
-msgid "Completeness"
-msgstr "Täckningsgrad"
-
 msgid "gives an overview of the success of sequencing"
 msgstr "ger en översiktlig bild av sekvenseringens framgång"
 
-msgid "It's defined as the ratio of transcripts"
-msgstr "Det definieras som andel transkript"
+msgid "defined as the ratio of transcripts that are fully covered"
+msgstr "definieras som andel transkript som är komplett täckta"
 
-msgid "with a completeness of"
-msgstr "som har en fullständighet lika med"
+msgid "i.e. with a completeness of"
+msgstr "dvs med en täckningsgrad lika med"
 
 
 msgid "calculated by comparing relative chromosome coverage"
