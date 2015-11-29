@@ -35,13 +35,6 @@
               name: 'Location'
             },
             {
-              viz: pileup.viz.variants(),
-              data: pileup.formats.vcf({
-                url: '{{ url_for("browser.remote_static", file=vcf_file) }}'
-              }),
-              name: 'Variants'
-            },
-            {
               viz: pileup.viz.genes(),
               data: pileup.formats.bigBed({
                 url: '{{ url_for("browser.remote_static", file="/mnt/hds/proj/bioinfo/develop/references/ensGene.bb") }}'
