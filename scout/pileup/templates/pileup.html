@@ -41,15 +41,15 @@
               }),
               name: 'Genes'
             },
-            {% for bam_file in bam_files %}
+            {% for alignment in alignments %}
               {
                 viz: pileup.viz.pileup(),
                 data: pileup.formats.bam({
-                  url: '{{ url_for("browser.remote_static", file=bam_file) }}',
-                  indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
+                  url: '{{ url_for("browser.remote_static", file=alignment.bam) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=alignment.bai) }}'
                 }),
                 cssClass: 'normal',
-                name: 'Alignments'
+                name: '{{ alignment.sample }}'
               },
             {% endfor %}
           ]

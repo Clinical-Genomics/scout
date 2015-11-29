@@ -95,6 +95,17 @@ class Case(Document):
                 if individual.bam_file]
 
     @property
+    def bai_files(self):
+        """Aggregate all BAM files across all individuals."""
+        return [individual.bam_file.replace('.bam', '.bai')
+                for individual in self.individuals if individual.bam_file]
+
+    @property
+    def sample_names(self):
+        return [individual.display_name for individual in self.individuals
+                if individual.bam_file]
+
+    @property
     def all_panels(self):
         """Yield all gene lists (both clinical and research)."""
         return itertools.chain(self.clinical_panels,
