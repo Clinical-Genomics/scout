@@ -111,6 +111,11 @@ class Case(Document):
         return itertools.chain(self.clinical_panels,
                                self.research_panels)
 
+    @property
+    def owner_case_id(self):
+        """Return an id using both owner and case."""
+        return "{this.owner}-{this.display_name}".format(this=self)
+
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
