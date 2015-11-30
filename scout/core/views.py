@@ -65,9 +65,9 @@ def case(institute_id, case_id):
     case_events = store.events(institute, case=case_model)
 
     # map internal + external sample ids
-    sample_map = {"alt_".format(sample.individual_id): sample.display_name
+    sample_map = {"alt_{}".format(sample.individual_id): sample.display_name
                   for sample in case_model.individuals}
-    group_id = "alt_{case.owner}_{case.display_name}".format(case=case_model)
+    group_id = "alt_{}".format(case.owner_case_id)
     sample_map[group_id] = case_model.display_name
 
     # default coverage report
