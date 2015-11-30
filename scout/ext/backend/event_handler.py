@@ -305,37 +305,53 @@ class EventHandler(object):
                 omim_term (str): A omim id
                 
         """
-        if hpo_term:
-            hpo_results = phizz.query_hpo([hpo_term])
-        elif omim_term:
-            hpo_results = phizz.query_disease([omim_term])
-        else:
-            raise ValueError('Must supply either hpo or omim term')
+        try:
+            if hpo_term:
+                logger.debug("Fetching info for hpo term {0}".format(hpo_term))
+                hpo_results = phizz.query_hpo([hpo_term])
+            elif omim_term:
+                logger.debug("Fetching info for mim term {0}".format(omim_term))
+                hpo_results = phizz.query_disease([omim_term])
+            else:
+                raise ValueError('Must supply either hpo or omim term')
+            logger.debug("Got result {0}".format(
+                ', '.join(res['hpo_term'] for res in hpo_results)))
+        except ValueError as e:
+            #TODO Should ve raise a more proper exception here?
+            raise e
         
+        phenotype_terms = []
         for hpo_result in hpo_results:
-            phenotype_term = PhenotypeTerm(phenotype_id=hpo_result['hpo_term'],
-                                           feature=hpo_result['description'])
+            phenotype_name = hpo_result['hpo_term']
+            description = hpo_result['description']
+            phenotype_term = PhenotypeTerm(
+                                    phenotype_id=phenotype_name,
+                                    feature=description
+            )
+            phenotype_terms.append(phenotype_term)
 
-        logger.info("Adding new phenotype term to case [0]".format(
-                      case.display_name))
-        logger.info("Append the new phenotype term (ID) to case")
-        case.phenotype_terms.append(phenotype_term)
+            logger.info("Append the phenotype term {0} to case {1}".format(
+                phenotype_name, case.display_name
+            ))
+            case.phenotype_terms.append(phenotype_term)
+        
+            logger.info("Creating event for adding phenotype term for case"\
+                        " {0}".format(case.display_name))
+                    
+            self.create_event(
+                institute=institute, 
+                case=case, 
+                user=user, 
+                link=link,
+                category='case', 
+                verb='add_phenotype',
+                subject=case.display_name,
+                content = phenotype_name
+            )
         
         case.save()
         logger.debug("Case updated")
         
-        logger.info("Creating event for adding phenotype term for case"\
-                    " {0}".format(case.display_name))
-                    
-        self.create_event(
-            institute=institute, 
-            case=case, 
-            user=user, 
-            link=link,
-            category='case', 
-            verb='add_phenotype',
-            subject=case.display_name
-        )
 
     def remove_phenotype(self, institute, case, user, link, phenotype_id):
         """Remove an existing phenotype from a case
@@ -352,23 +368,23 @@ class EventHandler(object):
         for phenotype in case.phenotype_terms:
             if phenotype.phenotype_id == phenotype_id:
                 case.phenotype_terms.remove(phenotype)
+                logger.info("Creating event for removing phenotype term {0}"\
+                            " from case {1}".format(
+                                phenotype_id, case.display_name))
+    
+                self.create_event(
+                    institute=institute, 
+                    case=case, 
+                    user=user, 
+                    link=link,
+                    category='case', 
+                    verb='remove_phenotype',
+                    subject=case.display_name
+                )
                 break
 
         case.save()
         logger.debug("Case updated")
-
-        logger.info("Creating event for removing phenotype term from case"\
-                    " {0}".format(case.display_name))
-    
-        self.create_event(
-            institute=institute, 
-            case=case, 
-            user=user, 
-            link=link,
-            category='case', 
-            verb='remove_phenotype',
-            subject=case.display_name
-        )
 
     def comment(self, institute, case, user, link, variant=None,
                 content="", comment_level="specific"):
@@ -388,7 +404,7 @@ class EventHandler(object):
             variant (Variant): A variant object
             content (str): The content of the comment
             comment_level (str): Any one of 'specific' or 'global'.
-            Default is 'specific'
+                                 Default is 'specific'
         """
         if variant:
             logger.info("Creating event for a {0} comment on variant {1}".format(
