@@ -67,7 +67,7 @@ def case(institute_id, case_id):
     # map internal + external sample ids
     sample_map = {"alt_{}".format(sample.individual_id): sample.display_name
                   for sample in case_model.individuals}
-    group_id = "alt_{}".format(case.owner_case_id)
+    group_id = "alt_{}".format(case_model.owner_case_id)
     sample_map[group_id] = case_model.display_name
 
     # default coverage report
