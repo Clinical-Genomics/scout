@@ -104,6 +104,64 @@ def get_case(request):
     return case
 
 @pytest.fixture(scope='function')
+def get_case_info(request):
+    logger.info("Get the necessary information to build a case")
+    case = {}
+    case['case_lines'] = [
+        "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
+        "636808	ADM1059A1	0	0	1	1",
+        "636808	ADM1059A2	ADM1059A1	ADM1059A3	1	2",
+        "636808	ADM1059A3	0	0	2	1",
+    ]
+    
+    case['scout_configs'] = {
+        'load': True,
+        'load_vcf':'test_vcf',
+        'analysis_type': 'wes',
+        'rank_model_version': '1.12',
+        'owner': 'cust000',
+        'collaborators': [],
+        'analysis_date': '2015-11-23 14:00:46',
+        'human_genome_version': 37,
+        'human_genome_build': 'GRCh',
+        'madeline': 'madeline.xml',
+        'ped': 'pedigree.ped',
+        'default_panels': ['IEM'],
+        'igv_vcf': 'test_vcf',
+        'gene_lists':{
+                'PIDCAD': {
+                    'date': '2015-10-21',
+                    'file': 'gene_list.txt',
+                    'version': 7.2,
+                    'name': 'PIDCAD',
+                    'full_name': "PID Candidates",
+                    }
+                },
+        'individuals':{
+            'ADM1059A3': {
+                'capture_kit': ['Agilent_SureSelectCRE.V1'],
+                'bam_path': 'abam.bam',
+                'name': 'ADM1059A3'
+                },
+            'ADM1059A2':{
+                'capture_kit': ['Agilent_SureSelectCRE.V1,'],
+                'bam_path': 'abam.bam',
+                'name': 'ADM1059A2'
+                },
+            'ADM1059A1':{
+                'capture_kit': ['Agilent_SureSelectCRE.V1'],
+                'bam_path': 'abam.bam',
+                'name': 'ADM1059A1'
+                }
+            }
+    }
+    case['case_type'] = 'ped'
+    case['owner'] = 'cust000'
+
+    return case
+
+
+@pytest.fixture(scope='function')
 def get_variant(request, get_institute):
     logger.info("setup a variant")
     variant = Variant(
