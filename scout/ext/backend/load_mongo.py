@@ -72,7 +72,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   logger.info("Parsing config file")
   config_object = ConfigParser(vcf_configs)
 
-
   ######## Get the cases and add them to the mongo db: ########
 
   logger.info("Get the case from ped file")

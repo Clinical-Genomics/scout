@@ -21,6 +21,8 @@ import click
 import logging
 from path import path
 
+from mongoengine import DoesNotExist, Q
+
 from ..config_parser import ConfigParser
 from scout.models import (Case, Individual, Institute)
 from .get_gene_lists import get_gene_lists
