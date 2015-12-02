@@ -1,10 +1,14 @@
+import os
 import logging
+import codecs
 
 from path import path
+from datetime import datetime
 from mongoengine import DoesNotExist, Q
 
 from ped_parser import FamilyParser
 from scout.models import (Case, Individual, Institute)
+from scout.ext.backend.utils.get_gene_lists import get_gene_lists
 
 logger = logging.getLogger(__name__)
 
@@ -213,6 +217,41 @@ class CaseHandler(object):
                     individual.individual_id, case_id))
             case.individuals.append(individual)
         
+        clinical_panels = []
+        research_panels = []
+        
+        for gene_list in scout_configs.get('gene_lists', {}):
+            logger.info("Found gene list {0}".format(gene_list))
+            list_info = scout_configs['gene_lists'][gene_list]
+
+            list_path = list_info.get('file')
+            list_type = list_info.get('type', 'clinical')
+            
+            if os.path.isfile(list_path):
+                with codecs.open(list_path, 'r') as list_lines:
+                    panels = get_gene_lists(list_lines, owner)
+
+                for panel in panels:
+                    logger.info("Store gene panel {0} in database".format(
+                        panel.panel_name))
+                    panel.save()
+                    if list_type == 'clinical':
+                        logger.info("Adding {0} to clinical gene lists".format(
+                            panel.panel_name))
+                        clinical_panels.append(panel)
+                    else:
+                        logger.info("Adding {0} to research gene lists".format(
+                            panel.panel_name))
+                        research_panels.append(panel)
+
+        case['clinical_panels'] = clinical_panels
+        case['research_panels'] = research_panels
+        
+        default_panels = scout_configs.get('default_panels', [])
+        logger.info("Adding {0} as default panels to case {1}".format(
+            ', '.join(default_panels), case_id))
+        case['default_panels'] = list(default_panels)
+        
         if self.case(institute_id=owner, case_id=case_id):
             self.update_case(case)
         else:
@@ -220,10 +259,45 @@ class CaseHandler(object):
             case.save()
     
     def update_case(self, case):
-        """Update a case in the database"""
+        """Update a case in the database
+        
+            Args:
+                case(Case): The new case information
+        """
+        logger.info("Updating case {0}".format(case.case_id))
+        existing_case = self.case(
+            institute_id=case.owner, 
+            case_id=case.display_name
+        )
+        logger.debug("Updating collaborators to".format(
+            existing_case['collaborators']))
+        case['collaborators'] = existing_case['collaborators']
+        logger.debug("Updating is_research to".format(
+            existing_case['is_reasearch']))
+        case['is_reasearch'] = existing_case['is_reasearch']
+        logger.debug("Updating created_at to".format(
+            existing_case['created_at']))
+        case['created_at'] = existing_case['created_at']
+        
+        logger.info("Deleting old case {0}".format(
+            existing_case['case_id']))
+        existing_case.delete()
+        
+        ##TODO Add event for updating case?
+        
+        logger.info("Saving updated case {0}".format(
+            case['case_id']))
+        
+        case.save()
+        
+        
+    def test_update_case(self):
+        """docstring for test_update_case"""
+        ##TODO Write test to do this
         pass
     
     def add_institute(self, internal_id, display_name):
         """docstring for add_institute"""
-    pass
+        ##TODO write this test
+        pass
     

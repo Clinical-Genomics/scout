@@ -305,5 +305,8 @@ class Variant(Document):
 
     return url_template.format(this=self)
 
+  ##TODO Add indexes to document
+    
+
   def __unicode__(self):
     return self.display_name
