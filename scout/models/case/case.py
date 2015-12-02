@@ -99,7 +99,9 @@ class Case(Document):
         """Yield all gene lists (both clinical and research)."""
         return itertools.chain(self.clinical_panels,
                                self.research_panels)
-
+    
+    ##TODO Add indexes to document
+    
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
