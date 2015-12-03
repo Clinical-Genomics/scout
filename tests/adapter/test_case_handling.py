@@ -45,4 +45,53 @@ def test_add_case(setup_database, get_case_info):
     for individual in result['individuals']:
         assert individual['individual_id'] in set(
                     get_case_info['scout_configs']['individuals'].keys())
+    logger.info("Removing case")
+    result.delete()
 
+
+def test_update_case(setup_database, get_case_info):
+    print('')
+    logger.info("Add a case")
+    
+    setup_database.add_case(
+        case_lines=get_case_info['case_lines'], 
+        case_type=get_case_info['case_type'], 
+        owner=get_case_info['owner'],
+        scout_configs=get_case_info['scout_configs']
+    )
+
+    result = setup_database.case(
+        institute_id='cust000',
+        case_id='636808'
+    )
+    
+    assert result.owner == 'cust000'
+    assert set(result.collaborators) == set(['cust000'])
+    
+    logger.info("Set case in research mode")
+    result['is_research'] = True
+    result.save()
+    
+    logger.info("Update case info")
+    get_case_info['scout_configs']['collaborators'] = ['cust001']
+    
+    setup_database.add_case(
+        case_lines=get_case_info['case_lines'], 
+        case_type=get_case_info['case_type'], 
+        owner=get_case_info['owner'],
+        scout_configs=get_case_info['scout_configs']
+    )
+    
+    result = setup_database.case(
+        institute_id='cust000',
+        case_id='636808'
+    )
+    
+    assert set(result.collaborators) == set(['cust000', 'cust001'])
+    assert result.is_research == True
+    
+    logger.info("Removing case")
+    result.delete()
+    
+    
+    
