@@ -14,7 +14,6 @@ from __future__ import (absolute_import, print_function,)
 
 import sys
 import os
-import click
 import logging
 
 from scout.models import (Variant, Institute)
@@ -22,37 +21,31 @@ from scout._compat import iteritems
 
 from . import (get_genes, get_genotype, get_compounds, generate_md5_key)
 
-from pprint import pprint as pp
+logger = logging.getLogger(__name__)
 
-# These are the valid SO terms with corresponfing severity rank
-def get_mongo_variant(variant, variant_type, individuals, case, config_object, variant_count):
+def get_mongo_variant(variant, variant_type, individuals, case, institute, 
+                        variant_count):
     """
     Take a variant and some additional information, convert it to mongo engine
     objects and put them in the proper format in the database.
     
     Input:
-      variant (dict): A Variant dictionary
-      variant_type  (str): A string in ['clinical', 'research']
-      individuals   (dict): A dictionary with the id:s of the individuals as keys and
+        variant (dict): A Variant dictionary
+        variant_type  (str): A string in ['clinical', 'research']
+        individuals   (dict): A dictionary with the id:s of the individuals as keys and
                       display names as values
-      case (Case): The Case object that the variant belongs to
-      variant_count (int): The rank order of the variant in this case
-      config_object : A config object with the information from the config file
+        case (Case): The Case object that the variant belongs to
+        institute(Institute): A institute object
+        variant_count (int): The rank order of the variant in this case
     
     Returns:
-      mongo_variant : A variant parser into the proper mongo engine format.
+        mongo_variant : A variant parsed into the proper mongoengine format.
     
     """
-
-    logger = logging.getLogger(__name__)
-
     # Create the ID for the variant
     case_id = case.case_id
     case_name = case.display_name
     
-    
-    institute = Institute.objects.get(display_name=case.owner)
-      
     id_fields = [
                   variant['CHROM'],
                   variant['POS'],
@@ -60,7 +53,8 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                   variant['ALT'],
                   variant_type
                 ]
-      
+    
+    # We need to create md5 keys since REF and ALT can be huge:
     variant_id = generate_md5_key(id_fields)
     document_id = generate_md5_key(id_fields+case_id.split('_'))
 
@@ -82,11 +76,11 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
                   )
 
     # If a variant belongs to any gene lists we check which ones
-    mongo_variant['gene_lists'] = variant['info_dict'].get(
-          config_object['VCF']['GeneLists']['vcf_info_key'],
-          None
-          )
-
+    gene_lists = variant['info_dict'].get('Clinical_db_gene_annotation')
+    if gene_lists:
+        logger.info("Adding gene lists {0}".format(set(gene_lists)))
+        mongo_variant['gene_lists'] = list(set(gene_lists))
+    
     ################# Add the rank score and variant rank #################
     # Get the rank score as specified in the config file.
     # This is central for displaying variants in scout.
@@ -102,7 +96,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
         # relevant information for a individual:
         gt_calls.append(get_genotype(
                                       variant,
-                                      config_object,
                                       individual_id,
                                       display_name
                                     )
@@ -203,118 +196,3 @@ def get_mongo_variant(variant, variant_type, individuals, case, config_object, v
 
     return mongo_variant
 
-
-@click.command()
-@click.option('-f', '--vcf_file',
-                nargs=1,
-                type=click.Path(exists=True),
-                help="Path to the vcf file that should be loaded."
-)
-@click.option('-p', '--ped_file',
-                nargs=1,
-                type=click.Path(exists=True),
-                help="Path to the corresponding ped file."
-)
-@click.option('--vcf_config_file',
-                nargs=1,
-                type=click.Path(exists=True),
-                help="Path to the config file for loading the variants."
-)
-@click.option('-c', '--scout_config_file',
-                nargs=1,
-                type=click.Path(exists=True),
-                help="Path to the config file for loading the variants."
-)
-@click.option('-t', '--family_type',
-                type=click.Choice(['ped', 'alt', 'cmms', 'mip']),
-                default='cmms',
-                nargs=1,
-                help="Specify the file format of the ped (or ped like) file."
-)
-@click.option('--variant_type',
-                type=click.Choice(['clinical', 'research']),
-                default='clinical',
-                nargs=1,
-                help="Specify the type of the variants that is being loaded."
-)
-@click.option('-i', '--institute',
-                default='CMMS',
-                nargs=1,
-                help="Specify the institute that the file belongs to."
-)
-@click.option('-v', '--verbose',
-                is_flag=True,
-                help='Increase output verbosity.'
-)
-def cli(vcf_file, ped_file, vcf_config_file, scout_config_file, family_type,
-        variant_type, institute, verbose):
-    """
-    Test generate mongo variants.
-    """
-      
-    from vcf_parser import VCFParser
-    from ....models import Case
-    from ..config_parser import ConfigParser
-    from . import get_case
-      
-    setup_configs = {}
-      
-    if scout_config_file:
-        setup_configs = ConfigParser(scout_config_file)
-      
-    print(scout_config_file)
-    print(setup_configs)
-    
-    if vcf_file:
-        setup_configs['load_vcf'] = vcf_file
-      
-    # if ped_file:
-    #     setup_configs['ped'] = ped_file
-    #
-    # if institute:
-    #     setup_configs['institutes'] = [institute]
-    #
-    # if not setup_configs.get('load_vcf', None):
-    #     print("Please provide a vcf file.(Use flag '-vcf/--vcf_file')", file=sys.stderr)
-    #     sys.exit(0)
-    #
-    # # Check that the ped file is provided:
-    # if not setup_configs.get('ped', None):
-    #     print("Please provide a ped file.(Use flag '-ped/--ped_file')", file=sys.stderr)
-    #     sys.exit(0)
-    #
-    # # Check that the config file is provided:
-    # if not vcf_config_file:
-    #     print("Please provide a config file.(Use flag '-vcf_config/--vcf_config_file')", file=sys.stderr)
-    #     sys.exit(0)
-    #
-    # config_object = ConfigParser(vcf_config_file)
-    #
-    # my_case = get_case(setup_configs, family_type)
-      
-    vcf_parser = VCFParser(infile=setup_configs['load_vcf'], split_variants=True)
-      
-    individuals = vcf_parser.individuals
-      
-    variant_count = 0
-    for variant in vcf_parser:
-         clnsig = variant['info_dict'].get('CLNSIG')
-         if clnsig:
-             clnsig = clnsig[0]
-             print(clnsig.split('|'))
-             print(variant['info_dict'].get('SnpSift_CLNACC'))
-        
-      # variant_count += 1
-      # mongo_variant = get_mongo_variant(
-      #                     variant,
-      #                     variant_type,
-      #                     individuals,
-      #                     my_case,
-      #                     config_object,
-      #                     variant_count
-      #                   )
-      # print(mongo_variant.to_json())
-      
-
-if __name__ == '__main__':
-    cli()

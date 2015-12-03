@@ -1,7 +1,10 @@
 import logging
 
+from datetime import datetime
 from scout.models import (Variant,)
 from mongoengine import (DoesNotExist)
+
+from vcf_parser import VCFParser
 
 logger = logging.getLogger(__name__)
 
@@ -104,3 +107,105 @@ class VariantHandler(object):
                                     )
         except DoesNotExist:
             return None
+    
+    def delete_variants(self, case_id, variant_type):
+        """Delete variants of one type for a case
+        
+            This is used when a case i reanalyzed
+            
+            Args:
+                case_id(str): The case id
+                variant_type(str): 'research' or 'clinical'
+        """
+        logger.info("Deleting old variants for case {0}".format(case_id))
+        Variant.objects(case_id=case_id, variant_type=variant_type).delete()
+        logger.debug("Variants deleted")
+        
+    
+    def add_variants(self, variants, variant_type, case, nr_of_variants=5000,
+                    rank_score_threshold = 0):
+        """Add variants to the mongo database
+            
+            Args:
+                variants(str): Path to a vcf file
+                variant_type(str): 'research' or 'clinical'
+                case(Case): The case for which the variants should be uploaded
+                nr_of_variants(int): Treshold for number of variants
+                rank_score_threshold(int): Treshold for rankscore
+        """
+        case_id = case.case_id
+        
+        logger.info("Setting up a variant parser")
+        variant_parser = VCFParser(infile=vcf_file)
+        nr_of_variants = 0
+        
+        self.delete_variants(case_id, variant_type)
+        
+        start_inserting_variants = datetime.now()
+
+
+        # Check which individuals that exists in the vcf file.
+        # Save the individuals in a dictionary with individual ids as keys
+        # and display names as values
+        individuals = {}
+        # loop over keys (internal ids)
+        logger.info("Checking which individuals in ped file exists in vcf")
+        for individual in case.individuals:
+            individual_id = individual.individual_id
+            display_name = individual.display_name
+            logger.debug("Checking individual {0}".format(individual_id))
+            if individual_id in variant_parser.individuals:
+                logger.debug("Individual {0} found".format(individual_id))
+                individuals[individual_id] = display_name
+            else:
+                logger.warning("Individual {0} is present in ped file but"\
+                                " not in vcf".format(individual_id))
+
+        logger.info('Start parsing variants')
+        
+        ########## If a rank score threshold is used check if it is below that threshold ##########
+        for variant in variant_parser:
+            logger.debug("Parsing variant {0}".format(variant['variant_id']))
+            if not float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
+                logger.info("Lower rank score threshold reached after {0}"\
+                            " variants".format(nr_of_variants))
+                break
+            
+            if variant_number_threshold:
+                if nr_of_variants > variant_number_threshold:
+                    logger.info("Variant number threshold reached. ({0})".format(
+                                variant_number_threshold))
+                    break
+
+
+            nr_of_variants += 1
+            mongo_variant = get_mongo_variant(
+                variant=variant, 
+                variant_type=variant_type, 
+                individuals=individuals, 
+                case=case, 
+                variant_count=nr_of_variants, 
+            )
+
+            mongo_variant.save()
+
+            if nr_of_variants % 1000 == 0:
+                logger.info('{0} variants parsed'.format(nr_of_variants))
+
+        logger.info("Parsing variants done")
+        logger.info("{0} variants inserted".format(nr_of_variants))
+        logger.info("Time to insert variants: {0}".format(
+          datetime.now() - start_inserting_variants))
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        
+        
