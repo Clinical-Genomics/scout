@@ -14,8 +14,65 @@ logger = logging.getLogger(__name__)
 
 
 class CaseHandler(object):
-    """Part of the mongo adapter that handles cases"""
+    """Part of the mongo adapter that handles cases and institutes"""
     
+    def add_institute(self, internal_id, display_name):
+        """Add a institute to the database
+        
+            Args:
+                internal_id(str): The internal id (like cust003)
+                display_name(str): The display name for a institute (like CMMS)
+        """
+        logger.info("Creating institute with internal_id: {0} and"\
+                    " display_name: {1}".format(internal_id, display_name))
+        institute = Institute(
+            internal_id=internal_id,
+            display_name=display_name
+        )
+        institute.save()
+        ##TODO create event for doing this?
+    
+    def update_institute(self, internal_id, sanger_recipient=None, 
+                            coverage_cutoff=None):
+        """Update the information for an institute
+        
+            Args:
+                internal_id(str): The internal institute id
+                sanger_recipient(str): Email adress for ordering sanger
+                coverage_cutoff(int): Update coverage cutoff
+        """
+        institute = self.institute(internal_id)
+        if institute:
+            if sanger_recipient:
+                logger.info("Updating sanger recipients for institute"\
+                            " {0} with {1}".format(
+                                internal_id, sanger_recipient))
+                institute.sanger_recipients.append(sanger_recipient)
+            if coverage_cutoff:
+                logger.info("Updating coverage cutoff for institute"\
+                            " {0} with {1}".format(
+                                internal_id, coverage_cutoff))
+                institute.coverage_cutoff = coverage_cutoff
+            institute.save()
+        ##TODO create event?
+    
+    def institute(self, internal_id):
+        """Featch a single institute from the backend
+        
+            Args:
+                internal_id(str)
+            
+            Returns:
+                Institute object
+        """
+        logger.info("Fetch institute {}".format(
+            internal_id))
+        try:
+            return Institute.objects.get(internal_id=internal_id)
+        except DoesNotExist:
+            logger.warning("Could not find institute {0}".format(internal_id))
+            return None
+        
     def cases(self, collaborator=None, query=None):
         """Fetches all cases from the backend.
 
@@ -252,11 +309,14 @@ class CaseHandler(object):
             ', '.join(default_panels), case_id))
         case['default_panels'] = list(default_panels)
         
+        #If the case exists we need tu update the information
         if self.case(institute_id=owner, case_id=case_id):
             self.update_case(case)
         else:
             logger.info("Adding case {0} to database".format(case_id))
             case.save()
+        
+        return case
     
     def update_case(self, case):
         """Update a case in the database
@@ -269,13 +329,13 @@ class CaseHandler(object):
             institute_id=case.owner, 
             case_id=case.display_name
         )
-        logger.debug("Updating collaborators to".format(
-            existing_case['collaborators']))
-        case['collaborators'] = existing_case['collaborators']
-        logger.debug("Updating is_research to".format(
-            existing_case['is_reasearch']))
-        case['is_reasearch'] = existing_case['is_reasearch']
-        logger.debug("Updating created_at to".format(
+        case['collaborators'] = list(set(case['collaborators'] + existing_case.collaborators))
+        logger.debug("Updating collaborators to {0}".format(
+            case['collaborators']))
+        logger.debug("Updating is_research to {0}".format(
+            existing_case.is_research))
+        case['is_research'] = existing_case['is_research']
+        logger.debug("Updating created_at to {0}".format(
             existing_case['created_at']))
         case['created_at'] = existing_case['created_at']
         
@@ -290,14 +350,3 @@ class CaseHandler(object):
         
         case.save()
         
-        
-    def test_update_case(self):
-        """docstring for test_update_case"""
-        ##TODO Write test to do this
-        pass
-    
-    def add_institute(self, internal_id, display_name):
-        """docstring for add_institute"""
-        ##TODO write this test
-        pass
-    

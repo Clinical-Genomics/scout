@@ -5,6 +5,8 @@ import logging
 from pymongo import MongoClient
 from mongoengine import DoesNotExist
 
+from vcf_parser import VCFParser
+
 from scout.ext.backend import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
@@ -12,8 +14,52 @@ from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm,
 
 from scout.log import init_log
 root_logger = logging.getLogger()
-init_log(root_logger, loglevel='DEBUG')
+init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
+
+vcf_file = "tests/fixtures/337334.clinical.vcf"
+
+@pytest.fixture(scope='function')
+def variant_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return vcf_file
+
+@pytest.fixture(scope='function')
+def vcf_case(request):
+    logger.info("setup a vcf case")
+    case = Case(
+        case_id="337334",
+        display_name="337334",
+        owner='cust000',
+        collaborators = ['cust000']
+    )
+    
+    return case
+
+@pytest.fixture(scope='function')
+def compound_variant(request):
+    logger.info("setup a compound variant")
+    variant = {
+        'variant_id':'7_117175580_C_A',
+        'compound_variants':{
+            "337334":[
+                {'variant_id':'7_117175579_AT_A',
+                'compound_score': 32}
+            ]
+        }
+    }
+    
+    return variant
+
+
+@pytest.fixture(scope='function')
+def variants(request):
+    """Get a parser with vcf variants"""
+    print('')
+    variant_parser = VCFParser(infile=vcf_file)
+    return variant_parser
+
 
 @pytest.fixture(scope='session')
 def setup_database(request):
