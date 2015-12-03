@@ -82,12 +82,12 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         mongo_variant['gene_lists'] = list(set(gene_lists))
     
     ################# Add the rank score and variant rank #################
-    # Get the rank score as specified in the config file.
-    # This is central for displaying variants in scout.
-
-    mongo_variant['rank_score'] = float(
-      variant.get('rank_scores', {}).get(case_name, 0.0)
-    )
+    # The rank score is central for displaying variants in scout.
+    
+    rank_score = float(variant.get('rank_scores', {}).get(case_name, 0.0))
+    mongo_variant['rank_score'] = rank_score
+    logger.debug("Updating rank score for variant {0} to {1}".format(
+        variant['variant_id'], rank_score))
 
     ################# Add gt calls #################
     gt_calls = []
@@ -95,32 +95,33 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         # This function returns an ODM GTCall object with the
         # relevant information for a individual:
         gt_calls.append(get_genotype(
-                                      variant,
-                                      individual_id,
-                                      display_name
+                                      variant=variant,
+                                      individual_id=individual_id,
+                                      display_name=display_name
                                     )
                                 )
+    logger.debug("Updating genotype calls for variant {0}".format(
+        variant['variant_id']))
     mongo_variant['samples'] = gt_calls
 
     ################# Add the compound information #################
+    logger.debug("Updating compounds for variant {0}".format(
+        variant['variant_id']))
 
     mongo_variant['compounds'] = get_compounds(
-                                          variant,
-                                          case,
-                                          variant_type
+                                          variant=variant,
+                                          case=case,
+                                          variant_type=variant_type
                                         )
                                     
     ################# Add the inheritance patterns #################
+    
+    genetic_models = variant.get('genetic_models',{}).get(case_name,[])
+    mongo_variant['genetic_models'] = genetic_models
+    logger.debug("Updating genetic models for variant {0} to {1}".format(
+        variant['variant_id'], ', '.join(genetic_models)))
 
-    mongo_variant['genetic_models'] = variant.get(
-                                        'genetic_models',
-                                        {}
-                                        ).get(
-                                            case_name,
-                                            []
-                                            )
-
-    ################# Add the gene and tanscript information #################
+    ################# Add the gene and transcript information #################
 
     # Get genes return a list with ODM objects for each gene
     mongo_variant['genes'] = get_genes(variant)
