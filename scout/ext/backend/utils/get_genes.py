@@ -87,6 +87,7 @@ def get_transcripts(variant):
             transcripts(list(Transcript))
     """
     ensembl_to_refseq = create_ensembl_to_refseq(variant)
+    transcripts = []
     
     for vep_entry in variant['vep_info'].get(variant['ALT'], []):
         # There can be several functional annotations for one variant
@@ -240,7 +241,6 @@ def get_omim_phenotype_ids(variant):
                     
     return phenotype_mim_ids
 
-
 def get_genes(variant):
     """Get the gene information in the mongoengine format.
     
@@ -255,7 +255,7 @@ def get_genes(variant):
     genes = {}
     mongo_genes = []    
     
-    transcripts = [get_transcripts(vep_entry)]
+    transcripts = get_transcripts(variant)
     # A dictionary with clinical gene descriptions
     gene_descriptions = get_gene_descriptions(variant)
     
