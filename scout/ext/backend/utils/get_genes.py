@@ -308,7 +308,10 @@ def get_genes(variant):
     mim_ids = get_omim_gene_ids(variant)
     for hgnc_symbol in mim_ids:
         if hgnc_symbol in genes:
-            genes[hgnc_symbol]['omim_gene_id'] = mim_ids[mim_ids]
+            mim_id = mim_ids[hgnc_symbol]
+            logger.debug("Adding mim id {0} to gene {1}".format(
+                hgnc_symbol, mim_id))
+            genes[hgnc_symbol]['omim_gene_id'] = mim_id
     
     # Fill the omim phenotype terms:
     

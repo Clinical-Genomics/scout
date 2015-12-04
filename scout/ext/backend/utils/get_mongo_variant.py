@@ -112,7 +112,8 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     # If a variant belongs to any gene lists we check which ones
     gene_lists = variant['info_dict'].get('Clinical_db_gene_annotation')
     if gene_lists:
-        logger.info("Adding gene lists {0}".format(set(gene_lists)))
+        logger.debug("Adding gene lists {0} to variant {1}".format(
+            set(gene_lists), variant['variant_id']))
         mongo_variant['gene_lists'] = list(set(gene_lists))
     
     ################# Add the rank score and variant rank #################
@@ -155,14 +156,22 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     logger.debug("Updating genetic models for variant {0} to {1}".format(
         variant['variant_id'], ', '.join(genetic_models)))
 
+    # Add the clinsig prediction
+    clnsig_accessions = get_clnsig(variant)
+    if clnsig_accessions:
+        logger.debug("Updating clnsig for variant {0} to {1}".format(
+            variant['variant_id'], '5'))
+        mongo_variant['clnsig'] = 5
+        logger.debug("Updating clnsigacc for variant {0} to {1}".format(
+            variant['variant_id'], ', '.join(clnsig_accessions)))
+        mongo_variant['clnsigacc'] = clnsig_accessions
+
     ################# Add the gene and transcript information #################
 
     # Get genes return a list with ODM objects for each gene
     mongo_variant['genes'] = get_genes(variant)
     hgnc_symbols = set([])
     ensembl_gene_ids = set([])
-    
-    # Add the clinsig prediction
 
     for gene in mongo_variant.genes:
         hgnc_symbols.add(gene.hgnc_symbol)
@@ -178,43 +187,50 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
 
     ################# Add the frequencies #################
 
-    try:
-        mongo_variant['thousand_genomes_frequency'] = float(
-                                variant['info_dict'].get(
-                                  config_object['VCF']['1000GMAF']['vcf_info_key'],
-                                  ['0'])[0]
-                                )
-    except ValueError:
-        pass
 
-    try:
-        mongo_variant['exac_frequency'] = float(
-                                variant['info_dict'].get(
-                                  config_object['VCF']['EXAC']['vcf_info_key'],
-                                  ['0'])[0]
-                                )
-    except ValueError:
-        pass
+    thousand_g = variant['info_dict'].get('1000GAF')
+    if thousand_g:
+        value = thousand_g[0]
+        logger.debug("Updating 1000G freq for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['thousand_genomes_frequency'] = float(value)
+
+    exac = variant['info_dict'].get('EXACAF')
+    if exac:
+        value = exac[0]
+        logger.debug("Updating EXAC freq for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['exac_frequency'] = float(value)
 
     # Add the severity predictions
-    mongo_variant['cadd_score'] = float(
-                          variant['info_dict'].get(
-                            config_object['VCF']['CADD']['vcf_info_key'],
-                            ['0'])[0]
-                          )
-    # Add conservation annotation
-    mongo_variant['gerp_conservation'] = variant['info_dict'].get(
-                                  config_object['VCF']['Gerp']['vcf_info_key'],
-                                  []
-                                )
-    mongo_variant['phast_conservation'] = variant['info_dict'].get(
-                                  config_object['VCF']['PhastCons']['vcf_info_key'],
-                                  []
-                                )
-    mongo_variant['phylop_conservation'] = variant['info_dict'].get(
-                                  config_object['VCF']['PhylopCons']['vcf_info_key'],
-                                  []
-                                )
+    cadd = variant['info_dict'].get('CADD')
+    if cadd:
+        value = cadd[0]
+        logger.debug("Updating CADD score for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['cadd_score'] = float(value)
 
+    # Add conservation annotation
+    gerp = variant['info_dict'].get('GERP++_RS_prediction_term')
+    if gerp:
+        value = gerp[0]
+        logger.debug("Updating Gerp annotation for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['gerp_conservation'] = value
+
+    phast_cons = variant['info_dict'].get('phastCons100way_vertebrate_prediction_term')
+    if phast_cons:
+        value = phast_cons[0]
+        logger.debug("Updating Phast annotation for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['phast_conservation'] = value
+
+    phylop = variant['info_dict'].get('phyloP100way_vertebrate_prediction_term')
+    if phylop:
+        value = phylop[0]
+        logger.debug("Updating Phylop annotation for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['phylop_conservation'] = value
+    
     return mongo_variant
 
