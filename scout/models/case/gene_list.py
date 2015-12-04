@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
-from mongoengine import (Document, ListField, StringField, FloatField)
+from mongoengine import (Document, ListField, StringField, FloatField, 
+IntField, BooleanField)
 
+
+class Gene(Document):
+    chromosome = StringField(required=True)
+    start = IntField(required=True)
+    stop = IntField(required=True)
+    hgnc_symbol = StringField(required=True)
+    ensembl_gene_id = StringField(required=True)
+    description = StringField()
+    locus = StringField()
+    mim_id = IntField()
+    protein_name = StringField()
+    reduced_penetrance = BooleanField(default=False)
 
 class GenePanel(Document):
     institute = StringField(required=True)
