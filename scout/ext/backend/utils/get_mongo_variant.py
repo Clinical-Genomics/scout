@@ -23,13 +23,47 @@ from . import (get_genes, get_genotype, get_compounds, generate_md5_key)
 
 logger = logging.getLogger(__name__)
 
+def get_clnsig(variant):
+    """Get the clnsig information
+    
+        We are only interested when clnsig = 5. So for each 5 we return the
+        CLNSIG accesson number.
+        
+        Args:
+            variant (dict): A Variant dictionary
+        
+        Returns:
+            clnsig_accsessions(list)
+    """
+    clnsig_key = 'SnpSift_CLNSIG'
+    accession_key = 'SnpSift_CLNACC'
+    clnsig_annotation = variant['info_dict'].get(clnsig_key)
+    accession_annotation = variant['info_dict'].get(accession_key)
+    
+    clnsig_accsessions = []
+    if clnsig_annotation:
+        clnsig_annotation = clnsig_annotation[0].split('|')
+        logger.debug("Found clnsig annotations {0}".format(
+            ', '.join(clnsig_annotation)))
+        accession_annotation = accession_annotation[0].split('|')
+        try:
+            for index, entry in enumerate(clnsig_annotation):
+                if int(entry) == 5:
+                    if accession_annotation:
+                        clnsig_accsessions.append(accession_annotation[index])
+        except (ValueError, IndexError):
+            pass
+    
+    return clnsig_accsessions
+    
+
 def get_mongo_variant(variant, variant_type, individuals, case, institute, 
                         variant_count):
     """
     Take a variant and some additional information, convert it to mongo engine
     objects and put them in the proper format in the database.
     
-    Input:
+    Args:
         variant (dict): A Variant dictionary
         variant_type  (str): A string in ['clinical', 'research']
         individuals   (dict): A dictionary with the id:s of the individuals as keys and
@@ -129,19 +163,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     ensembl_gene_ids = set([])
     
     # Add the clinsig prediction
-    clnsig = variant.get('CLNSIG', None)
-    clnsig_accession = variant.get('SnpSift_CLNACC', None)
-    if clnsig:
-        clnsig = clnsig[0].split('|')
-        try:
-            for index, clnsig_entry in enumerate(clnsig):
-                if int(clnsig_entry) == 5:
-                    mongo_variant['clnsig'] = 5
-                    if clnsig_accession:
-                        clnsig_accession = clnsig_accession[0].split('|')
-                        mongo_variant['clnsigacc'] = clnsig_accession[index]
-        except (ValueError, IndexError):
-            pass
 
     for gene in mongo_variant.genes:
         hgnc_symbols.add(gene.hgnc_symbol)
