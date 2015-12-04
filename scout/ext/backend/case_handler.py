@@ -8,7 +8,7 @@ from mongoengine import DoesNotExist, Q
 
 from ped_parser import FamilyParser
 from scout.models import (Case, Individual, Institute)
-from scout.ext.backend.utils.get_gene_lists import get_gene_lists
+from scout.ext.backend.utils import get_gene_panel
 
 logger = logging.getLogger(__name__)
 
@@ -186,37 +186,37 @@ class CaseHandler(object):
         case['collaborators'] = list(collaborators)
         logger.debug("Setting collaborators to: {0}".format(
           ', '.join(collaborators)))
-        
+
         analysis_type = scout_configs.get('analysis_type', 'unknown').lower()
         case['analysis_type'] = analysis_type
         logger.debug("Setting analysis type to: {0}".format(analysis_type))
-        
+
         # Get the path of vcf from configs
         vcf = scout_configs.get('igv_vcf', '')
         case['vcf_file'] = vcf
         logger.debug("Setting igv vcf file to: {0}".format(vcf))
-        
+
         # Add the genome build information
         genome_build = scout_configs.get('human_genome_build', '')
         case['genome_build'] = genome_build
         logger.debug("Setting genome build to: {0}".format(genome_build))
-        
+
         # Get the genome version
         genome_version = float(scout_configs.get('human_genome_version', '0'))
         case['genome_version'] = genome_version
         logger.debug("Setting genome version to: {0}".format(genome_version))
-        
+
         # Add the rank model version
         rank_model_version = scout_configs.get('rank_model_version', '')
         case['rank_model_version'] = rank_model_version
         logger.debug("Setting rank model version to: {0}".format(
               rank_model_version))
-        
+
         # Check the analysis date
         analysis_date = scout_configs.get('analysis_date', '')
         case['analysis_date'] = analysis_date
         logger.debug("Setting analysis date to: {0}".format(analysis_date))
-        
+
         # Add the pedigree picture, this is a xml file that will be read and
         # saved in the mongo database
         madeline_path = path(scout_configs.get('madeline', '/__menoexist.tXt'))
@@ -237,7 +237,7 @@ class CaseHandler(object):
                 logger.debug("Coverage was read succesfully")
         else:
             logger.info("No coverage report found. Skipping coverage report.")
-        
+
         individuals = []
         # Add the individuals
         for ind_id in case_parser.individuals:
@@ -256,7 +256,7 @@ class CaseHandler(object):
                 'individuals',{}).get(
                     ind_id, {}).get(
                         'bam_path', '')
-            
+
             individual['capture_kits'] = scout_configs.get(
                 'individuals',{}).get(
                     ind_id, {}).get(
@@ -268,38 +268,46 @@ class CaseHandler(object):
                 case.individuals.append(individual)
             else:
                 individuals.append(individual)
-        
+
         for individual in individuals:
             logger.info("Adding individual {0} to case {1}".format(
                     individual.individual_id, case_id))
             case.individuals.append(individual)
-        
+
         clinical_panels = []
         research_panels = []
-        
+
         for gene_list in scout_configs.get('gene_lists', {}):
             logger.info("Found gene list {0}".format(gene_list))
-            list_info = scout_configs['gene_lists'][gene_list]
+            panel_info = scout_configs['gene_lists'][gene_list]
 
-            list_path = list_info.get('file')
-            list_type = list_info.get('type', 'clinical')
-            
-            if os.path.isfile(list_path):
-                with codecs.open(list_path, 'r') as list_lines:
-                    panels = get_gene_lists(list_lines, owner)
+            panel_path = list_info.get('file')
+            panel_type = list_info.get('type', 'clinical')
+            panel_date = list_info.get('date')
+            panel_version = float(list_info.get('version', '0'))
+            panel_id = list_info.get('name')
+            display_name = list_info.get('full_name', '')
 
-                for panel in panels:
-                    logger.info("Store gene panel {0} in database".format(
-                        panel.panel_name))
-                    panel.save()
-                    if list_type == 'clinical':
-                        logger.info("Adding {0} to clinical gene lists".format(
+            panel = get_gene_panel(
+                list_file_name=panel_path, 
+                institute_id=owner, 
+                panel_id=panel_id, 
+                panel_version=panel_version, 
+                display_name=display_name, 
+                panel_date=panel_date)
+
+            logger.info("Store gene panel {0} in database".format(
                             panel.panel_name))
-                        clinical_panels.append(panel)
-                    else:
-                        logger.info("Adding {0} to research gene lists".format(
-                            panel.panel_name))
-                        research_panels.append(panel)
+            panel.save()
+
+            if list_type == 'clinical':
+                logger.info("Adding {0} to clinical gene lists".format(
+                                panel.panel_name))
+                clinical_panels.append(panel)
+            else:
+                logger.info("Adding {0} to research gene lists".format(
+                                panel.panel_name))
+                research_panels.append(panel)
 
         case['clinical_panels'] = clinical_panels
         case['research_panels'] = research_panels
@@ -325,19 +333,46 @@ class CaseHandler(object):
                 case(Case): The new case information
         """
         logger.info("Updating case {0}".format(case.case_id))
+        
         existing_case = self.case(
             institute_id=case.owner, 
             case_id=case.display_name
         )
+        
+        logger.debug("Updating collaborators")
         case['collaborators'] = list(set(case['collaborators'] + existing_case.collaborators))
-        logger.debug("Updating collaborators to {0}".format(
-            case['collaborators']))
+        
         logger.debug("Updating is_research to {0}".format(
             existing_case.is_research))
         case['is_research'] = existing_case['is_research']
+        
         logger.debug("Updating created_at to {0}".format(
             existing_case['created_at']))
         case['created_at'] = existing_case['created_at']
+        
+        logger.debug("Updating assignee")
+        case['assignee'] = existing_case['assignee']
+        
+        logger.debug("Updating suspects")
+        case['suspects'] = existing_case['suspects']
+
+        logger.debug("Updating causatives")
+        case['causatives'] = existing_case['causatives']
+        
+        logger.debug("Updating synopsis")
+        case['synopsis'] = existing_case['synopsis']
+
+        logger.debug("Updating status to {0}".format(
+            existing_case['status']))
+        case['status'] = existing_case['status']
+
+        logger.debug("Updating gender_check to {0}".format(
+            existing_case['gender_check']))
+        case['gender_check'] = existing_case['gender_check']
+
+        logger.debug("Updating phenotype_terms")
+        case['gender_check'] = existing_case['gender_check']
+        
         
         logger.info("Deleting old case {0}".format(
             existing_case['case_id']))
