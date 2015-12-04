@@ -18,6 +18,7 @@ init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
 vcf_file = "tests/fixtures/337334.clinical.vcf"
+one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
 
 @pytest.fixture(scope='function')
 def variant_file(request):
