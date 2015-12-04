@@ -9,5 +9,5 @@ from .get_genes import (get_genes, create_ensembl_to_refseq,
 get_gene_descriptions, get_transcripts, get_omim_gene_ids, 
 get_omim_phenotype_ids)
 from .get_compounds import get_compounds
-from .get_mongo_variant import get_mongo_variant
+from .get_mongo_variant import (get_mongo_variant, get_clnsig)
 from .get_gene_lists import get_gene_lists
