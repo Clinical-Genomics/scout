@@ -50,39 +50,40 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
     """Manage Scout interactions."""
     init_log(logger, logfile, loglevel)
     mongo_configs = {}
-    config = {}
+    configs = {}
     if config:
         logger.info("Use config file {0}".format(config))
-        config = ConfigObj(config)
+        configs = ConfigObj(config)
+
     if mongodb:
         mongo_configs['mongodb'] = mongodb
     else:
-        mongo_configs['mongodb'] = config.get('mongodb', 'variantDatabase')
+        mongo_configs['mongodb'] = configs.get('mongodb', 'variantDatabase')
     logger.info("Setting mongodb to {0}".format(mongo_configs['mongodb']))
     
     if host:
         mongo_configs['host'] = host
     else:
-        mongo_configs['host'] = config.get('host', 'localhost')
+        mongo_configs['host'] = configs.get('host', 'localhost')
     logger.info("Setting host to {0}".format(mongo_configs['host']))
     
     
     if port:
         mongo_configs['port'] = port
     else:
-        mongo_configs['port'] = int(config.get('port', 27017))
+        mongo_configs['port'] = int(configs.get('port', 27017))
     logger.info("Setting port to {0}".format(mongo_configs['port']))
     
     if username:
         mongo_configs['username'] = username
     else:
-        mongo_configs['username'] = config.get('username')
+        mongo_configs['username'] = configs.get('username')
     logger.info("Setting host to {0}".format(mongo_configs['username']))
     
     if password:
         mongo_configs['password'] = password
     else:
-        mongo_configs['password'] = config.get('password')
+        mongo_configs['password'] = configs.get('password')
     
     logger.info("Setting up a mongo adapter")
     mongo_adapter = MongoAdapter()

@@ -1,5 +1,7 @@
 import pytest
 import logging
+
+from tempfile import NamedTemporaryFile
 # We will use mongomock when mongoengine allows it
 # from mongomock import MongoClient
 from pymongo import MongoClient
@@ -14,17 +16,25 @@ from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm,
 
 from scout.log import init_log
 root_logger = logging.getLogger()
-init_log(root_logger, loglevel='INFO')
+init_log(root_logger, loglevel='DEBUG')
 logger = logging.getLogger(__name__)
 
 vcf_file = "tests/fixtures/337334.clinical.vcf"
 one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
+ped_file = "tests/fixtures/337334.ped"
 
 @pytest.fixture(scope='function')
 def variant_file(request):
     """Get the path to a variant file"""
     print('')
     return vcf_file
+
+@pytest.fixture(scope='function')
+def ped_file(request):
+    """Get the path to a ped file"""
+    print('')
+    return ped_file
+
 
 @pytest.fixture(scope='function')
 def vcf_case(request):
@@ -61,6 +71,32 @@ def variants(request):
     variant_parser = VCFParser(infile=vcf_file)
     return variant_parser
 
+@pytest.fixture(scope='session')
+def database_setup(request):
+    """Get a config file with mongodb arguments"""
+    print('')
+    logger.info("Setting up database configs")
+    config_file = NamedTemporaryFile(delete=False, mode='w')
+    
+    host = 'localhost'
+    port = 27017
+    db_name = 'testdatabase'
+    
+    config_file.write("mongodb = {0}\n".format(db_name))
+    config_file.write("host = {0}\n".format(host))
+    config_file.write("port = 27017\n".format(db_name))
+    
+    config_file.close()
+    
+    logger.info("Database configs setup")
+    def teardown():
+        print('\n')
+        client = MongoClient()
+        logger.info('Teardown database')
+        client.drop_database(db_name)
+        logger.info('Teardown done')
+    request.addfinalizer(teardown)
+    return config_file.name
 
 @pytest.fixture(scope='session')
 def setup_database(request):
