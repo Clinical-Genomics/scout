@@ -57,7 +57,8 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
             password(str)
         """
         logger.info("Connecting to database {0}".format(database))
-        connect(
+        self.mongodb_name = database
+        self.db = connect(
             database, 
             host=host, 
             port=port, 
@@ -65,28 +66,20 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
             password=password
         )
         logger.debug("Connection established")
+    
+    def drop_database(self):
+        """Drop the database that the adapter is connected to
         
+        """
+        logger.info("Drop database {0}".format(self.mongodb_name))
+        self.db.drop_database(self.mongodb_name)
+        logger.debug("Database dropped")
+        return
+
     def __init__(self, app=None):
         if app:
             logger.info("Initializing app")
             self.init_app(app)
-
-    def institute(self, institute_id):
-        """Fetch an Institute from the database
-        
-        Args:
-            institute_id(str): An Institute id
-    
-        Returns:
-            An Institute object
-        """
-        logger.info("Fetching institute {0}".format(
-            institute_id))
-        try:
-            result = Institute.objects.get(internal_id=institute_id)
-        except DoesNotExist:
-            result = None
-        return result
 
     def gene_panel(self, panel_id, version):
         """Fetch a gene panel from the database."""
