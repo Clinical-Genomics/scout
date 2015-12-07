@@ -56,21 +56,21 @@ class CaseHandler(object):
             institute.save()
         ##TODO create event?
     
-    def institute(self, internal_id):
+    def institute(self, institute_id):
         """Featch a single institute from the backend
         
             Args:
-                internal_id(str)
+                institute_id(str)
             
             Returns:
                 Institute object
         """
         logger.info("Fetch institute {}".format(
-            internal_id))
+            institute_id))
         try:
-            return Institute.objects.get(internal_id=internal_id)
+            return Institute.objects.get(internal_id=institute_id)
         except DoesNotExist:
-            logger.warning("Could not find institute {0}".format(internal_id))
+            logger.warning("Could not find institute {0}".format(institute_id))
             return None
         
     def cases(self, collaborator=None, query=None):
