@@ -6,22 +6,24 @@ from tempfile import NamedTemporaryFile
 # from mongomock import MongoClient
 from pymongo import MongoClient
 from mongoengine import DoesNotExist
+from configobj import ConfigObj
 
 from vcf_parser import VCFParser
 
 from scout.ext.backend import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
-
+from scout.commands import cli
 
 from scout.log import init_log
 root_logger = logging.getLogger()
-init_log(root_logger, loglevel='DEBUG')
+init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
 vcf_file = "tests/fixtures/337334.clinical.vcf"
 one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
 ped_file = "tests/fixtures/337334.ped"
+scout_config = "tests/fixtures/scout_config_test.ini"
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -63,7 +65,6 @@ def compound_variant(request):
     
     return variant
 
-
 @pytest.fixture(scope='function')
 def variants(request):
     """Get a parser with vcf variants"""
@@ -99,6 +100,51 @@ def database_setup(request):
     return config_file.name
 
 @pytest.fixture(scope='session')
+def setup_loaded_database(request):
+    """Setup a mongo databse with loaded variants"""
+    print('')
+    logger.info("Setting up database and populate it")
+    host = 'localhost'
+    port = 27017
+    db_name = 'testdatabase'
+    client = MongoClient(
+        host=host,
+        port=port,
+    )
+    #Initialize an adapter
+    adapter = MongoAdapter()
+    #Connect to the test database
+    adapter.connect_to_database(
+        database=db_name, 
+        host=host, 
+        port=port
+    )
+    scout_configs = ConfigObj(scout_config)
+    
+    case = adapter.add_case(
+        case_lines=open(scout_configs['ped'], 'r'),
+        case_type='ped', 
+        owner=scout_configs['owner'], 
+        scout_configs=scout_configs
+    )
+    
+    adapter.add_variants(
+        vcf_file=scout_configs['load_vcf'], 
+        variant_type='clinical',
+        case=case,
+    )
+    
+    logger.info("Database setup")
+    def teardown():
+        print('\n')
+        logger.info('Teardown database')
+        client.drop_database(db_name)
+        logger.info('Teardown done')
+    request.addfinalizer(teardown)
+    return adapter
+
+
+@pytest.fixture(scope='session')
 def setup_database(request):
     """Setup the mongo adapter"""
     print('')
@@ -127,7 +173,6 @@ def setup_database(request):
         logger.info('Teardown done')
     request.addfinalizer(teardown)
     return adapter
-
 
 @pytest.fixture(scope='function')
 def get_institute(request):

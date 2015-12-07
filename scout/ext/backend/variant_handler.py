@@ -5,7 +5,7 @@ from mongoengine import (DoesNotExist)
 from vcf_parser import VCFParser
 
 from scout.models import (Variant,)
-from scout.ext.backend.utils import get_mongo_variant
+from scout.ext.backend.utils import get_mongo_variant, build_query
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ class VariantHandler(object):
         Yields:
             Variant objects
         """
+        logger.info("Fetching variants from {0}".format(case_id))
         if variant_ids:
             nr_of_variants = len(variant_ids)
         else:
@@ -118,8 +119,13 @@ class VariantHandler(object):
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
         """
-        logger.info("Deleting old variants for case {0}".format(case_id))
-        Variant.objects(case_id=case_id, variant_type=variant_type).delete()
+        logger.info("Deleting old {0} variants for case {1}".format(
+            variant_type, case_id))
+        nr_deleted = Variant.objects(
+            case_id=case_id, 
+            variant_type=variant_type).delete()
+        
+        logger.info("{0} variants deleted".format(nr_deleted))
         logger.debug("Variants deleted")
         
     

@@ -137,10 +137,12 @@ class CaseHandler(object):
             logger.info("Deleting case {0}".format(case.case_id))
             case.delete()
             logger.debug("Case deleted")
+            return case
             ##TODO Add event for deleting case?
             
         except DoesNotExist:
             logger.warning("Could not find case {0}".format(case_id))
+            return None
     
     def add_case(self, case_lines, case_type, owner, scout_configs={}):
         """Add a case to the database
@@ -377,8 +379,7 @@ class CaseHandler(object):
         case['gender_check'] = existing_case['gender_check']
 
         logger.debug("Updating phenotype_terms")
-        case['gender_check'] = existing_case['gender_check']
-        
+        case['phenotype_terms'] = existing_case['phenotype_terms']
         
         logger.info("Deleting old case {0}".format(
             existing_case['case_id']))
