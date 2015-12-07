@@ -45,10 +45,9 @@ Flask-Script
 
 # utils
 path.py
-configparser
 click
 ped-parser>=1.6
-vcf_parser==1.4.2
+vcf_parser==1.5.5
 configobj
 requests
 python-dateutil

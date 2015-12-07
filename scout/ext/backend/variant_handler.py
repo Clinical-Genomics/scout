@@ -143,7 +143,6 @@ class VariantHandler(object):
         
         start_inserting_variants = datetime.now()
 
-
         # Check which individuals that exists in the vcf file.
         # Save the individuals in a dictionary with individual ids as keys
         # and display names as values
