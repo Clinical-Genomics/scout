@@ -24,6 +24,8 @@ vcf_file = "tests/fixtures/337334.clinical.vcf"
 one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
 ped_file = "tests/fixtures/337334.ped"
 scout_config = "tests/fixtures/scout_config_test.ini"
+gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
+madeline_file = "tests/fixtures/madeline.xml"
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -244,7 +246,7 @@ def get_case_info(request):
     
     case['scout_configs'] = {
         'load': True,
-        'load_vcf':'test_vcf',
+        'load_vcf':vcf_file,
         'analysis_type': 'wes',
         'rank_model_version': '1.12',
         'owner': 'cust000',
@@ -252,17 +254,17 @@ def get_case_info(request):
         'analysis_date': '2015-11-23 14:00:46',
         'human_genome_version': 37,
         'human_genome_build': 'GRCh',
-        'madeline': 'madeline.xml',
-        'ped': 'pedigree.ped',
+        'madeline': madeline_file,
+        'ped': ped_file,
         'default_panels': ['IEM'],
-        'igv_vcf': 'test_vcf',
+        'igv_vcf': vcf_file,
         'gene_lists':{
-                'PIDCAD': {
+                'Panel1': {
                     'date': '2015-10-21',
-                    'file': 'gene_list.txt',
-                    'version': 7.2,
-                    'name': 'PIDCAD',
-                    'full_name': "PID Candidates",
+                    'file': gene_list_file,
+                    'version': 0.1,
+                    'name': 'Panel1',
+                    'full_name': "Panel 1",
                     }
                 },
         'individuals':{
