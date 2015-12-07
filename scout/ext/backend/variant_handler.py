@@ -1,10 +1,11 @@
 import logging
 
 from datetime import datetime
-from scout.models import (Variant,)
 from mongoengine import (DoesNotExist)
-
 from vcf_parser import VCFParser
+
+from scout.models import (Variant,)
+from scout.ext.backend.utils import get_mongo_variant
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +123,7 @@ class VariantHandler(object):
         logger.debug("Variants deleted")
         
     
-    def add_variants(self, variants, variant_type, case, nr_of_variants=5000,
+    def add_variants(self, vcf_file, variant_type, case, variant_number_treshold=5000,
                     rank_score_threshold = 0):
         """Add variants to the mongo database
             
@@ -140,7 +141,7 @@ class VariantHandler(object):
         nr_of_variants = 0
         
         self.delete_variants(case_id, variant_type)
-        
+        institute = self.institute(institute_id=case.owner)
         start_inserting_variants = datetime.now()
 
         # Check which individuals that exists in the vcf file.
@@ -170,22 +171,24 @@ class VariantHandler(object):
                             " variants".format(nr_of_variants))
                 break
             
-            if variant_number_threshold:
-                if nr_of_variants > variant_number_threshold:
+            if variant_number_treshold:
+                if nr_of_variants > variant_number_treshold:
                     logger.info("Variant number threshold reached. ({0})".format(
-                                variant_number_threshold))
+                                variant_number_treshold))
                     break
 
 
             nr_of_variants += 1
+            
             mongo_variant = get_mongo_variant(
                 variant=variant, 
                 variant_type=variant_type, 
-                individuals=individuals, 
-                case=case, 
+                individuals=individuals,
+                case=case,
+                institute=institute,
                 variant_count=nr_of_variants, 
             )
-
+            logger.debug("Saving variant {0}".format(mongo_variant.display_name))
             mongo_variant.save()
 
             if nr_of_variants % 1000 == 0:
