@@ -287,12 +287,12 @@ class CaseHandler(object):
             logger.info("Found gene list {0}".format(gene_list))
             panel_info = scout_configs['gene_lists'][gene_list]
 
-            panel_path = list_info.get('file')
-            panel_type = list_info.get('type', 'clinical')
-            panel_date = list_info.get('date')
-            panel_version = float(list_info.get('version', '0'))
-            panel_id = list_info.get('name')
-            display_name = list_info.get('full_name', '')
+            panel_path = panel_info.get('file')
+            panel_type = panel_info.get('type', 'clinical')
+            panel_date = panel_info.get('date')
+            panel_version = float(panel_info.get('version', '0'))
+            panel_id = panel_info.get('name')
+            display_name = panel_info.get('full_name', '')
 
             panel = get_gene_panel(
                 list_file_name=panel_path, 
@@ -306,7 +306,7 @@ class CaseHandler(object):
                             panel.panel_name))
             panel.save()
 
-            if list_type == 'clinical':
+            if panel_type == 'clinical':
                 logger.info("Adding {0} to clinical gene lists".format(
                                 panel.panel_name))
                 clinical_panels.append(panel)
