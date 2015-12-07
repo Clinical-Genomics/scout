@@ -81,7 +81,6 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
         mongo_configs['username'] = username
     else:
         mongo_configs['username'] = configs.get('username')
-    logger.info("Setting host to {0}".format(mongo_configs['username']))
     ctx.username = mongo_configs['username']
     
     if password:
