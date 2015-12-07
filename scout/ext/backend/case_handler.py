@@ -165,6 +165,12 @@ class CaseHandler(object):
         case_id = list(case_parser.families.keys())[0]
         logger.info("Found case {0}".format(case_id))
         
+        if not self.institute(institute_id=owner):
+            logger.warning("Institute {0} does not exist in database".format(
+                owner))
+            logger.info("Creating new institute")
+            self.add_institute(internal_id=owner, display_name=owner)
+        
         logger.info("Creating Case with id {0}".format(
             '_'.join([owner, case_id])))
 
@@ -319,7 +325,7 @@ class CaseHandler(object):
         
         #If the case exists we need tu update the information
         if self.case(institute_id=owner, case_id=case_id):
-            self.update_case(case)
+            case = self.update_case(case)
         else:
             logger.info("Adding case {0} to database".format(case_id))
             case.save()
@@ -384,4 +390,5 @@ class CaseHandler(object):
             case['case_id']))
         
         case.save()
+        return case
         

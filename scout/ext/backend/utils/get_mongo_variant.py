@@ -16,6 +16,7 @@ import sys
 import os
 import logging
 
+
 from scout.models import (Variant, Institute)
 from scout._compat import iteritems
 
@@ -79,7 +80,7 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     # Create the ID for the variant
     case_id = case.case_id
     case_name = case.display_name
-    
+
     id_fields = [
                   variant['CHROM'],
                   variant['POS'],
@@ -108,7 +109,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
                           filters = variant['FILTER'].split(';'),
                           institute = institute
                   )
-
     # If a variant belongs to any gene lists we check which ones
     gene_lists = variant['info_dict'].get('Clinical_db_gene_annotation')
     if gene_lists:
@@ -213,24 +213,21 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     # Add conservation annotation
     gerp = variant['info_dict'].get('GERP++_RS_prediction_term')
     if gerp:
-        value = gerp[0]
         logger.debug("Updating Gerp annotation for variant {0} to {1}".format(
-            variant['variant_id'], value))
-        mongo_variant['gerp_conservation'] = value
+            variant['variant_id'], ''.join(gerp)))
+        mongo_variant['gerp_conservation'] = gerp
 
     phast_cons = variant['info_dict'].get('phastCons100way_vertebrate_prediction_term')
     if phast_cons:
-        value = phast_cons[0]
         logger.debug("Updating Phast annotation for variant {0} to {1}".format(
-            variant['variant_id'], value))
-        mongo_variant['phast_conservation'] = value
+            variant['variant_id'], ''.join(phast_cons)))
+        mongo_variant['phast_conservation'] = phast_cons
 
     phylop = variant['info_dict'].get('phyloP100way_vertebrate_prediction_term')
     if phylop:
-        value = phylop[0]
         logger.debug("Updating Phylop annotation for variant {0} to {1}".format(
-            variant['variant_id'], value))
-        mongo_variant['phylop_conservation'] = value
+            variant['variant_id'], ''.join(phylop)))
+        mongo_variant['phylop_conservation'] = phylop
     
     return mongo_variant
 
