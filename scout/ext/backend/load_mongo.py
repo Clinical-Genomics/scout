@@ -34,10 +34,10 @@ from pymongo import (ASCENDING, DESCENDING)
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import get_db
 
-from .config_parser import ConfigParser
-from .utils import (get_case, get_institute, get_mongo_variant)
-from scout.models import (Institute, Case, Variant)
-from scout._compat import iteritems
+# from .config_parser import ConfigParser
+# from .utils import (get_case, get_institute, get_mongo_variant)
+# from scout.models import (Institute, Case, Variant)
+# from scout._compat import iteritems
 
 from vcf_parser import VCFParser
 
