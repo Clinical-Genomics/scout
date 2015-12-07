@@ -11,7 +11,7 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 """
 
 
-from __future__ import (absolute_import, unicode_literals, print_function)
+from __future__ import (print_function)
 
 import sys
 import os
@@ -23,6 +23,7 @@ from pymongo import MongoClient, Connection
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import _get_db
 
+logger = logging.getLogger(__name__)
 
 def drop_mongo(mongo_db='variantDatabase', username=None, password=None, 
               port=27017, host='localhost'):
@@ -86,8 +87,7 @@ def drop_mongo(mongo_db='variantDatabase', username=None, password=None,
                 help='Increase output verbosity.'
 )
 def wipe(mongo_db, username, password, port, host, verbose):
-  """Drop the mongo database given and rebuild it again."""
-  logger = logging.getLogger(__name__)
+  """Drop the mongo database given."""
   
   logger.info("Running wipe_mongo")
   

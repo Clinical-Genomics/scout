@@ -15,10 +15,11 @@ import logging
 
 import click
 
-import scout
-from scout.ext.backend import (load_mongo_db, ConfigParser)
+from configobj import ConfigObj
 
-BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
+from scout.ext.backend import (load_mongo_db)
+
+logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option('-vcf', '--vcf_file',
@@ -35,12 +36,6 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 nargs=1,
                 type=click.Path(exists=True),
                 help="Path to the scout config file."
-)
-@click.option('-c', '--vcf_config_file',
-                nargs=1,
-                type=click.Path(exists=True),
-                default=os.path.join(BASE_PATH, 'configs/config_test.ini'),
-                help="Path to the config file for loading the variants. Default configs/config_test.ini"
 )
 @click.option('-m', '--madeline',
                 nargs=1,
@@ -78,103 +73,73 @@ BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(scout.__file__), '..'))
                 nargs=1,
                 help="Specify the the maximum number of variants to load."
 )
+@click.pass_context
+def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file, 
+              madeline, coverage_report, owner, rank_score_threshold, 
+              variant_number_threshold):
+    """
+    Load the mongo database.
+    
+    Command line arguments will override what's in the config file.
+    
+    """
+    # Check if vcf file exists and that it has the correct naming:
+    scout_configs = {}
+    
+    logger.info("Running load_mongo")
+    if scout_config_file:
+        scout_configs = ConfigObj(scout_config_file)
+        logger.info("Using scout config file {0}".format(scout_config_file))
+    
+    if vcf_file:
+        scout_configs['load_vcf'] = vcf_file
+        scout_configs['igv_vcf'] = vcf_file
+    
+    if not scout_configs.get('load_vcf'):
+        logger.warning("Please provide a vcf file.(Use flag '-vcf/--vcf_file')")
+        logger.info("Exiting")
+        sys.exit(1)
+    logger.info("Using vcf {0}".format(scout_configs.get('load_vcf')))
+    
+    if ped_file:
+        logger.info("Using command line specified ped file {0}".format(ped_file))
+        scout_configs['ped'] = ped_file
+    if not scout_configs.get('ped', None):
+        logger.warning("Please provide a ped file.(Use flag '-ped/--ped_file')")
+        logger.info("Exiting")
+        sys.exit(1)
 
-@click.option('-db', '--mongo-db',
-                default='variantDatabase'
-)
-@click.option('-u', '--username',
-                type=str
-)
-@click.option('-p', '--password',
-                type=str
-)
-@click.option('-port', '--port',
-                default=27017,
-                help='Specify the port where to look for the mongo database.'
-)
-@click.option('-h', '--host',
-                default='localhost',
-                help='Specify the host where to look for the mongo database.'
-)
-@click.option('-v', '--verbose',
-                is_flag=True,
-                help='Increase output verbosity.'
-)
-def load(vcf_file, ped_file, scout_config_file, vcf_config_file, family_type,
-              mongo_db, username, variant_type, madeline, coverage_report,
-              password, owner, port, host, verbose,
-              rank_score_threshold, variant_number_threshold):
-  """
-  Load the mongo database.
-
-  Command line arguments will override what's in the config file.
-
-  """
-  # Check if vcf file exists and that it has the correct naming:
-  logger = logging.getLogger(__name__)
-  scout_configs = {}
-
-  scout_validation_file = os.path.join(BASE_PATH, 'config_spec/scout_config.ini')
-
-
-  logger.info("Running load_mongo")
-  if scout_config_file:
-    scout_configs = ConfigParser(scout_config_file, configspec=scout_validation_file)
-    logger.info("Using scout config file {0}".format(scout_config_file))
-
-  if vcf_file:
-    scout_configs['load_vcf'] = vcf_file
-    logger.info("Using command line specified vcf {0}".format(vcf_file))
-    scout_configs['igv_vcf'] = vcf_file
-
-  if ped_file:
-    logger.info("Using command line specified ped file {0}".format(ped_file))
-    scout_configs['ped'] = ped_file
-
-  if madeline:
-    logger.info("Using command line specified madeline file {0}".format(
-      madeline))
-    scout_configs['madeline'] = madeline
-
-  if coverage_report:
-    logger.info("Using command line specified coverage report {0}".format(
-      coverage_report))
-    scout_configs['coverage_report'] = coverage_report
-
-  if owner:
+    if owner:
+        scout_configs['owner'] = owner
+    if not scout_configs.get('owner', None):
+        logger.warning("A case has to have a owner!")
+        logger.info("Exiting")
+        sys.exit(1)
+    
     logger.info("Using command line specified owner {0}".format(
-      institute))
-    scout_configs['owner'] = owner
-
-  if not scout_configs.get('load_vcf', None):
-    logger.warning("Please provide a vcf file.(Use flag '-vcf/--vcf_file')")
-    sys.exit(0)
-
-  # Check that the ped file is provided:
-  if not scout_configs.get('ped', None):
-    logger.warning("Please provide a ped file.(Use flag '-ped/--ped_file')")
-    sys.exit(0)
-
-  # Check that the config file is provided:
-  if not vcf_config_file:
-    logger.warning("Please provide a vcf config file.(Use flag '-config/--config_file')")
-    sys.exit(0)
-
-
-  my_vcf = load_mongo_db(
-                          scout_configs,
-                          vcf_config_file,
-                          family_type,
-                          mongo_db=mongo_db,
-                          username=username,
-                          password=password,
-                          variant_type=variant_type,
-                          port=port,
-                          host=host,
-                          rank_score_threshold=rank_score_threshold,
-                          variant_number_threshold=variant_number_threshold
-                        )
-
-
-if __name__ == '__main__':
-    load_mongo()
+        institute))
+    
+    if madeline:
+        scout_configs['madeline'] = madeline
+        logger.info("Using madeline file {0}".format(
+                        scout_configs.get('madeline')))
+    
+    if coverage_report:
+        scout_configs['coverage_report'] = coverage_report
+    
+    adapter = ctx.parent.adapter
+    
+    
+    # my_vcf = load_mongo_db(
+    #                         scout_configs,
+    #                         vcf_config_file,
+    #                         family_type,
+    #                         mongo_db=mongo_db,
+    #                         username=username,
+    #                         password=password,
+    #                         variant_type=variant_type,
+    #                         port=port,
+    #                         host=host,
+    #                         rank_score_threshold=rank_score_threshold,
+    #                         variant_number_threshold=variant_number_threshold
+    #                       )
