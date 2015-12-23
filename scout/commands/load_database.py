@@ -9,18 +9,14 @@ Created by Måns Magnusson on 2015-01-14.
 Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 
 """
-import sys
-import os
+from codecs import open
 import logging
 
 import click
-
-from codecs import open
 from configobj import ConfigObj
 
-from scout.ext.backend import (load_mongo_db)
-
 logger = logging.getLogger(__name__)
+
 
 @click.command()
 @click.option('-f', '--vcf_file',
@@ -72,57 +68,55 @@ logger = logging.getLogger(__name__)
                 help="Specify the the maximum number of variants to load."
 )
 @click.pass_context
-def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file, 
-              madeline, coverage_report, owner, rank_score_threshold, 
+def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
+              madeline, coverage_report, owner, rank_score_threshold,
               variant_number_threshold, analysis_type):
     """
     Load the mongo database.
-    
+
     Command line arguments will override what's in the config file.
-    
+
     """
     # Check if vcf file exists and that it has the correct naming:
     scout_configs = {}
-    
+
     logger.info("Running load_mongo")
-    
+
     if scout_config_file:
         scout_configs = ConfigObj(scout_config_file)
         logger.info("Using scout config file {0}".format(scout_config_file))
-    
+
     if vcf_file:
         scout_configs['load_vcf'] = vcf_file
         scout_configs['igv_vcf'] = vcf_file
-    
+
     if not scout_configs.get('load_vcf'):
-        logger.warning("Please provide a vcf file.(Use flag '-vcf/--vcf_file')")
+        logger.warn("Please provide a vcf file. (Use flag '-vcf/--vcf_file')")
         logger.info("Exiting")
-        sys.exit(1)
+        ctx.abort()
     logger.info("Using vcf {0}".format(scout_configs.get('load_vcf')))
-    
+
     if ped_file:
         scout_configs['ped'] = ped_file
     if not scout_configs.get('ped', None):
-        logger.warning("Please provide a ped file.(Use flag '-ped/--ped_file')")
+        logger.warn("Please provide a ped file. (Use flag '-ped/--ped_file')")
         logger.info("Exiting")
-        sys.exit(1)
+        ctx.abort()
     logger.info("Using ped file {0}".format(ped_file))
-    
+
     if family_type:
         scout_configs['family_type'] = family_type
     logger.info("Set family type to {0}".format(scout_configs['family_type']))
-        
 
     if owner:
         scout_configs['owner'] = owner
     if not scout_configs.get('owner', None):
-        logger.warning("A case has to have a owner!")
+        logger.warn("A case has to have a owner!")
         logger.info("Exiting")
-        sys.exit(1)
+        ctx.abort()
 
-    logger.info("Using command line specified owner {0}".format(
-        owner))
-    
+    logger.info("Using command line specified owner {0}".format(owner))
+
     if analysis_type:
         scout_configs['analysis_type'] = analysis_type
 
@@ -137,25 +131,24 @@ def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
     if coverage_report:
         scout_configs['coverage_report'] = coverage_report
 
-    adapter = ctx.parent.adapter
-
+    adapter = ctx.obj['adapter']
     case = adapter.add_case(
         case_lines=open(scout_configs['ped'], 'r'),
-        case_type=scout_configs['family_type'], 
-        owner=scout_configs['owner'], 
+        case_type=scout_configs['family_type'],
+        owner=scout_configs['owner'],
         scout_configs=scout_configs
     )
-    
+
     logger.info("Delete the variants for case {0}".format(case.case_id))
     adapter.delete_variants(
-        case_id=case.case_id, 
+        case_id=case.case_id,
         variant_type=scout_configs.get('variant_type', 'clinical')
     )
     logger.info("Load the variants for case {0}".format(case.case_id))
     adapter.add_variants(
-        vcf_file=scout_configs['load_vcf'], 
+        vcf_file=scout_configs['load_vcf'],
         variant_type=scout_configs.get('variant_type', 'clinical'),
         case=case,
         variant_number_treshold=variant_number_threshold,
-        rank_score_threshold = rank_score_threshold
+        rank_score_threshold=rank_score_threshold
     )
