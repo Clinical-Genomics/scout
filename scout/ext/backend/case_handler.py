@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 class CaseHandler(object):
     """Part of the mongo adapter that handles cases and institutes"""
-    
+
     def add_institute(self, internal_id, display_name):
         """Add a institute to the database
-        
+
             Args:
                 internal_id(str): The internal id (like cust003)
                 display_name(str): The display name for a institute (like CMMS)
@@ -31,11 +31,11 @@ class CaseHandler(object):
         )
         institute.save()
         ##TODO create event for doing this?
-    
-    def update_institute(self, internal_id, sanger_recipient=None, 
+
+    def update_institute(self, internal_id, sanger_recipient=None,
                             coverage_cutoff=None):
         """Update the information for an institute
-        
+
             Args:
                 internal_id(str): The internal institute id
                 sanger_recipient(str): Email adress for ordering sanger
@@ -55,13 +55,13 @@ class CaseHandler(object):
                 institute.coverage_cutoff = coverage_cutoff
             institute.save()
         ##TODO create event?
-    
+
     def institute(self, institute_id):
         """Featch a single institute from the backend
-        
+
             Args:
                 institute_id(str)
-            
+
             Returns:
                 Institute object
         """
@@ -72,14 +72,14 @@ class CaseHandler(object):
         except DoesNotExist:
             logger.warning("Could not find institute {0}".format(institute_id))
             return None
-        
+
     def cases(self, collaborator=None, query=None):
         """Fetches all cases from the backend.
 
         Args:
             collaborator(str): If collaborator should be considered
             query(dict): If a specific query is used
-        
+
         Yields:
             Cases ordered by date
         """
@@ -107,7 +107,7 @@ class CaseHandler(object):
         Yields:
             A single Case
         """
-        
+
         logger.info("Fetch case {0} from institute {1}".format(
             case_id, institute_id))
         try:
@@ -118,7 +118,7 @@ class CaseHandler(object):
         except DoesNotExist:
             logger.warning("Could not find case {0}".format(case_id))
             return None
-    
+
     def delete_case(self, institute_id, case_id):
         """Delete a single case from database
 
@@ -139,19 +139,19 @@ class CaseHandler(object):
             logger.debug("Case deleted")
             return case
             ##TODO Add event for deleting case?
-            
+
         except DoesNotExist:
             logger.warning("Could not find case {0}".format(case_id))
             return None
-    
+
     def add_case(self, case_lines, case_type, owner, scout_configs={}):
         """Add a case to the database
 
             If case exists in database it will be updated.
-            This method will take information in a ped like format and create 
-            a case object. If the case is already in database it will update 
+            This method will take information in a ped like format and create
+            a case object. If the case is already in database it will update
             the necessary information.
-            
+
             Args:
                 case_lines(Iterator): An iterator with the pedigree infromation
                 case_type(str): The format of the case lines
@@ -163,16 +163,16 @@ class CaseHandler(object):
 
         if len(case_parser.families) != 1:
             raise SyntaxError("Only one case per ped file is allowed")
-        
+
         case_id = list(case_parser.families.keys())[0]
         logger.info("Found case {0}".format(case_id))
-        
+
         if not self.institute(institute_id=owner):
             logger.warning("Institute {0} does not exist in database".format(
                 owner))
             logger.info("Creating new institute")
             self.add_institute(internal_id=owner, display_name=owner)
-        
+
         logger.info("Creating Case with id {0}".format(
             '_'.join([owner, case_id])))
 
@@ -181,7 +181,7 @@ class CaseHandler(object):
             display_name=case_id,
             owner=owner,
         )
-        
+
         collaborators = scout_configs.get('collaborators') or set()
         if collaborators:
             if isinstance(collaborators, list):
@@ -297,11 +297,11 @@ class CaseHandler(object):
             display_name = panel_info.get('full_name', '')
 
             panel = get_gene_panel(
-                list_file_name=panel_path, 
-                institute_id=owner, 
-                panel_id=panel_id, 
-                panel_version=panel_version, 
-                display_name=display_name, 
+                list_file_name=panel_path,
+                institute_id=owner,
+                panel_id=panel_id,
+                panel_version=panel_version,
+                display_name=display_name,
                 panel_date=panel_date)
 
             logger.info("Store gene panel {0} in database".format(
@@ -319,54 +319,54 @@ class CaseHandler(object):
 
         case['clinical_panels'] = clinical_panels
         case['research_panels'] = research_panels
-        
+
         default_panels = scout_configs.get('default_panels', [])
         logger.info("Adding {0} as default panels to case {1}".format(
             ', '.join(default_panels), case_id))
         case['default_panels'] = list(default_panels)
-        
+
         #If the case exists we need tu update the information
         if self.case(institute_id=owner, case_id=case_id):
             case = self.update_case(case)
         else:
             logger.info("Adding case {0} to database".format(case_id))
             case.save()
-        
+
         return case
-    
+
     def update_case(self, case):
         """Update a case in the database
-        
+
             Args:
                 case(Case): The new case information
         """
         logger.info("Updating case {0}".format(case.case_id))
-        
+
         existing_case = self.case(
-            institute_id=case.owner, 
+            institute_id=case.owner,
             case_id=case.display_name
         )
-        
+
         logger.debug("Updating collaborators")
         case['collaborators'] = list(set(case['collaborators'] + existing_case.collaborators))
-        
+
         logger.debug("Updating is_research to {0}".format(
             existing_case.is_research))
         case['is_research'] = existing_case['is_research']
-        
+
         logger.debug("Updating created_at to {0}".format(
             existing_case['created_at']))
         case['created_at'] = existing_case['created_at']
-        
+
         logger.debug("Updating assignee")
         case['assignee'] = existing_case['assignee']
-        
+
         logger.debug("Updating suspects")
         case['suspects'] = existing_case['suspects']
 
         logger.debug("Updating causatives")
         case['causatives'] = existing_case['causatives']
-        
+
         logger.debug("Updating synopsis")
         case['synopsis'] = existing_case['synopsis']
 
@@ -380,16 +380,16 @@ class CaseHandler(object):
 
         logger.debug("Updating phenotype_terms")
         case['phenotype_terms'] = existing_case['phenotype_terms']
-        
+
         logger.info("Deleting old case {0}".format(
             existing_case['case_id']))
         existing_case.delete()
-        
+
         ##TODO Add event for updating case?
-        
+
         logger.info("Saving updated case {0}".format(
             case['case_id']))
-        
+
         case.save()
         return case
-        
+
