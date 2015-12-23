@@ -9,13 +9,14 @@ from scout.ext.backend.utils import get_mongo_variant, build_query
 
 logger = logging.getLogger(__name__)
 
+
 class VariantHandler(object):
     """Methods to handle variants in the mongo adapter"""
-    
-    def variants(self, case_id, query=None, variant_ids=None, 
+
+    def variants(self, case_id, query=None, variant_ids=None,
                  nr_of_variants=10, skip=0):
         """Returns variants specified in question for a specific case.
-            
+
         If skip not equal to 0 skip the first n variants.
 
         Arguments:
@@ -32,12 +33,12 @@ class VariantHandler(object):
             nr_of_variants = skip + nr_of_variants
 
         mongo_query = build_query(case_id, query, variant_ids)
-        
+
         result = Variant.objects(
             __raw__=mongo_query).order_by(
                 'variant_rank').skip(
                     skip).limit(nr_of_variants)
-        
+
         for variant in result:
             yield variant
 
@@ -54,13 +55,13 @@ class VariantHandler(object):
             return Variant.objects.get(document_id=document_id)
         except DoesNotExist:
             return None
-    
+
     def next_variant(self, document_id):
         """Returns the next variant from the rank order.
-      
+
           Arguments:
               document_id : A md5 key that represents the variant
-          
+
           Returns:
               variant_object: A odm variant object
         """
@@ -79,7 +80,7 @@ class VariantHandler(object):
                                           ]
                                         }
                                       )
-                                    )   
+                                    )
         except DoesNotExist:
             return None
 
@@ -109,12 +110,12 @@ class VariantHandler(object):
                                     )
         except DoesNotExist:
             return None
-    
+
     def delete_variants(self, case_id, variant_type):
         """Delete variants of one type for a case
-        
+
             This is used when a case i reanalyzed
-            
+
             Args:
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
@@ -122,17 +123,17 @@ class VariantHandler(object):
         logger.info("Deleting old {0} variants for case {1}".format(
             variant_type, case_id))
         nr_deleted = Variant.objects(
-            case_id=case_id, 
+            case_id=case_id,
             variant_type=variant_type).delete()
-        
+
         logger.info("{0} variants deleted".format(nr_deleted))
         logger.debug("Variants deleted")
-        
-    
+
+
     def add_variants(self, vcf_file, variant_type, case, variant_number_treshold=5000,
                     rank_score_threshold = 0):
         """Add variants to the mongo database
-            
+
             Args:
                 variants(str): Path to a vcf file
                 variant_type(str): 'research' or 'clinical'
@@ -141,11 +142,11 @@ class VariantHandler(object):
                 rank_score_threshold(int): Treshold for rankscore
         """
         case_id = case.case_id
-        
+
         logger.info("Setting up a variant parser")
         variant_parser = VCFParser(infile=vcf_file)
         nr_of_variants = 0
-        
+
         self.delete_variants(case_id, variant_type)
         institute = self.institute(institute_id=case.owner)
         start_inserting_variants = datetime.now()
@@ -168,31 +169,30 @@ class VariantHandler(object):
                                 " not in vcf".format(individual_id))
 
         logger.info('Start parsing variants')
-        
-        ########## If a rank score threshold is used check if it is below that threshold ##########
+
+        # If a rank score threshold is used, check if below that threshold
         for variant in variant_parser:
             logger.debug("Parsing variant {0}".format(variant['variant_id']))
             if not float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
                 logger.info("Lower rank score threshold reached after {0}"\
                             " variants".format(nr_of_variants))
                 break
-            
+
             if variant_number_treshold:
                 if nr_of_variants > variant_number_treshold:
                     logger.info("Variant number threshold reached. ({0})".format(
                                 variant_number_treshold))
                     break
 
-
             nr_of_variants += 1
-            
+
             mongo_variant = get_mongo_variant(
-                variant=variant, 
-                variant_type=variant_type, 
+                variant=variant,
+                variant_type=variant_type,
                 individuals=individuals,
                 case=case,
                 institute=institute,
-                variant_count=nr_of_variants, 
+                variant_count=nr_of_variants,
             )
             logger.debug("Saving variant {0}".format(mongo_variant.display_name))
             mongo_variant.save()
@@ -204,16 +204,3 @@ class VariantHandler(object):
         logger.info("{0} variants inserted".format(nr_of_variants))
         logger.info("Time to insert variants: {0}".format(
           datetime.now() - start_inserting_variants))
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        
-        

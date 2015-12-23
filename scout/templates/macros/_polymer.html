@@ -1,7 +1,7 @@
 {% macro core_item(label, icon=None, src=None, class='core-item', href=None, title=None, onclick=None, target=None) %}
 
   {% if href %}
-    <a href="{{ href }}" target="{{ target }}"
+    <a href="{{ href }}" target="{{ target if target }}"
   {% else %}
     <div
   {% endif %}

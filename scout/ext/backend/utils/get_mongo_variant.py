@@ -26,13 +26,13 @@ logger = logging.getLogger(__name__)
 
 def get_clnsig(variant):
     """Get the clnsig information
-    
+
         We are only interested when clnsig = 5. So for each 5 we return the
         CLNSIG accesson number.
-        
+
         Args:
             variant (dict): A Variant dictionary
-        
+
         Returns:
             clnsig_accsessions(list)
     """
@@ -40,30 +40,30 @@ def get_clnsig(variant):
     accession_key = 'SnpSift_CLNACC'
     clnsig_annotation = variant['info_dict'].get(clnsig_key)
     accession_annotation = variant['info_dict'].get(accession_key)
-    
+
     clnsig_accsessions = []
     if clnsig_annotation:
         clnsig_annotation = clnsig_annotation[0].split('|')
         logger.debug("Found clnsig annotations {0}".format(
             ', '.join(clnsig_annotation)))
-        accession_annotation = accession_annotation[0].split('|')
         try:
+            accession_annotation = (accession_annotation or [])[0].split('|')
             for index, entry in enumerate(clnsig_annotation):
                 if int(entry) == 5:
                     if accession_annotation:
                         clnsig_accsessions.append(accession_annotation[index])
         except (ValueError, IndexError):
             pass
-    
-    return clnsig_accsessions
-    
 
-def get_mongo_variant(variant, variant_type, individuals, case, institute, 
+    return clnsig_accsessions
+
+
+def get_mongo_variant(variant, variant_type, individuals, case, institute,
                         variant_count):
     """
     Take a variant and some additional information, convert it to mongo engine
     objects and put them in the proper format in the database.
-    
+
     Args:
         variant (dict): A Variant dictionary
         variant_type  (str): A string in ['clinical', 'research']
@@ -72,10 +72,10 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         case (Case): The Case object that the variant belongs to
         institute(Institute): A institute object
         variant_count (int): The rank order of the variant in this case
-    
+
     Returns:
         mongo_variant : A variant parsed into the proper mongoengine format.
-    
+
     """
     # Create the ID for the variant
     case_id = case.case_id
@@ -88,7 +88,7 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
                   variant['ALT'],
                   variant_type
                 ]
-    
+
     # We need to create md5 keys since REF and ALT can be huge:
     variant_id = generate_md5_key(id_fields)
     document_id = generate_md5_key(id_fields+case_id.split('_'))
@@ -115,10 +115,10 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         logger.debug("Adding gene lists {0} to variant {1}".format(
             set(gene_lists), variant['variant_id']))
         mongo_variant['gene_lists'] = list(set(gene_lists))
-    
+
     ################# Add the rank score and variant rank #################
     # The rank score is central for displaying variants in scout.
-    
+
     rank_score = float(variant.get('rank_scores', {}).get(case_name, 0.0))
     mongo_variant['rank_score'] = rank_score
     logger.debug("Updating rank score for variant {0} to {1}".format(
@@ -148,9 +148,9 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
                                           case=case,
                                           variant_type=variant_type
                                         )
-                                    
+
     ################# Add the inheritance patterns #################
-    
+
     genetic_models = variant.get('genetic_models',{}).get(case_name,[])
     mongo_variant['genetic_models'] = genetic_models
     logger.debug("Updating genetic models for variant {0} to {1}".format(
@@ -228,6 +228,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         logger.debug("Updating Phylop annotation for variant {0} to {1}".format(
             variant['variant_id'], ''.join(phylop)))
         mongo_variant['phylop_conservation'] = phylop
-    
+
     return mongo_variant
 
