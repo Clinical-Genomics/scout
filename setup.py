@@ -20,7 +20,7 @@ setup(
     ],
     entry_points=dict(
        console_scripts=[
-           'scout = scout.__main__:cli',
+           'scout = scout.commands:cli',
         ]
     ),
     # test_suite='tests',

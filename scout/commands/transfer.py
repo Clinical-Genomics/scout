@@ -9,7 +9,7 @@ import click
 @click.pass_context
 def transfer(ctx, orig_cust, case_id, new_cust):
     """Transfer a case between two customers."""
-    case_obj = ctx.parent.db.case(orig_cust, case_id)
+    case_obj = ctx.obj['adapter'].case(orig_cust, case_id)
     case_obj.owner = new_cust
     case_obj.collaborators.remove(orig_cust)
     if new_cust not in case_obj.collaborators:

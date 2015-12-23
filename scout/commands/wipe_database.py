@@ -14,10 +14,12 @@ import logging
 import click
 
 logger = logging.getLogger(__name__)
-  
+
+
 def abort_if_false(ctx, param, value):
     if not value:
         ctx.abort()
+
 
 @click.command()
 @click.option("--yes",
@@ -30,8 +32,5 @@ def abort_if_false(ctx, param, value):
 def wipe(ctx):
     """Drop the mongo database given."""
     logger.info("Running wipe_mongo")
-    adapter = ctx.parent.adapter
-    adapter.drop_database()
+    ctx.obj['adapter'].drop_database()
     logger.info("Dropped all tables")
-  
-
