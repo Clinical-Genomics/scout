@@ -294,7 +294,7 @@ class CaseHandler(object):
             panel_date = panel_info.get('date')
             panel_version = float(panel_info.get('version', '0'))
             panel_id = panel_info.get('name')
-            display_name = panel_info.get('full_name', '')
+            display_name = panel_info.get('full_name', panel_id)
 
             panel = get_gene_panel(
                 list_file_name=panel_path,

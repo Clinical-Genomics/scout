@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class EventHandler(object):
     """Class to handle events for the mongo adapter"""
-    
+
     def delete_event(self, event_id):
         """Delete a event
 
@@ -24,8 +24,8 @@ class EventHandler(object):
     def create_event(self, institute, case, user, link, category, verb,
                      subject, level='specific', variant_id="", content=""):
         """Create an Event with the parameters given.
-        
-        
+
+
         Arguments:
             institute (Institute): A Institute object
             case (Case): A Case object
@@ -55,7 +55,7 @@ class EventHandler(object):
         event.save()
         logger.debug("Event Saved")
 
-    def events(self, institute, case=None, variant_id=None, level=None, 
+    def events(self, institute, case=None, variant_id=None, level=None,
                 comments=False):
         """Fetch events from the database.
 
@@ -71,12 +71,12 @@ class EventHandler(object):
         """
         # add basic filters
         filters = [Q(institute=institute)]
-        
+
         if variant_id:
             # restrict to only variant events
             filters.append(Q(category='variant'))
             filters.append(Q(variant_id=variant_id))
-        
+
             if level:
                 # filter on specific/global (implicit: only comments)
                 filters.append(Q(level=level))
@@ -137,8 +137,8 @@ class EventHandler(object):
     def unassign(self, institute, case, user, link):
         """Unassign a user from a case.
 
-        This function will create an Event to log that a person has been 
-        unassigned from a case. Also the "assignee" on the case will be 
+        This function will create an Event to log that a person has been
+        unassigned from a case. Also the "assignee" on the case will be
         updated.
 
         Arguments:
@@ -149,7 +149,7 @@ class EventHandler(object):
         """
         logger.info("Creating event for unassigning {0} from {1}".format(
                     user.display_name, case.display_name))
-    
+
         self.create_event(
             institute=institute,
             case=case,
@@ -162,7 +162,7 @@ class EventHandler(object):
 
         logger.info("Updating {0} to be unassigned with {1}".format(
                     case.display_name, user.display_name))
-        
+
         case.assignee = None
         case.save()
         logger.debug("Case updated")
@@ -180,7 +180,7 @@ class EventHandler(object):
             status (str): The new status of the case
             link (str): The url to be used in the event
         """
-        
+
         logger.info("Creating event for updating status of {0} to {1}".format(
                     case.display_name, status))
 
@@ -232,7 +232,6 @@ class EventHandler(object):
         case.save()
         logger.debug("Case updated")
 
-
     def archive_case(self, institute, case, user, link):
         """Create an event for archiving a case.
 
@@ -244,7 +243,7 @@ class EventHandler(object):
         """
         logger.info("Creating event for archiving case {0}".format(
                     case.display_name))
-        
+
         self.create_event(
             institute=institute,
             case=case,
@@ -273,7 +272,7 @@ class EventHandler(object):
         """
         logger.info("Creating event for opening research for case"\
                     " {0}".format(case.display_name))
-        
+
         self.create_event(
             institute=institute,
             case=case,
@@ -283,7 +282,7 @@ class EventHandler(object):
             verb='open_research',
             subject=case.display_name,
         )
-        
+
         logger.info("Setting is_research to 'True' in case {0}".format(
                         case.display_name))
         case.is_research = True
@@ -293,9 +292,9 @@ class EventHandler(object):
     def add_phenotype(self, institute, case, user, link, hpo_term=None,
                       omim_term=None):
         """Add a new phenotype term to a case
-            
+
             Create a phenotype term and event with the given information
-            
+
             Args:
                 institute (Institute): A Institute object
                 case (Case): Case object
@@ -303,7 +302,7 @@ class EventHandler(object):
                 link (str): The url to be used in the event
                 hpo_term (str): A hpo id
                 omim_term (str): A omim id
-                
+
         """
         try:
             if hpo_term:
@@ -319,7 +318,7 @@ class EventHandler(object):
         except ValueError as e:
             #TODO Should ve raise a more proper exception here?
             raise e
-        
+
         phenotype_terms = []
         for hpo_result in hpo_results:
             phenotype_name = hpo_result['hpo_term']
@@ -334,28 +333,28 @@ class EventHandler(object):
                 phenotype_name, case.display_name
             ))
             case.phenotype_terms.append(phenotype_term)
-        
+
             logger.info("Creating event for adding phenotype term for case"\
                         " {0}".format(case.display_name))
-                    
+
             self.create_event(
-                institute=institute, 
-                case=case, 
-                user=user, 
+                institute=institute,
+                case=case,
+                user=user,
                 link=link,
-                category='case', 
+                category='case',
                 verb='add_phenotype',
                 subject=case.display_name,
                 content = phenotype_name
             )
-        
+
         case.save()
         logger.debug("Case updated")
-        
+
 
     def remove_phenotype(self, institute, case, user, link, phenotype_id):
         """Remove an existing phenotype from a case
-      
+
         Args:
             institute (Institute): A Institute object
             case (Case): Case object
@@ -371,13 +370,13 @@ class EventHandler(object):
                 logger.info("Creating event for removing phenotype term {0}"\
                             " from case {1}".format(
                                 phenotype_id, case.display_name))
-    
+
                 self.create_event(
-                    institute=institute, 
-                    case=case, 
-                    user=user, 
+                    institute=institute,
+                    case=case,
+                    user=user,
                     link=link,
-                    category='case', 
+                    category='case',
                     verb='remove_phenotype',
                     subject=case.display_name
                 )
@@ -392,8 +391,8 @@ class EventHandler(object):
 
         This function will create an Event to log that a user have commented on
         a variant. If a variant id is given it will be a variant comment.
-        A variant comment can be 'global' or specific. The global comments will 
-        be shown for this variation in all cases while the specific comments 
+        A variant comment can be 'global' or specific. The global comments will
+        be shown for this variation in all cases while the specific comments
         will only be shown for a specific case.
 
         Arguments:
@@ -438,7 +437,6 @@ class EventHandler(object):
                 content=content
             )
 
-
     def pin_variant(self, institute, case, user, link, variant):
         """Create an event for pinning a variant.
 
@@ -478,7 +476,7 @@ class EventHandler(object):
               link (str): The url to be used in the event
               variant (Variant): A variant object
         """
-        
+
         logger.info("Creating event for unpinning variant {0}".format(
                       variant.display_name))
 
@@ -508,7 +506,7 @@ class EventHandler(object):
               link (str): The url to be used in the event
               variant (Variant): A variant object
         """
-        
+
         logger.info("Creating event for ordering sanger for"\
         " variant {0}".format(variant.display_name))
 
@@ -525,7 +523,7 @@ class EventHandler(object):
 
         logger.info("Creating event for ordering sanger for case"\
         " {0}".format(case.display_name))
-        
+
         self.create_event(
             institute=institute,
             case=case,
@@ -550,7 +548,7 @@ class EventHandler(object):
         display_name = variant.display_name
         logger.info("Mark variant {0} as causative in the case {1}".format(
             display_name, case.display_name))
-        
+
         logger.info("Adding variant to causatives in case {0}".format(
             case.display_name))
         case.causatives.append(variant)
@@ -563,7 +561,7 @@ class EventHandler(object):
 
         logger.info("Creating case event for marking {0}"\
                     " causative".format(variant.display_name))
-        
+
         self.create_event(
             institute=institute,
             case=case,
@@ -577,7 +575,7 @@ class EventHandler(object):
 
         logger.info("Creating variant event for marking {0}"\
                          " causative".format(case.display_name))
-        
+
         self.create_event(
             institute=institute,
             case=case,
@@ -603,7 +601,7 @@ class EventHandler(object):
         display_name = variant.display_name
         logger.info("Remove variant {0} as causative in case {1}".format(
             display_name, case.display_name))
-        
+
         case.causatives.remove(variant)
 
         # mark the case as active again
@@ -639,11 +637,11 @@ class EventHandler(object):
             subject=variant.display_name,
         )
 
-    def update_manual_rank(self, institute, case, user, link, variant, 
+    def update_manual_rank(self, institute, case, user, link, variant,
                               manual_rank):
         """Create an event for updating the manual rank of a variant
-          
-          This function will create a event and update the manual rank 
+
+          This function will create a event and update the manual rank
           of the variant.
 
           Arguments:
