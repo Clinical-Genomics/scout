@@ -45,16 +45,16 @@
               {
                 viz: pileup.viz.coverage(),
                 data: pileup.formats.bam({
-                  url: '{{ url_for("browser.remote_static", file=bam_file) }}',
-                  indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
+                  url: '{{ url_for("browser.remote_static", file=alignment.bam) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=alignment.bai) }}'
                 }),
                 name: 'Coverage'
               },
               {
                 viz: pileup.viz.pileup(),
                 data: pileup.formats.bam({
-                  url: '{{ url_for("browser.remote_static", file=bam_file) }}',
-                  indexUrl: '{{ url_for("browser.remote_static", file=(bam_file + ".bai")) }}'
+                  url: '{{ url_for("browser.remote_static", file=alignment.bam) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=alignment.bai) }}'
                 }),
                 cssClass: 'normal',
                 name: '{{ alignment.sample }}'
