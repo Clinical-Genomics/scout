@@ -8,10 +8,10 @@ from pprint import pprint as pp
 
 logger = logging.getLogger(__name__)
 
-def get_gene_panel(list_file_name, institute_id, panel_id, panel_version, 
+def get_gene_panel(list_file_name, institute_id, panel_id, panel_version,
                     display_name, panel_date):
     """Return a GenePanel object
-    
+
         Args:
             list_file_name(str): The gene list lines
             institute_id(str)
@@ -29,17 +29,17 @@ def get_gene_panel(list_file_name, institute_id, panel_id, panel_version,
     )
     list_lines = open(list_file_name, 'r')
     genes = get_genes(list_lines, panel_id)
-    panel['genes'] = genes
+    panel['genes'] = sorted(genes)
     return panel
 
 def get_genes(list_lines, panel_name):
     """Parse a gene list file and return the genes that belongs
         to the panel in question.
-    
+
         Args:
             list_lines (iterator): An iterable with gene list lines
             panel_name (str): The name of the panel
-        
+
         Returns:
             genes(list(str)): A list of gene names
     """
@@ -71,13 +71,13 @@ def get_genes(list_lines, panel_name):
                 reduced_penetrance = True
             else:
                 reduced_penetrance = False
-            
+
             if panel_name in gene_panels:
                 for hgnc_symbol in hgnc_symbols:
                     genes.append(hgnc_symbol)
-    
+
     return genes
-    
+
 @click.command()
 @click.argument('gene_list',
             type=click.Path(),
@@ -92,11 +92,11 @@ def cli(gene_list, panel_name):
     #     for gene in genes:
     #         print(gene)
     panel = get_gene_panel(
-        list_file_name=gene_list, 
-        institute_id='cust000', 
-        panel_id=panel_name, 
-        panel_version=1.0, 
-        display_name=panel_name, 
+        list_file_name=gene_list,
+        institute_id='cust000',
+        panel_id=panel_name,
+        panel_version=1.0,
+        display_name=panel_name,
         panel_date="Today"
     )
     print(panel.panel_name)
