@@ -455,16 +455,17 @@ class EventHandler(object):
         case.suspects.append(variant)
         case.save()
 
-        self.create_event(
+        kwargs = dict(
             institute=institute,
             case=case,
             user=user,
             link=link,
-            category='variant',
             verb='pin',
             variant_id=variant.variant_id,
             subject=variant.display_name,
         )
+        self.create_event(category='variant', **kwargs)
+        self.create_event(category='case', **kwargs)
 
     def unpin_variant(self, institute, case, user, link, variant):
         """Create an event for unpinning a variant.
