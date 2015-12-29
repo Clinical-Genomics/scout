@@ -50,10 +50,25 @@
 
 {% block toolbar_secondary %}
   <form id="search-cases" class="cases-search" action="{{ url_for('core.cases', institute_id=institute_id) }}" method="GET" accept-charset="utf-8">
-    <div class="cases-search-icon">
-      <core-icon icon="search"></core-icon>
+    <div class="md-label cases-search-block">
+      <div class="md-label-icon">
+        <core-icon icon="search"></core-icon>
+      </div>
+      <div class="md-label-text full-width">
+        <input value="{{ query or '' }}" name="query" type="search" class="cases-search-input">
+      </div>
     </div>
-    <input value="{{ query or '' }}" name="query" type="search" class="cases-search-input">
+
+    <div class="md-label">
+      <div class="md-label-icon">
+        <input id="skip-assigned" name="skip_assigned" type="checkbox" {% if skip_assigned %}checked{% endif %}></input>
+      </div>
+      <div class="md-label-text">
+        <label for="skip-assigned"><small>Hide assigned</small></label>
+      </div>
+    </div>
+
+    <button class="md-button" type="submit">Search</button>
   </form>
 {% endblock %}
 
