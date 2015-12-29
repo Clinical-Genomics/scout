@@ -1,13 +1,11 @@
-import os
+# -*- coding: utf-8 -*-
 import logging
-import codecs
 
 from path import path
-from datetime import datetime
 from mongoengine import DoesNotExist, Q
 
 from ped_parser import FamilyParser
-from scout.models import (Case, Individual, Institute)
+from scout.models import (Case, Individual, Institute, User)
 from scout.ext.backend.utils import get_gene_panel
 
 logger = logging.getLogger(__name__)
@@ -73,7 +71,7 @@ class CaseHandler(object):
             logger.warning("Could not find institute {0}".format(institute_id))
             return None
 
-    def cases(self, collaborator=None, query=None):
+    def cases(self, collaborator=None, query=None, skip_assigned=False):
         """Fetches all cases from the backend.
 
         Args:
@@ -90,10 +88,19 @@ class CaseHandler(object):
         else:
             case_query = Case.objects
 
-            if query:
-                # filter cases by matching display name of case or individuals
-                case_query = case_query.filter(Q(display_name__contains=query) |
-                Q(individuals__display_name__contains=query))
+        if query:
+            # filter if any user names match query
+            matching_users = User.objects(name__icontains=query)
+
+            # filter cases by matching display name of case or individuals
+            case_query = case_query.filter(
+                Q(display_name__icontains=query) |
+                Q(individuals__display_name__icontains=query) |
+                Q(assignee__in=matching_users)
+            )
+
+        if skip_assigned:
+            case_query = case_query.filter(assignee__exists=False)
 
         return case_query.order_by('-updated_at')
 
@@ -392,4 +399,3 @@ class CaseHandler(object):
 
         case.save()
         return case
-

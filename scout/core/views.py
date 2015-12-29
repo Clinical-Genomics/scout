@@ -39,16 +39,19 @@ def cases(institute_id):
     The purpose of this page is to display all cases related to an institute.
     """
     query = request.args.get('query')
+    skip_assigned = request.args.get('skip_assigned')
     institute = validate_user(current_user, institute_id)
     case_groups = {}
-    case_models = store.cases(collaborator=institute_id, query=query)
+    case_models = store.cases(collaborator=institute_id, query=query,
+                              skip_assigned=skip_assigned)
     for case_model in case_models:
         if case_model.status not in case_groups:
             case_groups[case_model.status] = []
         case_groups[case_model.status].append(case_model)
 
     return dict(institute=institute, institute_id=institute_id,
-                cases=case_groups, found_cases=len(case_models), query=query)
+                cases=case_groups, found_cases=len(case_models), query=query,
+                skip_assigned=skip_assigned)
 
 
 @core.route('/<institute_id>/<case_id>')
