@@ -31,7 +31,7 @@ Flask-OAuthlib==0.7.0
 
 # SSL
 Flask-SSLify
-pyOpenSSL==0.13
+pyOpenSSL>=0.13.1
 
 # Chanjo coverage reports
 chanjo-report>=2.1.0
