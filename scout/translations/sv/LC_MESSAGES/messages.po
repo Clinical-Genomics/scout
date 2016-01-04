@@ -1,0 +1,177 @@
+# Swedish translations for Chanjo Report.
+# Copyright (C) 2014 Robin Andeer
+# This file is distributed under the same license as the Chanjo Report project.
+# Robin Andeer <robin.andeer@gmail.com>, 2014.
+
+# use {{ _("home") }} in templates.
+# or _("Home") in python codes.
+msgid "Home"
+msgstr "Hem"
+
+# index.html
+msgid "Sample"
+msgstr "Prov"
+
+msgid "Group"
+msgstr "Grupp"
+
+# error pages
+msgid "Page not found"
+msgstr "Sidan kunde inte hittas"
+
+# coverage report
+msgid "Quality report"
+msgstr "Kvalitetsrapport"
+
+msgid "clinical sequencing"
+msgstr "klinisk sekvensering"
+
+msgid "Based on gene panel"
+msgstr "Baserat på genpanel"
+
+msgid "Cutoff"
+msgstr "Gränsvärde"
+
+msgif "Included splice sites"
+msgstr "Inkluderade splitsningpositioner"
+
+msgid "Generally important metrics"
+msgstr "Allmänt viktiga mått"
+
+msgid "Average coverage"
+msgstr "Medelsekvensdjup"
+
+msgid "Average completeness"
+msgstr "Medeltäckningsgrad"
+
+msgid "Transcript coverage"
+msgstr "Täckning av transkript"
+
+msgid "at"
+msgstr "vid"
+
+msgid "Fully covered transcripts"
+msgstr "Helt täckta transkript"
+
+msgid "Incomplete"
+msgstr "Ofullständiga"
+
+msgid "Incompletely covered"
+msgstr "Ofullständigt täckta"
+
+msgid "transcripts"
+msgstr "transkript"
+
+msgid "genes"
+msgstr "gener"
+
+msgid "Sex"
+msgstr "Kön"
+
+msgid "according to sequence data"
+msgstr "enligt sekvensdata"
+
+msgid "Chromosome"
+msgstr "Kromosom"
+
+msgid "Analyzed at"
+msgstr "Analysdatum"
+
+msgid "End of report"
+msgstr "Slut på rapport"
+
+# Explanations
+msgid "Explanations"
+msgstr "Förklaringar"
+
+msgid "General"
+msgstr "Allmänt"
+
+msgid "is used for coverage analysis based on read alignment."
+msgstr "används för täckningsanalys baserat på sekvensmappning."
+
+msgid "Duplicates, reads with mapping quality less than 10 as well as bases with a base quality less than 10 are not included in the analysis."
+msgstr "Duplikat, läsningar med en mappningskvalitet mindre än 10 samt baser med en baskvalitet mindre än 10 inkluderas ej i analysen."
+
+msgid "The parts of the genome that has been analyzed"
+msgstr "De delar av genomet som har analyserats"
+
+msgid "is composed of all protein coding, exonic intervals"
+msgstr "omfattar alla proteinkodande, exoniska intervall"
+
+msgid "referenced in the"
+msgstr "som anges i"
+
+msgid "CCDS database"
+msgstr "CCDS-databasen"
+
+msgid "Additionally, the data also includes spicing sites"
+msgstr "Därutöver, inkluderas även splitsningpositioner"
+
+msgid "donator and acceptor positions"
+msgstr "donator- och acceptorpositioner"
+
+msgid "bases on either of each exon"
+msgstr "baser i vardera ände utanför alla exoner"
+
+msgid "Final coverage metrics were calculated for genes from the clinical panels"
+msgstr "Slutgiltiga medelsekvensedjup beräknades för gener från de kliniska listorna"
+
+msgid "Note that estimations were made regarding coverage and completeness"
+msgstr "Notera att uppskattningar av medelsekvensdjup och medeltäckningsgrad"
+
+msgid "on the level of transcripts"
+msgstr "har gjorts på transkriptnivå"
+
+
+msgid "Coverage"
+msgstr "Medelsekvensdjup"
+
+msgid "Completeness"
+msgstr "Täckningsgrad"
+
+msgid "defined as the ratio of bases"
+msgstr "definieras som andelen baser"
+
+msgid "sequenced deeper than a specified cutoff"
+msgstr "som är sekvenserade med ett djup över en specificerad gräns"
+
+msgid "e.g. 10x"
+msgstr "t.ex. 10x"
+
+msgid "The current cutoff is defined per sample"
+msgstr "Den aktuella gränsen definieras per prov"
+
+msgid "and is found i the "Cutoff" column (first table)"
+msgstr "och återfinns i kolumnen "Gränsvärde" (första tabellen)"
+
+
+msgid "gives an overview of the success of sequencing"
+msgstr "ger en översiktlig bild av sekvenseringens framgång"
+
+msgid "defined as the ratio of transcripts that are fully covered"
+msgstr "definieras som andel transkript som är komplett täckta"
+
+msgid "i.e. with a completeness of"
+msgstr "dvs med en täckningsgrad lika med"
+
+
+msgid "calculated by comparing relative chromosome coverage"
+msgstr "beräknades genom jämförelse av relativa kromosomsekvensdjup"
+
+msgid "Some reads randomly map to the Y chromosome"
+msgstr "Vissa läspar mappar slumpmässigt till Y-kromosomen"
+
+msgid "Therefore, a less than 10 fold difference is used to infer a "male" sample"
+msgstr "En mindre än 10 gångers skillnad används därför, för att indikera "manligt" prov"
+
+
+# genders
+msgid "Gender prediction from data"
+msgstr "Könsprediktion från data"
+
+msgid "female"
+msgstr "kvinna"
+
+msgid "male"
+msgstr "man"

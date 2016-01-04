@@ -6,11 +6,12 @@ import os
 import urllib2
 
 import arrow
-from flask import Flask, render_template, current_app
+from flask import Flask, render_template, current_app, request
 from jinja2 import is_undefined
 from werkzeug.utils import import_string
 
 from .settings import DevelopmentConfig
+from .extensions import babel
 
 
 class NoContextProcessorException(Exception):
@@ -86,6 +87,27 @@ class AppFactory(object):
 
       else:
         extension(self.app)
+
+    @babel.localeselector
+    def get_locale():
+      """Determine locale to use for translations."""
+      accept_languages = current_app.config.get('ACCEPT_LANGUAGES')
+
+      # first check request args
+      session_language = request.args.get('lang')
+      print(session_language)
+      if session_language in accept_languages:
+        return session_language
+
+      # language can be forced in config
+      user_language = current_app.config.get('REPORT_LANGUAGE')
+      if user_language:
+        return user_language
+
+      # try to guess the language from the user accept header that
+      # the browser transmits.  We support de/fr/en in this example.
+      # The best match wins.
+      return request.accept_languages.best_match(accept_languages)
 
   def _register_blueprints(self):
     """Configure blueprints in views."""
@@ -218,7 +240,7 @@ class AppFactory(object):
       Return:
         str: humanized string of the decimal number
       """
-      min_number = 10^-ndigits
+      min_number = 10**-ndigits
 
       if number is None:
         # NaN
@@ -228,7 +250,7 @@ class AppFactory(object):
         return 0
       elif number < min_number:
         # make human readable and sane
-        return "&lt; {}".format(min_number)
+        return "< {}".format(min_number)
       else:
         # round all other numbers
         return round(number, ndigits)

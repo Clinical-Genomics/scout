@@ -24,7 +24,7 @@
       icon="chevron-right">
     </core-icon>
 
-    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant.variant_type, gene_lists=case.default_gene_lists) }}">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant.variant_type, gene_lists=case.default_panels) }}">
       <small>{{ variant.variant_type|capitalize }} variants</small>
     </a>
     <core-icon
@@ -67,11 +67,11 @@
     </form>
   {% endif %}
 
-  {% if case.is_solved %}
-    {% if variant == case.causative %}
+  {% if variant in case.causatives %}
       <form action="{{ url_for('core.unmark_causative',
                                institute_id=institute.display_name,
-                               case_id=case.display_name) }}"
+                               case_id=case.display_name,
+                               variant_id=variant.id) }}"
             method="POST">
         <button type="submit" class="case-assign-icon" title="Reset causative">
           <div class="md-label">
@@ -82,7 +82,6 @@
           </div>
         </button>
       </form>
-    {% endif %}
   {% else %}
     <form action="{{ url_for('core.mark_causative',
                              institute_id=institute.display_name,
@@ -90,7 +89,7 @@
                              variant_id=variant_id) }}"
           method="POST">
 
-      <button type="submit" class="case-assign-icon" title="Mark as causative">
+      <button class="case-assign-icon" type="submit" title="Mark as causative" onclick="return confirm('Are you sure?')">
         <div class="md-label">
           <div class="md-label-icon">
             <core-icon icon="verified-user"></core-icon>
@@ -115,14 +114,14 @@
   </div>
 
   <div class="variant-header-item">
-    <div class="md-label">
+    <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">
       <div class="md-label-icon">
         <core-icon icon="room"></core-icon>
       </div>
       <div class="md-label-text">
-        {{ variant.chromosome }}:{{ variant.position }} ({{ variant.hgnc_symbols|join(', ') }})
+        View alignment: {{ variant.chromosome }}:{{ variant.position }} ({{ variant.hgnc_symbols|join(', ') }})
       </div>
-    </div>
+    </a>
   </div>
 
   <div class="variant-header-item">
@@ -244,21 +243,27 @@
             </div>
           </div>
 
-          {% if variant_type == 'clinical' %}
-            <div class="variant-row-item">
+          <div class="variant-row-item">
               <div>Gene panels</div>
-
               <div class="variant-row-item-sublist">
-                {% for panel in variant.gene_lists %}
+              {% for panel in variant.gene_lists %}
                   <div class="variant-row-item-sublist-item">{{ panel }}</div>
-                {% endfor %}
+              {% endfor %}
               </div>
-            </div>
-          {% endif %}
+          </div>
 
           <div class="variant-list-item">
             <div>CLINSIG</div>
-            <div>{{ variant.clnsig or '1' }}: {{ variant.clnsig_human }}</div>
+            <div>
+              {{ variant.clnsig or '1' }}:
+              {% if variant.clnsig %}
+                <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ variant.clnsigacc }}">
+                  {{ variant.clnsig_human }}
+                </a>
+              {% else %}
+                {{ variant.clnsig_human }}
+              {% endif %}
+            </div>
           </div>
 
           <div class="variant-row-item">
@@ -367,7 +372,6 @@
 
       <div id="inheritance-model" class="md-card">
         <div class="md-card-header">Inheritance models</div>
-
         <div class="md-card-body-list">
           <div class="variant-row-item">
             <div>Variant</div>
@@ -391,6 +395,20 @@
             </div>
           {% endif %}
         </div>
+
+        <div class="md-card-header">Reduced penetrance</div>
+          <div class="md-card-body-list">
+            {% for gene in variant.reduced_penetrance_genes %}
+              <div class="variant-list-item">
+                <div>{{ gene.hgnc_symbol }}</div>
+                <div>YES</div>
+              </div>
+            {% else %}
+              <div class="variant-list-item">
+                <div>No annotations.</div>
+              </div>
+            {% endfor %}
+          </div>
       </div>
 
       <div id="omim" class="md-card">
@@ -525,7 +543,7 @@
 
             <tbody>
               {% for individual in variant.samples %}
-                <tr>
+                <tr class="{{ individuals[individual.sample_id].phenotype_human }}">
                   <td class="text-center">{{ individual.display_name }}</td>
                   <td class="text-center">{{ individual.genotype_call }}</td>
                   {% for number in individual.allele_depths %}

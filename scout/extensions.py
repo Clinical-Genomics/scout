@@ -2,6 +2,7 @@
 """Extensions module. Each extension is initialized in the app factory
 located in app.py
 """
+from flask import current_app, request
 
 # +--------------------------------------------------------------------+
 # | Flask-DebugToolbar

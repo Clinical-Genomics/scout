@@ -91,7 +91,7 @@
             {{ upload_form.gene_list.label }}
           </div>
           <div class="list-item">
-            <div>{{ upload_form.gene_list }}</div>
+            <div>{{ upload_form.gene_list(class='full-width') }}</div>
             <div><button type="submit">Upload</button></div>
           </div>
         </div>
@@ -193,7 +193,7 @@
           {{ form.genetic_models.label }}
         </div>
 
-        <div class="variant-filters-group-body">
+        <div class="variant-filters-group-body ">
           {{ form.genetic_models(class="variants-filters-select") }}
         </div>
       </div>
@@ -218,7 +218,7 @@
             <small><span class="md-badge--{{ variant.manual_rank_level }}">
               {{ variant.manual_rank }}
             </span></small>
-          {% elif variant.has_comments %}
+          {% elif variant.has_comments(case) %}
             <!-- At least show if there are any comments written -->
             <div class="dot-indicator"></div>
           {% endif %}

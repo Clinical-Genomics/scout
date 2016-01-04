@@ -23,17 +23,11 @@
 
 {% block toolbar_secondary %}
 
-  {% if case.causative %}
-    <a href="{{ url_for('core.variant',
-                        institute_id=institute.display_name,
-                        case_id=case.display_name,
-                        variant_id=case.causative.id) }}"
-       class="md-label">
-      <div class="md-label-icon">
-        <core-icon icon="verified-user"></core-icon>
-      </div>
-      <div class="md-label-text">{{ case.causative.display_name }}</div>
-    </a>
+  {% if case.analysis_type %}
+    <div class="md-label">
+      <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
+      <div class="md-label-text">{{ case.analysis_type }}</div>
+    </div>
   {% endif %}
 
   {% if case.assignee %}
@@ -73,13 +67,18 @@
       <core-icon icon="label"></core-icon>
     </div>
 
-    <form class="md-label-text" action="{{ url_for('api.case_status',institute_id=institute.display_name,case_id=case.display_name) }}" method="POST">
+    <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
       {{ case.status|capitalize }}
 
       {% if case.status != 'archived' %}
         <input type="hidden" name="status" readonly value="archived">
-        <button class="case-assign-icon" type="submit">
+        <button class="case-assign-icon" type="submit" onclick="return confirm('Are you sure?')">
           <small><strong>(ARCHIVE)</strong></small>
+        </button>
+      {% else %}
+        <input type="hidden" name="status" readonly value="active">
+        <button class="case-assign-icon" type="submit">
+          <small><strong>(UNARCHIVE)</strong></small>
         </button>
       {% endif %}
     </form>
@@ -101,18 +100,24 @@
     </div>
   {% endif %}
 
-  <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
+  <a href="{{ url_for('report.group', group_id=case.owner_case_id, level=case.coverage_cutoff, panel_name=panel_names|join(', '), gene_ids=case.default_genes()|join(','), **sample_map) }}" class="md-label" target="_blank">
     <div class="md-label-icon">
       <core-icon icon="assessment"></core-icon>
     </div>
     <div class="md-label-text">Coverage report</div>
   </a>
+
+  {% if case.rank_model_version %}
+      <div class="md-label">
+          <div class="md-label-text">Rank model: {{ case.rank_model_version }}</div>
+      </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
 
   <div class="layout">
-    <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_gene_lists) }}" class="case-variants-button">
+    <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}" class="case-variants-button">
       Clinical variants
     </a>
 
@@ -125,7 +130,76 @@
 
   <div class="case-segments">
 
-    <div id="strong-candidates" class="case-segment-row">
+    <div id="overview" class="case-segment-row">
+      <div id="case-samples" class="md-card">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Sample</th>
+                <th>Sex</th>
+                <th>Phenotype</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for individual in case.individuals %}
+                <tr class="{{ individual.phenotype_human }}">
+                  <td>{{ individual.display_name }}</td>
+                  <td>{{ individual.sex_human }}</td>
+                  <td>{{ individual.phenotype_human }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="case-samples" class="md-card">
+        <div class="md-card-header">Pedigree</div>
+        <div class="md-card-body-list layout-center">
+          {% if case.individuals|length == 1 %}
+            <!-- Don't expect a pedigree visualization -->
+            <p>Single sample case: {{ case.individuals.0.display_name }}</p>
+          {% else %}
+            {{ case.madeline_info|safe }}
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="case-synopsis" class="md-card">
+        <div class="md-card-header">Synopsis</div>
+        <div class="md-card-body--padded">
+          <markdown-editor v-ref="synopsisEditor" v-with='
+            content: {{ case.synopsis|tojson|safe }},
+            onSave: updateSynopsis
+          '></markdown-editor>
+        </div>
+
+        <div class="md-card-footer">
+          <div class="md-button-group">
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.save"
+                 v-show="$.synopsisEditor.isEditing">
+              Save
+            </div>
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.cancel"
+                 v-show="$.synopsisEditor.isEditing">
+              Cancel
+            </div>
+
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.edit"
+                 v-show="!$.synopsisEditor.isEditing">
+              Edit
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="candidates" class="case-segment-row">
       <div id="case-candidates" class="md-card">
         <div class="md-card-header">Strong candidates</div>
         <div class="md-card-body-list">
@@ -170,111 +244,46 @@
         </div>
       </div>
 
-      <div id="case-samples" class="md-card">
-        <div class="md-card-header">Individuals</div>
-        <div class="md-card-body-list">
-          <table class="default-table--flex">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Sex</th>
-                <th>Phenotype</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for individual in case.individuals %}
-                <tr>
-                  <td>{{ individual.display_name }}</td>
-                  <td>{{ individual.sex_human }}</td>
-                  <td>{{ individual.phenotype_human }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="case-samples" class="md-card">
-        <div class="md-card-header">Pedigree</div>
-        <div class="md-card-body-list layout-center">
-          {% if case.individuals|length == 1 %}
-            <!-- Don't expect a pedigree visualization -->
-            <p>Single sample case: {{ case.individuals.0.display_name }}</p>
-          {% else %}
-            {{ case.madeline_info|safe }}
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <div id="synopsis+samples" class="case-segment-row">
-      <div id="case-synopsis" class="md-card is-main">
-        <div class="md-card-header">Synopsis</div>
-        <div class="md-card-body--padded">
-          <markdown-editor v-ref="synopsisEditor" v-with='
-            content: {{ case.synopsis|tojson|safe }},
-            onSave: updateSynopsis
-          '></markdown-editor>
-        </div>
-
-        <div class="md-card-footer">
-          <div class="md-button-group">
-            <div class="md-button-flat"
-                 v-on="click: $.synopsisEditor.save"
-                 v-show="$.synopsisEditor.isEditing">
-              Save
-            </div>
-            <div class="md-button-flat"
-                 v-on="click: $.synopsisEditor.cancel"
-                 v-show="$.synopsisEditor.isEditing">
-              Cancel
-            </div>
-
-            <div class="md-button-flat"
-                 v-on="click: $.synopsisEditor.edit"
-                 v-show="!$.synopsisEditor.isEditing">
-              Edit
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HPO/Phenotype list -->
-      <div id="case-phenotype" class="md-card is-aside">
-        <div class="md-card-header">
-          Phenotype
-          (<a target="_blank"
-              href="http://compbio.charite.de/phenomizer/">phenomizer</a>)
-        </div>
-        <div class="md-card-body-list">
-          {% for hpo_term in case.phenotype_terms %}
+      <div class="md-card">
+          <div class="md-card-header">Marked as causative</div>
+          <div class="md-card-body-list">
+            {% for variant in case.causatives %}
             <div class="list-item">
-              <div>
-                {{ hpo_term.feature or hpo_term.phenotype_id }}
-              </div>
+              <a href="{{ url_for('core.variant',
+                                  institute_id=institute.display_name,
+                                  case_id=case.display_name,
+                                  variant_id=variant.id) }}"
+                 class="md-item">
 
-              <form action="{{ url_for('core.case_phenotype',
-                                       institute_id=institute.display_name,
-                                       case_id=case.display_name,
-                                       phenotype_id=hpo_term.phenotype_id) }}"
+                <div class="md-item-icon">
+                    <core-icon icon="verified-user"></core-icon>
+                </div>
+
+                <div class="md-item-body">
+                  {{ variant.hgnc_symbols|join(', ') }}
+                  <span class="md-badge"><small>{{ variant.display_name }}</small></span>
+                </div>
+              </a>
+
+              <form action="{{ url_for('core.unmark_causative',
+                             institute_id=institute.display_name,
+                             case_id=case.display_name,
+                             variant_id=variant.id) }}"
                     method="POST">
-                <button type="submit" class="md-button-flat">
+                <button type="submit" class="md-icon-button" title="Unmark">
                   <core-icon icon="highlight-remove"></core-icon>
                 </button>
               </form>
             </div>
+          {% else %}
+            <div class="list-item">No variants marked causative.</div>
           {% endfor %}
-        </div>
-        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
-          <input type="text" name="hpo_term" placeholder="HPO ID">
-          <button class="md-button-flat" type="submit">Add</button>
-        </form>
+          </div>
       </div>
     </div>
 
-    <div id="comments" class="case-segment-row">
-
-      <div id="case-activity" class="md-card is-main">
+    <div id="activity" class="case-segment-row">
+      <div id="case-activity" class="md-card">
         <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
           <div class="activity-feed">
@@ -324,7 +333,7 @@
         </div>
       </div>
 
-      <div class="md-card is-aside">
+      <div class="md-card">
         <div class="md-card-body--padded">
           <div class="feed-toolbar">
             <form class="comment-box"
@@ -345,8 +354,8 @@
     </div>
 
     <div id="gene-lists+hpo-genes" class="case-segment-row">
-      <div id="clinical-gene-lists" class="md-card is-main">
-        <div class="md-card-header">Clinical gene lists</div>
+      <div id="clinical-gene-lists" class="md-card">
+        <div class="md-card-header">Clinical gene panels</div>
         <div class="md-card-body mod-scrollable-big">
           <table class="default-table--flex">
             <thead>
@@ -354,14 +363,18 @@
                 <th>Gene list</th>
                 <th>Version</th>
                 <th>Last updated</th>
+                <th>Genes</th>
               </tr>
             </thead>
             <tbody>
-              {% for gene_list in case.clinical_gene_lists %}
+              {% for panel in case.clinical_panels %}
                 <tr>
-                  <td>{{ gene_list.display_name }}</td>
-                  <td>{{ gene_list.version }}</td>
-                  <td>{{ gene_list.date or '' }}</td>
+                  <td>
+                      <a href="{{ url_for('core.gene_panel', institute_id=institute_id, case_id=case_id, panel_id=panel.panel_name) }}">{{ panel.display_name }}</a>
+                  </td>
+                  <td>{{ panel.version }}</td>
+                  <td>{{ panel.date or '' }}</td>
+                  <td>{{ panel.genes|length }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -369,7 +382,42 @@
         </div>
       </div>
 
-      <div class="md-card is-aside">
+      <!-- HPO/Phenotype list -->
+      <div id="case-phenotype" class="md-card">
+        <div class="md-card-header">
+          Phenotype
+          (<a target="_blank"
+              href="http://compbio.charite.de/hpoweb/showterm?id=HP:0000018">HPO web</a>)
+        </div>
+        <div class="md-card-body-list mod-scrollable-big">
+          {% for hpo_term in case.phenotype_terms %}
+            <div class="list-item">
+              <div>
+                {{ hpo_term.feature }}
+                <a href="{{ hpo_term.hpo_link }}" target="_blank">
+                  <small>{{ hpo_term.phenotype_id }}</small>
+                </a>
+              </div>
+
+              <form action="{{ url_for('core.case_phenotype',
+                                       institute_id=institute.display_name,
+                                       case_id=case.display_name,
+                                       phenotype_id=hpo_term.phenotype_id) }}"
+                    method="POST">
+                <button type="submit" class="md-button-flat">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+          <input type="text" name="hpo_term" placeholder="HP:XXX or OMIM:XXX">
+          <button class="md-button-flat" type="submit">Add</button>
+        </form>
+      </div>
+
+      <div class="md-card">
         <div class="md-card-header">HPO gene list</div>
         <div class="md-card-body-list mod-scrollable-big">
           {% for hpo_gene in case.dynamic_gene_list[:10] %}

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from mongoengine import (StringField, IntField, ListField, EmbeddedDocument)
 
 class Individual(EmbeddedDocument):
@@ -32,4 +31,3 @@ class Individual(EmbeddedDocument):
     return "Individual(individual_id={0}, display_name={1})".format(
       self.individual_id, self.display_name
     )
-

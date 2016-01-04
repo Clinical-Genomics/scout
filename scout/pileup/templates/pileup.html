@@ -1,0 +1,66 @@
+{% extends 'layouts/base.html' %}
+
+{% block css_style %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('pileup.static', filename='pileup.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div id="pileup-viewer"></div>
+{% endblock %}
+
+{% block js_btm %}
+    {{ super() }}
+
+    <script type="text/javascript" src="{{ url_for('pileup.static', filename='pileup.min.js') }}"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        var div = document.getElementById('pileup-viewer');
+        var p = pileup.create(div, {
+          range: { contig: '{{ position.contig }}', start: {{ position.start }}, stop: {{ position.stop }} },
+          tracks: [
+            {
+              viz: pileup.viz.genome(),
+              isReference: true,
+              data: pileup.formats.twoBit({
+                url: '{{ url_for("browser.remote_static", file="/mnt/hds/proj/bioinfo/develop/references/hg19.2bit") }}'
+              }),
+              name: 'Reference'
+            },
+            {
+              viz: pileup.viz.scale(),
+              name: 'Scale'
+            },
+            {
+              viz: pileup.viz.location(),
+              name: 'Location'
+            },
+            {
+              viz: pileup.viz.genes(),
+              data: pileup.formats.bigBed({
+                url: '{{ url_for("browser.remote_static", file="/mnt/hds/proj/bioinfo/develop/references/ensGene.bb") }}'
+              }),
+              name: 'Genes'
+            },
+            {% for alignment in alignments %}
+              {
+                viz: pileup.viz.coverage(),
+                data: pileup.formats.bam({
+                  url: '{{ url_for("browser.remote_static", file=alignment.bam) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=alignment.bai) }}'
+                }),
+                name: 'Coverage'
+              },
+              {
+                viz: pileup.viz.pileup(),
+                data: pileup.formats.bam({
+                  url: '{{ url_for("browser.remote_static", file=alignment.bam) }}',
+                  indexUrl: '{{ url_for("browser.remote_static", file=alignment.bai) }}'
+                }),
+                cssClass: 'normal',
+                name: '{{ alignment.sample }}'
+              },
+            {% endfor %}
+          ]
+        });
+    </script>
+{% endblock %}

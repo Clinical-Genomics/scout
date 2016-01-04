@@ -55,7 +55,9 @@ VERBS = (
   "unmark_causative",
   "manual_rank",
   "add_phenotype",
-  "remove_phenotype"
+  "remove_phenotype",
+  "add_case",
+  "update_case",
 )
 
 
@@ -75,7 +77,7 @@ class Event(Document):
   subject = StringField(required=True) # case 23 or 1_2343_A_C
 
   verb = StringField(choices=VERBS)
-  level = StringField(choices=('global', 'specific'), default='specific')
+  level = StringField(choices=('global', 'specific', 'internal'), default='specific')
 
   # An event can belong to a variant. This is the id that looks like 1_34253_A_C.
   variant_id = StringField()
@@ -106,7 +108,9 @@ class Event(Document):
       "unmark_causative": "unmarked causative for",
       "manual_rank": "updated manual rank for",
       "add_phenotype": "added HPO term for",
-      "remove_phenotype": "removed HPO term for"
+      "remove_phenotype": "removed HPO term for",
+      "add_case": "added case",
+      "update_case": "updated case",
     }
 
     return display_info.get(self.verb, "")

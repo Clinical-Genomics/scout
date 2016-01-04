@@ -39,10 +39,10 @@
 
     {% block body %}{% endblock %}
 
-    {% if config.DEBUG %}
-      <!-- include browser-sync script tag -->
-      {% include 'footer.html' %}
-    {% endif %}
+    {% block js_btm %}
+      <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
+      <script src="{{ url_for('static', filename='bundle.js') }}"></script>
+    {% endblock %}
 
     {% block ga %}
       {% include "macros/_google_analytics.html" %}

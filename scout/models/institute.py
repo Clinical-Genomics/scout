@@ -4,11 +4,11 @@
 "main concept of MongoDB is embed whenever possible"
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
 from datetime import datetime
 
-from mongoengine import (DateTimeField, Document, EmailField, ListField,
-                         ReferenceField, StringField)
+from mongoengine import (DateTimeField, Document, EmailField, IntField,
+                         ListField, ReferenceField, StringField)
 
 
 class Institute(Document):
@@ -18,6 +18,8 @@ class Institute(Document):
   sanger_recipients = ListField(EmailField())
   created_at = DateTimeField(default=datetime.now)
   updated_at = DateTimeField(default=datetime.now)
+
+  coverage_cutoff = IntField(default=10)
 
   def __unicode__(self):
     return self.display_name

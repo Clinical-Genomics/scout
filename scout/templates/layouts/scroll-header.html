@@ -45,7 +45,7 @@
             {% endblock %}
 
             {% block toolbar_right %}
-              <a class="md-label" href="{{ url_for('user.profile', user_id=current_user.id) }}">
+              <a class="md-label" href="{{ url_for('profile.profile', user_id=current_user.id) }}">
                 <div class="md-label-icon">
                   <core-icon icon="account-circle"></core-icon>
                 </div>
@@ -71,10 +71,5 @@
       </div>
     </div>
   </div>
-
-  {% block js_btm %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
-    <script src="{{ url_for('static', filename='bundle.js') }}"></script>
-  {% endblock %}
 
 {% endblock %}

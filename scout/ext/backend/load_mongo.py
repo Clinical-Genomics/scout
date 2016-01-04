@@ -20,8 +20,8 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 
 
-from __future__ import (absolute_import, unicode_literals, print_function,
-                        division)
+from __future__ import (absolute_import, print_function, division)
+
 import sys
 import os
 import io
@@ -34,16 +34,16 @@ from pymongo import (ASCENDING, DESCENDING)
 from mongoengine import connect, DoesNotExist
 from mongoengine.connection import get_db
 
-from .config_parser import ConfigParser
-from .utils import (get_case, get_institute, get_mongo_variant)
-from scout.models import (Institute, Case, Variant)
-from scout._compat import iteritems
+# from .config_parser import ConfigParser
+# from .utils import (get_case, get_institute, get_mongo_variant)
+# from scout.models import (Institute, Case, Variant)
+# from scout._compat import iteritems
 
 from vcf_parser import VCFParser
 
 import scout
 
-
+logger = logging.getLogger(__name__)
 
 def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
                   mongo_db='variantDatabase', variant_type='clinical',
@@ -52,11 +52,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   """Populate a moongo database with information from ped and variant files."""
   # get root path of the Flask app
   # project_root = '/'.join(app.root_path.split('/')[0:-1])
-
-  logger = logging.getLogger(__name__)
-  # For testing only
-  if __name__ == '__main__':
-    logger = logging.getLogger("scout.ext.backend.load_mongo")
 
   ####### Check if the vcf file is on the proper format #######
   vcf_file = scout_configs['load_vcf']
@@ -76,7 +71,6 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
   ######## Parse the config file to check for keys ########
   logger.info("Parsing config file")
   config_object = ConfigParser(vcf_configs)
-
 
   ######## Get the cases and add them to the mongo db: ########
 
@@ -100,12 +94,12 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   logger.info("Updating case in database")
 
-  update_case(case, variant_type, logger)
+  update_case(case, variant_type)
 
   ######## Get the variants and add them to the mongo db: ########
 
   logger.info("Setting up a variant parser")
-  variant_parser = VCFParser(infile=vcf_file, split_variants=True, skip_info_check=True)
+  variant_parser = VCFParser(infile=vcf_file)
   nr_of_variants = 0
 
   logger.info("Deleting old variants for case {0}".format(case.case_id))
@@ -169,7 +163,7 @@ def load_mongo_db(scout_configs, vcf_configs=None, family_type='cmms',
 
   return
 
-def update_case(case, variant_type, logger):
+def update_case(case, variant_type):
   """
   Update a case in in the mongo database.
 
@@ -181,7 +175,6 @@ def update_case(case, variant_type, logger):
   Arguments:
     case (Case): A case object.
     variant_type (str): 'research' or 'clinical'
-    logger (logging.logger): A logger object
   """
   case_id = case.case_id
   try:
@@ -189,16 +182,16 @@ def update_case(case, variant_type, logger):
     logger.info("Case {0} already in database".format(case_id))
     if variant_type=='research':
       logger.info("Updating research gene list for case {0} to {1}".format(
-        case_id, case.research_gene_lists
+        case_id, case.research_panels
       ))
-      existing_case.research_gene_lists = case.research_gene_lists
+      existing_case.research_panels = case.research_panels
       logger.info("Setting case {0} in research mode".format(case_id))
       existing_case.is_research = True
     else:
       logger.info("Updating clinical gene list for case {0} to {1}".format(
-        case_id, case.clinical_gene_lists
+        case_id, case.clinical_panels
       ))
-      existing_case.clinical_gene_lists = case.clinical_gene_lists
+      existing_case.clinical_panels = case.clinical_panels
     logger.info("Updating individuals for case {0} to {1}".format(
       case_id, case.individuals
     ))
@@ -208,9 +201,9 @@ def update_case(case, variant_type, logger):
 
     # This decides which gene lists that should be shown when the case is opened
     logger.info("Updating default gene lists for case {0} to {1}".format(
-      case_id, case.default_gene_lists
+      case_id, case.default_panels
     ))
-    existing_case.default_gene_lists = case.default_gene_lists
+    existing_case.default_panels = case.default_panels
 
     logger.info("Updating genome build for case {0} to {1}".format(
       case_id, case.genome_build

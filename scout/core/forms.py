@@ -112,5 +112,4 @@ def init_filters_form(get_args):
   form.gene_lists.data = [gene_list for gene_list
                           in (form.gene_lists.data or [])
                           if gene_list]
-
   return form

@@ -16,11 +16,9 @@ argv = require('yargs').argv
 
 # browser-sync task, only cares about compiled CSS
 gulp.task 'browser-sync', ->
-	browserSync
-    port: 3023
-		files: ['build/*.css', 'build/*.js']
-		proxy:
-			port: 5023
+    browserSync
+        files: ['build/*.css', 'build/*.js']
+        proxy: 'localhost:5023'
 
 
 # CSS task - finds and compiles all SCSS files
@@ -37,7 +35,7 @@ gulp.task 'css', ->
 
 # bundle Vue.js template and scripts
 gulp.task 'webpack', ->
-	gulp.src 'assets/coffee/main.js'
+	gulp.src 'assets/coffee/*.js'
 		.pipe webpack webpackConfig
 		.pipe gulpif argv.production, uglify()
 		.pipe gulp.dest 'build/'
