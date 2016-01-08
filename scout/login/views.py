@@ -104,15 +104,12 @@ def authorized(oauth_response):
     flash('Your email is not on the whitelist, contact an admin.')
     return abort(403)
 
-  # get or create user from the database
-  user, was_created = User.objects.get_or_create(
-    email = google_data['email'],
-    name = google_data['name']
-  )
-
+  user, was_created = User.objects.get_or_create(email=google_data['email'])
   if was_created:
+    current_app.logger.info('create user: %s, %s', google_data)
     user.created_at = datetime.utcnow()
     user.location = google_data['locale']
+    user.name = google_data['name']
 
     # add a default institute if it is specified
     if faux_user.institutes:
