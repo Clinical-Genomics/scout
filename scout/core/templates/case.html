@@ -26,7 +26,12 @@
   {% if case.analysis_type %}
     <div class="md-label">
       <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
-      <div class="md-label-text">{{ case.analysis_type }}</div>
+      <div class="md-label-text">
+        {{ case.analysis_type }}
+        {% if case.analysis_type == 'unknown' %}
+            analysis type
+        {% endif %}
+      </div>
     </div>
   {% endif %}
 
