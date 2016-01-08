@@ -449,6 +449,7 @@ def email_sanger(institute_id, case_id, variant_id):
     # build variant page URL
     variant_url = url_for('.variant', institute_id=institute_id,
                           case_id=case_id, variant_id=variant_id)
+    gene_lists_str = ', '.join(variant_model.gene_lists)
 
     hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
     functions = ["<li>{}</li>".format(function) for function in
@@ -460,7 +461,7 @@ def email_sanger(institute_id, case_id, variant_id):
     html = """
       <p>Case {case_id}: <a href='{url}'>{variant_id}</a></p>
       <p>HGNC symbol: {hgnc_symbol}</p>
-      <p>Database: {database_id}</p>
+      <p>Database: {databases}</p>
       <p>Chr position: {chromosome_position}</p>
       <p>Amino acid change(s): <br> <ul>{functions}</ul></p><br>
       <p>GT-call: <br> <ul>{gtcalls}</ul></p><br>
@@ -470,7 +471,7 @@ def email_sanger(institute_id, case_id, variant_id):
       url=variant_url,
       variant_id=variant_id,
       hgnc_symbol=hgnc_symbol,
-      database_id='coming soon',
+      databases=gene_lists_str,
       chromosome_position=variant_model.display_name,
       functions=''.join(functions),
       gtcalls=''.join(gtcalls),
