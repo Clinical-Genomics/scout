@@ -1,6 +1,10 @@
 .list--horizontal {
   display: flex;
   overflow: auto;
+
+  // make it work with tooltip
+  position: absolute;
+  max-width: 100%;
 }
 
 .list-item {
