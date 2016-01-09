@@ -84,7 +84,9 @@ class CaseHandler(object):
         logger.info("Fetch all cases")
         if collaborator:
             logger.info("Use collaborator {0}".format(collaborator))
-            case_query = Case.objects(collaborators=collaborator)
+            case_query = Case.objects(
+                Q(owner=collaborator) | Q(collaborators=collaborator)
+            )
         else:
             case_query = Case.objects
 
