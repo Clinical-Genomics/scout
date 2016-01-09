@@ -120,10 +120,10 @@ class CaseHandler(object):
         logger.info("Fetch case {0} from institute {1}".format(
             case_id, institute_id))
         try:
-            return Case.objects.get(
-                collaborators__contains=institute_id,
-                display_name=case_id
-            )
+            return Case.objects.get((
+                (Q(owner=institute_id) | Q(collaborators=institute_id)) &
+                Q(display_name=case_id)
+            ))
         except DoesNotExist:
             logger.warning("Could not find case {0}".format(case_id))
             return None
