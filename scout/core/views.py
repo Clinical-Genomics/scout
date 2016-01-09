@@ -63,6 +63,9 @@ def case(institute_id, case_id):
 
     # fetch a single, specific case from the data store
     case_model = store.case(institute_id, case_id)
+    if case_model is None:
+        return abort(404, "Can't find a case '{}' for institute {}"
+                          .format(case_id, institute_id))
 
     case_comments = store.events(institute, case=case_model, comments=True)
     case_events = store.events(institute, case=case_model)
