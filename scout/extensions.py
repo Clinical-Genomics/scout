@@ -74,18 +74,18 @@ omim = OMIM()
 # | Flask-SSLify
 # +--------------------------------------------------------------------+
 from flask_sslify import SSLify
-from OpenSSL import SSL
+import ssl
 
 # (ext lacks init_app...)
-ctx = SSL.Context(SSL.SSLv23_METHOD)
+ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
 
 
 def ssl(app):
   """Proxy function to setup Flask-SSLify extension."""
   # Setup SSL: http://flask.pocoo.org/snippets/111/
   if not app.debug:
-    ctx.use_privatekey_file(app.config.get('SSL_KEY_PATH'))
-    ctx.use_certificate_file(app.config.get('SSL_CERT_PATH'))
+    ctx.load_cert_chain(app.config.get('SSL_CERT_PATH'),
+                        app.config.get('SSL_KEY_PATH'))
 
   # https://github.com/kennethreitz/flask-sslify
   # Force SSL. Redirect all incoming requests to HTTPS.
