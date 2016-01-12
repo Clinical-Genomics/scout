@@ -352,6 +352,8 @@ def variant(institute_id, case_id, variant_id):
     institute = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
+    if variant_model is None:
+        return abort(404, 'variant not found')
 
     comments = store.events(institute, case=case_model,
                             variant_id=variant_model.variant_id,
