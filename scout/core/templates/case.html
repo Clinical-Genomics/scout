@@ -110,8 +110,8 @@
     <input class="is-hidden" name="level" value="{{ case.coverage_cutoff }}"></input>
     <input class="is-hidden" name="panel_name" value="{{ panel_names|join(', ') }}"></input>
     <input class="is-hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
-    {% for sample in sample_map %}
-
+    {% for sample_id, display_name in sample_map.items() %}
+        <input class="is-hidden" name="{{ sample_id }}" value="{{ display_name }}"></input>
     {% endfor %}
 
     <div class="md-label-icon">
@@ -377,6 +377,7 @@
                 <th>Version</th>
                 <th>Last updated</th>
                 <th>Genes</th>
+                <th>Coverage</th>
               </tr>
             </thead>
             <tbody>
@@ -388,6 +389,17 @@
                   <td>{{ panel.version }}</td>
                   <td>{{ panel.date or '' }}</td>
                   <td>{{ panel.genes|length }}</td>
+                  <td>
+                      <form class="md-label" action="{{ url_for('report.group', group_id=case.owner_case_id) }}" method="post" accept-charset="utf-8" target="_blank">
+                        <input class="is-hidden" name="level" value="{{ case.coverage_cutoff }}"></input>
+                        <input class="is-hidden" name="panel_name" value="{{ panel.name_and_version }}"></input>
+                        <input class="is-hidden" name="gene_ids" value="{{ panel.genes|join(',') }}"></input>
+                        {% for sample_id, display_name in sample_map.items() %}
+                          <input class="is-hidden" name="{{ sample_id }}" value="{{ display_name }}"></input>
+                        {% endfor %}
+                        <button type="submit" class="md-label-text">View</button>
+                      </form>
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
