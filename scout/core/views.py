@@ -63,6 +63,9 @@ def case(institute_id, case_id):
 
     # fetch a single, specific case from the data store
     case_model = store.case(institute_id, case_id)
+    if case_model is None:
+        return abort(404, "Can't find a case '{}' for institute {}"
+                          .format(case_id, institute_id))
 
     case_comments = store.events(institute, case=case_model, comments=True)
     case_events = store.events(institute, case=case_model)
@@ -349,6 +352,8 @@ def variant(institute_id, case_id, variant_id):
     institute = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
+    if variant_model is None:
+        return abort(404, 'variant not found')
 
     comments = store.events(institute, case=case_model,
                             variant_id=variant_model.variant_id,
@@ -449,6 +454,7 @@ def email_sanger(institute_id, case_id, variant_id):
     # build variant page URL
     variant_url = url_for('.variant', institute_id=institute_id,
                           case_id=case_id, variant_id=variant_id)
+    gene_lists_str = ', '.join(variant_model.gene_lists)
 
     hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
     functions = ["<li>{}</li>".format(function) for function in
@@ -460,7 +466,7 @@ def email_sanger(institute_id, case_id, variant_id):
     html = """
       <p>Case {case_id}: <a href='{url}'>{variant_id}</a></p>
       <p>HGNC symbol: {hgnc_symbol}</p>
-      <p>Database: {database_id}</p>
+      <p>Database: {databases}</p>
       <p>Chr position: {chromosome_position}</p>
       <p>Amino acid change(s): <br> <ul>{functions}</ul></p><br>
       <p>GT-call: <br> <ul>{gtcalls}</ul></p><br>
@@ -470,7 +476,7 @@ def email_sanger(institute_id, case_id, variant_id):
       url=variant_url,
       variant_id=variant_id,
       hgnc_symbol=hgnc_symbol,
-      database_id='coming soon',
+      databases=gene_lists_str,
       chromosome_position=variant_model.display_name,
       functions=''.join(functions),
       gtcalls=''.join(gtcalls),

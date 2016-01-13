@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from mongoengine import (Document, ListField, StringField, FloatField, 
-IntField, BooleanField)
+from mongoengine import (Document, ListField, StringField, FloatField,
+                         IntField, BooleanField)
 
 
 class Gene(Document):
@@ -15,9 +15,10 @@ class Gene(Document):
     protein_name = StringField()
     reduced_penetrance = BooleanField(default=False)
 
+
 class GenePanel(Document):
     institute = StringField(required=True)
-    panel_name = StringField(required=True)
+    panel_name = StringField(required=True, unique_with='version')
     version = FloatField(required=True)
     date = StringField(required=True)
     display_name = StringField()
