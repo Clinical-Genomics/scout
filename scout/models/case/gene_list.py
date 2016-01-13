@@ -18,7 +18,7 @@ class Gene(Document):
 
 class GenePanel(Document):
     institute = StringField(required=True)
-    panel_name = StringField(required=True)
+    panel_name = StringField(required=True, unique_with='version')
     version = FloatField(required=True)
     date = StringField(required=True)
     display_name = StringField()

@@ -5,7 +5,7 @@ from path import path
 from mongoengine import DoesNotExist, Q
 
 from ped_parser import FamilyParser
-from scout.models import (Case, Individual, Institute, User)
+from scout.models import (Case, GenePanel, Individual, Institute, User)
 from scout.ext.backend.utils import get_gene_panel
 
 logger = logging.getLogger(__name__)
@@ -305,25 +305,27 @@ class CaseHandler(object):
             panel_id = panel_info.get('name')
             display_name = panel_info.get('full_name', panel_id)
 
-            panel = get_gene_panel(
-                list_file_name=panel_path,
-                institute_id=owner,
-                panel_id=panel_id,
-                panel_version=panel_version,
-                display_name=display_name,
-                panel_date=panel_date)
+            # lookup among existing gene panels
+            panel = self.gene_panel(panel_id, panel_version)
+            if panel is None:
+                panel = get_gene_panel(list_file_name=panel_path,
+                                       institute_id=owner,
+                                       panel_id=panel_id,
+                                       panel_version=panel_version,
+                                       display_name=display_name,
+                                       panel_date=panel_date)
 
-            logger.info("Store gene panel {0} in database".format(
+                logger.info("Store gene panel {0} in database".format(
                             panel.panel_name))
-            panel.save()
+                panel.save()
 
             if panel_type == 'clinical':
                 logger.info("Adding {0} to clinical gene lists".format(
-                                panel.panel_name))
+                            panel.panel_name))
                 clinical_panels.append(panel)
             else:
                 logger.info("Adding {0} to research gene lists".format(
-                                panel.panel_name))
+                            panel.panel_name))
                 research_panels.append(panel)
 
         case['clinical_panels'] = clinical_panels
@@ -401,3 +403,19 @@ class CaseHandler(object):
 
         case.save()
         return case
+
+    def gene_panel(self, panel_id, version):
+        """Fetch a gene panel.
+
+        Args:
+            panel_id (str): unique id for the panel
+            version (str): version of the panel
+
+        Returns:
+            GenePanel: gene panel object
+        """
+        try:
+            panel = GenePanel.objects.get(panel_name=panel_id, version=version)
+        except DoesNotExist:
+            return None
+        return panel

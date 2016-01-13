@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
     """Adapter for cummunication with a mongo database."""
-    
+
     def init_app(self, app):
         config = getattr(app, 'config', {})
 
@@ -39,17 +39,17 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         username = config.get('MONGODB_USERNAME', None)
         password = config.get('MONGODB_PASSWORD', None)
         self.connect_to_database(
-            database, 
-            host=host, 
-            port=port, 
+            database,
+            host=host,
+            port=port,
             username=username,
             password=password
         )
 
-    def connect_to_database(self, database, host='localhost', port=27017, 
+    def connect_to_database(self, database, host='localhost', port=27017,
         username=None, password=None):
         """Connect to a mongo database
-        
+
             database(str): Name of database
             host(str): Host of database
             port(int): Port of database
@@ -59,17 +59,17 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         logger.info("Connecting to database {0}".format(database))
         self.mongodb_name = database
         self.db = connect(
-            database, 
-            host=host, 
-            port=port, 
+            database,
+            host=host,
+            port=port,
             username=username,
             password=password
         )
         logger.debug("Connection established")
-    
+
     def drop_database(self):
         """Drop the database that the adapter is connected to
-        
+
         """
         logger.info("Drop database {0}".format(self.mongodb_name))
         self.db.drop_database(self.mongodb_name)
@@ -80,10 +80,6 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         if app:
             logger.info("Initializing app")
             self.init_app(app)
-
-    def gene_panel(self, panel_id, version):
-        """Fetch a gene panel from the database."""
-        return dict()
 
     def update_dynamic_gene_list(self, case, gene_list):
         """Update the dynamic gene list for a case
