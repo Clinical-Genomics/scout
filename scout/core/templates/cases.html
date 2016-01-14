@@ -26,7 +26,7 @@
         <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
       {% endif %}
        |
-      <span>{{ case.updated_at|format_date }}</span> |
+      <span>{{ case.analysis_date|format_date }}</span> |
       {% if case.analysis_type != 'unknown' %}
         <span class="md-badge is-{{ case.analysis_type }}">{{ case.analysis_type|upper }}</span>
       {% endif %}
