@@ -479,7 +479,7 @@ class EventHandler(object):
         case.suspects.remove(variant)
         case.save()
 
-        create_event(
+        self.create_event(
             institute=institute,
             case=case,
             user=user,
