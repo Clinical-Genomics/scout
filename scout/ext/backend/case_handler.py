@@ -138,18 +138,15 @@ class CaseHandler(object):
         """
         logger.info("Fetch case {0} from institute {1}".format(
             case_id, institute_id))
-        try:
-            case = Case.objects.get(
-                collaborators__contains=institute_id,
-                display_name=case_id
-            )
-            logger.info("Deleting case {0}".format(case.case_id))
-            case.delete()
-            logger.debug("Case deleted")
-            return case
-            ##TODO Add event for deleting case?
 
-        except DoesNotExist:
+        case_obj = self.case(institute_id, case_id)
+        if case_obj:
+            logger.info("Deleting case {0}".format(case_obj.case_id))
+            case_obj.delete()
+            logger.debug("Case deleted")
+            return case_obj
+            # TODO Add event for deleting case?
+        else:
             logger.warning("Could not find case {0}".format(case_id))
             return None
 
