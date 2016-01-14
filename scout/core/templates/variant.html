@@ -260,7 +260,7 @@
                 {{ variant.clnsig_human }}
 
                 [{% for clnsigacc in variant.clnsigacc %}
-                    <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clnsigacc }}">
+                    <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clnsigacc }}" target="_blank">
                         {{ loop.index }}
                     </a>{% if not loop.last %}, {% endif %}
                 {% endfor %}]
