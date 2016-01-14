@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os.path
+
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for, make_response)
 from flask.ext.login import login_required, current_user
@@ -452,8 +454,9 @@ def email_sanger(institute_id, case_id, variant_id):
         return abort(403)
 
     # build variant page URL
-    variant_url = url_for('.variant', institute_id=institute_id,
-                          case_id=case_id, variant_id=variant_id)
+    rel_url = url_for('.variant', institute_id=institute_id,
+                      case_id=case_id, variant_id=variant_id)
+    variant_url = os.path.join(request.url_root, rel_url)
     gene_lists_str = ', '.join(variant_model.gene_lists)
 
     hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
