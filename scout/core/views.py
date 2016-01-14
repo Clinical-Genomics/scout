@@ -456,7 +456,7 @@ def email_sanger(institute_id, case_id, variant_id):
     # build variant page URL
     rel_url = url_for('.variant', institute_id=institute_id,
                       case_id=case_id, variant_id=variant_id)
-    variant_url = os.path.join(request.url_root, rel_url)
+    variant_url = os.path.join(request.host_url, rel_url)
     gene_lists_str = ', '.join(variant_model.gene_lists)
 
     hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
