@@ -270,9 +270,8 @@ class EventHandler(object):
                 user (User): A User object
                 link (str): The url to be used in the event
         """
-        logger.info("Creating event for opening research for case"\
+        logger.info("Creating event for opening research for case"
                     " {0}".format(case.display_name))
-
         self.create_event(
             institute=institute,
             case=case,
@@ -282,12 +281,6 @@ class EventHandler(object):
             verb='open_research',
             subject=case.display_name,
         )
-
-        logger.info("Setting is_research to 'True' in case {0}".format(
-                        case.display_name))
-        case.is_research = True
-        case.save()
-        logger.debug("Case updated")
 
     def add_phenotype(self, institute, case, user, link, hpo_term=None,
                       omim_term=None):
