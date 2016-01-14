@@ -464,7 +464,8 @@ def email_sanger(institute_id, case_id, variant_id):
                for individual in variant_model.samples]
 
     html = """
-      <p>Case {case_id}: <a href='{url}'>{variant_id}</a></p>
+      <p>Case {case_id}: {variant_id}</p>
+      <p>Scout link: {url}</p>
       <p>HGNC symbol: {hgnc_symbol}</p>
       <p>Database: {databases}</p>
       <p>Chr position: {chromosome_position}</p>
@@ -474,7 +475,7 @@ def email_sanger(institute_id, case_id, variant_id):
     """.format(
       case_id=case_id,
       url=variant_url,
-      variant_id=variant_id,
+      variant_id=variant_model.display_name,
       hgnc_symbol=hgnc_symbol,
       databases=gene_lists_str,
       chromosome_position=variant_model.display_name,
