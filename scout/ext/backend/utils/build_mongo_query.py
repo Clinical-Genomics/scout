@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 
 def build_query(case_id, query=None, variant_ids=None):
     """Build a mongo query
-    
+
     query looks like:
         {
             'genetic_models': list,
@@ -19,7 +19,7 @@ def build_query(case_id, query=None, variant_ids=None):
         case_id(str)
         query(dict): A dictionary with querys for the database
         variant_ids(list(str)): A list of md5 variant ids
-    
+
     Returns:
         mongo_query : A dictionary in the mongo query format
 
@@ -41,21 +41,22 @@ def build_query(case_id, query=None, variant_ids=None):
 
         if query.get('thousand_genomes_frequency'):
             try:
-                mongo_query['$and'].append(
-                    {'thousand_genomes_frequency':{
-                        '$lt': float(query['thousand_genomes_frequency'])
-                        }
-                    }
-                )
+                mongo_query['$and'].append({
+                    '$or': [
+                        {'thousand_genomes_frequency':
+                            {'$lt': float(query['thousand_genomes_frequency'])}},
+                        {'thousand_genomes_frequency': {'$exists': False}}
+                    ]
+                })
                 logger.debug("Adding thousand_genomes_frequency to query")
                 any_query = True
             except TypeError:
                 pass
-        
+
         if query.get('exac_frequency'):
             try:
                 mongo_query['$and'].append(
-                    {'exac_frequency':{
+                    {'exac_frequency': {
                         '$lt': float(query['exac_frequency'])
                         }
                     }
@@ -64,7 +65,7 @@ def build_query(case_id, query=None, variant_ids=None):
                 any_query = True
             except TypeError:
                 pass
-        
+
         if query.get('genetic_models'):
             mongo_query['$and'].append(
                 {'genetic_models':{
@@ -75,7 +76,7 @@ def build_query(case_id, query=None, variant_ids=None):
             logger.debug("Adding genetic_models={0} to query".format(
                 ', '.join(query['genetic_models'])))
             any_query = True
-        
+
         if query.get('hgnc_symbols'):
             mongo_query['$and'].append(
                 {'hgnc_symbols':{
@@ -86,7 +87,7 @@ def build_query(case_id, query=None, variant_ids=None):
             logger.debug("Adding hgnc_symbols={0} to query".format(
                 ', '.join(query['hgnc_symbols'])))
             any_query = True
-        
+
         if query.get('gene_lists'):
             mongo_query['$and'].append(
                 {'gene_lists':{
@@ -97,7 +98,7 @@ def build_query(case_id, query=None, variant_ids=None):
             logger.debug("Adding gene_lists={0} to query".format(
                 ', '.join(query['gene_lists'])))
             any_query = True
-        
+
         if query.get('functional_annotations'):
             mongo_query['$and'].append(
                 {'genes.functional_annotation':{
@@ -108,7 +109,7 @@ def build_query(case_id, query=None, variant_ids=None):
             logger.debug("Adding functional_annotations={0} to query".format(
                 ', '.join(query['functional_annotations'])))
             any_query = True
-        
+
         if query.get('region_annotations'):
             mongo_query['$and'].append(
                 {'genes.region_annotation':{
@@ -119,7 +120,7 @@ def build_query(case_id, query=None, variant_ids=None):
             logger.debug("Adding region_annotations={0} to query".format(
                 ', '.join(query['region_annotations'])))
             any_query = True
-        
+
     if variant_ids:
         mongo_query['$and'].append(
             {'variant_id':{
