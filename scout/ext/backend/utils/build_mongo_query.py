@@ -55,12 +55,13 @@ def build_query(case_id, query=None, variant_ids=None):
 
         if query.get('exac_frequency'):
             try:
-                mongo_query['$and'].append(
-                    {'exac_frequency': {
-                        '$lt': float(query['exac_frequency'])
-                        }
-                    }
-                )
+                mongo_query['$and'].append({
+                    '$or': [
+                        {'exac_frequency':
+                            {'$lt': float(query['exac_frequency'])}},
+                        {'exac_frequency': {'$exists': False}}
+                    ]
+                })
                 logger.debug("Adding exac_frequency to query")
                 any_query = True
             except TypeError:
