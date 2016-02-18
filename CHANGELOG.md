@@ -2,18 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2016-02-18
+### Fixed
+- avoid filtering out variants lacking ExAC and 1000G annotations
+
 ## [1.1.3] - 2015-10-01
-## Fixed
+### Fixed
 - persist (clinical) filter when clicking load more
 - fix #154 by robustly setting clinical filter func. terms
 
 ## [1.1.2] - 2015-09-07
-## Fixed
+### Fixed
 - avoid replacing coverage report with none
 - update SO terms, refactored
 
 ## [1.1.1] - 2015-08-20
-## Fixed
+### Fixed
 - fetch case based on collaborator status (not owner)
 
 ## [1.1.0] - 2015-05-29
