@@ -227,9 +227,13 @@ class CaseHandler(object):
               rank_model_version))
 
         # Check the analysis date
-        analysis_date = scout_configs.get('analysis_date', '')
-        case['analysis_date'] = analysis_date
-        logger.debug("Setting analysis date to: {0}".format(analysis_date))
+        analysis_date = scout_configs.get('analysis_date')
+        if analysis_date:
+            case['analysis_date'] = analysis_date
+            case['analysis_dates'] = [analysis_date]
+            logger.debug("Setting analysis date to: {0}".format(analysis_date))
+        else:
+            case['analysis_dates'] = []
 
         # Add the pedigree picture, this is a xml file that will be read and
         # saved in the mongo database
@@ -257,13 +261,13 @@ class CaseHandler(object):
         for ind_id in case_parser.individuals:
             ped_individual = case_parser.individuals[ind_id]
             individual = Individual(
-                individual_id = ind_id,
-                father = ped_individual.father,
-                mother = ped_individual.mother,
-                display_name = ped_individual.extra_info.get(
+                individual_id=ind_id,
+                father=ped_individual.father,
+                mother=ped_individual.mother,
+                display_name=ped_individual.extra_info.get(
                                     'display_name', ind_id),
-                sex = str(ped_individual.sex),
-                phenotype = ped_individual.phenotype,
+                sex=str(ped_individual.sex),
+                phenotype=ped_individual.phenotype,
             )
             # Path to the bam file for IGV:
             individual['bam_file'] = scout_configs.get(
@@ -333,7 +337,7 @@ class CaseHandler(object):
             ', '.join(default_panels), case_id))
         case['default_panels'] = list(default_panels)
 
-        #If the case exists we need tu update the information
+        # If the case exists we need to update the information
         if self.case(institute_id=owner, case_id=case_id):
             case = self.update_case(case)
         else:
@@ -388,6 +392,12 @@ class CaseHandler(object):
 
         logger.debug("Updating phenotype_terms")
         case['phenotype_terms'] = existing_case['phenotype_terms']
+
+        logger.debug("Updating analysis dates")
+        if 'analysis_dates' in existing_case:
+            if case['analysis_date'] not in existing_case['analysis_dates']:
+                case['analysis_dates'] = (existing_case['analysis_dates'] +
+                                          case['analysis_dates'])
 
         logger.info("Deleting old case {0}".format(
             existing_case['case_id']))

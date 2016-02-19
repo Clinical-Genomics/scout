@@ -47,6 +47,7 @@ class Case(Document):
     genome_version = FloatField()
 
     analysis_date = StringField()
+    analysis_dates = ListField(StringField())
     rank_model_version = StringField()
     analysis_type = StringField(choices=ANALYSIS_TYPES)
 
@@ -83,7 +84,7 @@ class Case(Document):
 
     @property
     def is_rerun(self):
-        return self.created_at < self.updated_at
+        return self.analysis_dates and len(self.analysis_dates) > 1
 
     @property
     def hpo_gene_ids(self):

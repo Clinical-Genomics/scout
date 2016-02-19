@@ -178,7 +178,7 @@ def update_case(case, variant_type):
   """
   case_id = case.case_id
   try:
-    existing_case = Case.objects.get(case_id = case_id)
+    existing_case = Case.objects.get(case_id=case_id)
     logger.info("Case {0} already in database".format(case_id))
     if variant_type=='research':
       logger.info("Updating research gene list for case {0} to {1}".format(
