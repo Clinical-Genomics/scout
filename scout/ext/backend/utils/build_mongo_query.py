@@ -40,18 +40,24 @@ def build_query(case_id, query=None, variant_ids=None):
             mongo_query['variant_type']))
 
         if query.get('thousand_genomes_frequency'):
-            try:
+            thousandg_freq = query.get('thousand_genomes_frequency')
+            if thousandg_freq == '-1':
                 mongo_query['$and'].append({
-                    '$or': [
-                        {'thousand_genomes_frequency':
-                            {'$lt': float(query['thousand_genomes_frequency'])}},
-                        {'thousand_genomes_frequency': {'$exists': False}}
-                    ]
+                    'thousand_genomes_frequency': {'$exists': False}
                 })
-                logger.debug("Adding thousand_genomes_frequency to query")
-                any_query = True
-            except TypeError:
-                pass
+            else:
+                try:
+                    mongo_query['$and'].append({
+                        '$or': [
+                            {'thousand_genomes_frequency':
+                                {'$lt': float(query['thousand_genomes_frequency'])}},
+                            {'thousand_genomes_frequency': {'$exists': False}}
+                        ]
+                    })
+                    logger.debug("Adding thousand_genomes_frequency to query")
+                    any_query = True
+                except TypeError:
+                    pass
 
         if query.get('exac_frequency'):
             try:

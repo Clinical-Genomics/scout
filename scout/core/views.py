@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import os.path
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
@@ -8,11 +9,11 @@ from flask.ext.mail import Message
 import query_phenomizer
 
 from scout.models import Case, Variant
+from scout.models.variant import SEVERE_SO_TERMS
 from scout.extensions import mail, store
 from scout.helpers import templated
 
-from .forms import (init_filters_form, SO_TERMS, process_filters_form,
-                    GeneListUpload)
+from .forms import init_filters_form, process_filters_form, GeneListUpload
 from .utils import validate_user
 
 core = Blueprint('core', __name__, template_folder='templates')
@@ -51,9 +52,11 @@ def cases(institute_id):
             case_groups[case_model.status] = []
         case_groups[case_model.status].append(case_model)
 
+    missed_cutoff = datetime.datetime(2016, 2, 19)
     return dict(institute=institute, institute_id=institute_id,
                 cases=case_groups, found_cases=len(case_models), query=query,
-                skip_assigned=skip_assigned)
+                skip_assigned=skip_assigned, severe_so_terms=SEVERE_SO_TERMS,
+                missed_cutoff=missed_cutoff)
 
 
 @core.route('/<institute_id>/<case_id>')
@@ -329,8 +332,6 @@ def variants(institute_id, case_id, variant_type):
     variant_models = store.variants(case_model.case_id, query=query,
                                     nr_of_variants=per_page, skip=skip)
 
-    so_cutoff = SO_TERMS.index('stop_retained_variant')
-    severe_so_terms = SO_TERMS[:so_cutoff]
     query_dict = {key: request.args.getlist(key) for key in request.args.keys()}
     return dict(variants=variant_models,
                 case=case_model,
@@ -339,7 +340,7 @@ def variants(institute_id, case_id, variant_type):
                 institute_id=institute_id,
                 current_batch=(skip + per_page),
                 form=form,
-                severe_so_terms=severe_so_terms,
+                severe_so_terms=SEVERE_SO_TERMS,
                 current_gene_lists=current_gene_lists,
                 variant_type=variant_type,
                 upload_form=GeneListUpload(),

@@ -49,6 +49,9 @@ SO_TERMS = (
   'intergenic_variant'
 )
 
+so_cutoff = SO_TERMS.index('stop_retained_variant')
+SEVERE_SO_TERMS = SO_TERMS[:so_cutoff]
+
 FEATURE_TYPES = (
   'exonic',
   'splicing',

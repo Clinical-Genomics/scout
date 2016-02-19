@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
 from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
-                     SelectMultipleField, RadioField)
+                     SelectMultipleField, RadioField, DateField)
 from wtforms import widgets
 
 from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
