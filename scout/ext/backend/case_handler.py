@@ -393,6 +393,10 @@ class CaseHandler(object):
         logger.debug("Updating phenotype_terms")
         case['phenotype_terms'] = existing_case['phenotype_terms']
 
+        logger.debug("Updating complete status")
+        if 'analysis_checked' in existing_case:
+            case['analysis_checked'] = existing_case['analysis_checked']
+
         logger.debug("Updating analysis dates")
         if 'analysis_dates' in existing_case:
             if case['analysis_date'] not in existing_case['analysis_dates']:

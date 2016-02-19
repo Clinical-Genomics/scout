@@ -666,10 +666,10 @@ class EventHandler(object):
         variant.save()
         logger.debug("Variant updated")
 
-    def mark_complete(self, institute_model, case_model, user_model, link,
-                      unmark=False):
-        """Mark a case as complete from an analysis point of view."""
-        logger.info("Updating complete status of {}"
+    def mark_checked(self, institute_model, case_model, user_model, link,
+                     unmark=False):
+        """Mark a case as checked from an analysis point of view."""
+        logger.info("Updating checked status of {}"
                     .format(case_model.display_name))
 
         self.create_event(
@@ -682,9 +682,9 @@ class EventHandler(object):
             subject=case_model.display_name
         )
 
-        status = 'not completed' if unmark else 'completed'
-        logger.info("Updating {0}'s complete status {1}"
+        status = 'not checked' if unmark else 'checked'
+        logger.info("Updating {0}'s checked status {1}"
                     .format(case_model.display_name, status))
-        case_model.analysis_complete = False if unmark else True
+        case_model.analysis_checked = False if unmark else True
         case_model.save()
         logger.debug("Case updated")

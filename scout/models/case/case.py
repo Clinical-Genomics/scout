@@ -59,7 +59,7 @@ class Case(Document):
     vcf_file = StringField()
 
     # completed analysis
-    analysis_complete = BooleanField()
+    analysis_checked = BooleanField()
 
     # The coverage report will be read as a binary blob
     coverage_report = BinaryField()

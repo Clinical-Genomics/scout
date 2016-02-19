@@ -20,7 +20,7 @@
     </a>
 
     <div class="md-item-subtitle">
-      {% if not case.analysis_complete and case.created_at < missed_cutoff %}
+      {% if not case.analysis_checked and case.created_at < missed_cutoff %}
         <a href="{{ url_for('core.variants', institute_id=institute_id,
                             case_id=case.display_name,
                             variant_type='clinical',
@@ -46,8 +46,8 @@
       {% if case.is_rerun %}
         <span class="md-badge--success">rerun</span> |
       {% endif %}
-      {% if case.analysis_complete %}
-          <span class="md-badge--success">complete</span>
+      {% if case.analysis_checked %}
+          <span class="md-badge--success">checked</span>
       {% endif %}
     </div>
   </div>
