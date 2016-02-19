@@ -665,3 +665,26 @@ class EventHandler(object):
         variant.manual_rank = manual_rank
         variant.save()
         logger.debug("Variant updated")
+
+    def mark_complete(self, institute_model, case_model, user_model, link,
+                      unmark=False):
+        """Mark a case as complete from an analysis point of view."""
+        logger.info("Updating complete status of {}"
+                    .format(case_model.display_name))
+
+        self.create_event(
+            institute=institute_model,
+            case=case_model,
+            user=user_model,
+            link=link,
+            category='case',
+            verb='status',
+            subject=case_model.display_name
+        )
+
+        status = 'not completed' if unmark else 'completed'
+        logger.info("Updating {0}'s complete status {1}"
+                    .format(case_model.display_name, status))
+        case_model.analysis_complete = False if unmark else True
+        case_model.save()
+        logger.debug("Case updated")

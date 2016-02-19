@@ -130,6 +130,22 @@
     </form>
   {% endif %}
 
+  <form class="md-label" action="{{ url_for('core.mark_complete', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8" target="_blank">
+    {% if case.analysis_complete %}
+      <input class="is-hidden" name="unmark" value="true"></input>
+    {% endif %}
+    <div class="md-label-icon">
+      {% if case.analysis_complete %}
+        <core-icon icon="check-box"></core-icon>
+      {% else %}
+        <core-icon icon="check-box-outline-blank"></core-icon>
+      {% endif %}
+    </div>
+    <button type="submit" class="md-label-text">
+      {{ 'Unmark complete' if case.analysis_complete else 'Mark complete' }}
+    </button>
+  </form>
+
   {% if case.rank_model_version %}
       <div class="md-label">
           <div class="md-label-text">Rank model: {{ case.rank_model_version }}</div>

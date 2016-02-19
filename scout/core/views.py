@@ -505,3 +505,17 @@ def email_sanger(institute_id, case_id, variant_id):
                        variant_model)
 
     return redirect(variant_url)
+
+
+@core.route('/<institute_id>/<case_id>/complete', methods=['POST'])
+def mark_complete(institute_id, case_id):
+    """Mark a case as complete in term of the analysis."""
+    # fetch all variants for a specific case
+    institute_model = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+
+    unmark = 'unmark' in request.form
+    store.mark_complete(institute_model, case_model, current_user,
+                        request.referrer, unmark=unmark)
+
+    return redirect(request.referrer)

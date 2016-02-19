@@ -57,6 +57,9 @@ class Case(Document):
     madeline_info = StringField()
     vcf_file = StringField()
 
+    # completed analysis
+    analysis_complete = BooleanField()
+
     # The coverage report will be read as a binary blob
     coverage_report = BinaryField()
 
@@ -80,7 +83,7 @@ class Case(Document):
 
     @property
     def is_rerun(self):
-        return self.created_at != self.updated_at
+        return self.created_at < self.updated_at
 
     @property
     def hpo_gene_ids(self):
