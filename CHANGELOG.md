@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0] - 2016-02-19
+### Fixed
+- Update query-phenomizer and add username/password
+
+### Changed
+- Update the way a case is checked for rerun-status
+
+### Added
+- Add new button to mark a case as "checked"
+- Link to clinical variants _without_ 1000G annotation
+
 ## [1.2.2] - 2016-02-18
 ### Fixed
 - avoid filtering out variants lacking ExAC and 1000G annotations
