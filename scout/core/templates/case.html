@@ -130,7 +130,7 @@
     </form>
   {% endif %}
 
-  <form class="md-label" action="{{ url_for('core.mark_checked', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8" target="_blank">
+  <form class="md-label" action="{{ url_for('core.mark_checked', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
     {% if case.analysis_checked %}
       <input class="is-hidden" name="unmark" value="true"></input>
     {% endif %}
