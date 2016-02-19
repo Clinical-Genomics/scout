@@ -344,7 +344,6 @@ class EventHandler(object):
         case.save()
         logger.debug("Case updated")
 
-
     def remove_phenotype(self, institute, case, user, link, phenotype_id):
         """Remove an existing phenotype from a case
 

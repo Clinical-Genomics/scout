@@ -196,14 +196,23 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
                                .format(phenotype_id)))
 
     # fetch genes to update dynamic gene list
-    genes = hpo_genes(case_model.phenotype_terms)
+    try:
+        username = current_app.config['PHENOMIZER_USERNAME']
+        password = current_app.config['PHENOMIZER_PASSWORD']
+        genes = hpo_genes(username, password, case_model.phenotype_terms)
+    except KeyError:
+        genes = []
     store.update_dynamic_gene_list(case_model, genes)
 
     return redirect(case_url)
 
 
-def hpo_genes(phenotype_terms):
+def hpo_genes(username, password, phenotype_terms):
     """Return the list of HGNC symbols that match annotated HPO terms.
+
+    Args:
+        username (str): username to use for phenomizer connection
+        password (str): password to use for phenomizer connection
 
     Returns:
         query_result: a list of dictionaries on the form
@@ -225,7 +234,7 @@ def hpo_genes(phenotype_terms):
     # skip querying Phenomizer unless at least one HPO terms exists
     if hpo_terms:
         try:
-            results = query_phenomizer.query(hpo_terms)
+            results = query_phenomizer.query(username, password, hpo_terms)
             return [result for result in results
                     if result['p_value'] is not None]
         except SystemExit:
