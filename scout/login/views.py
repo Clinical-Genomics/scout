@@ -91,9 +91,11 @@ def authorized(oauth_response):
         flash('Your email is not on the whitelist, contact an admin.')
         return abort(403)
 
-    user, was_created = User.objects.get_or_create(email=google_data['email'])
-    if was_created:
-        current_app.logger.info('create user: %s, %s', google_data)
+    try:
+        user = User.objects.get(email=google_data['email'])
+    except DoesNotExist:
+        current_app.logger.info('create user: {}'.format(google_data['email']))
+        user = User(email=google_data['email'])
         user.created_at = datetime.utcnow()
         user.location = google_data['locale']
         user.name = google_data['name']
