@@ -115,8 +115,8 @@ class EventHandler(object):
             user (User): A User object
             link (str): The url to be used in the event
         """
-        logger.info("Creating event for assigning {0} to {1}".format(
-        user.name, case.display_name))
+        logger.info("Creating event for assigning {0} to {1}"
+                    .format(user.name.encode('utf-8'), case.display_name))
 
         self.create_event(
             institute=institute,
@@ -127,8 +127,8 @@ class EventHandler(object):
             verb='assign',
             subject=case.display_name
         )
-        logger.info("Updating {0} to be assigned with {1}".format(
-        case.display_name, user.name))
+        logger.info("Updating {0} to be assigned with {1}"
+                    .format(case.display_name, user.name.encode('utf-8')))
 
         case.assignee = user.to_dbref()
         case.save()
