@@ -503,6 +503,9 @@ class EventHandler(object):
         logger.info("Creating event for ordering sanger for"\
         " variant {0}".format(variant.display_name))
 
+        variant.sanger_ordered = True
+        variant.save()
+
         self.create_event(
             institute=institute,
             case=case,

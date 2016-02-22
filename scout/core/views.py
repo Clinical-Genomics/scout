@@ -494,7 +494,7 @@ def email_sanger(institute_id, case_id, variant_id):
       chromosome_position=variant_model.display_name,
       functions=''.join(functions),
       gtcalls=''.join(gtcalls),
-      name=current_user.name
+      name=current_user.name.encode('utf-8')
     )
 
     kwargs = dict(
