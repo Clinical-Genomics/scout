@@ -236,12 +236,12 @@
         </div>
 
         <!-- HGNC -->
-				<div class="variants-row-item">
-					{{ (variant.hgnc_symbols or ['-'])|join(', ') }}
-				</div>
+		<div class="variants-row-item">
+			{{ (variant.hgnc_symbols or ['-'])|join(', ') }}
+		</div>
 
         <!-- 1000 Genomes -->
-				<div class="variants-row-item text-right md-tooltip">
+		<div class="variants-row-item text-right md-tooltip">
           {{ variant.thousand_genomes_frequency|human_decimal }}
 
           <div class="md-tooltip-tip is-left">

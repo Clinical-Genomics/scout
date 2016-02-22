@@ -25,7 +25,6 @@ class EventHandler(object):
                      subject, level='specific', variant_id="", content=""):
         """Create an Event with the parameters given.
 
-
         Arguments:
             institute (Institute): A Institute object
             case (Case): A Case object
@@ -309,7 +308,7 @@ class EventHandler(object):
             logger.debug("Got result {0}".format(
                 ', '.join(res['hpo_term'] for res in hpo_results)))
         except ValueError as e:
-            #TODO Should ve raise a more proper exception here?
+            # TODO Should ve raise a more proper exception here?
             raise e
 
         phenotype_terms = []
