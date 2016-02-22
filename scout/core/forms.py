@@ -4,11 +4,13 @@
 "main concept of MongoDB is embed whenever possible"
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
+from collections import namedtuple
+
 from flask_wtf import Form
 from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
-                     SelectMultipleField)
+                     SelectMultipleField, StringField)
 from wtforms import widgets
 
 from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
@@ -16,6 +18,25 @@ from .._compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
+Position = namedtuple('Position', ['chrom', 'start', 'end'])
+
+
+def convert_position(data):
+    if ':' in data:
+        chromosome, raw_positions = data.split(':')
+        positions = map(int, raw_positions.split('-'))
+        if len(positions) == 1:
+            start = positions[0]
+            end = None
+        else:
+            start, end = positions
+    else:
+        chromosome = data
+        start = None
+        end = None
+    if not data:
+        chromosome = None
+    return Position(chrom=chromosome, start=start, end=end)
 
 
 def process_filters_form(form):
@@ -24,6 +45,10 @@ def process_filters_form(form):
     This should ideally be handled with ``form.validate_on_submit`` but
     this will have to do in the mean time.
     """
+    # handle position
+    if form.position:
+        form.position.data = convert_position(form.position.data[0])
+
     # make sure HGNC symbols are handled correctly
     if len(form.hgnc_symbols.data) == 1:
         if ',' in form.hgnc_symbols.data[0]:
@@ -65,6 +90,22 @@ class ListField(Field):
             return ''
 
 
+class PositionField(Field):
+    widget = widgets.TextInput()
+
+    def _value(self):
+        if self.data:
+            if self.data.chrom:
+                string = self.data.chrom
+            if self.data.start:
+                string = "{}:{}".format(string, self.data.start)
+            if self.data.end:
+                string = "{}-{}".format(string, self.data.end)
+            return string
+        else:
+            return ''
+
+
 class MultiCheckboxField(SelectMultipleField):
     """A multiple-select, except displays a list of checkboxes.
 
@@ -86,6 +127,7 @@ class FiltersForm(Form):
     region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
     functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
     genetic_models = MultiCheckboxField(choices=GENETIC_MODELS)
+    position = PositionField()
 
 
 class GeneListUpload(Form):
