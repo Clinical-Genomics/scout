@@ -263,6 +263,10 @@
                 <div class="md-item-body">
                   <div class="md-item-title">
                     {{ variant.hgnc_symbols|join(', ') }}
+
+                    {% if variant.sanger_ordered %}
+                      <span class="md-badge"><small>SANGER ORDERED</small></span>
+                    {% endif %}
                   </div>
                 </div>
               </a>
@@ -301,6 +305,9 @@
                 <div class="md-item-body">
                   {{ variant.hgnc_symbols|join(', ') }}
                   <span class="md-badge"><small>{{ variant.display_name }}</small></span>
+                  {% if variant.sanger_ordered %}
+                      <span class="md-badge"><small>SANGER ORDERED</small></span>
+                  {% endif %}
                 </div>
               </a>
 
