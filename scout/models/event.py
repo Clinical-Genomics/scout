@@ -58,6 +58,7 @@ VERBS = (
   "remove_phenotype",
   "add_case",
   "update_case",
+  "check_case"
 )
 
 
@@ -94,23 +95,24 @@ class Event(Document):
     Return the string that should be displayed based on the keyword
     """
     display_info = {
-      "assign" : "was assigned to",
-      "unassign" : "was unassigned from",
-      "status" : "updated the status for",
-      "comment" : "commented on",
-      "synopsis" : "updated synopsis for",
-      "pin" : "pinned variant",
-      "unpin" : "removed pinned variant",
-      "sanger" : "ordered sanger sequencing for",
-      "archive" : "archived",
-      "open_research" : "opened research mode for",
-      "mark_causative" : "marked causative for",
+      "assign": "was assigned to",
+      "unassign": "was unassigned from",
+      "status": "updated the status for",
+      "comment": "commented on",
+      "synopsis": "updated synopsis for",
+      "pin": "pinned variant",
+      "unpin": "removed pinned variant",
+      "sanger": "ordered sanger sequencing for",
+      "archive": "archived",
+      "open_research": "opened research mode for",
+      "mark_causative": "marked causative for",
       "unmark_causative": "unmarked causative for",
       "manual_rank": "updated manual rank for",
       "add_phenotype": "added HPO term for",
       "remove_phenotype": "removed HPO term for",
       "add_case": "added case",
       "update_case": "updated case",
+      "check_case": "marked case as"
     }
 
     return display_info.get(self.verb, "")
