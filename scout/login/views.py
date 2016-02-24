@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-from datetime import datetime
-
 from bson import ObjectId
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    session, url_for)
