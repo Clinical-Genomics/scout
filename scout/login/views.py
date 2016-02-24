@@ -10,8 +10,8 @@ from flask.ext.login import (
 from flask_oauthlib.client import OAuthException
 from mongoengine.queryset import DoesNotExist
 
-from ..extensions import google, login_manager
-from ..models import User, Whitelist, AnonymousUser
+from scout.extensions import google, login_manager, store
+from scout.models import User, Whitelist, AnonymousUser
 
 
 login = Blueprint('login', __name__, template_folder='templates')
@@ -91,24 +91,12 @@ def authorized(oauth_response):
         flash('Your email is not on the whitelist, contact an admin.')
         return abort(403)
 
-    try:
-        user = User.objects.get(email=google_data['email'])
-    except DoesNotExist:
-        current_app.logger.info('create user: {}'.format(google_data['email']))
-        user = User(email=google_data['email'])
-        user.created_at = datetime.utcnow()
-        user.location = google_data['locale']
-        user.name = google_data['name']
+    user_obj = store.getoradd_user(google_data['email'], google_data['name'],
+                                   location=google_data['locale'],
+                                   institutes=faux_user.institutes)
 
-        # add a default institute if it is specified
-        if faux_user.institutes:
-            user.institutes = faux_user.institutes
-
-        user.save()
-
-    if login_user(user, remember=True):
-        user.accessed_at = datetime.utcnow()
-        user.save()
+    if login_user(user_obj, remember=True):
+        store.update_access(user_obj)
         flash('Logged in', 'success')
         return redirect(request.args.get('next') or url_for('frontend.index'))
 
