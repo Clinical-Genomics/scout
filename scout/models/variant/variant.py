@@ -76,6 +76,8 @@ class Variant(Document):
     # Frequencies:
     thousand_genomes_frequency = FloatField()
     exac_frequency = FloatField()
+    max_thousand_genomes_frequency = FloatField()
+    max_exac_frequency = FloatField()
     local_frequency = FloatField()
     # Predicted deleteriousness:
     cadd_score = FloatField()

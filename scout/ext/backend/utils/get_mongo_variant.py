@@ -195,12 +195,26 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
             variant['variant_id'], value))
         mongo_variant['thousand_genomes_frequency'] = float(value)
 
+    thousand_g_max = variant['info_dict'].get('1000G_MAX_AF')
+    if thousand_g_max:
+        value = thousand_g_max[0]
+        logger.debug("Updating 1000G max freq for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['max_thousand_genomes_frequency'] = float(value)
+
     exac = variant['info_dict'].get('EXACAF')
     if exac:
         value = exac[0]
         logger.debug("Updating EXAC freq for variant {0} to {1}".format(
             variant['variant_id'], value))
         mongo_variant['exac_frequency'] = float(value)
+
+    max_exac = variant['info_dict'].get('ExAC_MAX_AF')
+    if exac:
+        value = max_exac[0]
+        logger.debug("Updating EXAC max freq for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        mongo_variant['max_exac_frequency'] = float(value)
 
     # Add the severity predictions
     cadd = variant['info_dict'].get('CADD')
