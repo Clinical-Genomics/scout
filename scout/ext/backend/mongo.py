@@ -12,23 +12,25 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
 from __future__ import (absolute_import, print_function)
-import json
-import click
+from datetime import datetime
 import logging
 
-from mongoengine import connect, DoesNotExist, Q
-
-import phizz
-
+from mongoengine import connect, DoesNotExist
 
 from . import EventHandler, VariantHandler, CaseHandler
-from scout.models import (Variant, Case, Institute, PhenotypeTerm)
-from scout.ext.backend.utils import (build_query)
+from scout.models import User
 
 logger = logging.getLogger(__name__)
 
+
 class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
+
     """Adapter for cummunication with a mongo database."""
+
+    def __init__(self, app=None):
+        if app:
+            logger.info("Initializing app")
+            self.init_app(app)
 
     def init_app(self, app):
         config = getattr(app, 'config', {})
@@ -47,9 +49,10 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         )
 
     def connect_to_database(self, database, host='localhost', port=27017,
-        username=None, password=None):
+                            username=None, password=None):
         """Connect to a mongo database
 
+        Args:
             database(str): Name of database
             host(str): Host of database
             port(int): Port of database
@@ -68,18 +71,11 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         logger.debug("Connection established")
 
     def drop_database(self):
-        """Drop the database that the adapter is connected to
-
-        """
+        """Drop the database that the adapter is connected to."""
         logger.info("Drop database {0}".format(self.mongodb_name))
         self.db.drop_database(self.mongodb_name)
         logger.debug("Database dropped")
         return
-
-    def __init__(self, app=None):
-        if app:
-            logger.info("Initializing app")
-            self.init_app(app)
 
     def update_dynamic_gene_list(self, case, gene_list):
         """Update the dynamic gene list for a case
@@ -94,3 +90,23 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         case.save()
         logger.debug("Case updated")
 
+    def getoradd_user(self, email, name, location=None, institutes=None):
+        """Get or create a new user."""
+        try:
+            user_obj = User.objects.get(email=email)
+        except DoesNotExist:
+            logger.info('create user: %s', email)
+            user = User(email=email, created_at=datetime.utcnow(),
+                        location=location, name=name, institutes=institutes)
+            user.save()
+
+        return user_obj
+
+    def user(self, email):
+        """Fetch a user from the database."""
+        user_obj = User.objects.get(email=email)
+        return user_obj
+
+    def update_access(self, user_obj):
+        user_obj.accessed_at = datetime.utcnow()
+        user_obj.save()
