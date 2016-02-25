@@ -281,6 +281,18 @@
               {% endfor %}
             </div>
           </div>
+
+          <div class="variant-row-item">
+            <div>Coverage</div>
+
+            <div class="variant-row-item-sublist">
+              {% for gene_id, link in coverage_links.iteritems() %}
+                <a target="_blank" href="{{ link }}" class="variant-row-item-sublist-item">
+                  {{ gene_id }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
 
