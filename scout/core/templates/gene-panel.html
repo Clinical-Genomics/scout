@@ -95,7 +95,7 @@
     <div class="md-card-body-list">
       {% for gene_id in panel.genes %}
         <div class="list-item">
-          <a href="{{ url_for('report.gene', gene_id=gene_id, **covlink_kwargs) }}">
+          <a href="{{ url_for('report.gene', gene_id=gene_id, **covlink_kwargs) }}" target="_blank">
             {{ gene_id }}
           </a>
         </div>
