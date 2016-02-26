@@ -14,7 +14,7 @@ from scout.extensions import mail, store
 from scout.helpers import templated
 
 from .forms import init_filters_form, process_filters_form, GeneListUpload
-from .utils import validate_user
+from .utils import validate_user, genecov_links
 
 core = Blueprint('core', __name__, template_folder='templates')
 
@@ -100,11 +100,14 @@ def gene_panel(institute_id, case_id, panel_id):
     institute_model = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
 
+    # coverage link for gene
+    covlink_kwargs = genecov_links(case_model.individuals)
+
     for panel in case_model.clinical_panels:
         if panel.panel_name == panel_id:
             gene_panel = panel
     return dict(institute=institute_model, case=case_model,
-                panel=gene_panel)
+                panel=gene_panel, covlink_kwargs=covlink_kwargs)
 
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
@@ -376,6 +379,10 @@ def variant(institute_id, case_id, variant_id):
     individuals = {individual.individual_id: individual
                    for individual in case_model.individuals}
 
+    # coverage link for gene
+    coverage_links = genecov_links(case_model.individuals,
+                                   variant_model.hgnc_symbols)
+
     prev_variant = store.previous_variant(document_id=variant_id)
     next_variant = store.next_variant(document_id=variant_id)
     return dict(institute=institute, institute_id=institute_id,
@@ -384,7 +391,7 @@ def variant(institute_id, case_id, variant_id):
                 comments=comments, events=events,
                 prev_variant=prev_variant, next_variant=next_variant,
                 manual_rank_options=Variant.manual_rank.choices,
-                individuals=individuals)
+                individuals=individuals, coverage_links=coverage_links)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])

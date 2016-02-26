@@ -91,11 +91,13 @@
   </div>
 
   <div class="md-card">
-    <div class="md-card-header">Included genes</div>
+    <div class="md-card-header">Included genes (coverage)</div>
     <div class="md-card-body-list">
       {% for gene_id in panel.genes %}
         <div class="list-item">
-          {{ gene_id }}
+          <a href="{{ url_for('report.gene', gene_id=gene_id, **covlink_kwargs) }}" target="_blank">
+            {{ gene_id }}
+          </a>
         </div>
       {% endfor %}
     </div>

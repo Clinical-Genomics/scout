@@ -33,7 +33,7 @@ Flask-OAuthlib==0.7.0
 Flask-SSLify
 
 # Chanjo coverage reports
-chanjo-report>=2.4.0
+chanjo-report>=2.5.0
 
 # misc. extensions
 Flask-Babel
