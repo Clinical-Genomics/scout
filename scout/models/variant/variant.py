@@ -76,6 +76,8 @@ class Variant(Document):
     # Frequencies:
     thousand_genomes_frequency = FloatField()
     exac_frequency = FloatField()
+    max_thousand_genomes_frequency = FloatField()
+    max_exac_frequency = FloatField()
     local_frequency = FloatField()
     # Predicted deleteriousness:
     cadd_score = FloatField()
@@ -299,6 +301,14 @@ class Variant(Document):
                       "-{this.alternative}")
 
         return url_template.format(this=self)
+
+    @property
+    def thousandg_link(self):
+        """Compose link to 1000G page for detailed information."""
+        if self.db_snp_ids:
+            url_template = ("http://browser.1000genomes.org/Homo_sapiens/"
+                            "Variation/Population?db=core;source=dbSNP;v={}")
+            return url_template.format(self.db_snp_ids[0])
 
     @property
     def ucsc_link(self):

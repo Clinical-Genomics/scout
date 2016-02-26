@@ -332,19 +332,41 @@
       <div id="frequency" class="md-card is-main">
         <div class="md-card-header">Frequency</div>
         <div class="md-card-body-list">
-          <div class="variant-list-item">
-            <div>ThousandG</div>
+          <div class="variant-row-item">
             <div>
-              {{ variant.thousand_genomes_frequency|human_decimal }}
+              {% if variant.db_snp_ids %}
+                <a href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
+              {% else %}
+                1000G
+              {% endif %}
+            </div>
+
+            <div class="variant-row-item-sublist">
+              {% if variant.max_thousand_genomes_frequency %}
+                <div class="variant-row-item-sublist-item">
+                  {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small>
+                </div>
+              {% endif %}
+
+              <div class="variant-row-item-sublist-item">
+                {{ variant.thousand_genomes_frequency|human_decimal }}
+              </div>
             </div>
           </div>
 
-          <div class="variant-list-item">
-            <div title="Exome Aggregation Consortium">ExAC</div>
+          <div class="variant-row-item">
             <div>
-              <a target="_blank" href="{{ variant.exac_link }}">
-                {{ variant.exac_frequency|human_decimal }}
-              </a>
+              <a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a>
+            </div>
+            <div class="variant-row-item-sublist">
+                {% if variant.exac_frequency %}
+                  <div class="variant-row-item-sublist-item">
+                    {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small>
+                  </div>
+                {% endif %}
+                <div class="variant-row-item-sublist-item">
+                  {{ variant.exac_frequency|human_decimal }}
+                </div>
             </div>
           </div>
         </div>
