@@ -53,3 +53,4 @@ python-dateutil
 arrow
 query_phenomizer>=0.5
 phizz>=0.0.6
+loqusdb>=0.1.2

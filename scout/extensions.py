@@ -2,8 +2,6 @@
 """Extensions module. Each extension is initialized in the app factory
 located in app.py
 """
-from flask import current_app, request
-
 # +--------------------------------------------------------------------+
 # | Flask-DebugToolbar
 # +--------------------------------------------------------------------+
@@ -69,6 +67,22 @@ google = oauth.remote_app('google', app_key='GOOGLE')
 # +--------------------------------------------------------------------+
 from .ext.omim import OMIM
 omim = OMIM()
+
+# +--------------------------------------------------------------------+
+# | LoqusDB
+# +--------------------------------------------------------------------+
+from loqusdb.plugins import MongoAdapter
+
+
+class LoqusDB(MongoAdapter):
+    def init_app(self, app):
+        """Initialize from Flask."""
+        self.connect(**app.config['LOQUSDB_SETTINGS'])
+
+    def case_count(self):
+        return self.db.case.find({}).count()
+
+loqusdb = LoqusDB()
 
 # +--------------------------------------------------------------------+
 # | Flask-SSLify

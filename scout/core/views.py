@@ -10,7 +10,7 @@ import query_phenomizer
 
 from scout.models import Case, Variant
 from scout.models.variant import SEVERE_SO_TERMS
-from scout.extensions import mail, store
+from scout.extensions import mail, store, loqusdb
 from scout.helpers import templated
 
 from .forms import init_filters_form, process_filters_form, GeneListUpload
@@ -385,13 +385,18 @@ def variant(institute_id, case_id, variant_id):
 
     prev_variant = store.previous_variant(document_id=variant_id)
     next_variant = store.next_variant(document_id=variant_id)
+
+    local_freq = loqusdb.get_variant({'_id': variant_model.composite_id})
+    local_total = loqusdb.case_count()
+
     return dict(institute=institute, institute_id=institute_id,
                 case=case_model, case_id=case_id,
                 variant=variant_model, variant_id=variant_id,
                 comments=comments, events=events,
                 prev_variant=prev_variant, next_variant=next_variant,
                 manual_rank_options=Variant.manual_rank.choices,
-                individuals=individuals, coverage_links=coverage_links)
+                individuals=individuals, coverage_links=coverage_links,
+                local_freq=local_freq, local_total=local_total)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])
