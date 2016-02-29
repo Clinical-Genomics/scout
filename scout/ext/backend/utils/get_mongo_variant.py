@@ -155,6 +155,12 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     mongo_variant['genetic_models'] = genetic_models
     logger.debug("Updating genetic models for variant {0} to {1}".format(
         variant['variant_id'], ', '.join(genetic_models)))
+        
+    # Add the expected inheritance patterns
+    
+    expected_inheritance = variant['info_dict'].get('Genetic_disease_model')
+    if expected_inheritance:
+        mongo_variant['expected_inheritance'] = expected_inheritance
 
     # Add the clinsig prediction
     clnsig_accessions = get_clnsig(variant)

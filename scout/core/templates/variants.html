@@ -70,9 +70,11 @@
     <div class="variants-header-item" title="MIM Terms">
       MIM terms
     </div>
-    <div class="variants-header-item" title="Disease gene model">
-      Expected inheritance
-    </div>
+    {% if variant_type == 'clinical' %}
+      <div class="variants-header-item" title="Disease gene model">
+        Expected inheritance
+      </div>
+    {% endif %}
     <div class="variants-header-item flex-big" title="Inheritance models">
       Inheritance models
     </div>
@@ -293,10 +295,12 @@
           {% endfor %}
         </div>
 
-        <!-- Expected inheritance -->
-        <div class="variants-row-item">
-          {{ variant.expected_inheritance_genes|join(', ') }}
-        </div>
+        {% if variant_type == 'clinical' %}
+          <!-- Expected inheritance -->
+          <div class="variants-row-item">
+            {{ variant.expected_inheritance|join(', ') }}
+          </div>
+        {% endif %}
 
         <!-- Inheritance models -->
 				<div class="variants-row-list flex-big md-tooltip">

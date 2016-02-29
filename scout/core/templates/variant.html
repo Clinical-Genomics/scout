@@ -421,7 +421,19 @@
             </div>
           </div>
 
-          {% if variant_type == 'clinical' %}
+          {% if variant.expected_inheritance %}
+            <div class="variant-row-item">
+              <div>Disorder</div>
+
+              <div class="variant-row-item-sublist">
+                {% for model in variant.expected_inheritance|sort %}
+                  <div class="variant-row-item-sublist-item">{{ model }}</div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if variant.omim_inheritance_models %}
             <div class="variant-row-item">
               <div>OMIM</div>
 
