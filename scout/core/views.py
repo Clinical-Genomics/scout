@@ -75,11 +75,7 @@ def case(institute_id, case_id):
     case_comments = store.events(institute, case=case_model, comments=True)
     case_events = store.events(institute, case=case_model)
 
-    # map internal + external sample ids
-    sample_map = {"alt_{}".format(sample.individual_id): sample.display_name
-                  for sample in case_model.individuals}
-    group_id = "alt_{}".format(case_model.owner_case_id)
-    sample_map[group_id] = case_model.display_name
+    sample_map = sampleid_map(case_model)
 
     # default coverage report
     default_panel_names = [panel.name_and_version for panel
@@ -100,6 +96,7 @@ def gene_panel(institute_id, case_id, panel_id):
     institute_model = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
 
+    sample_map = sampleid_map(case_model)
     # coverage link for gene
     covlink_kwargs = genecov_links(case_model.individuals)
 
@@ -107,7 +104,8 @@ def gene_panel(institute_id, case_id, panel_id):
         if panel.panel_name == panel_id:
             gene_panel = panel
     return dict(institute=institute_model, case=case_model,
-                panel=gene_panel, covlink_kwargs=covlink_kwargs)
+                panel=gene_panel, covlink_kwargs=covlink_kwargs,
+                sample_map=sample_map)
 
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
@@ -208,6 +206,15 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
     store.update_dynamic_gene_list(case_model, genes)
 
     return redirect(case_url)
+
+
+def sampleid_map(case_model):
+    # map internal + external sample ids
+    sample_map = {"alt_{}".format(sample.individual_id): sample.display_name
+                  for sample in case_model.individuals}
+    group_id = "alt_{}".format(case_model.owner_case_id)
+    sample_map[group_id] = case_model.display_name
+    return sample_map
 
 
 def hpo_genes(username, password, phenotype_terms):

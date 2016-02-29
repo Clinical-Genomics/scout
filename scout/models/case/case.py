@@ -110,6 +110,10 @@ class Case(Document):
                 if individual.bam_file]
 
     @property
+    def sample_ids(self):
+        return [individual.individual_id for individual in self.individuals]
+
+    @property
     def all_panels(self):
         """Yield all gene lists (both clinical and research)."""
         return itertools.chain(self.clinical_panels,
