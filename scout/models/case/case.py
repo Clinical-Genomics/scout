@@ -120,6 +120,14 @@ class Case(Document):
         """Return an id using both owner and case."""
         return "{this.owner}-{this.display_name}".format(this=self)
 
+    meta = {
+        'index_background': True,
+        'indexes':[
+            'updated_at',
+            ]
+        }
+
+
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
