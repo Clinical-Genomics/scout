@@ -216,7 +216,7 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         mongo_variant['exac_frequency'] = float(value)
 
     max_exac = variant['info_dict'].get('ExAC_MAX_AF')
-    if exac:
+    if max_exac:
         value = max_exac[0]
         logger.debug("Updating EXAC max freq for variant {0} to {1}".format(
             variant['variant_id'], value))
