@@ -102,8 +102,9 @@ class Case(Document):
     @property
     def hpo_gene_ids(self):
         """Parse out all HGNC symbols form the dynamic Phenomizer query."""
-        return set(term['gene_id'] for term in self.dynamic_gene_list
-                   if term['gene_id'])
+        unique_ids = set(term['gene_id'] for term in self.dynamic_gene_list
+                         if term['gene_id'])
+        return list(unique_ids)
 
     @property
     def bam_files(self):
