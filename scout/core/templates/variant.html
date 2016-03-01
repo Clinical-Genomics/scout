@@ -376,10 +376,10 @@
           <div class="variant-row-item">
             <div class="variant-row-item-sublist">
                 <div class="variant-row-item-sublist-item">
-                  {{ local_freq.observations }} <small>obs.</small>
+                  {{ local_freq.observations|default('N/A') }} <small>obs.</small>
                 </div>
                 <div class="variant-row-item-sublist-item">
-                  {{ local_freq.homozygote }} <small>homo.</small>
+                  {{ local_freq.homozygote|default('N/A') }} <small>homo.</small>
                 </div>
                 <div class="variant-row-item-sublist-item">
                   {{ local_total }} <small>tot.</small>
