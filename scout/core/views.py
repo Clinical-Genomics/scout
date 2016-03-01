@@ -196,11 +196,12 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
                                               omim_term=phenotype_term)
         except ValueError:
             return abort(400, ("unable to add phenotype term: {}"
-                               .format(phenotype_id)))
+                               .format(phenotype_term)))
 
         if len(results) == 0:
+            flash("unknown HPO term: {}".format(phenotype_term))
             return abort(404, ("phenotype term not found: {}"
-                               .format(phenotype_id)))
+                               .format(phenotype_term)))
 
     # fetch genes to update dynamic gene list
     try:

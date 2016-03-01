@@ -9,12 +9,12 @@
     {% if messages %}
       {% for message in messages %}
         <li>{{ message }}</li>
+      {% else %}
+        <li>a mistyped address</li>
+        <li>an out-of-date link</li>
       {% endfor %}
     {% endif %}
   {% endwith %}
-
-  <li>a mistyped address</li>
-  <li>an out-of-date link</li>
 </ul>
 <script>
   var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
