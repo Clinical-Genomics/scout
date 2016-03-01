@@ -85,6 +85,12 @@ class Variant(Document):
     clnsigacc = ListField(StringField())
 
     @property
+    def composite_id(self):
+        """Compose variant id from components."""
+        return ("{this.chromosome}_{this.position}_{this.reference}_"
+                "{this.alternative}".format(this=self))
+
+    @property
     def reduced_penetrance_genes(self):
         return (gene for gene in self.genes if gene.reduced_penetrance)
 

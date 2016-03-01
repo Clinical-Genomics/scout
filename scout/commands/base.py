@@ -4,7 +4,7 @@ from configobj import ConfigObj
 from scout import __version__, logger
 from scout.log import init_log
 from scout.ext.backend import MongoAdapter
-from . import (load, transfer, wipe, wipe_and_load, delete_case)
+from . import (load, transfer, wipe, delete_case)
 
 
 @click.group()
@@ -94,5 +94,4 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
 cli.add_command(load)
 cli.add_command(transfer)
 cli.add_command(wipe)
-cli.add_command(wipe_and_load)
 cli.add_command(delete_case)

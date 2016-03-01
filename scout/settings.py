@@ -54,12 +54,18 @@ class BaseConfig(object):
                 'scout.extensions.mail',
                 'scout.extensions.omim',
                 'scout.extensions.babel',
-                'chanjo_report.server.extensions.api']
+                'chanjo_report.server.extensions.api',
+                'scout.extensions.loqusdb']
 
   # settings for triggering opening of research mode
   RESEARCH_MODE_RECIPIENT = 'example@domain.com'
 
   CHANJO_URI = 'sqlite:////vagrant/DEV/coverage.sqlite3'
+  LOQUSDB_SETTINGS = {
+    'host': 'localhost',
+    'port': 27017,
+    'database': 'loqusdb'
+  }
 
   # default to storing logs under instance folder
   LOG_FOLDER = os.path.abspath('./instance/logs')

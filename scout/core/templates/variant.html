@@ -359,7 +359,7 @@
               <a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a>
             </div>
             <div class="variant-row-item-sublist">
-                {% if variant.exac_frequency %}
+                {% if variant.max_exac_frequency %}
                   <div class="variant-row-item-sublist-item">
                     {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small>
                   </div>
@@ -369,6 +369,24 @@
                 </div>
             </div>
           </div>
+
+          <div class="variant-list-item">
+            <div>Local</div>
+          </div>
+          <div class="variant-row-item">
+            <div class="variant-row-item-sublist">
+                <div class="variant-row-item-sublist-item">
+                  {{ local_freq.observations|default('N/A') }} <small>obs.</small>
+                </div>
+                <div class="variant-row-item-sublist-item">
+                  {{ local_freq.homozygote|default('N/A') }} <small>homo.</small>
+                </div>
+                <div class="variant-row-item-sublist-item">
+                  {{ local_total }} <small>tot.</small>
+                </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
