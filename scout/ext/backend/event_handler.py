@@ -313,36 +313,36 @@ class EventHandler(object):
             raise e
 
         phenotype_terms = []
+        existing_ids = set(term.phenotype_id for term in case.phenotype_terms)
         for hpo_result in hpo_results:
             phenotype_name = hpo_result['hpo_term']
             description = hpo_result['description']
-            phenotype_term = PhenotypeTerm(
-                                    phenotype_id=phenotype_name,
-                                    feature=description
-            )
+            phenotype_term = PhenotypeTerm(phenotype_id=phenotype_name,
+                                           feature=description)
             phenotype_terms.append(phenotype_term)
 
-            logger.info("Append the phenotype term {0} to case {1}".format(
-                phenotype_name, case.display_name
-            ))
-            case.phenotype_terms.append(phenotype_term)
+            if phenotype_term.phenotype_id not in existing_ids:
+                logger.info("Append the phenotype term {0} to case {1}"
+                            .format(phenotype_name, case.display_name))
+                case.phenotype_terms.append(phenotype_term)
 
-            logger.info("Creating event for adding phenotype term for case"\
-                        " {0}".format(case.display_name))
+                logger.info("Creating event for adding phenotype term for case"
+                            " {0}".format(case.display_name))
 
-            self.create_event(
-                institute=institute,
-                case=case,
-                user=user,
-                link=link,
-                category='case',
-                verb='add_phenotype',
-                subject=case.display_name,
-                content = phenotype_name
-            )
+                self.create_event(
+                    institute=institute,
+                    case=case,
+                    user=user,
+                    link=link,
+                    category='case',
+                    verb='add_phenotype',
+                    subject=case.display_name,
+                    content=phenotype_name
+                )
 
         case.save()
         logger.debug("Case updated")
+        return phenotype_terms
 
     def remove_phenotype(self, institute, case, user, link, phenotype_id):
         """Remove an existing phenotype from a case
