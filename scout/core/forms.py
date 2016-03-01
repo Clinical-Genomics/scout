@@ -34,7 +34,6 @@ def process_filters_form(form):
   # correct decimal fields
   for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
     field = getattr(form, field_name)
-
     if field.data:
       field.data = float(field.data)
 

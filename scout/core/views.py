@@ -336,6 +336,7 @@ def variants(institute_id, case_id, variant_type):
     gene_list_names = [(item.panel_name, (item.display_name or item.panel_name))
                        for item in gene_lists]
     form.gene_lists.choices = gene_list_names
+
     # make sure HGNC symbols are correctly handled
     form.hgnc_symbols.data = [gene.upper() for gene in
                               request.args.getlist('hgnc_symbols') if gene]
@@ -346,6 +347,10 @@ def variants(institute_id, case_id, variant_type):
     # add variant type to query
     query = dict(**form.data)
     query['variant_type'] = variant_type
+
+    # handle HPO gene list separately
+    if query['gene_lists'] == ['hpo']:
+        query['hgnc_symbols'] = case_model.hpo_gene_ids
 
     # fetch list of variants
     variant_models = store.variants(case_model.case_id, query=query,

@@ -674,17 +674,17 @@ class EventHandler(object):
         logger.info("Updating checked status of {}"
                     .format(case_model.display_name))
 
+        status = 'not checked' if unmark else 'checked'
         self.create_event(
             institute=institute_model,
             case=case_model,
             user=user_model,
             link=link,
             category='case',
-            verb='status',
-            subject=case_model.display_name
+            verb='check_case',
+            subject=status
         )
 
-        status = 'not checked' if unmark else 'checked'
         logger.info("Updating {0}'s checked status {1}"
                     .format(case_model.display_name, status))
         case_model.analysis_checked = False if unmark else True
