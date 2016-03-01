@@ -44,6 +44,7 @@ class User(Document, LoginUserMixin):
   roles = ListField(StringField())
 
   # Flask-Login integration
+  @property
   def is_authenticated(self):
     """Perform a faux check that the user if properly authenticated."""
     return True

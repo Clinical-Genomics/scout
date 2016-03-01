@@ -17,7 +17,7 @@ def index():
   Doesn't require a user to login. But if they are logged in, they
   should be passed along to their personalized start page (TODO).
   """
-  if current_user.is_authenticated():
+  if current_user.is_authenticated:
     return redirect(url_for('core.institutes'))
   else:
     return render_template('index.html', version=__version__)
