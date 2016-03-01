@@ -1,4 +1,5 @@
 from __future__ import (absolute_import)
+import logging
 from datetime import datetime
 import itertools
 
@@ -11,6 +12,8 @@ from .individual import Individual
 from .gene_list import GenePanel
 from scout.models import PhenotypeTerm
 from scout.constants import ANALYSIS_TYPES
+
+logger = logging.getLogger(__name__)
 
 
 class Case(Document):
@@ -72,8 +75,13 @@ class Case(Document):
     def default_panel_objs(self):
         """Match gene panels with default references."""
         for panel in self.clinical_panels:
-            if panel.panel_name in self.default_panels:
-                yield panel
+            try:
+                if panel.panel_name in self.default_panels:
+                    yield panel
+            except AttributeError as error:
+                logger.warn(error.message)
+                self.clinical_panels.remove(panel)
+                self.save()
 
     def default_genes(self):
         """Combine all gene ids for default gene panels."""
