@@ -87,6 +87,19 @@
           </div>
         </div>
       </div>
+
+      <div class="variant-row-item">
+        <div class="dist-even">
+          <div class="dist-even-item">
+            <div>Coverage overview</div>
+            <div>
+              <a href="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.sample_ids, gene_id=panel.genes|join(','), **sample_map) }}" target="_blank">
+                {{ case.display_name }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
