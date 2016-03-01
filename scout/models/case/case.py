@@ -14,7 +14,12 @@ from scout.constants import ANALYSIS_TYPES
 
 
 class Case(Document):
+
     """Represents a case (family) of individuals (samples)."""
+
+    meta = {'index_background': True, 'indexes': ['updated_at'],
+            'strict': False}
+
     # This is a string with the id for the family:
     case_id = StringField(primary_key=True, required=True)
     # This is the string that will be shown in scout:
@@ -123,14 +128,6 @@ class Case(Document):
     def owner_case_id(self):
         """Return an id using both owner and case."""
         return "{this.owner}-{this.display_name}".format(this=self)
-
-    meta = {
-        'index_background': True,
-        'indexes':[
-            'updated_at',
-            ]
-        }
-
 
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"

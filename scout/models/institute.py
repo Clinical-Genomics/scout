@@ -12,7 +12,11 @@ from mongoengine import (DateTimeField, Document, EmailField, IntField,
 
 
 class Institute(Document):
+
   """Represents an institute linked to multiple collaborating users."""
+
+  meta = {'strict': False}
+
   internal_id = StringField(primary_key=True, required=True)
   display_name = StringField(required=True)
   sanger_recipients = ListField(EmailField())

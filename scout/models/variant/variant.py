@@ -40,6 +40,9 @@ class GTCall(EmbeddedDocument):
 
 
 class Variant(Document):
+
+    meta = {'strict': False}
+
     # document_id is a md5 string created by institute_genelist_caseid_variantid:
     document_id = StringField(primary_key=True)
     # variant_id is a md5 string created by variant_id

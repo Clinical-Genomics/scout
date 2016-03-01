@@ -4,6 +4,9 @@ from mongoengine import (Document, ListField, StringField, FloatField,
 
 
 class Gene(Document):
+
+    meta = {'strict': False}
+
     chromosome = StringField(required=True)
     start = IntField(required=True)
     stop = IntField(required=True)
@@ -17,6 +20,9 @@ class Gene(Document):
 
 
 class GenePanel(Document):
+
+    meta = {'strict': False}
+
     institute = StringField(required=True)
     panel_name = StringField(required=True, unique_with='version')
     version = FloatField(required=True)

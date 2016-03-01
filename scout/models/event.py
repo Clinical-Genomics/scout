@@ -63,7 +63,11 @@ VERBS = (
 
 
 class Event(Document):
+
   """Embedded model for defining a general user generated event."""
+
+  meta = {'strict': False}
+
   # an event will allways belong to a institute and a case
   institute = ReferenceField('Institute', required=True)
   case = ReferenceField('Case', required=True)
