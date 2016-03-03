@@ -358,6 +358,7 @@ def variants(institute_id, case_id, variant_type):
     # handle HPO gene list separately
     if query['gene_lists'] == ['hpo']:
         query['hgnc_symbols'] = case_model.hpo_gene_ids
+        query['gene_lists'] = []
 
     # fetch list of variants
     variant_models = store.variants(case_model.case_id, query=query,
