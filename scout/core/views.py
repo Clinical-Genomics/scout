@@ -560,3 +560,16 @@ def mark_checked(institute_id, case_id):
                        request.referrer, unmark=unmark)
 
     return redirect(request.referrer)
+
+
+@core.route('/pileup/range')
+def pileup_range():
+    """Build a proper call to the pileup viewer for a given range."""
+    positions = dict(contig=request.args['chrom'], start=request.args['start'],
+                     stop=request.args['end'])
+    sample_id = request.args['sample']
+    case_obj = store.case_ind(sample_id)
+    link = url_for('pileup.viewer', bam=case_obj.bam_files,
+                   bai=case_obj.bai_files, sample=case_obj.sample_names,
+                   vcf=case_obj.vcf_file, **positions)
+    return redirect(link)

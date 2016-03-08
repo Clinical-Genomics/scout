@@ -11,7 +11,7 @@ def validate_user(current_user, institute_id):
     # abort with 404 error if case/institute doesn't exist
     try:
         institute = store.institute(institute_id)
-    except DoesNotExist as exception:
+    except DoesNotExist:
         return abort(404)
 
     if institute not in current_user.institutes:
@@ -27,6 +27,7 @@ def genecov_links(individuals, hgnc_symbols=None):
     kwargs = {"alt_{}".format(sample.individual_id): sample.display_name
               for sample in individuals}
     kwargs['sample_id'] = [sample.individual_id for sample in individuals]
+    kwargs['link'] = 'core.pileup_range'
     if hgnc_symbols:
         coverage_links = {gene_id: url_for('report.gene', gene_id=gene_id,
                                            **kwargs)

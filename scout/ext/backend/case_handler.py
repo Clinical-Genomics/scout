@@ -128,6 +128,11 @@ class CaseHandler(object):
             logger.warning("Could not find case {0}".format(case_id))
             return None
 
+    def case_ind(self, ind_id):
+        """Fetch a case based on an individual id."""
+        case_obj = Case.objects.get(individuals__individual_id=ind_id)
+        return case_obj
+
     def delete_case(self, institute_id, case_id):
         """Delete a single case from database
 
