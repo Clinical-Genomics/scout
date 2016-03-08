@@ -567,9 +567,11 @@ def pileup_range():
     """Build a proper call to the pileup viewer for a given range."""
     positions = dict(contig=request.args['chrom'], start=request.args['start'],
                      stop=request.args['end'])
-    sample_id = request.args['sample']
-    case_obj = store.case_ind(sample_id)
-    link = url_for('pileup.viewer', bam=case_obj.bam_files,
-                   bai=case_obj.bai_files, sample=case_obj.sample_names,
-                   vcf=case_obj.vcf_file, **positions)
+    # replace first instance of separator (can be part of case id)
+    institute_id, case_id = request.args['group'].split('-', 1)
+    validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    link = url_for('pileup.viewer', bam=case_model.bam_files,
+                   bai=case_model.bai_files, sample=case_model.sample_names,
+                   vcf=case_model.vcf_file, **positions)
     return redirect(link)
