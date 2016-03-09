@@ -146,7 +146,7 @@ def open_research(institute_id, case_id):
         <p>{institute}: {case} ({case_id})</p>
         <p>Requested by: {name}</p>
     """.format(institute=institute.display_name, case=case_model.display_name,
-               case_id=case_model.id, name=current_user.name)
+               case_id=case_model.id, name=current_user.name.encode('utf-8'))
 
     # compose and send the email message
     msg = Message(subject=("SCOUT: open research mode for {}"
