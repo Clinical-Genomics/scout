@@ -241,17 +241,23 @@
 				</div>
 
         <!-- 1000 Genomes -->
-				<div class="variants-row-item text-right md-tooltip">
+		<div class="variants-row-item text-right md-tooltip">
           {{ variant.thousand_genomes_frequency|human_decimal }}
 
           <div class="md-tooltip-tip is-left">
             <ul>
-              {% if variant.exac_frequency %}
-                <li>
-                  <strong>ExAC</strong>
-                  {{ variant.exac_frequency|human_decimal }}
-                </li>
-              {% endif %}
+              <li>
+                <strong>1000G (max)</strong>
+                {{ variant.max_thousand_genomes_frequency|human_decimal }}
+              </li>
+              <li>
+                <strong>ExAC</strong>
+                {{ variant.exac_frequency|human_decimal }}
+              </li>
+              <li>
+                <strong>ExAC (max)</strong>
+                {{ variant.max_exac_frequency|human_decimal }}
+              </li>
             </ul>
           </div>
         </div>
