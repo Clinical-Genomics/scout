@@ -600,3 +600,15 @@ def share_case(institute_id, case_id):
                     current_user, link)
 
     return redirect(request.referrer)
+
+
+@core.route('/<institute_id>/<case_id>/rerun', methods=['POST'])
+def request_rerun(institute_id, case_id):
+    """Request a case to be rerun."""
+    institute_model = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+
+    link = url_for('.case', institute_id=institute_id, case_id=case_id)
+    store.request_rerun(institute_model, case_model, current_user, link)
+
+    return redirect(request.referrer)

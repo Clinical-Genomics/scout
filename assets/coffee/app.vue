@@ -23,6 +23,12 @@
       hideModal: ->
         @$.modal.hide()
 
+      showRerunModal: ->
+        @$.rerunModal.show()
+
+      hideRerunModal: ->
+        @$.rerunModal.hide()
+
       updateSynopsis: (markdown) ->
         superagent
           .put "/api/v1#{location.pathname}/synopsis"

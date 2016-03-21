@@ -108,6 +108,22 @@
     {% endif %}
   {% endif %}
 
+  {% if case.rerun_requested %}
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="restore"></core-icon>
+      </div>
+      <div class="md-label-text"><i>Rerun pending</i></div>
+    </div>
+  {% else %}
+    <div v-on="click: showRerunModal" class="md-label clickable">
+      <div class="md-label-icon">
+        <core-icon icon="restore"></core-icon>
+      </div>
+      <div class="md-label-text">Request rerun</div>
+    </div>
+  {% endif %}
+
   {% if case.coverage_report %}
     <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
       <div class="md-label-icon">
@@ -549,6 +565,17 @@
           class="case-open-research" method="POST">
       <p>Please confirm that you want to have the list of research variants opened.</p>
       <p>You also confirm that you have the relevant consent signed.</p>
+      <button type="submit" class="md-button">Confirm</button>
+    </form>
+  </md-modal>
+
+  <!-- Request rerun modal -->
+  <md-modal v-ref="rerunModal" title="Request rerun">
+    <form action="{{ url_for('core.request_rerun',
+                              institute_id=institute.display_name,
+                              case_id=case.display_name) }}"
+          class="case-open-research" method="POST">
+      <p>Please confirm that you want to have the case rerun and the current variants replaced with updated information.</p>
       <button type="submit" class="md-button">Confirm</button>
     </form>
   </md-modal>
