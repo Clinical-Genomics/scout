@@ -43,6 +43,7 @@ class Case(Document):
     synopsis = StringField(default='')
     status = StringField(default='inactive', choices=STATUS)
     is_research = BooleanField(default=False)
+    research_requested = BooleanField(default=False)
 
     # default_panels specifies which gene lists that should be shown when
     # the case is opened

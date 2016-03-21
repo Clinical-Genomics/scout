@@ -282,6 +282,9 @@ class EventHandler(object):
             subject=case.display_name,
         )
 
+        case.research_requested = True
+        case.save()
+
     def add_phenotype(self, institute, case, user, link, hpo_term=None,
                       omim_term=None):
         """Add a new phenotype term to a case
