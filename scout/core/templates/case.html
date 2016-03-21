@@ -90,20 +90,22 @@
     </form>
   </div>
 
-  {% if case.is_research %}
-    <div class="md-label">
-      <div class="md-label-icon">
-        <core-icon icon="public"></core-icon>
+  {% if not case.is_research %}
+    {% if case.research_requested %}
+      <div class="md-label">
+        <div class="md-label-icon">
+          <core-icon icon="public"></core-icon>
+        </div>
+        <div class="md-label-text"><i>Research pending</i></div>
       </div>
-      <div class="md-label-text">Research opened</div>
-    </div>
-  {% else %}
-    <div v-on="click: showModal" class="md-label clickable">
-      <div class="md-label-icon">
-        <core-icon icon="public"></core-icon>
+    {% else %}
+      <div v-on="click: showModal" class="md-label clickable">
+        <div class="md-label-icon">
+          <core-icon icon="public"></core-icon>
+        </div>
+        <div class="md-label-text">Request research list</div>
       </div>
-      <div class="md-label-text">Request research list</div>
-    </div>
+    {% endif %}
   {% endif %}
 
   {% if case.coverage_report %}
