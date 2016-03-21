@@ -72,6 +72,12 @@ class Case(Document):
     # The coverage report will be read as a binary blob
     coverage_report = BinaryField()
 
+    @property
+    def o_collaborators(self):
+        """Other collaborators than the owner of the case."""
+        return [collab_id for collab_id in self.collaborators if
+                collab_id != self.owner]
+
     def default_panel_objs(self):
         """Match gene panels with default references."""
         for panel in self.clinical_panels:

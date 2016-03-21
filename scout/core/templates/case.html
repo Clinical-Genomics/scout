@@ -106,7 +106,6 @@
     </div>
   {% endif %}
 
-
   {% if case.coverage_report %}
     <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
       <div class="md-label-icon">
@@ -151,6 +150,42 @@
           <div class="md-label-text">Rank model: {{ case.rank_model_version }}</div>
       </div>
   {% endif %}
+
+  {% if case.owner == institute.display_name %}
+    {% if collaborators %}
+      <form class="md-label" action="{{ url_for('core.share_case', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
+        <div class="md-label-icon">
+          <core-icon icon="settings"></core-icon>
+        </div>
+        <div class="md-label-text">
+          <select name="collaborator">
+            {% for collab_id in collaborators %}
+              <option value="{{ collab_id }}">{{ collab_id }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="md-label-text">Share</button>
+      </form>
+    {% endif %}
+
+    {% if case.o_collaborators %}
+      <form class="md-label" action="{{ url_for('core.share_case', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
+        <input type="text" hidden name="revoke" />
+        <div class="md-label-icon">
+          <core-icon icon="settings"></core-icon>
+        </div>
+        <div class="md-label-text">
+          <select name="collaborator">
+            {% for collab_id in case.o_collaborators %}
+              <option value="{{ collab_id }}">{{ collab_id }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="md-label-text">Revoke access</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
 {% endblock %}
 
 {% block content %}

@@ -64,7 +64,7 @@ def cases(institute_id):
 @login_required
 def case(institute_id, case_id):
     """View a specific case."""
-    institute = validate_user(current_user, institute_id)
+    inst_mod = validate_user(current_user, institute_id)
 
     # fetch a single, specific case from the data store
     case_model = store.case(institute_id, case_id)
@@ -72,8 +72,13 @@ def case(institute_id, case_id):
         return abort(404, "Can't find a case '{}' for institute {}"
                           .format(case_id, institute_id))
 
-    case_comments = store.events(institute, case=case_model, comments=True)
-    case_events = store.events(institute, case=case_model)
+    irrelevant_ids = ('cust000', inst_mod.display_name)
+    collab_ids = [collab.display_name for collab in store.institutes() if
+                  (collab.display_name not in irrelevant_ids) and
+                  (collab.display_name not in case_model.collaborators)]
+
+    case_comments = store.events(inst_mod, case=case_model, comments=True)
+    case_events = store.events(inst_mod, case=case_model)
 
     sample_map = sampleid_map(case_model)
 
@@ -81,11 +86,11 @@ def case(institute_id, case_id):
     default_panel_names = [panel.name_and_version for panel
                            in case_model.default_panel_objs()]
 
-    return dict(institute=institute, case=case_model,
+    return dict(institute=inst_mod, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
                 case_id=case_id, panel_names=default_panel_names,
-                sample_map=sample_map)
+                sample_map=sample_map, collaborators=collab_ids)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
@@ -575,3 +580,23 @@ def pileup_range():
                    bai=case_model.bai_files, sample=case_model.sample_names,
                    vcf=case_model.vcf_file, **positions)
     return redirect(link)
+
+
+@core.route('/<institute_id>/<case_id>/share', methods=['POST'])
+def share_case(institute_id, case_id):
+    """Share a case with a different institute."""
+    institute_model = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+
+    collaborator_id = request.form['collaborator']
+    revoke_access = 'revoke' in request.form
+    link = url_for('.case', institute_id=institute_id, case_id=case_id)
+
+    if revoke_access:
+        store.unshare(institute_model, case_model, collaborator_id,
+                      current_user, link)
+    else:
+        store.share(institute_model, case_model, collaborator_id,
+                    current_user, link)
+
+    return redirect(request.referrer)

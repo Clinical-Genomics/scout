@@ -690,3 +690,41 @@ class EventHandler(object):
         case_model.analysis_checked = False if unmark else True
         case_model.save()
         logger.debug("Case updated")
+
+    def share(self, institute_model, case_model, collaborator_id,
+              user_model, link):
+        """Share a case with a new institute."""
+        if collaborator_id in case_model.collaborators:
+            raise ValueError('new customer is already a collaborator')
+
+        self.create_event(
+            institute=institute_model,
+            case=case_model,
+            user=user_model,
+            link=link,
+            category='case',
+            verb='share',
+            subject=collaborator_id
+        )
+
+        case_model.collaborators.append(collaborator_id)
+        case_model.save()
+
+    def unshare(self, institute_model, case_model, collaborator_id,
+                user_model, link):
+        """Revoke access for a collaborator for a case."""
+        if collaborator_id not in case_model.collaborators:
+            raise ValueError("collaborator doesn't have access to case")
+
+        self.create_event(
+            institute=institute_model,
+            case=case_model,
+            user=user_model,
+            link=link,
+            category='case',
+            verb='unshare',
+            subject=collaborator_id
+        )
+
+        case_model.collaborators.remove(collaborator_id)
+        case_model.save()

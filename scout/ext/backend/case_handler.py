@@ -71,6 +71,10 @@ class CaseHandler(object):
             logger.warning("Could not find institute {0}".format(institute_id))
             return None
 
+    def institutes(self):
+        """Fetch all institutes."""
+        return Institute.objects
+
     def cases(self, collaborator=None, query=None, skip_assigned=False):
         """Fetches all cases from the backend.
 

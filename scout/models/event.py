@@ -58,7 +58,9 @@ VERBS = (
   "remove_phenotype",
   "add_case",
   "update_case",
-  "check_case"
+  "check_case",
+  "share",
+  "unshare"
 )
 
 
@@ -116,7 +118,9 @@ class Event(Document):
       "remove_phenotype": "removed HPO term for",
       "add_case": "added case",
       "update_case": "updated case",
-      "check_case": "marked case as"
+      "check_case": "marked case as",
+      "share": "shared case with",
+      "unshare": "revoked access for"
     }
 
     return display_info.get(self.verb, "")
