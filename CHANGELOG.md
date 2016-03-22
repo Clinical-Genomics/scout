@@ -2,9 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.4.0] - XXX
+## [1.4.0] - 2016-03-22
 ### Added
 - support for local frequency through loqusdb
+- bunch of other stuff
 
 ## [1.3.0] - 2016-02-19
 ### Fixed
