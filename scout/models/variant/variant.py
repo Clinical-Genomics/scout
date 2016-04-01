@@ -21,10 +21,18 @@ from scout.models import Event
 
 class Compound(EmbeddedDocument):
     # This must be the document_id for this variant
-    variant = ReferenceField('Variant')
+    variant = StringField(required=True)
     # This is the variant id
     display_name = StringField(required=True)
     combined_score = FloatField(required=True)
+    
+    @property
+    def variant_obj(self):
+        """Return the full variant object"""
+        try:
+            return Variant.objects.get(document_id=self.variant_id)
+        except DoesNotExist:
+            return None
 
 
 class GTCall(EmbeddedDocument):
