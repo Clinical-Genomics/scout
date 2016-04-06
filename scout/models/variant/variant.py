@@ -27,13 +27,17 @@ class Compound(EmbeddedDocument):
     display_name = StringField(required=True)
     combined_score = FloatField(required=True)
 
+    _variant_obj = None
+
     @property
     def variant_obj(self):
         """Return the full variant object"""
-        try:
-            return Variant.objects.get(document_id=self.variant)
-        except DoesNotExist:
-            return None
+        if self.variant_obj is None:
+            try:
+                self._variant_obj = Variant.objects.get(document_id=self.variant)
+            except DoesNotExist:
+                pass
+        return self.variant_obj
 
 
 class GTCall(EmbeddedDocument):
