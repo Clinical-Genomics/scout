@@ -15,12 +15,12 @@
       {% for compound in compounds %}
         <tr>
           <td>
-            {% if compound.variant.document_id %}
+            {% if compound.variant_obj %}
               <a href="{{
                 url_for('core.variant',
                         institute_id=institute_id,
                         case_id=case_id,
-                        variant_id=compound.variant.document_id)
+                        variant_id=compound.variant)
               }}">
                 {{ compound.display_name }}
               </a>
@@ -29,9 +29,9 @@
             {% endif %}
           </td>
           <td class="text-right">{{ compound.combined_score }}</td>
-          <td class="text-right">{{ compound.variant.rank_score }}</td>
-          <td>{{ compound.variant.region_annotations|join(',') }}</td>
-          <td>{{ compound.variant.functional_annotations|join(',') }}</td>
+          <td class="text-right">{{ compound.variant_obj.rank_score }}</td>
+          <td>{{ compound.variant_obj.region_annotations|join(',') }}</td>
+          <td>{{ compound.variant_obj.functional_annotations|join(',') }}</td>
         </tr>
       {% else %}
         <tr>
