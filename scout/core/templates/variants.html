@@ -314,7 +314,7 @@
             {% endfor %}
           </div>
 
-          {% if False %}  {# before: variant.compounds #}
+          {% if variant.compounds %}
             <div class="md-tooltip-tip is-left">
               <!-- Limit compounds in this view for performance! -->
               {{ compounds_table(
