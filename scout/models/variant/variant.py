@@ -31,7 +31,7 @@ class Compound(EmbeddedDocument):
     def variant_obj(self):
         """Return the full variant object"""
         try:
-            return Variant.objects.get(document_id=self.variant_id)
+            return Variant.objects.get(document_id=self.variant)
         except DoesNotExist:
             return None
 
