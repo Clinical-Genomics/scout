@@ -32,12 +32,12 @@ class Compound(EmbeddedDocument):
     @property
     def variant_obj(self):
         """Return the full variant object"""
-        if self.variant_obj is None:
+        if self._variant_obj is None:
             try:
                 self._variant_obj = Variant.objects.get(document_id=self.variant)
             except DoesNotExist:
                 pass
-        return self.variant_obj
+        return self._variant_obj
 
 
 class GTCall(EmbeddedDocument):
