@@ -9,7 +9,8 @@ import itertools
 
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
-                         ReferenceField, SortedListField, Q, BooleanField)
+                         ReferenceField, SortedListField, Q, BooleanField,
+                         DoesNotExist)
 
 from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
 from .gene import Gene
@@ -25,7 +26,7 @@ class Compound(EmbeddedDocument):
     # This is the variant id
     display_name = StringField(required=True)
     combined_score = FloatField(required=True)
-    
+
     @property
     def variant_obj(self):
         """Return the full variant object"""
