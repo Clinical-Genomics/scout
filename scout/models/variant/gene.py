@@ -60,5 +60,5 @@ class Gene(EmbeddedDocument):
         url_template = ("https://www.ebi.ac.uk/gxa/genes/{}?"
                         "bs=%7B%22homo+sapiens%22%3A%7B%22CELL_LINE%22%3Atrue"
                         "%2C%22ORGANISM_PART%22%3Atrue%7D%7D&ds=%7B%22species"
-                        "%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D#baseline")
+                        "%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D")
         return url_template.format(self.ensembl_gene_id)

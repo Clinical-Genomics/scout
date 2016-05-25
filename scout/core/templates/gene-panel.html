@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block toolbar_secondary %}
-  {% for gene_panel in case.clinical_panels %}
+  {% for gene_panel in case.sorted_clinical_panels %}
     <a class="md-label" href="{{ url_for('core.gene_panel', institute_id=institute.display_name, case_id=case.display_name, panel_id=gene_panel.panel_name) }}">
       {% if gene_panel == panel %}
         <div class="md-label-icon">

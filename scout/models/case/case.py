@@ -142,6 +142,13 @@ class Case(Document):
                                self.research_panels)
 
     @property
+    def sorted_clinical_panels(self):
+        """Return clinical panels sorted by name."""
+        panels = sorted(self.clinical_panels,
+                        key=lambda panel: panel.display_name)
+        return panels
+
+    @property
     def owner_case_id(self):
         """Return an id using both owner and case."""
         return "{this.owner}-{this.display_name}".format(this=self)
