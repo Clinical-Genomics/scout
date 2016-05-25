@@ -39,8 +39,7 @@ class VariantHandler(object):
                 'variant_rank').skip(
                     skip).limit(nr_of_variants)
 
-        for variant in result:
-            yield variant
+        return result
 
     def variant(self, document_id):
         """Returns the specified variant.

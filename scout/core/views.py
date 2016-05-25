@@ -376,6 +376,7 @@ def variants(institute_id, case_id, variant_type):
                 institute=institute,
                 institute_id=institute_id,
                 current_batch=(skip + per_page),
+                per_page=per_page,
                 form=form,
                 severe_so_terms=SEVERE_SO_TERMS,
                 current_gene_lists=current_gene_lists,
