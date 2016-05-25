@@ -42,7 +42,7 @@
   </table>
 {% endmacro %}
 
-{% macro variant_links(ensembl_link, hpa_link, string_link, ucsc_link, entrez_link, reactome_link) %}
+{% macro variant_links(ensembl_link, hpa_link, string_link, ucsc_link, entrez_link, reactome_link, expression_atlas_link) %}
   <a target="_blank" class="variant-link-external" href="{{ ensembl_link }}">
     Ensembl
   </a>
@@ -67,6 +67,10 @@
 
   <a target="_blank" class="variant-link-external" href="{{ reactome_link }}">
     Reactome
+  </a>
+
+  <a target="_blank" class="variant-link-external" href="{{ expression_atlas_link }}">
+      Expr. Atlas
   </a>
 {% endmacro %}
 

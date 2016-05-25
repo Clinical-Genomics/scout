@@ -354,4 +354,3 @@ class Variant(Document):
 
     def __unicode__(self):
         return self.display_name
-
