@@ -8,29 +8,29 @@ from __future__ import absolute_import
 from datetime import datetime
 
 from mongoengine import (DateTimeField, Document, EmailField, IntField,
-                         ListField, ReferenceField, StringField)
+                         ListField, StringField, FloatField)
 
 
 class Institute(Document):
 
-  """Represents an institute linked to multiple collaborating users."""
+    """Represents an institute linked to multiple collaborating users."""
 
-  meta = {'strict': False}
+    meta = {'strict': False}
 
-  internal_id = StringField(primary_key=True, required=True)
-  display_name = StringField(required=True)
-  sanger_recipients = ListField(EmailField())
-  created_at = DateTimeField(default=datetime.now)
-  updated_at = DateTimeField(default=datetime.now)
+    internal_id = StringField(primary_key=True, required=True)
+    display_name = StringField(required=True)
+    sanger_recipients = ListField(EmailField())
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
 
-  coverage_cutoff = IntField(default=10)
+    coverage_cutoff = IntField(default=10)
+    frequency_cutoff = FloatField(default=0.01)
 
-  def __unicode__(self):
-    return self.display_name
+    def __unicode__(self):
+        return self.display_name
 
-  def __repr__(self):
-    return "Institute(internal_id={0}, display_name={1}, "\
-           "sanger_recipients={2}, created_at={3})".format(
-             self.internal_id, self.display_name, self.sanger_recipients,
-             self.created_at
-             )
+    def __repr__(self):
+        return ("Institute(internal_id={this.internal_id}, "
+                "display_name={this.display_name}, "
+                "sanger_recipients={this.sanger_recipients}, "
+                "created_at={this.created_at})".format(this=self))

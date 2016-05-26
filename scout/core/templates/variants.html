@@ -15,7 +15,7 @@
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
         <small>{{ case.display_name }}</small>
     </a>
-    <core-iconclass="md-breadcrumb-separator" icon="chevron-right"></core-icon>
+    <core-icon class="md-breadcrumb-separator" icon="chevron-right"></core-icon>
 
     <div class="md-breadcrumb">
         <small>{{ variant_type|capitalize }} variants</small>
@@ -102,7 +102,7 @@
                       variant_type=variant_type,
                       functional_annotations=severe_so_terms,
                       region_annotations=['exonic', 'splicing'],
-                      thousand_genomes_frequency=0.01,
+                      thousand_genomes_frequency=institute.frequency_cutoff,
                       gene_lists=current_gene_lists,
                       hgnc_symbols=form.hgnc_symbols.data) }}"
            class="md-button">
