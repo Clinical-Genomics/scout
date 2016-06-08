@@ -5,7 +5,7 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import (absolute_import, division)
 
-from mongoengine import (EmbeddedDocument, StringField, ListField)
+from mongoengine import (EmbeddedDocument, StringField, ListField, BooleanField)
 
 from . import (CONSEQUENCE, SO_TERMS, FEATURE_TYPES)
 
@@ -49,6 +49,8 @@ class Transcript(EmbeddedDocument):
   coding_sequence_name = StringField()
   # The amino acid change on the transcript e.g. 'p.Phe32Ser'
   protein_sequence_name = StringField()
+  
+  is_canonical = BooleanField()
 
   @property
   def refseq_ids_string(self):
