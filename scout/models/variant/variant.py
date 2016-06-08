@@ -99,6 +99,11 @@ class Variant(Document):
     cadd_score = FloatField()
     clnsig = IntField()
     clnsigacc = ListField(StringField())
+    
+    # Callers
+    gatk = StringField(choices=VARIANT_CALL, default='Not Used')
+    samtools = StringField(choices=VARIANT_CALL, default='Not Used')
+    freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
 
     @property
     def composite_id(self):
