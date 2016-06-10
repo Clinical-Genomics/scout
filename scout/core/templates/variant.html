@@ -2,7 +2,12 @@
 {% from 'macros/_polymer.html' import core_item %}
 {% from '_macros.html' import activity_feed, compounds_table, variant_links %}
 
-{% set page_title = 'Variant' %}
+{% set page_title = case.display_name ~ '- Variant: ' ~ variant.display_name %}
+{% if case.is_solved %}
+  {% set header_classes = 'success' %}
+{% elif case.is_archived %}
+  {% set header_classes = 'disabled' %}
+{% endif %}
 
 {% block toolbar_left %}
   {{ super() }}

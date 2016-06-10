@@ -104,6 +104,10 @@ class Case(Document):
         return self.status == 'solved'
 
     @property
+    def is_archived(self):
+        return self.status in ('solved', 'archived')
+
+    @property
     def is_rerun(self):
         return self.analysis_dates and len(self.analysis_dates) > 1
 
