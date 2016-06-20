@@ -176,6 +176,8 @@ def get_transcripts(variant):
         transcript.functional_annotations = functional
         transcript.region_annotations = regional
         
+        transcript.is_canonical = (vep_entry.get('CANONICAL') == 'YES') 
+        
         transcripts.append(transcript)
     
     return transcripts 

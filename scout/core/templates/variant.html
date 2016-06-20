@@ -314,7 +314,7 @@
             </thead>
             <tbody>
               {% for transcript in variant.refseq_transcripts %}
-                <tr>
+                <tr {% if transcript.is_canonical %}class="affected"{% endif %}>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
@@ -708,7 +708,7 @@
 
             <tbody>
               {% for transcript in variant.transcripts %}
-                <tr>
+                <tr {% if transcript.is_canonical %}class="affected"{% endif %}>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
                     <a target="_blank" href="{{ transcript.ensembl_link }}">
