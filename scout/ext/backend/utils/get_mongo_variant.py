@@ -248,6 +248,12 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         logger.debug("Updating Phylop annotation for variant {0} to {1}".format(
             variant['variant_id'], ''.join(phylop)))
         mongo_variant['phylop_conservation'] = phylop
-
+        
+    
+    # Check what different genotype callers says about this variant
+    callers = variant['info_dict'].get('set')
+    if callers:
+        callers = callers[0].split('-')
+    
     return mongo_variant
 

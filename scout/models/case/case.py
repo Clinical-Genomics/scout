@@ -108,6 +108,11 @@ class Case(Document):
         return self.status in ('solved', 'archived')
 
     @property
+    def is_new(self):
+        """Check if the analysis was preformed with latest rank model."""
+        return self.rank_model_version == '1.16'
+
+    @property
     def is_rerun(self):
         return self.analysis_dates and len(self.analysis_dates) > 1
 

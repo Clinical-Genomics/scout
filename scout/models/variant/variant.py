@@ -12,7 +12,7 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          ReferenceField, SortedListField, Q, BooleanField,
                          DoesNotExist)
 
-from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS)
+from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS, VARIANT_CALL)
 from .gene import Gene
 from scout._compat import zip
 from scout.models import Event
@@ -99,6 +99,19 @@ class Variant(Document):
     cadd_score = FloatField()
     clnsig = IntField()
     clnsigacc = ListField(StringField())
+
+    # Callers
+    gatk = StringField(choices=VARIANT_CALL, default='Not Used')
+    samtools = StringField(choices=VARIANT_CALL, default='Not Used')
+    freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
+
+    @property
+    def callers(self):
+        """Return call for all callers."""
+        calls = [('GATK', self.gatk), ('Samtools', self.samtools),
+                 ('Freebayes', self.freebayes)]
+        existing_calls = [(name, caller) for name, caller in calls if caller]
+        return existing_calls
 
     @property
     def composite_id(self):
