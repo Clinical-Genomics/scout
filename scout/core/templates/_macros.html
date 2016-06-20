@@ -84,7 +84,7 @@
             {{ event.display_info }}
             <a href="{{ event.link }}">{{ event.subject }}</a>
             <span class="timestamp">
-              {{ event.created_at|human_date }}
+              {{ event.created_at.date() }}
             </span>
           </div>
         </div>

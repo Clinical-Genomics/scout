@@ -421,7 +421,7 @@
                   <div class="activity-feed-item-event-body">
                     <strong>{{ comment.author.name }}</strong>
                     <span class="timestamp">
-                      {{ comment.created_at|human_date }}
+                      {{ comment.created_at.date() }}
                     </span>
                     {% if comment.created_at < case.updated_at %}
                       <small><span class="md-badge--warning">OLD</span></small>
