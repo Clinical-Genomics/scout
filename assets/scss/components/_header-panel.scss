@@ -13,6 +13,17 @@
   background-color: $body-fg;
 }
 
+.md-header-panel-header {
+  background-color: $primary-color;
+
+  &.disabled {
+    background-color: #9E9E9E;  // gray
+  }
+  &.success {
+    background-color: #8BC34A; // green
+  }
+}
+
 .md-header-panel-body {
   // cover the rest of the container vertically
   flex: 1;

@@ -2,7 +2,12 @@
 {% from 'macros/_polymer.html' import core_item %}
 {% from '_macros.html' import activity_feed %}
 
-{% set page_title = 'Case' %}
+{% set page_title = "Case " ~ case.display_name %}
+{% if case.is_solved %}
+  {% set header_classes = 'success' %}
+{% elif case.is_archived %}
+  {% set header_classes = 'disabled' %}
+{% endif %}
 
 {% block toolbar_left %}
   {{ super() }}
@@ -16,7 +21,14 @@
       class="md-breadcrumb-separator">
     </core-icon>
     <div class="md-breadcrumb">
-      <small>{{ case.display_name }}</small>
+      <small>
+        {{ case.display_name }}
+        {% if case.is_solved %}
+          <strong>(SOLVED)</strong>
+        {% elif case.is_archived %}
+          <strong>(ARCHIVED)</strong>
+        {% endif %}
+      </small>
     </div>
   </div>
 {% endblock %}
@@ -78,7 +90,7 @@
 
       {% if case.status != 'archived' %}
         <input type="hidden" name="status" readonly value="archived">
-        <button class="case-assign-icon" type="submit" onclick="return confirm('Are you sure?')">
+        <button class="case-assign-icon" type="submit" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
           <small><strong>(ARCHIVE)</strong></small>
         </button>
       {% else %}
@@ -90,7 +102,7 @@
     </form>
   </div>
 
-  {% if not case.is_research %}
+  {% if not (case.is_archived or case.is_research) %}
     {% if case.research_requested %}
       <div class="md-label">
         <div class="md-label-icon">
