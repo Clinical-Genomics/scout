@@ -48,6 +48,23 @@
     </div>
   {% endif %}
 
+  <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
+    {% if case.status == 'prioritized' %}
+        <input type="hidden" name="status" readonly value="active">
+    {% else %}
+        <input type="hidden" name="status" readonly value="prioritized">
+    {% endif %}
+    <div class="md-label">
+      <div class="md-label-icon"><core-icon icon="verified-user"></core-icon></div>
+
+      <button class="md-label-text" type="submit">
+        {% if case.status == 'prioritized' %}
+          De-prioritize{% else %}Prioritize
+        {% endif %}
+      </button>
+    </div>
+  </form>
+
   {% if case.assignee %}
     <form class="case-assign" action="{{ url_for('core.remove_assignee',
                              institute_id=institute.display_name,

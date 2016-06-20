@@ -124,6 +124,13 @@
 
   <div class="cases-list">
     <div class="md-card-list">
+      {% if cases.prioritized %}
+        <h3>Prioritized</h3>
+        {% for case in cases.prioritized %}
+          {{ case_box(case, institute_id) }}
+        {% endfor %}
+      {% endif %}
+
       {% if cases.inactive %}
         <h3>Inactive</h3>
         {% for case in cases.inactive %}
