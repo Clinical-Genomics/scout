@@ -597,7 +597,14 @@
 
     <div id="gt-call" class="variant-segments-row">
       <div class="md-card">
-        <div class="md-card-header">GT call</div>
+        <div class="md-card-header">
+          GT call
+          {% if case.is_new %}
+            [{% for name, caller in variant.callers %}
+              {{ name }}: {{ caller }} |
+            {% endfor %}]
+          {% endif %}
+        </div>
 
         <div class="md-card-body is-main">
           <table class="default-table">

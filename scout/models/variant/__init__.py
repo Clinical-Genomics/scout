@@ -88,3 +88,10 @@ ACMG_TERMS = (
   'likely benign',
   'benign'
 )
+
+VARIANT_CALL = (
+    'Pass',
+    'Filtered',
+    'Not Found',
+    'Not Used',
+)
