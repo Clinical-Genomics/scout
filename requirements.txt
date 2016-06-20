@@ -2,6 +2,7 @@
 
 # Flask
 Flask>=0.10.1
+Jinja2==2.7.3  # set behaves differently in 2.8
 
 # Admin
 Flask-Admin>=1.4.0
