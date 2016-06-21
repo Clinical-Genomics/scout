@@ -626,9 +626,14 @@
                 <tr class="{{ individuals[individual.sample_id].phenotype_human }}">
                   <td class="text-center">{{ individual.display_name }}</td>
                   <td class="text-center">{{ individual.genotype_call }}</td>
-                  {% for number in individual.allele_depths %}
-                    <td class="text-right">{{ number }}</td>
-                  {% endfor %}
+                  {% if individual.allele_depths %}
+                      {% for number in individual.allele_depths %}
+                        <td class="text-right">{{ number }}</td>
+                      {% endfor %}
+                  {% else %}
+                      <td class="text-right">N/A</td>
+                      <td class="text-right">N/A</td>
+                  {% endif %}
                   <td class="text-right">{{ individual.genotype_quality }}</td>
                 </tr>
               {% endfor %}
