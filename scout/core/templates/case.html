@@ -162,7 +162,7 @@
     </a>
   {% else %}
     <form class="md-label" action="{{ url_for('report.group', group_id=case.owner_case_id) }}" method="post" accept-charset="utf-8" target="_blank">
-      <input class="is-hidden" name="level" value="{{ case.coverage_cutoff }}"></input>
+      <input class="is-hidden" name="level" value="{{ institute.coverage_cutoff }}"></input>
       <input class="is-hidden" name="panel_name" value="{{ panel_names|join(', ') }}"></input>
       <input class="is-hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
       {% for sample_id, display_name in sample_map.items() %}
