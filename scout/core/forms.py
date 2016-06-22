@@ -32,7 +32,8 @@ def process_filters_form(form):
                                 if x]
 
   # correct decimal fields
-  for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
+  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
+                     'cadd_score']:
     field = getattr(form, field_name)
     if field.data:
       field.data = float(field.data)
@@ -82,6 +83,7 @@ class FiltersForm(Form):
 
   thousand_genomes_frequency = DecimalField('1000 Genomes', places=None)
   exac_frequency = DecimalField('ExAC', places=None)
+  cadd_score = DecimalField('CADD', places=2)
 
   region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
   functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
@@ -102,7 +104,8 @@ def init_filters_form(get_args):
   # initialize the normal way to get lists inserted correctly
   form = FiltersForm(**get_args)
 
-  for field_name in ['thousand_genomes_frequency', 'exac_frequency']:
+  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
+                     'cadd_score']:
     field = getattr(form, field_name)
 
     if field.data:

@@ -148,6 +148,11 @@
             <div>{{ form.hgnc_symbols.label }}</div>
             <div>{{ form.hgnc_symbols }}</div>
           </div>
+
+          <div class="list-item">
+            <div>{{ form.cadd_score.label }}</div>
+            <div>{{ form.cadd_score }}</div>
+          </div>
         </div>
       </div>
 
@@ -157,7 +162,7 @@
         <div class="variants-filters-group-list">
           <div class="list-item">
             <div>{{ form.thousand_genomes_frequency.label }}</div>
-            <div>{{ form.thousand_genomes_frequency }}</div>
+            <div>{{ form.thousand_genomes_frequency(type='number') }}</div>
           </div>
 
           <div class="list-item">
