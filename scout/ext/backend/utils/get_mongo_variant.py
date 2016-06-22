@@ -185,13 +185,14 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     if disease_transcripts:
         for annotation in disease_transcripts:
             annotation = annotation.split(':')
-            gene_id = annotation[0]
-            transcript_id = annotation[1]
+            if len(annotation) == 2:
+                gene_id = annotation[0]
+                transcript_ids = set(annotation[1].split('|'))
 
-            if gene_id not in disease_associated_transcripts:
-                disease_associated_transcripts[gene_id] = set(transcript_id)
-            else:
-                disease_associated_transcripts[gene_id].add(transcript_id)
+                if gene_id not in disease_associated_transcripts:
+                    disease_associated_transcripts[gene_id] = transcript_ids
+                else:
+                    disease_associated_transcripts[gene_id].update(transcript_ids)
 
     # Get the gene ids and add the disease associated transcripts
     for gene in mongo_variant.genes:
