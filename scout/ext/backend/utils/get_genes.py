@@ -88,7 +88,7 @@ def get_transcripts(variant):
     """
     ensembl_to_refseq = create_ensembl_to_refseq(variant)
     transcripts = []
-    
+
     for vep_entry in variant['vep_info'].get(variant['ALT'], []):
         # There can be several functional annotations for one variant
         functional_annotations = vep_entry.get('Consequence', '').split('&')
@@ -177,6 +177,7 @@ def get_transcripts(variant):
         transcript.region_annotations = regional
         
         transcript.is_canonical = (vep_entry.get('CANONICAL') == 'YES') 
+        
         
         transcripts.append(transcript)
     

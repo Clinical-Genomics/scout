@@ -27,6 +27,8 @@ class Gene(EmbeddedDocument):
     omim_phenotypes = ListField(EmbeddedDocumentField(PhenotypeTerm))
     description = StringField()
     reduced_penetrance = BooleanField()
+    
+    disease_associated_transcripts = ListField(StringField())
 
     @property
     def reactome_link(self):
