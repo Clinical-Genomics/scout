@@ -5,7 +5,7 @@ from mongoengine import (DoesNotExist)
 from vcf_parser import VCFParser
 
 from scout.models import (Variant,)
-from scout.ext.backend.utils import get_mongo_variant, build_query
+from scout.ext.backend.utils import (get_mongo_variant, build_query)
 
 logger = logging.getLogger(__name__)
 
