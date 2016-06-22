@@ -253,5 +253,23 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     callers = variant['info_dict'].get('set')
     if callers:
         callers = callers[0].split('-')
+        for call in callers:
+            if call == 'FilteredInAll':
+                mongo_variant['gatk'] = 'Filtered'
+                mongo_variant['samtools'] = 'Filtered'
+                mongo_variant['freebayes'] = 'Filtered'
+            elif call == 'Intersection':
+                mongo_variant['gatk'] = 'Pass'
+                mongo_variant['samtools'] = 'Pass'
+                mongo_variant['freebayes'] = 'Pass'
+            elif 'filterIn' in call:
+                if 'gatk' in call:
+                    mongo_variant['gatk'] = 'Filtered'
+                if 'samtools' in call:
+                    mongo_variant['samtools'] = 'Filtered'
+                if 'freebayes' in call:
+                    mongo_variant['freebayes'] = 'Filtered'
+            elif call in ['gatk', 'samtools', 'freebayes']:
+                mongo_variant[call] = 'Pass'
 
     return mongo_variant
