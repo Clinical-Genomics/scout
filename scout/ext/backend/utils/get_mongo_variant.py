@@ -187,27 +187,27 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
             annotation = annotation.split(':')
             gene_id = annotation[0]
             transcript_id = annotation[1]
-            
+
             if gene_id not in disease_associated_transcripts:
                 disease_associated_transcripts[gene_id] = set(transcript_id)
             else:
                 disease_associated_transcripts[gene_id].add(transcript_id)
-    
+
     # Get the gene ids and add the disease associated transcripts
     for gene in mongo_variant.genes:
         hgnc_symbol = gene.hgnc_symbol
-        
+
         hgnc_symbols.add(hgnc_symbol)
         ensembl_gene_ids.add(gene.ensembl_gene_id)
-        
+
         if hgnc_symbol in disease_associated_transcripts:
             gene.disease_associated_transcripts = list(
-                disease_associated_transcripts[hgnc_symbols])
+                disease_associated_transcripts[hgnc_symbol])
 
     mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
 
     mongo_variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
-    
+
 
     ################# Add a list with the dbsnp ids #################
 
