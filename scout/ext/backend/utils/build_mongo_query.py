@@ -73,6 +73,19 @@ def build_query(case_id, query=None, variant_ids=None):
             except TypeError:
                 pass
 
+        if query.get('cadd_score'):
+            try:
+                mongo_query['$and'].append({
+                    'cadd_score':{
+                        '$gt': float(query['cadd_score'])
+                        }
+                    }
+                )
+                logger.debug("Adding cadd_score to query")
+                any_query = True
+            except TypeError:
+                pass
+
         if query.get('genetic_models'):
             mongo_query['$and'].append(
                 {'genetic_models':{
