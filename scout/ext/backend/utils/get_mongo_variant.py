@@ -155,9 +155,9 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     mongo_variant['genetic_models'] = genetic_models
     logger.debug("Updating genetic models for variant {0} to {1}".format(
         variant['variant_id'], ', '.join(genetic_models)))
-        
+
     # Add the expected inheritance patterns
-    
+
     expected_inheritance = variant['info_dict'].get('Genetic_disease_model')
     if expected_inheritance:
         mongo_variant['expected_inheritance'] = expected_inheritance
@@ -248,12 +248,10 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         logger.debug("Updating Phylop annotation for variant {0} to {1}".format(
             variant['variant_id'], ''.join(phylop)))
         mongo_variant['phylop_conservation'] = phylop
-        
-    
+
     # Check what different genotype callers says about this variant
     callers = variant['info_dict'].get('set')
     if callers:
         callers = callers[0].split('-')
-    
-    return mongo_variant
 
+    return mongo_variant
