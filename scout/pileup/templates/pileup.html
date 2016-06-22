@@ -51,7 +51,9 @@
                 name: 'Coverage'
               },
               {
-                viz: pileup.viz.pileup(),
+                viz: pileup.viz.pileup({
+                    viewAsPairs: true
+                }),
                 data: pileup.formats.bam({
                   url: '{{ url_for("browser.remote_static", file=alignment.bam) }}',
                   indexUrl: '{{ url_for("browser.remote_static", file=alignment.bai) }}'
