@@ -330,6 +330,20 @@
           </table>
         </div>
       </div>
+
+      <div class="md-card">
+        <div class="md-card-header">Disease associated transcripts</div>
+        <div class="md-card-body-list">
+          {% for gene in variant.genes %}
+            {% for transcript in gene.disease_associated_transcripts %}
+              <div class="variant-list-item">
+                <div>{{ gene.hgnc_symbol }}</div>
+                <div>{{ transcript }}</div>
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
     </div>
 
     <div id="important-data" class="variant-segments-row">
@@ -395,7 +409,7 @@
         </div>
       </div>
 
-      <div id="severities+conservation" class="md-card">
+      <div id="severities+conservation" class="md-card is-main">
         <div class="md-card-header">Severity</div>
         <div class="md-card-body-list">
           <div class="variant-list-item">
