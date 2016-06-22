@@ -5,7 +5,7 @@ from mongoengine import (DoesNotExist)
 from vcf_parser import VCFParser
 
 from scout.models import (Variant,)
-from scout.ext.backend.utils import get_mongo_variant, build_query
+from scout.ext.backend.utils import (get_mongo_variant, build_query)
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +39,7 @@ class VariantHandler(object):
                 'variant_rank').skip(
                     skip).limit(nr_of_variants)
 
-        for variant in result:
-            yield variant
+        return result
 
     def variant(self, document_id):
         """Returns the specified variant.

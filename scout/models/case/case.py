@@ -104,6 +104,15 @@ class Case(Document):
         return self.status == 'solved'
 
     @property
+    def is_archived(self):
+        return self.status in ('solved', 'archived')
+
+    @property
+    def is_new(self):
+        """Check if the analysis was preformed with latest rank model."""
+        return self.rank_model_version == '1.16'
+
+    @property
     def is_rerun(self):
         return self.analysis_dates and len(self.analysis_dates) > 1
 
@@ -140,6 +149,13 @@ class Case(Document):
         """Yield all gene lists (both clinical and research)."""
         return itertools.chain(self.clinical_panels,
                                self.research_panels)
+
+    @property
+    def sorted_clinical_panels(self):
+        """Return clinical panels sorted by name."""
+        panels = sorted(self.clinical_panels,
+                        key=lambda panel: panel.display_name)
+        return panels
 
     @property
     def owner_case_id(self):

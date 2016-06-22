@@ -1,33 +1,31 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from '_macros.html' import compounds_table %}
 
-{% set page_title = 'Variants' %}
+{% set page_title = case.display_name ~ '- Variants' %}
+{% if case.is_solved %}
+  {% set header_classes = 'success' %}
+{% elif case.is_archived %}
+  {% set header_classes = 'disabled' %}
+{% endif %}
 
 {% block toolbar_left %}
-  {{ super() }}
+{{ super() }}
 
-  <div class="md-breadcrumb-group flex">
-    <a class="md-breadcrumb-button is-raised"
-       href="{{ url_for('core.cases', institute_id=institute_id) }}">
-      <small>{{ institute.display_name }}</small>
+<div class="md-breadcrumb-group flex">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.cases', institute_id=institute_id) }}">
+        <small>{{ institute.display_name }}</small>
     </a>
-    <core-icon
-      class="md-breadcrumb-separator"
-      icon="chevron-right">
-    </core-icon>
+    <core-icon class="md-breadcrumb-separator" icon="chevron-right"></core-icon>
 
     <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-      <small>{{ case.display_name }}</small>
+        <small>{{ case.display_name }}</small>
     </a>
-    <core-icon
-      class="md-breadcrumb-separator"
-      icon="chevron-right">
-    </core-icon>
+    <core-icon class="md-breadcrumb-separator" icon="chevron-right"></core-icon>
 
     <div class="md-breadcrumb">
-      <small>{{ variant_type|capitalize }} variants</small>
+        <small>{{ variant_type|capitalize }} variants</small>
     </div>
-  </div>
+</div>
 {% endblock %}
 
 {% block toolbar_right %}
@@ -109,7 +107,7 @@
                       variant_type=variant_type,
                       functional_annotations=severe_so_terms,
                       region_annotations=['exonic', 'splicing'],
-                      thousand_genomes_frequency=0.01,
+                      thousand_genomes_frequency=institute.frequency_cutoff,
                       gene_lists=current_gene_lists,
                       hgnc_symbols=form.hgnc_symbols.data) }}"
            class="md-button">
@@ -150,6 +148,11 @@
             <div>{{ form.hgnc_symbols.label }}</div>
             <div>{{ form.hgnc_symbols }}</div>
           </div>
+
+          <div class="list-item">
+            <div>{{ form.cadd_score.label }}</div>
+            <div>{{ form.cadd_score }}</div>
+          </div>
         </div>
       </div>
 
@@ -159,7 +162,7 @@
         <div class="variants-filters-group-list">
           <div class="list-item">
             <div>{{ form.thousand_genomes_frequency.label }}</div>
-            <div>{{ form.thousand_genomes_frequency }}</div>
+            <div>{{ form.thousand_genomes_frequency(type='number') }}</div>
           </div>
 
           <div class="list-item">
@@ -206,7 +209,7 @@
 
 			<div class="variants-row">
 
-        <!-- Rank position -->
+                <!-- Rank position -->
 				<a class="variants-row-item flex-small layout"
 					 href="{{ url_for('core.variant',
                             institute_id=institute_id,
@@ -328,15 +331,21 @@
 				</div>
 
 			</div>
+
+        {% else %}
+            <p class="text-center">No matching variants.</p>
 		{% endfor %}
 
 	</div>
 
-  {{ query_dict.update({'skip': current_batch})|default('', True) }}
-  <a href="{{ url_for('core.variants', institute_id=institute_id,
-                      case_id=case_id, variant_type=variant_type, **query_dict) }}"
-     class="variants-load-more is-raised">
-    Load more
-  </a>
+  {% if variants.count() > current_batch %}
+      {# We might have some more variants not loaded #}
+      {{ query_dict.update({'skip': current_batch})|default('', True) }}
+      <a href="{{ url_for('core.variants', institute_id=institute_id,
+                          case_id=case_id, variant_type=variant_type, **query_dict) }}"
+         class="variants-load-more is-raised">
+        Load more
+      </a>
+  {% endif %}
 
 {% endblock %}

@@ -12,6 +12,8 @@ user = Blueprint('profile', __name__, template_folder='templates')
 
 
 class CaseView(ModelView):
+    column_filters = ['display_name', 'owner', 'status']
+    column_searchable_list = ('display_name', 'owner')
     column_exclude_list = ['coverage_report', 'madeline_info',
                            'dynamic_gene_list']
     form_columns = ['display_name', 'owner', 'collaborators', 'individuals',

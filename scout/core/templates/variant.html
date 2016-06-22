@@ -2,7 +2,12 @@
 {% from 'macros/_polymer.html' import core_item %}
 {% from '_macros.html' import activity_feed, compounds_table, variant_links %}
 
-{% set page_title = 'Variant' %}
+{% set page_title = case.display_name ~ '- Variant: ' ~ variant.display_name %}
+{% if case.is_solved %}
+  {% set header_classes = 'success' %}
+{% elif case.is_archived %}
+  {% set header_classes = 'disabled' %}
+{% endif %}
 
 {% block toolbar_left %}
   {{ super() }}
@@ -309,7 +314,7 @@
             </thead>
             <tbody>
               {% for transcript in variant.refseq_transcripts %}
-                <tr>
+                <tr {% if transcript.is_canonical %}class="affected"{% endif %}>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
@@ -323,6 +328,20 @@
               {% endfor %}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="md-card">
+        <div class="md-card-header">Disease associated transcripts</div>
+        <div class="md-card-body-list">
+          {% for gene in variant.genes %}
+            {% for transcript in gene.disease_associated_transcripts %}
+              <div class="variant-list-item">
+                <div>{{ gene.hgnc_symbol }}</div>
+                <div>{{ transcript }}</div>
+              </div>
+            {% endfor %}
+          {% endfor %}
         </div>
       </div>
     </div>
@@ -390,7 +409,7 @@
         </div>
       </div>
 
-      <div id="severities+conservation" class="md-card">
+      <div id="severities+conservation" class="md-card is-main">
         <div class="md-card-header">Severity</div>
         <div class="md-card-body-list">
           <div class="variant-list-item">
@@ -523,7 +542,7 @@
                   <div class="activity-feed-item-event-body">
                     <strong>{{ comment.author.name }}</strong>
                     <span class="timestamp">
-                      {{ comment.created_at|human_date }}
+                      {{ comment.created_at.date() }}
                     </span>
                     {% if comment.level == 'global' %}
                       <small><span class="md-badge--low">GLOBAL</span></small>
@@ -592,7 +611,14 @@
 
     <div id="gt-call" class="variant-segments-row">
       <div class="md-card">
-        <div class="md-card-header">GT call</div>
+        <div class="md-card-header">
+          GT call
+          {% if case.is_new %}
+            [{% for name, caller in variant.callers %}
+              {{ name }}: {{ caller }} |
+            {% endfor %}]
+          {% endif %}
+        </div>
 
         <div class="md-card-body is-main">
           <table class="default-table">
@@ -614,9 +640,14 @@
                 <tr class="{{ individuals[individual.sample_id].phenotype_human }}">
                   <td class="text-center">{{ individual.display_name }}</td>
                   <td class="text-center">{{ individual.genotype_call }}</td>
-                  {% for number in individual.allele_depths %}
-                    <td class="text-right">{{ number }}</td>
-                  {% endfor %}
+                  {% if individual.allele_depths %}
+                      {% for number in individual.allele_depths %}
+                        <td class="text-right">{{ number }}</td>
+                      {% endfor %}
+                  {% else %}
+                      <td class="text-right"><small>N/A</small></td>
+                      <td class="text-right"><small>N/A</small></td>
+                  {% endif %}
                   <td class="text-right">{{ individual.genotype_quality }}</td>
                 </tr>
               {% endfor %}
@@ -703,7 +734,7 @@
 
             <tbody>
               {% for transcript in variant.transcripts %}
-                <tr>
+                <tr {% if transcript.is_canonical %}class="affected"{% endif %}>
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
                     <a target="_blank" href="{{ transcript.ensembl_link }}">
@@ -838,7 +869,8 @@
                              string_link=gene.string_link,
                              ucsc_link=variant.ucsc_link,
                              entrez_link=gene.entrez_link,
-                             reactome_link=gene.reactome_link)
+                             reactome_link=gene.reactome_link,
+                             expression_atlas_link=gene.expression_atlas_link)
             }}
           </div>
         </div>

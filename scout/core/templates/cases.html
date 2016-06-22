@@ -64,6 +64,14 @@
   </div>
 {% endblock %}
 
+{% block toolbar_right %}
+    {{ super() }}
+
+    <div v-on="click: showFilters" class="icon-button">
+        <core-icon icon="settings"></core-icon>
+    </div>
+{% endblock %}
+
 {% block toolbar_secondary %}
   <form id="search-cases" class="cases-search" action="{{ url_for('core.cases', institute_id=institute_id) }}" method="GET" accept-charset="utf-8">
     <div class="md-label cases-search-block">
@@ -89,8 +97,40 @@
 {% endblock %}
 
 {% block content %}
+  <drawer-panel v-ref="filters" side="right">
+      <form action="{{ url_for('core.institute_settings', institute_id=institute.id) }}" method="POST">
+        <div class="variants-filters-group">
+          <div class="variants-filters-group-list">
+            <div class="variants-filters-group-label">
+              Institute settings
+            </div>
+            <div class="list-item">
+              <div>Frequency cutoff (clinical filter)</div>
+              <div><input type="number" min="0" max="1" step="0.01" name="frequency_cutoff" value="{{ institute.frequency_cutoff }}"></div>
+            </div>
+
+            <div class="list-item">
+              <div>Coverage cutoff (report)</div>
+              <div><input type="number" min="10" max="100" step="5" name="coverage_cutoff" value="{{ institute.coverage_cutoff }}"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="variants-filter-buttons">
+          <button class="md-button" type="submit">Save</button>
+        </div>
+      </form>
+  </drawer-panel>
+
   <div class="cases-list">
     <div class="md-card-list">
+      {% if cases.prioritized %}
+        <h3>Prioritized</h3>
+        {% for case in cases.prioritized %}
+          {{ case_box(case, institute_id) }}
+        {% endfor %}
+      {% endif %}
+
       {% if cases.inactive %}
         <h3>Inactive</h3>
         {% for case in cases.inactive %}

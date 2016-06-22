@@ -155,9 +155,9 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     mongo_variant['genetic_models'] = genetic_models
     logger.debug("Updating genetic models for variant {0} to {1}".format(
         variant['variant_id'], ', '.join(genetic_models)))
-        
+
     # Add the expected inheritance patterns
-    
+
     expected_inheritance = variant['info_dict'].get('Genetic_disease_model')
     if expected_inheritance:
         mongo_variant['expected_inheritance'] = expected_inheritance
@@ -179,13 +179,36 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
     hgnc_symbols = set([])
     ensembl_gene_ids = set([])
 
+    #Check if there are any manually annotated disease transcripts
+    disease_associated_transcripts = {}
+    disease_transcripts = variant['info_dict'].get('Disease_associated_transcript')
+    if disease_transcripts:
+        for annotation in disease_transcripts:
+            annotation = annotation.split(':')
+            if len(annotation) == 2:
+                gene_id = annotation[0]
+                transcript_ids = set(annotation[1].split('|'))
+
+                if gene_id not in disease_associated_transcripts:
+                    disease_associated_transcripts[gene_id] = transcript_ids
+                else:
+                    disease_associated_transcripts[gene_id].update(transcript_ids)
+
+    # Get the gene ids and add the disease associated transcripts
     for gene in mongo_variant.genes:
-        hgnc_symbols.add(gene.hgnc_symbol)
+        hgnc_symbol = gene.hgnc_symbol
+
+        hgnc_symbols.add(hgnc_symbol)
         ensembl_gene_ids.add(gene.ensembl_gene_id)
+
+        if hgnc_symbol in disease_associated_transcripts:
+            gene.disease_associated_transcripts = list(
+                disease_associated_transcripts[hgnc_symbol])
 
     mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
 
     mongo_variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
+
 
     ################# Add a list with the dbsnp ids #################
 
@@ -249,5 +272,27 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
             variant['variant_id'], ''.join(phylop)))
         mongo_variant['phylop_conservation'] = phylop
 
-    return mongo_variant
+    # Check what different genotype callers says about this variant
+    callers = variant['info_dict'].get('set')
+    if callers:
+        callers = callers[0].split('-')
+        for call in callers:
+            if call == 'FilteredInAll':
+                mongo_variant['gatk'] = 'Filtered'
+                mongo_variant['samtools'] = 'Filtered'
+                mongo_variant['freebayes'] = 'Filtered'
+            elif call == 'Intersection':
+                mongo_variant['gatk'] = 'Pass'
+                mongo_variant['samtools'] = 'Pass'
+                mongo_variant['freebayes'] = 'Pass'
+            elif 'filterIn' in call:
+                if 'gatk' in call:
+                    mongo_variant['gatk'] = 'Filtered'
+                if 'samtools' in call:
+                    mongo_variant['samtools'] = 'Filtered'
+                if 'freebayes' in call:
+                    mongo_variant['freebayes'] = 'Filtered'
+            elif call in ['gatk', 'samtools', 'freebayes']:
+                mongo_variant[call] = 'Pass'
 
+    return mongo_variant

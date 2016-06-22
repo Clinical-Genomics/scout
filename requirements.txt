@@ -2,6 +2,7 @@
 
 # Flask
 Flask>=0.10.1
+Jinja2==2.7.3  # set behaves differently in 2.8
 
 # Admin
 Flask-Admin>=1.4.0
@@ -41,7 +42,7 @@ Flask-Script
 path.py
 click
 ped-parser>=1.6
-vcf_parser>=1.5.5
+vcf_parser>=1.5.6
 configobj
 requests
 python-dateutil

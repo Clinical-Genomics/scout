@@ -39,8 +39,13 @@ def get_genotype(variant, individual_id, display_name):
 
     mongo_gt_call['read_depth'] = variant['genotypes'][individual_id].depth_of_coverage
 
-    mongo_gt_call['allele_depths'] = [variant['genotypes'][individual_id].ref_depth,
-                                      variant['genotypes'][individual_id].alt_depth]
+    ref_depth = variant['genotypes'][individual_id].ref_depth
+    alt_depth = variant['genotypes'][individual_id].alt_depth
+    if ref_depth is not None and alt_depth is not None:
+        mongo_gt_call['allele_depths'] = [
+            variant['genotypes'][individual_id].ref_depth,
+            variant['genotypes'][individual_id].alt_depth
+        ]
 
     mongo_gt_call['genotype_quality'] = variant['genotypes'][individual_id].genotype_quality
 
