@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.5.1] - 2016-07-27
+### Fixed
+- look for both ".bam.bai" and ".bai" extensions
+
 ## [1.4.0] - 2016-03-22
 ### Added
 - support for local frequency through loqusdb

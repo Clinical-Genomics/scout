@@ -1,4 +1,5 @@
 from __future__ import (absolute_import)
+import os.path
 import logging
 from datetime import datetime
 import itertools
@@ -132,8 +133,15 @@ class Case(Document):
     @property
     def bai_files(self):
         """Aggregate all BAM files across all individuals."""
-        return [individual.bam_file.replace('.bam', '.bai')
-                for individual in self.individuals if individual.bam_file]
+        files = []
+        for individual in self.individuals:
+            if individual.bam_file:
+                bai_file = individual.bam_file.replace('.bam', '.bai')
+                if not os.path.exists(bai_file):
+                    # try the other convention
+                    bai_file = "{}.bai".format(individual.bam_file)
+                files.append(bai_file)
+        return files
 
     @property
     def sample_names(self):
