@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask.ext.login import current_user
+from flask_login import current_user
 from flask.ext.admin import AdminIndexView, expose
 from flask.ext.admin.contrib.mongoengine import ModelView
 

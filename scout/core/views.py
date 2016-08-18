@@ -4,7 +4,7 @@ import os.path
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for, make_response)
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 from flask.ext.mail import Message
 import query_phenomizer
 

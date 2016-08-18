@@ -128,9 +128,8 @@ class VariantHandler(object):
         logger.info("{0} variants deleted".format(nr_deleted))
         logger.debug("Variants deleted")
 
-
-    def add_variants(self, vcf_file, variant_type, case, variant_number_treshold=5000,
-                    rank_score_threshold = 0):
+    def add_variants(self, vcf_file, variant_type, case,
+                     variant_number_treshold=5000, rank_score_threshold=0):
         """Add variants to the mongo database
 
             Args:

@@ -2,8 +2,7 @@
 from bson import ObjectId
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    session, url_for)
-from flask.ext.login import (
-  confirm_login, login_required, login_user, logout_user)
+from flask_login import confirm_login, login_required, login_user, logout_user
 from flask_oauthlib.client import OAuthException
 from mongoengine.queryset import DoesNotExist
 
