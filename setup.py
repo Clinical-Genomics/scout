@@ -35,11 +35,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=parse_reqs(),
-    entry_points=dict(
-       console_scripts=[
-           'scout = scout.commands:cli',
-        ]
-    ),
+    entry_points=dict(console_scripts=['scout = scout.cli:base']),
     test_suite='tests',
     classifiers=[
       'Environment :: Web Environment',

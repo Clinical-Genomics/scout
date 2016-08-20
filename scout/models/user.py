@@ -5,7 +5,7 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from datetime import datetime
 
-from flask.ext.login import AnonymousUserMixin
+from flask_login import AnonymousUserMixin
 from flask import current_app
 from mongoengine import (DateTimeField, Document, EmailField, ListField,
                          ReferenceField, StringField)

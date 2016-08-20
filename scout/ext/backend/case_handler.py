@@ -31,7 +31,7 @@ class CaseHandler(object):
         ##TODO create event for doing this?
 
     def update_institute(self, internal_id, sanger_recipient=None,
-                            coverage_cutoff=None):
+                         coverage_cutoff=None):
         """Update the information for an institute
 
             Args:

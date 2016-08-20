@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from bson.json_util import dumps
 from flask import Blueprint, jsonify, Response, request, redirect, url_for
-from flask.ext.login import current_user
+from flask_login import current_user
 import markdown as md
 
 from scout.core.utils import validate_user

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from flask import Blueprint, render_template, redirect, url_for
-from flask.ext.login import current_user
+from flask_login import current_user
 
 from .. import __version__
 
