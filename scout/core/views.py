@@ -219,6 +219,20 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
             return abort(404, ("phenotype term not found: {}"
                                .format(phenotype_term)))
 
+    return redirect(case_url)
+
+
+@core.route('/<institute_id>/<case_id>/update-hpogenes', methods=['POST'])
+def update_hpogenes(institute_id, case_id):
+    """Update the list of genes based on phenotype terms."""
+    validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+    update_hpolist(case_model)
+    return redirect(case_url)
+
+
+def update_hpolist(case_model):
     # fetch genes to update dynamic gene list
     try:
         username = current_app.config['PHENOMIZER_USERNAME']
@@ -227,8 +241,6 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
     except KeyError:
         genes = []
     store.update_dynamic_gene_list(case_model, genes)
-
-    return redirect(case_url)
 
 
 def sampleid_map(case_model):
