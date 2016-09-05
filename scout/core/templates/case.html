@@ -2,7 +2,7 @@
 {% from 'macros/_polymer.html' import core_item %}
 {% from '_macros.html' import activity_feed %}
 
-{% macro hpo_item(institute, case, hpo_term, group=False) %}
+{% macro hpo_item(institute, case, hpo_term, group=False, selected_ids=None) %}
 <div class="list-item">
   {% if group %}
       <div>
@@ -24,7 +24,8 @@
   {% else %}
     <div>
       <label>
-          <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}" checked>
+          <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
+                 {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
           {{ hpo_term.feature }}
           <a href="{{ hpo_term.hpo_link }}" target="_blank">
             <small>{{ hpo_term.phenotype_id }}</small>

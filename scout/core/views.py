@@ -104,7 +104,8 @@ def case(institute_id, case_id):
                 case_events=case_events, institute_id=institute_id,
                 case_id=case_id, panel_names=default_panel_names,
                 sample_map=sample_map, collaborators=collab_ids,
-                hpo_groups=PHENOTYPE_GROUPS)
+                hpo_groups=PHENOTYPE_GROUPS,
+                hpo_ids=request.args.getlist('hpo_id'))
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
@@ -235,8 +236,13 @@ def phenotypes_gendel(institute_id, case_id):
             store.remove_phenotype(institute, case_model, current_user,
                                    case_url, hpo_id)
     elif action == 'GENERATE':
-        if hpo_ids:
-            update_hpolist(case_model, hpo_ids=hpo_ids)
+        if len(hpo_ids) == 0:
+            hpo_ids = [term.phenotype_id for term in
+                       case_model.phenotype_terms]
+        update_hpolist(case_model, hpo_ids=hpo_ids)
+        case_url = url_for('.case', institute_id=institute_id,
+                           case_id=case_id, hpo_id=hpo_ids)
+
     return redirect(case_url)
 
 
