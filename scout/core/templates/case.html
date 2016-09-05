@@ -600,7 +600,7 @@
         <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
             <div class="md-card-body-list mod-scrollable-big">
               {% for hpo_term in case.phenotype_terms %}
-                {{ hpo_item(institute, case, hpo_term) }}
+                {{ hpo_item(institute, case, hpo_term, selected_ids=hpo_ids) }}
               {% endfor %}
             </div>
             <div class="md-card-footer layout">
