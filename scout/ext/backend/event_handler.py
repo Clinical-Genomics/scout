@@ -286,7 +286,7 @@ class EventHandler(object):
         case.save()
 
     def add_phenotype(self, institute, case, user, link, hpo_term=None,
-                      omim_term=None):
+                      omim_term=None, is_group=False):
         """Add a new phenotype term to a case
 
             Create a phenotype term and event with the given information
@@ -298,6 +298,7 @@ class EventHandler(object):
                 link (str): The url to be used in the event
                 hpo_term (str): A hpo id
                 omim_term (str): A omim id
+                is_group (bool): is phenotype term a group?
 
         """
         try:
@@ -316,7 +317,9 @@ class EventHandler(object):
             raise e
 
         phenotype_terms = []
-        existing_ids = set(term.phenotype_id for term in case.phenotype_terms)
+        existing_terms = (case.phenotype_groups if is_group else
+                          case.phenotype_terms)
+        existing_ids = set(term.phenotype_id for term in existing_terms)
         for hpo_result in hpo_results:
             phenotype_name = hpo_result['hpo_term']
             description = hpo_result['description']
@@ -327,7 +330,10 @@ class EventHandler(object):
             if phenotype_term.phenotype_id not in existing_ids:
                 logger.info("Append the phenotype term {0} to case {1}"
                             .format(phenotype_name, case.display_name))
-                case.phenotype_terms.append(phenotype_term)
+                if is_group:
+                    case.phenotype_groups.append(phenotype_term)
+                else:
+                    case.phenotype_terms.append(phenotype_term)
 
                 logger.info("Creating event for adding phenotype term for case"
                             " {0}".format(case.display_name))
@@ -347,7 +353,8 @@ class EventHandler(object):
         logger.debug("Case updated")
         return phenotype_terms
 
-    def remove_phenotype(self, institute, case, user, link, phenotype_id):
+    def remove_phenotype(self, institute, case, user, link, phenotype_id,
+                         is_group=False):
         """Remove an existing phenotype from a case
 
         Args:
@@ -358,10 +365,13 @@ class EventHandler(object):
             phenotype_id (str): A phenotype id
         """
         logger.info("Removing HPO term from case {0}".format(case.display_name))
-
-        for phenotype in case.phenotype_terms:
+        if is_group:
+            terms = case.phenotype_groups
+        else:
+            terms = case.phenotype_terms
+        for phenotype in terms:
             if phenotype.phenotype_id == phenotype_id:
-                case.phenotype_terms.remove(phenotype)
+                terms.remove(phenotype)
                 logger.info("Creating event for removing phenotype term {0}"\
                             " from case {1}".format(
                                 phenotype_id, case.display_name))

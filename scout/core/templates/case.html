@@ -2,6 +2,28 @@
 {% from 'macros/_polymer.html' import core_item %}
 {% from '_macros.html' import activity_feed %}
 
+{% macro hpo_item(institute, case, hpo_term, group=False) %}
+<div class="list-item">
+  <div>
+    {{ hpo_term.feature }}
+    <a href="{{ hpo_term.hpo_link }}" target="_blank">
+      <small>{{ hpo_term.phenotype_id }}</small>
+    </a>
+  </div>
+
+  <form action="{{ url_for('core.case_phenotype',
+                           institute_id=institute.display_name,
+                           case_id=case.display_name,
+                           phenotype_id=hpo_term.phenotype_id,
+                           is_group=('yes' if group else None)) }}"
+        method="POST">
+    <button type="submit" class="md-button-flat">
+      <core-icon icon="highlight-remove"></core-icon>
+    </button>
+  </form>
+</div>
+{% endmacro %}
+
 {% set page_title = "Case " ~ case.display_name %}
 {% if case.is_solved %}
   {% set header_classes = 'success' %}
@@ -479,6 +501,36 @@
           </div>
         </div>
       </div>
+
+      <div class="md-card">
+        <div class="md-card-header">Phenotype groups</div>
+        <div class="md-card-body-list mod-scrollable-big">
+          {% for hpo_term in case.phenotype_groups %}
+            {{ hpo_item(institute, case, hpo_term, group=True) }}
+          {% else %}
+            <div class="list-item">
+              <div>
+                No HPO groups added yet.
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <form accept-charset="UTF-8"
+              action="{{ url_for('core.case_phenotype',
+                                 institute_id=institute.display_name,
+                                 case_id=case.display_name,
+                                 is_group='yes') }}"
+              method="POST"
+              class="md-card-footer layout">
+          <select class="form-control" name="hpo_term">
+              <option></option>
+              {% for hpo_id, group in hpo_groups.iteritems() %}
+                <option value="{{ hpo_id }}">{{ group.name }} ({{ group.abbr }})</option>
+              {% endfor %}
+          </select>
+          <button class="md-button-flat" type="submit">Add</button>
+        </form>
+      </div>
     </div>
 
     <div id="gene-lists+hpo-genes" class="case-segment-row">
@@ -531,24 +583,10 @@
         </div>
         <div class="md-card-body-list mod-scrollable-big">
           {% for hpo_term in case.phenotype_terms %}
-            <div class="list-item">
-              <div>
-                {{ hpo_term.feature }}
-                <a href="{{ hpo_term.hpo_link }}" target="_blank">
-                  <small>{{ hpo_term.phenotype_id }}</small>
-                </a>
-              </div>
-
-              <form action="{{ url_for('core.case_phenotype',
-                                       institute_id=institute.display_name,
-                                       case_id=case.display_name,
-                                       phenotype_id=hpo_term.phenotype_id) }}"
-                    method="POST">
-                <button type="submit" class="md-button-flat">
-                  <core-icon icon="highlight-remove"></core-icon>
-                </button>
-              </form>
-            </div>
+            {{ hpo_item(institute, case, hpo_term) }}
+          {% endfor %}
+          {% for hpo_term in case.phenotype_groups %}
+            {{ hpo_item(institute, case, hpo_term, group=True) }}
           {% endfor %}
         </div>
         <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">

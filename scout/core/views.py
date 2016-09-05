@@ -15,6 +15,7 @@ from scout.helpers import templated
 
 from .forms import init_filters_form, process_filters_form, GeneListUpload
 from .utils import validate_user, genecov_links
+from .constants import PHENOTYPE_GROUPS
 
 core = Blueprint('core', __name__, template_folder='templates')
 
@@ -101,7 +102,8 @@ def case(institute_id, case_id):
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
                 case_id=case_id, panel_names=default_panel_names,
-                sample_map=sample_map, collaborators=collab_ids)
+                sample_map=sample_map, collaborators=collab_ids,
+                hpo_groups=PHENOTYPE_GROUPS)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
@@ -192,19 +194,21 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
     institute = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
     case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
+    is_group = request.args.get('is_group') == 'yes'
 
     if phenotype_id:
         # DELETE a phenotype from the list
         store.remove_phenotype(institute, case_model, current_user,
-                               case_url, phenotype_id)
+                               case_url, phenotype_id,
+                               is_group=is_group)
     else:
         try:
             # POST a new phenotype to the list
             phenotype_term = request.form['hpo_term']
             if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
-                results = store.add_phenotype(institute, case_model,
-                                              current_user, case_url,
-                                              hpo_term=phenotype_term)
+                results = store.add_phenotype(
+                    institute, case_model, current_user, case_url,
+                    hpo_term=phenotype_term, is_group=is_group)
             else:
                 # assume omim id
                 results = store.add_phenotype(institute, case_model,
