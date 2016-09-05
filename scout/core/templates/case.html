@@ -4,23 +4,34 @@
 
 {% macro hpo_item(institute, case, hpo_term, group=False) %}
 <div class="list-item">
-  <div>
-    {{ hpo_term.feature }}
-    <a href="{{ hpo_term.hpo_link }}" target="_blank">
-      <small>{{ hpo_term.phenotype_id }}</small>
-    </a>
-  </div>
-
-  <form action="{{ url_for('core.case_phenotype',
-                           institute_id=institute.display_name,
-                           case_id=case.display_name,
-                           phenotype_id=hpo_term.phenotype_id,
-                           is_group=('yes' if group else None)) }}"
-        method="POST">
-    <button type="submit" class="md-button-flat">
-      <core-icon icon="highlight-remove"></core-icon>
-    </button>
-  </form>
+  {% if group %}
+      <div>
+          {{ hpo_term.feature }}
+          <a href="{{ hpo_term.hpo_link }}" target="_blank">
+            <small>{{ hpo_term.phenotype_id }}</small>
+          </a>
+      </div>
+      <form action="{{ url_for('core.case_phenotype',
+                               institute_id=institute.display_name,
+                               case_id=case.display_name,
+                               phenotype_id=hpo_term.phenotype_id,
+                               is_group=('yes' if group else None)) }}"
+            method="POST">
+        <button type="submit" class="md-button-flat">
+          <core-icon icon="highlight-remove"></core-icon>
+        </button>
+      </form>
+  {% else %}
+    <div>
+      <label>
+          <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}" checked>
+          {{ hpo_term.feature }}
+          <a href="{{ hpo_term.hpo_link }}" target="_blank">
+            <small>{{ hpo_term.phenotype_id }}</small>
+          </a>
+      </label>
+    </div>
+  {% endif %}
 </div>
 {% endmacro %}
 
@@ -581,38 +592,34 @@
           (<a target="_blank"
               href="http://compbio.charite.de/hpoweb/showterm?id=HP:0000018">HPO web</a>)
         </div>
-        <div class="md-card-body-list mod-scrollable-big">
-          {% for hpo_term in case.phenotype_terms %}
-            {{ hpo_item(institute, case, hpo_term) }}
-          {% endfor %}
-          {% for hpo_term in case.phenotype_groups %}
-            {{ hpo_item(institute, case, hpo_term, group=True) }}
-          {% endfor %}
-        </div>
         <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
           <input type="text" name="hpo_term" placeholder="HP:XXX or OMIM:XXX">
           <button class="md-button-flat" type="submit">Add</button>
         </form>
+        <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
+            <div class="md-card-body-list mod-scrollable-big">
+              {% for hpo_term in case.phenotype_terms %}
+                {{ hpo_item(institute, case, hpo_term) }}
+              {% endfor %}
+            </div>
+            <div class="md-card-footer layout">
+                <button class="md-button-flat" type="submit" name="action" value="DELETE">Delete</button>
+                <button class="md-button-flat" type="submit" name="action" value="GENERATE">Generate gene list</button>
+            </div>
+        </form>
       </div>
 
       <div class="md-card">
-        <div class="md-card-header">HPO gene list</div>
+        <div class="md-card-header">HPO gene list ({{ case.dynamic_gene_list|length }} genes)</div>
         <div class="md-card-body-list mod-scrollable-big">
-          {% for hpo_gene in case.dynamic_gene_list[:10] %}
+          {% for hpo_gene in case.dynamic_gene_list %}
             <div class="list-item" title="{{ hpo_gene.description }}">
               <div>
-                {{ hpo_gene.gene_id or 'Unknown' }}
-                <a href="http://www.omim.org/entry/{{ hpo_gene.omim_id }}" target="_blank">
-                  <small>{{ hpo_gene.omim_id }}</small>
-                </a>
+                {{ hpo_gene.gene_id }}
               </div>
-              <small class="md-badge">{{ hpo_gene.p_value }}</small>
             </div>
           {% endfor %}
         </div>
-        <form accept-charset="UTF-8" action="{{ url_for('core.update_hpogenes', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
-          <button class="md-button-flat" type="submit">Generate</button>
-        </form>
       </div>
     </div>
 

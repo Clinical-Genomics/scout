@@ -313,27 +313,20 @@ class EventHandler(object):
             logger.debug("Got result {0}".format(
                 ', '.join(res['hpo_term'] for res in hpo_results)))
         except ValueError as e:
-            #TODO Should ve raise a more proper exception here?
+            # TODO Should ve raise a more proper exception here?
             raise e
 
-        phenotype_terms = []
-        existing_terms = (case.phenotype_groups if is_group else
-                          case.phenotype_terms)
-        existing_ids = set(term.phenotype_id for term in existing_terms)
+        existing_terms = set(term.phenotype_id for term in
+                             case.phenotype_terms)
         for hpo_result in hpo_results:
             phenotype_name = hpo_result['hpo_term']
             description = hpo_result['description']
             phenotype_term = PhenotypeTerm(phenotype_id=phenotype_name,
                                            feature=description)
-            phenotype_terms.append(phenotype_term)
-
-            if phenotype_term.phenotype_id not in existing_ids:
+            if phenotype_term.phenotype_id not in existing_terms:
                 logger.info("Append the phenotype term {0} to case {1}"
                             .format(phenotype_name, case.display_name))
-                if is_group:
-                    case.phenotype_groups.append(phenotype_term)
-                else:
-                    case.phenotype_terms.append(phenotype_term)
+                case.phenotype_terms.append(phenotype_term)
 
                 logger.info("Creating event for adding phenotype term for case"
                             " {0}".format(case.display_name))
@@ -348,10 +341,16 @@ class EventHandler(object):
                     subject=case.display_name,
                     content=phenotype_name
                 )
+            if is_group:
+                existing_groups = set(term.phenotype_id for term in
+                                      case.phenotype_groups)
+                if phenotype_term.phenotype_id not in existing_groups:
+                    logger.info("Append the phenotype group {0} to case {1}"
+                                .format(phenotype_name, case.display_name))
+                    case.phenotype_groups.append(phenotype_term)
 
         case.save()
         logger.debug("Case updated")
-        return phenotype_terms
 
     def remove_phenotype(self, institute, case, user, link, phenotype_id,
                          is_group=False):

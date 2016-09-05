@@ -5,7 +5,7 @@ from flask.ext.login import login_required
 
 from ..admin import UserModelView
 from ..extensions import admin
-from ..models import User, Institute, Variant, Whitelist, Case
+from ..models import User, Institute, Variant, Whitelist, Case, GenePanel
 from ..helpers import templated
 
 user = Blueprint('profile', __name__, template_folder='templates')
@@ -18,7 +18,8 @@ class CaseView(ModelView):
                            'dynamic_gene_list']
     form_columns = ['display_name', 'owner', 'collaborators', 'individuals',
                     'status', 'is_research', 'default_panels',
-                    'gender_check', 'clinical_panels', 'phenotype_terms']
+                    'gender_check', 'clinical_panels', 'phenotype_terms',
+                    'dynamic_gene_list']
 
 
 class VariantView(ModelView):
@@ -31,6 +32,7 @@ admin.add_view(UserModelView(User))
 admin.add_view(ModelView(Institute))
 admin.add_view(CaseView(Case))
 admin.add_view(VariantView(Variant))
+admin.add_view(VariantView(GenePanel))
 
 
 @user.route('/profile/<user_id>')

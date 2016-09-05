@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import itertools
 import os.path
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
@@ -206,45 +207,49 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
             # POST a new phenotype to the list
             phenotype_term = request.form['hpo_term']
             if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
-                results = store.add_phenotype(
-                    institute, case_model, current_user, case_url,
-                    hpo_term=phenotype_term, is_group=is_group)
+                store.add_phenotype(institute, case_model, current_user,
+                                    case_url, hpo_term=phenotype_term,
+                                    is_group=is_group)
             else:
                 # assume omim id
-                results = store.add_phenotype(institute, case_model,
-                                              current_user, case_url,
-                                              omim_term=phenotype_term)
+                store.add_phenotype(institute, case_model,
+                                    current_user, case_url,
+                                    omim_term=phenotype_term)
         except ValueError:
             return abort(400, ("unable to add phenotype term: {}"
                                .format(phenotype_term)))
-
-        if len(results) == 0:
-            flash("unknown HPO term: {}".format(phenotype_term))
-            return abort(404, ("phenotype term not found: {}"
-                               .format(phenotype_term)))
-
     return redirect(case_url)
 
 
-@core.route('/<institute_id>/<case_id>/update-hpogenes', methods=['POST'])
-def update_hpogenes(institute_id, case_id):
+@core.route('/<institute_id>/<case_id>/phenotypes', methods=['POST'])
+def phenotypes_gendel(institute_id, case_id):
     """Update the list of genes based on phenotype terms."""
-    validate_user(current_user, institute_id)
+    institute = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
     case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
-    update_hpolist(case_model)
+    action = request.form['action']
+    hpo_ids = request.form.getlist('hpo_id')
+    if action == 'DELETE':
+        for hpo_id in hpo_ids:
+            # DELETE a phenotype from the list
+            store.remove_phenotype(institute, case_model, current_user,
+                                   case_url, hpo_id)
+    elif action == 'GENERATE':
+        if hpo_ids:
+            update_hpolist(case_model, hpo_ids=hpo_ids)
     return redirect(case_url)
 
 
-def update_hpolist(case_model):
+def update_hpolist(case_model, hpo_ids):
     # fetch genes to update dynamic gene list
     try:
         username = current_app.config['PHENOMIZER_USERNAME']
         password = current_app.config['PHENOMIZER_PASSWORD']
-        genes = hpo_genes(username, password, case_model.phenotype_terms)
+        gene_ids = [{'gene_id': gene_id} for gene_id in
+                    hpo_genes(username, password, hpo_ids)]
     except KeyError:
-        genes = []
-    store.update_dynamic_gene_list(case_model, genes)
+        gene_ids = []
+    store.update_dynamic_gene_list(case_model, gene_ids)
 
 
 def sampleid_map(case_model):
@@ -256,7 +261,7 @@ def sampleid_map(case_model):
     return sample_map
 
 
-def hpo_genes(username, password, phenotype_terms):
+def hpo_genes(username, password, hpo_ids):
     """Return the list of HGNC symbols that match annotated HPO terms.
 
     Args:
@@ -277,20 +282,14 @@ def hpo_genes(username, password, phenotype_terms):
             'raw_line': str
         }
     """
-    hpo_terms = [phenotype_term.phenotype_id for phenotype_term
-                 in phenotype_terms]
-
     # skip querying Phenomizer unless at least one HPO terms exists
-    if hpo_terms:
-        try:
-            results = query_phenomizer.query(username, password, hpo_terms)
-            return [result for result in results
-                    if result['p_value'] is not None]
-        except SystemExit:
-            return None
-    else:
+    try:
+        results = query_phenomizer.query(username, password, hpo_ids)
+        nested_genes = [result['gene_id'].split(', ') for result in results
+                        if result['gene_id'] and result['p_value'] is not None]
+        return list(set(itertools.chain.from_iterable(nested_genes)))
+    except SystemExit:
         return None
-
 
 @core.route('/<institute_id>/<case_id>/coverage_report', methods=['GET'])
 def coverage_report(institute_id, case_id):
