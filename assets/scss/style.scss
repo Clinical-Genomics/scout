@@ -51,6 +51,11 @@ input {
   color: inherit;
 }
 
+select {
+  // override for Firefox!
+  color: $body-font-color;
+}
+
 .full-width {
     width: 100%;
 }
