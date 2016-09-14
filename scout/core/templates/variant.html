@@ -46,9 +46,23 @@
 {% block toolbar_right %}
   {{ super() }}
 
-  <div v-on="click: showModal" class="icon-button" title="Order Sanger">
-    <core-icon icon="mail"></core-icon>
-  </div>
+  {% if variant.ordered_sanger %}
+    <div v-on="click: showModal" class="icon-button" title="Order Sanger">
+      <core-icon icon="mail"></core-icon>
+    </div>
+  {% else %}
+    <div class="case-assign-icon">
+      <div class="md-label">
+        <div class="md-label-text">
+          {% if variant.validation %}
+            Sanger: {{ variant.validation }}
+          {% else %}
+            Sanger: Pending...
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
   {% if variant not in case.suspects %}
     <form action="{{ url_for('core.pin_variant',

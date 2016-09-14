@@ -77,7 +77,7 @@ class Variant(Document):
     variant_rank = IntField(required=True)
     institute = ReferenceField('Institute', required=True)
     sanger_ordered = BooleanField()
-    validation = StringField(choices=('True postive', 'False positive'))
+    validation = StringField(choices=('True positive', 'False positive'))
     quality = FloatField()
     filters = ListField(StringField())
     samples = ListField(EmbeddedDocumentField(GTCall))

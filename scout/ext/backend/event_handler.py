@@ -543,6 +543,22 @@ class EventHandler(object):
             subject=variant.display_name,
         )
 
+    def validate(self, institute, case, user, link, variant, validate_type):
+        """Mark validation status for a variant."""
+        variant.validation = validate_type
+        variant.save()
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='validate',
+            variant_id=variant.variant_id,
+            subject=variant.display_name,
+        )
+
     def mark_causative(self, institute, case, user, link, variant):
         """Create an event for marking a variant causative.
 

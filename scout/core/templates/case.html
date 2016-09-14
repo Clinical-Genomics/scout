@@ -383,23 +383,21 @@
                 </div>
               </div>
 
-              {% if variant.validation %}
-                <span class="md-badge">{{ variant.validation }}</span>
-              {% else %}
-                <form action="{{ url_for('core.mark_validation',
+              <form action="{{ url_for('core.mark_validation',
                                          institute_id=institute.display_name,
                                          case_id=case.display_name,
                                          variant_id=variant.id) }}"
-                      method="POST" accept-charset="utf-8">
-                  <select onchange="this.form.submit()" name="type">
-                    <option>Validate Sanger...</option>
-                    <option value="True positive">True positive</option>
-                    <option value="False positive">False positive</option>
-                  </select>
-                </form>
-                {% if variant.sanger_ordered %}
-                  <span class="md-badge"><small>SANGER ORDERED</small></span>
-                {% endif %}
+                    method="POST" accept-charset="utf-8">
+                <select onchange="this.form.submit()" name="type">
+                  <option>Validate Sanger...</option>
+                  {% for type in ('True positive', 'False positive') %}
+                    <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+
+              {% if variant.sanger_ordered %}
+                <span class="md-badge"><small>SANGER ORDERED</small></span>
               {% endif %}
 
               <form action="{{ url_for('core.unpin_variant',

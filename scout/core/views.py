@@ -528,6 +528,10 @@ def email_sanger(institute_id, case_id, variant_id):
     case_model = store.case(institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
 
+    if variant_model not in case_model.suspects:
+        case_model.suspects.append(variant_model)
+        case_model.save()
+
     recipients = institute.sanger_recipients
     if len(recipients) == 0:
         flash('No sanger recipients added to the institute.')
@@ -606,11 +610,11 @@ def mark_validation(institute_id, case_id, variant_id):
     institute_model = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
-    validate_type = request.form['type']
+    validate_type = request.form['type'] or None
     variant_link = url_for('.variant', institute_id=institute_id,
                            case_id=case_id, variant_id=variant_id)
-    store.validate(institute_model, case_model, current_user, variant_model,
-                   variant_link, validate_type)
+    store.validate(institute_model, case_model, current_user, variant_link,
+                   variant_model, validate_type)
     return redirect(request.referrer)
 
 
