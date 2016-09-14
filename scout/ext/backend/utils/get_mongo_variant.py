@@ -272,6 +272,13 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
             variant['variant_id'], ''.join(phylop)))
         mongo_variant['phylop_conservation'] = phylop
 
+    spidex = variant['info_dict'].get('SPIDEX')
+    if spidex:
+        value = spidex[0]
+        logger.debug("Updating SPIDEX annotation for variant {0} to {1}".format(
+            variant['variant_id'], spidex))
+        mongo_variant['spidex'] = spidex
+
     # Check what different genotype callers says about this variant
     callers = variant['info_dict'].get('set')
     if callers:
