@@ -100,6 +100,7 @@ class Variant(Document):
     cadd_score = FloatField()
     clnsig = IntField()
     clnsigacc = ListField(StringField())
+    spidex = FloatField()
 
     # Callers
     gatk = StringField(choices=VARIANT_CALL, default='Not Used')
