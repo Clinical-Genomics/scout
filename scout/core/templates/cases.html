@@ -98,7 +98,7 @@
 
 {% block content %}
   <drawer-panel v-ref="filters" side="right">
-      <form action="{{ url_for('core.institute_settings', institute_id=institute.id) }}" method="POST">
+      <form action="{{ url_for('core.institute_settings', institute_id=institute_id) }}" method="POST">
         <div class="variants-filters-group">
           <div class="variants-filters-group-list">
             <div class="variants-filters-group-label">

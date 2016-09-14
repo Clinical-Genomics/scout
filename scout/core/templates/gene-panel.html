@@ -6,13 +6,13 @@
   {{ super() }}
 
   <div class="md-breadcrumb-group flex">
-    <a href="{{ url_for('core.cases', institute_id=institute.display_name) }}" class="md-breadcrumb-button is-raised">
+    <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}" class="md-breadcrumb-button is-raised">
       <small>{{ institute.display_name }}</small>
     </a>
 
     <core-icon icon="chevron-right" class="md-breadcrumb-separator">
     </core-icon>
-    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute.display_name, case_id=case.display_name) }}">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute.internal_id, case_id=case.display_name) }}">
       <small>{{ case.display_name }}</small>
     </a>
 
@@ -26,7 +26,7 @@
 
 {% block toolbar_secondary %}
   {% for gene_panel in case.sorted_clinical_panels %}
-    <a class="md-label" href="{{ url_for('core.gene_panel', institute_id=institute.display_name, case_id=case.display_name, panel_id=gene_panel.panel_name) }}">
+    <a class="md-label" href="{{ url_for('core.gene_panel', institute_id=institute.internal_id, case_id=case.display_name, panel_id=gene_panel.panel_name) }}">
       {% if gene_panel == panel %}
         <div class="md-label-icon">
           <core-icon icon="arrow-forward"></core-icon>

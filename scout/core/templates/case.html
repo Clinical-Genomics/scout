@@ -12,7 +12,7 @@
           </a>
       </div>
       <form action="{{ url_for('core.case_phenotype',
-                               institute_id=institute.display_name,
+                               institute_id=institute.internal_id,
                                case_id=case.display_name,
                                phenotype_id=hpo_term.phenotype_id,
                                is_group=('yes' if group else None)) }}"
@@ -47,7 +47,7 @@
   {{ super() }}
 
   <div class="md-breadcrumb-group flex">
-    <a href="{{ url_for('core.cases', institute_id=institute.display_name) }}" class="md-breadcrumb-button is-raised">
+    <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}" class="md-breadcrumb-button is-raised">
       <small>{{ institute.display_name }}</small>
     </a>
     <core-icon
@@ -82,7 +82,7 @@
     </div>
   {% endif %}
 
-  <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
+  <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
     {% if case.status == 'prioritized' %}
         <input type="hidden" name="status" readonly value="active">
     {% else %}
@@ -101,7 +101,7 @@
 
   {% if case.assignee %}
     <form class="case-assign" action="{{ url_for('core.remove_assignee',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name) }}"
           method="POST">
       <button type="submit" class="case-assign-icon">
@@ -115,7 +115,7 @@
     </form>
   {% else %}
     <form class="case-assign" action="{{ url_for('core.assign_self',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name) }}"
           method="POST"
           title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
@@ -136,7 +136,7 @@
       <core-icon icon="label"></core-icon>
     </div>
 
-    <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
+    <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
       {{ case.status|capitalize }}
 
       {% if case.status != 'archived' %}
@@ -232,7 +232,7 @@
       </div>
   {% endif %}
 
-  {% if case.owner == institute.display_name %}
+  {% if case.owner == institute.internal_id %}
     {% if collaborators %}
       <form class="md-label" action="{{ url_for('core.share_case', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
         <div class="md-label-icon">
@@ -272,12 +272,12 @@
 {% block content %}
 
   <div class="layout">
-    <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}" class="case-variants-button">
+    <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}" class="case-variants-button">
       Clinical variants
     </a>
 
     {% if case.is_research %}
-      <a href="{{ url_for('core.variants', institute_id=institute.display_name, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+      <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
         Research variants
       </a>
     {% endif %}
@@ -374,7 +374,7 @@
                 <div class="md-item-body">
                   <div class="md-item-title">
                     <a href="{{ url_for('core.variant',
-                                    institute_id=institute.display_name,
+                                    institute_id=institute.internal_id,
                                     case_id=case.display_name,
                                     variant_id=variant.id) }}">
                       {{ variant.hgnc_symbols|join(', ') }}
@@ -384,7 +384,7 @@
               </div>
 
               <form action="{{ url_for('core.mark_validation',
-                                         institute_id=institute.display_name,
+                                         institute_id=institute.internal_id,
                                          case_id=case.display_name,
                                          variant_id=variant.id) }}"
                     method="POST" accept-charset="utf-8">
@@ -401,7 +401,7 @@
               {% endif %}
 
               <form action="{{ url_for('core.unpin_variant',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name,
                              variant_id=variant.id) }}"
                     method="POST">
@@ -422,7 +422,7 @@
             {% for variant in case.causatives %}
             <div class="list-item">
               <a href="{{ url_for('core.variant',
-                                  institute_id=institute.display_name,
+                                  institute_id=institute.internal_id,
                                   case_id=case.display_name,
                                   variant_id=variant.id) }}"
                  class="md-item">
@@ -441,7 +441,7 @@
               </a>
 
               <form action="{{ url_for('core.unmark_causative',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name,
                              variant_id=variant.id) }}"
                     method="POST">
@@ -480,7 +480,7 @@
                     <form class="activity-feed-delete"
                           accept-charset="UTF-8"
                           action="{{ url_for('api.delete_event',
-                                             institute_id=institute.display_name,
+                                             institute_id=institute.internal_id,
                                              case_id=case.display_name,
                                              event_id=comment.id) }}"
                           method="POST">
@@ -542,7 +542,7 @@
         </div>
         <form accept-charset="UTF-8"
               action="{{ url_for('core.case_phenotype',
-                                 institute_id=institute.display_name,
+                                 institute_id=institute.internal_id,
                                  case_id=case.display_name,
                                  is_group='yes') }}"
               method="POST"
@@ -606,11 +606,11 @@
           (<a target="_blank"
               href="http://compbio.charite.de/hpoweb/showterm?id=HP:0000018">HPO web</a>)
         </div>
-        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
           <input type="text" name="hpo_term" placeholder="HP:XXX or OMIM:XXX">
           <button class="md-button-flat" type="submit">Add</button>
         </form>
-        <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.display_name, case_id=case.display_name) }}" method="POST">
+        <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
             <div class="md-card-body-list mod-scrollable-big">
               {% for hpo_term in case.phenotype_terms %}
                 {{ hpo_item(institute, case, hpo_term, selected_ids=hpo_ids) }}
@@ -651,7 +651,7 @@
   <!-- Request research list modal -->
   <md-modal v-ref="modal" title="Request research list">
     <form action="{{ url_for('core.open_research',
-                              institute_id=institute.display_name,
+                              institute_id=institute.internal_id,
                               case_id=case.display_name) }}"
           class="case-open-research" method="POST">
       <p>Please confirm that you want to have the list of research variants opened.</p>
@@ -663,7 +663,7 @@
   <!-- Request rerun modal -->
   <md-modal v-ref="rerunModal" title="Request rerun">
     <form action="{{ url_for('core.request_rerun',
-                              institute_id=institute.display_name,
+                              institute_id=institute.internal_id,
                               case_id=case.display_name) }}"
           class="case-open-research" method="POST">
       <p>Please confirm that you want to have the case rerun and the current variants replaced with updated information.</p>

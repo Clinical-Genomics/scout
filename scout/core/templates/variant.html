@@ -66,7 +66,7 @@
 
   {% if variant not in case.suspects %}
     <form action="{{ url_for('core.pin_variant',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name,
                              variant_id=variant_id) }}"
           method="POST">
@@ -76,7 +76,7 @@
     </form>
   {% else %}
     <form action="{{ url_for('core.unpin_variant',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name,
                              variant_id=variant_id) }}"
           method="POST">
@@ -88,7 +88,7 @@
 
   {% if variant in case.causatives %}
       <form action="{{ url_for('core.unmark_causative',
-                               institute_id=institute.display_name,
+                               institute_id=institute.internal_id,
                                case_id=case.display_name,
                                variant_id=variant.id) }}"
             method="POST">
@@ -103,7 +103,7 @@
       </form>
   {% else %}
     <form action="{{ url_for('core.mark_causative',
-                             institute_id=institute.display_name,
+                             institute_id=institute.internal_id,
                              case_id=case.display_name,
                              variant_id=variant_id) }}"
           method="POST">

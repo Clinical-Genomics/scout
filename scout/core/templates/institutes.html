@@ -15,7 +15,7 @@
   <div class="cases-list">
     <div class="md-card-list">
       {% for institute in institutes %}
-        <a class="md-card" href="{{ url_for('core.cases', institute_id=institute.display_name) }}">
+        <a class="md-card" href="{{ url_for('core.cases', institute_id=institute.internal_id) }}">
           <div class="md-card-body--padded">
 
             <div class="md-item-label">
