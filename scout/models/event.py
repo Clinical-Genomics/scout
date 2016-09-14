@@ -61,7 +61,8 @@ VERBS = (
   "check_case",
   "share",
   "unshare",
-  "rerun"
+  "rerun",
+  "validate",
 )
 
 
@@ -122,7 +123,8 @@ class Event(Document):
       "check_case": "marked case as",
       "share": "shared case with",
       "unshare": "revoked access for",
-      "rerun": "requested rerun of"
+      "rerun": "requested rerun of",
+      "validate": "marked validation status for",
     }
 
     return display_info.get(self.verb, "")
