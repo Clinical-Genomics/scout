@@ -600,6 +600,20 @@ def mark_checked(institute_id, case_id):
     return redirect(request.referrer)
 
 
+@core.route('/<institute_id>/<case_id>/<variant_id>/validate', methods=['POST'])
+def mark_validation(institute_id, case_id, variant_id):
+    """Mark a variant as sanger validated."""
+    institute_model = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    variant_model = store.variant(document_id=variant_id)
+    validate_type = request.form['type']
+    variant_link = url_for('.variant', institute_id=institute_id,
+                           case_id=case_id, variant_id=variant_id)
+    store.validate(institute_model, case_model, current_user, variant_model,
+                   variant_link, validate_type)
+    return redirect(request.referrer)
+
+
 @core.route('/pileup/range')
 def pileup_range():
     """Build a proper call to the pileup viewer for a given range."""

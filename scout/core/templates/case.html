@@ -360,12 +360,7 @@
         <div class="md-card-body-list">
           {% for variant in case.suspects %}
             <div class="list-item">
-              <a href="{{ url_for('core.variant',
-                                  institute_id=institute.display_name,
-                                  case_id=case.display_name,
-                                  variant_id=variant.id) }}"
-                 class="md-item">
-
+              <div class="md-item">
                 {% if variant.manual_rank %}
                   <small class="md-badge--{{ variant.manual_rank_level }}">
                     {{ variant.manual_rank }}
@@ -378,14 +373,34 @@
 
                 <div class="md-item-body">
                   <div class="md-item-title">
-                    {{ variant.hgnc_symbols|join(', ') }}
-
-                    {% if variant.sanger_ordered %}
-                      <span class="md-badge"><small>SANGER ORDERED</small></span>
-                    {% endif %}
+                    <a href="{{ url_for('core.variant',
+                                    institute_id=institute.display_name,
+                                    case_id=case.display_name,
+                                    variant_id=variant.id) }}">
+                      {{ variant.hgnc_symbols|join(', ') }}
+                    </a>
                   </div>
                 </div>
-              </a>
+              </div>
+
+              {% if variant.validation %}
+                <span class="md-badge">{{ variant.validation }}</span>
+              {% else %}
+                <form action="{{ url_for('core.mark_validation',
+                                         institute_id=institute.display_name,
+                                         case_id=case.display_name,
+                                         variant_id=variant.id) }}"
+                      method="POST" accept-charset="utf-8">
+                  <select onchange="this.form.submit()" name="type">
+                    <option>Validate Sanger...</option>
+                    <option value="True positive">True positive</option>
+                    <option value="False positive">False positive</option>
+                  </select>
+                </form>
+                {% if variant.sanger_ordered %}
+                  <span class="md-badge"><small>SANGER ORDERED</small></span>
+                {% endif %}
+              {% endif %}
 
               <form action="{{ url_for('core.unpin_variant',
                              institute_id=institute.display_name,
