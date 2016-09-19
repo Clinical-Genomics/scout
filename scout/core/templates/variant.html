@@ -330,14 +330,17 @@
               {% for transcript in variant.refseq_transcripts %}
                 {% if transcript.is_disease_associated %}
                   {% set row_class = 'danger' %}
-                {% elif transcript.is_canonical %}
-                  {% set row_class = 'success' %}
                 {% else %}
                   {% set row_class = 'default' %}
                 {% endif %}
 
                 <tr class="{{ row_class }}">
-                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>
+                    {% if transcript.is_canonical %}
+                      <span class="dot-indicator" title="CANONICAL"></span>
+                    {% endif %}
+                    {{ transcript.hgnc_symbol }}
+                  </td>
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
                   </td>
@@ -748,14 +751,17 @@
               {% for transcript in variant.transcripts %}
                 {% if transcript.is_disease_associated %}
                   {% set row_class = 'danger' %}
-                {% elif transcript.is_canonical %}
-                  {% set row_class = 'success' %}
                 {% else %}
                   {% set row_class = 'default' %}
                 {% endif %}
 
                 <tr class="{{ row_class }}">
-                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>
+                    {% if transcript.is_canonical %}
+                      <span class="dot-indicator" title="CANONICAL"></span>
+                    {% endif %}
+                    {{ transcript.hgnc_symbol }}
+                  </td>
                   <td>
                     <a target="_blank" href="{{ transcript.ensembl_link }}">
                       <small>{{ transcript.transcript_id }}</small>
