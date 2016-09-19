@@ -163,6 +163,11 @@
   font-size: .8em;
 }
 
-.affected {
+.affected, .danger {
     background-color: #FFCDD2;
+}
+
+.success {
+    // light green
+    background-color: #C5E1A5;
 }

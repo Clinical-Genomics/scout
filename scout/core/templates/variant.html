@@ -328,7 +328,15 @@
             </thead>
             <tbody>
               {% for transcript in variant.refseq_transcripts %}
-                <tr {% if transcript.is_canonical %}class="affected"{% endif %}>
+                {% if transcript.is_disease_associated %}
+                  {% set row_class = 'danger' %}
+                {% elif transcript.is_canonical %}
+                  {% set row_class = 'success' %}
+                {% else %}
+                  {% set row_class = 'default' %}
+                {% endif %}
+
+                <tr class="{{ row_class }}">
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
@@ -342,20 +350,6 @@
               {% endfor %}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div class="md-card">
-        <div class="md-card-header">Disease associated transcripts</div>
-        <div class="md-card-body-list">
-          {% for gene in variant.genes %}
-            {% for transcript in gene.disease_associated_transcripts %}
-              <div class="variant-list-item">
-                <div>{{ gene.hgnc_symbol }}</div>
-                <div>{{ transcript }}</div>
-              </div>
-            {% endfor %}
-          {% endfor %}
         </div>
       </div>
     </div>
@@ -752,7 +746,15 @@
 
             <tbody>
               {% for transcript in variant.transcripts %}
-                <tr {% if transcript.is_canonical %}class="affected"{% endif %}>
+                {% if transcript.is_disease_associated %}
+                  {% set row_class = 'danger' %}
+                {% elif transcript.is_canonical %}
+                  {% set row_class = 'success' %}
+                {% else %}
+                  {% set row_class = 'default' %}
+                {% endif %}
+
+                <tr class="{{ row_class }}">
                   <td>{{ transcript.hgnc_symbol }}</td>
                   <td>
                     <a target="_blank" href="{{ transcript.ensembl_link }}">
