@@ -774,3 +774,33 @@ class EventHandler(object):
 
         case_model.collaborators.remove(collaborator_id)
         case_model.save()
+
+    def diagnose(self, institute, case_model, current_user, link, level,
+                 omim_id, remove=False):
+        """Diagnose a case using OMIM ids."""
+        if level == 'phenotype':
+            diagnosis_list = case_model.diagnosis_phenotypes
+        elif level == 'gene':
+            diagnosis_list = case_model.diagnosis_genes
+        else:
+            raise TypeError('wrong level')
+
+        omim_number = int(omim_id.split(':')[-1])
+        if remove and omim_number in diagnosis_list:
+            diagnosis_list.remove(omim_number)
+        elif omim_number not in diagnosis_list:
+            diagnosis_list.append(omim_number)
+
+        self.create_event(
+            institute=institute,
+            case=case_model,
+            user=current_user,
+            link=link,
+            category='case',
+            verb='update_diagnosis',
+            subject=case_model.display_name,
+            content=omim_id
+        )
+
+        case_model.save()
+        return case_model

@@ -40,30 +40,33 @@ from datetime import datetime
 
 from mongoengine import (DateTimeField, Document, ReferenceField, StringField)
 
-VERBS = (
-  "assign",
-  "unassign",
-  "status",
-  "comment",
-  "synopsis",
-  "pin",
-  "unpin",
-  "sanger",
-  "archive",
-  "open_research",
-  "mark_causative",
-  "unmark_causative",
-  "manual_rank",
-  "add_phenotype",
-  "remove_phenotype",
-  "add_case",
-  "update_case",
-  "check_case",
-  "share",
-  "unshare",
-  "rerun",
-  "validate",
-)
+VERBS_MAP = {
+  "assign": "was assigned to",
+  "unassign": "was unassigned from",
+  "status": "updated the status for",
+  "comment": "commented on",
+  "synopsis": "updated synopsis for",
+  "pin": "pinned variant",
+  "unpin": "removed pinned variant",
+  "sanger": "ordered sanger sequencing for",
+  "archive": "archived",
+  "open_research": "opened research mode for",
+  "mark_causative": "marked causative for",
+  "unmark_causative": "unmarked causative for",
+  "manual_rank": "updated manual rank for",
+  "add_phenotype": "added HPO term for",
+  "remove_phenotype": "removed HPO term for",
+  "add_case": "added case",
+  "update_case": "updated case",
+  "check_case": "marked case as",
+  "share": "shared case with",
+  "unshare": "revoked access for",
+  "rerun": "requested rerun of",
+  "validate": "marked validation status for",
+  "update_diagnosis": "updated diagnosis for",
+}
+
+VERBS = VERBS_MAP.keys()
 
 
 class Event(Document):
@@ -102,32 +105,7 @@ class Event(Document):
     """
     Return the string that should be displayed based on the keyword
     """
-    display_info = {
-      "assign": "was assigned to",
-      "unassign": "was unassigned from",
-      "status": "updated the status for",
-      "comment": "commented on",
-      "synopsis": "updated synopsis for",
-      "pin": "pinned variant",
-      "unpin": "removed pinned variant",
-      "sanger": "ordered sanger sequencing for",
-      "archive": "archived",
-      "open_research": "opened research mode for",
-      "mark_causative": "marked causative for",
-      "unmark_causative": "unmarked causative for",
-      "manual_rank": "updated manual rank for",
-      "add_phenotype": "added HPO term for",
-      "remove_phenotype": "removed HPO term for",
-      "add_case": "added case",
-      "update_case": "updated case",
-      "check_case": "marked case as",
-      "share": "shared case with",
-      "unshare": "revoked access for",
-      "rerun": "requested rerun of",
-      "validate": "marked validation status for",
-    }
-
-    return display_info.get(self.verb, "")
+    return VERBS_MAP.get(self.verb, "")
 
   @property
   def is_edited(self):

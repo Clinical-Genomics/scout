@@ -6,7 +6,7 @@ import itertools
 
 from mongoengine import (Document, StringField, ListField, ReferenceField,
                          EmbeddedDocumentField, DateTimeField, BooleanField,
-                         BinaryField, FloatField, DictField)
+                         BinaryField, FloatField, DictField, IntField)
 
 from . import STATUS
 from .individual import Individual
@@ -69,6 +69,9 @@ class Case(Document):
     # madeline info is a full xml file
     madeline_info = StringField()
     vcf_file = StringField()
+
+    diagnosis_phenotypes = ListField(IntField())
+    diagnosis_genes = ListField(IntField())
 
     # completed analysis
     analysis_checked = BooleanField()

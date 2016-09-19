@@ -684,3 +684,17 @@ def request_rerun(institute_id, case_id):
     mail.send(msg)
 
     return redirect(request.referrer)
+
+
+@core.route('/<institute_id>/<case_id>/diagnose', methods=['POST'])
+def case_diagnosis(institute_id, case_id):
+    """Pin or unpin a variant from the list of suspects."""
+    institute = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    link = url_for('.case', institute_id=institute_id, case_id=case_id)
+    level = 'phenotype' if 'phenotype' in request.form else 'gene'
+    omim_id = request.form['omim_id']
+    remove = True if 'remove' in request.args else False
+    store.diagnose(institute, case_model, current_user, link, level=level,
+                   omim_id=omim_id, remove=remove)
+    return redirect(request.args.get('next') or request.referrer or link)

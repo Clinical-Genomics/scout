@@ -1,5 +1,7 @@
 .activity-feed {
   font-size: .9rem;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .activity-feed-item {
