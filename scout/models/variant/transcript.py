@@ -52,6 +52,8 @@ class Transcript(EmbeddedDocument):
     
     # If the transcript is relevant
     is_canonical = BooleanField()
+    # If the transcript is marked as diesease associated in gene panel
+    is_disease_associated = BooleanField()
 
     @property
     def refseq_ids_string(self):

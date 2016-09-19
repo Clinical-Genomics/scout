@@ -202,8 +202,15 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
         ensembl_gene_ids.add(gene.ensembl_gene_id)
 
         if hgnc_symbol in disease_associated_transcripts:
+            #Add a list of disease associated transcripts on gene level
             gene.disease_associated_transcripts = list(
                 disease_associated_transcripts[hgnc_symbol])
+            #Add annotation for disease association on transcript level
+            for transcript in gene.transcripts:
+                for refseq_id in transcript.refseq_ids:
+                    if refseq_id in disease_associated_transcripts[hgnc_symbol]:
+                        transcript.is_disease_associated = True
+            
 
     mongo_variant['hgnc_symbols'] = list(hgnc_symbols)
 
