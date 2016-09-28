@@ -204,6 +204,22 @@
     </form>
   </drawer-panel>
 
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="error-list">
+                <div class="md-card">
+                    <div class="md-card-header">Errors</div>
+
+                    <div class="md-card-body-list">
+                        {% for category, msg in messages %}
+                            <div class="variant-list-item">{{ msg }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
 	<div class="variants-body">
 		{% for variant in variants %}
 

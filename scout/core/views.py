@@ -382,8 +382,16 @@ def variants(institute_id, case_id, variant_type):
     form.gene_lists.choices = gene_list_names
 
     # make sure HGNC symbols are correctly handled
-    form.hgnc_symbols.data = [gene.upper() for gene in
-                              request.args.getlist('hgnc_symbols') if gene]
+    raw_hgncids = [hgnc_id.upper() for hgnc_id in
+                   request.args.getlist('hgnc_symbols') if hgnc_id]
+    hgnc_ids = []
+    for hgnc_alias in raw_hgncids:
+        real_id = store.to_hgnc(hgnc_alias)
+        if real_id:
+            hgnc_ids.append(hgnc_ids)
+        else:
+            flash("couldn't find HGNC id: {}".format(hgnc_alias))
+    form.hgnc_symbols.data = hgnc_ids
 
     # preprocess some of the results before submitting query to adapter
     process_filters_form(form)
