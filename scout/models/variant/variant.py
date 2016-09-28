@@ -189,9 +189,14 @@ class Variant(Document):
     @property
     def omim_phenotypes(self):
         """Return a list of OMIM phenotypes with related gene information."""
+        added_phenotypes = set()
         for gene in self.genes:
             for phenotype in gene.omim_phenotypes:
-                yield gene, phenotype
+                if phenotype.phenotype_id in added_phenotypes:
+                    continue
+                else:
+                    added_phenotypes.add(phenotype_id)
+                    yield gene, phenotype
 
     @property
     def omim_inheritance_models(self):
