@@ -212,7 +212,10 @@
 
                     <div class="md-card-body-list">
                         {% for category, msg in messages %}
-                            <div class="variant-list-item">{{ msg }}</div>
+                            <div class="variant-list-item">
+                              <div>{{ msg }}</div>
+                              <div>{{ category }}</div>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
