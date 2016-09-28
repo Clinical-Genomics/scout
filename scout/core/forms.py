@@ -31,6 +31,12 @@ def process_filters_form(form):
                                 form.hgnc_symbols.data[0].split(',')
                                 if x]
 
+  if isinstance(form.cadd_inclusive.data, unicode):
+    if 'no' in form.cadd_inclusive.data:
+        form.cadd_inclusive.data = 'no'
+    else:
+        form.cadd_inclusive.data = 'yes'
+
   # correct decimal fields
   for field_name in ['thousand_genomes_frequency', 'exac_frequency',
                      'cadd_score']:
@@ -84,6 +90,9 @@ class FiltersForm(Form):
   thousand_genomes_frequency = DecimalField('1000 Genomes', places=None)
   exac_frequency = DecimalField('ExAC', places=None)
   cadd_score = DecimalField('CADD', places=2)
+  cadd_inclusive = RadioField('CADD inclusive',
+                              choices=[('yes', 'Yes'), ('no', 'No')],
+                              default='no')
 
   region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
   functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)

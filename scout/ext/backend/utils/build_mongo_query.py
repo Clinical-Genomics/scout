@@ -75,14 +75,16 @@ def build_query(case_id, query=None, variant_ids=None):
 
         if query.get('cadd_score'):
             try:
-                mongo_query['$and'].append({
-                    'cadd_score':{
-                        '$gt': float(query['cadd_score'])
-                        }
-                    }
-                )
+                cadd_query = {'cadd_score': {'$gt': float(query['cadd_score'])}}
+                if query.get('cadd_inclusive') == 'yes':
+                    cadd_query = {'$or': [
+                        cadd_query,
+                        {'cadd_score': {'$exists': False}}
+                    ]}
+
                 logger.debug("Adding cadd_score to query")
                 any_query = True
+                mongo_query['$and'].append(cadd_query)
             except TypeError:
                 pass
 
