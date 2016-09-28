@@ -1,4 +1,3 @@
-from scout.models import HgncAlias
 
 def read_hgnc_genes(lines):
     """Read the genes from a hgnc file and create objects for hgnc map"""
@@ -16,7 +15,7 @@ def read_hgnc_genes(lines):
                 hgnc_gene['hgnc_symbol'] = hgnc_symbol
                 aliases.append(hgnc_symbol)
                 
-                previous_names = raw_info['prev_symbol']
+                previous_names = raw_info['prev_symbol'].strip('"')
                 if previous_names:
                     for alias in previous_names.split('|'):
                         aliases.append(alias)

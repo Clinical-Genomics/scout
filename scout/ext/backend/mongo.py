@@ -119,13 +119,29 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
                 hgnc_gene(dict):A dictionary with hgnc genes
         """
         logger.debug("Addind gene %s with aliases %s", 
-                    (hgnc_gene['hgnc_symbol'], ', '.join(hgnc_gene['alises'])))
+                    (hgnc_gene['hgnc_symbol'], ', '.join(hgnc_gene['aliases'])))
         hgnc_gene_obj = HgncAlias(
             hgnc_symbol = hgnc_gene['hgnc_symbol'],
-            aliases = hgnc_gene['alises']
+            aliases = hgnc_gene['aliases']
         )
         hgnc_gene_obj.save()
         
         return hgnc_gene_obj
         
-    
+    def to_hgnc(self, hgnc_alias):
+        """Check if a hgnc symbol is an alias
+        
+            Return the correct hgnc symbol, if not existing return None
+        
+            Args:
+                hgnc_alias(str)
+        
+            Returns:
+                hgnc_symbol(str)
+        """
+        result = HgncAlias.objects(aliases__contains(hgnc_alias))
+        if result:
+            for gene in result:
+                return gene.hgnc_symbol
+        else:
+            return None
