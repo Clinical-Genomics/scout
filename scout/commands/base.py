@@ -6,7 +6,6 @@ from scout.log import init_log
 from scout.ext.backend import MongoAdapter
 from . import (load, transfer, wipe, delete_case, hgnc)
 
-
 @click.group()
 @click.option('-l', '--logfile',
                 type=click.Path(exists=False),
