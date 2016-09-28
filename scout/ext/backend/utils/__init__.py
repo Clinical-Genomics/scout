@@ -10,3 +10,4 @@ get_omim_phenotype_ids)
 from .get_compounds import get_compounds
 from .get_mongo_variant import (get_mongo_variant, get_clnsig)
 from .get_gene_panels import get_gene_panel
+from .hgnc import read_hgnc_genes

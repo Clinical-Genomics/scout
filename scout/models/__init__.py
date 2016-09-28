@@ -14,3 +14,4 @@ from .variant.transcript import Transcript
 from .case.gene_list import GenePanel
 from .case.individual import Individual
 from .case.case import Case
+from .hgnc_map import HgncAlias
