@@ -365,6 +365,7 @@ class Variant(Document):
         'index_background': True,
         'indexes':[
             'rank_score',
+            'variant_id',
             ('case_id' ,'+variant_rank', '+variant_type', '+thousand_genomes_frequency'),
             ('hgnc_symbols', '+exac_frequency'),
             ('thousand_genomes_frequency', '+genes.functional_annotation',

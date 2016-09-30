@@ -55,6 +55,44 @@ class VariantHandler(object):
         except DoesNotExist:
             return None
 
+    def get_causatives(self, institute_id):
+        """Return all causative variants for an institute
+        
+            Args:
+                institute_id(str)
+            
+            Yields:
+                causatives(iterable(Variant))
+        """
+        for case in cases(collaborator=institute_id, has_causatives=True):
+            for variant in case.causatives:
+                yield variant    
+
+    def check_causatives(self, case_obj):
+        """Check if there are any variants that are previously marked causative
+        
+            Loop through all variants that are marked 'causative' for an 
+            institute and check if any of the variants are present in the 
+            current case.
+        
+            Args:
+                case(Case): A Case object'
+        
+            Returns:
+                causatives(iterable(Variant))
+        """
+        #owner is a string
+        causatives = get_causatives(intsitute_id=case.owner)
+        
+        fixed_ids = set([])
+        for variant in causatives:
+            variant_id = variant.variant_id.split('_')[:-1]
+            fixed_ids.add('_'.join(variant_id + ['research']))
+            fixed_ids.add('_'.join(variant_id + ['clinical']))
+
+        return Variant.objects((Q(case_id=case_obj.case_id) & 
+                                Q(variant_id__in=list(fixed_ids))))
+
     def next_variant(self, document_id):
         """Returns the next variant from the rank order.
 
@@ -204,10 +242,4 @@ class VariantHandler(object):
         logger.info("Time to insert variants: {0}".format(
           datetime.now() - start_inserting_variants))
     
-    def check_causatives(self, case_obj):
-        """Check if there are any variants that are previously marked causative
-        
-            Args:
-                case(Case): A Case object
-        """
         
