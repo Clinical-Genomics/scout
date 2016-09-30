@@ -41,7 +41,7 @@ class VariantHandler(object):
 
         return result
 
-    def variant(self, document_id):
+    def variant(self, document_id=None, variant_id=None, case_id=None):
         """Returns the specified variant.
 
            Arguments:
@@ -203,3 +203,11 @@ class VariantHandler(object):
         logger.info("{0} variants inserted".format(nr_of_variants))
         logger.info("Time to insert variants: {0}".format(
           datetime.now() - start_inserting_variants))
+    
+    def check_causatives(self, case_obj):
+        """Check if there are any variants that are previously marked causative
+        
+            Args:
+                case(Case): A Case object
+        """
+        
