@@ -17,17 +17,15 @@ import click
 logger = logging.getLogger(__name__)
 
 @click.command()
-@click.option('-t', '--variant-type', default='causative')
-@click.option('-f', '--format', default='vcf')
 @click.option('-c', '--collaborator')
 @click.pass_context
-def export(ctx, institute, variant_type, collaborator, format):
+def export(ctx, collaborator):
     """
     Export variants from the mongo database.
     """
     logger.info("Running scout export")
     
-    # Store variants in a dictionary
+    # Store variants in a dictionary to avoid duplicated
     causative_variants = {}
     
     adapter = ctx.obj['adapter']

@@ -4,7 +4,7 @@ from datetime import datetime
 from mongoengine import (DoesNotExist)
 from vcf_parser import VCFParser
 
-from scout.models import (Variant,)
+from scout.models import (Variant)
 from scout.ext.backend.utils import (get_mongo_variant, build_query)
 
 logger = logging.getLogger(__name__)
@@ -64,7 +64,7 @@ class VariantHandler(object):
             Yields:
                 causatives(iterable(Variant))
         """
-        for case in cases(collaborator=institute_id, has_causatives=True):
+        for case in self.cases(collaborator=institute_id, has_causatives=True):
             for variant in case.causatives:
                 yield variant    
 
