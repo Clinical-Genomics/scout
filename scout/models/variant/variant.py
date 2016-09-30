@@ -195,7 +195,7 @@ class Variant(Document):
                 if phenotype.phenotype_id in added_phenotypes:
                     continue
                 else:
-                    added_phenotypes.add(phenotype_id)
+                    added_phenotypes.add(phenotype.phenotype_id)
                     yield gene, phenotype
 
     @property
