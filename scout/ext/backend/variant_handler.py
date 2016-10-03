@@ -178,15 +178,14 @@ class VariantHandler(object):
         logger.debug("Variants deleted")
 
 
-    def add_variants(self, vcf_file, variant_type, case, variant_number_treshold=5000,
-                    rank_score_threshold = 0):
+    def add_variants(self, vcf_file, variant_type, case, 
+                     rank_score_threshold = 0):
         """Add variants to the mongo database
 
             Args:
                 variants(str): Path to a vcf file
                 variant_type(str): 'research' or 'clinical'
                 case(Case): The case for which the variants should be uploaded
-                nr_of_variants(int): Treshold for number of variants
                 rank_score_threshold(int): Treshold for rankscore
         """
         case_id = case.case_id
@@ -194,6 +193,7 @@ class VariantHandler(object):
         logger.info("Setting up a variant parser")
         variant_parser = VCFParser(infile=vcf_file)
         nr_of_variants = 0
+        variants_inserted = 0
 
         self.delete_variants(case_id, variant_type)
         institute = self.institute(institute_id=case.owner)
@@ -221,36 +221,30 @@ class VariantHandler(object):
         # If a rank score threshold is used, check if below that threshold
         for variant in variant_parser:
             logger.debug("Parsing variant {0}".format(variant['variant_id']))
-            if not float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
-                logger.info("Lower rank score threshold reached after {0}"\
-                            " variants".format(nr_of_variants))
-                break
-
-            if variant_number_treshold:
-                if nr_of_variants > variant_number_treshold:
-                    logger.info("Variant number threshold reached. ({0})".format(
-                                variant_number_treshold))
-                    break
 
             nr_of_variants += 1
 
-            mongo_variant = get_mongo_variant(
-                variant=variant,
-                variant_type=variant_type,
-                individuals=individuals,
-                case=case,
-                institute=institute,
-                variant_count=nr_of_variants,
-            )
-            logger.debug("Saving variant {0}".format(mongo_variant.display_name))
-            mongo_variant.save()
+            if float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
 
+                variants_inserted += 1
+                mongo_variant = get_mongo_variant(
+                    variant=variant,
+                    variant_type=variant_type,
+                    individuals=individuals,
+                    case=case,
+                    institute=institute,
+                    variant_count=nr_of_variants,
+                )
+                logger.debug("Insert variant %s" % mongo_variant.display_name)
+                mongo_variant.save()
+                
             if nr_of_variants % 1000 == 0:
                 logger.info('{0} variants parsed'.format(nr_of_variants))
 
         logger.info("Parsing variants done")
-        logger.info("{0} variants inserted".format(nr_of_variants))
+        logger.info("{0} variants parsed".format(nr_of_variants))
+        logger.info("{0} variants inserted".format(variants_inserted))
         logger.info("Time to insert variants: {0}".format(
-          datetime.now() - start_inserting_variants))
+                    datetime.now() - start_inserting_variants))
 
 
