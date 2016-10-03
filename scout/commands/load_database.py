@@ -63,14 +63,9 @@ logger = logging.getLogger(__name__)
                 default=0,
                 help="Specify the lowest rank score that should be used."
 )
-@click.option('--variant_number_threshold',
-                default=5000,
-                help="Specify the the maximum number of variants to load."
-)
 @click.pass_context
 def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
-              madeline, coverage_report, owner, rank_score_threshold,
-              variant_number_threshold, analysis_type):
+         madeline, coverage_report, owner, rank_score_threshold, analysis_type):
     """
     Load the mongo database.
 
@@ -149,6 +144,5 @@ def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
         vcf_file=scout_configs['load_vcf'],
         variant_type=scout_configs.get('variant_type', 'clinical'),
         case=case,
-        variant_number_treshold=variant_number_threshold,
         rank_score_threshold=rank_score_threshold
     )
