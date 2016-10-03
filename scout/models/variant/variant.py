@@ -176,35 +176,14 @@ class Variant(Document):
         }.get(self.clnsig, 'not provided')
 
     @property
-    def omim_annotations(self):
-        """Returns a list with OMIM id(s)."""
-        if len(self.genes) == 1:
-            annotations = (str(gene.omim_gene_entry) for gene in self.genes
-                             if gene.omim_gene_entry)
-        else:
-            annotations = (':'.join([gene.hgnc_symbol, str(gene.omim_gene_entry)])
-                         for gene in self.genes if gene.omim_gene_entry)
-
-        # flatten the list of list of omim ids
-        return annotations
-
-    @property
     def omim_annotation_links(self):
         """Return a list of OMIM id links."""
         base_url = 'http://www.omim.org/entry'
 
-        for omim_id_str in self.omim_annotations:
-            # handle cases with variant overlapping multiple genes
-            omim_id_parts = omim_id_str.split(':')
-            if len(omim_id_parts) == 1:
-                # single gene overlap
-                omim_id = omim_id_parts[0]
-
-            else:
-                # multiple genes
-                omim_id = omim_id_parts[1]
-
-            yield (omim_id_str, "{base}/{id}".format(base=base_url, id=omim_id))
+        for gene in self.genes:
+            omim_link = "{base}/{id}".format(base=base_url,
+                                             id=gene.omim_gene_entry)
+            yield gene.hgnc_symbol, omim_link
 
     @property
     def omim_phenotypes(self):

@@ -65,9 +65,6 @@
     <div class="variants-header-item flex-big" title="Func. annotation">
       Func. annotation
     </div>
-    <div class="variants-header-item" title="MIM Terms">
-      MIM terms
-    </div>
     {% if variant_type == 'clinical' %}
       <div class="variants-header-item" title="Disease gene model">
         Expected inheritance
@@ -263,9 +260,11 @@
         </div>
 
         <!-- HGNC -->
-				<div class="variants-row-item">
-					{{ (variant.hgnc_symbols or ['-'])|join(', ') }}
-				</div>
+        <div class="variants-row-item is-scrollable">
+          {% for hgnc_id, omim_link in variant.omim_annotation_links %}
+            <a target="_blank" href="{{ omim_link }}">{{ hgnc_id }}</a>
+          {% endfor %}
+        </div>
 
         <!-- 1000 Genomes -->
 		<div class="variants-row-item text-right md-tooltip">
@@ -315,15 +314,6 @@
         <!-- Func. annotation -->
         <div class="variants-row-item is-scrollable flex-big">
           {{ variant.functional_annotations|join(',') }}
-        </div>
-
-        <!-- MIM terms -->
-        <div class="variants-row-item is-scrollable">
-          {% for omim_id, omim_link in variant.omim_annotation_links %}
-            {% if omim_id %}
-              <a target="_blank" href="{{ omim_link }}">{{ omim_id }}</a>
-            {% endif %}
-          {% endfor %}
         </div>
 
         {% if variant_type == 'clinical' %}
