@@ -79,6 +79,8 @@ class Case(Document):
     # The coverage report will be read as a binary blob
     coverage_report = BinaryField()
 
+    has_svvariants = BooleanField(default=False)
+
     @property
     def o_collaborators(self):
         """Other collaborators than the owner of the case."""
