@@ -108,6 +108,11 @@ class Variant(Document):
     freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
 
     @property
+    def case_displayname(self):
+        """Convert case_id to family id or display name."""
+        return self.case_id.split('_')[-1]
+
+    @property
     def callers(self):
         """Return call for all callers."""
         calls = [('GATK', self.gatk), ('Samtools', self.samtools),
