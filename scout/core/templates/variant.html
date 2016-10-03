@@ -224,6 +224,28 @@
 
   <div class="variant-segments">
 
+    <div class="variant-segments-row">
+        <div id="causatives" class="md-card">
+            <div class="md-card-header">Matching causatives from other cases</div>
+            <div class="variant-segment-content">
+                {% for o_variant in causatives %}
+                    <div class="activity-feed-item">
+                        <a href="{{ url_for('core.variant',
+                                    institute_id=institute_id,
+                                    case_id=o_variant.case_displayname,
+                                    variant_id=o_variant.id) }}">
+                            {{ o_variant.case_id }}
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="activity-feed-item">
+                        No matching variants.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
     <div id="summary" class="variant-segments-row">
       <div id="summary" class="md-card">
         <div class="md-card-header">Summary</div>

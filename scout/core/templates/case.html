@@ -286,6 +286,40 @@
   <div class="case-segments">
 
     <div id="overview" class="case-segment-row">
+      <div id="case-candidates" class="md-card">
+        <div class="md-card-header">Matching causatives from other cases</div>
+        <div class="md-card-body-list">
+          {% for variant in causatives %}
+            <div class="list-item">
+              <div class="md-item">
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    <a href="{{ url_for('core.variant',
+                                    institute_id=institute.internal_id,
+                                    case_id=case.display_name,
+                                    variant_id=variant.id) }}">
+                      {{ variant.hgnc_symbols|join(', ') }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="list-item">
+              <div class="md-item">
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    No matching causative variants.
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="overview" class="case-segment-row">
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list">

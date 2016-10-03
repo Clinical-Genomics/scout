@@ -95,6 +95,10 @@ def case(institute_id, case_id):
 
     sample_map = sampleid_map(case_model)
 
+    # matching causatives
+    causatives = (variant for variant in store.check_causatives(case_model)
+                  if variant not in case_model.causatives)
+
     # default coverage report
     default_panel_names = [panel.name_and_version for panel
                            in case_model.default_panel_objs()]
@@ -105,7 +109,8 @@ def case(institute_id, case_id):
                 case_id=case_id, panel_names=default_panel_names,
                 sample_map=sample_map, collaborators=collab_ids,
                 hpo_groups=PHENOTYPE_GROUPS,
-                hpo_ids=request.args.getlist('hpo_id'))
+                hpo_ids=request.args.getlist('hpo_id'),
+                causatives=causatives)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
@@ -460,6 +465,8 @@ def variant(institute_id, case_id, variant_id):
     local_freq = loqusdb.get_variant({'_id': variant_model.composite_id})
     local_total = loqusdb.case_count()
 
+    causatives = store.other_causatives(case_model, variant_model)
+
     return dict(institute=institute, institute_id=institute_id,
                 case=case_model, case_id=case_id,
                 variant=variant_model, variant_id=variant_id,
@@ -467,7 +474,8 @@ def variant(institute_id, case_id, variant_id):
                 prev_variant=prev_variant, next_variant=next_variant,
                 manual_rank_options=Variant.manual_rank.choices,
                 individuals=individuals, coverage_links=coverage_links,
-                local_freq=local_freq, local_total=local_total)
+                local_freq=local_freq, local_total=local_total,
+                causatives=causatives)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])

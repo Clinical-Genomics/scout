@@ -108,6 +108,11 @@ class Variant(Document):
     freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
 
     @property
+    def case_displayname(self):
+        """Convert case_id to family id or display name."""
+        return self.case_id.split('_')[-1]
+
+    @property
     def callers(self):
         """Return call for all callers."""
         calls = [('GATK', self.gatk), ('Samtools', self.samtools),
@@ -195,7 +200,7 @@ class Variant(Document):
                 if phenotype.phenotype_id in added_phenotypes:
                     continue
                 else:
-                    added_phenotypes.add(phenotype_id)
+                    added_phenotypes.add(phenotype.phenotype_id)
                     yield gene, phenotype
 
     @property
@@ -365,6 +370,7 @@ class Variant(Document):
         'index_background': True,
         'indexes':[
             'rank_score',
+            'variant_id',
             ('case_id' ,'+variant_rank', '+variant_type', '+thousand_genomes_frequency'),
             ('hgnc_symbols', '+exac_frequency'),
             ('thousand_genomes_frequency', '+genes.functional_annotation',

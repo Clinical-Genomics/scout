@@ -1,10 +1,10 @@
 import logging
 
 from datetime import datetime
-from mongoengine import (DoesNotExist)
+from mongoengine import DoesNotExist, Q
 from vcf_parser import VCFParser
 
-from scout.models import (Variant,)
+from scout.models import Variant
 from scout.ext.backend.utils import (get_mongo_variant, build_query)
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class VariantHandler(object):
 
         return result
 
-    def variant(self, document_id):
+    def variant(self, document_id=None, variant_id=None, case_id=None):
         """Returns the specified variant.
 
            Arguments:
@@ -54,6 +54,55 @@ class VariantHandler(object):
             return Variant.objects.get(document_id=document_id)
         except DoesNotExist:
             return None
+
+    def get_causatives(self, institute_id):
+        """Return all causative variants for an institute
+
+            Args:
+                institute_id(str)
+
+            Yields:
+                causatives(iterable(Variant))
+        """
+        for case in self.cases(collaborator=institute_id, has_causatives=True):
+            for variant in case.causatives:
+                yield variant
+
+    def check_causatives(self, case_obj):
+        """Check if there are any variants that are previously marked causative
+
+            Loop through all variants that are marked 'causative' for an
+            institute and check if any of the variants are present in the
+            current case.
+
+            Args:
+                case(Case): A Case object
+
+            Returns:
+                causatives(iterable(Variant))
+        """
+        #owner is a string
+        causatives = self.get_causatives(case_obj.owner)
+
+        fixed_ids = set([])
+        for variant in causatives:
+            variant_id = variant.display_name.split('_')[:-1]
+            fixed_ids.add('_'.join(variant_id + ['research']))
+            fixed_ids.add('_'.join(variant_id + ['clinical']))
+
+        return Variant.objects((Q(case_id=case_obj.case_id) &
+                                Q(display_name__in=list(fixed_ids))))
+
+    def other_causatives(self, case_obj, variant_obj):
+        """Find the same variant in other cases marked causative."""
+        # variant id without "*_[variant_type]"
+        variant_id = variant_obj.display_name.rsplit('_', 1)[0]
+        causatives = self.get_causatives(variant_obj.institute.id)
+        for causative in causatives:
+            not_same_case = causative.case_id != case_obj.id
+            same_variant = causative.display_name.startswith(variant_id)
+            if (not_same_case and same_variant):
+                yield causative
 
     def next_variant(self, document_id):
         """Returns the next variant from the rank order.
@@ -203,3 +252,5 @@ class VariantHandler(object):
         logger.info("{0} variants inserted".format(nr_of_variants))
         logger.info("Time to insert variants: {0}".format(
           datetime.now() - start_inserting_variants))
+
+

@@ -74,13 +74,15 @@ class CaseHandler(object):
     def institutes(self):
         """Fetch all institutes."""
         return Institute.objects
-
-    def cases(self, collaborator=None, query=None, skip_assigned=False):
+    
+    def cases(self, collaborator=None, query=None, skip_assigned=False, has_causatives=False):
         """Fetches all cases from the backend.
 
         Args:
             collaborator(str): If collaborator should be considered
             query(dict): If a specific query is used
+            skip_assigned(bool)
+            has_causatives(bool)
 
         Yields:
             Cases ordered by date
@@ -107,6 +109,9 @@ class CaseHandler(object):
 
         if skip_assigned:
             case_query = case_query.filter(assignee__exists=False)
+
+        if has_causatives:
+            case_query = case_query.filter(causatives__exists=True)
 
         return case_query.order_by('-updated_at')
 
