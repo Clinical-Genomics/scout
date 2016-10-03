@@ -13,7 +13,7 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          DoesNotExist, DictField)
 
 from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
-                             VARIANT_CALL)
+                             VARIANT_CALL, CLINSIG_MAP)
 from .gene import Gene
 from scout.models import Event
 
@@ -168,11 +168,8 @@ class Variant(Document):
 
     @property
     def clnsig_human(self):
-        return {
-            0: 'Uncertain significance', 1: 'not provided', 2: 'Benign',
-            3: 'Likely benign', 4: 'Likely pathogenic', 5: 'Pathogenic',
-            6: 'drug response', 7: 'histocompatibility', 255: 'other'
-        }.get(self.clnsig, 'not provided')
+        human_str = CLINSIG_MAP.get(self.clnsig, 'not provided')
+        return human_str
 
     @property
     def omim_annotation_links(self):
