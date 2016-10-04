@@ -62,9 +62,9 @@ class Variant(Document):
     variant_id = StringField(required=True)
     # display name in variant_id (no md5)
     display_name = StringField(required=True)
-    # The variant can be either a reserch variant or a clinical variant.
+    # The variant can be either research or clinical.
     # For research variants we display all the available information while
-    # the clinical variants hae limited annotation fields.
+    # the clinical variants have limited annotation fields.
     variant_type = StringField(required=True,
                                choices=('research', 'clinical'))
     # case_id is a string like owner_caseid
@@ -74,7 +74,7 @@ class Variant(Document):
     reference = StringField(required=True)
     alternative = StringField(required=True)
     rank_score = FloatField(required=True)
-    variant_rank = IntField(required=True)
+    variant_rank = IntField()
     institute = ReferenceField('Institute', required=True)
     sanger_ordered = BooleanField()
     validation = StringField(choices=('True positive', 'False positive'))

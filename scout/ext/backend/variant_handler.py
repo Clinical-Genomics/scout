@@ -177,74 +177,21 @@ class VariantHandler(object):
         logger.info("{0} variants deleted".format(nr_deleted))
         logger.debug("Variants deleted")
 
-
-    def add_variants(self, vcf_file, variant_type, case, 
-                     rank_score_threshold = 0):
-        """Add variants to the mongo database
-
-            Args:
-                variants(str): Path to a vcf file
-                variant_type(str): 'research' or 'clinical'
-                case(Case): The case for which the variants should be uploaded
-                rank_score_threshold(int): Treshold for rankscore
-        """
-        case_id = case.case_id
-
-        logger.info("Setting up a variant parser")
-        variant_parser = VCFParser(infile=vcf_file)
-        nr_of_variants = 0
-        variants_inserted = 0
-
-        self.delete_variants(case_id, variant_type)
-        institute = self.institute(institute_id=case.owner)
-        start_inserting_variants = datetime.now()
-
-        # Check which individuals that exists in the vcf file.
-        # Save the individuals in a dictionary with individual ids as keys
-        # and display names as values
-        individuals = {}
-        # loop over keys (internal ids)
-        logger.info("Checking which individuals in ped file exists in vcf")
-        for individual in case.individuals:
-            individual_id = individual.individual_id
-            display_name = individual.display_name
-            logger.debug("Checking individual {0}".format(individual_id))
-            if individual_id in variant_parser.individuals:
-                logger.debug("Individual {0} found".format(individual_id))
-                individuals[individual_id] = display_name
-            else:
-                logger.warning("Individual {0} is present in ped file but"\
-                                " not in vcf".format(individual_id))
-
-        logger.info('Start parsing variants')
-
-        # If a rank score threshold is used, check if below that threshold
+    def load_svs(self, sv_file, case_obj, institute_obj):
+        """Load structural variants"""
+        variant_parser = VCFParser(infile=sv_file)
         for variant in variant_parser:
-            logger.debug("Parsing variant {0}".format(variant['variant_id']))
-
-            nr_of_variants += 1
-
-            if float(variant['rank_scores'][case.display_name]) > rank_score_threshold:
-
-                variants_inserted += 1
-                mongo_variant = get_mongo_variant(
-                    variant=variant,
-                    variant_type=variant_type,
-                    individuals=individuals,
-                    case=case,
-                    institute=institute,
-                    variant_count=nr_of_variants,
-                )
-                logger.debug("Insert variant %s" % mongo_variant.display_name)
-                mongo_variant.save()
-                
-            if nr_of_variants % 1000 == 0:
-                logger.info('{0} variants parsed'.format(nr_of_variants))
-
-        logger.info("Parsing variants done")
-        logger.info("{0} variants parsed".format(nr_of_variants))
-        logger.info("{0} variants inserted".format(variants_inserted))
-        logger.info("Time to insert variants: {0}".format(
-                    datetime.now() - start_inserting_variants))
-
+            # print(variant)
+            pass
+    
+    def load_snv(self, mongo_variant):
+        """Load a mongo variant into the database
+        
+            Args:
+                mongo_variant(Variant)
+        
+        """
+        logger.debug("Insert variant %s" % mongo_variant.display_name)
+        mongo_variant.save()
+    
 

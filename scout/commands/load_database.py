@@ -15,11 +15,17 @@ import logging
 import click
 from configobj import ConfigObj
 
+from scout.ext.backend.utils import load_variants
+
 logger = logging.getLogger(__name__)
 
 
 @click.command()
 @click.option('-f', '--vcf_file',
+                type=click.Path(exists=True),
+                help="Path to the vcf file that should be loaded."
+)
+@click.option('--sv_file',
                 type=click.Path(exists=True),
                 help="Path to the vcf file that should be loaded."
 )
@@ -64,7 +70,7 @@ logger = logging.getLogger(__name__)
                 help="Specify the lowest rank score that should be used."
 )
 @click.pass_context
-def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
+def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_config_file,
          madeline, coverage_report, owner, rank_score_threshold, analysis_type):
     """
     Load the mongo database.
@@ -85,26 +91,34 @@ def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
         scout_configs['load_vcf'] = vcf_file
         scout_configs['igv_vcf'] = vcf_file
 
-    if not scout_configs.get('load_vcf'):
+    if sv_file:
+        scout_configs['sv_file'] = sv_file
+
+    if not (scout_configs.get('load_vcf') or sv_file):
         logger.warn("Please provide a vcf file. (Use flag '-vcf/--vcf_file')")
         logger.info("Exiting")
         ctx.abort()
+    
     logger.info("Using vcf {0}".format(scout_configs.get('load_vcf')))
 
     if ped_file:
         scout_configs['ped'] = ped_file
+    
     if not scout_configs.get('ped', None):
         logger.warn("Please provide a ped file. (Use flag '-ped/--ped_file')")
         logger.info("Exiting")
         ctx.abort()
+
     logger.info("Using ped file {0}".format(ped_file))
 
     if family_type:
         scout_configs['family_type'] = family_type
+    
     logger.info("Set family type to {0}".format(scout_configs['family_type']))
 
     if owner:
         scout_configs['owner'] = owner
+    
     if not scout_configs.get('owner', None):
         logger.warn("A case has to have a owner!")
         logger.info("Exiting")
@@ -127,22 +141,25 @@ def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
         scout_configs['coverage_report'] = coverage_report
 
     adapter = ctx.obj['adapter']
-    case = adapter.add_case(
-        case_lines=open(scout_configs['ped'], 'r'),
-        case_type=scout_configs['family_type'],
-        owner=scout_configs['owner'],
-        scout_configs=scout_configs
-    )
-
-    logger.info("Delete the variants for case {0}".format(case.case_id))
-    adapter.delete_variants(
-        case_id=case.case_id,
-        variant_type=scout_configs.get('variant_type', 'clinical')
-    )
-    logger.info("Load the variants for case {0}".format(case.case_id))
-    adapter.add_variants(
-        vcf_file=scout_configs['load_vcf'],
-        variant_type=scout_configs.get('variant_type', 'clinical'),
-        case=case,
-        rank_score_threshold=rank_score_threshold
-    )
+    
+    # case = adapter.add_case(
+    #     case_lines=open(scout_configs['ped'], 'r'),
+    #     case_type=scout_configs['family_type'],
+    #     owner=scout_configs['owner'],
+    #     scout_configs=scout_configs
+    # )
+    #
+    # logger.info("Delete the variants for case {0}".format(case.case_id))
+    # adapter.delete_variants(
+    #     case_id=case.case_id,
+    #     variant_type=scout_configs.get('variant_type', 'clinical')
+    # )
+    # logger.info("Load the variants for case {0}".format(case.case_id))
+    # adapter.add_variants(
+    #     vcf_file=scout_configs['load_vcf'],
+    #     variant_type=scout_configs.get('variant_type', 'clinical'),
+    #     case=case,
+    #     rank_score_threshold=rank_score_threshold
+    # )
+    if scout_configs['sv_file']:
+        adapter.load_svs(scout_configs['sv_file'])

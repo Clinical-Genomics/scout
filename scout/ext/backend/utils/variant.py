@@ -58,8 +58,7 @@ def get_clnsig(variant):
     return clnsig_accsessions
 
 
-def get_mongo_variant(variant, variant_type, individuals, case, institute,
-                        variant_count):
+def get_mongo_variant(variant, variant_type, individuals, case, institute):
     """
     Take a variant and some additional information, convert it to mongo engine
     objects and put them in the proper format in the database.
@@ -104,7 +103,6 @@ def get_mongo_variant(variant, variant_type, individuals, case, institute,
                           position = int(variant['POS']),
                           reference = variant['REF'],
                           alternative = variant['ALT'],
-                          variant_rank = variant_count,
                           quality = float(variant['QUAL']),
                           filters = variant['FILTER'].split(';'),
                           institute = institute
