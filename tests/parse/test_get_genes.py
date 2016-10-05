@@ -1,4 +1,4 @@
-from scout.ext.backend.utils import get_genes
+from scout.parse import parse_genes
 
 
 
@@ -52,12 +52,12 @@ def test_get_genes():
         }
     
     
-    genes = get_genes(variant)
+    genes = parse_genes(variant)
     # for transcript in transcripts:
     #     if transcript.transcript_id == 'ENST00000296484':
     #         assert transcript.sift_prediction == 'deleterious'
     #         assert transcript.functional_annotations == ['missense_variant']
     #         assert set(transcript.refseq_ids) == set(['XM_005265019', 'NM_015426'])
     for gene in genes:
-        assert gene.hgnc_symbol == 'POC1A'
+        assert gene['hgnc_symbol'] == 'POC1A'
     assert len(genes) == 1

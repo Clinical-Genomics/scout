@@ -1,4 +1,4 @@
-from scout.ext.backend.utils import get_omim_gene_ids
+from scout.parse import get_omim_gene_ids
 
 def test_get_omim_gene_ids():
     variant = {

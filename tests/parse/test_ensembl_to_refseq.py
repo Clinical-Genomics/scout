@@ -1,6 +1,4 @@
-from scout.ext.backend.utils import create_ensembl_to_refseq
-
-
+from scout.parse.transcript import create_ensembl_to_refseq
 
 def test_ensembl_to_refseq():
     variant = {

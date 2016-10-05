@@ -137,8 +137,11 @@ def get_mongo_case(case_lines, owner, case_type='mip', collaborators=set(),
     research_panels = []
     
     for gene_list in scout_configs.get('gene_lists', {}):
+
         logger.info("Found gene list {0}".format(gene_list))
         panel_info = scout_configs['gene_lists'][gene_list]
+        
+        panel = get_gene_panel(panel_info)
 
         panel_path = panel_info.get('file')
         panel_type = panel_info.get('type', 'clinical')

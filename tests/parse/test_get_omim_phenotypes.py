@@ -1,4 +1,4 @@
-from scout.ext.backend.utils import get_omim_phenotype_ids
+from scout.parse import get_omim_phenotype_ids
 
 def test_get_omim_phenotype_ids():
     variant = {
@@ -9,5 +9,5 @@ def test_get_omim_phenotype_ids():
     }
     phenotypes = get_omim_phenotype_ids(variant)
     for phenotype_term in phenotypes['POLG']:
-        if phenotype_term.phenotype_id == '157640':
-            assert phenotype_term.disease_models == ['AD']
+        if phenotype_term['phenotype_id'] == '157640':
+            assert phenotype_term['disease_models'] == ['AD']

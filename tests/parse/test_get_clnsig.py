@@ -1,4 +1,4 @@
-from scout.ext.backend.utils import get_clnsig
+from scout.parse import get_clnsig
 
 def test_get_clnsig():
     variant = {

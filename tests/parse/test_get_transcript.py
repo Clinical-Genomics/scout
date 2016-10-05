@@ -1,4 +1,4 @@
-from scout.ext.backend.utils import get_transcripts
+from scout.parse import parse_transcripts
 
 
 
@@ -52,9 +52,9 @@ def test_ensembl_to_refseq():
         }
     
     
-    transcripts = get_transcripts(variant)
+    transcripts = parse_transcripts(variant)
     for transcript in transcripts:
-        if transcript.transcript_id == 'ENST00000296484':
-            assert transcript.sift_prediction == 'deleterious'
-            assert transcript.functional_annotations == ['missense_variant']
-            assert set(transcript.refseq_ids) == set(['XM_005265019', 'NM_015426'])
+        if transcript['transcript_id'] == 'ENST00000296484':
+            assert transcript['sift_prediction'] == 'deleterious'
+            assert transcript['functional_annotations'] == ['missense_variant']
+            assert set(transcript['refseq_ids']) == set(['XM_005265019', 'NM_015426'])

@@ -1,6 +1,4 @@
-from scout.ext.backend.utils import get_gene_descriptions
-
-
+from scout.parse.gene import parse_gene_descriptions
 
 def test_get_gene_descriptions():
     variant = {
@@ -9,6 +7,6 @@ def test_get_gene_descriptions():
                 "AKT1:Second description"]
             }
     }
-    descriptions = get_gene_descriptions(variant)
+    descriptions = parse_gene_descriptions(variant)
     assert descriptions['SIVA1'] == "First description"
     assert descriptions['AKT1'] == 'Second description'

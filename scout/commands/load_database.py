@@ -15,7 +15,7 @@ import logging
 import click
 from configobj import ConfigObj
 
-from scout.ext.backend.utils import load_variants
+# from scout.ext.backend.utils import load_variants
 
 logger = logging.getLogger(__name__)
 
