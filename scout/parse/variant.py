@@ -2,7 +2,7 @@ import logging
 
 from scout.utils import generate_md5_key
 from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes, 
-               parse_frequencies, parse_conservations, parse_ids)
+               parse_frequencies, parse_conservations, parse_ids, parse_callers)
 
 logger=logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
                   variant_dict['ALT'],
                 ]
     
-    variant['ids'] = parse_ids(variant, case, variant_type)
+    variant['ids'] = parse_ids(variant_dict, case, variant_type)
     
     # type can be 'clinical' or 'research'
     # category is sv or snv
@@ -79,8 +79,6 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     # If a variant belongs to any gene lists we check which ones
     gene_lists = variant_dict['info_dict'].get('Clinical_db_gene_annotation')
     if gene_lists:
-        logger.debug("Adding gene lists {0} to variant {1}".format(
-            set(gene_lists), variant['variant_id']))
         variant['gene_lists'] = list(set(gene_lists))
     else:
         variant['gene_lists'] = None
@@ -90,8 +88,6 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
 
     rank_score = float(variant_dict.get('rank_scores', {}).get(case_name, 0.0))
     variant['rank_score'] = rank_score
-    logger.debug("Updating rank score for variant {0} to {1}".format(
-        variant['variant_id'], rank_score))
     
     ################# Add gt calls #################
     
@@ -145,26 +141,22 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
 
     ################# Add the frequencies #################
     
-    variant['frequencies'] = parse_frequencies(variant)
+    variant['frequencies'] = parse_frequencies(variant_dict)
 
     # Add the severity predictions
     cadd = variant_dict['info_dict'].get('CADD')
     if cadd:
         value = cadd[0]
-        logger.debug("Updating CADD score for variant {0} to {1}".format(
-            variant['variant_id'], value))
         variant['cadd_score'] = float(value)
 
     spidex = variant_dict['info_dict'].get('SPIDEX')
     if spidex:
         value = spidex[0]
-        logger.debug("Updating SPIDEX annotation for variant {0} to {1}".format(
-            variant['variant_id'], spidex))
         variant['spidex'] = spidex
     
-    variant['conservation'] = parse_conservations(variant)
+    variant['conservation'] = parse_conservations(variant_dict)
     
-    variant['callers'] = parse_callers(variant)
+    variant['callers'] = parse_callers(variant_dict)
 
     return variant
     
