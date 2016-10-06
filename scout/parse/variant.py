@@ -168,8 +168,8 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
         variant['spidex'] = spidex
     
     variant['conservation'] = parse_conservations(variant)
-
     
+    variant['callers'] = parse_callers(variant)
 
     return variant
     

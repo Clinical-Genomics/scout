@@ -1,5 +1,6 @@
 from .constants import SO_TERMS
 
+from .callers import parse_callers
 from .conservation import parse_conservations
 from .frequency import parse_frequencies
 from .genotype import parse_genotypes
