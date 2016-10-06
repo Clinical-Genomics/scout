@@ -2,7 +2,7 @@ import logging
 
 from scout.utils import generate_md5_key
 from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes, 
-               parse_frequencies, parse_conservations)
+               parse_frequencies, parse_conservations, parse_ids)
 
 logger=logging.getLogger(__name__)
 
@@ -28,12 +28,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
                   variant_dict['ALT'],
                 ]
     
-    # We need to create md5 keys since REF and ALT can be huge:
-    variant['simple_id'] = '_'.join(id_fields)
-    variant['variant_id'] = generate_md5_key(id_fields + [variant_type])
-    variant['display_name'] = '_'.join(id_fields + [variant_type])
-    variant['document_id'] = generate_md5_key(id_fields+[variant_type]+
-                                              case_id.split('_'))
+    variant['ids'] = parse_ids(variant, case, variant_type)
     
     # type can be 'clinical' or 'research'
     # category is sv or snv
