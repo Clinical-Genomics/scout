@@ -1,7 +1,8 @@
 import logging
 
 from scout.utils import generate_md5_key
-from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes)
+from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes, 
+               parse_frequencies)
 
 logger=logging.getLogger(__name__)
 
@@ -142,6 +143,23 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     
     variant['hgnc_symbols'] = list(hgnc_symbols)
     variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
+
+    ################# Add a list with the dbsnp ids #################
+
+    variant['db_snp_ids'] = variant_dict['ID'].split(';')
+
+    ################# Add the frequencies #################
+    
+    variant['frequencies'] = parse_frequencies(variant)
+
+    # Add the severity predictions
+    cadd = variant_dict['info_dict'].get('CADD')
+    if cadd:
+        value = cadd[0]
+        logger.debug("Updating CADD score for variant {0} to {1}".format(
+            variant['variant_id'], value))
+        variant['cadd_score'] = float(value)
+
 
 
     return variant

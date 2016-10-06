@@ -1,5 +1,6 @@
 from .constants import SO_TERMS
 
+from .frequency import parse_frequencies
 from .genotype import parse_genotypes
 from .omim import (get_omim_gene_ids, get_omim_phenotype_ids)
 from .transcript import (parse_transcripts, parse_disease_associated)
