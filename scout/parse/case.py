@@ -37,7 +37,7 @@ def get_individual(ind_obj, bam_file='', capture_kits=[]):
     
 
 def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
-               scout_configs={}):
+               scout_configs=None):
     """Return a parsed case
     
         Args:
@@ -52,8 +52,10 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
                         individuals etc
     """
     case = {}
+    scout_configs = scout_configs or {}
     
     case['owner'] = owner
+    case['collaborators'] = [owner]
     
     logger.info("Setting up a family parser")
     case_parser = FamilyParser(case_lines,family_type=case_type)
@@ -158,6 +160,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
         panel_info = scout_configs['gene_lists'][panel_id]
         
         panel = parse_gene_panel(panel_info)
+        panel['institute'] = owner
         
         if panel['type'] == 'clinical':
             case['clinical_panels'].append(panel)

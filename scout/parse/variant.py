@@ -22,7 +22,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     case_name = case['display_name']
 
     variant['ids'] = parse_ids(variant_dict, case, variant_type)
-
+    variant['case_id'] = case_id
     # type can be 'clinical' or 'research'
     # category is sv or snv
     if variant_dict['info_dict'].get('SVTYPE'):

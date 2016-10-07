@@ -79,6 +79,8 @@ def parse_genes(variant):
         most_severe_consequence = None
         most_severe_score = 100
         most_severe_transcript = None
+        most_severe_sift = None
+        most_severe_polyphen = None
         for transcript in gene_transcripts:
             ensembl_gene_id = transcript['ensembl_id']
             for consequence in transcript['functional_annotations']:
@@ -87,14 +89,19 @@ def parse_genes(variant):
                     most_severe_score = new_score
                     most_severe_consequence = consequence
                     most_severe_transcript = transcript
+                    most_severe_sift = transcript['sift_prediction']
+                    most_severe_polyphen = transcript['polyphen_prediction']
 
         gene = {
             'transcripts': transcripts,
             'most_severe_transcript': most_severe_transcript,
             'most_severe_consequence': most_severe_consequence,
+            'most_severe_sift': most_severe_sift,
+            'most_severe_polyphen': most_severe_polyphen,
             'hgnc_symbol': gene_id,
             'ensembl_gene_id': ensembl_gene_id,
-            'region_annotation': SO_TERMS[most_severe_consequence]['region']
+            'region_annotation': SO_TERMS[most_severe_consequence]['region'],
+            'description': gene_descriptions.get(gene_id, ''),
         }
         genes.append(gene)    
 

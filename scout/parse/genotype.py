@@ -38,9 +38,16 @@ def parse_genotype(variant, ind):
 
     gt_call['read_depth'] = variant['genotypes'][ind_id].depth_of_coverage
 
-    gt_call['ref_depth'] = variant['genotypes'][ind_id].ref_depth
-    gt_call['alt_depth'] = variant['genotypes'][ind_id].alt_depth
+    try:
+        gt_call['ref_depth'] = int(variant['genotypes'][ind_id].ref_depth)
+    except ValueError:
+        gt_call['ref_depth'] = -1
     
+    try:
+        gt_call['alt_depth'] = int(variant['genotypes'][ind_id].alt_depth)
+    except ValueError:
+        gt_call['alt_depth'] = -1
+
     gt_call['genotype_quality'] = variant['genotypes'][ind_id].genotype_quality
 
     return gt_call

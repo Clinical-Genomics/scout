@@ -15,6 +15,7 @@ def test_parse_genotype(variants):
             
             vcf_genotype = variant['genotypes'][ind_id]
             
+            print(vcf_genotype)
             assert genotype['genotype_call'] == vcf_genotype.genotype
             assert genotype['read_depth'] == vcf_genotype.depth_of_coverage
             assert genotype['ref_depth'] == vcf_genotype.ref_depth 

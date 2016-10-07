@@ -8,4 +8,4 @@ def test_get_omim_gene_ids():
         }
     }
     mim_ids = get_omim_gene_ids(variant)
-    assert mim_ids['POLG'] == '174763'
+    assert mim_ids['POLG'] == 174763

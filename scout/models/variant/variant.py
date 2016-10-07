@@ -12,7 +12,7 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          ReferenceField, SortedListField, Q, BooleanField,
                          DoesNotExist)
 
-from . import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS, VARIANT_CALL)
+from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS, VARIANT_CALL)
 from .gene import Gene
 from scout._compat import zip
 from scout.models import Event
@@ -62,6 +62,9 @@ class Variant(Document):
     variant_id = StringField(required=True)
     # display name in variant_id (no md5)
     display_name = StringField(required=True)
+    
+    # chrom_pos_ref_alt
+    simple_id = StringField()
     # The variant can be either research or clinical.
     # For research variants we display all the available information while
     # the clinical variants have limited annotation fields.
@@ -73,11 +76,14 @@ class Variant(Document):
     position = IntField(required=True)
     reference = StringField(required=True)
     alternative = StringField(required=True)
+    
     rank_score = FloatField(required=True)
     variant_rank = IntField()
     institute = ReferenceField('Institute', required=True)
+    
     sanger_ordered = BooleanField()
     validation = StringField(choices=('True positive', 'False positive'))
+    
     quality = FloatField()
     filters = ListField(StringField())
     samples = ListField(EmbeddedDocumentField(GTCall))
