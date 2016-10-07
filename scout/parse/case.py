@@ -4,7 +4,7 @@ from path import path
 
 from ped_parser import FamilyParser
 
-from . import get_gene_panel
+from . import parse_gene_panel
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ def get_individual(ind_obj, bam_file='', capture_kits=[]):
 
     individual['sex'] = str(ind_obj.sex)
 
-    individual['phenotype'] = ind_obj.phenotype
+    individual['phenotype'] =int(ind_obj.phenotype)
     
     # Path to the bam file for IGV:
     individual['bam_file'] = bam_file
@@ -65,6 +65,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
     family = case_parser.families[family_id]
     
     case['case_id'] = '_'.join([owner, family_id])
+    case['display_name'] = family_id
     
     logger.info("Addind case id {0}".format(case['case_id']))
     
@@ -156,7 +157,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
         logger.info("Found gene panel {0}".format(panel_id))
         panel_info = scout_configs['gene_lists'][panel_id]
         
-        panel = get_gene_panel(panel_info)
+        panel = parse_gene_panel(panel_info)
         
         if panel['type'] == 'clinical':
             case['clinical_panels'].append(panel)

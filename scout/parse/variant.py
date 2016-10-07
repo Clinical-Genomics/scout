@@ -21,15 +21,8 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     case_id = case['case_id']
     case_name = case['display_name']
 
-    id_fields = [
-                  variant_dict['CHROM'],
-                  variant_dict['POS'],
-                  variant_dict['REF'],
-                  variant_dict['ALT'],
-                ]
-    
     variant['ids'] = parse_ids(variant_dict, case, variant_type)
-    
+
     # type can be 'clinical' or 'research'
     # category is sv or snv
     if variant_dict['info_dict'].get('SVTYPE'):
@@ -39,9 +32,9 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     #sub category is 'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv'
     # 'snv' and 'indel' are subcatogories of snv
     variant['sub_category'] = None
-    
+
     ################# General information #################
-    
+
     variant['reference'] = variant_dict['REF']
     variant['alternative'] = variant_dict['ALT']
     variant['quality'] = float(variant_dict['QUAL'])
