@@ -21,7 +21,15 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
             analysis_type(str): 'WES', 'WGS', 'unknown' or 'mixed'
             scout_configs(dict): A dictionary with meta information
             update(bool): If existing case should be updated
+        
+        Returns:
+            case_obj(Case)
     """
+    institute_obj = adapter.institute(institute_id=owner)
+    if not institute_obj:
+        message = "Institute {} does not exist in database".format(owner)
+        raise SyntaxError(message)
+    
     # Parse the case lines with the extra information
     parsed_case = parse_case(
         case_lines=case_lines, 
@@ -34,9 +42,14 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
     case_obj = build_case(parsed_case)
 
     # Check if case exists in database
-    if adapter.case(institute_id=owner,case_id=case_obj.display_name):
-        logger.warning("Case %s exists in database" % case_obj.display_name)
+    existing_case = adapter.case(institute_id=owner,case_id=case_obj.display_name)
+    if existing_case:
+        message = "Case {} exists in database".format(case_obj.display_name)
         if not update:
-            raise SyntaxError()
+            raise SyntaxError(message)
+        else:
+            adapter.update_case(case_obj)
+    else:
+        adapter.add_case(case_obj)
     
-    adapter.add_case(case_obj)
+    return case_obj

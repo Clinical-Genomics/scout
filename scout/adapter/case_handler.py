@@ -163,20 +163,11 @@ class CaseHandler(object):
     def add_case(self, case_obj):
         """Add a case to the database
 
-            If case exists in database it will be updated.
-            This method will take information in a ped like format and create
-            a case object. If the case is already in database it will update
-            the necessary information.
-
             Args:
                 case_obj(Case)
         """
-        
-        if self.case(institute_id=case_obj.owner, case_id=case_obj.case_id):
-            case_obj = self.update_case(case_obj)
-        
-        logger.info("Adding case {0} to database".format(case_id))
-        case.save()
+        logger.info("Adding case {0} to database".format(case_obj.case_id))
+        case_obj.save()
 
     def update_case(self, case):
         """Update a case in the database

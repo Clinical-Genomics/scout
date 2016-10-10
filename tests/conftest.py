@@ -41,6 +41,19 @@ def ped_file(request):
 
 
 @pytest.fixture(scope='function')
+def parsed_case(request):
+    logger.info("setup a vcf case")
+    case = {
+        'case_id': "337334",
+        'display_name': "337334",
+        'owner': 'cust000',
+        'collaborators': ['cust000']
+    }
+    
+    return case
+
+
+@pytest.fixture(scope='function')
 def vcf_case(request):
     logger.info("setup a vcf case")
     case = Case(

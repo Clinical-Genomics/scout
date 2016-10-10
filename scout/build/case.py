@@ -34,7 +34,7 @@ def build_case(case):
     case_obj.analysis_date = case.get('analysis_date')
     case_obj.analysis_dates = case.get('analysis_dates')
     
-    case_obj.analysis_type = case.get['analysis_type']
+    case_obj.analysis_type = case.get('analysis_type')
     
     # Files
     case_obj.madeline_info = case.get('madeline_info')
@@ -47,11 +47,11 @@ def build_case(case):
     clinical_panels = []
     research_panels = []
     
-    for panel in case['clinical_panels']:
+    for panel in case.get('clinical_panels', []):
         clinical_panels.append(build_panel(panel))
     case_obj.clinical_panels = clinical_panels
     
-    for panel in case['research_panels']:
+    for panel in case.get('research_panels', []):
         research_panels.append(build_panel(panel))
     case_obj.research_panels = research_panels
     

@@ -15,7 +15,8 @@ import logging
 import click
 from configobj import ConfigObj
 
-# from scout.ext.backend.utils import load_variants
+from scout.load import (load_case, delete_variants)
+
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +63,11 @@ logger = logging.getLogger(__name__)
                 help="Path to the coverage report file."
 )
 @click.option('-o', '--owner',
-                nargs=1,
                 help="Specify the owner of the case."
+)
+@click.option('-u', '--update',
+                is_flag=True,
+                help="Update case if it already exists."
 )
 @click.option('--rank_score_threshold',
                 default=0,
@@ -71,7 +75,7 @@ logger = logging.getLogger(__name__)
 )
 @click.pass_context
 def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_config_file,
-         madeline, coverage_report, owner, rank_score_threshold, analysis_type):
+         madeline, coverage_report, owner, update, rank_score_threshold, analysis_type):
     """
     Load the mongo database.
 
@@ -142,18 +146,27 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
 
     adapter = ctx.obj['adapter']
     
-    # case = adapter.add_case(
-    #     case_lines=open(scout_configs['ped'], 'r'),
-    #     case_type=scout_configs['family_type'],
-    #     owner=scout_configs['owner'],
-    #     scout_configs=scout_configs
-    # )
-    #
-    # logger.info("Delete the variants for case {0}".format(case.case_id))
-    # adapter.delete_variants(
-    #     case_id=case.case_id,
-    #     variant_type=scout_configs.get('variant_type', 'clinical')
-    # )
+    try:
+        case_obj = load_case(
+            adapter=adapter, 
+            case_lines=open(scout_configs['ped'], 'r'), 
+            owner=scout_configs['owner'], 
+            case_type=scout_configs['family_type'], 
+            scout_configs=scout_configs, 
+            update=update
+        )
+    except Exception as e:
+        logger.warning(e.message)
+        ctx.abort()
+        
+    logger.info("Delete the variants for case {0}".format(case.case_id))
+    
+    delete_variants(
+        adapter=adapter, 
+        case_obj=case_obj, 
+        variant_type=scout_configs.get('variant_type', 'clinical'),
+    )
+    
     # logger.info("Load the variants for case {0}".format(case.case_id))
     # adapter.add_variants(
     #     vcf_file=scout_configs['load_vcf'],
@@ -161,5 +174,5 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
     #     case=case,
     #     rank_score_threshold=rank_score_threshold
     # )
-    if scout_configs['sv_file']:
-        adapter.load_svs(scout_configs['sv_file'])
+    # if scout_configs.get('sv_file'):
+    #     adapter.load_svs(scout_configs['sv_file'])
