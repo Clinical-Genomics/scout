@@ -91,7 +91,7 @@ class DevelopmentConfig(BaseConfig):
                      'flask_debugtoolbar.panels.logger.LoggingPanel',
                      'flask_debugtoolbar.panels.profiler.ProfilerDebugPanel',
                      # add the MongoDB panel
-                     'flask.ext.mongoengine.panels.MongoDebugPanel']
+                     'flask_mongoengine.panels.MongoDebugPanel']
 
 
 class TestConfig(BaseConfig):

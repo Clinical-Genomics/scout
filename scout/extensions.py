@@ -5,38 +5,38 @@ located in app.py
 # +--------------------------------------------------------------------+
 # | Flask-DebugToolbar
 # +--------------------------------------------------------------------+
-from flask.ext.debugtoolbar import DebugToolbarExtension
+from flask_debugtoolbar import DebugToolbarExtension
 toolbar = DebugToolbarExtension()
 
 # +--------------------------------------------------------------------+
 # | Flask-Admin
 # +--------------------------------------------------------------------+
-from flask.ext.admin import Admin
+from flask_admin import Admin
 from .admin import AdminView
 admin = Admin(index_view=AdminView())
 
 # +--------------------------------------------------------------------+
 # | Flask-Babel
 # +--------------------------------------------------------------------+
-from flask.ext.babel import Babel
+from flask_babel import Babel
 babel = Babel()
 
 # +--------------------------------------------------------------------+
 # | Flask-MongoEngine
 # +--------------------------------------------------------------------+
-from flask.ext.mongoengine import MongoEngine
+from flask_mongoengine import MongoEngine
 db = MongoEngine()
 
 # +--------------------------------------------------------------------+
 # | Storage-Adapter
 # +--------------------------------------------------------------------+
-from .ext.backend import MongoAdapter
+from scout.adapter import MongoAdapter
 store = MongoAdapter()
 
 # +--------------------------------------------------------------------+
 # | Flask-Login
 # +--------------------------------------------------------------------+
-from flask.ext.login import LoginManager
+from flask_login import LoginManager
 login_manager = LoginManager()
 
 # +--------------------------------------------------------------------+
@@ -48,7 +48,7 @@ markdown = lambda app: Markdown(app)
 # +--------------------------------------------------------------------+
 # | Flask-Mail
 # +--------------------------------------------------------------------+
-from flask.ext.mail import Mail
+from flask_mail import Mail
 mail = Mail()
 
 # +--------------------------------------------------------------------+

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint
-from flask.ext.admin.contrib.mongoengine import ModelView
-from flask.ext.login import login_required
+from flask_admin.contrib.mongoengine import ModelView
+from flask_login import login_required
 
 from ..admin import UserModelView
 from ..extensions import admin
