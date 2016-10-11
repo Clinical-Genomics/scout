@@ -5,17 +5,17 @@ import os.path
 
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for, make_response)
-from flask.ext.login import login_required, current_user
-from flask.ext.mail import Message
+from flask_login import login_required, current_user
+from flask_mail import Message
 import query_phenomizer
 
 from scout.models import Case, Variant
 from scout.models.variant import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb
-from scout.helpers import templated
+from scout.utils import templated, validate_user
 
 from .forms import init_filters_form, process_filters_form, GeneListUpload
-from .utils import validate_user, genecov_links
+from .utils import genecov_links
 from .constants import PHENOTYPE_GROUPS
 
 core = Blueprint('core', __name__, template_folder='templates')

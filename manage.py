@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask.ext.script import Manager, Server
+from flask_script import Manager, Server
 
 from scout.app import AppFactory
 from scout.extensions import ctx

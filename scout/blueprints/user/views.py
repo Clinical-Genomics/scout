@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint
-from flask.ext.admin.contrib.mongoengine import ModelView
-from flask.ext.login import login_required
+from flask_admin.contrib.mongoengine import ModelView
+from flask_login import login_required
 
-from ..admin import UserModelView
-from ..extensions import admin
-from ..models import User, Institute, Variant, Whitelist, Case, GenePanel
-from ..helpers import templated
+from scout.admin import UserModelView
+from scout.extensions import admin
+from scout.models import User, Institute, Variant, Whitelist, Case, GenePanel
+from scout.utils import templated
 
 user = Blueprint('profile', __name__, template_folder='templates')
 
@@ -24,6 +24,7 @@ class CaseView(ModelView):
 
 class VariantView(ModelView):
     column_exclude_list = ['variant_id', 'compounds']
+
 
 # register admin views - TODO: move!
 admin.add_view(ModelView(Whitelist))
