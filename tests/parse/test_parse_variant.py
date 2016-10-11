@@ -1,8 +1,12 @@
 from scout.parse import parse_variant
 
-from vcf_parser import VCFParser
-
-one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
+def test_parse_minimal(minimal_snv, minimal_case):
+    """Test to parse a minimal variant"""
+    parsed_variant = parse_variant(minimal_snv, minimal_case, variant_type='clinical')
+    
+    assert parsed_variant['position'] == 10
+    assert parsed_variant['end'] == 10
+    assert parsed_variant['category'] == 'snv'
 
 # def test_parse_variant(setup_database, vcf_case, get_institute):
 #     variant_parser = VCFParser(infile=one_variant)

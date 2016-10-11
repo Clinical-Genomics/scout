@@ -19,8 +19,6 @@ def parse_compounds(variant, case, variant_type):
     case_id = case['case_id']
     case_name = case['display_name']
     compounds = []
-    logger.debug("Checking compounds for case %s in variant %s" %
-                 (case_id, variant['variant_id']))
     
     for compound in variant['compound_variants'].get(case_name, []):
         compound_obj = {}

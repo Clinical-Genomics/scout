@@ -20,5 +20,6 @@ def test_parse_case_two_cases():
         "636808	ADM1059A3	0	0	2	1",
         "636809	ADM1059A3	0	0	2	1",
     ]
+    #Should raise since there are multiple families
     with pytest.raises(PedigreeError):
         parse_case(case_lines, 'test_institute')

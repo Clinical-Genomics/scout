@@ -10,7 +10,7 @@ def parse_genotypes(variant, case):
             genotypes(list(dict)): A list of genotypes
     """
     genotypes = []
-    for ind in case['individuals']:
+    for ind in case.get('individuals',[]):
         genotypes.append(parse_genotype(variant, ind))
 
     return genotypes

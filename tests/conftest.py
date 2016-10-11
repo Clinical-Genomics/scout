@@ -41,13 +41,52 @@ def ped_file(request):
 
 
 @pytest.fixture(scope='function')
+def minimal_case(request):
+    logger.info("setup a vcf case")
+    case = {
+        'case_id': "337334",
+        'display_name': "337334",
+        'owner': 'cust000',
+        'collaborators': ['cust000'],
+    }
+    
+    return case
+
+@pytest.fixture(scope='function')
 def parsed_case(request):
     logger.info("setup a vcf case")
     case = {
         'case_id': "337334",
         'display_name': "337334",
         'owner': 'cust000',
-        'collaborators': ['cust000']
+        'collaborators': ['cust000'],
+        'individuals':[
+            {
+                'ind_id': 'ADM1136A1',
+                'father': '0',
+                'mother': '0',
+                'display_name': 'ADM1136A1',
+                'sex': '1',
+                'phenotype': 1
+            },
+            {
+                'ind_id': 'ADM1136A2',
+                'father': 'ADM1136A1',
+                'mother': 'ADM1136A3',
+                'display_name': 'ADM1136A2',
+                'sex': '1',
+                'phenotype': 2
+            },
+            {
+                'ind_id': 'ADM1136A3',
+                'father': '0',
+                'mother': '0',
+                'display_name': 'ADM1136A3',
+                'sex': '2',
+                'phenotype': 1
+            },
+            
+        ]
     }
     
     return case
@@ -96,26 +135,46 @@ def client(request):
     
     return client
 
-@pytest.fixture(scope='function')
-def adapter(request, client):
+@pytest.yield_fixture(scope='function')
+def adapter(request):
     """Get an adapter connected to mongomock database"""
+    client = MongoAdapter()
+    # client.connect_to_database(
+    #     database='mongotest',
+    #     host='mongomock://localhost',
+    #     port=27019,
+    #     username=None,
+    #     password=None
+    # )
     client.connect_to_database(
-        database='mongotest', 
-        host='mongomock://localhost',
-        port=27019,
-        username=None,
-        password=None
+        database='test', 
     )
-    def teardown():
-        print('\n')
-        logger.info('Teardown database')
-        client.drop_database()
-        logger.info('Teardown done')
-    
-    request.addfinalizer(teardown)
-    
-    
-    return client
+    yield client
+
+    print('\n')
+    logger.info('Teardown database')
+    client.drop_database()
+    for case in client.cases():
+        print(case)
+    logger.info('Teardown done')
+
+@pytest.fixture(scope='function')
+def minimal_snv(request):
+    """Simulate a variant dictionary from vcf parser"""
+    variant = {
+        'CHROM':'1',
+        'POS':'10',
+        'REF':'A',
+        'ALT':'C',
+        'ID':'rs1',
+        'FILTER':'PASS',
+        'QUAL':'1000',
+        'INFO':'.',
+        'info_dict': {},
+        'compound_variants': {},
+        'vep_info': {},
+    }
+    return variant
 
 @pytest.fixture(scope='function')
 def get_case_info(request):
