@@ -37,6 +37,7 @@ Flask-Markdown
 Flask-Mail
 Flask-DebugToolbar>=0.10.0
 Flask-Script
+Flask-Alchy
 
 # utils
 path.py
