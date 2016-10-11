@@ -167,7 +167,15 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
         variant_type=scout_configs.get('variant_type', 'clinical'),
     )
     
-    # logger.info("Load the variants for case {0}".format(case.case_id))
+    logger.info("Load the variants for case {0}".format(case.case_id))
+    
+    load_variants(
+        adapter=adapter,
+        case=case_obj,
+        variants=scout_configs['load_vcf'],
+        variant_type='clinical'
+    )
+    
     # adapter.add_variants(
     #     vcf_file=scout_configs['load_vcf'],
     #     variant_type=scout_configs.get('variant_type', 'clinical'),

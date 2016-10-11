@@ -3,14 +3,14 @@ import logging
 
 from tempfile import NamedTemporaryFile
 # We will use mongomock when mongoengine allows it
-# from mongomock import MongoClient
-from pymongo import MongoClient
+from mongomock import MongoClient
+# from pymongo import MongoClient
 from mongoengine import DoesNotExist
 from configobj import ConfigObj
 
 from vcf_parser import VCFParser
 
-from scout.ext.backend import MongoAdapter
+from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 from scout.commands import cli
@@ -54,15 +54,14 @@ def parsed_case(request):
 
 
 @pytest.fixture(scope='function')
-def vcf_case(request):
-    logger.info("setup a vcf case")
+def case_obj(request):
+    logger.info("Create a case obj")
     case = Case(
         case_id="337334",
         display_name="337334",
         owner='cust000',
         collaborators = ['cust000']
     )
-    
     return case
 
 @pytest.fixture(scope='function')
@@ -87,164 +86,36 @@ def variants(request):
     variant_parser = VCFParser(infile=vcf_file)
     return variant_parser
 
-@pytest.fixture(scope='session')
-def database_setup(request):
-    """Get a config file with mongodb arguments"""
-    print('')
-    logger.info("Setting up database configs")
-    config_file = NamedTemporaryFile(delete=False, mode='w')
+@pytest.fixture(scope='function')
+def client(request):
+    """Get a mongoadapter"""
+    logger.info("Get a mongo adapter")
+    host = 'mongomock://localhost'
+    port = 27019
+    client = MongoAdapter()
     
-    host = 'localhost'
-    port = 27017
-    db_name = 'testdatabase'
-    
-    config_file.write("mongodb = {0}\n".format(db_name))
-    config_file.write("host = {0}\n".format(host))
-    config_file.write("port = 27017\n".format(db_name))
-    
-    config_file.close()
-    
-    logger.info("Database configs setup")
-    def teardown():
-        print('\n')
-        client = MongoClient()
-        logger.info('Teardown database')
-        client.drop_database(db_name)
-        logger.info('Teardown done')
-    request.addfinalizer(teardown)
-    return config_file.name
+    return client
 
-@pytest.fixture(scope='session')
-def setup_loaded_database(request):
-    """Setup a mongo databse with loaded variants"""
-    print('')
-    logger.info("Setting up database and populate it")
-    host = 'localhost'
-    port = 27017
-    db_name = 'testdatabase'
-    client = MongoClient(
-        host=host,
-        port=port,
+@pytest.fixture(scope='function')
+def adapter(request, client):
+    """Get an adapter connected to mongomock database"""
+    client.connect_to_database(
+        database='mongotest', 
+        host='mongomock://localhost',
+        port=27019,
+        username=None,
+        password=None
     )
-    #Initialize an adapter
-    adapter = MongoAdapter()
-    #Connect to the test database
-    adapter.connect_to_database(
-        database=db_name, 
-        host=host, 
-        port=port
-    )
-    scout_configs = ConfigObj(scout_config)
-    
-    case = adapter.add_case(
-        case_lines=open(scout_configs['ped'], 'r'),
-        case_type='ped', 
-        owner=scout_configs['owner'], 
-        scout_configs=scout_configs
-    )
-    
-    adapter.add_variants(
-        vcf_file=scout_configs['load_vcf'], 
-        variant_type='clinical',
-        case=case,
-    )
-    
-    logger.info("Database setup")
     def teardown():
         print('\n')
         logger.info('Teardown database')
-        client.drop_database(db_name)
+        client.drop_database()
         logger.info('Teardown done')
-    request.addfinalizer(teardown)
-    return adapter
-
-
-@pytest.fixture(scope='session')
-def setup_database(request):
-    """Setup the mongo adapter"""
-    print('')
-    logger.info("Setting up database")
-    host = 'localhost'
-    port = 27017
-    db_name = 'testdatabase'
-    client = MongoClient(
-        host=host,
-        port=port,
-    )
-    #Initialize an adapter
-    adapter = MongoAdapter()
-    #Connect to the test database
-    adapter.connect_to_database(
-        database=db_name, 
-        host=host, 
-        port=port
-    )
     
-    logger.info("Database setup")
-    def teardown():
-        print('\n')
-        logger.info('Teardown database')
-        client.drop_database(db_name)
-        logger.info('Teardown done')
-    request.addfinalizer(teardown)
-    return adapter
-
-@pytest.fixture(scope='function')
-def get_institute(request):
-    print('')
-    logger.info("setup a institute")
-    institute = Institute(
-        internal_id='cust000',
-        display_name='clinical'
-    )
-    logger.info("Adding institute to database")
-    institute.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing institute')
-        institute.delete()
-        logger.info('Institute removed')
     request.addfinalizer(teardown)
     
-    return institute
-
-@pytest.fixture(scope='function')
-def get_user(request):
-    logger.info("setup a user")
-    user = User(
-        email='john@doe.com',
-        name="John Doe"
-    )
-    logger.info("Adding user to database")
-    user.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing user')
-        user.delete()
-        logger.info('user removed')
-    request.addfinalizer(teardown)
     
-    return user
-
-@pytest.fixture(scope='function')
-def get_case(request):
-    logger.info("setup a case")
-    case = Case(
-        case_id="acase",
-        display_name="acase",
-        owner='cust000',
-        collaborators = ['cust000']
-    )
-    logger.info("Adding case to database")
-    case.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing case')
-        case.delete()
-        logger.info('Case removed')
-    request.addfinalizer(teardown)
-    
-    return case
+    return client
 
 @pytest.fixture(scope='function')
 def get_case_info(request):
@@ -302,33 +173,3 @@ def get_case_info(request):
     case['owner'] = 'cust000'
 
     return case
-
-
-@pytest.fixture(scope='function')
-def get_variant(request, get_institute):
-    logger.info("setup a variant")
-    variant = Variant(
-        document_id = "document_id",
-        variant_id = "variant_id",
-        display_name = "display_name",
-        variant_type = 'research',
-        case_id = 'case_id',
-        chromosome = '1',
-        position = 10,
-        reference = "A",
-        alternative = "C",
-        rank_score = 10.0,
-        variant_rank = 1,
-        institute = get_institute,
-    )
-    logger.info("Adding variant to database")
-    variant.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing variant')
-        variant.delete()
-        logger.info('Case variant')
-    request.addfinalizer(teardown)
-    
-    return variant
-

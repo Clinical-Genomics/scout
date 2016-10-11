@@ -16,6 +16,7 @@ from datetime import datetime
 import logging
 
 from mongoengine import connect, DoesNotExist
+from mongoengine.connection import get_connection, _get_db
 
 from . import EventHandler, VariantHandler, CaseHandler
 from scout.models import (User,HgncAlias)
@@ -28,6 +29,9 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
     """Adapter for cummunication with a mongo database."""
 
     def __init__(self, app=None):
+        self.mongodb_name = None
+        self.host = None
+        self.port = None
         if app:
             logger.info("Initializing app")
             self.init_app(app)
@@ -42,8 +46,8 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         password = config.get('MONGODB_PASSWORD', None)
         self.connect_to_database(
             database,
-            host=host,
-            port=port,
+            host=self.host,
+            port=self.port,
             username=username,
             password=password
         )
@@ -61,6 +65,8 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
         """
         logger.info("Connecting to database {0}".format(database))
         self.mongodb_name = database
+        self.host = host
+        self.port = port
         self.db = connect(
             database,
             host=host,
@@ -69,7 +75,11 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
             password=password
         )
         logger.debug("Connection established")
-
+    
+    def get_connection(self):
+        """Return a mongoengine connection object"""
+        return get_connection()
+    
     def drop_database(self):
         """Drop the database that the adapter is connected to."""
         logger.info("Drop database {0}".format(self.mongodb_name))

@@ -4,7 +4,7 @@ import logging
 from mongoengine import DoesNotExist, Q
 
 from scout.models import (Case, GenePanel, Institute, User)
-from scout.ext.backend.utils import get_gene_panel
+from scout.exceptions import (IntegrityError)
 
 logger = logging.getLogger(__name__)
 
@@ -162,10 +162,19 @@ class CaseHandler(object):
 
     def add_case(self, case_obj):
         """Add a case to the database
+           If the case already exists exception is raised
 
             Args:
                 case_obj(Case)
         """
+        existing_case = self.case(
+            institute_id = case_obj['owner'],
+            case_id = case_obj['display_name']
+        )
+        if existing_case:
+            raise(IntegrityError("Case {0} already exists in database".format(
+                                  case_obj['display_name'])))
+            
         logger.info("Adding case {0} to database".format(case_obj.case_id))
         case_obj.save()
 

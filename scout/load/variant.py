@@ -13,7 +13,7 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
             variant_type(str)
     """
     adapter.delete_variants(
-        case_id=case['case_id'], 
+        case_id=case_obj['case_id'], 
         variant_type=variant_type
     )
 
@@ -35,7 +35,7 @@ def load_variants(adapter, variants, case, variant_type='clinical'):
             variant_type=variant_type
         )
 
-def load_variant(adapter, variant, case, variant_type='clinical'):
+def load_variant(adapter, variant, case_obj, variant_type='clinical'):
     """Load a variant into the database
     
         Parse the variant, create a mongoengine object and load it into 
@@ -44,13 +44,13 @@ def load_variant(adapter, variant, case, variant_type='clinical'):
         Args:
             adapter(MongoAdapter)
             variant(vcf_parser.Variant)
-            case(Case)
+            case_obj(Case)
             variant_type(str)
         
         Returns:
             variant_obj(Variant): mongoengine Variant object
     """
-    institute_obj = adapter.institute(institute_id=case['owner'])
+    institute_obj = adapter.institute(institute_id=case_obj['owner'])
     
     if not institute_obj:
         logger.warning("Institute does not exist.")
@@ -58,7 +58,7 @@ def load_variant(adapter, variant, case, variant_type='clinical'):
     
     parsed_variant = parse_variant(
         variant_dict=variant, 
-        case=case, 
+        case=case_obj, 
         variant_type=variant_type
     )
     

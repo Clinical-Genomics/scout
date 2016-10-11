@@ -4,6 +4,7 @@ from path import path
 
 from ped_parser import FamilyParser
 
+from scout.exceptions import PedigreeError
 from . import parse_gene_panel
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
     case_parser = FamilyParser(case_lines,family_type=case_type)
     
     if len(case_parser.families) != 1:
-        raise SyntaxError("Only one case per ped file is allowed")
+        raise PedigreeError("Only one case per ped file is allowed")
     
     family_id = list(case_parser.families.keys())[0]
     family = case_parser.families[family_id]
@@ -139,18 +140,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
     else:
         case['madeline_info'] = None
         logger.info("No madeline file found. Skipping madeline file.")
-    
-    # Add the coverage report
-    coverage_report_path = path(scout_configs.get('coverage_report', '/__menoexist.tXt'))
-    if coverage_report_path.exists():
-        logger.debug("Found a coverage report")
-        with coverage_report_path.open('rb') as handle:
-            case['coverage_report'] = handle.read()
-            logger.debug("Coverage was read succesfully")
-    else:
-        case['coverage_report'] = None
-        logger.info("No coverage report found. Skipping coverage report.")
-    
+
     case['clinical_panels'] = []
     case['research_panels'] = []
 
