@@ -34,12 +34,12 @@ class BaseConfig(object):
   REPORT_LANGUAGE = 'en'
   ACCEPT_LANGUAGES = ['en', 'sv']
 
-  BLUEPRINTS = [('scout.core.core', None),
-                ('scout.frontend.frontend', None),
-                ('scout.login.login', None),
-                ('scout.user.user', None),
-                ('scout.api.api', None),
-                ('scout.pileup.pileup_bp', None),
+  BLUEPRINTS = [('scout.blueprints.core.core', None),
+                ('scout.blueprints.frontend.frontend', None),
+                ('scout.blueprints.login.login', None),
+                ('scout.blueprints.user.user', None),
+                ('scout.blueprints.api.api', None),
+                ('scout.blueprints.pileup.pileup_bp', None),
                 ('chanjo_report.server.blueprints.report_bp', '/reports')]
 
   EXTENSIONS = ['scout.extensions.store',

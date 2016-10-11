@@ -8,11 +8,11 @@ from __future__ import absolute_import, unicode_literals
 from flask_wtf import Form
 from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
-                     SelectMultipleField, RadioField, DateField)
+                     SelectMultipleField, RadioField)
 from wtforms import widgets
 
-from ..models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
-from .._compat import text_type
+from scout.models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
+from scout._compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
