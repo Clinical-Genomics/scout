@@ -3,7 +3,7 @@ import logging
 
 from tempfile import NamedTemporaryFile
 # We will use mongomock when mongoengine allows it
-from mongomock import MongoClient
+# from mongomock import MongoClient
 # from pymongo import MongoClient
 from mongoengine import DoesNotExist
 from configobj import ConfigObj
@@ -20,9 +20,10 @@ root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
-vcf_file = "tests/fixtures/337334.clinical.vcf"
+vcf_file = "tests/fixtures/337334.selected.downsampled.vcf"
+sv_path = "tests/fixtures/337334.SV.vcf"
 one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
-ped_file = "tests/fixtures/337334.ped"
+ped_path = "tests/fixtures/337334.ped"
 scout_config = "tests/fixtures/scout_config_test.ini"
 gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
@@ -34,10 +35,16 @@ def variant_file(request):
     return vcf_file
 
 @pytest.fixture(scope='function')
+def sv_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return sv_path
+
+@pytest.fixture(scope='function')
 def ped_file(request):
     """Get the path to a ped file"""
     print('')
-    return ped_file
+    return ped_path
 
 
 @pytest.fixture(scope='function')
@@ -163,6 +170,24 @@ def minimal_snv(request):
     """Simulate a variant dictionary from vcf parser"""
     variant = {
         'CHROM':'1',
+        'POS':'27232819',
+        'REF':'A',
+        'ALT':'T',
+        'ID':'rs1',
+        'FILTER':'PASS',
+        'QUAL':'164',
+        'info_dict': {},
+        'compound_variants': {},
+        'vep_info': {},
+        
+    }
+    return variant
+
+@pytest.fixture(scope='function')
+def minimal_sv(request):
+    """Simulate a variant dictionary from vcf parser"""
+    variant = {
+        'CHROM':'1',
         'POS':'10',
         'REF':'A',
         'ALT':'C',
@@ -173,6 +198,61 @@ def minimal_snv(request):
         'info_dict': {},
         'compound_variants': {},
         'vep_info': {},
+        'rank_scores': {'15026-miptest': '-2'},
+        'variant_id': '1_27232819_T_T]16:89585536]',
+        'info_dict':{
+            'Ensembl_transcript_to_refseq_transcript': ["NUDC:ENST00000321265>NM_006600/"\
+            "XM_005245726|ENST00000435827|ENST00000452707|ENST00000484772"],
+            'Gene_description': ['NUDC:nudC_nuclear_distribution_protein'],
+            'MATEID':['MantaBND:454:0:1:0:0:0:1'],
+            'SVTYPE':['BND'],
+        },
+        'vep_info': {
+            u'T]16': [
+                {
+                    'APPRIS': '',
+                    'Allele': 'T]16',
+                    'Amino_acids': '',
+                    'BIOTYPE': 'protein_coding',
+                    'CANONICAL': '',
+                    'CCDS': '',
+                    'CDS_position': '',
+                    'Codons': '',
+                    'Consequence': 'intron_variant',
+                    'DISTANCE': '',
+                    'DOMAINS': '',
+                    'ENSP': 'ENSP00000404020',
+                    'EXON': '',
+                    'Existing_variation': '',
+                    'FLAGS': 'cds_end_NF',
+                    'Feature': 'ENST00000435827',
+                    'Feature_type': 'Transcript',
+                    'Gene': 'ENSG00000090273',
+                    'HGNC_ID': '8045',
+                    'HGVS_OFFSET': '',
+                    'HGVSc': '',
+                    'HGVSp': '',
+                    'HIGH_INF_POS': '',
+                    'IMPACT': 'MODIFIER',
+                    'INTRON': '2/6',
+                    'MOTIF_NAME': '',
+                    'MOTIF_POS': '',
+                    'MOTIF_SCORE_CHANGE': '',
+                    'PolyPhen': '',
+                    'Protein_position': '',
+                    'SIFT': '',
+                    'STRAND': '1',
+                    'SWISSPROT': '',
+                    'SYMBOL': 'NUDC',
+                    'SYMBOL_SOURCE': 'HGNC',
+                    'TREMBL': '',
+                    'TSL': '',
+                    'UNIPARC': 'UPI0002A475AB',
+                    'cDNA_position': ''
+                }
+            ],
+            'T]16:89585536]': []
+        }
     }
     return variant
 

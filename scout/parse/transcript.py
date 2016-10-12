@@ -65,93 +65,94 @@ def parse_transcripts(variant):
     disease_associated_transcripts = parse_disease_associated(variant)
     transcripts = []
 
-    for vep_entry in variant['vep_info'].get(variant['ALT'], []):
-        transcript = {}
-        # There can be several functional annotations for one variant
-        functional_annotations = vep_entry.get('Consequence', '').split('&')
-        transcript['functional_annotations'] = functional_annotations
-        # Get the transcript id
-        transcript_id = vep_entry.get('Feature', '').split(':')[0]
-        transcript['transcript_id'] = transcript_id
-        
-        transcript['refseq_ids'] = ensembl_to_refseq.get(transcript_id, [])
-        
-        # Add the hgnc gene identifier
-        transcript['hgnc_symbol'] = vep_entry.get('SYMBOL', '').split('.')[0]
-
-        transcript['is_disease_associated'] = False
-        disease_transcripts = disease_associated_transcripts.get(transcript['hgnc_symbol'], set())
-        for refseq_id in transcript['refseq_ids']:
-            if refseq_id in disease_transcripts:
-                transcript['is_disease_associated'] = True
-
-        # Add the ensembl gene identifier
-        transcript['ensembl_id'] = vep_entry.get('Gene', '')
-      
-        ########### Fill it with the available information ###########
-      
-        ### Protein specific annotations ###
-      
-        ## Protein ID ##
-        transcript['protein_id'] = vep_entry.get('ENSP')
-        transcript['polyphen_prediction'] = vep_entry.get('PolyPhen')
-        transcript['sift_prediction'] = vep_entry.get('SIFT')
-        transcript['swiss_prot'] = vep_entry.get('SWISSPROT')
-
-        if vep_entry.get('DOMAINS', None):
-            pfam_domains = vep_entry['DOMAINS'].split('&')
-        
-            for annotation in pfam_domains:
-                annotation = annotation.split(':')
-                domain_name = annotation[0]
-                domain_id = annotation[1]
-                if domain_name == 'Pfam_domain':
-                    transcript['pfam_domain'] = domain_id
-                elif domain_name == 'PROSITE_profiles':
-                    transcript['prosite_profile'] = domain_id
-                elif domain_name == 'SMART_domains':
-                    transcript['smart_domain'] = domain_id
-
-        coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
-        protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
-      
-        coding_sequence_name = None
-        if len(coding_sequence_entry) > 1:
-            coding_sequence_name = coding_sequence_entry[-1]
-      
-        transcript['coding_sequence_name'] = coding_sequence_name
-      
-        protein_sequence_name = None
-        if len(protein_sequence_entry) > 1:
-            protein_sequence_name = protein_sequence_entry[-1]
-      
-        transcript['protein_sequence_name'] = protein_sequence_name
-      
-        transcript['biotype'] = vep_entry.get('BIOTYPE')
-      
-        transcript['exon'] = vep_entry.get('EXON')
-        transcript['intron'] = vep_entry.get('INTRON')
-        
-        if vep_entry.get('STRAND'):
-            if vep_entry['STRAND'] == '1':
-                transcript['strand'] = '+'
-            elif vep_entry['STRAND'] == '-1':
-                transcript['strand'] = '-'
-        else:
-            transcript['strand'] = None
+    for allele in variant['vep_info']:
+        for vep_entry in variant['vep_info'][allele]:
+            transcript = {}
+            # There can be several functional annotations for one variant
+            functional_annotations = vep_entry.get('Consequence', '').split('&')
+            transcript['functional_annotations'] = functional_annotations
+            # Get the transcript id
+            transcript_id = vep_entry.get('Feature', '').split(':')[0]
+            transcript['transcript_id'] = transcript_id
             
-        functional = []
-        regional = []
-        for annotation in functional_annotations:
-            functional.append(annotation)
-            regional.append(SO_TERMS[annotation]['region'])
-      
-        transcript['functional_annotations'] = functional
-        transcript['region_annotations'] = regional
-        
-        transcript['is_canonical'] = (vep_entry.get('CANONICAL') == 'YES') 
-        
-        
-        transcripts.append(transcript)
+            transcript['refseq_ids'] = ensembl_to_refseq.get(transcript_id, [])
+            
+            # Add the hgnc gene identifier
+            transcript['hgnc_symbol'] = vep_entry.get('SYMBOL', '').split('.')[0]
+            
+            transcript['is_disease_associated'] = False
+            disease_transcripts = disease_associated_transcripts.get(transcript['hgnc_symbol'], set())
+            for refseq_id in transcript['refseq_ids']:
+                if refseq_id in disease_transcripts:
+                    transcript['is_disease_associated'] = True
+            
+            # Add the ensembl gene identifier
+            transcript['ensembl_id'] = vep_entry.get('Gene', '')
+          
+            ########### Fill it with the available information ###########
+          
+            ### Protein specific annotations ###
+          
+            ## Protein ID ##
+            transcript['protein_id'] = vep_entry.get('ENSP')
+            transcript['polyphen_prediction'] = vep_entry.get('PolyPhen')
+            transcript['sift_prediction'] = vep_entry.get('SIFT')
+            transcript['swiss_prot'] = vep_entry.get('SWISSPROT')
+            
+            if vep_entry.get('DOMAINS', None):
+                pfam_domains = vep_entry['DOMAINS'].split('&')
+            
+                for annotation in pfam_domains:
+                    annotation = annotation.split(':')
+                    domain_name = annotation[0]
+                    domain_id = annotation[1]
+                    if domain_name == 'Pfam_domain':
+                        transcript['pfam_domain'] = domain_id
+                    elif domain_name == 'PROSITE_profiles':
+                        transcript['prosite_profile'] = domain_id
+                    elif domain_name == 'SMART_domains':
+                        transcript['smart_domain'] = domain_id
+            
+            coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
+            protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
+          
+            coding_sequence_name = None
+            if len(coding_sequence_entry) > 1:
+                coding_sequence_name = coding_sequence_entry[-1]
+          
+            transcript['coding_sequence_name'] = coding_sequence_name
+          
+            protein_sequence_name = None
+            if len(protein_sequence_entry) > 1:
+                protein_sequence_name = protein_sequence_entry[-1]
+          
+            transcript['protein_sequence_name'] = protein_sequence_name
+          
+            transcript['biotype'] = vep_entry.get('BIOTYPE')
+          
+            transcript['exon'] = vep_entry.get('EXON')
+            transcript['intron'] = vep_entry.get('INTRON')
+            
+            if vep_entry.get('STRAND'):
+                if vep_entry['STRAND'] == '1':
+                    transcript['strand'] = '+'
+                elif vep_entry['STRAND'] == '-1':
+                    transcript['strand'] = '-'
+            else:
+                transcript['strand'] = None
+                
+            functional = []
+            regional = []
+            for annotation in functional_annotations:
+                functional.append(annotation)
+                regional.append(SO_TERMS[annotation]['region'])
+          
+            transcript['functional_annotations'] = functional
+            transcript['region_annotations'] = regional
+            
+            transcript['is_canonical'] = (vep_entry.get('CANONICAL') == 'YES') 
+            
+            
+            transcripts.append(transcript)
     
     return transcripts 

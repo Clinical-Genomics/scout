@@ -4,6 +4,8 @@ from scout.utils import generate_md5_key
 from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes, 
                parse_frequencies, parse_conservations, parse_ids, parse_callers)
 
+from scout.exceptions import VcfError
+
 logger=logging.getLogger(__name__)
 
 def parse_variant(variant_dict, case, variant_type='clinical'):
@@ -40,6 +42,8 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     variant['quality'] = float(variant_dict['QUAL'])
     variant['filters'] = variant_dict['FILTER'].split(';')
     variant['variant_type'] = variant_type
+    # This is the id of other position in translocations
+    variant['mate_id'] = None
     
     ################# Position specific #################
     variant['chromosome'] = variant_dict['CHROM']
@@ -62,11 +66,21 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             variant['sub_category'] = 'indel'
     elif variant['category'] == 'sv':
         try:
-            variant['length'] = int(variant_dict['info_dict']['SVLEN'])
-            variant['end'] = int(variant_dict['info_dict']['END'])
-            variant['sub_category'] = variant_dict['info_dict']['SVTYPE']
+            variant['sub_category'] = variant_dict['info_dict']['SVTYPE'][0]
         except KeyError:
-            raise SyntaxError("SVs has to have SVLEN, END and SVTYPE")
+            raise VcfError("SVs has to have SVTYPE")
+        if variant['sub_category'] == 'BND':
+            if variant_dict['info_dict'].get('MATEID'):
+                variant['mate_id'] = variant_dict['info_dict']['MATEID'][0]
+            #For translocations we set lenth to infinity
+            variant_dict['length'] = float('inf')
+        else:
+            try:
+                variant['length'] = int(variant_dict['info_dict']['SVLEN'][0])
+                variant['end'] = int(variant_dict['info_dict']['END'][0])
+            except KeyError:
+                raise VcfError("Non BND SVs has to have SVLEN and END")
+        
 
     ################# Gene Lists #################
     # If a variant belongs to any gene lists we check which ones
