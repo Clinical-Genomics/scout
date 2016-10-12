@@ -27,6 +27,7 @@ def test_parse_small_sv(minimal_sv, minimal_case):
     assert parsed_variant['sub_category'] == 'BND'
     assert parsed_variant['position'] == int(minimal_sv['POS'])
     assert parsed_variant['hgnc_symbols'] == ['NUDC']
+    assert parsed_variant['mate_id'] == 'MantaBND:454:0:1:0:0:0:1'
     
 # def test_parse_all_svs(sv_file, ped_file):
 #     """docstring for test_parse_all_variants"""

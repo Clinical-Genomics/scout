@@ -66,10 +66,10 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             variant['sub_category'] = 'indel'
     elif variant['category'] == 'sv':
         try:
-            variant['sub_category'] = variant_dict['info_dict']['SVTYPE'][0]
+            variant['sub_category'] = variant_dict['info_dict']['SVTYPE'][0].lower()
         except KeyError:
             raise VcfError("SVs has to have SVTYPE")
-        if variant['sub_category'] == 'BND':
+        if variant['sub_category'] == 'bnd':
             if variant_dict['info_dict'].get('MATEID'):
                 variant['mate_id'] = variant_dict['info_dict']['MATEID'][0]
             #For translocations we set lenth to infinity

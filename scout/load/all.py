@@ -5,6 +5,11 @@ from . import (load_case, load_variants, delete_variants)
 
 logger = logging.getLogger(__name__)
 
+
+def wipe_database():
+    """docstring for wipe_database"""
+    pass
+
 def load_scout(adapter, case_file, snv_file, owner, sv_file=None, 
                case_type='mip', variant_type='clinical', update=False,
                scout_configs=None):

@@ -70,10 +70,18 @@ class Variant(Document):
     # the clinical variants have limited annotation fields.
     variant_type = StringField(required=True,
                                choices=('research', 'clinical'))
+                               
+    category = StringField(choices=('sv', 'snv'))
+    sub_category = StringField(choices=(
+                    'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv'))
+                    
+    mate_id = StringField()
     # case_id is a string like owner_caseid
     case_id = StringField(required=True)
     chromosome = StringField(required=True)
     position = IntField(required=True)
+    end = IntField()
+    length = IntField()
     reference = StringField(required=True)
     alternative = StringField(required=True)
     
@@ -112,6 +120,18 @@ class Variant(Document):
     gatk = StringField(choices=VARIANT_CALL, default='Not Used')
     samtools = StringField(choices=VARIANT_CALL, default='Not Used')
     freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
+    
+    # Conservation:
+    phast_conservation = ListField(StringField(choices=CONSERVATION))
+    gerp_conservation = ListField(StringField(choices=CONSERVATION))
+    phylop_conservation = ListField(StringField(choices=CONSERVATION))
+    # Database options:
+    gene_lists = ListField(StringField())
+    expected_inheritance = ListField(StringField())
+    manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
+
+    acmg_evaluation = StringField(choices=ACMG_TERMS)
+    
 
     @property
     def case_displayname(self):
@@ -154,17 +174,6 @@ class Variant(Document):
             3: 'Likely benign', 4: 'Likely pathogenic', 5: 'Pathogenic',
             6: 'drug response', 7: 'histocompatibility', 255: 'other'
         }.get(self.clnsig, 'not provided')
-
-    # Conservation:
-    phast_conservation = ListField(StringField(choices=CONSERVATION))
-    gerp_conservation = ListField(StringField(choices=CONSERVATION))
-    phylop_conservation = ListField(StringField(choices=CONSERVATION))
-    # Database options:
-    gene_lists = ListField(StringField())
-    expected_inheritance = ListField(StringField())
-    manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
-
-    acmg_evaluation = StringField(choices=ACMG_TERMS)
 
     @property
     def omim_annotations(self):
