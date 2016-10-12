@@ -1,0 +1,77 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css">
+<link rel="stylesheet"
+      href="{{ url_for('sv.static', filename='styles.css') }}">
+{% endblock %}
+
+{% block content %}
+  <table id="variantsTable" class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Rank #</th>
+        <th>Score</th>
+        <th>Type</th>
+        <th>Chrom</th>
+        <th>Start</th>
+        <th>Stop</th>
+        <th>Length</th>
+        <th>Frequency</th>
+        <th>Genes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for index in range(100) %}
+        <tr>
+          <td>1</td>
+          <td>16</td>
+          <td>BDN</td>
+          <td>Chr 2</td>
+          <td>10</td>
+          <td>20</td>
+          <td>10</td>
+          <td>0.3</td>
+          <td>ADK <span class="badge pull-right">1</span></td>
+        </tr>
+      {% endfor %}
+
+      {% for variant in variants %}
+        <tr>
+          <td>
+            <a href="{{ url_for('sv.variant', variant_id=variant.id) }}">
+              {{ variant.variant_rank }}
+            </a>
+          </td>
+          <td>{{ variant.rank_rank }}</td>
+          <td>{{ variant.sub_category|upper }}</td>
+          <td>{{ variant.chromosome }}</td>
+          <td>{{ variant.position }}</td>
+          <td>{{ variant.end }}</td>
+          <td>{{ variant.length }}</td>
+          <td>
+            {{ variant.hgnc_symbols }}
+            <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-body">hs</div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/1.4.4/jquery.floatThead.min.js"></script>
+
+  <script>
+    var $table = $("#variantsTable");
+    $table.floatThead({});
+  </script>
+{% endblock %}
