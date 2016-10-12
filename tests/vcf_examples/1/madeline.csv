@@ -1,5 +1,0 @@
-FamilyID	IndividualID	Gender	Father	Mother	Affected	Proband	Consultand	Alive
-1	1-1-3A	M	1-2-1U	1-2-2U	A	Y	Y	Y
-1	1-2-2U	F	.	.	U	N	N	Y
-1	1-2-1U	M	.	.	U	N	N	Y
-1	1-1-4A	F	1-2-1U	1-2-2U	A	N	Y	Y
