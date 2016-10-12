@@ -18,21 +18,17 @@ class CaseHandler(object):
             Args:
                 institute_obj(Institute)
         """
-        logger.info("Adding institute with internal_id: {0} and"\
-                    " display_name: {1}".format(
-                        institute_obj['internal_id'], 
-                        institute_obj['display_name']))
-        
+        logger.info("Adding institute with internal_id: {0} and "
+                    "display_name: {1}".format(institute_obj['internal_id'],
+                                               institute_obj['display_name']))
         if self.institute(institute_id=institute_obj['internal_id']):
-            raise IntegrityError("Institute {0} already exists in database".format(
-                            institute_obj['internal_id']))
-            
+            raise IntegrityError("Institute {0} already exists in database"
+                                 .format(institute_obj['internal_id']))
         institute_obj.save()
-        
         logger.info("Institute saved")
 
     def update_institute(self, internal_id, sanger_recipient=None,
-                            coverage_cutoff=None):
+                         coverage_cutoff=None):
         """Update the information for an institute
 
             Args:
@@ -74,7 +70,7 @@ class CaseHandler(object):
     def institutes(self):
         """Fetch all institutes."""
         return Institute.objects
-    
+
     def cases(self, collaborator=None, query=None, skip_assigned=False, has_causatives=False):
         """Fetches all cases from the backend.
 
@@ -178,7 +174,7 @@ class CaseHandler(object):
         if existing_case:
             raise(IntegrityError("Case {0} already exists in database".format(
                                   case_obj['display_name'])))
-            
+
         logger.info("Adding case {0} to database".format(case_obj.case_id))
         case_obj.save()
 
@@ -264,12 +260,12 @@ class CaseHandler(object):
             panel = GenePanel.objects.get(panel_name=panel_id, version=version)
         except DoesNotExist:
             return None
-        
+
         return panel
 
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database
-        
+
             Args:
                 panel_obj(GenePanel)
         """
