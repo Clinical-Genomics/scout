@@ -1,40 +1,39 @@
 # -*- coding: utf-8 -*-
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for, make_response)
-from flask.ext.login import login_required, current_user
+from flask_login import login_required, current_user
 
 from scout.models import Variant
 from scout.extensions import store, loqusdb
-from scout.helpers import templated
+from scout.utils import templated, validate_user
 
-from scout.core.utils import validate_user, genecov_links
+sv_bp = Blueprint('sv', __name__, template_folder='templates',
+                  static_folder='static', static_url_path='/sv/static')
 
-core = Blueprint('sv', __name__, template_folder='templates')
 
-
-@core.route('/<institute_id>/<case_id>/sv/<variant_type>')
+@sv_bp.route('/sv/<variant_type>')
 @templated('sv/variants.html')
 @login_required
-def variants(institute_id, case_id, variant_type):
+def variants(variant_type):
     """View all variants for a single case."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    #institute = validate_user(current_user, institute_id)
+    #case_model = store.case(institute_id, case_id)
 
-    if case_model is None:
-        abort(404)
+    #if case_model is None:
+    #    abort(404)
 
     # fetch list of variants
-    variant_models = store.sv_variants(case_model.case_id)
+    #variant_models = store.sv_variants()
 
-    return dict(variants=variant_models,
-                case=case_model,
-                case_id=case_id,
-                institute=institute,
-                institute_id=institute_id,
+    return dict(#variants=variant_models,
+                #case=case_model,
+                #case_id=case_id,
+                #institute=institute,
+                #institute_id=institute_id,
                 variant_type=variant_type,)
 
 
-@core.route('/<institute_id>/<case_id>/sv/variants/<variant_id>')
+@sv_bp.route('/<institute_id>/<case_id>/sv/variants/<variant_id>')
 @templated('sv/variant.html')
 @login_required
 def variant(institute_id, case_id, variant_id):
