@@ -12,9 +12,9 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          ReferenceField, SortedListField, Q, BooleanField,
                          DoesNotExist)
 
-from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS, VARIANT_CALL)
+from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
+                             VARIANT_CALL)
 from .gene import Gene
-from scout._compat import zip
 from scout.models import Event
 
 ######## These are defined terms for different categories ########
@@ -62,7 +62,7 @@ class Variant(Document):
     variant_id = StringField(required=True)
     # display name in variant_id (no md5)
     display_name = StringField(required=True)
-    
+
     # chrom_pos_ref_alt
     simple_id = StringField()
     # The variant can be either research or clinical.
@@ -70,11 +70,10 @@ class Variant(Document):
     # the clinical variants have limited annotation fields.
     variant_type = StringField(required=True,
                                choices=('research', 'clinical'))
-                               
+
     category = StringField(choices=('sv', 'snv'))
     sub_category = StringField(choices=(
                     'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd'))
-                    
     mate_id = StringField()
     # case_id is a string like owner_caseid
     case_id = StringField(required=True)
@@ -84,14 +83,14 @@ class Variant(Document):
     length = IntField()
     reference = StringField(required=True)
     alternative = StringField(required=True)
-    
+
     rank_score = FloatField(required=True)
     variant_rank = IntField()
     institute = ReferenceField('Institute', required=True)
-    
+
     sanger_ordered = BooleanField()
     validation = StringField(choices=('True positive', 'False positive'))
-    
+
     quality = FloatField()
     filters = ListField(StringField())
     samples = ListField(EmbeddedDocumentField(GTCall))
@@ -120,7 +119,7 @@ class Variant(Document):
     gatk = StringField(choices=VARIANT_CALL, default='Not Used')
     samtools = StringField(choices=VARIANT_CALL, default='Not Used')
     freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
-    
+
     # Conservation:
     phast_conservation = ListField(StringField(choices=CONSERVATION))
     gerp_conservation = ListField(StringField(choices=CONSERVATION))
@@ -131,7 +130,7 @@ class Variant(Document):
     manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
 
     acmg_evaluation = StringField(choices=ACMG_TERMS)
-    
+
 
     @property
     def case_displayname(self):
