@@ -177,21 +177,11 @@ class VariantHandler(object):
         logger.info("{0} variants deleted".format(nr_deleted))
         logger.debug("Variants deleted")
 
-    def load_svs(self, sv_file, case_obj, institute_obj):
-        """Load structural variants"""
-        variant_parser = VCFParser(infile=sv_file)
-        for variant in variant_parser:
-            # print(variant)
-            pass
-    
-    def load_snv(self, mongo_variant):
-        """Load a mongo variant into the database
-        
-            Args:
-                mongo_variant(Variant)
-        
-        """
-        logger.debug("Insert variant %s" % mongo_variant.display_name)
-        mongo_variant.save()
+    def load_variant(self, variant_obj):
+        """Load a variant object"""
+        logger.debug("Loading variant %s into database" % variant_obj['variant_id'])
+        variant_obj.save()
+        logger.debug("Variant saved")
+
     
 

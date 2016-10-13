@@ -12,20 +12,24 @@ logger = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the mongo adapter that handles cases and institutes"""
 
-    def add_institute(self, internal_id, display_name):
+    def add_institute(self, institute_obj):
         """Add a institute to the database
 
             Args:
-                internal_id(str): The internal id (like cust003)
-                display_name(str): The display name for a institute (like CMMS)
+                institute_obj(Institute)
         """
-        logger.info("Creating institute with internal_id: {0} and"\
-                    " display_name: {1}".format(internal_id, display_name))
-        institute = Institute(
-            internal_id=internal_id,
-            display_name=display_name
-        )
-        institute.save()
+        logger.info("Adding institute with internal_id: {0} and"\
+                    " display_name: {1}".format(
+                        institute_obj['internal_id'], 
+                        institute_obj['display_name']))
+        
+        if self.institute(institute_id=institute_obj['internal_id']):
+            raise IntegrityError("Institute {0} already exists in database".format(
+                            institute_obj['internal_id']))
+            
+        institute_obj.save()
+        
+        logger.info("Institute saved")
 
     def update_institute(self, internal_id, sanger_recipient=None,
                             coverage_cutoff=None):
@@ -254,7 +258,41 @@ class CaseHandler(object):
             GenePanel: gene panel object
         """
         try:
+            logger.info("Fetch gene panel {0}, version {1} from database".format(
+                panel_id, version
+            ))
             panel = GenePanel.objects.get(panel_name=panel_id, version=version)
         except DoesNotExist:
             return None
+        
         return panel
+
+    def add_gene_panel(self, panel_obj):
+        """Add a gene panel to the database
+        
+            Args:
+                panel_obj(GenePanel)
+        """
+        logger.info("Adding panel {0}, version {1} to database".format(
+            panel_obj['panel_name'], panel_obj['version']
+        ))
+        if self.gene_panel(panel_obj['panel_name'], panel_obj['version']):
+            raise IntegrityError("Panel {0} with version {1} already"\
+                                 " exist in database".format(
+                                 panel_obj['panel_name'], panel_obj['version']
+                                 ))
+        panel_obj.save()
+        logger.info("Panel saved")
+
+
+
+
+
+
+
+
+
+
+
+
+

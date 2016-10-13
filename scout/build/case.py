@@ -1,6 +1,10 @@
+import logging
+
 from scout.models import (Case)
 
 from . import (build_individual, build_panel)
+
+logger = logging.getLogger(__name__)
 
 def build_case(case):
     """Build a mongoengine Case object
@@ -11,6 +15,7 @@ def build_case(case):
         Returns:
             case_obj(Case): A mongoengine case object
     """
+    logger.info("Building case with case id: {0}".format(case['case_id']))
     case_obj = Case(
         case_id=case['case_id'],
         display_name=case['display_name'],
@@ -48,11 +53,15 @@ def build_case(case):
     research_panels = []
     
     for panel in case.get('clinical_panels', []):
-        clinical_panels.append(build_panel(panel))
+        clinical_panels.append(
+            build_panel(panel_info=panel)
+        )
     case_obj.clinical_panels = clinical_panels
     
     for panel in case.get('research_panels', []):
-        research_panels.append(build_panel(panel))
+        research_panels.append(
+            build_panel(panel_info=panel)
+            )
     case_obj.research_panels = research_panels
     
     return case_obj

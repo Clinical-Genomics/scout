@@ -10,8 +10,10 @@ def parse_genotypes(variant, case):
             genotypes(list(dict)): A list of genotypes
     """
     genotypes = []
-    for ind in case.get('individuals',[]):
-        genotypes.append(parse_genotype(variant, ind))
+    individuals = case['individuals']
+    if individuals:
+        for ind in individuals:
+            genotypes.append(parse_genotype(variant, ind))
 
     return genotypes
 
@@ -28,9 +30,9 @@ def parse_genotype(variant, ind):
     """
     # Initiate a mongo engine gt call object
     gt_call = {}
-    ind_id = ind['ind_id']
+    ind_id = ind['individual_id']
     
-    gt_call['ind_id'] = ind_id
+    gt_call['individual_id'] = ind_id
     gt_call['display_name'] = ind['display_name']
 
     # Fill the onbject with the relevant information:
@@ -40,12 +42,12 @@ def parse_genotype(variant, ind):
 
     try:
         gt_call['ref_depth'] = int(variant['genotypes'][ind_id].ref_depth)
-    except ValueError:
+    except (ValueError, TypeError):
         gt_call['ref_depth'] = -1
     
     try:
         gt_call['alt_depth'] = int(variant['genotypes'][ind_id].alt_depth)
-    except ValueError:
+    except (ValueError, TypeError):
         gt_call['alt_depth'] = -1
 
     gt_call['genotype_quality'] = variant['genotypes'][ind_id].genotype_quality

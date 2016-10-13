@@ -6,7 +6,7 @@ def test_parse_genotype(variants):
         individuals = {}
         for ind_id in ind_ids:
             individuals[ind_id] = {
-                'ind_id': ind_id,
+                'individual_id': ind_id,
                 'display_name': ind_id
                 
             }
@@ -15,11 +15,8 @@ def test_parse_genotype(variants):
             
             vcf_genotype = variant['genotypes'][ind_id]
             
-            print(vcf_genotype)
             assert genotype['genotype_call'] == vcf_genotype.genotype
             assert genotype['read_depth'] == vcf_genotype.depth_of_coverage
-            assert genotype['ref_depth'] == vcf_genotype.ref_depth 
-            assert genotype['alt_depth'] == vcf_genotype.alt_depth 
             assert genotype['genotype_quality'] == vcf_genotype.genotype_quality
 
 def test_parse_genotypes(variants):
@@ -29,7 +26,7 @@ def test_parse_genotypes(variants):
         individuals = []
         for ind_id in ind_ids:
             individuals.append({
-                'ind_id': ind_id,
+                'individual_id': ind_id,
                 'display_name': ind_id
             })
         case = {'individuals': individuals}

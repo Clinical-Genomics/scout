@@ -1,7 +1,9 @@
 import logging
 
 from scout.parse import parse_case
-from scout.build import build_case
+from scout.build import (build_case)
+from scout.exceptions import IntegrityError
+from . import load_panel
 
 logger = logging.getLogger(__name__)
 
@@ -38,17 +40,32 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
         analysis_type=analysis_type,
         scout_configs=scout_configs
     )
+    
+    logger.info("Create the gene panels if they do not exist")
+
     #Build the mongoenginge case object
     case_obj = build_case(parsed_case)
+
+    for panel_obj in case_obj['clinical_panels']:
+        #Replace with stored gene panels
+        panel_objs = []
+        panel_objs.append(load_panel(adapter, panel_obj))
+        case_obj['clinical_panels'] = panel_objs
+
+    for panel_info in parsed_case['research_panels']:
+        #Replace with stored gene panels
+        panel_objs = []
+        panel_objs.append(load_panel(adapter, panel_obj))
+        case_obj['research_panels'] = panel_objs
 
     # Check if case exists in database
     existing_case = adapter.case(institute_id=owner,case_id=case_obj.display_name)
     if existing_case:
-        message = "Case {} exists in database".format(case_obj.display_name)
-        if not update:
-            raise SyntaxError(message)
-        else:
+        if update:
             adapter.update_case(case_obj)
+        else:
+            raise IntegrityError("Case {0} already exists in database".format(
+                                 case_obj.case_id))
     else:
         adapter.add_case(case_obj)
     

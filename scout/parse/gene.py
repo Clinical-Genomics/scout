@@ -132,7 +132,7 @@ def parse_genes(variant):
             gene['reduced_penetrance'] = False
         
         if hgnc_symbol in disease_associated_transcripts:
-            gene['disease_associated'] = disease_associated_transcripts[hgnc_symbol]
+            gene['disease_associated'] = list(disease_associated_transcripts[hgnc_symbol])
         else:
             gene['disease_associated'] = None
             

@@ -2,10 +2,20 @@ from scout.utils import generate_md5_key
 
 
 def parse_ids(variant, case, variant_type):
-    """Construct the necessary ids for a variant"""
+    """Construct the necessary ids for a variant
+    
+        Args:
+            variant(VariantDict)
+            case(CaseDict)
+            variant_type(str)
+        
+        Returns:
+            ids(dict): Dictionary with the relevant ids
+    """
     ids = {}
     case_id = case['case_id']
-
+    
+    print("Variant", variant)
     chrom = variant['CHROM']
     pos = variant['POS']
     ref = variant['REF']

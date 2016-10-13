@@ -1,7 +1,10 @@
 import logging
+from pprint import pprint as pp
+from vcf_parser import VCFParser
 
 from scout.parse import parse_variant
 from scout.build import build_variant
+from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -17,21 +20,23 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
         variant_type=variant_type
     )
 
-def load_variants(adapter, variants, case, variant_type='clinical'):
+def load_variants(adapter, variant_file, case_obj, variant_type='clinical'):
     """Load all variantt in variants
     
         Args:
             adapter(MongoAdapter)
-            variants(Iterable(dict))
+            variant_file(str): Path to variant file
             case(Case)
             variant_type(str)
     
     """
+    variants = VCFParser(infile=variant_file)
+    
     for variant in variants:
         load_variant(
             adapter=adapter,
             variant=variant,
-            case=case,
+            case_obj=case_obj,
             variant_type=variant_type
         )
 
@@ -53,8 +58,8 @@ def load_variant(adapter, variant, case_obj, variant_type='clinical'):
     institute_obj = adapter.institute(institute_id=case_obj['owner'])
     
     if not institute_obj:
-        logger.warning("Institute does not exist.")
-        raise SyntaxError()
+        raise IntegrityError("Institute {0} does not exist in"\
+                             " database.".format(case_obj['owner']))
     
     parsed_variant = parse_variant(
         variant_dict=variant, 
@@ -66,7 +71,8 @@ def load_variant(adapter, variant, case_obj, variant_type='clinical'):
         variant=parsed_variant, 
         institute=institute_obj
     )
-
+    
+    print(variant_obj.to_json())
     adapter.load_variant(variant_obj)
     
     return variant_obj

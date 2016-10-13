@@ -63,9 +63,9 @@ def build_variant(variant, institute):
     
     # Add the callers
     call_info = variant.get('callers', {})
-    variant_obj['gatk'] = callers.get('gatk')
-    variant_obj['samtools'] = callers.get('samtools')
-    variant_obj['freebayes'] = callers.get('freebayes')
+    variant_obj['gatk'] = call_info.get('gatk')
+    variant_obj['samtools'] = call_info.get('samtools')
+    variant_obj['freebayes'] = call_info.get('freebayes')
     
     # Add the conservation
     conservation_info = variant.get('conservation', {})
@@ -73,7 +73,7 @@ def build_variant(variant, institute):
     variant_obj['gerp_conservation'] = conservation_info.get('gerp',[])
     variant_obj['phylop_conservation'] = conservation_info.get('phylop',[])
     
-    variant_obj['gene_lists'] = variant_obj.get('gene_lists')
-    variant_obj['expected_inheritance'] = variant_obj.get('expected_inheritance')
+    variant_obj['gene_lists'] = variant.get('gene_lists')
+    variant_obj['expected_inheritance'] = variant.get('expected_inheritance')
     
     return variant_obj

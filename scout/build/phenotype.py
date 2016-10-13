@@ -9,7 +9,7 @@ def build_phenotype(phenotype):
         Returns:
             phenotype_obj(PheotypeTerm)
     """
-    phenotype_obj = PheotypeTerm(
+    phenotype_obj = PhenotypeTerm(
         phenotype_id = phenotype['phenotype_id'],
         disease_models = phenotype['disease_models']
     )

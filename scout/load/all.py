@@ -28,20 +28,19 @@ def load_scout(adapter, case_file, snv_file, owner, sv_file=None,
         
     """
     scout_configs = scout_configs or {}
-
-    try:
-        with open(case_file, 'r') as case_lines:
-            case_obj = load_case(
-                adapter=adapter, 
-                case_lines=case_lines, 
-                owner=owner, 
-                case_type=case_type, 
-                scout_configs=scout_configs, 
-                update=update
-            )
-    except Exception as e:
-        raise(e)
-
+    logger.info("Loading database")
+    
+    with open(case_file, 'r') as case_lines:
+        case_obj = load_case(
+            adapter=adapter, 
+            case_lines=case_lines, 
+            owner=owner, 
+            case_type=case_type,
+            analysis_type=scout_configs.get('analysis_type', 'unknown'), 
+            scout_configs=scout_configs, 
+            update=update
+        )
+    
     logger.info("Delete the variants for case {0}".format(case_obj.case_id))
 
     delete_variants(
@@ -50,23 +49,21 @@ def load_scout(adapter, case_file, snv_file, owner, sv_file=None,
         variant_type=variant_type
     )
     
-    logger.info("Load the SV variants for case {0}".format(case_obj.case_id))
+    logger.info("Load the SNV variants for case {0}".format(case_obj.case_id))
 
-    with open(snv_file, 'r') as variant_lines:
-        load_variants(
-            adapter=adapter, 
-            variants=variant_lines, 
-            case_obj=case_obj, 
-            variant_type=variant_type
-        )
+    load_variants(
+        adapter=adapter, 
+        variant_file=snv_file, 
+        case_obj=case_obj, 
+        variant_type=variant_type
+    )
 
     if sv_file:
         logger.info("Load the SV variants for case {0}".format(case_obj.case_id))
-        with open(sv_file, 'r') as variant_lines:
-            load_variants(
-                adapter=adapter, 
-                variants=variant_lines, 
-                case_obj=case_obj, 
-                variant_type=variant_type
-            )
+        load_variants(
+            adapter=adapter, 
+            variant_file=sv_file, 
+            case_obj=case_obj, 
+            variant_type=variant_type
+        )
 

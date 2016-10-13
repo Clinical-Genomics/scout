@@ -9,7 +9,7 @@ from . import parse_gene_panel
 
 logger = logging.getLogger(__name__)
 
-def get_individual(ind_obj, bam_file='', capture_kits=[]):
+def parse_individual(ind_obj, bam_file='', capture_kits=[]):
     """Return an individual
     
         Args:
@@ -20,7 +20,7 @@ def get_individual(ind_obj, bam_file='', capture_kits=[]):
     individual = {}
     
     ind_id = ind_obj.individual_id
-    individual['ind_id'] = ind_id
+    individual['individual_id'] = ind_id
     individual['father'] = ind_obj.father
     individual['mother'] = ind_obj.mother
     individual['display_name'] = ind_obj.extra_info.get('display_name', ind_id)
@@ -85,7 +85,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
         
         capture_kits = config_individual.get('capture_kit', [])
         
-        individual = get_individual(
+        individual = parse_individual(
             ind_obj=individual, 
             bam_file=bam_file,
             capture_kits=capture_kits
@@ -153,8 +153,10 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
         panel['institute'] = owner
         
         if panel['type'] == 'clinical':
+            logger.info("Add panel {0} to clinical panels".format(panel['id']))
             case['clinical_panels'].append(panel)
         else:
+            logger.info("Add panel {0} to research panels".format(panel['id']))
             case['research_panels'].append(panel)
     
     case['default_panels'] = list(scout_configs.get('default_panels', []))

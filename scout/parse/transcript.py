@@ -95,9 +95,9 @@ def parse_transcripts(variant):
           
             ## Protein ID ##
             transcript['protein_id'] = vep_entry.get('ENSP')
-            transcript['polyphen_prediction'] = vep_entry.get('PolyPhen')
-            transcript['sift_prediction'] = vep_entry.get('SIFT')
-            transcript['swiss_prot'] = vep_entry.get('SWISSPROT')
+            transcript['polyphen_prediction'] = vep_entry.get('PolyPhen') or 'unknown'
+            transcript['sift_prediction'] = vep_entry.get('SIFT') or 'unknown'
+            transcript['swiss_prot'] = vep_entry.get('SWISSPROT') or 'unknown'
             
             if vep_entry.get('DOMAINS', None):
                 pfam_domains = vep_entry['DOMAINS'].split('&')

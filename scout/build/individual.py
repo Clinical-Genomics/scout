@@ -1,4 +1,8 @@
+import logging
+
 from scout.models import Individual
+
+logger = logging.getLogger(__name__)
 
 def build_individual(ind):
     """Build a mongoengine Individual object
@@ -9,8 +13,10 @@ def build_individual(ind):
         Returns:
             ind_obj(Individual): A mongoengine Individual object
     """
+    logger.info("Building Individual with id:{0}".format(ind['individual_id']))
+    
     ind_obj = Individual(
-        individual_id=ind['ind_id']
+        individual_id=ind['individual_id']
     )
     ind_obj.display_name = ind.get('display_name')
     ind_obj.sex = ind.get('sex')
