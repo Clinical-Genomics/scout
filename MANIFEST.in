@@ -17,8 +17,11 @@ recursive-include /configs *.ini
 
 # tests
 # example data
-recursive-include /tests/vcf_examples/* *.ped
-recursive-include /tests/vcf_examples/* *.vcf
+recursive-include /tests/fixtures/*.ped
+recursive-include /tests/fixtures/*.vcf
+recursive-include /tests/fixtures/*.ini
+recursive-include /tests/fixtures/*.xml
+recursive-include /tests/fixtures/gene_listst/gene_list_test.txt
 
 # excluding
 recursive-exclude  *.pyc
