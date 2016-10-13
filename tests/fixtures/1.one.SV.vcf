@@ -166,5 +166,5 @@
 ##fileDate=20161007
 ##reference=file:///mnt/hds/proj/bioinfo/develop/references_4.0/Homo_sapiens.GRCh37.d5.fasta
 ##source=GenerateSVCandidates 1.0.0
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	ADM980A10-miptest	ADM980A9-miptest	ADM994A2-miptest
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	ADM1136A1	ADM1136A2	ADM1136A3
 1	27232819	MantaBND:454:0:1:0:0:0:0	T	T]16:89585536]	164	PASS	BND_DEPTH=10;CIPOS=0,20;CSQ=T]16|intron_variant|MODIFIER|NUDC|ENSG00000090273|Transcript|ENST00000435827|protein_coding||2/6||||||||||1|cds_end_NF|HGNC|8045|||||ENSP00000404020|||UPI0002A475AB||||||||;Clinical_db_gene_annotation=PIDCAD,FullList;Ensembl_gene_id=ENSG00000090273;Ensembl_transcript_to_refseq_transcript=NUDC:ENST00000321265>NM_006600/XM_005245726|ENST00000435827|ENST00000452707|ENST00000484772;Gene_description=NUDC:nudC_nuclear_distribution_protein;GeneticRegionAnnotation=NUDC:T]16|intronic;HGNC_symbol=NUDC;HGVScp=T]16:NUDC:ENST00000435827:intron_variant:s.+:i.2/6;HOMLEN=20;HOMSEQ=GCCTGTAATCCCAGCTACTC;MATEID=MantaBND:454:0:1:0:0:0:1;MATE_BND_DEPTH=6;MostSevereConsequence=NUDC:T]16|intron_variant;OMIM_morbid=NUDC:610325;RankResult=0|3|-12|1|3|3;RankScore=15026-miptest:-2;SVTYPE=BND	GT:FT:GQ:PL:PR:SR	0/0:PASS:48:0,0,0:0,0:0,0	0/0:PASS:48:0,0,0:0,0:0,0	0/1:PASS:73:214,0,70:1,3:1,3

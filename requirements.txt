@@ -43,7 +43,7 @@ Flask-Alchy
 path.py
 click
 ped-parser>=1.6
-vcf_parser>=1.5.6
+vcf_parser>=1.5.9
 configobj
 requests
 python-dateutil

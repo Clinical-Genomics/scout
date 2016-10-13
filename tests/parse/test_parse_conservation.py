@@ -34,6 +34,6 @@ def test_parse_conservations():
     }
     conservations = parse_conservations(variant)
     
-    assert conservations['gerp_annotation'] == ['Conserved', 'NotConserved']
-    assert conservations['phast_conservation'] == ['Conserved']
-    assert conservations['phylop_conservation'] == ['NotConserved']
+    assert conservations['gerp'] == ['Conserved', 'NotConserved']
+    assert conservations['phast'] == ['Conserved']
+    assert conservations['phylop'] == ['NotConserved']

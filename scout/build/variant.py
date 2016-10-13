@@ -1,7 +1,7 @@
 from scout.models import Variant
 
-from . import (build_genotype)
-
+from . import (build_genotype, build_compound, build_gene)
+        
 def build_variant(variant, institute):
     """Build a mongoengine Variant based on parsed information
     
@@ -29,23 +29,51 @@ def build_variant(variant, institute):
     
     variant_obj['quality'] = variant['quality']
     variant_obj['filters'] = variant['filters']
+
+    variant_obj['end'] = variant.get('end')
+    variant_obj['length'] = variant.get('length')
+    variant_obj['db_snp_ids'] = variant.get('db_snp_ids')
+    
+    variant['category'] = variant.get('category')
+    variant['sub_category'] = variant.get('sub_category')
+
+    variant_obj['mate_id'] = variant.get('mate_id')
     
     gt_types = []
     for sample in variant['samples']:
         gt_call = build_genotype(sample)
         gt_types.append(gt_call)
-    variant_obj.samples = gt_types
+    variant_obj['samples'] = gt_types
     
     variant_obj.genetic_models = variant['genetic_models']
     
+    # Add the compounds
     compounds = []
     for compound in variant['compounds']:
         compound_obj = build_compound(compound)
         compounds.append(compound_obj)
-    variant_obj.compounds = compounds
+    variant_obj['compounds'] = compounds
     
+    # Add the genes with transcripts
     genes = []
     for gene in variant['genes']:
         gene_obj = build_gene(gene)
         genes.append(gene_obj)
-    variant_obj.genes = genes
+    variant_obj['genes'] = genes
+    
+    # Add the callers
+    call_info = variant.get('callers', {})
+    variant_obj['gatk'] = callers.get('gatk')
+    variant_obj['samtools'] = callers.get('samtools')
+    variant_obj['freebayes'] = callers.get('freebayes')
+    
+    # Add the conservation
+    conservation_info = variant.get('conservation', {})
+    variant_obj['phast_conservation'] = conservation_info.get('phast',[])
+    variant_obj['gerp_conservation'] = conservation_info.get('gerp',[])
+    variant_obj['phylop_conservation'] = conservation_info.get('phylop',[])
+    
+    variant_obj['gene_lists'] = variant_obj.get('gene_lists')
+    variant_obj['expected_inheritance'] = variant_obj.get('expected_inheritance')
+    
+    return variant_obj

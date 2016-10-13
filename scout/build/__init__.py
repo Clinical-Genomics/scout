@@ -1,4 +1,7 @@
+from .transcript import build_transcript
 from .phenotype import build_phenotype
+from .gene import build_gene
+from .compound import build_compound
 from .genotype import build_genotype
 from .individual import build_individual
 from .panel import build_panel

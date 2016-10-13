@@ -20,11 +20,12 @@ root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
-vcf_file = "tests/fixtures/337334.selected.downsampled.vcf"
-sv_path = "tests/fixtures/337334.SV.vcf"
-one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
-ped_path = "tests/fixtures/337334.ped"
-scout_config = "tests/fixtures/scout_config_test.ini"
+vcf_file = "tests/fixtures/1.downsampled.vcf"
+sv_path = "tests/fixtures/1.SV.vcf"
+one_variant = "tests/fixtures/1.one.vcf"
+one_sv = "tests/fixtures/1.one.SV.vcf"
+ped_path = "tests/fixtures/1.ped"
+scout_config = "tests/fixtures/config1.ini"
 gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
@@ -58,6 +59,20 @@ def minimal_case(request):
     }
     
     return case
+
+@pytest.fixture(scope='function')
+def one_file_variant(request):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_variant)
+    return variant
+
+@pytest.fixture(scope='function')
+def one_file_sv_variant(request):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_sv)
+    return variant
+
+
 
 @pytest.fixture(scope='function')
 def parsed_case(request):

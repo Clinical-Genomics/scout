@@ -12,15 +12,15 @@ def parse_conservations(variant):
     """
     conservations = {}
     
-    conservations['gerp_annotation'] = parse_conservation(
+    conservations['gerp'] = parse_conservation(
                                             variant, 
                                             'GERP++_RS_prediction_term'
                                         )
-    conservations['phast_conservation'] = parse_conservation(
+    conservations['phast'] = parse_conservation(
                                             variant,
                                             'phastCons100way_vertebrate_prediction_term'
                                         )
-    conservations['phylop_conservation'] = parse_conservation(
+    conservations['phylop'] = parse_conservation(
                                             variant,
                                             'phyloP100way_vertebrate_prediction_term'
                                         )

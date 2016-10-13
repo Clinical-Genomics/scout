@@ -64,6 +64,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             variant['length'] = alt_len - ref_len
             variant['end'] = variant['position'] + (alt_len - 1)
             variant['sub_category'] = 'indel'
+    
     elif variant['category'] == 'sv':
         try:
             variant['sub_category'] = variant_dict['info_dict']['SVTYPE'][0].lower()
@@ -77,9 +78,10 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
         else:
             try:
                 variant['length'] = int(variant_dict['info_dict']['SVLEN'][0])
-                variant['end'] = int(variant_dict['info_dict']['END'][0])
             except KeyError:
-                raise VcfError("Non BND SVs has to have SVLEN and END")
+                variant['length'] = -1
+            
+            variant['end'] = int(variant_dict['info_dict']['END'][0])
         
 
     ################# Gene Lists #################
