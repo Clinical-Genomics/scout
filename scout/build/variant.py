@@ -34,8 +34,8 @@ def build_variant(variant, institute):
     variant_obj['length'] = variant.get('length')
     variant_obj['db_snp_ids'] = variant.get('db_snp_ids')
     
-    variant['category'] = variant.get('category')
-    variant['sub_category'] = variant.get('sub_category')
+    variant_obj['category'] = variant.get('category')
+    variant_obj['sub_category'] = variant.get('sub_category')
 
     variant_obj['mate_id'] = variant.get('mate_id')
     

@@ -1,6 +1,5 @@
 import pytest
 import logging
-import mongomock
 
 from scout.models import Case
 

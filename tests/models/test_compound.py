@@ -4,7 +4,6 @@ from __future__ import absolute_import
 from .setup_objects import setup_compound, setup_variant
 
 
-  
 def test_compound():
   """
   Test the compound class
