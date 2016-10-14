@@ -358,10 +358,10 @@
 
                 <tr class="{{ row_class }}">
                   <td>
+                    {{ transcript.hgnc_symbol }}
                     {% if transcript.is_canonical %}
                       <span class="dot-indicator" title="CANONICAL"></span>
                     {% endif %}
-                    {{ transcript.hgnc_symbol }}
                   </td>
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}

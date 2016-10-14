@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import (abort, Blueprint, current_app, flash, redirect, request,
-                   url_for, make_response)
+from flask import (abort, Blueprint, current_app, request, make_response)
 from flask_login import login_required, current_user
 
 from scout.models import Variant
@@ -11,26 +10,23 @@ sv_bp = Blueprint('sv', __name__, template_folder='templates',
                   static_folder='static', static_url_path='/sv/static')
 
 
-@sv_bp.route('/sv/<variant_type>')
+@sv_bp.route('/<institute_id>/<case_id>/sv/variants')
 @templated('sv/variants.html')
 @login_required
-def variants(variant_type):
+def variants(institute_id, case_id):
     """View all variants for a single case."""
-    #institute = validate_user(current_user, institute_id)
-    #case_model = store.case(institute_id, case_id)
-
-    #if case_model is None:
-    #    abort(404)
+    institute = validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    if case_model is None:
+        abort(404)
 
     # fetch list of variants
-    #variant_models = store.sv_variants()
-
-    return dict(#variants=variant_models,
-                #case=case_model,
-                #case_id=case_id,
-                #institute=institute,
-                #institute_id=institute_id,
-                variant_type=variant_type,)
+    variant_models = store.variants(case_id, category='sv')
+    return dict(variants=variant_models,
+                case=case_model,
+                case_id=case_id,
+                institute=institute,
+                institute_id=institute_id)
 
 
 @sv_bp.route('/<institute_id>/<case_id>/sv/variants/<variant_id>')
