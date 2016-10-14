@@ -106,9 +106,12 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
             user_obj = User.objects.get(email=email)
         except DoesNotExist:
             logger.info('create user: %s', email)
-            user_obj = User(email=email, created_at=datetime.utcnow(),
-                            location=location, name=name,
-                            institutes=institutes)
+            user_obj = User(
+                email=email, 
+                created_at=datetime.utcnow(),
+                location=location, 
+                name=name,
+                institutes=institutes)
             user_obj.save()
 
         return user_obj

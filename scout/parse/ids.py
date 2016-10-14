@@ -15,7 +15,6 @@ def parse_ids(variant, case, variant_type):
     ids = {}
     case_id = case['case_id']
     
-    print("Variant", variant)
     chrom = variant['CHROM']
     pos = variant['POS']
     ref = variant['REF']

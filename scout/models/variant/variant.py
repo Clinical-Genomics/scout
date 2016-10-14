@@ -73,7 +73,7 @@ class Variant(Document):
                                
     category = StringField(choices=('sv', 'snv'))
     sub_category = StringField(choices=(
-                    'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv'))
+                    'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd'))
                     
     mate_id = StringField()
     # case_id is a string like owner_caseid

@@ -105,6 +105,7 @@ def minimal_case(request):
         'display_name': "337334",
         'owner': 'cust000',
         'collaborators': ['cust000'],
+        'individuals':[]
     }
     
     return case
@@ -208,10 +209,26 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
     adapter.add_case(case_obj)
     
     return adapter
-    
-    
 
-    
+
+##################### Panel fixtures #####################
+
+@pytest.fixture(scope='function')
+def panel_info(request):
+    "Return one panel info as specified in tests/fixtures/config1.ini"
+    panel = {
+            'date': '2015-10-21',
+            'file': 'tests/fixtures/gene_lists/gene_list_test.txt',
+            'version': '0.1',
+            'name': 'Panel1',
+            'full_name': 'Panel 1'
+        }
+    return panel
+
+@pytest.fixture(scope='function')
+def parsed_panel(request, panel_info):
+    """docstring for parsed_panels"""
+    pass
 
 ##################### Variant fixtures #####################
 

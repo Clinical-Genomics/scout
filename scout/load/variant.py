@@ -72,7 +72,6 @@ def load_variant(adapter, variant, case_obj, variant_type='clinical'):
         institute=institute_obj
     )
     
-    print(variant_obj.to_json())
     adapter.load_variant(variant_obj)
     
     return variant_obj

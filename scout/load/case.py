@@ -46,17 +46,21 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
     #Build the mongoenginge case object
     case_obj = build_case(parsed_case)
 
+    panel_objs = []
     for panel_obj in case_obj['clinical_panels']:
         #Replace with stored gene panels
-        panel_objs = []
-        panel_objs.append(load_panel(adapter, panel_obj))
-        case_obj['clinical_panels'] = panel_objs
+        load_panel(adapter, panel_obj)
+        panel_objs.append(adapter.gene_panel(panel_obj['panel_name'], panel_obj['version']))
+    
+    case_obj['clinical_panels'] = panel_objs
 
+    panel_objs = []
     for panel_info in parsed_case['research_panels']:
         #Replace with stored gene panels
-        panel_objs = []
-        panel_objs.append(load_panel(adapter, panel_obj))
-        case_obj['research_panels'] = panel_objs
+        load_panel(adapter, panel_obj)
+        panel_objs.append(adapter.gene_panel(panel_obj['panel_name'], panel_obj['version']))
+
+    case_obj['research_panels'] = panel_objs
 
     # Check if case exists in database
     existing_case = adapter.case(institute_id=owner,case_id=case_obj.display_name)

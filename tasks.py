@@ -3,9 +3,64 @@ from __future__ import absolute_import, unicode_literals
 from invoke import run, task
 from invoke.util import log
 
-from mongoengine import connect
-from scout.models import User, Whitelist, Institute
+from configobj import ConfigObj
 
+from mongoengine import connect
+from scout.adapter import MongoAdapter
+from scout.models import (User, Whitelist, Institute)
+from scout.load import load_scout
+
+@task
+def setup(email, name="Paul Anderson"):
+    """docstring for setup"""
+    db_name = 'variantDatabase'
+    adapter = MongoAdapter()
+    adapter.connect_to_database(
+        database=db_name
+    )
+    
+    adapter.drop_database()
+    
+    institute_obj = Institute(
+        internal_id = 'cust000',
+        display_name = 'test-institute',
+        sanger_recipients = [email]
+    )
+    
+    adapter.add_institute(institute_obj)
+    institute = adapter.institute(institute_id=institute_obj.internal_id)
+    Whitelist(email=email).save()
+    user = User(
+      email=email,
+      name=name,
+      roles=['admin'],
+      institutes=[institute]
+    )
+    user.save()
+    
+    for index in [1,2]:
+        config = ConfigObj("tests/fixtures/config{}.ini".format(index))
+        load_scout(
+            adapter=adapter,
+            case_file=config['ped'], 
+            snv_file=config['load_vcf'], 
+            owner=config['owner'], 
+            sv_file=config['sv_vcf'], 
+            case_type='mip', 
+            variant_type='clinical', 
+            update=False,
+            scout_configs=config
+        )
+
+@task
+def teardown():
+    db_name = 'variantDatabase'
+    adapter = MongoAdapter()
+    adapter.connect_to_database(
+        database=db_name
+    )
+    adapter.drop_database()
+    
 
 @task
 def test():
@@ -17,18 +72,6 @@ def test():
 def testall():
   """test-all - run tests on every Python version with tox."""
   run('tox')
-
-
-@task(name='init-data')
-def init_data():
-  """Bootstrap the database with demo data."""
-  # load database with cases, variants, and a default institute
-  for case in [21, 22, 23, 31, 32, 33, 34, 51, 53, 54]:
-    run("python -m scout.ext.backend.load_mongo "
-        "./tests/vcf_examples/%(case)d/variants.vcf "
-        "./tests/vcf_examples/%(case)d/%(case)d_pedigree.txt "
-        "./configs/config_test.ini -type cmms" % dict(case=case))
-
 
 @task(name='add-user')
 def add_user(email, name='Paul Anderson'):

@@ -10,9 +10,7 @@ def load_panel(adapter, panel_obj):
     panel = adapter.gene_panel(panel_obj['panel_name'], panel_obj['version']) 
     
     if not panel:
-        panel = adapter.add_gene_panel(panel_obj)
+        adapter.add_gene_panel(panel_obj)
     else:
         logger.info("Panel {0} version {1} already exists".format(
             panel.panel_name, panel.version))
-    
-    return panel
