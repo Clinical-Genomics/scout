@@ -43,8 +43,6 @@ def test_parse_one_sv_from_file(one_file_sv_variant, ped_file):
     
 def test_parse_many_svs(sv_file, ped_file):
     """docstring for test_parse_all_variants"""
-    print(ped_file)
-    from pprint import pprint as pp
     case = parse_case(
         case_lines=open(ped_file, 'r'),
         owner='cust000'
@@ -54,7 +52,6 @@ def test_parse_many_svs(sv_file, ped_file):
         try:
             parsed_variant = parse_variant(variant, case)
         except VcfError:
-            pp(variant)
             for info in variant['info_dict']:
                 print(info, variant_dict['info'])
             assert False

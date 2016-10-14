@@ -3,8 +3,6 @@ import logging
 
 from tempfile import NamedTemporaryFile
 # We will use mongomock when mongoengine allows it
-# from mongomock import MongoClient
-# from pymongo import MongoClient
 from mongoengine import DoesNotExist
 from configobj import ConfigObj
 
@@ -14,8 +12,11 @@ from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 from scout.commands import cli
-
+from scout.parse import parse_case
 from scout.log import init_log
+from scout.build import (build_institute, build_case)
+
+
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
@@ -25,9 +26,16 @@ sv_path = "tests/fixtures/1.SV.vcf"
 one_variant = "tests/fixtures/1.one.vcf"
 one_sv = "tests/fixtures/1.one.SV.vcf"
 ped_path = "tests/fixtures/1.ped"
-scout_config = "tests/fixtures/config1.ini"
+scout_config_file = "tests/fixtures/config1.ini"
 gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
+
+##################### File fixtures #####################
+@pytest.fixture(scope='function')
+def config_file(request):
+    """Get the path to a config file"""
+    print('')
+    return scout_config_file
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -47,18 +55,12 @@ def ped_file(request):
     print('')
     return ped_path
 
-
 @pytest.fixture(scope='function')
-def minimal_case(request):
-    logger.info("setup a vcf case")
-    case = {
-        'case_id': "337334",
-        'display_name': "337334",
-        'owner': 'cust000',
-        'collaborators': ['cust000'],
-    }
-    
-    return case
+def scout_configs(request, config_file):
+    """Return a dictionary with scout configs"""
+    print('')
+    configs = ConfigObj(config_file)
+    return configs
 
 @pytest.fixture(scope='function')
 def one_file_variant(request):
@@ -72,73 +74,146 @@ def one_file_sv_variant(request):
     variant = VCFParser(infile=one_sv)
     return variant
 
-
+##################### Case fixtures #####################
 
 @pytest.fixture(scope='function')
-def parsed_case(request):
+def case_lines(request):
+    """Get the lines for a case"""
+    lines = [
+        "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
+        "337334-testset	ADM1136A1	0	0	1	1",
+        "337334-testset	ADM1136A2	ADM1136A1	ADM1136A3	1	2",
+        "337334-testset	ADM1136A3	0	0	2	1",
+    ]
+    return lines
+
+@pytest.fixture(scope='function')
+def parsed_case(request, case_lines, scout_configs):
+    """Get the lines for a case"""
+    owner = scout_configs['owner']
+    
+    case = parse_case(case_lines, owner)
+    
+    return case    
+
+@pytest.fixture(scope='function')
+def minimal_case(request):
+    print('')
     logger.info("setup a vcf case")
     case = {
         'case_id': "337334",
         'display_name': "337334",
         'owner': 'cust000',
         'collaborators': ['cust000'],
-        'individuals':[
-            {
-                'ind_id': 'ADM1136A1',
-                'father': '0',
-                'mother': '0',
-                'display_name': 'ADM1136A1',
-                'sex': '1',
-                'phenotype': 1
-            },
-            {
-                'ind_id': 'ADM1136A2',
-                'father': 'ADM1136A1',
-                'mother': 'ADM1136A3',
-                'display_name': 'ADM1136A2',
-                'sex': '1',
-                'phenotype': 2
-            },
-            {
-                'ind_id': 'ADM1136A3',
-                'father': '0',
-                'mother': '0',
-                'display_name': 'ADM1136A3',
-                'sex': '2',
-                'phenotype': 1
-            },
-            
-        ]
     }
     
     return case
 
-
 @pytest.fixture(scope='function')
-def case_obj(request):
+def case_obj(request, parsed_case):
     logger.info("Create a case obj")
-    case = Case(
-        case_id="337334",
-        display_name="337334",
-        owner='cust000',
-        collaborators = ['cust000']
-    )
+    case = build_case(parsed_case)
+    
     return case
 
+##################### Institute fixtures #####################
+
 @pytest.fixture(scope='function')
-def compound_variant(request):
-    logger.info("setup a compound variant")
-    variant = {
-        'variant_id':'7_117175580_C_A',
-        'compound_variants':{
-            "337334":[
-                {'variant_id':'7_117175579_AT_A',
-                'compound_score': 32}
-            ]
-        }
+def parsed_institute(request):
+    print('')
+    institute = {
+        'institute_id': 'cust000',
+        'display_name': 'test_institute',
+        'sanger_recipients': ['john@doe.com']
     }
     
-    return variant
+    return institute
+
+@pytest.fixture(scope='function')
+def institute_obj(request, parsed_institute):
+    print('')
+    institute = build_institute(
+        internal_id = parsed_institute['institute_id'],
+        display_name = parsed_institute['display_name'],
+        sanger_recipients = parsed_institute['sanger_recipients'],
+    )
+    return institute
+
+
+##################### Adapter fixtures #####################
+
+@pytest.fixture(scope='function')
+def client(request):
+    """Get a mongoadapter"""
+    logger.info("Get a mongo adapter")
+    mongo_client = MongoAdapter()
+    
+    return mongo_client
+
+@pytest.fixture(scope='function')
+def adapter(request):
+    """Get an adapter connected to mongomock database"""
+    database = 'test'
+    host = 'localhost'
+    port = 27017
+    
+    mongo_client = MongoAdapter()
+    mongo_client.connect_to_database(
+        database=database,
+        host=host,
+        port=port
+    )
+    
+    def teardown():
+        print('\n')
+        logger.info("Deleting database")
+        mongo_client.drop_database()
+        logger.info("Database deleted")
+
+    request.addfinalizer(teardown)
+    
+    return mongo_client
+
+@pytest.fixture(scope='function')
+def parsed_user(request, institute_obj):
+    """Return user info"""
+    user_info = {
+        'email': 'john@doe.com', 
+        'name': 'John Doe', 
+        'location': None, 
+        'institutes': [institute_obj],
+        'roles': ['admin']
+    }
+    return user_info
+
+@pytest.fixture(scope='function')
+def user_obj(request, parsed_user):
+    """Return a User object"""
+    user = User(
+      email=parsed_user['email'],
+      name=parsed_user['name'],
+      institutes=parsed_user['institutes']
+    )
+    return user
+
+@pytest.fixture(scope='function')
+def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
+    adapter.add_institute(institute_obj)
+    adapter.getoradd_user(
+        email=parsed_user['email'], 
+        name=parsed_user['name'],
+        location=parsed_user['location'], 
+        institutes=parsed_user['institutes']
+    )
+    adapter.add_case(case_obj)
+    
+    return adapter
+    
+    
+
+    
+
+##################### Variant fixtures #####################
 
 @pytest.fixture(scope='function')
 def variants(request):
@@ -147,38 +222,6 @@ def variants(request):
     variant_parser = VCFParser(infile=vcf_file)
     return variant_parser
 
-@pytest.fixture(scope='function')
-def client(request):
-    """Get a mongoadapter"""
-    logger.info("Get a mongo adapter")
-    host = 'mongomock://localhost'
-    port = 27019
-    client = MongoAdapter()
-    
-    return client
-
-@pytest.yield_fixture(scope='function')
-def adapter(request):
-    """Get an adapter connected to mongomock database"""
-    client = MongoAdapter()
-    # client.connect_to_database(
-    #     database='mongotest',
-    #     host='mongomock://localhost',
-    #     port=27019,
-    #     username=None,
-    #     password=None
-    # )
-    client.connect_to_database(
-        database='test', 
-    )
-    yield client
-
-    print('\n')
-    logger.info('Teardown database')
-    client.drop_database()
-    for case in client.cases():
-        print(case)
-    logger.info('Teardown done')
 
 @pytest.fixture(scope='function')
 def minimal_snv(request):
@@ -270,60 +313,3 @@ def minimal_sv(request):
         }
     }
     return variant
-
-@pytest.fixture(scope='function')
-def get_case_info(request):
-    logger.info("Get the necessary information to build a case")
-    case = {}
-    case['case_lines'] = [
-        "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
-        "636808	ADM1059A1	0	0	1	1",
-        "636808	ADM1059A2	ADM1059A1	ADM1059A3	1	2",
-        "636808	ADM1059A3	0	0	2	1",
-    ]
-    
-    case['scout_configs'] = {
-        'load': True,
-        'load_vcf':vcf_file,
-        'analysis_type': 'wes',
-        'rank_model_version': '1.12',
-        'owner': 'cust000',
-        'collaborators': [],
-        'analysis_date': '2015-11-23 14:00:46',
-        'human_genome_version': 37,
-        'human_genome_build': 'GRCh',
-        'madeline': madeline_file,
-        'ped': ped_file,
-        'default_panels': ['IEM'],
-        'igv_vcf': vcf_file,
-        'gene_lists':{
-                'Panel1': {
-                    'date': '2015-10-21',
-                    'file': gene_list_file,
-                    'version': 0.1,
-                    'name': 'Panel1',
-                    'full_name': "Panel 1",
-                    }
-                },
-        'individuals':{
-            'ADM1059A3': {
-                'capture_kit': ['Agilent_SureSelectCRE.V1'],
-                'bam_path': 'abam.bam',
-                'name': 'ADM1059A3'
-                },
-            'ADM1059A2':{
-                'capture_kit': ['Agilent_SureSelectCRE.V1,'],
-                'bam_path': 'abam.bam',
-                'name': 'ADM1059A2'
-                },
-            'ADM1059A1':{
-                'capture_kit': ['Agilent_SureSelectCRE.V1'],
-                'bam_path': 'abam.bam',
-                'name': 'ADM1059A1'
-                }
-            }
-    }
-    case['case_type'] = 'ped'
-    case['owner'] = 'cust000'
-
-    return case

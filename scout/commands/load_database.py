@@ -90,9 +90,6 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
         scout_configs = ConfigObj(scout_config_file)
         logger.info("Using scout config file {0}".format(scout_config_file))
 
-    from pprint import pprint as pp
-    pp(scout_configs)
-    
     if vcf_file:
         logger.info("Use vcf specified on command line: %s" % vcf_file)
         scout_configs['load_vcf'] = vcf_file

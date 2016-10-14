@@ -1,3 +1,4 @@
+from .institute import build_institute
 from .transcript import build_transcript
 from .phenotype import build_phenotype
 from .gene import build_gene

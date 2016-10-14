@@ -2,9 +2,8 @@ import pytest
 from scout.parse import parse_case
 from scout.exceptions import PedigreeError
 
-def test_parse_case(get_case_info):
-    case_lines = get_case_info['case_lines']
-    owner = get_case_info['scout_configs']['owner']
+def test_parse_case(case_lines, scout_configs):
+    owner = scout_configs['owner']
     
     case = parse_case(case_lines, owner)
     

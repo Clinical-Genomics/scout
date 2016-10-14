@@ -9,21 +9,30 @@ from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm,
 
 logger = logging.getLogger(__name__)
 
-# def test_assign(setup_database, get_institute, get_user, get_case):
-#     logger.info("Testing assign a user to a case")
-#     setup_database.assign(
-#         institute=get_institute,
-#         case=get_case,
-#         user=get_user,
-#         link='assignlink'
-#     )
-#     #The user should be added as assignee to the case
-#     updated_case = Case.objects.get(case_id="acase")
-#     assert updated_case.assignee == get_user
-#     #Check that the event exists
-#     event = Event.objects.get(verb='assign')
-#     assert event.link == 'assignlink'
-#     event.delete()
+def test_assign(populated_database, institute_obj, case_obj, user_obj):
+    logger.info("Testing assign a user to a case")
+    institute = populated_database.institute(
+        institute_id=institute_obj.internal_id
+    )
+    case = populated_database.case(
+        institute_id=institute_obj.internal_id, 
+        case_id=case_obj.display_name
+    )
+    user = populated_database.user(
+        email = user_obj.email
+    )
+    populated_database.assign(
+        institute=institute,
+        case=case,
+        user=user,
+        link='assignlink'
+    )
+    #The user should be added as assignee to the case
+    updated_case = Case.objects.get(case_id=case_obj.case_id)
+    assert updated_case.assignee == user
+    #Check that the event exists
+    event = Event.objects.get(verb='assign')
+    assert event.link == 'assignlink'
 
 #
 # def test_unassign(setup_database, get_institute, get_user, get_case):
