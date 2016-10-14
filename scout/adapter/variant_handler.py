@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
 import logging
 
-from datetime import datetime
-from mongoengine import (DoesNotExist, Q)
+from mongoengine import DoesNotExist, Q
 
 from scout.models import Variant
 
@@ -12,7 +12,7 @@ class VariantHandler(object):
     """Methods to handle variants in the mongo adapter"""
 
     def variants(self, case_id, query=None, variant_ids=None,
-                 category='snv', nr_of_variants=10, skip=0, 
+                 category='snv', nr_of_variants=10, skip=0,
                  sort_key='variant_rank'):
         """Returns variants specified in question for a specific case.
 
@@ -37,19 +37,17 @@ class VariantHandler(object):
         else:
             nr_of_variants = skip + nr_of_variants
 
-        mongo_query = self.build_query(case_id, query, variant_ids,
+        mongo_query = self.build_query(case_id, query=query,
+                                       variant_ids=variant_ids,
                                        category=category)
 
         if nr_of_variants == -1:
-            result = Variant.objects(
-                __raw__=mongo_query).order_by(
-                    sort_key)
+            result = Variant.objects(__raw__=mongo_query).order_by(sort_key)
         else:
-            result = Variant.objects(
-                __raw__=mongo_query).order_by(
-                    sort_key).skip(
-                        skip).limit(nr_of_variants)
-
+            result = (Variant.objects(__raw__=mongo_query)
+                             .order_by(sort_key)
+                             .skip(skip)
+                             .limit(nr_of_variants))
         return result
 
     def variant(self, document_id=None, variant_id=None, case_id=None):
@@ -106,13 +104,13 @@ class VariantHandler(object):
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
-        
+
             Args:
                 case_obj(Case)
                 variant_type(str)
         """
         variants = self.variants(
-            case_id=case_obj['case_id'], 
+            case_id=case_obj['case_id'],
             nr_of_variants=-1,
             category=category,
             query={'variant_type': variant_type},
@@ -122,7 +120,7 @@ class VariantHandler(object):
         for index, variant in enumerate(variants):
             variant.variant_rank = index + 1
             variant.save()
-    
+
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""
         # variant id without "*_[variant_type]"

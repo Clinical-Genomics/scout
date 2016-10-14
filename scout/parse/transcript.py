@@ -1,18 +1,20 @@
-from .constants import SO_TERMS
+# -*- coding: utf-8 -*-
+from scout.constants import SO_TERMS
+
 
 def create_ensembl_to_refseq(variant):
     """Create a dictionary with ensembleids to refseq ids
-    
+
         Args:
             variant(dict): A Variant dictionary
-        
+
         Returns:
             conversion(dict): Dict that translate the ids
     """
     info_key = 'Ensembl_transcript_to_refseq_transcript'
     conversion = {}
     vcf_entry = variant['info_dict'].get(info_key, [])
-    
+
     for gene_info in vcf_entry:
         #Genes are splitted from transcripts with ':'
         splitted_gene = gene_info.split(':')
@@ -27,10 +29,10 @@ def create_ensembl_to_refseq(variant):
 
 def parse_disease_associated(variant):
     """Check if there are any manually annotated disease associated transcripts
-    
+
         Args:
             variant(dict)
-    
+
         Returns:
             disease_associated_transcripts(dict): {hgnc_symbol: (transcripts)}
     """
@@ -46,7 +48,7 @@ def parse_disease_associated(variant):
 
                 if gene_id not in disease_associated_transcripts:
                     disease_associated_transcripts[gene_id] = set([
-                        transcript_id.split('.')[0] for 
+                        transcript_id.split('.')[0] for
                         transcript_id in transcript_ids])
                 else:
                     disease_associated_transcripts[gene_id].update(transcript_ids)
@@ -54,10 +56,10 @@ def parse_disease_associated(variant):
 
 def parse_transcripts(variant):
     """Create a list of mongo engine transcript objects
-    
+
         Args:
             variant(dict)
-        
+
         Returns:
             transcripts(list(Transcript))
     """
@@ -74,34 +76,34 @@ def parse_transcripts(variant):
             # Get the transcript id
             transcript_id = vep_entry.get('Feature', '').split(':')[0]
             transcript['transcript_id'] = transcript_id
-            
+
             transcript['refseq_ids'] = ensembl_to_refseq.get(transcript_id, [])
-            
+
             # Add the hgnc gene identifier
             transcript['hgnc_symbol'] = vep_entry.get('SYMBOL', '').split('.')[0]
-            
+
             transcript['is_disease_associated'] = False
             disease_transcripts = disease_associated_transcripts.get(transcript['hgnc_symbol'], set())
             for refseq_id in transcript['refseq_ids']:
                 if refseq_id in disease_transcripts:
                     transcript['is_disease_associated'] = True
-            
+
             # Add the ensembl gene identifier
             transcript['ensembl_id'] = vep_entry.get('Gene', '')
-          
+
             ########### Fill it with the available information ###########
-          
+
             ### Protein specific annotations ###
-          
+
             ## Protein ID ##
             transcript['protein_id'] = vep_entry.get('ENSP')
             transcript['polyphen_prediction'] = vep_entry.get('PolyPhen') or 'unknown'
             transcript['sift_prediction'] = vep_entry.get('SIFT') or 'unknown'
             transcript['swiss_prot'] = vep_entry.get('SWISSPROT') or 'unknown'
-            
+
             if vep_entry.get('DOMAINS', None):
                 pfam_domains = vep_entry['DOMAINS'].split('&')
-            
+
                 for annotation in pfam_domains:
                     annotation = annotation.split(':')
                     domain_name = annotation[0]
@@ -112,27 +114,27 @@ def parse_transcripts(variant):
                         transcript['prosite_profile'] = domain_id
                     elif domain_name == 'SMART_domains':
                         transcript['smart_domain'] = domain_id
-            
+
             coding_sequence_entry = vep_entry.get('HGVSc', '').split(':')
             protein_sequence_entry = vep_entry.get('HGVSp', '').split(':')
-          
+
             coding_sequence_name = None
             if len(coding_sequence_entry) > 1:
                 coding_sequence_name = coding_sequence_entry[-1]
-          
+
             transcript['coding_sequence_name'] = coding_sequence_name
-          
+
             protein_sequence_name = None
             if len(protein_sequence_entry) > 1:
                 protein_sequence_name = protein_sequence_entry[-1]
-          
+
             transcript['protein_sequence_name'] = protein_sequence_name
-          
+
             transcript['biotype'] = vep_entry.get('BIOTYPE')
-          
+
             transcript['exon'] = vep_entry.get('EXON')
             transcript['intron'] = vep_entry.get('INTRON')
-            
+
             if vep_entry.get('STRAND'):
                 if vep_entry['STRAND'] == '1':
                     transcript['strand'] = '+'
@@ -140,19 +142,19 @@ def parse_transcripts(variant):
                     transcript['strand'] = '-'
             else:
                 transcript['strand'] = None
-                
+
             functional = []
             regional = []
             for annotation in functional_annotations:
                 functional.append(annotation)
                 regional.append(SO_TERMS[annotation]['region'])
-          
+
             transcript['functional_annotations'] = functional
             transcript['region_annotations'] = regional
-            
-            transcript['is_canonical'] = (vep_entry.get('CANONICAL') == 'YES') 
-            
-            
+
+            transcript['is_canonical'] = (vep_entry.get('CANONICAL') == 'YES')
+
+
             transcripts.append(transcript)
-    
-    return transcripts 
+
+    return transcripts

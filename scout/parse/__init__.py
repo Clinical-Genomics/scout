@@ -1,5 +1,4 @@
-from .constants import SO_TERMS
-
+# -*- coding: utf-8 -*-
 from .hgnc import parse_hgnc_genes
 from .panel import parse_gene_panel
 from .ids import parse_ids
