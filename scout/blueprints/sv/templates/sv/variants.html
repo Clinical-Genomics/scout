@@ -15,12 +15,11 @@
         <th>Rank #</th>
         <th>Score</th>
         <th>Type</th>
-        <th>Chrom</th>
-        <th>Start</th>
-        <th>Stop</th>
+        <th>Start loc</th>
+        <th>Stop loc</th>
         <th>Length</th>
         <th>Frequency</th>
-        <th>Genes</th>
+        <th>Gene(s)</th>
       </tr>
     </thead>
     <tbody>
@@ -29,7 +28,6 @@
           <td>1</td>
           <td>16</td>
           <td>BDN</td>
-          <td>Chr 2</td>
           <td>10</td>
           <td>20</td>
           <td>10</td>
@@ -47,22 +45,32 @@
           </td>
           <td>{{ variant.rank_rank }}</td>
           <td>{{ variant.sub_category|upper }}</td>
-          <td>{{ variant.chromosome }}</td>
           <td>{{ variant.position }}</td>
           <td>{{ variant.end }}</td>
           <td>{{ variant.length }}</td>
           <td>
             {{ variant.hgnc_symbols }}
-            <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
+            {% if variant.hgnc_symbols %}
+              <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
+            {% endif %}
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
   <div class="container-fluid">
-    <div class="panel panel-default">
-      <div class="panel-body">hs</div>
+    <div class="row">
+      <div class="col-xs-4">
+        <button class="btn btn-default btn-sm">Prev</button>
+      </div>
+      <div class="col-xs-4 text-center">
+        Page 1
+      </div>
+      <div class="col-xs-4">
+        <button class="btn btn-default btn-sm pull-right">Next</button>
+      </div>
     </div>
+    <br>
   </div>
 {% endblock %}
 
