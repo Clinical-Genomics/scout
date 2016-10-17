@@ -9,5 +9,48 @@
 {% endblock %}
 
 {% block content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="badge">{{ variant.variant_rank }}</span>
+            Ranking
+          </li>
 
+          {% if variant.rank_score %}
+            <li class="list-group-item">
+              <span class="badge">{{ variant.rank_score }}</span>
+              Rank score
+            </li>
+          {% endif %}
+
+          {% if variant.sv_type %}
+            <li class="list-group-item">
+              <span class="badge">{{ variant.sv_type }}</span>
+              SV Type
+            </li>
+          {% endif %}
+
+          {% if variant.sv_len %}
+            <li class="list-group-item">
+              <span class="pull-right">{{ '{0:,}'.format(variant.sv_len) }} bp</span>
+              Length of SV
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            Position
+            <div class="pull-right">
+              {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 {% endblock %}

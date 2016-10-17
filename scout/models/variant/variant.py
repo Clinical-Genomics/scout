@@ -131,7 +131,6 @@ class Variant(Document):
 
     acmg_evaluation = StringField(choices=ACMG_TERMS)
 
-
     @property
     def case_displayname(self):
         """Convert case_id to family id or display name."""
