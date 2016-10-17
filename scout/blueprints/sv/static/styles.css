@@ -1,5 +1,9 @@
+:root {
+    --top-margin: 40px;
+}
+
 body {
-    padding-top: 50px;
+    padding-top: var(--top-margin);
 }
 
 th {
@@ -7,5 +11,9 @@ th {
 }
 
 .floatThead-container {
-    margin-top: 50px !important;
+    margin-top: var(--top-margin) !important;
+}
+
+.clear-navbar {
+    padding-top: 20px;
 }

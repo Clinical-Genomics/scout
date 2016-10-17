@@ -1,15 +1,12 @@
-{% extends "bootstrap/base.html" %}
+{% extends "sv/layout.html" %}
 
-{% block styles %}
-{{super()}}
-<link rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css">
-<link rel="stylesheet"
-      href="{{ url_for('sv.static', filename='styles.css') }}">
+{% block top_nav %}
+  {{ super() }}
+  <li><a href="{{ url_for('sv.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">{{ variant.display_name|truncate(20, True) }}</a></li>
 {% endblock %}
 
 {% block content %}
-  <div class="container-fluid">
+  <div class="container-fluid clear-navbar">
     <div class="row">
       <div class="col-md-6">
         <ul class="list-group">
