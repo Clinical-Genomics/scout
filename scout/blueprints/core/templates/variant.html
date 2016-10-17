@@ -1,0 +1,999 @@
+{% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
+{% from '_macros.html' import activity_feed, compounds_table, variant_links %}
+
+{% set page_title = case.display_name ~ '- Variant: ' ~ variant.display_name %}
+{% if case.is_solved %}
+  {% set header_classes = 'success' %}
+{% elif case.is_archived %}
+  {% set header_classes = 'disabled' %}
+{% endif %}
+
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      <small>{{ institute.display_name }}</small>
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      <small>{{ case.display_name }}</small>
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <a class="md-breadcrumb-button is-raised" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant.variant_type, gene_lists=case.default_panels) }}">
+      <small>{{ variant.variant_type|capitalize }} variants</small>
+    </a>
+    <core-icon
+      class="md-breadcrumb-separator"
+      icon="chevron-right">
+    </core-icon>
+
+    <div class="md-breadcrumb">
+      <small>{{ variant.display_name|truncate(20, True) }}</small>
+    </div>
+  </div>
+{% endblock %}
+
+{% block toolbar_right %}
+  {{ super() }}
+
+  {% if variant.ordered_sanger %}
+    <div v-on="click: showModal" class="icon-button" title="Order Sanger">
+      <core-icon icon="mail"></core-icon>
+    </div>
+  {% else %}
+    <div class="case-assign-icon">
+      <div class="md-label">
+        <div class="md-label-text">
+          {% if variant.validation %}
+            Sanger: {{ variant.validation }}
+          {% else %}
+            Sanger: Pending...
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if variant not in case.suspects %}
+    <form action="{{ url_for('core.pin_variant',
+                             institute_id=institute.internal_id,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Pin variant">
+        <core-icon icon="bookmark-outline"></core-icon>
+      </button>
+    </form>
+  {% else %}
+    <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.internal_id,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+      <button type="submit" class="icon-button" title="Unpin variant">
+        <core-icon icon="bookmark"></core-icon>
+      </button>
+    </form>
+  {% endif %}
+
+  {% if variant in case.causatives %}
+      <form action="{{ url_for('core.unmark_causative',
+                               institute_id=institute.internal_id,
+                               case_id=case.display_name,
+                               variant_id=variant.id) }}"
+            method="POST">
+        <button type="submit" class="case-assign-icon" title="Reset causative">
+          <div class="md-label">
+            <div class="md-label-icon">
+              <core-icon icon="verified-user"></core-icon>
+            </div>
+            <div class="md-label-text">Reset causative</div>
+          </div>
+        </button>
+      </form>
+  {% else %}
+    <form action="{{ url_for('core.mark_causative',
+                             institute_id=institute.internal_id,
+                             case_id=case.display_name,
+                             variant_id=variant_id) }}"
+          method="POST">
+
+      <button class="case-assign-icon" type="submit" title="Mark as causative" onclick="return confirm('Are you sure?')">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="verified-user"></core-icon>
+          </div>
+          <div class="md-label-text">Mark causative</div>
+        </div>
+      </button>
+    </form>
+  {% endif %}
+
+{% endblock %}
+
+{% block toolbar_secondary %}
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="grade"></core-icon>
+      </div>
+      <div class="md-label-text">{{ variant.variant_rank }}</div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">
+      <div class="md-label-icon">
+        <core-icon icon="room"></core-icon>
+      </div>
+      <div class="md-label-text">
+        View alignment: {{ variant.chromosome }}:{{ variant.position }} ({{ variant.hgnc_symbols|join(', ') }})
+      </div>
+    </a>
+  </div>
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="swap-vert-circle"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.reference }} → {{ variant.alternative }}
+      </div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="report"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.region_annotations|join(', ') }}
+      </div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="settings"></core-icon>
+      </div>
+      <div class="md-label-text">
+        {{ variant.functional_annotations|join(', ') }}
+      </div>
+    </div>
+  </div>
+
+  <div class="variant-header-item">
+    <form class="status-picker" method="POST">
+      <div class="md-label">
+        <div class="md-label-icon">Priority</div>
+        <div class="md-label-text">
+          <select v-model="variantRank" v-on="change: onVariantRankChange">
+            {% for rank in manual_rank_options %}
+              <option {% if rank == variant.manual_rank %}selected{% endif %}
+                      value="{{ rank }}">
+                {{ rank }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {% if variant.variant_type == 'research' %}
+    <!-- Separator -->
+    <div class="flex"></div>
+
+    <div class="md-toolbar-group">
+      {% if prev_variant %}
+        <a class="icon-button"
+           title="Previous variant"
+           href="{{ url_for('core.variant',
+                      institute_id=institute_id, case_id=case_id,
+                      variant_id=prev_variant.document_id) }}">
+          <core-icon icon="arrow-back"></core-icon>
+        </a>
+      {% endif %}
+
+      <a class="icon-button"
+         title="Next variant"
+         href="{{ url_for('core.variant',
+                    institute_id=institute_id, case_id=case_id,
+                    variant_id=next_variant.document_id) }}">
+        <core-icon icon="arrow-forward"></core-icon>
+      </a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+  <div class="variant-segments">
+
+    <div class="variant-segments-row">
+        <div id="causatives" class="md-card">
+            <div class="md-card-header">Matching causatives from other cases</div>
+            <div class="variant-segment-content">
+                {% for o_variant in causatives %}
+                    <div class="activity-feed-item">
+                        <a href="{{ url_for('core.variant',
+                                    institute_id=institute_id,
+                                    case_id=o_variant.case_displayname,
+                                    variant_id=o_variant.id) }}">
+                            {{ o_variant.case_id }}
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="activity-feed-item">
+                        No matching variants.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="summary" class="variant-segments-row">
+      <div id="summary" class="md-card">
+        <div class="md-card-header">Summary</div>
+
+        <div class="variant-segment-content">
+          <div class="variant-row-item">
+
+            <div class="dist-even">
+              <div class="dist-even-item">
+                <div>Rank score</div>
+                <div>{{ variant.rank_score }}</div>
+              </div>
+
+              <div class="dist-even-item">
+                <div>CADD score</div>
+                <div>{{ variant.cadd_score }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>Matches OMIM inheritance</div>
+
+            {% if variant.is_matching_inheritance %}
+              <div class="md-badge--success">Yes</div>
+            {% else %}
+              <div class="md-badge--fail">No</div>
+            {% endif %}
+          </div>
+
+          <div class="variant-list-item">
+            <div>Frequency</div>
+
+            <div class="md-badge--{% if variant.frequency == 'common' %}fail{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %}">
+              {{ variant.frequency }}
+            </div>
+          </div>
+
+          <div class="variant-row-item">
+              <div>Gene panels</div>
+              <div class="variant-row-item-sublist">
+              {% for panel in variant.gene_lists %}
+                  <div class="variant-row-item-sublist-item">{{ panel }}</div>
+              {% endfor %}
+              </div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>CLINSIG</div>
+            <div>
+              {{ variant.clnsig or '1' }}:
+              {% if variant.clnsig %}
+                {{ variant.clnsig_human }}
+
+                [{% for clnsigacc in variant.clnsigacc %}
+                    <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clnsigacc }}" target="_blank">
+                        {{ loop.index }}
+                    </a>{% if not loop.last %}, {% endif %}
+                {% endfor %}]
+              {% else %}
+                {{ variant.clnsig_human }}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="variant-row-item">
+            <div>SNPedia</div>
+
+            <div class="variant-row-item-sublist">
+              {% for rsnumber in variant.db_snp_ids %}
+                <a target="_blank" href="http://snpedia.com/index.php/{{ rsnumber }}" class="variant-row-item-sublist-item">
+                  {{ rsnumber }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="variant-row-item">
+            <div>Coverage</div>
+
+            <div class="variant-row-item-sublist">
+              {% for gene_id, link in coverage_links.iteritems() %}
+                <a target="_blank" href="{{ link }}" class="variant-row-item-sublist-item">
+                  {{ gene_id }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="transcript-overview" class="md-card">
+        <div class="md-card-header">Transcript overview</div>
+        <div class="md-card-body mod-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>HGVS Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for transcript in variant.refseq_transcripts %}
+                {% if transcript.is_disease_associated %}
+                  {% set row_class = 'danger' %}
+                {% else %}
+                  {% set row_class = 'default' %}
+                {% endif %}
+
+                <tr class="{{ row_class }}">
+                  <td>
+                    {{ transcript.hgnc_symbol }}
+                    {% if transcript.is_canonical %}
+                      <span class="dot-indicator" title="CANONICAL"></span>
+                    {% endif %}
+                  </td>
+                  <td title="{{ transcript.refseq_ids|join(', ') }}">
+                    {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}
+                  </td>
+                  {% if transcript.is_exonic() %}
+                    <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
+                  {% else %}
+                    <td>{{ (transcript.coding_sequence_name or '')|url_decode }}</td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="important-data" class="variant-segments-row">
+
+      <div id="frequency" class="md-card is-main">
+        <div class="md-card-header">Frequency</div>
+        <div class="md-card-body-list">
+          <div class="variant-row-item">
+            <div>
+              {% if variant.db_snp_ids %}
+                <a href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
+              {% else %}
+                1000G
+              {% endif %}
+            </div>
+
+            <div class="variant-row-item-sublist">
+              {% if variant.max_thousand_genomes_frequency %}
+                <div class="variant-row-item-sublist-item">
+                  {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small>
+                </div>
+              {% endif %}
+
+              <div class="variant-row-item-sublist-item">
+                {{ variant.thousand_genomes_frequency|human_decimal }}
+              </div>
+            </div>
+          </div>
+
+          <div class="variant-row-item">
+            <div>
+              <a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a>
+            </div>
+            <div class="variant-row-item-sublist">
+                {% if variant.max_exac_frequency %}
+                  <div class="variant-row-item-sublist-item">
+                    {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small>
+                  </div>
+                {% endif %}
+                <div class="variant-row-item-sublist-item">
+                  {{ variant.exac_frequency|human_decimal }}
+                </div>
+            </div>
+          </div>
+
+          <div class="variant-list-item">
+            <div><a href="http://www.clinicalgenomics.se/scout/user-guide/using-scout/" target="_blank">Local</a></div>
+          </div>
+          <div class="variant-row-item">
+            <div class="variant-row-item-sublist">
+                <div class="variant-row-item-sublist-item">
+                  {{ local_freq.observations|default('N/A') }} <small>obs.</small>
+                </div>
+                <div class="variant-row-item-sublist-item">
+                  {{ local_freq.homozygote|default('N/A') }} <small>homo.</small>
+                </div>
+                <div class="variant-row-item-sublist-item">
+                  {{ local_total }} <small>tot.</small>
+                </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="severities+conservation" class="md-card is-main">
+        <div class="md-card-header">Severity</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>Sift</div>
+            <div>{{ variant.sift_predictions|join(', ') }}</div>
+          </div>
+          <div class="variant-list-item">
+            <div>
+              <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">
+                Polyphen
+              </a>
+            </div>
+            <div>{{ variant.polyphen_predictions|join(', ') }}</div>
+          </div>
+          <div class="variant-list-item">
+            <div>SPIDEX</div>
+            <div>{{ variant.spidex or '-' }}</div>
+          </div>
+        </div>
+
+        <div class="md-card-header">Conservation</div>
+        <div class="md-card-body-list">
+          <div class="variant-list-item">
+            <div>PHAST</div>
+            <div>{{ variant.phast_conservation|join(', ') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>GERP</div>
+            <div>{{ variant.gerp_conservation|join(', ') or '-' }}</div>
+          </div>
+
+          <div class="variant-list-item">
+            <div>phyloP</div>
+            <div>{{ variant.phylop_conservation|join(', ') or '-' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="inheritance-model" class="md-card">
+        <div class="md-card-header">Inheritance models</div>
+        <div class="md-card-body-list">
+          <div class="variant-row-item">
+            <div>Variant</div>
+
+            <div class="variant-row-item-sublist">
+              {% for model in variant.genetic_models|sort %}
+                <div class="variant-row-item-sublist-item">{{ model }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {% if variant.expected_inheritance %}
+            <div class="variant-row-item">
+              <div>Disorder</div>
+
+              <div class="variant-row-item-sublist">
+                {% for model in variant.expected_inheritance|sort %}
+                  <div class="variant-row-item-sublist-item">{{ model }}</div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if variant.omim_inheritance_models %}
+            <div class="variant-row-item">
+              <div>OMIM</div>
+
+              <div class="variant-row-item-sublist">
+                {% for model in variant.omim_inheritance_models|sort %}
+                  <div class="variant-row-item-sublist-item">{{ model }}</div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="md-card-header">Reduced penetrance</div>
+          <div class="md-card-body-list">
+            {% for gene in variant.reduced_penetrance_genes %}
+              <div class="variant-list-item">
+                <div>{{ gene.hgnc_symbol }}</div>
+                <div>YES</div>
+              </div>
+            {% else %}
+              <div class="variant-list-item">
+                <div>No annotations.</div>
+              </div>
+            {% endfor %}
+          </div>
+      </div>
+
+      <div id="omim" class="md-card">
+        <div class="md-card-header">OMIM phenotypes</div>
+        <div class="md-card-body mod-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Phenotype</th>
+                <th>Inheritance models</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gene, phenotype in variant.omim_phenotypes %}
+                <tr>
+                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a href="{{ phenotype.omim_link }}" target="_blank">
+                      {{ phenotype.phenotype_id }}
+                    </a>
+                  </td>
+                  <td>{{ phenotype.disease_models|sort|join(', ') }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="3">No OMIM phenotypes.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="details" class="variant-segments-row">
+      <div id="comments" class="md-card is-main">
+        <div class="md-card-header">Comments</div>
+        <div class="md-card-body-list">
+          <div class="activity-feed">
+            {% for comment in comments|reverse %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ comment.author.name }}</strong>
+                    <span class="timestamp">
+                      {{ comment.created_at.date() }}
+                    </span>
+                    {% if comment.level == 'global' %}
+                      <small><span class="md-badge--low">GLOBAL</span></small>
+                    {% endif %}
+                    {% if comment.created_at < case.updated_at %}
+                      <small><span class="md-badge--warning">OLD</span></small>
+                    {% endif %}
+                  </div>
+
+                  {% if comment.author.id == current_user.id %}
+                    {% set form_id = 'delete-comment-%s' % loop.index %}
+                    <form class="activity-feed-delete"
+                          accept-charset="UTF-8"
+                          action="{{ url_for('api.delete_event',
+                                             institute_id=institute_id,
+                                             case_id=case_id,
+                                             event_id=comment.id) }}"
+                          method="POST">
+                      <core-icon class="activity-feed-delete-button" onclick="document.querySelector('#{{ form_id }}').click();" icon="highlight-remove"></core-icon>
+                      <button id="{{ form_id }}" class="is-hidden"></button>
+                    </form>
+                  {% endif %}
+                </div>
+
+                {% if comment.content %}
+                  <div class="activity-feed-item-body">
+                    {{ comment.content }}
+                  </div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No variant comments yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div id="comment-box" class="md-card is-aside">
+        <div class="md-card-body--padded">
+          <div class="feed-toolbar">
+            <form class="comment-box"
+                  action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}"
+                  method="POST">
+              <input type="hidden" name="link"
+                     value="{{ url_for('core.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">
+              <textarea class="comment-box-input" name="content" placeholder="Leave a comment"></textarea>
+              <div class="comment-box-toolbar">
+                <div class="comment-box-toolbar-setting">
+                  <input name="level" type="checkbox" value="global">
+                  <label for="level">Comment globally</label>
+                </div>
+
+                <div class="comment-box-toolbar-action">
+                  <button class="md-button" type="submit">Comment</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gt-call" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">
+          GT call
+          {% if case.is_new %}
+            [{% for name, caller in variant.callers %}
+              {{ name }}: {{ caller }} |
+            {% endfor %}]
+          {% endif %}
+        </div>
+
+        <div class="md-card-body is-main">
+          <table class="default-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Sample</th>
+                <th rowspan="2">Genotype call (GT)</th>
+                <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+              </tr>
+              <tr>
+                <th class="default-table-subcell">Reference</th>
+                <th class="default-table-subcell">Alternative</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for individual in variant.samples %}
+                <tr class="{{ individuals[individual.sample_id].phenotype_human }}">
+                  <td class="text-center">{{ individual.display_name }}</td>
+                  <td class="text-center">{{ individual.genotype_call }}</td>
+                  {% if individual.allele_depths %}
+                      {% for number in individual.allele_depths %}
+                        <td class="text-right">{{ number }}</td>
+                      {% endfor %}
+                  {% else %}
+                      <td class="text-right"><small>N/A</small></td>
+                      <td class="text-right"><small>N/A</small></td>
+                  {% endif %}
+                  <td class="text-right">{{ individual.genotype_quality }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="case-samples" class="md-card is-aside">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list layout-center">
+          {% if case.individuals|length == 1 %}
+            <!-- Don't expect a pedigree visualization -->
+            <p>Single sample case: {{ case.individuals.0.display_name }}</p>
+          {% else %}
+            {{ case.madeline_info|safe }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div id="compounds" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Compounds</div>
+
+        <div class="md-card-body mod-scrollable-big">
+          {{ compounds_table(variant.compounds, institute_id, case_id) }}
+        </div>
+      </div>
+    </div>
+
+    <div id="genes" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Genes</div>
+
+        <div class="md-card-body mod-scrollable">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Ensembl ID</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for gene in variant.genes %}
+                <tr>
+                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a target="_blank" href="{{ gene.ensembl_link }}">
+                      {{ gene.ensembl_gene_id }}
+                    </a>
+                  </td>
+                  <td>{{ gene.description or '' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="transcripts" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Transcripts</div>
+
+        <div class="md-card-body mod-scrollable-big">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>RefSeq</th>
+                <th>Biotype</th>
+                <th>Mutation type</th>
+                <th>Strand</th>
+                <th>Exon</th>
+                <th>Intron</th>
+                <th>cDNA</th>
+                <th>Amino acid</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.transcripts %}
+                {% if transcript.is_disease_associated %}
+                  {% set row_class = 'danger' %}
+                {% else %}
+                  {% set row_class = 'default' %}
+                {% endif %}
+
+                <tr class="{{ row_class }}">
+                  <td>
+                    {% if transcript.is_canonical %}
+                      <span class="dot-indicator" title="CANONICAL"></span>
+                    {% endif %}
+                    {{ transcript.hgnc_symbol }}
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
+                  </td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        <!-- Show only the first two links! -->
+                        {% for refseq_id, refseq_link in (transcript.refseq_links|list)[:2] %}
+                          <a target="_blank" href="{{ refseq_link }}">
+                            <small>{{ refseq_id }}</small>
+                          </a>
+                        {% endfor %}
+                      </div>
+
+                      <div class="md-tooltip-tip is-top">
+                        {{ transcript.refseq_ids|join(', ') }}
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ transcript.biotype or '' }}</td>
+                  <td>
+                    <div class="md-tooltip">
+                      <div class="dotdotdot">
+                        {{ transcript.functional_annotations
+                            |join(', ')
+                            |truncate(20, True) }}
+                      </div>
+
+                      <div class="md-tooltip-tip is-top">
+                        {{ transcript.functional_annotations|join(', ') }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-center">{{ transcript.strand }}</td>
+                  <td>{{ transcript.exon or '' }}</td>
+                  <td>{{ transcript.intron or '' }}</td>
+                  <td>{{ (transcript.coding_sequence_name or '')|url_decode }}</td>
+                  <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="10">
+                    No protein change predictions available.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="proteins" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Proteins</div>
+
+        <div class="md-card-body mod-scrollable-big">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>Transcript</th>
+                <th>Protein</th>
+                <th>SWISS PROT</th>
+                <th>Sift</th>
+                <th>Polyphen</th>
+                <th>Pfam</th>
+                <th>ProSite</th>
+                <th>Smart</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for transcript in variant.transcripts %}
+                <tr>
+                  <td>{{ transcript.hgnc_symbol }}</td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.ensembl_link }}">
+                      <small>{{ transcript.transcript_id }}</small>
+                    </a>
+                  </td>
+                  <td>
+                    <small>{{ transcript.protein_id or '' }}</small>
+                  <td>
+                    <a target="_blank" href="{{ transcript.swiss_prot_link }}">
+                      {{ transcript.swiss_prot or '' }}
+                    </a>
+                  </td>
+                  <td>{{ transcript.sift_prediction or '' }}</td>
+                  <td>{{ transcript.polyphen_prediction or '' }}</td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.pfam_domain_link }}">
+                      {{ transcript.pfam_domain or '' }}
+                    </a>
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.prosite_profile_link }}">
+                      {{ transcript.prosite_profile or '' }}
+                    </a>
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.smart_domain_link }}">
+                      {{ transcript.smart_domain or '' }}
+                    </a>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="10">
+                    No protein change predictions available.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% for gene in variant.genes %}
+      <div id="external-links" class="variant-segments-row">
+        <div class="md-card">
+          <div class="md-card-header">
+            External links: {{ gene.hgnc_symbol }}
+          </div>
+          <div class="md-card-body">
+            {{ variant_links(ensembl_link=gene.ensembl_link,
+                             hpa_link=gene.hpa_link,
+                             string_link=gene.string_link,
+                             ucsc_link=variant.ucsc_link,
+                             entrez_link=gene.entrez_link,
+                             reactome_link=gene.reactome_link,
+                             expression_atlas_link=gene.expression_atlas_link)
+            }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div id="activity" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
+          {{ activity_feed(events|reverse, context='variant') }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SANGER EMAIL MODAL -->
+  <md-modal v-ref="modal" title="Order Sanger sequencing">
+    <form
+      action="{{ url_for('core.email_sanger',
+                         institute_id=institute_id,
+                         case_id=case_id,
+                         variant_id=variant_id) }}"
+      method="POST"
+    >
+
+      <p>
+        <strong>Case {{ case_id }}</strong>:
+        <a href="{{ url_for('core.variant',
+                            institute_id=institute_id,
+                            case_id=case_id,
+                            variant_id=variant_id) }}">
+          {{ variant.display_name }}
+        </a>
+      </p>
+
+      <p>
+        <strong>HGNC symbol(s)</strong>:
+        {{ variant.hgnc_symbols|join(', ') }}
+      </p>
+
+      <p><strong>Databases</strong>: {{ variant.gene_lists|join(', ') }}</p>
+
+      <p>
+        <strong>Amino acid change(s)</strong>:
+        <ul>
+          {% for transcript in variant.refseq_transcripts %}
+            <li>{{ transcript.stringify() }}</li>
+          {% endfor %}
+        </ul>
+      </p>
+
+      <p><strong>GT call</strong></p>
+      <p>
+        <ul>
+          {% for individual in variant.samples %}
+            <li>
+              {{ individual.display_name }}: {{ individual.genotype_call }}
+            </li>
+          {% endfor %}
+        </ul>
+      </p>
+
+      <p><strong>Ordered by</strong>: {{ current_user.name }}</p>
+
+      <div class="sanger-form-footer">
+        <div v-on="click: hideModal" class="md-button" title="Cancel Sanger">
+          Cancel
+        </div>
+
+        <button class="md-button" type="submit" title="Order Sanger">
+          Send
+        </button>
+      </div>
+    </form>
+  </md-modal>
+
+{% endblock %}

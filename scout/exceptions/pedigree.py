@@ -1,0 +1,2 @@
+class PedigreeError(Exception):
+    pass

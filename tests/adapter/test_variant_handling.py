@@ -4,7 +4,7 @@ import logging
 from pymongo import MongoClient
 from mongoengine import DoesNotExist
 
-from scout.ext.backend import MongoAdapter
+from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 
@@ -13,3 +13,7 @@ logger = logging.getLogger()
 
 init_log(logger, loglevel='DEBUG')
 
+
+def test_load_one_variant(adapter):
+    """docstring for test_load_one_variant"""
+    pass

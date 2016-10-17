@@ -1,6 +1,8 @@
-on="1.1"  id="svgDC" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  width="279.72" height="266.884"  onload="init()" >
+<?xml version="1.0" standalone="no"?>
+<svg version="1.1"  id="svgDC" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  width="279.72" height="266.884"  onload="init()" >
  <defs>
   <style type="text/css"><![CDATA[
+
 
 line{
 	stroke:#000;

@@ -1,0 +1,772 @@
+{% extends 'layouts/scroll-header.html' %}
+{% from 'macros/_polymer.html' import core_item %}
+{% from '_macros.html' import activity_feed %}
+
+{% macro hpo_item(institute, case, hpo_term, group=False, selected_ids=None) %}
+<div class="list-item">
+  {% if group %}
+      <div>
+          {{ hpo_term.feature }}
+          <a href="{{ hpo_term.hpo_link }}" target="_blank">
+            <small>{{ hpo_term.phenotype_id }}</small>
+          </a>
+      </div>
+      <form action="{{ url_for('core.case_phenotype',
+                               institute_id=institute.internal_id,
+                               case_id=case.display_name,
+                               phenotype_id=hpo_term.phenotype_id,
+                               is_group=('yes' if group else None)) }}"
+            method="POST">
+        <button type="submit" class="md-button-flat">
+          <core-icon icon="highlight-remove"></core-icon>
+        </button>
+      </form>
+  {% else %}
+    <div>
+      <label>
+          <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
+                 {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
+          {{ hpo_term.feature }}
+          <a href="{{ hpo_term.hpo_link }}" target="_blank">
+            <small>{{ hpo_term.phenotype_id }}</small>
+          </a>
+      </label>
+    </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% set page_title = "Case " ~ case.display_name %}
+{% if case.is_solved %}
+  {% set header_classes = 'success' %}
+{% elif case.is_archived %}
+  {% set header_classes = 'disabled' %}
+{% endif %}
+
+{% block toolbar_left %}
+  {{ super() }}
+
+  <div class="md-breadcrumb-group flex">
+    <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}" class="md-breadcrumb-button is-raised">
+      <small>{{ institute.display_name }}</small>
+    </a>
+    <core-icon
+      icon="chevron-right"
+      class="md-breadcrumb-separator">
+    </core-icon>
+    <div class="md-breadcrumb">
+      <small>
+        {{ case.display_name }}
+        {% if case.is_solved %}
+          <strong>(SOLVED)</strong>
+        {% elif case.is_archived %}
+          <strong>(ARCHIVED)</strong>
+        {% endif %}
+      </small>
+    </div>
+  </div>
+{% endblock %}
+
+{% block toolbar_secondary %}
+
+  {% if case.analysis_type %}
+    <div class="md-label">
+      <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
+      <div class="md-label-text">
+        {% if case.analysis_type == 'unknown' %}
+          unknown analysis type
+        {% else %}
+          {{ case.analysis_type|upper }}
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
+    {% if case.status == 'prioritized' %}
+        <input type="hidden" name="status" readonly value="active">
+    {% else %}
+        <input type="hidden" name="status" readonly value="prioritized">
+    {% endif %}
+    <div class="md-label">
+      <div class="md-label-icon"><core-icon icon="verified-user"></core-icon></div>
+
+      <button class="md-label-text" type="submit">
+        {% if case.status == 'prioritized' %}
+          De-prioritize{% else %}Prioritize
+        {% endif %}
+      </button>
+    </div>
+  </form>
+
+  {% if case.assignee %}
+    <form class="case-assign" action="{{ url_for('core.remove_assignee',
+                             institute_id=institute.internal_id,
+                             case_id=case.display_name) }}"
+          method="POST">
+      <button type="submit" class="case-assign-icon">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="highlight-remove"></core-icon>
+          </div>
+          <div class="md-label-text">{{ case.assignee.name }}</div>
+        </div>
+      </button>
+    </form>
+  {% else %}
+    <form class="case-assign" action="{{ url_for('core.assign_self',
+                             institute_id=institute.internal_id,
+                             case_id=case.display_name) }}"
+          method="POST"
+          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+
+      <button type="submit" class="case-assign-icon">
+        <div class="md-label">
+          <div class="md-label-icon">
+            <core-icon icon="assignment-ind"></core-icon>
+          </div>
+          <div class="md-label-text">Assign yourself</div>
+        </div>
+      </button>
+    </form>
+  {% endif %}
+
+  <div class="md-label">
+    <div class="md-label-icon">
+      <core-icon icon="label"></core-icon>
+    </div>
+
+    <form class="md-label-text" action="{{ url_for('api.case_status', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
+      {{ case.status|capitalize }}
+
+      {% if case.status != 'archived' %}
+        <input type="hidden" name="status" readonly value="archived">
+        <button class="case-assign-icon" type="submit" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
+          <small><strong>(ARCHIVE)</strong></small>
+        </button>
+      {% else %}
+        <input type="hidden" name="status" readonly value="active">
+        <button class="case-assign-icon" type="submit">
+          <small><strong>(UNARCHIVE)</strong></small>
+        </button>
+      {% endif %}
+    </form>
+  </div>
+
+  {% if not (case.is_archived or case.is_research) %}
+    {% if case.research_requested %}
+      <div class="md-label">
+        <div class="md-label-icon">
+          <core-icon icon="public"></core-icon>
+        </div>
+        <div class="md-label-text"><i>Research pending</i></div>
+      </div>
+    {% else %}
+      <div v-on="click: showModal" class="md-label clickable">
+        <div class="md-label-icon">
+          <core-icon icon="public"></core-icon>
+        </div>
+        <div class="md-label-text">Request research list</div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% if case.rerun_requested %}
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="restore"></core-icon>
+      </div>
+      <div class="md-label-text"><i>Rerun pending</i></div>
+    </div>
+  {% else %}
+    <div v-on="click: showRerunModal" class="md-label clickable">
+      <div class="md-label-icon">
+        <core-icon icon="restore"></core-icon>
+      </div>
+      <div class="md-label-text">Request rerun</div>
+    </div>
+  {% endif %}
+
+  {% if case.coverage_report %}
+    <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
+      <div class="md-label-icon">
+        <core-icon icon="assessment"></core-icon>
+      </div>
+      <div class="md-label-text">Coverage report</div>
+    </a>
+  {% else %}
+    <form class="md-label" action="{{ url_for('report.group', group_id=case.owner_case_id) }}" method="post" accept-charset="utf-8" target="_blank">
+      <input class="is-hidden" name="level" value="{{ institute.coverage_cutoff }}"></input>
+      <input class="is-hidden" name="panel_name" value="{{ panel_names|join(', ') }}"></input>
+      <input class="is-hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
+      {% for sample_id, display_name in sample_map.items() %}
+        <input class="is-hidden" name="{{ sample_id }}" value="{{ display_name }}"></input>
+      {% endfor %}
+
+      <div class="md-label-icon">
+        <core-icon icon="assessment"></core-icon>
+      </div>
+      <button type="submit" class="md-label-text">Coverage report</button>
+    </form>
+  {% endif %}
+
+  <form class="md-label" action="{{ url_for('core.mark_checked', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
+    {% if case.analysis_checked %}
+      <input class="is-hidden" name="unmark" value="true"></input>
+    {% endif %}
+    <div class="md-label-icon">
+      {% if case.analysis_checked %}
+        <core-icon icon="check-box"></core-icon>
+      {% else %}
+        <core-icon icon="check-box-outline-blank"></core-icon>
+      {% endif %}
+    </div>
+    <button type="submit" class="md-label-text">
+      {{ 'Unmark checked' if case.analysis_checked else 'Mark checked' }}
+    </button>
+  </form>
+
+  {% if case.rank_model_version %}
+      <div class="md-label">
+          <div class="md-label-text">Rank model: {{ case.rank_model_version }}</div>
+      </div>
+  {% endif %}
+
+  {% if case.owner == institute.internal_id %}
+    {% if collaborators %}
+      <form class="md-label" action="{{ url_for('core.share_case', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
+        <div class="md-label-icon">
+          <core-icon icon="settings"></core-icon>
+        </div>
+        <div class="md-label-text">
+          <select name="collaborator">
+            {% for collab_id in collaborators %}
+              <option value="{{ collab_id }}">{{ collab_id }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="md-label-text">Share</button>
+      </form>
+    {% endif %}
+
+    {% if case.o_collaborators %}
+      <form class="md-label" action="{{ url_for('core.share_case', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
+        <input type="text" hidden name="revoke" />
+        <div class="md-label-icon">
+          <core-icon icon="settings"></core-icon>
+        </div>
+        <div class="md-label-text">
+          <select name="collaborator">
+            {% for collab_id in case.o_collaborators %}
+              <option value="{{ collab_id }}">{{ collab_id }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="md-label-text">Revoke access</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+  <div class="layout">
+    <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}" class="case-variants-button">
+      Clinical variants
+    </a>
+
+    {% if case.has_svvariants %}
+        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}" class="case-variants-button">
+          Clinical SV variants
+        </a>
+    {% endif %}
+
+    {% if case.is_research %}
+      <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+        Research variants
+      </a>
+
+      {% if case.has_svvariants %}
+        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+          Research SV variants
+        </a>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="case-segments">
+
+    <div id="overview" class="case-segment-row">
+      <div id="case-candidates" class="md-card">
+        <div class="md-card-header">Matching causatives from other cases</div>
+        <div class="md-card-body-list">
+          {% for variant in causatives %}
+            <div class="list-item">
+              <div class="md-item">
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    <a href="{{ url_for('core.variant',
+                                    institute_id=institute.internal_id,
+                                    case_id=case.display_name,
+                                    variant_id=variant.id) }}">
+                      {{ variant.hgnc_symbols|join(', ') }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="list-item">
+              <div class="md-item">
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    No matching causative variants.
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="overview" class="case-segment-row">
+      <div id="case-samples" class="md-card">
+        <div class="md-card-header">Individuals</div>
+        <div class="md-card-body-list">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Sample</th>
+                <th>Sex</th>
+                <th>Phenotype</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for individual in case.individuals %}
+                <tr class="{{ individual.phenotype_human }}">
+                  <td>{{ individual.display_name }}</td>
+                  <td>{{ individual.sex_human }}</td>
+                  <td>{{ individual.phenotype_human }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="case-samples" class="md-card">
+        <div class="md-card-header">Pedigree</div>
+        <div class="md-card-body-list layout-center">
+          {% if case.individuals|length == 1 %}
+            <!-- Don't expect a pedigree visualization -->
+            <p>Single sample case: {{ case.individuals.0.display_name }}</p>
+          {% else %}
+            {{ case.madeline_info|safe }}
+          {% endif %}
+        </div>
+      </div>
+
+      <div id="case-synopsis" class="md-card">
+        <div class="md-card-header">Synopsis</div>
+        <div class="md-card-body--padded">
+          <markdown-editor v-ref="synopsisEditor" v-with='
+            content: {{ case.synopsis|tojson|safe }},
+            onSave: updateSynopsis
+          '></markdown-editor>
+        </div>
+
+        <div class="md-card-footer">
+          <div class="md-button-group">
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.save"
+                 v-show="$.synopsisEditor.isEditing">
+              Save
+            </div>
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.cancel"
+                 v-show="$.synopsisEditor.isEditing">
+              Cancel
+            </div>
+
+            <div class="md-button-flat"
+                 v-on="click: $.synopsisEditor.edit"
+                 v-show="!$.synopsisEditor.isEditing">
+              Edit
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="candidates" class="case-segment-row">
+      <div id="case-candidates" class="md-card">
+        <div class="md-card-header">Strong candidates</div>
+        <div class="md-card-body-list">
+          {% for variant in case.suspects %}
+            <div class="list-item">
+              <div class="md-item">
+                {% if variant.manual_rank %}
+                  <small class="md-badge--{{ variant.manual_rank_level }}">
+                    {{ variant.manual_rank }}
+                  </small>
+                {% else %}
+                  <div class="md-item-icon">
+                    <core-icon icon="bookmark"></core-icon>
+                  </div>
+                {% endif %}
+
+                <div class="md-item-body">
+                  <div class="md-item-title">
+                    <a href="{{ url_for('core.variant',
+                                    institute_id=institute.internal_id,
+                                    case_id=case.display_name,
+                                    variant_id=variant.id) }}">
+                      {{ variant.hgnc_symbols|join(', ') }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <form action="{{ url_for('core.mark_validation',
+                                         institute_id=institute.internal_id,
+                                         case_id=case.display_name,
+                                         variant_id=variant.id) }}"
+                    method="POST" accept-charset="utf-8">
+                <select onchange="this.form.submit()" name="type">
+                  <option>Validate Sanger...</option>
+                  {% for type in ('True positive', 'False positive') %}
+                    <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+
+              {% if variant.sanger_ordered %}
+                <span class="md-badge"><small>SANGER ORDERED</small></span>
+              {% endif %}
+
+              <form action="{{ url_for('core.unpin_variant',
+                             institute_id=institute.internal_id,
+                             case_id=case.display_name,
+                             variant_id=variant.id) }}"
+                    method="POST">
+                <button type="submit" class="md-icon-button" title="Unpin">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
+            </div>
+          {% else %}
+            <div class="list-item">No variants suspected yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="md-card">
+        <div class="md-card-header">Marked as causative</div>
+        <div class="md-card-body-list">
+          {% for variant in case.causatives %}
+          <div class="list-item">
+            <a href="{{ url_for('core.variant',
+                                institute_id=institute.internal_id,
+                                case_id=case.display_name,
+                                variant_id=variant.id) }}"
+               class="md-item">
+
+              <div class="md-item-icon">
+                  <core-icon icon="verified-user"></core-icon>
+              </div>
+
+              <div class="md-item-body">
+                {{ variant.hgnc_symbols|join(', ') }}
+                <span class="md-badge"><small>{{ variant.display_name }}</small></span>
+                {% if variant.sanger_ordered %}
+                    <span class="md-badge"><small>SANGER ORDERED</small></span>
+                {% endif %}
+              </div>
+            </a>
+
+            <form action="{{ url_for('core.unmark_causative',
+                           institute_id=institute.internal_id,
+                           case_id=case.display_name,
+                           variant_id=variant.id) }}"
+                  method="POST">
+              <button type="submit" class="md-icon-button" title="Unmark">
+                <core-icon icon="highlight-remove"></core-icon>
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <div class="list-item">No variants marked causative.</div>
+        {% endfor %}
+        </div>
+      </div>
+
+      {# Diagnosis gene and disease #}
+      <div id="case-phenotype" class="md-card">
+        <div class="md-card-header">Diagnosis phenotypes</div>
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_diagnosis', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+          <input type="text" name="omim_id" placeholder="OMIM:XXX" pattern="OMIM:[0-9]+">
+          <button class="md-button-flat" type="submit" name="phenotype">Add</button>
+        </form>
+        <div class="md-card-body-list">
+          {% for omim_id in case.diagnosis_phenotypes %}
+            <div class="list-item">
+              <div>
+                  <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">{{ omim_id }}</a>
+              </div>
+              <form action="{{ url_for('core.case_diagnosis',
+                                       institute_id=institute.internal_id,
+                                       case_id=case.display_name,
+                                       remove='yes') }}"
+                    method="POST">
+                <input hidden type="text" name="omim_id" value="{{ omim_id }}">
+                <button type="submit" class="md-button-flat" name="phenotype">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="md-card-header">Diagnosis genes</div>
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_diagnosis', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+          <input type="text" name="omim_id" placeholder="OMIM:XXX" pattern="OMIM:[0-9]+">
+          <button class="md-button-flat" type="submit" name="gene">Add</button>
+        </form>
+        <div class="md-card-body-list">
+          {% for omim_id in case.diagnosis_genes %}
+            <div class="list-item">
+              <div>
+                  <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">{{ omim_id }}</a>
+              </div>
+              <form action="{{ url_for('core.case_diagnosis',
+                                       institute_id=institute.internal_id,
+                                       case_id=case.display_name,
+                                       remove='yes') }}"
+                    method="POST">
+                <input hidden type="text" name="omim_id" value="{{ omim_id }}">
+                <button type="submit" class="md-button-flat" name="gene">
+                  <core-icon icon="highlight-remove"></core-icon>
+                </button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="activity" class="case-segment-row">
+      <div class="md-card">
+        <div class="md-card-header">Phenotype groups</div>
+        <div class="md-card-body-list mod-scrollable-big">
+          {% for hpo_term in case.phenotype_groups %}
+            {{ hpo_item(institute, case, hpo_term, group=True) }}
+          {% else %}
+            <div class="list-item">
+              <div>
+                No HPO groups added yet.
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <form accept-charset="UTF-8"
+              action="{{ url_for('core.case_phenotype',
+                                 institute_id=institute.internal_id,
+                                 case_id=case.display_name,
+                                 is_group='yes') }}"
+              method="POST"
+              class="md-card-footer layout">
+          <select class="form-control" name="hpo_term">
+              <option></option>
+              {% for hpo_id, group in hpo_groups.iteritems() %}
+                <option value="{{ hpo_id }}">{{ group.name }} ({{ group.abbr }})</option>
+              {% endfor %}
+          </select>
+          <button class="md-button-flat" type="submit">Add</button>
+        </form>
+      </div>
+
+      <!-- HPO/Phenotype list -->
+      <div id="case-phenotype" class="md-card">
+        <div class="md-card-header">
+          Phenotype
+          (<a target="_blank"
+              href="http://compbio.charite.de/hpoweb/showterm?id=HP:0000018">HPO web</a>)
+        </div>
+        <form accept-charset="UTF-8" action="{{ url_for('core.case_phenotype', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST" class="md-card-footer layout">
+          <input type="text" name="hpo_term" placeholder="HP:XXX or OMIM:XXX">
+          <button class="md-button-flat" type="submit">Add</button>
+        </form>
+        <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
+            <div class="md-card-body-list mod-scrollable-big">
+              {% for hpo_term in case.phenotype_terms %}
+                {{ hpo_item(institute, case, hpo_term, selected_ids=hpo_ids) }}
+              {% endfor %}
+            </div>
+            <div class="md-card-footer layout">
+                <button class="md-button-flat" type="submit" name="action" value="DELETE">Delete</button>
+                <button class="md-button-flat" type="submit" name="action" value="GENERATE">Generate gene list</button>
+            </div>
+        </form>
+      </div>
+
+      <div class="md-card">
+        <div class="md-card-header">HPO gene list ({{ case.dynamic_gene_list|length }} genes)</div>
+        <div class="md-card-body-list mod-scrollable-big">
+          {% for hpo_gene in case.dynamic_gene_list %}
+            <div class="list-item" title="{{ hpo_gene.description }}">
+              <div>
+                {{ hpo_gene.gene_id }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="gene-lists+hpo-genes" class="case-segment-row">
+      <div id="case-activity" class="md-card">
+        <div class="md-card-header">Comments</div>
+        <div class="md-card-body-list">
+          <div class="activity-feed">
+            {% for comment in case_comments|reverse %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  <div class="activity-feed-item-event-body">
+                    <strong>{{ comment.author.name }}</strong>
+                    <span class="timestamp">
+                      {{ comment.created_at.date() }}
+                    </span>
+                    {% if comment.created_at < case.updated_at %}
+                      <small><span class="md-badge--warning">OLD</span></small>
+                    {% endif %}
+                  </div>
+
+                  {% if comment.author.id == current_user.id %}
+                    {% set form_id = 'delete-comment-%s' % loop.index %}
+                    <form class="activity-feed-delete"
+                          accept-charset="UTF-8"
+                          action="{{ url_for('api.delete_event',
+                                             institute_id=institute.internal_id,
+                                             case_id=case.display_name,
+                                             event_id=comment.id) }}"
+                          method="POST">
+                      <core-icon icon="highlight-remove"
+                        class="activity-feed-delete-button"
+                        onclick="document.querySelector('#{{ form_id }}').click();">
+                      </core-icon>
+                      <button id="{{ form_id }}" class="is-hidden"></button>
+                    </form>
+                  {% endif %}
+                </div>
+
+                <div class="activity-feed-item-body">
+                  {{ comment.content }}
+                </div>
+              </div>
+            {% else %}
+              <div class="activity-feed-item">
+                <div class="activity-feed-item-event">
+                  No case comments yet.
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="md-card">
+        <div class="md-card-body--padded">
+          <div class="feed-toolbar">
+            <form class="comment-box"
+                  action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id) }}"
+                  method="POST">
+              <input type="hidden" name="link"
+                     value="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+              <textarea class="comment-box-input" name="content" placeholder="Leave a comment"></textarea>
+              <div class="comment-box-toolbar">
+                <div class="comment-box-toolbar-action">
+                  <button class="md-button" type="submit">Comment</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div id="clinical-gene-lists" class="md-card">
+        <div class="md-card-header">Clinical gene panels</div>
+        <div class="md-card-body mod-scrollable-big">
+          <table class="default-table--flex">
+            <thead>
+              <tr>
+                <th>Gene list</th>
+                <th>Version</th>
+                <th>Last updated</th>
+                <th>Genes</th>
+                <th>Coverage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for panel in case.sorted_clinical_panels %}
+                <tr>
+                  <td>
+                      <a href="{{ url_for('core.gene_panel', institute_id=institute_id, case_id=case_id, panel_id=panel.panel_name) }}">{{ panel.display_name }}</a>
+                  </td>
+                  <td>{{ panel.version }}</td>
+                  <td>{{ panel.date or '' }}</td>
+                  <td>{{ panel.genes|length }}</td>
+                  <td>
+                      <form class="md-label" action="{{ url_for('report.group', group_id=case.owner_case_id) }}" method="post" accept-charset="utf-8" target="_blank">
+                        <input class="is-hidden" name="level" value="{{ case.coverage_cutoff }}"></input>
+                        <input class="is-hidden" name="panel_name" value="{{ panel.name_and_version }}"></input>
+                        <input class="is-hidden" name="gene_ids" value="{{ panel.genes|join(',') }}"></input>
+                        {% for sample_id, display_name in sample_map.items() %}
+                          <input class="is-hidden" name="{{ sample_id }}" value="{{ display_name }}"></input>
+                        {% endfor %}
+                        <button type="submit" class="md-label-text">View</button>
+                      </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="activity" class="case-segment-row">
+      <div id="case-activity" class="md-card">
+        <div class="md-card-header">Activity</div>
+        <div class="md-card-body-list">
+          {{ activity_feed(case_events|reverse) }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Request research list modal -->
+  <md-modal v-ref="modal" title="Request research list">
+    <form action="{{ url_for('core.open_research',
+                              institute_id=institute.internal_id,
+                              case_id=case.display_name) }}"
+          class="case-open-research" method="POST">
+      <p>Please confirm that you want to have the list of research variants opened.</p>
+      <p>You also confirm that you have the relevant consent signed.</p>
+      <button type="submit" class="md-button">Confirm</button>
+    </form>
+  </md-modal>
+
+  <!-- Request rerun modal -->
+  <md-modal v-ref="rerunModal" title="Request rerun">
+    <form action="{{ url_for('core.request_rerun',
+                              institute_id=institute.internal_id,
+                              case_id=case.display_name) }}"
+          class="case-open-research" method="POST">
+      <p>Please confirm that you want to have the case rerun and the current variants replaced with updated information.</p>
+      <button type="submit" class="md-button">Confirm</button>
+    </form>
+  </md-modal>
+
+{% endblock %}

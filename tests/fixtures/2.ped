@@ -1,0 +1,4 @@
+#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype
+337335-testset	ADM1136A1	0	0	1	1
+337335-testset	ADM1136A2	ADM1136A1	ADM1136A3	1	2
+337335-testset	ADM1136A3	0	0	2	1

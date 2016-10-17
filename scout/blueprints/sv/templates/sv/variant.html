@@ -1,0 +1,148 @@
+{% extends "sv/layout.html" %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li><a href="{{ url_for('sv.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">{{ variant.display_name|truncate(20, True) }}</a></li>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid clear-navbar">
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="badge">{{ variant.variant_rank }}</span>
+            Ranking
+          </li>
+
+          <li class="list-group-item">
+            <span class="badge">{{ variant.rank_score }}</span>
+            Rank score
+          </li>
+
+          <li class="list-group-item">
+            <span class="badge">{{ variant.sub_category|upper }}</span>
+            Category
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            Position
+            <div class="pull-right">
+              {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end_position }}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    {# ROW 2 #}
+    <div class="row">
+      {# FREQUENCIES #}
+      <div class="col-md-4">
+        {{ frequencies(variant) }}
+      </div>
+      {# GT CALLS #}
+      <div class="col-md-8">
+        {{ gt_calls(variant.samples) }}
+      </div>
+    </div>
+
+    {# ROW 3 #}
+    <div class="row">
+      <div class="col-md-12">
+        {{ genes(variant) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% macro frequencies(variant) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Frequencies</div>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span class="badge">{{ variant.max_thousand_genomes_frequency }}</span>
+        Max 1000G
+      </li>
+    </ul>
+  </div>
+{% endmacro %}
+
+{% macro gt_calls(samples) %}
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th rowspan="2">Sample</th>
+        <th rowspan="2">Genotype</th>
+        <th colspan="2">Alleles</th>
+        <th rowspan="2">Read depth</th>
+        <th rowspan="2">GQ</th>
+      </tr>
+      <tr>
+        <th>1st</th>
+        <th>2nd</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sample in samples %}
+        <tr>
+          <td>{{ sample.display_name }}</td>
+          <td>{{ sample.genotype_call }}</td>
+          {% for allele in sample.allele_depths %}
+            <td>{{ allele }}</td>
+          {% endfor %}
+          <td>{{ sample.read_depth }}</td>
+          <td>{{ sample.genotype_quality }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% macro genes(variant) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Genes</div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Gene</th>
+            <th>Ensembl</th>
+
+            <th>Region</th>
+            <th>Function</th>
+            <th>SIFT</th>
+            <th>PolyPhen</th>
+
+            <th>Description</th>
+            <th>OMIM</th>
+            <th>Morbid</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <td>{{ gene.hgnc_symbol }}</td>
+              <td>{{ gene.ensembl_gene_id }}</td>
+
+              <td>{{ gene.region_annotation }}</td>
+              <td>{{ gene.functional_annotation }}</td>
+              <td>{{ gene.sift_prediction if gene.sift_prediction != 'unknown' }}</td>
+              <td>{{ gene.polyphen_prediction if gene.polyphen_prediction != 'unknown' }}</td>
+
+              <td>{{ gene.description }}</td>
+              <td>
+                <a href="{{ gene.omim_link }}">{{ gene.omim_gene_entry }}</a>
+              </td>
+              <td>{{ gene.hgnc_symbol }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
