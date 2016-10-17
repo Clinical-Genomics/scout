@@ -1,11 +1,9 @@
 import logging
 
 from datetime import datetime
-from mongoengine import DoesNotExist, Q
-from vcf_parser import VCFParser
+from mongoengine import (DoesNotExist, Q)
 
 from scout.models import Variant
-from scout.ext.backend.utils import (get_mongo_variant, build_query)
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +31,15 @@ class VariantHandler(object):
             Variant objects
         """
         logger.info("Fetching variants from {0}".format(case_id))
+
         if variant_ids:
             nr_of_variants = len(variant_ids)
         else:
             nr_of_variants = skip + nr_of_variants
 
-        mongo_query = build_query(case_id, query, variant_ids,
-                                  category=category)
-        
+        mongo_query = self.build_query(case_id, query, variant_ids,
+                                       category=category)
+
         if nr_of_variants == -1:
             result = Variant.objects(
                 __raw__=mongo_query).order_by(
@@ -146,7 +145,7 @@ class VariantHandler(object):
         """
         previous_variant = Variant.objects.get(document_id=document_id)
         logger.info("Fetching next variant for {0}".format(
-            previous_variant.display_name))
+                    previous_variant.display_name))
 
         rank = previous_variant.variant_rank or 0
         case_id = previous_variant.case_id
@@ -174,7 +173,7 @@ class VariantHandler(object):
         """
         previous_variant = Variant.objects.get(document_id=document_id)
         logger.info("Fetching previous variant for {0}".format(
-            previous_variant.display_name))
+                    previous_variant.display_name))
         rank = previous_variant.variant_rank or 0
         case_id = previous_variant.case_id
         variant_type = previous_variant.variant_type
@@ -200,7 +199,7 @@ class VariantHandler(object):
                 variant_type(str): 'research' or 'clinical'
         """
         logger.info("Deleting old {0} variants for case {1}".format(
-            variant_type, case_id))
+                    variant_type, case_id))
         nr_deleted = Variant.objects(
             case_id=case_id,
             variant_type=variant_type).delete()
@@ -213,6 +212,3 @@ class VariantHandler(object):
         logger.debug("Loading variant %s into database" % variant_obj['variant_id'])
         variant_obj.save()
         logger.debug("Variant saved")
-
-    
-

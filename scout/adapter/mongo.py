@@ -15,16 +15,16 @@ from __future__ import (absolute_import, print_function)
 from datetime import datetime
 import logging
 
-from mongoengine import connect, DoesNotExist
-from mongoengine.connection import get_connection, _get_db
+from mongoengine import (connect, DoesNotExist)
+from mongoengine.connection import (get_connection, _get_db)
 
-from . import EventHandler, VariantHandler, CaseHandler
+from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler)
 from scout.models import User, HgncAlias
 
 logger = logging.getLogger(__name__)
 
 
-class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
+class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -95,7 +95,7 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler):
             gene_list (list): The list of genes that should be added
         """
         logger.info("Updating the dynamic gene list for case {0}".format(
-            case.display_name))
+                    case.display_name))
         case.dynamic_gene_list = gene_list
         case.save()
         logger.debug("Case updated")

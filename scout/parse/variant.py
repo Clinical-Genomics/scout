@@ -77,7 +77,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             variant_dict['length'] = float('inf')
         else:
             try:
-                variant['length'] = int(variant_dict['info_dict']['SVLEN'][0])
+                variant['length'] = abs(int(variant_dict['info_dict']['SVLEN'][0]))
             except KeyError:
                 variant['length'] = -1
             

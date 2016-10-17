@@ -1,10 +1,11 @@
 import logging
 
-from mongoengine import DoesNotExist, Q
+from mongoengine import (DoesNotExist, Q)
 
 import phizz
 
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm)
+from scout.exceptions import (IntegrityError)
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,6 @@ class EventHandler(object):
     def create_event(self, institute, case, user, link, category, verb,
                      subject, level='specific', variant_id="", content=""):
         """Create an Event with the parameters given.
-
 
         Arguments:
             institute (Institute): A Institute object
@@ -213,7 +213,7 @@ class EventHandler(object):
             content (str): The content for what should be added to the synopsis
         """
         logger.info("Creating event for updating the synopsis for case"\
-        " {0}".format(case.display_name))
+                    " {0}".format(case.display_name))
 
         self.create_event(
             institute=institute,
@@ -272,6 +272,7 @@ class EventHandler(object):
         """
         logger.info("Creating event for opening research for case"
                     " {0}".format(case.display_name))
+        
         self.create_event(
             institute=institute,
             case=case,
@@ -311,7 +312,7 @@ class EventHandler(object):
             else:
                 raise ValueError('Must supply either hpo or omim term')
             logger.debug("Got result {0}".format(
-                ', '.join(res['hpo_term'] for res in hpo_results)))
+                         ', '.join(res['hpo_term'] for res in hpo_results)))
         except ValueError as e:
             # TODO Should ve raise a more proper exception here?
             raise e
@@ -364,6 +365,7 @@ class EventHandler(object):
             phenotype_id (str): A phenotype id
         """
         logger.info("Removing HPO term from case {0}".format(case.display_name))
+        
         if is_group:
             terms = case.phenotype_groups
         else:
@@ -483,10 +485,10 @@ class EventHandler(object):
         """
 
         logger.info("Creating event for unpinning variant {0}".format(
-                      variant.display_name))
+                    variant.display_name))
 
         logger.info("Remove variant from list of references in the case"\
-                      " model")
+                    " model")
         case.suspects.remove(variant)
         case.save()
 
@@ -512,8 +514,8 @@ class EventHandler(object):
               variant (Variant): A variant object
         """
 
-        logger.info("Creating event for ordering sanger for"\
-        " variant {0}".format(variant.display_name))
+        logger.info("Creating event for ordering sanger for variant"\
+                    " {0}".format(variant.display_name))
 
         variant.sanger_ordered = True
         variant.save()
@@ -530,7 +532,7 @@ class EventHandler(object):
         )
 
         logger.info("Creating event for ordering sanger for case"\
-        " {0}".format(case.display_name))
+                    " {0}".format(case.display_name))
 
         self.create_event(
             institute=institute,
@@ -571,14 +573,14 @@ class EventHandler(object):
         """
         display_name = variant.display_name
         logger.info("Mark variant {0} as causative in the case {1}".format(
-            display_name, case.display_name))
+                    display_name, case.display_name))
 
         logger.info("Adding variant to causatives in case {0}".format(
-            case.display_name))
+                    case.display_name))
         case.causatives.append(variant)
 
         logger.info("Marking case {0} as solved".format(
-            case.display_name))
+                    case.display_name))
         case.status = 'solved'
         # persist changes
         case.save()
@@ -598,7 +600,7 @@ class EventHandler(object):
         )
 
         logger.info("Creating variant event for marking {0}"\
-                         " causative".format(case.display_name))
+                    " causative".format(case.display_name))
 
         self.create_event(
             institute=institute,
@@ -624,7 +626,7 @@ class EventHandler(object):
         """
         display_name = variant.display_name
         logger.info("Remove variant {0} as causative in case {1}".format(
-            display_name, case.display_name))
+                    display_name, case.display_name))
 
         case.causatives.remove(variant)
 

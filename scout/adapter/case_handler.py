@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from mongoengine import DoesNotExist, Q
+from mongoengine import (DoesNotExist, Q)
 
 from scout.models import (Case, GenePanel, Institute, User)
 from scout.exceptions import (IntegrityError)
@@ -283,16 +283,3 @@ class CaseHandler(object):
                                  ))
         panel_obj.save()
         logger.info("Panel saved")
-
-
-
-
-
-
-
-
-
-
-
-
-
