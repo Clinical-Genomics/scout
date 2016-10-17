@@ -32,13 +32,18 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical'):
     """
     variants = VCFParser(infile=variant_file)
     
-    for variant in variants:
-        load_variant(
-            adapter=adapter,
-            variant=variant,
-            case_obj=case_obj,
-            variant_type=variant_type
-        )
+    try:
+        for variant in variants:
+            load_variant(
+                adapter=adapter,
+                variant=variant,
+                case_obj=case_obj,
+                variant_type=variant_type
+            )
+    except Exception as e:
+        logger.error(e.message)
+        logger.info("Deleting inserted variants")
+        delete_variants(adapter, case_obj, variant_type)
 
 def load_variant(adapter, variant, case_obj, variant_type='clinical'):
     """Load a variant into the database
