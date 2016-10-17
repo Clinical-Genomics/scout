@@ -9,6 +9,53 @@
 {% endblock %}
 
 {% block content %}
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{{ url_for('frontend.index') }}">Scout</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{{ url_for('core.cases', institute_id=institute_id) }}">{{ institute.display_name }}</a></li>
+          <li><a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">{{ case.display_name }}</a></li>
+          <li><a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical SNV</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      {{ table(variants.items, institute_id, case_id) }}
+    </div>
+
+    {{ pagination(variants, institute_id, case_id, query) }}
+  </div>
+{% endblock %}
+
+{% macro pagination(variants, institute_id, case_id, query) %}
+  <nav>
+    <ul class="pager">
+      {% if variants.has_prev %}
+        <li class="previous">
+          <a href="{{ url_for('sv.variants', institute_id=institute_id, case_id=case_id, page=variants.prev_num, **query) }}">
+            <span aria-hidden="true">&larr;</span> Page {{ variants.prev_num }}
+          </a>
+        </li>
+      {% endif %}
+
+      {% if variants.has_next %}
+        <li class="next">
+          <a href="{{ url_for('sv.variants', institute_id=institute_id, case_id=case_id, page=variants.next_num, **query) }}">
+            Page {{ variants.next_num }} <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endmacro %}
+
+{% macro table(variants, institute_id, case_id) %}
   <table id="variantsTable" class="table table-bordered table-hover">
     <thead>
       <tr>
@@ -23,56 +70,34 @@
       </tr>
     </thead>
     <tbody>
-      {% for index in range(100) %}
-        <tr>
-          <td>1</td>
-          <td>16</td>
-          <td>BDN</td>
-          <td>10</td>
-          <td>20</td>
-          <td>10</td>
-          <td>0.3</td>
-          <td>ADK <span class="badge pull-right">1</span></td>
-        </tr>
-      {% endfor %}
-
       {% for variant in variants %}
         <tr>
           <td>
-            <a href="{{ url_for('sv.variant', variant_id=variant.id) }}">
+            <a href="{{ url_for('sv.variant', institute_id=institute_id, case_id=case_id, variant_id=variant.id) }}">
               {{ variant.variant_rank }}
             </a>
           </td>
           <td>{{ variant.rank_rank }}</td>
           <td>{{ variant.sub_category|upper }}</td>
           <td>{{ variant.position }}</td>
-          <td>{{ variant.end }}</td>
-          <td>{{ variant.length }}</td>
+          <td>{{ variant.end if variant.end }}</td>
+          <td>{{ variant.length if variant.length }}</td>
+          <td></td>
           <td>
-            {{ variant.hgnc_symbols }}
+            {{ variant.hgnc_symbols|join(', ') }}
             {% if variant.hgnc_symbols %}
               <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
             {% endif %}
           </td>
         </tr>
+      {% else %}
+        <tr>
+            <td colspan="8">No variants.</td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-xs-4">
-        <button class="btn btn-default btn-sm">Prev</button>
-      </div>
-      <div class="col-xs-4 text-center">
-        Page 1
-      </div>
-      <div class="col-xs-4">
-        <button class="btn btn-default btn-sm pull-right">Next</button>
-      </div>
-    </div>
-    <br>
-  </div>
-{% endblock %}
+{% endmacro %}
 
 {% block scripts %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
