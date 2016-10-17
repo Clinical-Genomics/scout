@@ -13,3 +13,7 @@ logger = logging.getLogger()
 
 init_log(logger, loglevel='DEBUG')
 
+
+def test_load_one_variant(adapter):
+    """docstring for test_load_one_variant"""
+    pass

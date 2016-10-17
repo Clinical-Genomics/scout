@@ -47,11 +47,12 @@ def parse_genes(panel_path, panel_name):
 
     return genes
 
-def parse_gene_panel(panel_info):
+def parse_gene_panel(panel_info, institute):
     """Parse the panel info and return a gene panel
         
         Args:
             panel_info(dict)
+            institute(str)
     
         Returns:
             gene_panel(dict)
@@ -60,6 +61,7 @@ def parse_gene_panel(panel_info):
     gene_panel = {}
     
     gene_panel['path'] = panel_info.get('file')
+    gene_panel['institute'] = institute
     gene_panel['type'] = panel_info.get('type', 'clinical')
     gene_panel['date'] = panel_info.get('date')
     gene_panel['version'] = float(panel_info.get('version', '0'))

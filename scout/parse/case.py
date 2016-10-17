@@ -149,8 +149,7 @@ def parse_case(case_lines, owner, case_type='mip', analysis_type='unknown',
         logger.info("Found gene panel {0}".format(panel_id))
         panel_info = scout_configs['gene_lists'][panel_id]
         
-        panel = parse_gene_panel(panel_info)
-        panel['institute'] = owner
+        panel = parse_gene_panel(panel_info, institute=owner)
         
         if panel['type'] == 'clinical':
             logger.info("Add panel {0} to clinical panels".format(panel['id']))

@@ -12,9 +12,9 @@ from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 from scout.commands import cli
-from scout.parse import parse_case
+from scout.parse import (parse_case, parse_gene_panel)
 from scout.log import init_log
-from scout.build import (build_institute, build_case)
+from scout.build import (build_institute, build_case, build_panel)
 
 
 root_logger = logging.getLogger()
@@ -44,6 +44,12 @@ def variant_file(request):
     return vcf_file
 
 @pytest.fixture(scope='function')
+def one_variant_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return one_variant
+
+@pytest.fixture(scope='function')
 def sv_file(request):
     """Get the path to a variant file"""
     print('')
@@ -63,9 +69,9 @@ def scout_configs(request, config_file):
     return configs
 
 @pytest.fixture(scope='function')
-def one_file_variant(request):
+def one_file_variant(request, one_variant_file):
     logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=one_variant)
+    variant = VCFParser(infile=one_variant_file)
     return variant
 
 @pytest.fixture(scope='function')
@@ -73,6 +79,18 @@ def one_file_sv_variant(request):
     logger.info("Return a VCF parser with one variant")
     variant = VCFParser(infile=one_sv)
     return variant
+
+@pytest.fixture(scope='function')
+def sv_variants(request, sv_file):
+    logger.info("Return a VCF parser many svs")
+    variants = VCFParser(infile=sv_file)
+    return variants
+
+@pytest.fixture(scope='function')
+def variants(request, variant_file):
+    logger.info("Return a VCF parser many svs")
+    variants = VCFParser(infile=variant_file)
+    return variants
 
 ##################### Case fixtures #####################
 
@@ -199,6 +217,7 @@ def user_obj(request, parsed_user):
 
 @pytest.fixture(scope='function')
 def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
+    "Returns an adapter to a database populated with user, institute and case"
     adapter.add_institute(institute_obj)
     adapter.getoradd_user(
         email=parsed_user['email'], 
@@ -219,6 +238,7 @@ def panel_info(request):
     panel = {
             'date': '2015-10-21',
             'file': 'tests/fixtures/gene_lists/gene_list_test.txt',
+            'type': 'clinical',
             'version': '0.1',
             'name': 'Panel1',
             'full_name': 'Panel 1'
@@ -228,9 +248,20 @@ def panel_info(request):
 @pytest.fixture(scope='function')
 def parsed_panel(request, panel_info):
     """docstring for parsed_panels"""
-    pass
+    owner = 'cust000'
+    panel = parse_gene_panel(panel_info, owner)
+    
+    return panel
+
+@pytest.fixture(scope='function')
+def panel_obj(request, parsed_panel):
+    """docstring for parsed_panels"""
+    panel = build_panel(panel_info)
+
+    return panel
 
 ##################### Variant fixtures #####################
+
 
 @pytest.fixture(scope='function')
 def variants(request):
