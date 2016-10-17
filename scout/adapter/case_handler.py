@@ -59,8 +59,7 @@ class CaseHandler(object):
             Returns:
                 Institute object
         """
-        logger.info("Fetch institute {}".format(
-            institute_id))
+        logger.debug("Fetch institute {}".format(institute_id))
         try:
             return Institute.objects.get(internal_id=institute_id)
         except DoesNotExist:
