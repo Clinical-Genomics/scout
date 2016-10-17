@@ -1,5 +1,5 @@
 from __future__ import (absolute_import)
-import os.path
+import os
 import logging
 from datetime import datetime
 import itertools

@@ -14,9 +14,7 @@ import logging
 
 import click
 
-
 logger = logging.getLogger(__name__)
-
 
 @click.command()
 @click.option('-c', '--case_id', default=None)
@@ -46,8 +44,8 @@ def delete_case(ctx, case_id, owner):
 
     if case:
         logger.info("Delete the clinical variants for case {0}".format(
-            case.case_id))
+                    case.case_id))
         adapter.delete_variants(case_id=case.case_id, variant_type='clinical')
         logger.info("Delete the research variants for case {0}".format(
-            case.case_id))
+                    case.case_id))
         adapter.delete_variants(case_id=case.case_id, variant_type='research')

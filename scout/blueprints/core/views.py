@@ -10,7 +10,7 @@ from flask_mail import Message
 import query_phenomizer
 
 from scout.models import Case, Variant
-from scout.models.variant import SEVERE_SO_TERMS
+from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb
 from scout.utils import templated, validate_user
 

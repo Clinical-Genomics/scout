@@ -42,6 +42,10 @@ SO_TERMS = {
     'intergenic_variant': {'rank':38, 'region':'intergenic_variant'}
 }
 
+so_cutoff = list(SO_TERMS.keys()).index('stop_retained_variant')
+SEVERE_SO_TERMS = list(SO_TERMS.keys())[:so_cutoff]
+
+
 CONSEQUENCE = (
     'deleterious', 
     'deleterious_low_confidence', 

@@ -1,5 +1,6 @@
 from .constants import SO_TERMS
 
+from .hgnc import parse_hgnc_genes
 from .panel import parse_gene_panel
 from .ids import parse_ids
 from .callers import parse_callers
