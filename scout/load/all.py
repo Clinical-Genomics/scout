@@ -64,7 +64,6 @@ def load_scout(adapter, case_file, owner, snv_file=None, sv_file=None,
     if sv_file:
         logger.info("Load the SV variants for case {0}".format(
                     case_obj.case_id))
-        case_obj.has_svvariants = True
         load_variants(
             adapter=adapter,
             variant_file=sv_file,
@@ -72,3 +71,5 @@ def load_scout(adapter, case_file, owner, snv_file=None, sv_file=None,
             variant_type=variant_type,
             category='sv'
         )
+        case_obj.has_svvariants = True
+        case_obj.save()
