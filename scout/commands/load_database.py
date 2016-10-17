@@ -99,7 +99,7 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
         logger.info("Use sv vcf specified on command line: %s" % sv_file)
         scout_configs['sv_file'] = sv_file
 
-    if not (scout_configs.get('load_vcf') or sv_file):
+    if not (scout_configs.get('load_vcf') or scout_configs.get('sv_vcf')):
         logger.warn("Please provide a vcf file. (Use flag '-vcf/--vcf_file')")
         logger.info("Exiting")
         ctx.abort()
