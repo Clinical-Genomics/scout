@@ -20,6 +20,7 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
         variant_type=variant_type
     )
 
+
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical'):
     """Load all variantt in variants
     
@@ -44,6 +45,9 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical'):
         logger.error(e.message)
         logger.info("Deleting inserted variants")
         delete_variants(adapter, case_obj, variant_type)
+        raise e
+    
+    adapter.add_variant_rank(case_obj, variant_type)
 
 def load_variant(adapter, variant, case_obj, variant_type='clinical'):
     """Load a variant into the database

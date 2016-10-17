@@ -22,6 +22,9 @@ class VariantHandler(object):
         Arguments:
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
+            vairiant_ids(list(str))
+            nr_of_variants(int): if -1 return all variants
+            skip(int)
 
         Yields:
             Variant objects
@@ -33,11 +36,16 @@ class VariantHandler(object):
             nr_of_variants = skip + nr_of_variants
 
         mongo_query = build_query(case_id, query, variant_ids)
-
-        result = Variant.objects(
-            __raw__=mongo_query).order_by(
-                'variant_rank').skip(
-                    skip).limit(nr_of_variants)
+        
+        if nr_of_variants == -1:
+            result = Variant.objects(
+                __raw__=mongo_query).order_by(
+                    'variant_rank')
+        else:
+            result = Variant.objects(
+                __raw__=mongo_query).order_by(
+                    'variant_rank').skip(
+                        skip).limit(nr_of_variants)
 
         return result
 
@@ -93,6 +101,22 @@ class VariantHandler(object):
         return Variant.objects((Q(case_id=case_obj.case_id) &
                                 Q(display_name__in=list(fixed_ids))))
 
+    def add_variant_rank(self, case_obj, variant_type='clinical'):
+        """Add the variant rank for all inserted variants.
+        
+            Args:
+                case_obj(Case)
+                variant_type(str)
+        """
+        variants = self.variants(
+            case_id=case_obj['case_id'], 
+            nr_of_variants=-1,
+            query={'variant_type': variant_type}
+        )
+        for index, variant in variants:
+            variant.variant_rank = index + 1
+            variant.save()
+    
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""
         # variant id without "*_[variant_type]"
