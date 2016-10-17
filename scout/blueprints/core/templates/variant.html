@@ -38,7 +38,7 @@
     </core-icon>
 
     <div class="md-breadcrumb">
-      <small>{{ variant.display_name }}</small>
+      <small>{{ variant.display_name|truncate(20, True) }}</small>
     </div>
   </div>
 {% endblock %}
