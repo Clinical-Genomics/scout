@@ -1,12 +1,13 @@
 import logging
-from pprint import pprint as pp
 from vcf_parser import VCFParser
 
 from scout.parse import parse_variant
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
 
+
 logger = logging.getLogger(__name__)
+
 
 def delete_variants(adapter, case_obj, variant_type='clinical'):
     """Delete all variants for a case of a certain variant type
@@ -87,5 +88,4 @@ def load_variant(adapter, variant, case_obj, institute_obj,
     )
 
     adapter.load_variant(variant_obj)
-
     return variant_obj
