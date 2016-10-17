@@ -14,7 +14,8 @@ class VariantHandler(object):
     """Methods to handle variants in the mongo adapter"""
 
     def variants(self, case_id, query=None, variant_ids=None,
-                 nr_of_variants=10, skip=0):
+                 category='snv', nr_of_variants=10, skip=0, 
+                 sort_key='variant_rank'):
         """Returns variants specified in question for a specific case.
 
         If skip not equal to 0 skip the first n variants.
@@ -22,9 +23,11 @@ class VariantHandler(object):
         Arguments:
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
-            vairiant_ids(list(str))
+            variant_ids(list(str))
+            category(str): 'sv' or 'snv'
             nr_of_variants(int): if -1 return all variants
-            skip(int)
+            skip(int): How many variants to skip
+            sort_key: 'variant_rank' or 'rank_score'
 
         Yields:
             Variant objects
@@ -35,16 +38,17 @@ class VariantHandler(object):
         else:
             nr_of_variants = skip + nr_of_variants
 
-        mongo_query = build_query(case_id, query, variant_ids)
+        mongo_query = build_query(case_id, query, variant_ids,
+                                  category=category)
         
         if nr_of_variants == -1:
             result = Variant.objects(
                 __raw__=mongo_query).order_by(
-                    'variant_rank')
+                    sort_key)
         else:
             result = Variant.objects(
                 __raw__=mongo_query).order_by(
-                    'variant_rank').skip(
+                    sort_key).skip(
                         skip).limit(nr_of_variants)
 
         return result
@@ -101,7 +105,7 @@ class VariantHandler(object):
         return Variant.objects((Q(case_id=case_obj.case_id) &
                                 Q(display_name__in=list(fixed_ids))))
 
-    def add_variant_rank(self, case_obj, variant_type='clinical'):
+    def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
         
             Args:
@@ -111,9 +115,12 @@ class VariantHandler(object):
         variants = self.variants(
             case_id=case_obj['case_id'], 
             nr_of_variants=-1,
-            query={'variant_type': variant_type}
+            category=category,
+            query={'variant_type': variant_type},
+            sort_key='-rank_score',
         )
-        for index, variant in variants:
+        logger.info("Updating variant_rank for all variants")
+        for index, variant in enumerate(variants):
             variant.variant_rank = index + 1
             variant.save()
     

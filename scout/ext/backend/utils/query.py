@@ -2,7 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def build_query(case_id, query=None, variant_ids=None):
+def build_query(case_id, query=None, variant_ids=None, category='snv'):
     """Build a mongo query
 
     query looks like:
@@ -28,6 +28,7 @@ def build_query(case_id, query=None, variant_ids=None):
     logger.info("Building a mongo query for {0}".format(case_id))
     # We will allways use the case id when we query the database
     mongo_query['case_id'] = case_id
+    mongo_query['category'] = category
     logger.debug("Setting case_id to {0}".format(case_id))
     mongo_query['variant_type'] = 'clinical'
     logger.debug("Setting variant type to 'clinical' as default")
@@ -38,6 +39,8 @@ def build_query(case_id, query=None, variant_ids=None):
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
         logger.debug("Updating variant type to {0}".format(
             mongo_query['variant_type']))
+        
+        mongo_query
 
         if query.get('thousand_genomes_frequency'):
             thousandg_freq = query.get('thousand_genomes_frequency')

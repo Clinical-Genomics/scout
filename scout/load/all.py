@@ -55,7 +55,8 @@ def load_scout(adapter, case_file, snv_file, owner, sv_file=None,
         adapter=adapter, 
         variant_file=snv_file, 
         case_obj=case_obj, 
-        variant_type=variant_type
+        variant_type=variant_type,
+        category='snv'
     )
 
     if sv_file:
@@ -64,6 +65,7 @@ def load_scout(adapter, case_file, snv_file, owner, sv_file=None,
             adapter=adapter, 
             variant_file=sv_file, 
             case_obj=case_obj, 
-            variant_type=variant_type
+            variant_type=variant_type,
+            category='sv'
         )
 

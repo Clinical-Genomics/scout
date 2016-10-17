@@ -10,6 +10,12 @@ from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
 from scout.load import load_scout
 
+from scout import logger
+from scout.log import init_log
+
+init_log(logger, loglevel='INFO')
+
+
 @task
 def setup(email, name="Paul Anderson"):
     """docstring for setup"""
