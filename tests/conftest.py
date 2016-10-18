@@ -3,29 +3,39 @@ import logging
 
 from tempfile import NamedTemporaryFile
 # We will use mongomock when mongoengine allows it
-# from mongomock import MongoClient
-from pymongo import MongoClient
 from mongoengine import DoesNotExist
 from configobj import ConfigObj
 
 from vcf_parser import VCFParser
 
-from scout.ext.backend import MongoAdapter
+from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 from scout.commands import cli
-
+from scout.parse import (parse_case, parse_gene_panel, parse_variant)
 from scout.log import init_log
+from scout.build import (build_institute, build_case, build_panel, build_variant)
+
+
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
-vcf_file = "tests/fixtures/337334.clinical.vcf"
-one_variant = "tests/fixtures/337334.one_variant.clinical.vcf"
-ped_file = "tests/fixtures/337334.ped"
-scout_config = "tests/fixtures/scout_config_test.ini"
+vcf_file = "tests/fixtures/1.downsampled.vcf"
+sv_path = "tests/fixtures/1.SV.vcf"
+one_variant = "tests/fixtures/1.one.vcf"
+one_sv = "tests/fixtures/1.one.SV.vcf"
+ped_path = "tests/fixtures/1.ped"
+scout_config_file = "tests/fixtures/config1.ini"
 gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
+
+##################### File fixtures #####################
+@pytest.fixture(scope='function')
+def config_file(request):
+    """Get the path to a config file"""
+    print('')
+    return scout_config_file
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -34,288 +44,380 @@ def variant_file(request):
     return vcf_file
 
 @pytest.fixture(scope='function')
+def one_variant_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return one_variant
+
+@pytest.fixture(scope='function')
+def sv_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return sv_path
+
+@pytest.fixture(scope='function')
 def ped_file(request):
     """Get the path to a ped file"""
     print('')
-    return ped_file
-
+    return ped_path
 
 @pytest.fixture(scope='function')
-def vcf_case(request):
+def scout_configs(request, config_file):
+    """Return a dictionary with scout configs"""
+    print('')
+    configs = ConfigObj(config_file)
+    return configs
+
+
+##################### Case fixtures #####################
+
+@pytest.fixture(scope='function')
+def case_lines(request):
+    """Get the lines for a case"""
+    lines = [
+        "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
+        "337334-testset	ADM1136A1	0	0	1	1",
+        "337334-testset	ADM1136A2	ADM1136A1	ADM1136A3	1	2",
+        "337334-testset	ADM1136A3	0	0	2	1",
+    ]
+    return lines
+
+@pytest.fixture(scope='function')
+def parsed_case(request, case_lines, scout_configs):
+    """Get the lines for a case"""
+    owner = scout_configs['owner']
+    
+    case = parse_case(case_lines, owner)
+    
+    return case    
+
+@pytest.fixture(scope='function')
+def minimal_case(request):
+    print('')
     logger.info("setup a vcf case")
-    case = Case(
-        case_id="337334",
-        display_name="337334",
-        owner='cust000',
-        collaborators = ['cust000']
-    )
+    case = {
+        'case_id': "337334",
+        'display_name': "337334",
+        'owner': 'cust000',
+        'collaborators': ['cust000'],
+        'individuals':[]
+    }
     
     return case
 
 @pytest.fixture(scope='function')
-def compound_variant(request):
-    logger.info("setup a compound variant")
-    variant = {
-        'variant_id':'7_117175580_C_A',
-        'compound_variants':{
-            "337334":[
-                {'variant_id':'7_117175579_AT_A',
-                'compound_score': 32}
-            ]
-        }
+def case_obj(request, parsed_case):
+    logger.info("Create a case obj")
+    case = build_case(parsed_case)
+    
+    return case
+
+##################### Institute fixtures #####################
+
+@pytest.fixture(scope='function')
+def parsed_institute(request):
+    print('')
+    institute = {
+        'institute_id': 'cust000',
+        'display_name': 'test_institute',
+        'sanger_recipients': ['john@doe.com']
     }
-    
-    return variant
-
-@pytest.fixture(scope='function')
-def variants(request):
-    """Get a parser with vcf variants"""
-    print('')
-    variant_parser = VCFParser(infile=vcf_file)
-    return variant_parser
-
-@pytest.fixture(scope='session')
-def database_setup(request):
-    """Get a config file with mongodb arguments"""
-    print('')
-    logger.info("Setting up database configs")
-    config_file = NamedTemporaryFile(delete=False, mode='w')
-    
-    host = 'localhost'
-    port = 27017
-    db_name = 'testdatabase'
-    
-    config_file.write("mongodb = {0}\n".format(db_name))
-    config_file.write("host = {0}\n".format(host))
-    config_file.write("port = 27017\n".format(db_name))
-    
-    config_file.close()
-    
-    logger.info("Database configs setup")
-    def teardown():
-        print('\n')
-        client = MongoClient()
-        logger.info('Teardown database')
-        client.drop_database(db_name)
-        logger.info('Teardown done')
-    request.addfinalizer(teardown)
-    return config_file.name
-
-@pytest.fixture(scope='session')
-def setup_loaded_database(request):
-    """Setup a mongo databse with loaded variants"""
-    print('')
-    logger.info("Setting up database and populate it")
-    host = 'localhost'
-    port = 27017
-    db_name = 'testdatabase'
-    client = MongoClient(
-        host=host,
-        port=port,
-    )
-    #Initialize an adapter
-    adapter = MongoAdapter()
-    #Connect to the test database
-    adapter.connect_to_database(
-        database=db_name, 
-        host=host, 
-        port=port
-    )
-    scout_configs = ConfigObj(scout_config)
-    
-    case = adapter.add_case(
-        case_lines=open(scout_configs['ped'], 'r'),
-        case_type='ped', 
-        owner=scout_configs['owner'], 
-        scout_configs=scout_configs
-    )
-    
-    adapter.add_variants(
-        vcf_file=scout_configs['load_vcf'], 
-        variant_type='clinical',
-        case=case,
-    )
-    
-    logger.info("Database setup")
-    def teardown():
-        print('\n')
-        logger.info('Teardown database')
-        client.drop_database(db_name)
-        logger.info('Teardown done')
-    request.addfinalizer(teardown)
-    return adapter
-
-
-@pytest.fixture(scope='session')
-def setup_database(request):
-    """Setup the mongo adapter"""
-    print('')
-    logger.info("Setting up database")
-    host = 'localhost'
-    port = 27017
-    db_name = 'testdatabase'
-    client = MongoClient(
-        host=host,
-        port=port,
-    )
-    #Initialize an adapter
-    adapter = MongoAdapter()
-    #Connect to the test database
-    adapter.connect_to_database(
-        database=db_name, 
-        host=host, 
-        port=port
-    )
-    
-    logger.info("Database setup")
-    def teardown():
-        print('\n')
-        logger.info('Teardown database')
-        client.drop_database(db_name)
-        logger.info('Teardown done')
-    request.addfinalizer(teardown)
-    return adapter
-
-@pytest.fixture(scope='function')
-def get_institute(request):
-    print('')
-    logger.info("setup a institute")
-    institute = Institute(
-        internal_id='cust000',
-        display_name='clinical'
-    )
-    logger.info("Adding institute to database")
-    institute.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing institute')
-        institute.delete()
-        logger.info('Institute removed')
-    request.addfinalizer(teardown)
     
     return institute
 
 @pytest.fixture(scope='function')
-def get_user(request):
-    logger.info("setup a user")
-    user = User(
-        email='john@doe.com',
-        name="John Doe"
+def institute_obj(request, parsed_institute):
+    print('')
+    institute = build_institute(
+        internal_id = parsed_institute['institute_id'],
+        display_name = parsed_institute['display_name'],
+        sanger_recipients = parsed_institute['sanger_recipients'],
     )
-    logger.info("Adding user to database")
-    user.save()
+    return institute
+
+
+##################### Adapter fixtures #####################
+
+@pytest.fixture(scope='function')
+def client(request):
+    """Get a mongoadapter"""
+    logger.info("Get a mongo adapter")
+    mongo_client = MongoAdapter()
+    
+    return mongo_client
+
+@pytest.fixture(scope='function')
+def adapter(request):
+    """Get an adapter connected to mongomock database"""
+    database = 'test'
+    host = 'localhost'
+    port = 27017
+    
+    mongo_client = MongoAdapter()
+    mongo_client.connect_to_database(
+        database=database,
+        host=host,
+        port=port
+    )
+    
     def teardown():
         print('\n')
-        logger.info('Removing user')
-        user.delete()
-        logger.info('user removed')
+        logger.info("Deleting database")
+        mongo_client.drop_database()
+        logger.info("Database deleted")
+
     request.addfinalizer(teardown)
     
+    return mongo_client
+
+@pytest.fixture(scope='function')
+def parsed_user(request, institute_obj):
+    """Return user info"""
+    user_info = {
+        'email': 'john@doe.com', 
+        'name': 'John Doe', 
+        'location': None, 
+        'institutes': [institute_obj],
+        'roles': ['admin']
+    }
+    return user_info
+
+@pytest.fixture(scope='function')
+def user_obj(request, parsed_user):
+    """Return a User object"""
+    user = User(
+      email=parsed_user['email'],
+      name=parsed_user['name'],
+      institutes=parsed_user['institutes']
+    )
     return user
 
 @pytest.fixture(scope='function')
-def get_case(request):
-    logger.info("setup a case")
-    case = Case(
-        case_id="acase",
-        display_name="acase",
-        owner='cust000',
-        collaborators = ['cust000']
+def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
+    "Returns an adapter to a database populated with user, institute and case"
+    adapter.add_institute(institute_obj)
+    adapter.getoradd_user(
+        email=parsed_user['email'], 
+        name=parsed_user['name'],
+        location=parsed_user['location'], 
+        institutes=parsed_user['institutes']
     )
-    logger.info("Adding case to database")
-    case.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing case')
-        case.delete()
-        logger.info('Case removed')
-    request.addfinalizer(teardown)
+    adapter.add_case(case_obj)
     
-    return case
+    return adapter
 
 @pytest.fixture(scope='function')
-def get_case_info(request):
-    logger.info("Get the necessary information to build a case")
-    case = {}
-    case['case_lines'] = [
-        "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
-        "636808	ADM1059A1	0	0	1	1",
-        "636808	ADM1059A2	ADM1059A1	ADM1059A3	1	2",
-        "636808	ADM1059A3	0	0	2	1",
-    ]
+def variant_database(request, adapter, institute_obj, parsed_user, case_obj, 
+                     variant_objs, sv_variant_objs):
+    """Returns an adapter to a database populated with user, institute, case
+       and variants"""
+    adapter.add_institute(institute_obj)
+    adapter.getoradd_user(
+        email=parsed_user['email'], 
+        name=parsed_user['name'],
+        location=parsed_user['location'], 
+        institutes=parsed_user['institutes']
+    )
+    adapter.add_case(case_obj)
     
-    case['scout_configs'] = {
-        'load': True,
-        'load_vcf':vcf_file,
-        'analysis_type': 'wes',
-        'rank_model_version': '1.12',
-        'owner': 'cust000',
-        'collaborators': [],
-        'analysis_date': '2015-11-23 14:00:46',
-        'human_genome_version': 37,
-        'human_genome_build': 'GRCh',
-        'madeline': madeline_file,
-        'ped': ped_file,
-        'default_panels': ['IEM'],
-        'igv_vcf': vcf_file,
-        'gene_lists':{
-                'Panel1': {
-                    'date': '2015-10-21',
-                    'file': gene_list_file,
-                    'version': 0.1,
-                    'name': 'Panel1',
-                    'full_name': "Panel 1",
-                    }
-                },
-        'individuals':{
-            'ADM1059A3': {
-                'capture_kit': ['Agilent_SureSelectCRE.V1'],
-                'bam_path': 'abam.bam',
-                'name': 'ADM1059A3'
-                },
-            'ADM1059A2':{
-                'capture_kit': ['Agilent_SureSelectCRE.V1,'],
-                'bam_path': 'abam.bam',
-                'name': 'ADM1059A2'
-                },
-            'ADM1059A1':{
-                'capture_kit': ['Agilent_SureSelectCRE.V1'],
-                'bam_path': 'abam.bam',
-                'name': 'ADM1059A1'
-                }
-            }
-    }
-    case['case_type'] = 'ped'
-    case['owner'] = 'cust000'
+    # Load variants
+    for variant in variant_objs:
+        adapter.load_variant(variant)
 
-    return case
+    # Load sv variants
+    for variant in sv_variant_objs:
+        adapter.load_variant(variant)
+    
+    return adapter
 
+
+
+##################### Panel fixtures #####################
 
 @pytest.fixture(scope='function')
-def get_variant(request, get_institute):
-    logger.info("setup a variant")
-    variant = Variant(
-        document_id = "document_id",
-        variant_id = "variant_id",
-        display_name = "display_name",
-        variant_type = 'research',
-        case_id = 'case_id',
-        chromosome = '1',
-        position = 10,
-        reference = "A",
-        alternative = "C",
-        rank_score = 10.0,
-        variant_rank = 1,
-        institute = get_institute,
-    )
-    logger.info("Adding variant to database")
-    variant.save()
-    def teardown():
-        print('\n')
-        logger.info('Removing variant')
-        variant.delete()
-        logger.info('Case variant')
-    request.addfinalizer(teardown)
+def panel_info(request):
+    "Return one panel info as specified in tests/fixtures/config1.ini"
+    panel = {
+            'date': '2015-10-21',
+            'file': 'tests/fixtures/gene_lists/gene_list_test.txt',
+            'type': 'clinical',
+            'version': '0.1',
+            'name': 'Panel1',
+            'full_name': 'Panel 1'
+        }
+    return panel
+
+@pytest.fixture(scope='function')
+def parsed_panel(request, panel_info):
+    """docstring for parsed_panels"""
+    owner = 'cust000'
+    panel = parse_gene_panel(panel_info, owner)
     
+    return panel
+
+@pytest.fixture(scope='function')
+def panel_obj(request, parsed_panel):
+    """docstring for parsed_panels"""
+    panel = build_panel(panel_info)
+
+    return panel
+
+##################### Variant fixtures #####################
+@pytest.fixture(scope='function')
+def one_file_variant(request, one_variant_file):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_variant_file)
     return variant
 
+@pytest.fixture(scope='function')
+def one_file_sv_variant(request):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_sv)
+    return variant
+
+@pytest.fixture(scope='function')
+def sv_variants(request, sv_file):
+    logger.info("Return a VCF parser many svs")
+    variants = VCFParser(infile=sv_file)
+    return variants
+
+@pytest.fixture(scope='function')
+def variants(request, variant_file):
+    logger.info("Return a VCF parser many svs")
+    variants = VCFParser(infile=variant_file)
+    return variants
+
+@pytest.fixture(scope='function')
+def parsed_variant(request, one_file_variant, parsed_case):
+    """Return a parsed variant"""
+    print('')
+    for variant in one_file_variant:
+        variant_dict = parse_variant(variant, parsed_case)
+    return variant_dict
+
+@pytest.fixture(scope='function')
+def parsed_sv_variant(request, one_file_sv_variant, parsed_case):
+    """Return a parsed variant"""
+    print('')
+    for variant in one_file_sv_variant:
+        variant_dict = parse_variant(variant, parsed_case)
+    return variant_dict
+
+@pytest.fixture(scope='function')
+def parsed_variants(request, variants, parsed_case):
+    """Get a generator with parsed variants"""
+    print('')
+    return (parse_variant(variant, parsed_case) for variant in variants)
+
+@pytest.fixture(scope='function')
+def parsed_sv_variants(request, sv_variants, parsed_case):
+    """Get a generator with parsed variants"""
+    print('')
+    return (parse_variant(variant, parsed_case) for variant in sv_variants)
+
+@pytest.fixture(scope='function')
+def variant_objs(request, parsed_variants, institute_obj):
+    """Get a generator with parsed variants"""
+    print('')
+    return (build_variant(variant, institute_obj) 
+            for variant in parsed_variants)
+
+@pytest.fixture(scope='function')
+def sv_variant_objs(request, parsed_sv_variants, institute_obj):
+    """Get a generator with parsed variants"""
+    print('')
+    return (build_variant(variant, institute_obj) 
+            for variant in parsed_sv_variants)
+
+
+
+@pytest.fixture(scope='function')
+def minimal_snv(request):
+    """Simulate a variant dictionary from vcf parser"""
+    variant = {
+        'CHROM':'1',
+        'POS':'27232819',
+        'REF':'A',
+        'ALT':'T',
+        'ID':'rs1',
+        'FILTER':'PASS',
+        'QUAL':'164',
+        'info_dict': {},
+        'compound_variants': {},
+        'vep_info': {},
+        
+    }
+    return variant
+
+@pytest.fixture(scope='function')
+def minimal_sv(request):
+    """Simulate a variant dictionary from vcf parser"""
+    variant = {
+        'CHROM':'1',
+        'POS':'10',
+        'REF':'A',
+        'ALT':'C',
+        'ID':'rs1',
+        'FILTER':'PASS',
+        'QUAL':'1000',
+        'INFO':'.',
+        'info_dict': {},
+        'compound_variants': {},
+        'vep_info': {},
+        'rank_scores': {'15026-miptest': '-2'},
+        'variant_id': '1_27232819_T_T]16:89585536]',
+        'info_dict':{
+            'Ensembl_transcript_to_refseq_transcript': ["NUDC:ENST00000321265>NM_006600/"\
+            "XM_005245726|ENST00000435827|ENST00000452707|ENST00000484772"],
+            'Gene_description': ['NUDC:nudC_nuclear_distribution_protein'],
+            'MATEID':['MantaBND:454:0:1:0:0:0:1'],
+            'SVTYPE':['BND'],
+        },
+        'vep_info': {
+            u'T]16': [
+                {
+                    'APPRIS': '',
+                    'Allele': 'T]16',
+                    'Amino_acids': '',
+                    'BIOTYPE': 'protein_coding',
+                    'CANONICAL': '',
+                    'CCDS': '',
+                    'CDS_position': '',
+                    'Codons': '',
+                    'Consequence': 'intron_variant',
+                    'DISTANCE': '',
+                    'DOMAINS': '',
+                    'ENSP': 'ENSP00000404020',
+                    'EXON': '',
+                    'Existing_variation': '',
+                    'FLAGS': 'cds_end_NF',
+                    'Feature': 'ENST00000435827',
+                    'Feature_type': 'Transcript',
+                    'Gene': 'ENSG00000090273',
+                    'HGNC_ID': '8045',
+                    'HGVS_OFFSET': '',
+                    'HGVSc': '',
+                    'HGVSp': '',
+                    'HIGH_INF_POS': '',
+                    'IMPACT': 'MODIFIER',
+                    'INTRON': '2/6',
+                    'MOTIF_NAME': '',
+                    'MOTIF_POS': '',
+                    'MOTIF_SCORE_CHANGE': '',
+                    'PolyPhen': '',
+                    'Protein_position': '',
+                    'SIFT': '',
+                    'STRAND': '1',
+                    'SWISSPROT': '',
+                    'SYMBOL': 'NUDC',
+                    'SYMBOL_SOURCE': 'HGNC',
+                    'TREMBL': '',
+                    'TSL': '',
+                    'UNIPARC': 'UPI0002A475AB',
+                    'cDNA_position': ''
+                }
+            ],
+            'T]16:89585536]': []
+        }
+    }
+    return variant

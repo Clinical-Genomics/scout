@@ -15,7 +15,7 @@ import logging
 
 import click
 
-from scout.ext.backend.utils import read_hgnc_genes
+from scout.parse import parse_hgnc_genes
 
 logger = logging.getLogger(__name__)
 

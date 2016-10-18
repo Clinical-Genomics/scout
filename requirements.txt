@@ -37,12 +37,14 @@ Flask-Markdown
 Flask-Mail
 Flask-DebugToolbar>=0.10.0
 Flask-Script
+Flask-Alchy
+Flask-Bootstrap
 
 # utils
 path.py
 click
 ped-parser>=1.6
-vcf_parser>=1.5.6
+vcf_parser>=1.5.9
 configobj
 requests
 python-dateutil

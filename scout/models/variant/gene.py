@@ -3,7 +3,7 @@ from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField,
                          ListField, IntField, BooleanField)
 
 from .transcript import Transcript
-from . import (SO_TERMS, FEATURE_TYPES, CONSEQUENCE)
+from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERMS)
 
 from scout.models import PhenotypeTerm
 
@@ -16,7 +16,7 @@ class Gene(EmbeddedDocument):
     # A list of Transcript objects
     transcripts = ListField(EmbeddedDocumentField(Transcript))
     # This is the worst functional impact of all transcripts
-    functional_annotation = StringField(choices=SO_TERMS)
+    functional_annotation = StringField(choices=SO_TERMS.keys())
     # This is the region of the most severe functional impact
     region_annotation = StringField(choices=FEATURE_TYPES)
     # This is most severe sift prediction of all transcripts
@@ -27,7 +27,7 @@ class Gene(EmbeddedDocument):
     omim_phenotypes = ListField(EmbeddedDocumentField(PhenotypeTerm))
     description = StringField()
     reduced_penetrance = BooleanField()
-    
+
     disease_associated_transcripts = ListField(StringField())
 
     @property
@@ -64,3 +64,7 @@ class Gene(EmbeddedDocument):
                         "%2C%22ORGANISM_PART%22%3Atrue%7D%7D&ds=%7B%22species"
                         "%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D")
         return url_template.format(self.ensembl_gene_id)
+
+    @property
+    def omim_link(self):
+        return "http://omim.org/entry/{}".format(self.omim_gene_entry)

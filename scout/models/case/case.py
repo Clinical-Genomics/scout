@@ -1,5 +1,5 @@
 from __future__ import (absolute_import)
-import os.path
+import os
 import logging
 from datetime import datetime
 import itertools
@@ -78,6 +78,8 @@ class Case(Document):
 
     # The coverage report will be read as a binary blob
     coverage_report = BinaryField()
+
+    has_svvariants = BooleanField(default=False)
 
     @property
     def o_collaborators(self):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .institute import institute
 from .load_hgnc import hgnc
 from .load_database import load
 from .transfer import transfer

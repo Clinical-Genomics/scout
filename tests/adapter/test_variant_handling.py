@@ -1,15 +1,32 @@
-import pytest
 import logging
-# from mongomock import MongoClient
-from pymongo import MongoClient
-from mongoengine import DoesNotExist
 
-from scout.ext.backend import MongoAdapter
-from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
-                          Institute, User)
+def test_load_variants(populated_database, variant_objs, case_obj):
+    """Test to load variants into a mongo database"""
+    case_id = case_obj.case_id
+    # Make sure that there are no variants in the database
+    assert populated_database.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+    
+    for index, variant_obj in enumerate(variant_objs):
+        populated_database.load_variant(variant_obj)
+    
+    # Make sure that there are no variants in the database
+    assert populated_database.variants(case_id=case_id, nr_of_variants=-1).count() == index+1
 
-from scout.log import init_log
-logger = logging.getLogger()
+def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
+    """Test to load variants into a mongo database"""
+    case_id = case_obj.case_id
+    # Make sure that there are no variants in the database
+    assert populated_database.variants(
+            case_id=case_id, nr_of_variants=-1, category='sv').count() == 0
+    
+    for index, variant_obj in enumerate(sv_variant_objs):
+        populated_database.load_variant(variant_obj)
+    
+    # Make sure that there are no variants in the database
+    assert populated_database.variants(
+           case_id=case_id, nr_of_variants=-1, category='sv').count() == index+1
 
-init_log(logger, loglevel='DEBUG')
 
+def test_get_variant(variant_database):
+    pass
+    

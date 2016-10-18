@@ -3,39 +3,26 @@ from configobj import ConfigObj
 
 from scout import __version__, logger
 from scout.log import init_log
-from scout.ext.backend import MongoAdapter
-from . import (load, transfer, wipe, delete_case, hgnc, export)
+from scout.adapter import MongoAdapter
+from . import (load, transfer, wipe, delete_case, hgnc, export, institute)
+
+LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+
 
 @click.group()
-@click.option('-l', '--logfile',
-                type=click.Path(exists=False),
-                help="Path to log file. If none logging is printed to stderr."
-)
-@click.option('--loglevel',
-                type=click.Choice(['DEBUG', 'INFO', 'WARNING',
-                                    'ERROR', 'CRITICAL']),
-                default='INFO',
-                help="Set the level of log output."
-)
-@click.option('-db', '--mongodb',
-                help='Default=variantDatabase'
-)
+@click.option('-l', '--logfile', type=click.Path(exists=False),
+              help="Path to log file. If none logging is printed to stderr.")
+@click.option('--loglevel', default='INFO', type=click.Choice(LOG_LEVELS),
+              help="Set the level of log output.")
+@click.option('-db', '--mongodb', help='Default=variantDatabase')
 @click.option('-u', '--username', type=str)
 @click.option('-p', '--password', type=str)
-@click.option('-port', '--port',
-                type=int,
-                help="Specify the port where to look for the mongo database."\
-                     " Default=27017"
-)
-@click.option('-h', '--host',
-                default='localhost',
-                help="Specify the host where to look for the mongo database."\
-                     " Default=localhost"
-)
-@click.option('-c', '--config',
-            type=click.Path(exists=True),
-            help="Specify the path to a config file with database info."
-)
+@click.option('-port', '--port', type=int,
+              help="Specify port to look for the mongo database [27017]")
+@click.option('-h', '--host', default='localhost', show_default=True,
+              help="Specify the host where to look for the mongo database.")
+@click.option('-c', '--config', type=click.Path(exists=True),
+              help="Specify the path to a config file with database info.")
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
@@ -96,3 +83,4 @@ cli.add_command(wipe)
 cli.add_command(delete_case)
 cli.add_command(hgnc)
 cli.add_command(export)
+cli.add_command(institute)

@@ -1,0 +1,233 @@
+{% extends "sv/layout.html" %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li><a href="{{ url_for('sv.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}">{{ variant.display_name|truncate(20, True) }}</a></li>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid clear-navbar">
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="badge">{{ variant.variant_rank }}</span>
+            Ranking
+          </li>
+
+          <li class="list-group-item">
+            <span class="badge">{{ variant.rank_score }}</span>
+            Rank score
+          </li>
+
+          <li class="list-group-item">
+            <span class="badge">{{ variant.sub_category|upper }}</span>
+            Category
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            Position
+            <div class="pull-right">
+              <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50), vcf=case.vcf_file) }}" target="_blank">
+                Alignment: {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    {# ROW 2 #}
+    <div class="row">
+      {# FREQUENCIES #}
+      <div class="col-md-4">
+        {{ frequencies(variant) }}
+      </div>
+      {# GT CALLS #}
+      <div class="col-md-8">
+        {{ gt_calls(variant.samples) }}
+      </div>
+    </div>
+
+    {# ROW 3: GENES #}
+    <div class="row">
+      <div class="col-md-12">
+        {{ genes(variant) }}
+      </div>
+    </div>
+
+    {# ROW 4: OVERLAPPING SNVs #}
+    <div class="row">
+      <div class="col-md-12">
+        {{ overlapping(overlapping_snvs, institute_id, case_id) }}
+      </div>
+    </div>
+
+    {# ROW 5: LINKS #}
+    <div class="row">
+      <div class="col-md-12">
+        {{ ext_links(variant) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% macro ext_links(variant) %}
+  {# External links #}
+  <div class="panel panel-default">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td>
+            <a class="btn btn-link form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+          </td>
+          <td>
+            <a class="btn btn-link form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+          </td>
+          <td>
+            <a class="btn btn-link form-control" href="https://www.solvebio.com/variant/GRCh37-chr{{ variant.chromosome }}-{{ variant.position }}-{{ variant.end }}-{{ variant.alternative }}" target="_blank">SolveBio</a>
+          </td>
+          <td>
+            <a class="btn btn-link form-control" href="http://tools.genes.toronto.edu/" target="_blank">SPANR</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro overlapping(variants, rank_score, kinstitute_id, case_id) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Overlapping SNVs</div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Variant</th>
+          <th>Combined score</th>
+          <th>Rank score</th>
+          <th>Region</th>
+          <th>Function</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in variants %}
+          <tr>
+            <td>
+              <a href="{{url_for('core.variant',
+                                 institute_id=institute_id,
+                                 case_id=case_id,
+                                 variant_id=variant.document_id)}}">
+                {{ variant.display_name|truncate(20, True) }}
+              </a>
+            </td>
+            <td class="text-right">{{ rank_score + variant.rank_score }}</td>
+            <td class="text-right">{{ variant.rank_score }}</td>
+            <td>{{ variant.region_annotations|join(',') }}</td>
+            <td>{{ variant.functional_annotations|join(',') }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6">No overlapping SNVs found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro frequencies(variant) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Frequencies</div>
+    <ul class="list-group">
+      <li class="list-group-item">
+        {% if variant.max_thousand_genomes_frequency %}
+          <span class="badge">{{ variant.max_thousand_genomes_frequency }}</span>
+          Max 1000G
+        {% else %}
+          <i>No frequencies found.</i>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+{% endmacro %}
+
+{% macro gt_calls(samples) %}
+  <div class="panel panel-default">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th rowspan="2">Sample</th>
+          <th rowspan="2">Genotype</th>
+          <th colspan="2">Alleles</th>
+          <th rowspan="2">GQ</th>
+        </tr>
+        <tr>
+          <th>1st</th>
+          <th>2nd</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sample in samples %}
+          <tr>
+            <td>{{ sample.display_name }}</td>
+            <td>{{ sample.genotype_call }}</td>
+            {% for allele in sample.allele_depths %}
+              <td>{{ allele }}</td>
+            {% endfor %}
+            <td>{{ sample.genotype_quality }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro genes(variant) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Genes</div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Gene</th>
+            <th>Ensembl</th>
+
+            <th>Region</th>
+            <th>Function</th>
+
+            <th>Description</th>
+            <th>OMIM</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <td>
+                <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">
+                  {{ gene.hgnc_symbol }}
+                </a>
+              </td>
+              <td>
+                <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{ gene.ensembl_gene_id }}" target="_blank">
+                  {{ gene.ensembl_gene_id }}
+                </a>
+              </td>
+
+              <td>{{ gene.region_annotation }}</td>
+              <td>{{ gene.functional_annotation }}</td>
+
+              <td>{{ gene.description|replace('_', ' ') }}</td>
+              <td>
+                <a href="{{ gene.omim_link }}">{{ gene.omim_gene_entry }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}

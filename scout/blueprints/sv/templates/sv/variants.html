@@ -1,0 +1,87 @@
+{% extends "sv/layout.html" %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row">
+      {{ table(variants.items, institute_id, case_id) }}
+    </div>
+
+    {{ pagination(variants, institute_id, case_id, query) }}
+  </div>
+{% endblock %}
+
+{% macro pagination(variants, institute_id, case_id, query) %}
+  <nav>
+    <ul class="pager">
+      {% if variants.has_prev %}
+        <li class="previous">
+          <a href="{{ url_for('sv.variants', institute_id=institute_id, case_id=case_id, page=variants.prev_num, **query) }}">
+            <span aria-hidden="true">&larr;</span> Page {{ variants.prev_num }}
+          </a>
+        </li>
+      {% endif %}
+
+      {% if variants.has_next %}
+        <li class="next">
+          <a href="{{ url_for('sv.variants', institute_id=institute_id, case_id=case_id, page=variants.next_num, **query) }}">
+            Page {{ variants.next_num }} <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endmacro %}
+
+{% macro table(variants, institute_id, case_id) %}
+  <table id="variantsTable" class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Rank #</th>
+        <th>Score</th>
+        <th>Type</th>
+        <th>Start loc</th>
+        <th>Stop loc</th>
+        <th>Length</th>
+        <th>Frequency</th>
+        <th>Gene(s)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for variant in variants %}
+        <tr>
+          <td>
+            <a href="{{ url_for('sv.variant', institute_id=institute_id, case_id=case_id, variant_id=variant.id) }}">
+              {{ variant.variant_rank }}
+            </a>
+          </td>
+          <td>{{ variant.rank_score }}</td>
+          <td>{{ variant.sub_category|upper }}</td>
+          <td>{{ variant.position }}</td>
+          <td>{{ variant.end if variant.end }}</td>
+          <td>{{ variant.length if variant.length }}</td>
+          <td></td>
+          <td>
+            {{ variant.hgnc_symbols|join(', ') }}
+            {% if variant.hgnc_symbols %}
+              <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+            <td colspan="8">No variants.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% block scripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/1.4.4/jquery.floatThead.min.js"></script>
+
+  <script>
+    var $table = $("#variantsTable");
+    $table.floatThead({});
+  </script>
+{% endblock %}

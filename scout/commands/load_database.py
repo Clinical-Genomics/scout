@@ -15,6 +15,8 @@ import logging
 import click
 from configobj import ConfigObj
 
+from scout.load import (load_scout)
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +25,11 @@ logger = logging.getLogger(__name__)
                 type=click.Path(exists=True),
                 help="Path to the vcf file that should be loaded."
 )
-@click.option('-vt', '--variant_type',
+@click.option('--sv_file',
+                type=click.Path(exists=True),
+                help="Path to the vcf file that should be loaded."
+)
+@click.option('--variant_type',
                 type=click.Choice(['clinical', 'research']),
                 help="Specify the type of the variants that is being loaded."\
                         "Default='clinical'"
@@ -55,17 +61,20 @@ logger = logging.getLogger(__name__)
                 type=click.Path(exists=True),
                 help="Path to the coverage report file."
 )
-@click.option('-o', '--owner',
-                nargs=1,
+@click.option('--owner',
                 help="Specify the owner of the case."
+)
+@click.option('-u', '--update',
+                is_flag=True,
+                help="Update case if it already exists."
 )
 @click.option('--rank_score_threshold',
                 default=0,
                 help="Specify the lowest rank score that should be used."
 )
 @click.pass_context
-def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
-         madeline, coverage_report, owner, rank_score_threshold, analysis_type):
+def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_config_file,
+         madeline, coverage_report, owner, update, rank_score_threshold, analysis_type):
     """
     Load the mongo database.
 
@@ -82,67 +91,78 @@ def load(ctx, vcf_file, variant_type, ped_file, family_type, scout_config_file,
         logger.info("Using scout config file {0}".format(scout_config_file))
 
     if vcf_file:
+        logger.info("Use vcf specified on command line: %s" % vcf_file)
         scout_configs['load_vcf'] = vcf_file
         scout_configs['igv_vcf'] = vcf_file
 
-    if not scout_configs.get('load_vcf'):
+    if sv_file:
+        logger.info("Use sv vcf specified on command line: %s" % sv_file)
+        scout_configs['sv_file'] = sv_file
+
+    if not (scout_configs.get('load_vcf') or scout_configs.get('sv_vcf')):
         logger.warn("Please provide a vcf file. (Use flag '-vcf/--vcf_file')")
         logger.info("Exiting")
         ctx.abort()
+
     logger.info("Using vcf {0}".format(scout_configs.get('load_vcf')))
 
     if ped_file:
+        logger.info("Use ped file specified on command line: %s" % ped_file)
         scout_configs['ped'] = ped_file
-    if not scout_configs.get('ped', None):
+
+    if not scout_configs.get('ped'):
         logger.warn("Please provide a ped file. (Use flag '-ped/--ped_file')")
         logger.info("Exiting")
         ctx.abort()
-    logger.info("Using ped file {0}".format(ped_file))
+
+    logger.info("Using ped file {0}".format(scout_configs['ped']))
 
     if family_type:
         scout_configs['family_type'] = family_type
+
     logger.info("Set family type to {0}".format(scout_configs['family_type']))
 
     if owner:
+        logger.info("Using command line specified owner {0}".format(owner))
         scout_configs['owner'] = owner
+
     if not scout_configs.get('owner', None):
         logger.warn("A case has to have a owner!")
         logger.info("Exiting")
         ctx.abort()
 
-    logger.info("Using command line specified owner {0}".format(owner))
+    logger.info("Using owner {0}".format(scout_configs['owner']))
 
     if analysis_type:
         scout_configs['analysis_type'] = analysis_type
 
+    logger.info("Using analysis type {0}".format(scout_configs['analysis_type']))
+
     if variant_type:
         scout_configs['variant_type'] = variant_type
 
+    logger.info("Using variant type {0}".format(scout_configs['variant_type']))
+
     if madeline:
         scout_configs['madeline'] = madeline
-        logger.info("Using madeline file {0}".format(
+
+    logger.info("Using madeline file {0}".format(
                         scout_configs.get('madeline')))
 
-    if coverage_report:
-        scout_configs['coverage_report'] = coverage_report
-
     adapter = ctx.obj['adapter']
-    case = adapter.add_case(
-        case_lines=open(scout_configs['ped'], 'r'),
-        case_type=scout_configs['family_type'],
+
+    # try:
+    load_scout(
+        adapter=adapter,
+        case_file=scout_configs['ped'],
+        snv_file=scout_configs['load_vcf'],
         owner=scout_configs['owner'],
+        sv_file=scout_configs.get('sv_vcf'),
+        case_type=scout_configs['family_type'],
+        variant_type=scout_configs['variant_type'],
+        update=update,
         scout_configs=scout_configs
     )
-
-    logger.info("Delete the variants for case {0}".format(case.case_id))
-    adapter.delete_variants(
-        case_id=case.case_id,
-        variant_type=scout_configs.get('variant_type', 'clinical')
-    )
-    logger.info("Load the variants for case {0}".format(case.case_id))
-    adapter.add_variants(
-        vcf_file=scout_configs['load_vcf'],
-        variant_type=scout_configs.get('variant_type', 'clinical'),
-        case=case,
-        rank_score_threshold=rank_score_threshold
-    )
+    # except Exception as e:
+    #     logger.warning(e.message)
+    #     ctx.abort()
