@@ -12,9 +12,9 @@ from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          ReferenceField, SortedListField, Q, BooleanField,
                          DoesNotExist)
 
-from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS, VARIANT_CALL)
+from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
+                             VARIANT_CALL)
 from .gene import Gene
-from scout._compat import zip
 from scout.models import Event
 
 ######## These are defined terms for different categories ########
@@ -62,7 +62,7 @@ class Variant(Document):
     variant_id = StringField(required=True)
     # display name in variant_id (no md5)
     display_name = StringField(required=True)
-    
+
     # chrom_pos_ref_alt
     simple_id = StringField()
     # The variant can be either research or clinical.
@@ -70,11 +70,10 @@ class Variant(Document):
     # the clinical variants have limited annotation fields.
     variant_type = StringField(required=True,
                                choices=('research', 'clinical'))
-                               
+
     category = StringField(choices=('sv', 'snv'))
     sub_category = StringField(choices=(
                     'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd'))
-                    
     mate_id = StringField()
     # case_id is a string like owner_caseid
     case_id = StringField(required=True)
@@ -84,14 +83,14 @@ class Variant(Document):
     length = IntField()
     reference = StringField(required=True)
     alternative = StringField(required=True)
-    
+
     rank_score = FloatField(required=True)
     variant_rank = IntField()
     institute = ReferenceField('Institute', required=True)
-    
+
     sanger_ordered = BooleanField()
     validation = StringField(choices=('True positive', 'False positive'))
-    
+
     quality = FloatField()
     filters = ListField(StringField())
     samples = ListField(EmbeddedDocumentField(GTCall))
@@ -120,7 +119,7 @@ class Variant(Document):
     gatk = StringField(choices=VARIANT_CALL, default='Not Used')
     samtools = StringField(choices=VARIANT_CALL, default='Not Used')
     freebayes = StringField(choices=VARIANT_CALL, default='Not Used')
-    
+
     # Conservation:
     phast_conservation = ListField(StringField(choices=CONSERVATION))
     gerp_conservation = ListField(StringField(choices=CONSERVATION))
@@ -131,7 +130,6 @@ class Variant(Document):
     manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
 
     acmg_evaluation = StringField(choices=ACMG_TERMS)
-    
 
     @property
     def case_displayname(self):
@@ -176,35 +174,14 @@ class Variant(Document):
         }.get(self.clnsig, 'not provided')
 
     @property
-    def omim_annotations(self):
-        """Returns a list with OMIM id(s)."""
-        if len(self.genes) == 1:
-            annotations = (str(gene.omim_gene_entry) for gene in self.genes
-                             if gene.omim_gene_entry)
-        else:
-            annotations = (':'.join([gene.hgnc_symbol, str(gene.omim_gene_entry)])
-                         for gene in self.genes if gene.omim_gene_entry)
-
-        # flatten the list of list of omim ids
-        return annotations
-
-    @property
     def omim_annotation_links(self):
         """Return a list of OMIM id links."""
         base_url = 'http://www.omim.org/entry'
 
-        for omim_id_str in self.omim_annotations:
-            # handle cases with variant overlapping multiple genes
-            omim_id_parts = omim_id_str.split(':')
-            if len(omim_id_parts) == 1:
-                # single gene overlap
-                omim_id = omim_id_parts[0]
-
-            else:
-                # multiple genes
-                omim_id = omim_id_parts[1]
-
-            yield (omim_id_str, "{base}/{id}".format(base=base_url, id=omim_id))
+        for gene in self.genes:
+            omim_link = "{base}/{id}".format(base=base_url,
+                                             id=gene.omim_gene_entry)
+            yield gene.hgnc_symbol, omim_link
 
     @property
     def omim_phenotypes(self):

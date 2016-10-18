@@ -30,7 +30,7 @@ def institutes():
     if len(institute_objs) == 1:
         # there no choice of institutes to make, redirect to only institute
         institute = institute_objs[0]
-        return redirect(url_for('.cases', institute_id=institute.display_name))
+        return redirect(url_for('.cases', institute_id=institute.internal_id))
     else:
         return dict(institutes=institute_objs)
 

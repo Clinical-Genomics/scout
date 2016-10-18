@@ -38,7 +38,7 @@
     </core-icon>
 
     <div class="md-breadcrumb">
-      <small>{{ variant.display_name }}</small>
+      <small>{{ variant.display_name|truncate(20, True) }}</small>
     </div>
   </div>
 {% endblock %}
@@ -358,10 +358,10 @@
 
                 <tr class="{{ row_class }}">
                   <td>
+                    {{ transcript.hgnc_symbol }}
                     {% if transcript.is_canonical %}
                       <span class="dot-indicator" title="CANONICAL"></span>
                     {% endif %}
-                    {{ transcript.hgnc_symbol }}
                   </td>
                   <td title="{{ transcript.refseq_ids|join(', ') }}">
                     {{ transcript.refseq_ids|join(', ')|truncate(25, True) }}

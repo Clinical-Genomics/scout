@@ -78,15 +78,16 @@ class AppFactory(object):
         for ext_path in self.app.config.get('EXTENSIONS', []):
             module, object_name = get_imported_stuff_by_path(ext_path)
 
-        if not hasattr(module, object_name):
-            raise NoExtensionException("No {} extension found".format(object_name))
+            if not hasattr(module, object_name):
+                raise NoExtensionException("No {} extension found"
+                                           .format(object_name))
 
-        extension = getattr(module, object_name)
+            extension = getattr(module, object_name)
 
-        if getattr(extension, 'init_app', False):
-            extension.init_app(self.app)
-        else:
-            extension(self.app)
+            if getattr(extension, 'init_app', False):
+                extension.init_app(self.app)
+            else:
+                extension(self.app)
 
         @babel.localeselector
         def get_locale():
@@ -114,23 +115,23 @@ class AppFactory(object):
         for blueprint_path, url_prefix in self.app.config.get('BLUEPRINTS', []):
             module, object_name = get_imported_stuff_by_path(blueprint_path)
 
-        if hasattr(module, object_name):
-            self.app.register_blueprint(getattr(module, object_name),
-                                        url_prefix=url_prefix)
-        else:
-            raise NoBlueprintException("No {} blueprint found"
-                                       .format(object_name))
+            if hasattr(module, object_name):
+                self.app.register_blueprint(getattr(module, object_name),
+                                            url_prefix=url_prefix)
+            else:
+                raise NoBlueprintException("No {} blueprint found"
+                                           .format(object_name))
 
     def _register_context_processors(self):
         """Register extra contexts for Jinja templates."""
         for processor_path in self.app.config.get('CONTEXT_PROCESSORS', []):
             module, object_name = get_imported_stuff_by_path(processor_path)
 
-        if hasattr(module, object_name):
-            self.app.context_processor(getattr(module, object_name))
-        else:
-            raise NoContextProcessorException("No {} context processor found"
-                                              .format(object_name))
+            if hasattr(module, object_name):
+                self.app.context_processor(getattr(module, object_name))
+            else:
+                message = "No {} context processor found".format(object_name)
+                raise NoContextProcessorException(message)
 
     def _configure_logging(self):
         """Configure file(info) and email(error) logging"""

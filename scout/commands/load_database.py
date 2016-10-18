@@ -103,13 +103,13 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
         logger.warn("Please provide a vcf file. (Use flag '-vcf/--vcf_file')")
         logger.info("Exiting")
         ctx.abort()
-    
+
     logger.info("Using vcf {0}".format(scout_configs.get('load_vcf')))
 
     if ped_file:
         logger.info("Use ped file specified on command line: %s" % ped_file)
         scout_configs['ped'] = ped_file
-    
+
     if not scout_configs.get('ped'):
         logger.warn("Please provide a ped file. (Use flag '-ped/--ped_file')")
         logger.info("Exiting")
@@ -119,13 +119,13 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
 
     if family_type:
         scout_configs['family_type'] = family_type
-    
+
     logger.info("Set family type to {0}".format(scout_configs['family_type']))
 
     if owner:
         logger.info("Using command line specified owner {0}".format(owner))
         scout_configs['owner'] = owner
-    
+
     if not scout_configs.get('owner', None):
         logger.warn("A case has to have a owner!")
         logger.info("Exiting")
@@ -145,25 +145,24 @@ def load(ctx, vcf_file, sv_file, variant_type, ped_file, family_type, scout_conf
 
     if madeline:
         scout_configs['madeline'] = madeline
-    
+
     logger.info("Using madeline file {0}".format(
                         scout_configs.get('madeline')))
 
     adapter = ctx.obj['adapter']
-    
+
     # try:
     load_scout(
-        adapter=adapter, 
-        case_file=scout_configs['ped'], 
-        snv_file=scout_configs['load_vcf'], 
-        owner=scout_configs['owner'], 
-        sv_file=scout_configs.get('sv_file'), 
-        case_type=scout_configs['family_type'], 
-        variant_type=scout_configs['variant_type'], 
+        adapter=adapter,
+        case_file=scout_configs['ped'],
+        snv_file=scout_configs['load_vcf'],
+        owner=scout_configs['owner'],
+        sv_file=scout_configs.get('sv_vcf'),
+        case_type=scout_configs['family_type'],
+        variant_type=scout_configs['variant_type'],
         update=update,
         scout_configs=scout_configs
     )
     # except Exception as e:
     #     logger.warning(e.message)
     #     ctx.abort()
-
