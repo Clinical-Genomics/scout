@@ -51,9 +51,9 @@ class QueryHandler(object):
             mongo_query['chromosome'] = chromosome
             #Only check coordinates if there is a chromosome
             if (query.get('start') and query.get('end')):
-                mongo_query['position'] = {'$lt': int(query['end'])}
+                mongo_query['position'] = {'$lte': int(query['end'])}
                 
-                mongo_query['end'] = {'$gt': int(query['start'])}
+                mongo_query['end'] = {'$gte': int(query['start'])}
                 
 
         if query.get('thousand_genomes_frequency'):

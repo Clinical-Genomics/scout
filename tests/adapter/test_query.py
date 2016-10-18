@@ -1,3 +1,4 @@
+from scout.models import Variant
 
 def test_build_query(adapter):
     case_id = 'cust000'
@@ -106,7 +107,126 @@ def test_build_range(adapter):
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query['chromosome'] == chrom
-    assert mongo_query['position'] == {'$lt': end}
-    assert mongo_query['end'] == {'$gt': start}
+    assert mongo_query['position'] == {'$lte': end}
+    assert mongo_query['end'] == {'$gte': start}
+
+def test_get_overlapping_variant(populated_database, parsed_case):
+    """Add a couple of overlapping variants"""
+    case_id = parsed_case['case_id']
+    institute_id = parsed_case['owner']
+    institute_obj = populated_database.institute(institute_id)
+    snv_one = Variant(
+        document_id='first',
+        variant_id='first',
+        display_name='first',
+        simple_id='first',
+        variant_type='clinical',
+        category='snv',
+        sub_category='snv',
+        case_id=case_id,
+        chromosome='1',
+        position=10,
+        end=10,
+        length=1,
+        reference='A',
+        alternative='T',
+        rank_score=10,
+        variant_rank=1,
+        institute=institute_obj,
+    )
+    populated_database.load_variant(snv_one)
+
+    snv_two = Variant(
+        document_id='second',
+        variant_id='second',
+        display_name='second',
+        simple_id='second',
+        variant_type='clinical',
+        category='snv',
+        sub_category='snv',
+        case_id=case_id,
+        chromosome='1',
+        position=14,
+        end=14,
+        length=1,
+        reference='G',
+        alternative='T',
+        rank_score=9,
+        variant_rank=2,
+        institute=institute_obj,
+    )
+    
+    populated_database.load_variant(snv_two)
+
+    sv_one = Variant(
+        document_id='first_sv',
+        variant_id='first_sv',
+        display_name='first_sv',
+        simple_id='first_sv',
+        variant_type='clinical',
+        category='sv',
+        sub_category='ins',
+        case_id=case_id,
+        chromosome='1',
+        position=8,
+        end=12,
+        length=5,
+        reference='A',
+        alternative='ATTTTTT',
+        rank_score=10,
+        variant_rank=1,
+        institute=institute_obj,
+    )
+    populated_database.load_variant(sv_one)
+    
+    assert populated_database.variants(case_id, category='snv').count() == 2
+    assert populated_database.variants(case_id, category='sv').count() == 1
+    
+    #Try to match only snv_one
+    query = {'chrom': '1', 'start': 10, 'end':10}
+    result = populated_database.variants(case_id, category='snv', query=query)
+    assert result.count() == 1
+
+    #Try to match only both snvs
+    query = {'chrom': '1', 'start': 5, 'end':20}
+    result = populated_database.variants(case_id, category='snv', query=query)
+    assert result.count() == 2
+
+    #Try interval larger than sv
+    query = {'chrom': '1', 'start': 5, 'end':20}
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 1
+
+    #Try interval lower overlap sv
+    query = {'chrom': '1', 'start': 5, 'end':8}
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 1
+
+    #Try interval outside sv
+    query = {'chrom': '1', 'start': 5, 'end':7}
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 0
+
+    #Try minimal interval sv
+    query = {'chrom': '1', 'start': 10, 'end':10}
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -25,4 +25,8 @@ def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
     # Make sure that there are no variants in the database
     assert populated_database.variants(
            case_id=case_id, nr_of_variants=-1, category='sv').count() == index+1
+
+
+def test_get_variant(variant_database):
+    pass
     
