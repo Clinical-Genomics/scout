@@ -32,7 +32,9 @@
           <li class="list-group-item">
             Position
             <div class="pull-right">
-              {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}
+              <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50), vcf=case.vcf_file) }}" target="_blank">
+                Alignment: {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}
+              </a>
             </div>
           </li>
         </ul>
@@ -51,21 +53,52 @@
       </div>
     </div>
 
-    {# ROW 3 #}
+    {# ROW 3: GENES #}
     <div class="row">
       <div class="col-md-12">
         {{ genes(variant) }}
       </div>
     </div>
 
-    {# ROW 4 #}
+    {# ROW 4: OVERLAPPING SNVs #}
     <div class="row">
       <div class="col-md-12">
         {{ overlapping(overlapping_snvs, institute_id, case_id) }}
       </div>
     </div>
+
+    {# ROW 5: LINKS #}
+    <div class="row">
+      <div class="col-md-12">
+        {{ ext_links(variant) }}
+      </div>
+    </div>
   </div>
 {% endblock %}
+
+{% macro ext_links(variant) %}
+  {# External links #}
+  <div class="panel panel-default">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td>
+            <a class="btn btn-link form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+          </td>
+          <td>
+            <a class="btn btn-link form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+          </td>
+          <td>
+            <a class="btn btn-link form-control" href="https://www.solvebio.com/variant/GRCh37-chr{{ variant.chromosome }}-{{ variant.position }}-{{ variant.end }}-{{ variant.alternative }}" target="_blank">SolveBio</a>
+          </td>
+          <td>
+            <a class="btn btn-link form-control" href="http://tools.genes.toronto.edu/" target="_blank">SPANR</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
 
 {% macro overlapping(variants, rank_score, kinstitute_id, case_id) %}
   <div class="panel panel-default">
@@ -168,23 +201,29 @@
 
             <th>Description</th>
             <th>OMIM</th>
-            <th>Morbid</th>
           </tr>
         </thead>
         <tbody>
           {% for gene in variant.genes %}
             <tr>
-              <td>{{ gene.hgnc_symbol }}</td>
-              <td>{{ gene.ensembl_gene_id }}</td>
+              <td>
+                <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">
+                  {{ gene.hgnc_symbol }}
+                </a>
+              </td>
+              <td>
+                <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{ gene.ensembl_gene_id }}" target="_blank">
+                  {{ gene.ensembl_gene_id }}
+                </a>
+              </td>
 
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation }}</td>
 
-              <td>{{ gene.description }}</td>
+              <td>{{ gene.description|replace('_', ' ') }}</td>
               <td>
                 <a href="{{ gene.omim_link }}">{{ gene.omim_gene_entry }}</a>
               </td>
-              <td>{{ gene.hgnc_symbol }}</td>
             </tr>
           {% endfor %}
         </tbody>
