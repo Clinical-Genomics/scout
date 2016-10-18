@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def build_query(case_id, query=None, variant_ids=None, category='snv'):
     """Build a mongo query
 
@@ -39,7 +40,7 @@ def build_query(case_id, query=None, variant_ids=None, category='snv'):
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
         logger.debug("Updating variant type to {0}".format(
             mongo_query['variant_type']))
-        
+
         mongo_query
 
         if query.get('thousand_genomes_frequency'):

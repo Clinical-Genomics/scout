@@ -276,10 +276,22 @@
       Clinical variants
     </a>
 
+    {% if case.has_svvariants %}
+        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}" class="case-variants-button">
+          Clinical SV variants
+        </a>
+    {% endif %}
+
     {% if case.is_research %}
       <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
         Research variants
       </a>
+
+      {% if case.has_svvariants %}
+        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+          Research SV variants
+        </a>
+      {% endif %}
     {% endif %}
   </div>
 

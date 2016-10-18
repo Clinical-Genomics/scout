@@ -4,6 +4,7 @@ located in app.py
 """
 from flask_admin import Admin
 from flask_babel import Babel
+from flask_bootstrap import Bootstrap
 from flask_debugtoolbar import DebugToolbarExtension
 from flask.ext.markdown import Markdown
 from flask_login import LoginManager
@@ -57,6 +58,8 @@ login_manager = LoginManager()
 def markdown(app):
     return Markdown(app)
 
+
+bootstrap = Bootstrap()
 
 # +--------------------------------------------------------------------+
 # | Flask-Mail

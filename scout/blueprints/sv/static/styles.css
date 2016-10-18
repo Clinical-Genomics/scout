@@ -1,0 +1,19 @@
+:root {
+    --top-margin: 40px;
+}
+
+body {
+    padding-top: var(--top-margin);
+}
+
+th {
+    background-color: #fff;
+}
+
+.floatThead-container {
+    margin-top: var(--top-margin) !important;
+}
+
+.clear-navbar {
+    padding-top: 20px;
+}

@@ -13,6 +13,9 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
 
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TEMPLATES_AUTO_RELOAD = True
+
     # http://flask.pocoo.org/docs/quickstart/#sessions
     SECRET_KEY = 'secret key'
 
@@ -40,6 +43,7 @@ class BaseConfig(object):
                   ('scout.blueprints.user.user', None),
                   ('scout.blueprints.api.api', None),
                   ('scout.blueprints.pileup.pileup_bp', None),
+                  ('scout.blueprints.sv.sv_bp', None),
                   ('chanjo_report.server.blueprints.report_bp', '/reports')]
 
     EXTENSIONS = ['scout.extensions.store',
@@ -54,7 +58,8 @@ class BaseConfig(object):
                   'scout.extensions.omim',
                   'scout.extensions.babel',
                   'chanjo_report.server.extensions.api',
-                  'scout.extensions.loqusdb']
+                  'scout.extensions.loqusdb',
+                  'scout.extensions.bootstrap']
 
     # settings for triggering opening of research mode
     RESEARCH_MODE_RECIPIENT = 'example@domain.com'
@@ -79,6 +84,7 @@ class BaseConfig(object):
 class DevelopmentConfig(BaseConfig):
     """docstring for DefaultConfig"""
     DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     # Flask-DebugToolbar
     DEBUG_TB_ENABLED = True
