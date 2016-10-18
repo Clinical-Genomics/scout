@@ -467,6 +467,9 @@ def variant(institute_id, case_id, variant_id):
 
     causatives = store.other_causatives(case_model, variant_model)
 
+    # overlapping SVs
+    overlapping_svs = store.overlapping(variant_model)
+
     return dict(institute=institute, institute_id=institute_id,
                 case=case_model, case_id=case_id,
                 variant=variant_model, variant_id=variant_id,
@@ -475,7 +478,7 @@ def variant(institute_id, case_id, variant_id):
                 manual_rank_options=Variant.manual_rank.choices,
                 individuals=individuals, coverage_links=coverage_links,
                 local_freq=local_freq, local_total=local_total,
-                causatives=causatives)
+                causatives=causatives, overlapping_svs=overlapping_svs)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])

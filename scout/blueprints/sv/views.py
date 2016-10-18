@@ -44,6 +44,8 @@ def variant(institute_id, case_id, variant_id):
     if variant_model is None:
         return abort(404, 'variant not found')
 
+    overlapping_snvs = store.overlapping(variant_model)
     return dict(institute=institute, institute_id=institute_id,
                 case=case_model, case_id=case_id,
-                variant=variant_model, variant_id=variant_id)
+                variant=variant_model, variant_id=variant_id,
+                overlapping_snvs=overlapping_snvs)
