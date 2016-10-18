@@ -11,7 +11,7 @@ from wtforms import (DecimalField as _DecimalField, Field,
                      SelectMultipleField, RadioField)
 from wtforms import widgets
 
-from scout.models.variant import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
+from scout.constants import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
 from scout._compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
