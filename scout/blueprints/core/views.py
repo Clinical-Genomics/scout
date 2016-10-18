@@ -468,7 +468,7 @@ def variant(institute_id, case_id, variant_id):
     causatives = store.other_causatives(case_model, variant_model)
 
     # overlapping SVs
-    overlapping_svs = store.overlapping_svs(variant_model)
+    overlapping_svs = store.overlapping(variant_model)
 
     return dict(institute=institute, institute_id=institute_id,
                 case=case_model, case_id=case_id,

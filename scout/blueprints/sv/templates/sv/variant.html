@@ -57,8 +57,54 @@
         {{ genes(variant) }}
       </div>
     </div>
+
+    {# ROW 4 #}
+    <div class="row">
+      <div class="col-md-12">
+        {{ overlapping(overlapping_snvs, institute_id, case_id) }}
+      </div>
+    </div>
   </div>
 {% endblock %}
+
+{% macro overlapping(variants, rank_score, kinstitute_id, case_id) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Overlapping SNVs</div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Variant</th>
+          <th>Combined score</th>
+          <th>Rank score</th>
+          <th>Region</th>
+          <th>Function</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in variants %}
+          <tr>
+            <td>
+              <a href="{{url_for('core.variant',
+                                 institute_id=institute_id,
+                                 case_id=case_id,
+                                 variant_id=variant.document_id)}}">
+                {{ variant.display_name|truncate(20, True) }}
+              </a>
+            </td>
+            <td class="text-right">{{ rank_score + variant.rank_score }}</td>
+            <td class="text-right">{{ variant.rank_score }}</td>
+            <td>{{ variant.region_annotations|join(',') }}</td>
+            <td>{{ variant.functional_annotations|join(',') }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6">No overlapping SNVs found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
 
 {% macro frequencies(variant) %}
   <div class="panel panel-default">
@@ -77,32 +123,34 @@
 {% endmacro %}
 
 {% macro gt_calls(samples) %}
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th rowspan="2">Sample</th>
-        <th rowspan="2">Genotype</th>
-        <th colspan="2">Alleles</th>
-        <th rowspan="2">GQ</th>
-      </tr>
-      <tr>
-        <th>1st</th>
-        <th>2nd</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for sample in samples %}
+  <div class="panel panel-default">
+    <table class="table table-bordered">
+      <thead>
         <tr>
-          <td>{{ sample.display_name }}</td>
-          <td>{{ sample.genotype_call }}</td>
-          {% for allele in sample.allele_depths %}
-            <td>{{ allele }}</td>
-          {% endfor %}
-          <td>{{ sample.genotype_quality }}</td>
+          <th rowspan="2">Sample</th>
+          <th rowspan="2">Genotype</th>
+          <th colspan="2">Alleles</th>
+          <th rowspan="2">GQ</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        <tr>
+          <th>1st</th>
+          <th>2nd</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sample in samples %}
+          <tr>
+            <td>{{ sample.display_name }}</td>
+            <td>{{ sample.genotype_call }}</td>
+            {% for allele in sample.allele_depths %}
+              <td>{{ allele }}</td>
+            {% endfor %}
+            <td>{{ sample.genotype_quality }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endmacro %}
 
 {% macro genes(variant) %}

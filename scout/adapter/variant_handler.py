@@ -205,11 +205,12 @@ class VariantHandler(object):
         variant_obj.save()
         logger.debug("Variant saved")
 
-    def overlapping_svs(self, variant_obj):
+    def overlapping(self, variant_obj):
+        category = 'sv' if variant_obj.category == 'snv' else 'snv'
         query = {'variant_type': variant_obj.variant_type,
                  'chrom': variant_obj.chromosome,
                  'start': variant_obj.position,
                  'end': variant_obj.end}
-        variants = self.variants(variant_obj.case_id, category='sv',
+        variants = self.variants(variant_obj.case_id, category=category,
                                  nr_of_variants=-1, query=query)
         return variants
