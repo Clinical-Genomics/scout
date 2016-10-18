@@ -65,8 +65,12 @@
     <div class="panel-heading">Frequencies</div>
     <ul class="list-group">
       <li class="list-group-item">
-        <span class="badge">{{ variant.max_thousand_genomes_frequency }}</span>
-        Max 1000G
+        {% if variant.max_thousand_genomes_frequency %}
+          <span class="badge">{{ variant.max_thousand_genomes_frequency }}</span>
+          Max 1000G
+        {% else %}
+          <i>No frequencies found.</i>
+        {% endif %}
       </li>
     </ul>
   </div>
@@ -79,7 +83,6 @@
         <th rowspan="2">Sample</th>
         <th rowspan="2">Genotype</th>
         <th colspan="2">Alleles</th>
-        <th rowspan="2">Read depth</th>
         <th rowspan="2">GQ</th>
       </tr>
       <tr>
@@ -95,7 +98,6 @@
           {% for allele in sample.allele_depths %}
             <td>{{ allele }}</td>
           {% endfor %}
-          <td>{{ sample.read_depth }}</td>
           <td>{{ sample.genotype_quality }}</td>
         </tr>
       {% endfor %}
@@ -115,8 +117,6 @@
 
             <th>Region</th>
             <th>Function</th>
-            <th>SIFT</th>
-            <th>PolyPhen</th>
 
             <th>Description</th>
             <th>OMIM</th>
@@ -131,8 +131,6 @@
 
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation }}</td>
-              <td>{{ gene.sift_prediction if gene.sift_prediction != 'unknown' }}</td>
-              <td>{{ gene.polyphen_prediction if gene.polyphen_prediction != 'unknown' }}</td>
 
               <td>{{ gene.description }}</td>
               <td>
