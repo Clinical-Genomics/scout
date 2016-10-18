@@ -17,6 +17,9 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             variant_dict(dict): A dictionary from VCFParser
             case(dict)
             variant_type(str): 'clinical' or 'research'
+        
+        Yields:
+            variant(dict): Parsed variant
     """
     variant = {}
     # Create the ID for the variant

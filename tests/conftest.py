@@ -12,9 +12,9 @@ from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 from scout.commands import cli
-from scout.parse import (parse_case, parse_gene_panel)
+from scout.parse import (parse_case, parse_gene_panel, parse_variant)
 from scout.log import init_log
-from scout.build import (build_institute, build_case, build_panel)
+from scout.build import (build_institute, build_case, build_panel, build_variant)
 
 
 root_logger = logging.getLogger()
@@ -68,29 +68,6 @@ def scout_configs(request, config_file):
     configs = ConfigObj(config_file)
     return configs
 
-@pytest.fixture(scope='function')
-def one_file_variant(request, one_variant_file):
-    logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=one_variant_file)
-    return variant
-
-@pytest.fixture(scope='function')
-def one_file_sv_variant(request):
-    logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=one_sv)
-    return variant
-
-@pytest.fixture(scope='function')
-def sv_variants(request, sv_file):
-    logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=sv_file)
-    return variants
-
-@pytest.fixture(scope='function')
-def variants(request, variant_file):
-    logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=variant_file)
-    return variants
 
 ##################### Case fixtures #####################
 
@@ -229,6 +206,24 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
     
     return adapter
 
+@pytest.fixture(scope='function')
+def variant_database(request, adapter, institute_obj, parsed_user, case_obj, 
+                     variants, sv_variants):
+    """Returns an adapter to a database populated with user, institute, case
+       and variants"""
+    adapter.add_institute(institute_obj)
+    adapter.getoradd_user(
+        email=parsed_user['email'], 
+        name=parsed_user['name'],
+        location=parsed_user['location'], 
+        institutes=parsed_user['institutes']
+    )
+    adapter.add_case(case_obj)
+    
+    
+    return adapter
+
+
 
 ##################### Panel fixtures #####################
 
@@ -261,14 +256,65 @@ def panel_obj(request, parsed_panel):
     return panel
 
 ##################### Variant fixtures #####################
-
+@pytest.fixture(scope='function')
+def one_file_variant(request, one_variant_file):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_variant_file)
+    return variant
 
 @pytest.fixture(scope='function')
-def variants(request):
-    """Get a parser with vcf variants"""
+def one_file_sv_variant(request):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_sv)
+    return variant
+
+@pytest.fixture(scope='function')
+def sv_variants(request, sv_file):
+    logger.info("Return a VCF parser many svs")
+    variants = VCFParser(infile=sv_file)
+    return variants
+
+@pytest.fixture(scope='function')
+def variants(request, variant_file):
+    logger.info("Return a VCF parser many svs")
+    variants = VCFParser(infile=variant_file)
+    return variants
+
+@pytest.fixture(scope='function')
+def parsed_variant(request, one_file_variant, parsed_case):
+    """Return a parsed variant"""
     print('')
-    variant_parser = VCFParser(infile=vcf_file)
-    return variant_parser
+    for variant in one_file_variant:
+        variant_dict = parse_variant(variant, parsed_case)
+    return variant_dict
+
+@pytest.fixture(scope='function')
+def parsed_sv_variant(request, one_file_sv_variant, parsed_case):
+    """Return a parsed variant"""
+    print('')
+    for variant in one_file_sv_variant:
+        variant_dict = parse_variant(variant, parsed_case)
+    return variant_dict
+
+@pytest.fixture(scope='function')
+def parsed_variants(request, variants, parsed_case):
+    """Get a generator with parsed variants"""
+    print('')
+    return (parse_variant(variant, parsed_case) for variant in variants)
+
+@pytest.fixture(scope='function')
+def parsed_sv_variants(request, sv_variants, parsed_case):
+    """Get a generator with parsed variants"""
+    print('')
+    return (parse_variant(variant, parsed_case) for variant in sv_variants)
+
+@pytest.fixture(scope='function')
+def variant_objs(request, parsed_variants, institute_obj):
+    """Get a generator with parsed variants"""
+    print('')
+    return (build_variant(variant, institute_obj) 
+            for variant in parsed_variants)
+
 
 
 @pytest.fixture(scope='function')
