@@ -42,6 +42,44 @@
   </table>
 {% endmacro %}
 
+{% macro overlapping_svs(variants, rank_score, institute_id, case_id) %}
+  <table class="default-table">
+    <thead>
+      <tr>
+        <th>Variant</th>
+        <th>Combined score</th>
+        <th>Rank score</th>
+        <th>Length</th>
+        <th>Region</th>
+        <th>Function</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for variant in variants %}
+        <tr>
+          <td>
+            <a href="{{url_for('sv.variant',
+                               institute_id=institute_id,
+                               case_id=case_id,
+                               variant_id=variant.document_id)}}">
+              {{ variant.db_snp_ids|join(', ') }}
+            </a>
+          </td>
+          <td class="text-right">{{ rank_score + variant.rank_score }}</td>
+          <td class="text-right">{{ variant.rank_score }}</td>
+          <td class="text-right">{{ variant.length }}</td>
+          <td>{{ variant.region_annotations|join(',') }}</td>
+          <td>{{ variant.functional_annotations|join(',') }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="6">No overlapping SVs found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
 {% macro variant_links(ensembl_link, hpa_link, string_link, ucsc_link, entrez_link, reactome_link, expression_atlas_link) %}
   <a target="_blank" class="variant-link-external" href="{{ ensembl_link }}">
     Ensembl

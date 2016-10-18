@@ -149,14 +149,11 @@ class VariantHandler(object):
         case_id = previous_variant.case_id
         variant_type = previous_variant.variant_type
         try:
-            return Variant.objects.get(__raw__=({'$and':[
-                                          {'case_id': case_id},
-                                          {'variant_type': variant_type},
-                                          {'variant_rank': rank+1}
-                                          ]
-                                        }
-                                      )
-                                    )
+            return Variant.objects.get(__raw__={
+                'case_id': case_id,
+                'variant_type': variant_type,
+                'category': previous_variant.category,
+                'variant_rank': rank + 1})
         except DoesNotExist:
             return None
 
@@ -176,14 +173,11 @@ class VariantHandler(object):
         case_id = previous_variant.case_id
         variant_type = previous_variant.variant_type
         try:
-            return Variant.objects.get(__raw__=({'$and':[
-                                          {'case_id': case_id},
-                                          {'variant_type': variant_type},
-                                          {'variant_rank': rank - 1}
-                                          ]
-                                        }
-                                      )
-                                    )
+            return Variant.objects.get(__raw__={
+                'case_id': case_id,
+                'variant_type': variant_type,
+                'category': previous_variant.category,
+                'variant_rank': rank - 1})
         except DoesNotExist:
             return None
 
@@ -210,3 +204,12 @@ class VariantHandler(object):
         logger.debug("Loading variant %s into database" % variant_obj['variant_id'])
         variant_obj.save()
         logger.debug("Variant saved")
+
+    def overlapping_svs(self, variant_obj):
+        query = {'variant_type': variant_obj.variant_type,
+                 'chrom': variant_obj.chromosome,
+                 'start': variant_obj.position,
+                 'end': variant_obj.end}
+        variants = self.variants(variant_obj.case_id, category='sv',
+                                 nr_of_variants=-1, query=query)
+        return variants

@@ -1,6 +1,6 @@
 {% extends 'layouts/scroll-header.html' %}
 {% from 'macros/_polymer.html' import core_item %}
-{% from '_macros.html' import activity_feed, compounds_table, variant_links %}
+{% from '_macros.html' import activity_feed, compounds_table, variant_links, overlapping_svs %}
 
 {% set page_title = case.display_name ~ '- Variant: ' ~ variant.display_name %}
 {% if case.is_solved %}
@@ -712,6 +712,16 @@
 
         <div class="md-card-body mod-scrollable-big">
           {{ compounds_table(variant.compounds, institute_id, case_id) }}
+        </div>
+      </div>
+    </div>
+
+    <div id="compounds" class="variant-segments-row">
+      <div class="md-card">
+        <div class="md-card-header">Overlapping SVs</div>
+
+        <div class="md-card-body mod-scrollable-big">
+          {{ overlapping_svs(sv_compounds, variant.rank_score, institute_id, case_id) }}
         </div>
       </div>
     </div>
