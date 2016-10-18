@@ -208,7 +208,7 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
 
 @pytest.fixture(scope='function')
 def variant_database(request, adapter, institute_obj, parsed_user, case_obj, 
-                     variants, sv_variants):
+                     variant_objs, sv_variant_objs):
     """Returns an adapter to a database populated with user, institute, case
        and variants"""
     adapter.add_institute(institute_obj)
@@ -220,6 +220,13 @@ def variant_database(request, adapter, institute_obj, parsed_user, case_obj,
     )
     adapter.add_case(case_obj)
     
+    # Load variants
+    for variant in variant_objs:
+        adapter.load_variant(variant)
+
+    # Load sv variants
+    for variant in sv_variant_objs:
+        adapter.load_variant(variant)
     
     return adapter
 
@@ -314,6 +321,13 @@ def variant_objs(request, parsed_variants, institute_obj):
     print('')
     return (build_variant(variant, institute_obj) 
             for variant in parsed_variants)
+
+@pytest.fixture(scope='function')
+def sv_variant_objs(request, parsed_sv_variants, institute_obj):
+    """Get a generator with parsed variants"""
+    print('')
+    return (build_variant(variant, institute_obj) 
+            for variant in parsed_sv_variants)
 
 
 
