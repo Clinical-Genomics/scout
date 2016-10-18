@@ -212,7 +212,17 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     result = populated_database.variants(case_id, category='sv', query=query)
     assert result.count() == 1
 
+    # test function
+    result = populated_database.overlapping(snv_one)
+    assert result.count() == 1
 
+    # test function
+    result = populated_database.overlapping(snv_two)
+    assert result.count() == 0
+
+    # test function
+    result = populated_database.overlapping(sv_one)
+    assert result.count() == 1
 
 
 
