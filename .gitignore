@@ -16,7 +16,6 @@ develop-eggs
 lib
 lib64
 dist/
-build/
 
 # Installer logs
 pip-log.txt
