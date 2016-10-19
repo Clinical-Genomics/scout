@@ -17,8 +17,8 @@ import ssl
 
 from scout.adapter import MongoAdapter as ScoutMongoAdapter
 
-from .admin import AdminView
-from .ext.omim import OMIM
+from scout.admin import AdminView
+from scout.utils.omim import OMIM
 
 # +--------------------------------------------------------------------+
 # | Flask-DebugToolbar
