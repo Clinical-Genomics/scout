@@ -1,4 +1,4 @@
-from scout.utils import generate_md5_key
+from scout.utils.md5 import generate_md5_key
 
 
 def parse_ids(variant, case, variant_type):

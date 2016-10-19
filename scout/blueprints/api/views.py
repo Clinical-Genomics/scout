@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, Response, request, redirect, url_for
 from flask_login import current_user
 import markdown as md
 
-from scout.utils import validate_user
+from scout.utils.helpers import validate_user
 from scout.extensions import omim, store
 
 TERMS_MAP = {

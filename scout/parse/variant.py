@@ -1,7 +1,7 @@
 import logging
 
-from scout.utils import generate_md5_key
-from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes, 
+from scout.utils.md5 import generate_md5_key
+from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes,
                parse_frequencies, parse_conservations, parse_ids, parse_callers)
 
 from scout.exceptions import VcfError
@@ -10,14 +10,14 @@ logger=logging.getLogger(__name__)
 
 def parse_variant(variant_dict, case, variant_type='clinical'):
     """Return a parsed variant
-    
+
         Get all the necessary information to build a variant object
-    
+
         Args:
             variant_dict(dict): A dictionary from VCFParser
             case(dict)
             variant_type(str): 'clinical' or 'research'
-        
+
         Yields:
             variant(dict): Parsed variant
     """
@@ -47,7 +47,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     variant['variant_type'] = variant_type
     # This is the id of other position in translocations
     variant['mate_id'] = None
-    
+
     ################# Position specific #################
     variant['chromosome'] = variant_dict['CHROM']
     # position = start
@@ -60,14 +60,14 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             variant['length'] = 1
             variant['sub_category'] = 'snv'
         elif ref_len > alt_len:
-            variant['length'] = ref_len - alt_len 
+            variant['length'] = ref_len - alt_len
             variant['end'] = variant['position'] + (ref_len - 1)
             variant['sub_category'] = 'indel'
         elif ref_len < alt_len:
             variant['length'] = alt_len - ref_len
             variant['end'] = variant['position'] + (alt_len - 1)
             variant['sub_category'] = 'indel'
-    
+
     elif variant['category'] == 'sv':
         try:
             variant['sub_category'] = variant_dict['info_dict']['SVTYPE'][0].lower()
@@ -84,9 +84,9 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
                 variant['length'] = abs(int(variant_dict['info_dict']['SVLEN'][0]))
             except KeyError:
                 variant['length'] = -1
-            
+
             variant['end'] = int(variant_dict['info_dict']['END'][0])
-        
+
 
     ################# Gene Lists #################
     # If a variant belongs to any gene lists we check which ones
@@ -95,25 +95,25 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
         variant['gene_lists'] = list(set(gene_lists))
     else:
         variant['gene_lists'] = None
-    
+
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
 
     rank_score = float(variant_dict.get('rank_scores', {}).get(case_name, 0.0))
     variant['rank_score'] = rank_score
-    
+
     ################# Add gt calls #################
-    
+
     variant['samples'] = parse_genotypes(variant_dict, case)
-    
+
     ################# Add the compound information #################
-    
+
     variant['compounds'] = parse_compounds(
                                 variant=variant_dict,
                                 case=case,
                                 variant_type=variant_type
                                 )
-    
+
     ################# Add the inheritance patterns #################
 
     genetic_models = variant_dict.get('genetic_models',{}).get(case_name,[])
@@ -124,7 +124,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
         variant['expected_inheritance'] = expected_inheritance
     else:
         variant['expected_inheritance'] = None
-    
+
     # Add the clinsig prediction
     clnsig_accessions = get_clnsig(variant_dict)
     if clnsig_accessions:
@@ -140,11 +140,11 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
 
     hgnc_symbols = set([])
     ensembl_gene_ids = set([])
-    
+
     for gene in variant['genes']:
         hgnc_symbols.add(gene['hgnc_symbol'])
         ensembl_gene_ids.add(gene['ensembl_gene_id'])
-    
+
     variant['hgnc_symbols'] = list(hgnc_symbols)
     variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
 
@@ -153,7 +153,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     variant['db_snp_ids'] = variant_dict['ID'].split(';')
 
     ################# Add the frequencies #################
-    
+
     variant['frequencies'] = parse_frequencies(variant_dict)
 
     # Add the severity predictions
@@ -166,14 +166,14 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     if spidex:
         value = spidex[0]
         variant['spidex'] = spidex
-    
+
     variant['conservation'] = parse_conservations(variant_dict)
-    
+
     variant['callers'] = parse_callers(variant_dict)
 
     return variant
-    
-    
-    
-    
-    
+
+
+
+
+
