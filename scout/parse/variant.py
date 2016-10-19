@@ -77,7 +77,8 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
             if variant_dict['info_dict'].get('MATEID'):
                 variant['mate_id'] = variant_dict['info_dict']['MATEID'][0]
             #For translocations we set lenth to infinity
-            variant_dict['length'] = float('inf')
+            variant['length'] = int(10e10)
+            variant['end'] = int(10e10)
         else:
             try:
                 variant['length'] = abs(int(variant_dict['info_dict']['SVLEN'][0]))

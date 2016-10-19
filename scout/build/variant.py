@@ -61,6 +61,9 @@ def build_variant(variant, institute):
         genes.append(gene_obj)
     variant_obj['genes'] = genes
     
+    variant_obj['hgnc_symbols'] = variant['hgnc_symbols']
+    variant_obj['ensembl_gene_ids'] = variant['ensembl_gene_ids']
+    
     # Add the callers
     call_info = variant.get('callers', {})
     variant_obj['gatk'] = call_info.get('gatk')
