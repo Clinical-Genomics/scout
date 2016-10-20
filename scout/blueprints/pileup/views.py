@@ -29,7 +29,6 @@ def viewer():
     alignments = [{'bam': bam, 'bai': bai, 'sample': sample}
                   for bam, bai, sample in zip(bam_files, bai_files, samples)]
 
-    vcf_file = request.args['vcf']
     position = {
         'contig': request.args['contig'],
         'start': request.args['start'],
@@ -37,4 +36,4 @@ def viewer():
     }
 
     return render_template('pileup.html', alignments=alignments,
-                           vcf_file=vcf_file, position=position)
+                           position=position)
