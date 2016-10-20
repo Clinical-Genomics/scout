@@ -1,3 +1,4 @@
+from .hgnc_gene import build_hgnc_gene
 from .institute import build_institute
 from .transcript import build_transcript
 from .phenotype import build_phenotype
