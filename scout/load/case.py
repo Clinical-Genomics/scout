@@ -7,23 +7,24 @@ from . import load_panel
 
 logger = logging.getLogger(__name__)
 
-def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknown',
-               scout_configs=None, update=False):
+
+def load_case(adapter, case_lines, owner, case_type='mip',
+              analysis_type='unknown', scout_configs=None, update=False):
     """Load a case into the database
-    
+
         If the case already exists the function will exit.
-        If the user want to load a case that is already in the database 
+        If the user want to load a case that is already in the database
         'update' has to be 'True'
-    
+
         Args:
             adapter(MongoAdapter)
             case_lines(Iterable): An iterable with ped like lines
-            owner(str): Id of institute that owns the case   
+            owner(str): Id of institute that owns the case
             case_type(str): Describe the format of the ped lines
             analysis_type(str): 'WES', 'WGS', 'unknown' or 'mixed'
             scout_configs(dict): A dictionary with meta information
             update(bool): If existing case should be updated
-        
+
         Returns:
             case_obj(Case)
     """
@@ -31,16 +32,16 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
     if not institute_obj:
         message = "Institute {} does not exist in database".format(owner)
         raise SyntaxError(message)
-    
+
     # Parse the case lines with the extra information
     parsed_case = parse_case(
-        case_lines=case_lines, 
-        owner=owner, 
-        case_type=case_type, 
+        case_lines=case_lines,
+        owner=owner,
+        case_type=case_type,
         analysis_type=analysis_type,
         scout_configs=scout_configs
     )
-    
+
     logger.info("Create the gene panels if they do not exist")
 
     #Build the mongoenginge case object
@@ -51,7 +52,7 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
         #Replace with stored gene panels
         load_panel(adapter, panel_obj)
         panel_objs.append(adapter.gene_panel(panel_obj['panel_name'], panel_obj['version']))
-    
+
     case_obj['clinical_panels'] = panel_objs
 
     panel_objs = []
@@ -72,5 +73,5 @@ def load_case(adapter, case_lines, owner, case_type='mip', analysis_type='unknow
                                  case_obj.case_id))
     else:
         adapter.add_case(case_obj)
-    
+
     return case_obj

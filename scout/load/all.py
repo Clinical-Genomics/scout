@@ -1,75 +1,50 @@
 import logging
-from codecs import open
 
 from . import load_case, load_variants, delete_variants
 
 logger = logging.getLogger(__name__)
 
 
-def load_scout(adapter, case_file, owner, snv_file=None, sv_file=None,
-               case_type='mip', variant_type='clinical', update=False,
-               scout_configs=None):
-    """This function will load the database with a case and the variants
+def load_scout(adapter, config):
+    """Load a new case from a Scout config."""
+    samples = [{
+        'individual_id': sample['id'],
+        'father': sample.get('father'),
+        'mother': sample.get('mother'),
+        'display_name': sample.get('name', sample['id']),
+        'sex': sample['sex'],
+        'phenotype': sample['phenotype'],
+        'bam_file': sample.get('bam_path'),
+        'analysis_type': sample.get('analysis_type'),
+        'capture_kit': sample.get('capture_kit')
+    } for sample in config['samples']]
 
-        Args:
-            adapter(MongoAdapter)
-            case_file(str): Path to ped like file
-            snv_file(str): Path to a VCF with snvs
-            owner(str): The institute that owns a case
-            sv_file(str): Path to a VCF with SVs
-            case_type(str): Format for case_file
-            variant_type(str): 'clinical' or 'research'
-            update(bool): Update case if it already exists
-            scout_configs(dict): A dictionary with meta data
-
-    """
-    scout_configs = scout_configs or {}
-    if not (snv_file or sv_file):
-        raise SyntaxError("Please provide a variant file")
-
-    logger.info("Loading database")
-
-    with open(case_file, 'r') as case_lines:
-        case_obj = load_case(
-            adapter=adapter,
-            case_lines=case_lines,
-            owner=owner,
-            case_type=case_type,
-            analysis_type=scout_configs.get('analysis_type', 'unknown'),
-            scout_configs=scout_configs,
-            update=update
-        )
-
-    logger.info("Delete the variants for case {0}".format(case_obj.case_id))
-
-    delete_variants(
+    case_obj = load_case(
         adapter=adapter,
-        case_obj=case_obj,
-        variant_type=variant_type
+        family_id=config['family'],
+        owner=config['institute'],
+        analysis_date=config['analysis_date'],
+        default_panels=config['default_panels'],
+        genome_build=config['human_genome_build'],
+        rank_model_version=config['rank_model_version'],
+        vcf=config['vcf'],
+        vcf_sv=config['vcf_sv'],
+        vcf_research=config['vcf_research'],
+        vcf_research_sv=config['vcf_research_sv'],
+        samples=samples,
     )
 
-    logger.info("Load the SNV variants for case {0}".format(case_obj.case_id))
+    logger.info("Delete variants for case %s", case_obj.case_id)
+    delete_variants(adapter=adapter, case_obj=case_obj)
 
-    if snv_file:
-        logger.info("Loading SNV variants for case {0}".format(
-                    case_obj.case_id))
-        load_variants(
-            adapter=adapter,
-            variant_file=snv_file,
-            case_obj=case_obj,
-            variant_type=variant_type,
-            category='snv'
-        )
+    logger.info("Load SNV variants for case %s", case_obj.case_id)
+    load_variants(adapter=adapter, variant_file=config['vcf'],
+                  case_obj=case_obj, variant_type='clinical', category='snv')
 
-    if sv_file:
-        logger.info("Load the SV variants for case {0}".format(
-                    case_obj.case_id))
-        load_variants(
-            adapter=adapter,
-            variant_file=sv_file,
-            case_obj=case_obj,
-            variant_type=variant_type,
-            category='sv'
-        )
+    if 'sv_vcf' in config:
+        logger.info("Load SV variants for case %s", case_obj.case_id)
+        load_variants(adapter=adapter, variant_file=config['vcf_sv'],
+                      case_obj=case_obj, variant_type='clinical',
+                      category='sv')
         case_obj.has_svvariants = True
         case_obj.save()
