@@ -51,7 +51,7 @@ def parse_hgnc_line(line, header):
         
         omim_id = raw_info.get('omim_id')
         if omim_id:
-            hgnc_gene['omim_ids'] = omim_id.split('|')
+            hgnc_gene['omim_ids'] = omim_id.strip('"').split('|')
         else:
             hgnc_gene['omim_ids'] = None
         

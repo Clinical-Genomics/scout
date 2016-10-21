@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from scout.utils.link import link_genes
 from scout.build import build_hgnc_gene
 
-from pprint import pprint as pp
+logger = logging.getLogger(__name__)
 
 
 def load_hgnc_genes(adapter, ensembl_transcripts, hgnc_genes, exac_genes):
@@ -19,8 +21,10 @@ def load_hgnc_genes(adapter, ensembl_transcripts, hgnc_genes, exac_genes):
         hgnc_genes=hgnc_genes,
         exac_genes=exac_genes
     )
-
+    logger.info("Loading the genes and transcripts...")
     for hgnc_symbol in genes:
         gene = genes[hgnc_symbol]
         gene_obj = build_hgnc_gene(gene)
-        pp(gene_obj.to_json())
+        # print(gene_obj.to_json())
+        adapter.load_hgnc_gene(gene_obj)
+    logger.info("Loading done...")

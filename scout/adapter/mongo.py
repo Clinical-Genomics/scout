@@ -18,13 +18,15 @@ import logging
 from mongoengine import (connect, DoesNotExist)
 from mongoengine.connection import (get_connection, _get_db)
 
-from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler)
+from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler, 
+               GeneHandler)
 from scout.models import User, HgncAlias
 
 logger = logging.getLogger(__name__)
 
 
-class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler):
+class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler, 
+                   GeneHandler):
 
     """Adapter for cummunication with a mongo database."""
 

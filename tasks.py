@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import gzip
 from invoke import run, task
 from invoke.util import log
 
@@ -8,10 +9,12 @@ from configobj import ConfigObj
 from mongoengine import connect
 from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
-from scout.load import load_scout
+from scout.load import (load_scout, load_hgnc_genes)
 
 from scout import logger
 from scout.log import init_log
+
+from scout.resources import (hgnc_file,exac_file,transcripts_file)
 
 init_log(logger, loglevel='INFO')
 
@@ -55,7 +58,19 @@ def setup(context, email, name="Paul Anderson"):
             update=False,
             scout_configs=config
         )
-
+    
+    hgnc_handle = gzip.open(hgnc_file, 'r')
+    ensembl_handle = gzip.open(transcripts_file, 'r')
+    exac_handle = gzip.open(exac_file, 'r')
+    
+    #Load the genes and transcripts
+    load_hgnc_genes(
+        adapter=adapter,
+        ensembl_transcripts=ensembl_handle, 
+        hgnc_genes=hgnc_handle, 
+        exac_genes=exac_handle
+    )
+    
 
 @task
 def teardown(context):
