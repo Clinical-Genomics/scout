@@ -47,10 +47,6 @@
   {{ super() }}
 
   {% if variant.ordered_sanger %}
-    <div v-on="click: showModal" class="icon-button" title="Order Sanger">
-      <core-icon icon="mail"></core-icon>
-    </div>
-  {% else %}
     <div class="case-assign-icon">
       <div class="md-label">
         <div class="md-label-text">
@@ -61,6 +57,10 @@
           {% endif %}
         </div>
       </div>
+    </div>
+  {% else %}
+    <div v-on="click: showModal" class="icon-button" title="Order Sanger">
+      <core-icon icon="mail"></core-icon>
     </div>
   {% endif %}
 

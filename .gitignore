@@ -38,6 +38,8 @@ nosetests.xml
 *.sublime-*
 dev/
 .vagrant/
+.coverage*
+htmlcov/
 
 # Complexity
 output/*.html

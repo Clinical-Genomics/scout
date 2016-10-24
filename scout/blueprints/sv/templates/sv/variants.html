@@ -42,6 +42,8 @@
         <th>Start loc</th>
         <th>Stop loc</th>
         <th>Length</th>
+        <th>Region</th>
+        <th>Function</th>
         <th>Frequency</th>
         <th>Gene(s)</th>
       </tr>
@@ -57,11 +59,18 @@
           <td>{{ variant.rank_score }}</td>
           <td>{{ variant.sub_category|upper }}</td>
           <td>{{ variant.position }}</td>
-          <td>{{ variant.end if variant.end }}</td>
-          <td>{{ variant.length if variant.length }}</td>
-          <td></td>
+          <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
+          <td>{{ 'inf' if variant.length == 100000000000 else variant.length }}</td>
+          <td>{{ variant.max_thousand_genomes_frequency if variant.max_thousand_genomes_frequency }}</td>
+          <td>{{ variant.region_annotations[:3]|join(', ') }}</td>
+          <td>{{ variant.functional_annotations[:3]|join(', ') }}</td>
           <td>
-            {{ variant.hgnc_symbols|join(', ') }}
+            {% if variant.hgnc_symbols|length >= 5 %}
+              {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
+            {% else %}
+              {{ variant.hgnc_symbols|join(', ') }}
+            {% endif %}
+
             {% if variant.hgnc_symbols %}
               <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
             {% endif %}
