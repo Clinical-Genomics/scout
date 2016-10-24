@@ -1,0 +1,39 @@
+---
+institute: cust000
+family: 337334-testset
+
+samples:
+    - sample_id: ADM1136A1
+      sex: male
+      phenotype: unaffected
+      capture_kit: Agilent_SureSelectCRE.V1
+      bam_path: apath
+      name: Sample 1
+      analysis_type: wes
+    - sample_id: ADM1136A2
+      father: ADM1136A1
+      mother: ADM1136A3
+      sex: male
+      phenotype: affected
+      capture_kit: Agilent_SureSelectCRE.V1
+      bam_path: apath
+      name: Sample 2
+      analysis_type: wes
+    - sample_id: ADM1136A3
+      sex: female
+      phenotype: unaffected
+      capture_kit: Agilent_SureSelectCRE.V1
+      bam_path: apath
+      name: Sample 3
+      analysis_type: wes
+
+vcf_snv: tests/fixtures/1.downsampled.vcf
+vcf_sv: tests/fixtures/1.SV.vcf
+
+madeline: tests/fixtures/madeline.xml
+default_panels: [Panel1]
+
+# meta data
+rank_model_version: 1.12
+analysis_date: 2016-10-12 14:00:46
+human_genome_build: GRCh.37

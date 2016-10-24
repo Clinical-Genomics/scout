@@ -33,7 +33,8 @@ def parse_case(config, ped=None):
         'phenotype': sample['phenotype'],
         'bam_file': sample.get('bam_path'),
         'analysis_type': sample.get('analysis_type'),
-        'capture_kits': [sample.get('capture_kit')],
+        'capture_kits': ([sample.get('capture_kit')] if 'capture_kit' in sample
+                         else []),
     } for sample in config['samples']]
 
     owner = config['institute']
@@ -77,7 +78,7 @@ def parse_ped(ped_stream, family_type='mip'):
     family = pedigree.families[family_id]
 
     samples = [{
-        'id': ind_id,
+        'sample_id': ind_id,
         'father': individual.father,
         'mother': individual.mother,
         'sex': SEX_MAP[individual.sex],
