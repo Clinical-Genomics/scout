@@ -4,7 +4,7 @@ from configobj import ConfigObj
 from scout import __version__, logger
 from scout.log import init_log
 from scout.adapter import MongoAdapter
-from . import (load, transfer, wipe, delete_case, genes, export, institute)
+from . import (load, transfer, wipe, delete_case, hgnc, export, institute)
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 

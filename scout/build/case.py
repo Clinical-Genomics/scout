@@ -1,67 +1,47 @@
 import logging
 
-from scout.models import (Case)
+from scout.models import Case
 
-from . import (build_individual, build_panel)
+from . import build_individual
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
-def build_case(case):
+
+def build_case(case_data):
     """Build a mongoengine Case object
-    
-        Args:
-            case(dict): A dictionary with the relevant case information
-    
-        Returns:
-            case_obj(Case): A mongoengine case object
+
+    Args:
+        case_data (dict): A dictionary with the relevant case information
+
+    Returns:
+        case_obj (Case): A mongoengine case object
     """
-    logger.info("Building case with case id: {0}".format(case['case_id']))
+    log.info("build case with id: {0}".format(case_data['case_id']))
     case_obj = Case(
-        case_id=case['case_id'],
-        display_name=case['display_name'],
-        owner=case['owner'],
+        case_id=case_data['case_id'],
+        display_name=case_data['display_name'],
+        owner=case_data['owner'],
     )
-    case_obj.collaborators = case.get('collaborators')
-    case_obj.analysis_type = case.get('analysis_type')
-    case_obj.vcf_file = case.get('vcf_file')
-    
+    case_obj.collaborators = case_data.get('collaborators')
+    case_obj.analysis_type = case_data.get('analysis_type')
+
     # Individuals
-    individual_objs = []
-    for individual in case.get('individuals',[]):
-        individual_objs.append(build_individual(individual))
-    case_obj.individuals = individual_objs
-        
+    ind_objs = []
+    for individual in case_data.get('individuals', []):
+        ind_objs.append(build_individual(individual))
+    # sort the samples to put the affected individual first
+    sorted_inds = sorted(ind_objs, key=lambda ind: -ind.phenotype)
+    case_obj.individuals = sorted_inds
+
     # Meta data
-    case_obj.genome_build = case.get('genome_build')
-    case_obj.genome_version = case.get('genome_version')
-    case_obj.rank_model_version = case.get('rank_model_version')
-    
-    case_obj.analysis_date = case.get('analysis_date')
-    case_obj.analysis_dates = case.get('analysis_dates')
-    
-    case_obj.analysis_type = case.get('analysis_type')
-    
+    case_obj.genome_build = case_data.get('genome_build')
+    case_obj.rank_model_version = str(case_data.get('rank_model_version'))
+
+    analysis_date = case_data.get('analysis_date')
+    if analysis_date:
+        case_obj.analysis_date = analysis_date.date().isoformat()
+        case_obj.analysis_dates.append(case_obj.analysis_date)
+
     # Files
-    case_obj.madeline_info = case.get('madeline_info')
-    case_obj.coverage_report = case.get('coverage_report')
-    
-    case_obj.vcf_file = case.get('vcf_file')
-    
-    # Gene Panels
-    case_obj.default_panels = case.get('default_panels')
-    clinical_panels = []
-    research_panels = []
-    
-    for panel in case.get('clinical_panels', []):
-        clinical_panels.append(
-            build_panel(panel_info=panel)
-        )
-    case_obj.clinical_panels = clinical_panels
-    
-    for panel in case.get('research_panels', []):
-        research_panels.append(
-            build_panel(panel_info=panel)
-            )
-    case_obj.research_panels = research_panels
-    
+    case_obj.madeline_info = case_data.get('madeline_info')
     return case_obj
