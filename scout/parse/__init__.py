@@ -14,5 +14,5 @@ from .transcript import (parse_transcripts, parse_disease_associated)
 from .gene import parse_genes
 from .compound import parse_compounds
 from .clnsig import get_clnsig
-from .case import (parse_individual,parse_case)
+from .case import parse_case
 from .variant import parse_variant

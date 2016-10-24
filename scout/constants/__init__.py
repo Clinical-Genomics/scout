@@ -47,19 +47,19 @@ SEVERE_SO_TERMS = list(SO_TERMS.keys())[:so_cutoff]
 
 
 CONSEQUENCE = (
-    'deleterious', 
-    'deleterious_low_confidence', 
+    'deleterious',
+    'deleterious_low_confidence',
     'probably_damaging',
-    'possibly_damaging', 
-    'tolerated', 
+    'possibly_damaging',
+    'tolerated',
     'tolerated_low_confidence',
-    'benign', 
+    'benign',
     'unknown'
 )
 
 CONSERVATION = ('NotConserved', 'Conserved')
 
-SEVERE_SO_TERMS = (  
+SEVERE_SO_TERMS = (
     'transcript_ablation',
     'splice_donor_variant',
     'splice_acceptor_variant',
@@ -124,3 +124,8 @@ VARIANT_CALL = (
 )
 
 ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown')
+
+SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown'}
+REV_SEX_MAP = {value: key for key, value in SEX_MAP.items()}
+PHENOTYPE_MAP = {1: 'unaffected', 2: 'affected', 0: 'unknown', -9: 'unknown'}
+REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}

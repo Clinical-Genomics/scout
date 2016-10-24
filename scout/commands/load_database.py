@@ -25,10 +25,15 @@ logger = logging.getLogger(__name__)
 @click.option('-sv', '--vcf-sv', type=click.Path(exists=True),
               help='path to clinical SV VCF file to be loaded')
 @click.option('-o', '--owner', help='parent institute for the case')
-@click.argument('-c', '--config', type=click.File('r'), required=False)
+@click.option('-p', '--ped', type=click.File('r'))
+@click.option('-u', '--update', is_flag=True)
+@click.argument('config', type=click.File('r'), required=False)
 @click.pass_context
-def add(context, vcf, vcf_sv, owner, config):
+def load(context, vcf, vcf_sv, owner, ped, update, config):
     """Add a new case to Scout."""
+    if config is None and ped is None:
+        click.echo("you have to provide either config or ped file")
+        context.abort()
     config_data = yaml.load(config) if config else {}
     config_data['vcf'] = vcf if vcf else config_data.get('vcf')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
@@ -41,4 +46,4 @@ def add(context, vcf, vcf_sv, owner, config):
         logger.warn("Please provide an owner for the case (use '--owner')")
         context.abort()
 
-    load_scout(context.obj['adapter'], config)
+    load_scout(context.obj['adapter'], config_data, ped=ped, update=update)
