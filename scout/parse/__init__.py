@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .hpo import parse_hpo_genes
 from .exac import parse_exac_genes
 from .ensembl import (parse_ensembl_genes, parse_ensembl_transcripts)
 from .hgnc import parse_hgnc_genes

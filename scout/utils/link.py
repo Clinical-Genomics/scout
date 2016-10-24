@@ -1,11 +1,11 @@
 import logging
 
 from scout.parse import (parse_hgnc_genes, parse_ensembl_transcripts, 
-                         parse_exac_genes)
+                         parse_exac_genes, parse_hpo_genes)
 
 logger = logging.getLogger(__name__)
 
-def link_genes(ensembl_transcripts, hgnc_genes, exac_genes):
+def link_genes(ensembl_transcripts, hgnc_genes, exac_genes, hpo_lines):
     """Gather information from different sources and return a gene dict
     
         Extract information collected from a number of sources and combine them 
@@ -15,6 +15,7 @@ def link_genes(ensembl_transcripts, hgnc_genes, exac_genes):
             ensembl_genes(iterable(str))
             hgnc_genes(iterable(str))
             exac_genes(iterable(str))
+            hpo_lines(iterable(str))
         
         Yields:
             gene(dict): A dictionary with gene information
@@ -75,5 +76,27 @@ def link_genes(ensembl_transcripts, hgnc_genes, exac_genes):
         hgnc_symbol = exac_gene['hgnc_symbol']
         if hgnc_symbol in genes:
             genes[hgnc_symbol]['pli_score'] = exac_gene['pli_score']
-            
+    
+    hpo_genes = parse_hpo_genes(hpo_lines)
+    for hgnc_symbol in hpo_genes:
+        hpo_info = hpo_genes[hgnc_symbol]
+        if hgnc_symbol in genes:
+            gene = genes[hgnc_symbol]
+            if hpo_info.get('incomplete_penetrance'):
+                gene['incomplete_penetrance'] = True
+            if hpo_info.get('ar'):
+                gene['ar'] = True
+            if hpo_info.get('ad'):
+                gene['ad'] = True
+            if hpo_info.get('mt'):
+                gene['mt'] = True
+            if hpo_info.get('xd'):
+                gene['xd'] = True
+            if hpo_info.get('xr'):
+                gene['xr'] = True
+            if hpo_info.get('x'):
+                gene['x'] = True
+            if hpo_info.get('y'):
+                gene['y'] = True
+
     return genes

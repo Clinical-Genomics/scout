@@ -42,8 +42,13 @@ logger = logging.getLogger(__name__)
                 help="Path to exac gene file",
                 required=True
 )
+@click.option('--hpo',
+                type=click.Path(exists=True),
+                help="Path to HPO gene file",
+                required=True
+)
 @click.pass_context
-def genes(ctx, hgnc, ensembl, exac):
+def genes(ctx, hgnc, ensembl, exac, hpo):
     """
     Load the hgnc aliases to the mongo database.
     """
@@ -67,9 +72,17 @@ def genes(ctx, hgnc, ensembl, exac):
     else:
         exac_handle = open(exac, 'r')
 
+    logger.info("Loading HPO gene file from {0}".format(
+                hpo))
+    if hpo.endswith('.gz'):
+        hpo_handle = gzip.open(hpo, 'r')
+    else:
+        hpo_handle = open(hpo, 'r')
+
     load_hgnc_genes(
         adapter=ctx.obj['adapter'],
         ensembl_transcripts=ensembl_handle, 
         hgnc_genes=hgnc_handle, 
-        exac_genes=exac_handle
+        exac_genes=exac_handle,
+        hpo_lines=hpo_handle
     )
