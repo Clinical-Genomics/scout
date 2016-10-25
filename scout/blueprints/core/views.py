@@ -12,7 +12,7 @@ import query_phenomizer
 from scout.models import Case, Variant
 from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb
-from scout.utils import templated, validate_user
+from scout.utils.helpers import templated, validate_user
 
 from .forms import init_filters_form, process_filters_form, GeneListUpload
 from .utils import genecov_links

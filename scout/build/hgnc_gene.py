@@ -53,4 +53,12 @@ def build_hgnc_gene(gene):
     
     gene_obj.transcripts = transcript_objs
     
+    gene_obj.incomplete_penetrance = gene.get('incomplete_penetrance', False)
+    gene_obj.ad = gene.get('ad', False)
+    gene_obj.ar = gene.get('ar', False)
+    gene_obj.xd = gene.get('xd', False)
+    gene_obj.xr = gene.get('xr', False)
+    gene_obj.x = gene.get('x', False)
+    gene_obj.y = gene.get('y', False)
+
     return gene_obj

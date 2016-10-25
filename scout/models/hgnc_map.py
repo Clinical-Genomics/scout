@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
 from mongoengine import (Document, StringField, ListField, EmbeddedDocument,
-                         IntField, FloatField)
+                         IntField, FloatField, EmbeddedDocumentField, 
+                         BooleanField)
 
 class HgncAlias(Document):
     #This works like a dictionary where hgnc_symbol is the correct id and
@@ -38,6 +39,17 @@ class HgncGene(Document):
     ucsc_id = StringField()
     uniprot_ids = ListField(StringField())
     vega_id = StringField()
+    transcripts = ListField(EmbeddedDocumentField(HgncTranscript))
+    
+    #Inheritance information
+    incomplete_penetrance = BooleanField()
+    ar = BooleanField()
+    ad = BooleanField()
+    mt = BooleanField()
+    xr = BooleanField()
+    xd = BooleanField()
+    x = BooleanField()
+    y = BooleanField()
     
     @property
     def hgnc_link(self):

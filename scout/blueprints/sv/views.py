@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from flask_mongoengine import Pagination
 
 from scout.extensions import store
-from scout.utils import templated, validate_user
+from scout.utils.helpers import templated, validate_user
 
 sv_bp = Blueprint('sv', __name__, template_folder='templates',
                   static_folder='static', static_url_path='/sv/static')

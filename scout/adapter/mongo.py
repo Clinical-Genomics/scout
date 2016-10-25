@@ -18,13 +18,15 @@ import logging
 from mongoengine import (connect, DoesNotExist)
 from mongoengine.connection import (get_connection, _get_db)
 
-from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler)
+from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler, 
+               GeneHandler)
 from scout.models import User, HgncAlias
 
 logger = logging.getLogger(__name__)
 
 
-class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler):
+class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler, 
+                   GeneHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -75,11 +77,11 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler):
             password=password
         )
         logger.debug("Connection established")
-    
+
     def get_connection(self):
         """Return a mongoengine connection object"""
         return get_connection()
-    
+
     def drop_database(self):
         """Drop the database that the adapter is connected to."""
         logger.info("Drop database {0}".format(self.mongodb_name))
@@ -106,12 +108,9 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler):
             user_obj = User.objects.get(email=email)
         except DoesNotExist:
             logger.info('create user: %s', email)
-            user_obj = User(
-                email=email, 
-                created_at=datetime.utcnow(),
-                location=location, 
-                name=name,
-                institutes=institutes)
+            user_obj = User(email=email, created_at=datetime.utcnow(),
+                            location=location, name=name,
+                            institutes=institutes)
             user_obj.save()
 
         return user_obj
@@ -131,12 +130,11 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler):
             Args:
                 hgnc_gene(dict):A dictionary with hgnc genes
         """
-        logger.debug("Addind gene %s with aliases %s",
-                    (hgnc_gene['hgnc_symbol'], ', '.join(hgnc_gene['aliases'])))
-        hgnc_gene_obj = HgncAlias(
-            hgnc_symbol = hgnc_gene['hgnc_symbol'],
-            aliases = hgnc_gene['aliases']
-        )
+        symbol = hgnc_gene['hgnc_symbol']
+        aliases = ', '.join(hgnc_gene['aliases'])
+        logger.debug("Addind gene %s with aliases %s", symbol, aliases)
+        hgnc_gene_obj = HgncAlias(hgnc_symbol=hgnc_gene['hgnc_symbol'],
+                                  aliases=hgnc_gene['aliases'])
         hgnc_gene_obj.save()
 
         return hgnc_gene_obj
