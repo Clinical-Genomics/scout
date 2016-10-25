@@ -1,18 +1,20 @@
+# -*- coding: utf-8 -*-
 from codecs import open
+
 
 def parse_genes(panel_path, panel_name):
     """Parse a file with genes and return the hgnc ids
-    
-        Args:
-            panel_path(str): Path to gene panel file
-            panel_name(str): Name of the gene panel
-        
-        Returns:
-            genes(list(str)): List of hgnc ids
+
+    Args:
+        panel_path(str): Path to gene panel file
+        panel_name(str): Name of the gene panel
+
+    Returns:
+        genes(list(str)): List of hgnc ids
     """
     genes = []
     header = []
-    
+
     with open(panel_path, 'r') as f:
         for line in f:
             line = line.rstrip()
@@ -47,19 +49,20 @@ def parse_genes(panel_path, panel_name):
 
     return genes
 
+
 def parse_gene_panel(panel_info, institute):
     """Parse the panel info and return a gene panel
-        
+
         Args:
             panel_info(dict)
             institute(str)
-    
+
         Returns:
             gene_panel(dict)
     """
-    
+
     gene_panel = {}
-    
+
     gene_panel['path'] = panel_info.get('file')
     gene_panel['institute'] = institute
     gene_panel['type'] = panel_info.get('type', 'clinical')
@@ -67,12 +70,8 @@ def parse_gene_panel(panel_info, institute):
     gene_panel['version'] = float(panel_info.get('version', '0'))
     gene_panel['id'] = panel_info.get('name')
     gene_panel['display_name'] = panel_info.get('full_name', gene_panel['id'])
-    
-    gene_panel['genes'] = parse_genes(
-        panel_path = gene_panel['path'],
-        panel_name = gene_panel['id']
-    )
-    
+
+    gene_panel['genes'] = parse_genes(panel_path=gene_panel['path'],
+                                      panel_name=gene_panel['id'])
+
     return gene_panel
-    
-    

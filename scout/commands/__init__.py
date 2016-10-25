@@ -9,4 +9,5 @@ from .transfer import transfer
 from .wipe_database import wipe
 from .delete_case import delete_case
 from .export import export
+from .panel import panel
 from .base import cli
