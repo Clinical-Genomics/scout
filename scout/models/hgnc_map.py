@@ -64,3 +64,11 @@ class HgncGene(Document):
         url_template = ("http://www.genecards.org/cgi-bin/carddisp.pl?gene={}")
         return url_template.format(self.hgnc_symbol)
         
+    meta = {
+        'index_background': True,
+        'indexes':[
+            'hgnc_id',
+            ('chromosome' ,'+start', '+end'),
+        ]
+    }
+    

@@ -357,7 +357,6 @@ class Variant(Document):
 
         return url_template.format(this=self)
 
-    ##TODO Add indexes to document
     meta = {
         'index_background': True,
         'indexes':[
