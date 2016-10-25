@@ -28,3 +28,10 @@ class GeneHandler(object):
             gene_obj = None
         
         return gene_obj
+    
+    def hgnc_genes(self):
+        """Fetch a hgnc gene"""
+        logger.debug("Fetching all genes")
+        
+        return HgncGene.objects().order_by('chromosome')
+

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .load_hpo import hpo
 from .institute import institute
 from .load_genes import genes
 from .load_database import load

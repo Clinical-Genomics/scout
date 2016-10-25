@@ -1,3 +1,4 @@
+from .hpo import load_hpo_terms
 from .hgnc_gene import load_hgnc_genes
 from .panel import load_panel
 from .case import load_case

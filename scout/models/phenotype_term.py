@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, EmbeddedDocument, StringField, ListField,
-                         ReferenceField)
+                         ReferenceField, IntField)
 
 from scout.models import HgncGene
 
-class HpoTerm(Ducument):
+class HpoTerm(Document):
     hpo_id = StringField(required=True)
     description = StringField()
     genes = ListField(ReferenceField('HgncGene'))
@@ -22,7 +22,7 @@ class HpoTerm(Ducument):
         ]
     }
 
-class DiseaseTerms(Document):
+class DiseaseTerm(Document):
     #This is usually the mimnr for the disease
     disease_id = IntField(required=True)
     

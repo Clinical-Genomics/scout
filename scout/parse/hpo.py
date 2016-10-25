@@ -60,7 +60,7 @@ def parse_hpo_phenotypes(hpo_lines):
         Group the genes that a phenotype is associated to in 'genes'
     """
     hpo_terms = {}
-    
+    logger.info("Parsing hpo phenotypes...")
     for index, line in enumerate(hpo_lines):
         if index > 0:
             hpo_info = parse_hpo_phenotype(line)
@@ -74,7 +74,7 @@ def parse_hpo_phenotypes(hpo_lines):
                     'description': hpo_info['description'],
                     'hgnc_symbols': [hgnc_symbol]
                 }
-    
+    logger.info("Parsing done.")
     return hpo_terms
 
 def parse_hpo_diseases(hpo_lines):
@@ -87,6 +87,7 @@ def parse_hpo_diseases(hpo_lines):
             diseases(dict): A dictionary with mim numbers as keys
     """
     diseases = {}
+    logger.info("Parsing hpo diseases...")
     for index, line in enumerate(file_handle):
         if index > 0:
             mim_info = parse_hpo_disease(line)
@@ -103,6 +104,7 @@ def parse_hpo_diseases(hpo_lines):
                         'hgnc_symbols': set([hgnc_symbol]),
                         'hpo_terms': set([hpo_term]),
                     }
+    logger.info("Parsing done.")
     return diseases
     
 
@@ -143,6 +145,7 @@ def parse_hpo_genes(hpo_lines):
                 gene['x'] = True
             if description == 'X-linked inheritance':
                 gene['y'] = True
+    logger.info("Parsing done.")
     return genes
     
 
