@@ -3,13 +3,13 @@
 {% from '_macros.html' import activity_feed %}
 
 {% macro hpo_item(institute, case, hpo_term, group=False, selected_ids=None) %}
-<div class="list-item">
-  {% if group %}
+  <div class="list-item">
+    {% if group %}
       <div>
-          {{ hpo_term.feature }}
-          <a href="{{ hpo_term.hpo_link }}" target="_blank">
-            <small>{{ hpo_term.phenotype_id }}</small>
-          </a>
+        {{ hpo_term.feature }}
+        <a href="{{ hpo_term.hpo_link }}" target="_blank">
+          <small>{{ hpo_term.phenotype_id }}</small>
+        </a>
       </div>
       <form action="{{ url_for('core.case_phenotype',
                                institute_id=institute.internal_id,
@@ -21,19 +21,19 @@
           <core-icon icon="highlight-remove"></core-icon>
         </button>
       </form>
-  {% else %}
-    <div>
-      <label>
-          <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
-                 {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
-          {{ hpo_term.feature }}
-          <a href="{{ hpo_term.hpo_link }}" target="_blank">
-            <small>{{ hpo_term.phenotype_id }}</small>
-          </a>
-      </label>
-    </div>
-  {% endif %}
-</div>
+    {% else %}
+      <div>
+        <label>
+            <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
+                   {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
+            {{ hpo_term.feature }}
+            <a href="{{ hpo_term.hpo_link }}" target="_blank">
+              <small>{{ hpo_term.phenotype_id }}</small>
+            </a>
+        </label>
+      </div>
+    {% endif %}
+  </div>
 {% endmacro %}
 
 {% set page_title = "Case " ~ case.display_name %}
@@ -68,7 +68,6 @@
 {% endblock %}
 
 {% block toolbar_secondary %}
-
   {% if case.analysis_type %}
     <div class="md-label">
       <div class="md-label-icon"><core-icon icon="info"></core-icon></div>
@@ -162,7 +161,7 @@
         <div class="md-label-text"><i>Research pending</i></div>
       </div>
     {% else %}
-      <div v-on="click: showModal" class="md-label clickable">
+      <div v-on:click="showModal" class="md-label clickable">
         <div class="md-label-icon">
           <core-icon icon="public"></core-icon>
         </div>
@@ -179,7 +178,7 @@
       <div class="md-label-text"><i>Rerun pending</i></div>
     </div>
   {% else %}
-    <div v-on="click: showRerunModal" class="md-label clickable">
+    <div v-on:click="showSecondModal" class="md-label clickable">
       <div class="md-label-icon">
         <core-icon icon="restore"></core-icon>
       </div>
@@ -266,7 +265,6 @@
       </form>
     {% endif %}
   {% endif %}
-
 {% endblock %}
 
 {% block content %}
@@ -296,8 +294,8 @@
   </div>
 
   <div class="case-segments">
-
-    <div id="overview" class="case-segment-row">
+    {# matching causative variants #}
+    <div id="matching" class="case-segment-row">
       <div id="case-candidates" class="md-card">
         <div class="md-card-header">Matching causatives from other cases</div>
         <div class="md-card-body-list">
@@ -331,7 +329,9 @@
       </div>
     </div>
 
+    {# family overview and synopsis #}
     <div id="overview" class="case-segment-row">
+      {# individuals #}
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Individuals</div>
         <div class="md-card-body-list">
@@ -356,6 +356,7 @@
         </div>
       </div>
 
+      {# pedigree #}
       <div id="case-samples" class="md-card">
         <div class="md-card-header">Pedigree</div>
         <div class="md-card-body-list layout-center">
@@ -368,38 +369,16 @@
         </div>
       </div>
 
+      {# synopsis markdown editor #}
       <div id="case-synopsis" class="md-card">
         <div class="md-card-header">Synopsis</div>
         <div class="md-card-body--padded">
-          <markdown-editor v-ref="synopsisEditor" v-with='
-            content: {{ case.synopsis|tojson|safe }},
-            onSave: updateSynopsis
-          '></markdown-editor>
-        </div>
-
-        <div class="md-card-footer">
-          <div class="md-button-group">
-            <div class="md-button-flat"
-                 v-on="click: $.synopsisEditor.save"
-                 v-show="$.synopsisEditor.isEditing">
-              Save
-            </div>
-            <div class="md-button-flat"
-                 v-on="click: $.synopsisEditor.cancel"
-                 v-show="$.synopsisEditor.isEditing">
-              Cancel
-            </div>
-
-            <div class="md-button-flat"
-                 v-on="click: $.synopsisEditor.edit"
-                 v-show="!$.synopsisEditor.isEditing">
-              Edit
-            </div>
-          </div>
+          <markdown-editor content='{{ case.synopsis|tojson|safe }}' v-on:save="updateSynopsis"></markdown-editor>
         </div>
       </div>
     </div>
 
+    {# candidates, causatives, and disease #}
     <div id="candidates" class="case-segment-row">
       <div id="case-candidates" class="md-card">
         <div class="md-card-header">Strong candidates</div>
@@ -555,7 +534,8 @@
       </div>
     </div>
 
-    <div id="activity" class="case-segment-row">
+    {# phenotypes #}
+    <div id="phenotypes" class="case-segment-row">
       <div class="md-card">
         <div class="md-card-header">Phenotype groups</div>
         <div class="md-card-body-list mod-scrollable-big">
@@ -624,7 +604,8 @@
       </div>
     </div>
 
-    <div id="gene-lists+hpo-genes" class="case-segment-row">
+    {# comments and gene panels #}
+    <div id="comments" class="case-segment-row">
       <div id="case-activity" class="md-card">
         <div class="md-card-header">Comments</div>
         <div class="md-card-body-list">
@@ -735,6 +716,7 @@
       </div>
     </div>
 
+    {# activity feed #}
     <div id="activity" class="case-segment-row">
       <div id="case-activity" class="md-card">
         <div class="md-card-header">Activity</div>
@@ -743,11 +725,10 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- Request research list modal -->
-  <md-modal v-ref="modal" title="Request research list">
+  <core-modal title="Request research list" :visible="modalVisible" v-on:hide="hideModal">
     <form action="{{ url_for('core.open_research',
                               institute_id=institute.internal_id,
                               case_id=case.display_name) }}"
@@ -756,10 +737,10 @@
       <p>You also confirm that you have the relevant consent signed.</p>
       <button type="submit" class="md-button">Confirm</button>
     </form>
-  </md-modal>
+  </core-modal>
 
   <!-- Request rerun modal -->
-  <md-modal v-ref="rerunModal" title="Request rerun">
+  <core-modal title="Request rerun" :visible="modalSecondVisible" v-on:hide="hideSecondModal">
     <form action="{{ url_for('core.request_rerun',
                               institute_id=institute.internal_id,
                               case_id=case.display_name) }}"
@@ -767,6 +748,6 @@
       <p>Please confirm that you want to have the case rerun and the current variants replaced with updated information.</p>
       <button type="submit" class="md-button">Confirm</button>
     </form>
-  </md-modal>
+  </core-modal>
 
 {% endblock %}
