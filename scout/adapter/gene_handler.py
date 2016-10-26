@@ -19,11 +19,11 @@ class GeneHandler(object):
         gene_obj.save()
         logger.debug("Gene saved")
     
-    def hgnc_gene(self, hgnc_id):
+    def hgnc_gene(self, hgnc_symbol):
         """Fetch a hgnc gene"""
-        logger.debug("Fetching gene %s" % hgnc_id)
+        logger.debug("Fetching gene %s" % hgnc_symbol)
         try:
-            gene_obj = HgncGene.objects.get(hgnc_id=hgnc_id)
+            gene_obj = HgncGene.objects.get(hgnc_symbol=hgnc_symbol)
         except DoesNotExist:
             gene_obj = None
         
@@ -31,7 +31,7 @@ class GeneHandler(object):
     
     def hgnc_genes(self):
         """Fetch a hgnc gene"""
-        logger.debug("Fetching all genes")
+        logger.info("Fetching all genes")
         
         return HgncGene.objects().order_by('chromosome')
 

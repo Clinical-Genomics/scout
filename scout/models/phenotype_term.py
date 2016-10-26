@@ -5,7 +5,7 @@ from mongoengine import (Document, EmbeddedDocument, StringField, ListField,
 from scout.models import HgncGene
 
 class HpoTerm(Document):
-    hpo_id = StringField(required=True)
+    hpo_id = StringField(required=True, unique=True)
     description = StringField()
     genes = ListField(ReferenceField('HgncGene'))
 
@@ -24,7 +24,7 @@ class HpoTerm(Document):
 
 class DiseaseTerm(Document):
     #This is usually the mimnr for the disease
-    disease_id = IntField(required=True)
+    disease_id = IntField(required=True, unique=True)
     
     genes = ListField(ReferenceField('HgncGene'))
     hpo_terms = ListField(ReferenceField('HpoTerm'))

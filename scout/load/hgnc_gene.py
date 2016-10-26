@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from datetime import datetime
+
 from scout.utils.link import link_genes
 from scout.build import build_hgnc_gene
 
@@ -24,9 +26,13 @@ def load_hgnc_genes(adapter, ensembl_transcripts, hgnc_genes, exac_genes, hpo_li
         hpo_lines=hpo_lines,
     )
     logger.info("Loading the genes and transcripts...")
-
-    for hgnc_symbol in genes:
+    
+    start_time = datetime.now()
+    
+    for nr_genes, hgnc_symbol in enumerate(genes):
         gene = genes[hgnc_symbol]
         gene_obj = build_hgnc_gene(gene)
         adapter.load_hgnc_gene(gene_obj)
-    logger.info("Loading done...")
+        
+    logger.info("Loading done. {0} genes loaded".format(nr_genes))
+    logger.info("Time to load genes: {0}".format(datetime.now() - start_time))

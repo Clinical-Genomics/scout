@@ -19,9 +19,8 @@ from scout.resources import (hgnc_file, exac_file, transcripts_file,
 
 init_log(logger, loglevel='INFO')
 
-
 @task
-def setup(context, email, name="Paul Anderson"):
+def setup_test(context, email, name="Paul Anderson"):
     """docstring for setup"""
     db_name = 'variantDatabase'
     adapter = MongoAdapter()

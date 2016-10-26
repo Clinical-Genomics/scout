@@ -88,7 +88,7 @@ def parse_hpo_diseases(hpo_lines):
     """
     diseases = {}
     logger.info("Parsing hpo diseases...")
-    for index, line in enumerate(file_handle):
+    for index, line in enumerate(hpo_lines):
         if index > 0:
             mim_info = parse_hpo_disease(line)
             if mim_info:

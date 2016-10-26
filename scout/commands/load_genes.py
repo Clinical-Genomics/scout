@@ -24,6 +24,8 @@ import click
 
 from scout.load import load_hgnc_genes
 
+from . import get_file_handle
+
 logger = logging.getLogger(__name__)
 
 @click.command()
@@ -87,33 +89,21 @@ def genes(ctx, hgnc, ensembl, exac, hpo, export_genes, export_transcripts):
         if not (hgnc and ensembl and exac and hpo):
             logger.info("Please provide all gene files")
             ctx.abort()
-    
+
         logger.info("Loading hgnc file from {0}".format(hgnc))
-        if hgnc.endswith('.gz'):
-            hgnc_handle = gzip.open(hgnc, 'r')
-        else:
-            hgnc_handle = open(hgnc, 'r')
+        hgnc_handle = get_file_handle(hgnc)
         
         logger.info("Loading ensembl transcript file from {0}".format(
                     ensembl))
-        if ensembl.endswith('.gz'):
-            ensembl_handle = gzip.open(ensembl, 'r')
-        else:
-            ensembl_handle = open(ensembl, 'r')
+        ensembl_handle = get_file_handle(ensembl)
         
         logger.info("Loading exac gene file from {0}".format(
                     exac))
-        if exac.endswith('.gz'):
-            exac_handle = gzip.open(exac, 'r')
-        else:
-            exac_handle = open(exac, 'r')
+        exac_handle = get_file_handle(exac)
         
         logger.info("Loading HPO gene file from {0}".format(
                     hpo))
-        if hpo.endswith('.gz'):
-            hpo_handle = gzip.open(hpo, 'r')
-        else:
-            hpo_handle = open(hpo, 'r')
+        hpo_handle = get_file_handle(hpo)
         
         load_hgnc_genes(
             adapter=adapter,

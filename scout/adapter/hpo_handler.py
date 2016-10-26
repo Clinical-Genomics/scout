@@ -15,9 +15,9 @@ class HpoHandler(object):
             hpo_obj(HgncGene)
 
         """
-        logger.debug("Loading gene {0} into database".format(gene_obj['hgnc_symbol']))
+        logger.debug("Loading hpo term %s into database" , hpo_obj['hpo_id'])
         hpo_obj.save()
-        logger.debug("Gene saved")
+        logger.debug("Hpo term saved")
     
     def hpo_term(self, hpo_id):
         """Fetch a hgnc gene"""
@@ -28,3 +28,18 @@ class HpoHandler(object):
             hpo_obj = None
         
         return hpo_obj
+    
+    def hpo_terms(self):
+        """Return all HPO terms"""
+        logger.info("Fetching all hpo terms from database")
+        
+        return HpoTerm.objects()
+    
+    def load_disease_term(self, disease_obj):
+        """Load a disease term into the database"""
+        logger.debug("Loading disease %s into database", disease_obj.disease_id)
+        
+        disease_obj.save()
+        logger.debug("Disease term saved")
+        
+        
