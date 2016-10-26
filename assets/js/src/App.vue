@@ -3,6 +3,7 @@
   import DrawerPanel from './components/DrawerPanel.vue'
   import MarkdownEditor from './components/MarkdownEditor.vue'
   import CoreModal from './components/CoreModal.vue'
+  import Typeahead from './components/Typeahead.vue'
 
   export default {
     name: 'app',
@@ -79,7 +80,8 @@
       'core-icon': CoreIcon,
       'drawer-panel': DrawerPanel,
       'markdown-editor': MarkdownEditor,
-      'core-modal': CoreModal
+      'core-modal': CoreModal,
+      'typeahead': Typeahead
     }
   }
 </script>

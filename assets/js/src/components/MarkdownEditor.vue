@@ -19,7 +19,7 @@
 <template>
   <div class="markdown-editor">
     <textarea v-show="isEditing"
-              v-model="mkdContent"
+              v-model.trim="mkdContent"
               class="markdown-editor-input"
               placeholder="Edit synopsis">
     </textarea>
@@ -51,7 +51,11 @@
     },
     mounted () {
       this.update()
-      this.mkdContent = this.content.replace(/(^[ '\^\$\*#&]+)|([ '\^\$\*#&]+$)/g, '')
+      if (this.content) {
+        this.mkdContent = this.content.replace(/(^[ '\^\$\*#&]+)|([ '\^\$\*#&]+$)/g, '')
+      } else {
+        this.mkdContent = this.content
+      }
     },
     methods: {
       showEditor () {
