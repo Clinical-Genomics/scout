@@ -30,11 +30,25 @@
         superagent
           .put(`/api/v1${location.pathname}/synopsis`)
           .send({ synopsis: markdown })
-          .end((res) => {
-            if (res.ok) {
-              console.log('Synopsis updated!')
-            } else {
+          .end((err, res) => {
+            if (err || !res.ok) {
               console.log('Synopsis update failed.')
+            } else {
+              console.log('Synopsis updated!')
+            }
+          })
+      },
+      saveHpoterm (hpo_id) {
+        superagent
+          .post(`${location.pathname}/phenotype_terms`)
+          .type('form')
+          .send({ hpo_term: hpo_id })
+          .end((err, res) => {
+            if (err || !res.ok) {
+              console.log('HPO term not saved...')
+            } else {
+              console.log('HPO term saved!')
+              window.location.reload(true)
             }
           })
       },

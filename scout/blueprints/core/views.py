@@ -3,8 +3,9 @@ import datetime
 import itertools
 import os.path
 
+from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
-                   url_for, make_response)
+                   url_for, make_response, Response)
 from flask_login import login_required, current_user
 from flask_mail import Message
 import query_phenomizer
@@ -722,3 +723,16 @@ def case_diagnosis(institute_id, case_id):
     store.diagnose(institute, case_model, current_user, link, level=level,
                    omim_id=omim_id, remove=remove)
     return redirect(request.args.get('next') or request.referrer or link)
+
+
+@core.route('/api/v1/hpo-terms')
+def hpoterms():
+    """Search for HPO terms."""
+    query = request.args.get('query')
+    if query is None:
+        return abort(500)
+    terms = store.hpo_terms(query=query)
+    json_terms = [{'title': term.description,
+                   'id': term.hpo_id} for term in terms]
+    return Response(dumps(json_terms),
+                    mimetype='application/json; charset=utf-8')
