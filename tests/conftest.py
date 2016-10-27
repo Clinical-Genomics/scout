@@ -8,7 +8,7 @@ import yaml
 from scout.adapter import MongoAdapter
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse import (parse_case, parse_gene_panel, parse_variant, 
-                         parse_hgnc_genes)
+                         parse_hgnc_genes, parse_ensembl_transcripts)
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 
@@ -28,6 +28,7 @@ gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
 hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
+ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
 
 
 ##################### File fixtures #####################
@@ -42,6 +43,12 @@ def hgnc_file(request):
     """Get the path to a hgnc file"""
     print('')
     return hgnc_path
+
+@pytest.fixture
+def transcripts_file(request):
+    """Get the path to a ensembl transcripts file"""
+    print('')
+    return ensembl_transcript_path
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -93,6 +100,18 @@ def hgnc_genes(request, hgnc_handle):
     """Get a dictionary with hgnc genes"""
     print('')
     return parse_hgnc_genes(hgnc_handle)
+
+@pytest.fixture
+def transcripts_handle(request, transcripts_file):
+    """Get a file handle to a ensembl transcripts file"""
+    print('')
+    return open(transcripts_file, 'r')
+
+@pytest.fixture
+def transcripts(request, transcripts_handle):
+    """Get a file handle to a ensembl transcripts file"""
+    print('')
+    return parse_ensembl_transcripts(transcripts_handle)
 
 
 ##################### Case fixtures #####################

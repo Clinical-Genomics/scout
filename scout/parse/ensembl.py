@@ -12,6 +12,7 @@ def parse_ensembl_line(line, header):
         Returns:
             ensembl_info(dict): A dictionary with the relevant info
     """
+    line = line.rstrip().split('\t')
     raw_info = dict(zip(header, line))
     chrom = None
     gene_start = None
@@ -111,11 +112,10 @@ def parse_ensembl_transcripts(lines):
     header = []
     logger.info("Parsing ensembl transcripts...")
     for index,line in enumerate(lines):
-        line = line.rstrip().split('\t')
         
         #File allways start with a header line
         if index == 0:
-            header = line
+            header = line.rstrip().split('\t')
         #After that each line represents a transcript
         else:
             yield parse_ensembl_line(line, header)
