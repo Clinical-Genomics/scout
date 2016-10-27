@@ -32,6 +32,7 @@ madeline_file = "tests/fixtures/madeline.xml"
 hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
 ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
 exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
+hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
 
 
 ##################### File fixtures #####################
@@ -58,6 +59,12 @@ def exac_file(request):
     """Get the path to a exac genes file"""
     print('')
     return exac_genes_path
+
+@pytest.fixture
+def hpo_genes_file(request):
+    """Get the path to the hpo genes file"""
+    print('')
+    return hpo_genes_path
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -134,6 +141,11 @@ def exac_genes(request, exac_handle):
     print('')
     return parse_exac_genes(exac_handle)
 
+@pytest.fixture
+def hpo_genes_handle(request, hpo_genes_file):
+    """Get a file handle to a hpo gene file"""
+    print('')
+    return open(hpo_genes_file, 'r')
 
 ##################### Case fixtures #####################
 @pytest.fixture(scope='function')
