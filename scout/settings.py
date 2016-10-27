@@ -59,7 +59,8 @@ class BaseConfig(object):
                   'scout.extensions.babel',
                   'chanjo_report.server.extensions.api',
                   'scout.extensions.loqusdb',
-                  'scout.extensions.bootstrap']
+                  'scout.extensions.bootstrap',
+                  'scout.extensions.housekeeper']
 
     # settings for triggering opening of research mode
     RESEARCH_MODE_RECIPIENT = 'example@domain.com'

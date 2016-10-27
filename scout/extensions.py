@@ -15,6 +15,7 @@ from flask_oauthlib.client import OAuth
 from flask_sslify import SSLify
 from loqusdb.plugins import MongoAdapter
 import ssl
+from housekeeper.store import api as hkapi
 
 from scout.adapter import MongoAdapter as ScoutMongoAdapter
 
@@ -137,3 +138,16 @@ def ssl(app):
     # Force SSL. Redirect all incoming requests to HTTPS.
     # Only takes effect when DEBUG=False
     return SSLify(app)
+
+
+# +--------------------------------------------------------------------+
+# | Housekeeper
+# +--------------------------------------------------------------------+
+class Housekeeper(object):
+    def init_app(self, app):
+        """Initialize Housekeeper connection."""
+        db_uri = app.config['HOUSEKEEPER_DATABASE_URI']
+        self.manager = hkapi.manager(db_uri)
+
+
+housekeeper = Housekeeper()
