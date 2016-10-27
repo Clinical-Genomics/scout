@@ -8,7 +8,7 @@ samples:
       phenotype: unaffected
       capture_kit: Agilent_SureSelectCRE.V1
       bam_path: apath
-      name: Sample 1
+      sample_name: Sample 1
       analysis_type: wes
     - sample_id: ADM1136A2
       father: ADM1136A1
@@ -17,14 +17,14 @@ samples:
       phenotype: affected
       capture_kit: Agilent_SureSelectCRE.V1
       bam_path: apath
-      name: Sample 2
+      sample_name: Sample 2
       analysis_type: wes
     - sample_id: ADM1136A3
       sex: female
       phenotype: unaffected
       capture_kit: Agilent_SureSelectCRE.V1
       bam_path: apath
-      name: Sample 3
+      sample_name: Sample 3
       analysis_type: wes
 
 vcf_snv: tests/fixtures/2.downsampled.vcf
