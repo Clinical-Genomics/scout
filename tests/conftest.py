@@ -7,7 +7,8 @@ import yaml
 
 from scout.adapter import MongoAdapter
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
-from scout.parse import (parse_case, parse_gene_panel, parse_variant)
+from scout.parse import (parse_case, parse_gene_panel, parse_variant, 
+                         parse_hgnc_genes)
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 
@@ -26,6 +27,8 @@ scout_yaml_config = 'tests/fixtures/config1.yaml'
 gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
+hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
+
 
 ##################### File fixtures #####################
 @pytest.fixture
@@ -34,6 +37,11 @@ def config_file(request):
     print('')
     return scout_yaml_config
 
+@pytest.fixture
+def hgnc_file(request):
+    """Get the path to a hgnc file"""
+    print('')
+    return hgnc_path
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -70,6 +78,21 @@ def scout_config(request, config_file):
     with open(config_file) as in_handle:
         data = yaml.load(in_handle)
     return data
+
+
+##################### Gene fixtures #####################
+
+@pytest.fixture
+def hgnc_handle(request, hgnc_file):
+    """Get a file handle to a hgnc file"""
+    print('')
+    return open(hgnc_file, 'r')
+
+@pytest.fixture
+def hgnc_genes(request, hgnc_handle):
+    """Get a dictionary with hgnc genes"""
+    print('')
+    return parse_hgnc_genes(hgnc_handle)
 
 
 ##################### Case fixtures #####################
