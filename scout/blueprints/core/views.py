@@ -104,6 +104,27 @@ def case(institute_id, case_id):
     default_panel_names = [panel.name_and_version for panel
                            in case_model.default_panel_objs()]
 
+    # archive date
+    today = datetime.date.today()
+    archive_date = datetime.date(2016, 11, 10)
+    diff_days = (archive_date - today).days
+    if diff_days < 0:
+        # case already to be archived!
+        status = 'past'
+    elif diff_days <= 10:
+        # case is soon to be archived (0-10 days)
+        status = 'close'
+    elif diff_days <= 30:
+        # case is scheduled for archive (11-30 days)
+        status = 'before'
+    else:
+        # case is not to be archived soon (>30 days)
+        status = 'long'
+    archive = {
+        'date': archive_date,
+        'status': status
+    }
+
     return dict(institute=inst_mod, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
@@ -111,7 +132,7 @@ def case(institute_id, case_id):
                 sample_map=sample_map, collaborators=collab_ids,
                 hpo_groups=PHENOTYPE_GROUPS,
                 hpo_ids=request.args.getlist('hpo_id'),
-                causatives=causatives)
+                causatives=causatives, archive=archive)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')

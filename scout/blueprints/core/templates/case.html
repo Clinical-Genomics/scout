@@ -186,6 +186,22 @@
     </div>
   {% endif %}
 
+  {% if archive.status == 'past' %}
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="delete-forever"></core-icon>
+      </div>
+      <div class="md-label-text">Archived</div>
+    </div>
+  {% elif archive.status == 'long' %}
+    <div class="md-label">
+      <div class="md-label-icon">
+        <core-icon icon="delete-forever"></core-icon>
+      </div>
+      <div class="md-label-text">Will be archived: {{ archive.date }}</div>
+    </div>
+  {% endif %}
+
   {% if case.coverage_report %}
     <a href="{{ url_for('core.coverage_report', institute_id=institute_id, case_id=case_id) }}" class="md-label" target="_blank">
       <div class="md-label-icon">
@@ -269,31 +285,45 @@
 
 {% block content %}
 
-  <div class="layout">
-    <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}" class="case-variants-button">
-      Clinical variants
-    </a>
+  <div class="case-segments">
+    <div class="case-segment-row">
+      {# postpone archive options #}
+      {% if archive.status == 'close' %}
+        <button class="md-button bg-warning full-width">
+          Archived on: {{ archive.date }} -- postpone 30 days?
+        </button>
+      {% elif archive.status == 'before' %}
+        <button class="md-button full-width">
+          Archived on: {{ archive.date }} -- postpone 30 days?
+        </button>
+      {% endif %}
+    </div>
 
-    {% if case.has_svvariants %}
-        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}" class="case-variants-button">
-          Clinical SV variants
-        </a>
-    {% endif %}
-
-    {% if case.is_research %}
-      <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
-        Research variants
+    {# quick links #}
+    <div class="case-segment-row layout">
+      <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}" class="case-variants-button">
+        Clinical variants
       </a>
 
       {% if case.has_svvariants %}
-        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
-          Research SV variants
-        </a>
+          <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}" class="case-variants-button">
+            Clinical SV variants
+          </a>
       {% endif %}
-    {% endif %}
-  </div>
 
-  <div class="case-segments">
+      {% if case.is_research %}
+        <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+          Research variants
+        </a>
+
+        {% if case.has_svvariants %}
+          <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}" class="case-variants-button">
+            Research SV variants
+          </a>
+        {% endif %}
+      {% endif %}
+    </div>
+
     {# matching causative variants #}
     <div id="matching" class="case-segment-row">
       <div id="case-candidates" class="md-card">

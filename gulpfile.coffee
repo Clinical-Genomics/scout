@@ -36,5 +36,5 @@ gulp.task 'watch', ->
 
 
 # default task (called when we run `gulp` from cli)
-gulp.task 'default', ['watch', 'css', 'webpack', 'browser-sync']
+gulp.task 'default', ['watch', 'css', 'browser-sync']
 gulp.task 'build', ['css']
