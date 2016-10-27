@@ -107,8 +107,8 @@ def genes(ctx, hgnc, ensembl, exac, hpo, export_genes, export_transcripts):
         
         load_hgnc_genes(
             adapter=adapter,
-            ensembl_transcripts=ensembl_handle, 
-            hgnc_genes=hgnc_handle, 
-            exac_genes=exac_handle,
+            ensembl_lines=ensembl_handle, 
+            hgnc_lines=hgnc_handle, 
+            exac_lines=exac_handle,
             hpo_lines=hpo_handle
         )

@@ -9,8 +9,9 @@ from scout.adapter import MongoAdapter
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse import (parse_case, parse_gene_panel, parse_variant, 
                          parse_hgnc_genes, parse_ensembl_transcripts,
-                         parse_exac_genes)
+                         parse_exac_genes, parse_hpo_genes)
 
+from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 
@@ -146,6 +147,28 @@ def hpo_genes_handle(request, hpo_genes_file):
     """Get a file handle to a hpo gene file"""
     print('')
     return open(hpo_genes_file, 'r')
+
+@pytest.fixture
+def hpo_genes(request, hpo_genes_handle):
+    """Get the exac genes"""
+    print('')
+    return parse_hpo_genes(hpo_genes_handle)
+
+@pytest.fixture
+def genes(request, transcripts_handle, hgnc_handle, exac_handle, 
+          hpo_genes_handle):
+    """Get a dictionary with the linked genes"""
+    print('')
+    gene_dict = link_genes(
+        ensembl_lines=transcripts_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=hgnc_handle, 
+        hpo_lines=hpo_genes_handle
+    )
+    
+    return link_genes
+
+
 
 ##################### Case fixtures #####################
 @pytest.fixture(scope='function')
