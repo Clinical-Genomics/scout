@@ -40,8 +40,8 @@
     {% block body %}{% endblock %}
 
     {% block js_btm %}
-      <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
-      <script src="{{ url_for('static', filename='bundle.js') }}"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/2.3.0/superagent.min.js" charset="utf-8"></script>
+      <script src="{{ url_for('static', filename='build.js') }}"></script>
     {% endblock %}
 
     {% block ga %}

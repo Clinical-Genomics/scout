@@ -126,8 +126,10 @@ def markdown():
     Response: jsonified ``dict`` with the converted HTML string
   """
   mkd_string = request.json.get('markdown')
-  html_string = mkd.convert(mkd_string)
-
+  if mkd_string is None:
+    html_string = ""
+  else:
+    html_string = mkd.convert(mkd_string)
   return jsonify(html=html_string)
 
 

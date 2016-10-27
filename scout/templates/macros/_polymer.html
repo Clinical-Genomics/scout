@@ -9,7 +9,7 @@
     {% if title %}title="{{ title }}"{% endif %}
     {% if onclick %}onclick="{{ onclick }}"{% endif %}
   >
-    <core-icon v-with="icon: '{{ icon }}'"
+    <core-icon icon="{{ icon }}"
                {% if src %}src="{{ src }}"{% endif %}
                class="core-item-icon"></core-icon>
     <div class="core-item-label">{{ label }}</div>

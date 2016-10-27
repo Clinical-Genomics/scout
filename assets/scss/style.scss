@@ -16,11 +16,9 @@
 @import 'components/lists';
 @import 'components/buttons';
 @import 'components/forms';
-@import 'components/drawer-panel';
 @import 'components/header-panel';
 @import 'components/card';
 @import 'components/tooltip';
-@import 'components/markdown-editor';
 @import 'components/table';
 @import 'components/activity-feed';
 @import 'components/breadcrumb';
@@ -98,26 +96,6 @@ h3 {
 
 .is-hidden {
   display: none;
-}
-
-core-icon {
-  display: inline-block;
-  vertical-align: middle;
-  background-repeat: no-repeat;
-  position: relative;
-  height: 24px;
-  width: 24px;
-  min-width: 24px;
-
-  fill: currentcolor;
-  stroke: currentcolor;
-  stroke-width: 0;
-
-  &.is-small {
-    min-width: 15px;
-    width: 15px;
-    height: 15px;
-  }
 }
 
 .tag {
