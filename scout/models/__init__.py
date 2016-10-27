@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import (print_function, absolute_import, unicode_literals)
 
-from .phenotype_term import PhenotypeTerm
+from .hgnc_map import (HgncAlias, HgncGene, HgncTranscript)
+from .phenotype_term import (PhenotypeTerm, HpoTerm, DiseaseTerm)
 from .event import Event
 from .user import AnonymousUser, User
 from .institute import Institute
@@ -14,4 +15,3 @@ from .variant.transcript import Transcript
 from .case.gene_list import GenePanel
 from .case.individual import Individual
 from .case.case import Case
-from .hgnc_map import (HgncAlias, HgncGene, HgncTranscript)

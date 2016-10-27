@@ -11,3 +11,6 @@ insert_final_newline = true
 
 [*.md,*.bed]
 trim_trailing_whitespace = false
+
+[*.html, *.vue, *.js]
+indent_size = 2

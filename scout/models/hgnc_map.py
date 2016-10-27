@@ -12,7 +12,7 @@ class HgncAlias(Document):
 
 
 class HgncTranscript(EmbeddedDocument):
-    ensembl_transcript_id = StringField(required=True)
+    ensembl_transcript_id = StringField(required=True, unique=True)
     refseq_id = StringField(required=True)
     start = IntField(required=True)
     end = IntField(required=True)
@@ -21,7 +21,7 @@ class HgncTranscript(EmbeddedDocument):
 class HgncGene(Document):
     #This works like a dictionary where hgnc_symbol is the correct id and
     #values are all aliases
-    hgnc_symbol = StringField(required=True)
+    hgnc_symbol = StringField(required=True, unique=True)
     ensembl_id = StringField(required=True)
     
     hgnc_id = IntField()
@@ -64,3 +64,11 @@ class HgncGene(Document):
         url_template = ("http://www.genecards.org/cgi-bin/carddisp.pl?gene={}")
         return url_template.format(self.hgnc_symbol)
         
+    meta = {
+        'index_background': True,
+        'indexes':[
+            'hgnc_id',
+            ('chromosome' ,'+start', '+end'),
+        ]
+    }
+    

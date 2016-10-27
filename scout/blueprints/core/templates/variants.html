@@ -45,7 +45,7 @@
     <div class="md-label-text">Clear filters</div>
   </a>
 
-  <div v-on="click: showFilters" class="icon-button">
+  <div v-on:click="showRightDrawer" class="icon-button">
     <core-icon icon="filter-list"></core-icon>
   </div>
 {% endblock %}
@@ -79,7 +79,7 @@
 
 {% block content %}
 
-  <drawer-panel v-ref="filters" side="right">
+  <drawer-panel :visible="drawerRightVisible" v-on:hide="hideRightDrawer" side="right">
     <form method="POST" action="{{ url_for('core.upload_gene_list') }}"
           enctype="multipart/form-data">
       <div class="variants-filters-group">

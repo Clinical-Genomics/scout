@@ -12,7 +12,7 @@
 {% block body %}
 
   <div id="app">
-    <drawer-panel v-ref="drawer">
+    <drawer-panel :visible="drawerVisible" v-on:hide="hideDrawer">
       {% block main_drawer %}
         {{ core_item('Home', icon='home', href=url_for('frontend.index')) }}
 
@@ -39,7 +39,7 @@
           {% block toolbar %}
 
             {% block toolbar_left %}
-              <div v-on="click: showDrawer" class="icon-button">
+              <div v-on:click="showDrawer" class="icon-button">
                 <core-icon icon="menu"></core-icon>
               </div>
             {% endblock %}

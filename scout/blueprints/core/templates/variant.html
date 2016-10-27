@@ -59,7 +59,7 @@
       </div>
     </div>
   {% else %}
-    <div v-on="click: showModal" class="icon-button" title="Order Sanger">
+    <div v-on:click="showModal" class="icon-button" title="Order Sanger">
       <core-icon icon="mail"></core-icon>
     </div>
   {% endif %}
@@ -181,7 +181,7 @@
       <div class="md-label">
         <div class="md-label-icon">Priority</div>
         <div class="md-label-text">
-          <select v-model="variantRank" v-on="change: onVariantRankChange">
+          <select v-model="variantRank" v-on:change="onVariantRankChange">
             {% for rank in manual_rank_options %}
               <option {% if rank == variant.manual_rank %}selected{% endif %}
                       value="{{ rank }}">
@@ -946,7 +946,7 @@
   </div>
 
   <!-- SANGER EMAIL MODAL -->
-  <md-modal v-ref="modal" title="Order Sanger sequencing">
+  <core-modal :visible="modalVisible" v-on:hide="hideModal" title="Order Sanger sequencing">
     <form
       action="{{ url_for('core.email_sanger',
                          institute_id=institute_id,
@@ -995,15 +995,10 @@
       <p><strong>Ordered by</strong>: {{ current_user.name }}</p>
 
       <div class="sanger-form-footer">
-        <div v-on="click: hideModal" class="md-button" title="Cancel Sanger">
-          Cancel
-        </div>
-
-        <button class="md-button" type="submit" title="Order Sanger">
-          Send
-        </button>
+        <div v-on:click="hideModal" class="md-button">Cancel</div>
+        <button class="md-button" type="submit">Send</button>
       </div>
     </form>
-  </md-modal>
+  </core-modal>
 
 {% endblock %}
