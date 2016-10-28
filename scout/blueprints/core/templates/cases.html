@@ -2,58 +2,6 @@
 
 {% set page_title = 'Cases' %}
 
-{% macro case_box(case, institute_id) %}
-<div class="md-card">
-  <div class="md-card-body--padded">
-    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case.display_name) }}" class="md-item">
-      {% if case.events %}
-        <div class="md-item-icon">
-          <div class="dot-indicator"></div>
-        </div>
-      {% endif %}
-
-      <div class="md-item-label">{{ case.display_name }}</div>
-
-      {% if case.assignee %}
-        <div class="tag">{{ case.assignee.first_name }}</div>
-      {% endif %}
-    </a>
-
-    <div class="md-item-subtitle">
-      {% if not case.analysis_checked and case.created_at < missed_cutoff %}
-        <a href="{{ url_for('core.variants', institute_id=institute_id,
-                            case_id=case.display_name,
-                            variant_type='clinical',
-                            functional_annotations=severe_so_terms,
-                            region_annotations=['exonic', 'splicing'],
-                            thousand_genomes_frequency=-1,
-                            gene_lists=case.default_panels) }}">
-            Clinical variants without 1000G annotation
-        </a> |
-      {% endif %}
-      {% if case.is_research %}
-        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
-      {% else %}
-        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
-      {% endif %}
-       |
-      {% if case.analysis_date %}
-          <span>{{ case.analysis_date.split()|first }}</span> |
-      {% endif %}
-      {% if case.analysis_type != 'unknown' %}
-        <span class="md-badge is-{{ case.analysis_type }}">{{ case.analysis_type|upper }}</span>
-      {% endif %}
-      {% if case.is_rerun %}
-        <span class="md-badge--success">rerun</span> |
-      {% endif %}
-      {% if case.analysis_checked %}
-          <span class="md-badge--success">checked</span>
-      {% endif %}
-    </div>
-  </div>
-</div>
-{% endmacro %}
-
 {% block toolbar_left %}
   {{ super() }}
 
@@ -97,30 +45,7 @@
 {% endblock %}
 
 {% block content %}
-  <drawer-panel :visible="drawerRightVisible" v-on:hide="hideRightDrawer" side="right">
-      <form action="{{ url_for('core.institute_settings', institute_id=institute_id) }}" method="POST">
-        <div class="variants-filters-group">
-          <div class="variants-filters-group-list">
-            <div class="variants-filters-group-label">
-              Institute settings
-            </div>
-            <div class="list-item">
-              <div>Frequency cutoff (clinical filter)</div>
-              <div><input type="number" min="0" max="1" step="0.01" name="frequency_cutoff" value="{{ institute.frequency_cutoff }}"></div>
-            </div>
-
-            <div class="list-item">
-              <div>Coverage cutoff (report)</div>
-              <div><input type="number" min="10" max="100" step="5" name="coverage_cutoff" value="{{ institute.coverage_cutoff }}"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="variants-filter-buttons">
-          <button class="md-button" type="submit">Save</button>
-        </div>
-      </form>
-  </drawer-panel>
+  {{ drawer_panel(institute) }}
 
   <div class="cases-list">
     <div class="md-card-list">
@@ -165,3 +90,82 @@
     </div>
   </div>
 {% endblock %}
+
+{% macro drawer_panel(institute) %}
+  <drawer-panel :visible="drawerRightVisible" v-on:hide="hideRightDrawer" side="right">
+      <form action="{{ url_for('core.institute_settings', institute_id=institute.internal_id) }}" method="POST">
+        <div class="variants-filters-group">
+          <div class="variants-filters-group-list">
+            <div class="variants-filters-group-label">
+              Institute settings
+            </div>
+            <div class="list-item">
+              <div>Frequency cutoff (clinical filter)</div>
+              <div><input type="number" min="0" max="1" step="0.01" name="frequency_cutoff" value="{{ institute.frequency_cutoff }}"></div>
+            </div>
+
+            <div class="list-item">
+              <div>Coverage cutoff (report)</div>
+              <div><input type="number" min="10" max="100" step="5" name="coverage_cutoff" value="{{ institute.coverage_cutoff }}"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="variants-filter-buttons">
+          <button class="md-button" type="submit">Save</button>
+        </div>
+      </form>
+  </drawer-panel>
+{% endmacro %}
+
+{% macro case_box(case, institute_id) %}
+  <div class="md-card">
+    <div class="md-card-body--padded">
+      <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case.display_name) }}" class="md-item">
+        {% if case.events %}
+          <div class="md-item-icon">
+            <div class="dot-indicator"></div>
+          </div>
+        {% endif %}
+
+        <div class="md-item-label">{{ case.display_name }}</div>
+
+        {% if case.assignee %}
+          <div class="tag">{{ case.assignee.first_name }}</div>
+        {% endif %}
+      </a>
+
+      <div class="md-item-subtitle">
+        {% if not case.analysis_checked and case.created_at < missed_cutoff %}
+          <a href="{{ url_for('core.variants', institute_id=institute_id,
+                              case_id=case.display_name,
+                              variant_type='clinical',
+                              functional_annotations=severe_so_terms,
+                              region_annotations=['exonic', 'splicing'],
+                              thousand_genomes_frequency=-1,
+                              gene_lists=case.default_panels) }}">
+              Clinical variants without 1000G annotation
+          </a> |
+        {% endif %}
+        {% if case.is_research %}
+          <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
+        {% else %}
+          <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
+        {% endif %}
+         |
+        {% if case.analysis_date %}
+            <span>{{ case.analysis_date.split()|first }}</span> |
+        {% endif %}
+        {% if case.analysis_type != 'unknown' %}
+          <span class="md-badge is-{{ case.analysis_type }}">{{ case.analysis_type|upper }}</span>
+        {% endif %}
+        {% if case.is_rerun %}
+          <span class="md-badge--success">rerun</span> |
+        {% endif %}
+        {% if case.analysis_checked %}
+            <span class="md-badge--success">checked</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endmacro %}

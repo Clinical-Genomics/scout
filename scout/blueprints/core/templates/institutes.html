@@ -8,24 +8,21 @@
   <span class="flex">Institutes</span>
 {% endblock %}
 
+{# remove the secondary toolbar, unused #}
 {% block toolbar_custom %}{% endblock %}
 
 {% block content %}
-
   <div class="cases-list">
     <div class="md-card-list">
       {% for institute in institutes %}
         <a class="md-card" href="{{ url_for('core.cases', institute_id=institute.internal_id) }}">
           <div class="md-card-body--padded">
-
             <div class="md-item-label">
               {{ institute.display_name }}
             </div>
-
           </div>
         </a>
       {% endfor %}
     </div>
   </div>
-
 {% endblock %}
