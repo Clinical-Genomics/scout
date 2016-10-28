@@ -287,19 +287,15 @@
 
   <div class="case-segments">
     {# postpone archive options #}
-    <div class="case-segment-row">
-      <form action="{{ url_for('core.postpone', institute_id=institute_id, case_id=case_id) }}" method="POST" accept-charset="utf-8">
-        {% if archive.status == 'close' %}
-          <button type="submit" class="md-button bg-warning full-width">
+    {% if archive.status in ('before', 'close') %}
+      <div class="case-segment-row">
+        <form action="{{ url_for('core.postpone', institute_id=institute_id, case_id=case_id) }}" method="POST" accept-charset="utf-8">
+          <button type="submit" class="md-button full-width {% if archive.status == 'close' %}bg-warning{% endif %}">
             Archived on: {{ archive.date }} -- postpone 30 days?
           </button>
-        {% elif archive.status == 'before' %}
-          <button type="submit" class="md-button full-width">
-            Archived on: {{ archive.date }} -- postpone 30 days?
-          </button>
-        {% endif %}
-      </form>
-    </div>
+        </form>
+      </div>
+    {% endif %}
 
     {# quick links #}
     <div class="case-segment-row layout">
