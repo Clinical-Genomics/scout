@@ -34,7 +34,7 @@ hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
 ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
 exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
 hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
-
+hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
 
 ##################### File fixtures #####################
 @pytest.fixture
@@ -66,6 +66,12 @@ def hpo_genes_file(request):
     """Get the path to the hpo genes file"""
     print('')
     return hpo_genes_path
+
+@pytest.fixture
+def hpo_terms_file(request):
+    """Get the path to the hpo terms file"""
+    print('')
+    return hpo_terms_path
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -168,6 +174,11 @@ def genes(request, transcripts_handle, hgnc_handle, exac_handle,
     
     return link_genes
 
+@pytest.fixture
+def hpo_terms_handle(request, hpo_terms_file):
+    """Get a file handle to a hpo terms file"""
+    print('')
+    return open(hpo_terms_file, 'r')
 
 
 ##################### Case fixtures #####################
