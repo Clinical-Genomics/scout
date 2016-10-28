@@ -290,7 +290,7 @@
     {% if archive.status in ('before', 'close') %}
       <div class="case-segment-row">
         <form action="{{ url_for('core.postpone', institute_id=institute_id, case_id=case_id) }}" method="POST" accept-charset="utf-8">
-          <button type="submit" class="md-button full-width {% if archive.status == 'close' %}bg-warning{% endif %}">
+          <button type="submit" onclick="return confirm('Are you sure?')" class="md-button full-width {% if archive.status == 'close' %}bg-warning{% endif %}">
             Archived on: {{ archive.date }} -- postpone 30 days?
           </button>
         </form>
