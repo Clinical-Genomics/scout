@@ -3,26 +3,33 @@ from __future__ import absolute_import, unicode_literals
 import gzip
 from invoke import run, task
 from invoke.util import log
+from codecs import open
 
 from configobj import ConfigObj
+import yaml
 
 from mongoengine import connect
 from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
-from scout.load import (load_scout, load_hgnc_genes)
+from scout.load import (load_scout, load_hgnc_genes, load_hpo)
 
 from scout import logger
 from scout.log import init_log
 
-from scout.resources import (hgnc_file, exac_file, transcripts_file, 
-                             hpogenes_file)
+hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
+ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
+exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
+hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
+hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
+hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
+
 
 init_log(logger, loglevel='INFO')
 
 @task
 def setup_test(context, email, name="Paul Anderson"):
     """docstring for setup"""
-    db_name = 'variantDatabase'
+    db_name = 'test-database'
     adapter = MongoAdapter()
     adapter.connect_to_database(
         database=db_name
@@ -44,34 +51,37 @@ def setup_test(context, email, name="Paul Anderson"):
                 roles=['admin'],
                 institutes=[institute])
     user.save()
-
-    for index in [1, 2]:
-        config = ConfigObj("tests/fixtures/config{}.ini".format(index))
-        load_scout(
-            adapter=adapter,
-            case_file=config['ped'],
-            snv_file=config['load_vcf'],
-            owner=config['owner'],
-            sv_file=config['sv_vcf'],
-            case_type='mip',
-            variant_type='clinical',
-            update=False,
-            scout_configs=config
-        )
     
-    hgnc_handle = gzip.open(hgnc_file, 'r')
-    ensembl_handle = gzip.open(transcripts_file, 'r')
-    exac_handle = gzip.open(exac_file, 'r')
-    hpo_handle = gzip.open(hpogenes_file, 'r')
+    hgnc_handle = open(hgnc_path, 'r')
+    ensembl_handle = open(ensembl_transcript_path, 'r')
+    exac_handle = open(exac_genes_path, 'r')
+    hpo_genes_handle = open(hpo_genes_path, 'r')
+    hpo_terms_handle = open(hpo_terms_path, 'r')
+    hpo_disease_handle = open(hpo_disease_path, 'r')
     
     #Load the genes and transcripts
     load_hgnc_genes(
         adapter=adapter,
-        ensembl_transcripts=ensembl_handle, 
-        hgnc_genes=hgnc_handle, 
-        exac_genes=exac_handle,
-        hpo_lines=hpo_handle,
+        ensembl_lines=ensembl_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=exac_handle,
+        hpo_lines=hpo_genes_handle,
     )
+    
+    #Load the hpo terms and diseases
+    load_hpo(
+        adapter=adapter, 
+        hpo_lines=hpo_terms_handle, 
+        disease_lines=hpo_disease_handle
+    )
+
+    for index in [1, 2]:
+        config = yaml.load(open("tests/fixtures/config{}.yaml".format(index), 'r'))
+        load_scout(
+            adapter=adapter,
+            config=config,
+        )
+    
     
 
 @task

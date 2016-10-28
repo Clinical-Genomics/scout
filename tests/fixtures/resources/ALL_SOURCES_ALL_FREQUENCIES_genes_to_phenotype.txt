@@ -1,0 +1,494 @@
+#Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID
+27235	COQ2	Feeding difficulties	HP:0011968
+27235	COQ2	Ragged-red muscle fibers	HP:0003200
+27235	COQ2	Recurrent myoglobinuria	HP:0003652
+27235	COQ2	Autosomal recessive inheritance	HP:0000007
+27235	COQ2	Edema	HP:0000969
+27235	COQ2	Encephalopathy	HP:0001298
+27235	COQ2	Pancytopenia	HP:0001876
+27235	COQ2	Status epilepticus	HP:0002133
+27235	COQ2	Sensorineural hearing impairment	HP:0000407
+27235	COQ2	Onset	HP:0003674
+27235	COQ2	Proteinuria	HP:0000093
+27235	COQ2	Glomerulosclerosis	HP:0000096
+27235	COQ2	Cortical visual impairment	HP:0100704
+27235	COQ2	Intellectual disability	HP:0001249
+27235	COQ2	Seizures	HP:0001250
+27235	COQ2	Ataxia	HP:0001251
+27235	COQ2	Nephrotic syndrome	HP:0000100
+27235	COQ2	Phenotypic variability	HP:0003812
+27235	COQ2	Elevated serum creatine phosphokinase	HP:0003236
+27235	COQ2	Increased serum lactate	HP:0002151
+27235	COQ2	Neonatal hypotonia	HP:0001319
+27235	COQ2	Hypertrophic cardiomyopathy	HP:0001639
+27235	COQ2	Dysarthria	HP:0001260
+27235	COQ2	Anemia	HP:0001903
+27235	COQ2	Hypergonadotropic hypogonadism	HP:0000815
+27235	COQ2	Specific learning disability	HP:0001328
+27235	COQ2	Motor delay	HP:0001270
+27235	COQ2	Hepatic failure	HP:0001399
+27235	COQ2	Cerebellar atrophy	HP:0001272
+27235	COQ2	Lactic acidosis	HP:0003128
+27235	COQ2	Scanning speech	HP:0002168
+27235	COQ2	Progressive muscle weakness	HP:0003323
+27235	COQ2	Visual loss	HP:0000572
+27235	COQ2	Postural instability	HP:0002172
+27235	COQ2	Rod-cone dystrophy	HP:0000510
+27235	COQ2	Nystagmus	HP:0000639
+1630	DCC	Weight loss	HP:0001824
+1630	DCC	Neoplasm of the stomach	HP:0006753
+1630	DCC	Nausea and vomiting	HP:0002017
+1630	DCC	Autosomal dominant inheritance	HP:0000006
+1630	DCC	Abnormality of the voice	HP:0001608
+1630	DCC	Feeding difficulties in infancy	HP:0008872
+1630	DCC	Uterine leiomyosarcoma	HP:0002891
+1630	DCC	Chest pain	HP:0100749
+1630	DCC	Squamous cell carcinoma	HP:0002860
+1630	DCC	Esophageal neoplasm	HP:0100751
+1630	DCC	Renal cell carcinoma	HP:0005584
+1630	DCC	Transitional cell carcinoma of the bladder	HP:0006740
+1630	DCC	Incomplete penetrance	HP:0003829
+1630	DCC	Bimanual synkinesia	HP:0001335
+1630	DCC	Hereditary nonpolyposis colorectal carcinoma	HP:0006716
+1630	DCC	Lymphadenopathy	HP:0002716
+10806	SDCCAG8	Macrocephaly	HP:0000256
+10806	SDCCAG8	Abnormal electroretinogram	HP:0000512
+10806	SDCCAG8	Multicystic kidney dysplasia	HP:0000003
+10806	SDCCAG8	Cataract	HP:0000518
+10806	SDCCAG8	Autosomal recessive inheritance	HP:0000007
+10806	SDCCAG8	Incoordination	HP:0002311
+10806	SDCCAG8	Abnormality of retinal pigmentation	HP:0007703
+10806	SDCCAG8	Congenital primary aphakia	HP:0007707
+10806	SDCCAG8	Cryptorchidism	HP:0000028
+10806	SDCCAG8	Decreased testicular size	HP:0008734
+10806	SDCCAG8	Hypoplasia of penis	HP:0008736
+10806	SDCCAG8	Myopia	HP:0000545
+10806	SDCCAG8	Retinal degeneration	HP:0000546
+10806	SDCCAG8	Tapetoretinal degeneration	HP:0000547
+10806	SDCCAG8	Cone/cone-rod dystrophy	HP:0000548
+10806	SDCCAG8	Enuresis	HP:0000805
+10806	SDCCAG8	Foot polydactyly	HP:0001829
+10806	SDCCAG8	Undetectable electroretinogram	HP:0000550
+10806	SDCCAG8	Cerebellar vermis hypoplasia	HP:0001320
+10806	SDCCAG8	Hypospadias	HP:0000047
+10806	SDCCAG8	Rotary nystagmus	HP:0001583
+10806	SDCCAG8	Specific learning disability	HP:0001328
+10806	SDCCAG8	Respiratory distress	HP:0002098
+10806	SDCCAG8	Diabetes mellitus	HP:0000819
+10806	SDCCAG8	Asthma	HP:0002099
+10806	SDCCAG8	Congenital hepatic fibrosis	HP:0002612
+10806	SDCCAG8	Hypertension	HP:0000822
+10806	SDCCAG8	Micropenis	HP:0000054
+10806	SDCCAG8	Biliary tract abnormality	HP:0001080
+10806	SDCCAG8	Hyposmia	HP:0004409
+10806	SDCCAG8	Visual loss	HP:0000572
+10806	SDCCAG8	Tricuspid regurgitation	HP:0005180
+10806	SDCCAG8	Poor coordination	HP:0002370
+10806	SDCCAG8	Macular dystrophy	HP:0007754
+10806	SDCCAG8	Abnormality of the kidney	HP:0000077
+10806	SDCCAG8	Nephrogenic diabetes insipidus	HP:0009806
+10806	SDCCAG8	Cone-shaped epiphysis	HP:0010579
+10806	SDCCAG8	Renal insufficiency	HP:0000083
+10806	SDCCAG8	Renal hypoplasia	HP:0000089
+10806	SDCCAG8	Nephronophthisis	HP:0000090
+10806	SDCCAG8	Abnormality of the renal tubule	HP:0000091
+10806	SDCCAG8	Gait imbalance	HP:0002141
+10806	SDCCAG8	Atria septal defect	HP:0001631
+10806	SDCCAG8	Macular degeneration	HP:0000608
+10806	SDCCAG8	Hypoplasia of the femoral head	HP:0008802
+10806	SDCCAG8	Nephrotic syndrome	HP:0000100
+10806	SDCCAG8	Polyuria	HP:0000103
+10806	SDCCAG8	Renal agenesis	HP:0000104
+10806	SDCCAG8	Blindness	HP:0000618
+10806	SDCCAG8	Renal cyst	HP:0000107
+10806	SDCCAG8	Dilated cardiomyopathy	HP:0001644
+10806	SDCCAG8	Renal corticomedullary cysts	HP:0000108
+10806	SDCCAG8	Hearing impairment	HP:0000365
+10806	SDCCAG8	Renal dysplasia	HP:0000110
+10806	SDCCAG8	Bicuspid aortic valve	HP:0001647
+10806	SDCCAG8	Anemia	HP:0001903
+10806	SDCCAG8	Low-set, posteriorly rotated ears	HP:0000368
+10806	SDCCAG8	Polycystic kidney dysplasia	HP:0000113
+10806	SDCCAG8	Hepatic fibrosis	HP:0001395
+10806	SDCCAG8	Cholestasis	HP:0001396
+10806	SDCCAG8	Severe visual impairment	HP:0001141
+10806	SDCCAG8	Hepatic failure	HP:0001399
+10806	SDCCAG8	Neurological speech impairment	HP:0002167
+10806	SDCCAG8	Nystagmus	HP:0000639
+10806	SDCCAG8	Hepatic cysts	HP:0001407
+10806	SDCCAG8	Brachydactyly syndrome	HP:0001156
+10806	SDCCAG8	Amblyopia	HP:0000646
+10806	SDCCAG8	Syndactyly	HP:0001159
+10806	SDCCAG8	Hypogonadism	HP:0000135
+10806	SDCCAG8	Abnormality of the ovary	HP:0000137
+10806	SDCCAG8	Postaxial hand polydactyly	HP:0001162
+10806	SDCCAG8	Heterogeneous	HP:0001425
+10806	SDCCAG8	Recurrent otitis media	HP:0000403
+10806	SDCCAG8	Polycystic ovaries	HP:0000147
+10806	SDCCAG8	Vaginal atresia	HP:0000148
+10806	SDCCAG8	Nyctalopia	HP:0000662
+10806	SDCCAG8	Hypodontia	HP:0000668
+10806	SDCCAG8	Recurrent respiratory infections	HP:0002205
+10806	SDCCAG8	Situs inversus totalis	HP:0001696
+10806	SDCCAG8	Abnormality of the teeth	HP:0000164
+10806	SDCCAG8	Mesoaxial polydactyly	HP:0100260
+10806	SDCCAG8	Dental crowding	HP:0000678
+10806	SDCCAG8	Polydipsia	HP:0001959
+10806	SDCCAG8	External genital hypoplasia	HP:0003241
+10806	SDCCAG8	Prominent nasal bridge	HP:0000426
+10806	SDCCAG8	Bronchiolitis	HP:0011950
+10806	SDCCAG8	Left ventricular hypertrophy	HP:0001712
+10806	SDCCAG8	Tubulointerstitial nephritis	HP:0001970
+10806	SDCCAG8	Cognitive impairment	HP:0100543
+10806	SDCCAG8	Stage 5 chronic kidney disease	HP:0003774
+10806	SDCCAG8	Congenital blindness	HP:0007875
+10806	SDCCAG8	Abnormality of the nervous system	HP:0000707
+10806	SDCCAG8	Pancreatic cysts	HP:0001737
+10806	SDCCAG8	Polydactyly	HP:0010442
+10806	SDCCAG8	Aganglionic megacolon	HP:0002251
+10806	SDCCAG8	Finger syndactyly	HP:0006101
+10806	SDCCAG8	Short neck	HP:0000470
+10806	SDCCAG8	High palate	HP:0000218
+10806	SDCCAG8	Intellectual disability	HP:0001249
+10806	SDCCAG8	Seizures	HP:0001250
+10806	SDCCAG8	Short stature	HP:0004322
+10806	SDCCAG8	Astigmatism	HP:0000483
+10806	SDCCAG8	Ataxia	HP:0001251
+10806	SDCCAG8	Phenotypic variability	HP:0003812
+10806	SDCCAG8	Strabismus	HP:0000486
+10806	SDCCAG8	Hypertrichosis	HP:0000998
+10806	SDCCAG8	Retinopathy	HP:0000488
+10806	SDCCAG8	Obesity	HP:0001513
+10806	SDCCAG8	Broad foot	HP:0001769
+10806	SDCCAG8	Short foot	HP:0001773
+10806	SDCCAG8	Delayed speech and language development	HP:0000750
+10806	SDCCAG8	Downslanted palpebral fissures	HP:0000494
+10806	SDCCAG8	Global developmental delay	HP:0001263
+10806	SDCCAG8	Hirsutism	HP:0001007
+10806	SDCCAG8	Reduced visual acuity	HP:0007663
+10806	SDCCAG8	Glaucoma	HP:0000501
+10806	SDCCAG8	Brachycephaly	HP:0000248
+10806	SDCCAG8	Visual impairment	HP:0000505
+10806	SDCCAG8	Radial deviation of finger	HP:0009466
+10806	SDCCAG8	Medial flaring of the eyebrow	HP:0010747
+10806	SDCCAG8	Abnormality of bone mineral density	HP:0004348
+10806	SDCCAG8	Rod-cone dystrophy	HP:0000510
+11141	IL1RAPL1	Macrocephaly	HP:0000256
+11141	IL1RAPL1	Drooling	HP:0002307
+11141	IL1RAPL1	Narrow chest	HP:0000774
+11141	IL1RAPL1	X-linked inheritance	HP:0001417
+11141	IL1RAPL1	X-linked recessive inheritance	HP:0001419
+11141	IL1RAPL1	Dolichocephaly	HP:0000268
+11141	IL1RAPL1	X-linked dominant inheritance	HP:0001423
+11141	IL1RAPL1	Macrotia	HP:0000400
+11141	IL1RAPL1	Delayed gross motor development	HP:0002194
+11141	IL1RAPL1	Long face	HP:0000276
+11141	IL1RAPL1	Sensorineural hearing impairment	HP:0000407
+11141	IL1RAPL1	Synophrys	HP:0000664
+11141	IL1RAPL1	Decreased testicular size	HP:0008734
+11141	IL1RAPL1	Depressed nasal bridge	HP:0005280
+11141	IL1RAPL1	Poor speech	HP:0002465
+11141	IL1RAPL1	Enuresis	HP:0000805
+11141	IL1RAPL1	Dental crowding	HP:0000678
+11141	IL1RAPL1	Intellectual disability, moderate	HP:0002342
+11141	IL1RAPL1	Broad thumb	HP:0011304
+11141	IL1RAPL1	Long foot	HP:0001833
+11141	IL1RAPL1	Mandibular prognathia	HP:0000303
+11141	IL1RAPL1	Thick lower lip vermilion	HP:0000179
+11141	IL1RAPL1	Tented upper lip vermilion	HP:0010804
+11141	IL1RAPL1	Uplifted earlobe	HP:0009909
+11141	IL1RAPL1	Macroorchidism	HP:0000053
+11141	IL1RAPL1	Hypertelorism	HP:0000316
+11141	IL1RAPL1	Cognitive impairment	HP:0100543
+11141	IL1RAPL1	Kyphoscoliosis	HP:0002751
+11141	IL1RAPL1	Absent speech	HP:0001344
+11141	IL1RAPL1	Open mouth	HP:0000194
+11141	IL1RAPL1	Behavioral abnormality	HP:0000708
+11141	IL1RAPL1	Psychosis	HP:0000709
+11141	IL1RAPL1	Blepharophimosis	HP:0000581
+11141	IL1RAPL1	Upslanted palpebral fissure	HP:0000582
+11141	IL1RAPL1	Broad nasal tip	HP:0000455
+11141	IL1RAPL1	Agitation	HP:0000713
+11141	IL1RAPL1	Generalized myoclonic seizures	HP:0002123
+11141	IL1RAPL1	Autism	HP:0000717
+11141	IL1RAPL1	Aggressive behavior	HP:0000718
+11141	IL1RAPL1	Anteverted nares	HP:0000463
+11141	IL1RAPL1	Abnormal facial shape	HP:0001999
+11141	IL1RAPL1	Flat face	HP:0012368
+11141	IL1RAPL1	Prominent forehead	HP:0011220
+11141	IL1RAPL1	High palate	HP:0000218
+11141	IL1RAPL1	Thin upper lip vermilion	HP:0000219
+11141	IL1RAPL1	Stereotypic behavior	HP:0000733
+11141	IL1RAPL1	Short attention span	HP:0000736
+11141	IL1RAPL1	Intellectual disability	HP:0001249
+11141	IL1RAPL1	Seizures	HP:0001250
+11141	IL1RAPL1	Short stature	HP:0004322
+11141	IL1RAPL1	Anxiety	HP:0000739
+11141	IL1RAPL1	Muscular hypotonia	HP:0001252
+11141	IL1RAPL1	Joint hypermobility	HP:0001382
+11141	IL1RAPL1	Strabismus	HP:0000486
+11141	IL1RAPL1	Intellectual disability, mild	HP:0001256
+11141	IL1RAPL1	Abnormality of the distal phalanx of finger	HP:0009832
+11141	IL1RAPL1	Delayed speech and language development	HP:0000750
+11141	IL1RAPL1	Small for gestational age	HP:0001518
+11141	IL1RAPL1	Global developmental delay	HP:0001263
+11141	IL1RAPL1	Hyperactivity	HP:0000752
+11141	IL1RAPL1	Variable expressivity	HP:0003828
+11141	IL1RAPL1	Motor delay	HP:0001270
+11141	IL1RAPL1	Severe Myopia	HP:0011003
+11141	IL1RAPL1	Microcephaly	HP:0000252
+11141	IL1RAPL1	Short nose	HP:0003196
+57107	PDSS2	Feeding difficulties	HP:0011968
+57107	PDSS2	Ragged-red muscle fibers	HP:0003200
+57107	PDSS2	Recurrent myoglobinuria	HP:0003652
+57107	PDSS2	Autosomal recessive inheritance	HP:0000007
+57107	PDSS2	Edema	HP:0000969
+57107	PDSS2	Encephalopathy	HP:0001298
+57107	PDSS2	Pancytopenia	HP:0001876
+57107	PDSS2	Status epilepticus	HP:0002133
+57107	PDSS2	Sensorineural hearing impairment	HP:0000407
+57107	PDSS2	Onset	HP:0003674
+57107	PDSS2	Proteinuria	HP:0000093
+57107	PDSS2	Glomerulosclerosis	HP:0000096
+57107	PDSS2	Cortical visual impairment	HP:0100704
+57107	PDSS2	Intellectual disability	HP:0001249
+57107	PDSS2	Seizures	HP:0001250
+57107	PDSS2	Ataxia	HP:0001251
+57107	PDSS2	Nephrotic syndrome	HP:0000100
+57107	PDSS2	Phenotypic variability	HP:0003812
+57107	PDSS2	Elevated serum creatine phosphokinase	HP:0003236
+57107	PDSS2	Increased serum lactate	HP:0002151
+57107	PDSS2	Neonatal hypotonia	HP:0001319
+57107	PDSS2	Hypertrophic cardiomyopathy	HP:0001639
+57107	PDSS2	Dysarthria	HP:0001260
+57107	PDSS2	Anemia	HP:0001903
+57107	PDSS2	Hypergonadotropic hypogonadism	HP:0000815
+57107	PDSS2	Specific learning disability	HP:0001328
+57107	PDSS2	Motor delay	HP:0001270
+57107	PDSS2	Hepatic failure	HP:0001399
+57107	PDSS2	Cerebellar atrophy	HP:0001272
+57107	PDSS2	Lactic acidosis	HP:0003128
+57107	PDSS2	Scanning speech	HP:0002168
+57107	PDSS2	Progressive muscle weakness	HP:0003323
+57107	PDSS2	Visual loss	HP:0000572
+57107	PDSS2	Postural instability	HP:0002172
+57107	PDSS2	Rod-cone dystrophy	HP:0000510
+57107	PDSS2	Nystagmus	HP:0000639
+5888	RAD51	Multifactorial inheritance	HP:0001426
+5888	RAD51	Incomplete penetrance	HP:0003829
+5888	RAD51	Autosomal dominant inheritance	HP:0000006
+5888	RAD51	Bimanual synkinesia	HP:0001335
+5888	RAD51	Breast carcinoma	HP:0003002
+5889	RAD51C	Umbilical hernia	HP:0001537
+5889	RAD51C	Duodenal stenosis	HP:0100867
+5889	RAD51C	Cataract	HP:0000518
+5889	RAD51C	Autosomal dominant inheritance	HP:0000006
+5889	RAD51C	Autosomal recessive inheritance	HP:0000007
+5889	RAD51C	Abnormality of the femur	HP:0002823
+5889	RAD51C	Proptosis	HP:0000520
+5889	RAD51C	Abnormality of female internal genitalia	HP:0000008
+5889	RAD51C	Infantile onset	HP:0003593
+5889	RAD51C	Recurrent urinary tract infections	HP:0000010
+5889	RAD51C	Dolichocephaly	HP:0000268
+5889	RAD51C	Tracheoesophageal fistula	HP:0002575
+5889	RAD51C	Displacement of the external urethral meatus	HP:0100627
+5889	RAD51C	Vitiligo	HP:0001045
+5889	RAD51C	Biliary atresia	HP:0005912
+5889	RAD51C	Functional abnormality of male internal genitalia	HP:0000025
+5889	RAD51C	Oligohydramnios	HP:0001562
+5889	RAD51C	Cryptorchidism	HP:0000028
+5889	RAD51C	Hypopigmented skin patches	HP:0001053
+5889	RAD51C	Epicanthus	HP:0000286
+5889	RAD51C	Weight loss	HP:0001824
+5889	RAD51C	Squamous cell carcinoma	HP:0002860
+5889	RAD51C	Hypergonadotropic hypogonadism	HP:0000815
+5889	RAD51C	Myelodysplasia	HP:0002863
+5889	RAD51C	Absent thumb	HP:0009777
+5889	RAD51C	Short thumb	HP:0009778
+5889	RAD51C	Aplasia/Hypoplasia of the uvula	HP:0010293
+5889	RAD51C	Micropenis	HP:0000054
+5889	RAD51C	Microphthalmia	HP:0000568
+5889	RAD51C	Hypertelorism	HP:0000316
+5889	RAD51C	Hyperreflexia	HP:0001347
+5889	RAD51C	Facial asymmetry	HP:0000324
+5889	RAD51C	Medulloblastoma	HP:0002885
+5889	RAD51C	Blepharophimosis	HP:0000581
+5889	RAD51C	Upslanted palpebral fissure	HP:0000582
+5889	RAD51C	Ventriculomegaly	HP:0002119
+5889	RAD51C	Thrombocytopenia	HP:0001873
+5889	RAD51C	Duplicated collecting system	HP:0000081
+5889	RAD51C	Neutropenia	HP:0001875
+5889	RAD51C	Renal insufficiency	HP:0000083
+5889	RAD51C	Pancytopenia	HP:0001876
+5889	RAD51C	Sloping forehead	HP:0000340
+5889	RAD51C	Horseshoe kidney	HP:0000085
+5889	RAD51C	Ectopic kidney	HP:0000086
+5889	RAD51C	Renal hypoplasia	HP:0000089
+5889	RAD51C	Scoliosis	HP:0002650
+5889	RAD51C	Leukopenia	HP:0001882
+5889	RAD51C	Micrognathia	HP:0000347
+5889	RAD51C	Ventricular septal defect	HP:0001629
+5889	RAD51C	Atria septal defect	HP:0001631
+5889	RAD51C	Abnormality of the hypothalamus-pituitary axis	HP:0000864
+5889	RAD51C	Tetralogy of Fallot	HP:0001636
+5889	RAD51C	Aplasia/Hypoplasia of the radius	HP:0006501
+5889	RAD51C	Microtia	HP:0008551
+5889	RAD51C	Hypertrophic cardiomyopathy	HP:0001639
+5889	RAD51C	Reticulocytopenia	HP:0001896
+5889	RAD51C	Renal agenesis	HP:0000104
+5889	RAD51C	Nephroblastoma (Wilms tumor)	HP:0002667
+5889	RAD51C	Patent ductus arteriosus	HP:0001643
+5889	RAD51C	Renal cyst	HP:0000107
+5889	RAD51C	Hearing impairment	HP:0000365
+5889	RAD51C	Abnormality of the aortic valve	HP:0001646
+5889	RAD51C	Spina bifida	HP:0002414
+5889	RAD51C	Anemia	HP:0001903
+5889	RAD51C	Abnormality of the liver	HP:0001392
+5889	RAD51C	Clinodactyly of the 5th finger	HP:0004209
+5889	RAD51C	Low-set ears	HP:0000369
+5889	RAD51C	Leukemia	HP:0001909
+5889	RAD51C	Aplasia/Hypoplasia of the iris	HP:0008053
+5889	RAD51C	Aplastic anemia	HP:0001915
+5889	RAD51C	External ear malformation	HP:0008572
+5889	RAD51C	Lung segmentation defects	HP:0006525
+5889	RAD51C	Pelvic kidney	HP:0000125
+5889	RAD51C	Hydronephrosis	HP:0000126
+5889	RAD51C	Nystagmus	HP:0000639
+5889	RAD51C	Absent radius	HP:0003974
+5889	RAD51C	X-linked recessive inheritance	HP:0001419
+5889	RAD51C	Abnormality of the vertebrae	HP:0003468
+5889	RAD51C	Multiple cafe-au-lait spots	HP:0007565
+5889	RAD51C	Deficient excision of UV-induced pyrimidine dimers in DNA	HP:0003213
+5889	RAD51C	Prolonged G2 phase of cell cycle	HP:0003214
+5889	RAD51C	Abnormality of the aorta	HP:0001679
+5889	RAD51C	Multifactorial inheritance	HP:0001426
+5889	RAD51C	Abnormality of chromosome stability	HP:0003220
+5889	RAD51C	Abnormality of the thumb	HP:0001172
+5889	RAD51C	Chromosomal breakage induced by crosslinking agents	HP:0003221
+5889	RAD51C	Bone marrow hypocellularity	HP:0005528
+5889	RAD51C	Clubbing of toes	HP:0100760
+5889	RAD51C	Bulbous nose	HP:0000414
+5889	RAD51C	Depressed nasal bridge	HP:0005280
+5889	RAD51C	Cranial nerve paralysis	HP:0006824
+5889	RAD51C	Hypoplasia of the radius	HP:0002984
+5889	RAD51C	External genital hypoplasia	HP:0003241
+5889	RAD51C	Cleft palate	HP:0000175
+5889	RAD51C	Wide nasal bridge	HP:0000431
+5889	RAD51C	Triphalangeal thumb	HP:0001199
+5889	RAD51C	Abnormal renal morphology	HP:0012210
+5889	RAD51C	Abnormality of the ulna	HP:0002997
+5889	RAD51C	Breast carcinoma	HP:0003002
+5889	RAD51C	Arteriovenous malformation	HP:0100026
+5889	RAD51C	Cafe-au-lait spot	HP:0000957
+5889	RAD51C	Neuroblastoma	HP:0003006
+5889	RAD51C	Cognitive impairment	HP:0100543
+5889	RAD51C	Stage 5 chronic kidney disease	HP:0003774
+5889	RAD51C	Abnormal localization of kidney	HP:0100542
+5889	RAD51C	Postnatal growth retardation	HP:0008897
+5889	RAD51C	Choanal atresia	HP:0000453
+5889	RAD51C	Meckel diverticulum	HP:0002245
+5889	RAD51C	Abnormality of the hip bone	HP:0003272
+5889	RAD51C	Short palpebral fissure	HP:0012745
+5889	RAD51C	Aganglionic megacolon	HP:0002251
+5889	RAD51C	Abnormal facial shape	HP:0001999
+5889	RAD51C	Bruising susceptibility	HP:0000978
+5889	RAD51C	Finger syndactyly	HP:0006101
+5889	RAD51C	Short neck	HP:0000470
+5889	RAD51C	Duplication of thumb phalanx	HP:0009942
+5889	RAD51C	Complete duplication of thumb phalanx	HP:0009943
+5889	RAD51C	Frontal bossing	HP:0002007
+5889	RAD51C	Abnormality of cardiovascular system morphology	HP:0030680
+5889	RAD51C	Abnormality of the carotid arteries	HP:0005344
+5889	RAD51C	Intellectual disability	HP:0001249
+5889	RAD51C	Short stature	HP:0004322
+5889	RAD51C	Pes planus	HP:0001763
+5889	RAD51C	Astigmatism	HP:0000483
+5889	RAD51C	Phenotypic variability	HP:0003812
+5889	RAD51C	Strabismus	HP:0000486
+5889	RAD51C	Renal hypoplasia/aplasia	HP:0008678
+5889	RAD51C	Growth delay	HP:0001510
+5889	RAD51C	Intrauterine growth retardation	HP:0001511
+5889	RAD51C	Anal atresia	HP:0002023
+5889	RAD51C	Abnormality of skin pigmentation	HP:0001000
+5889	RAD51C	Irregular hyperpigmentation	HP:0007400
+5889	RAD51C	Toe syndactyly	HP:0001770
+5889	RAD51C	Abnormality of the preputium	HP:0100587
+5889	RAD51C	Urogenital fistula	HP:0100589
+5889	RAD51C	Small for gestational age	HP:0001518
+5889	RAD51C	Hydrocephalus	HP:0000238
+5889	RAD51C	Global developmental delay	HP:0001263
+5889	RAD51C	Esophageal atresia	HP:0002032
+5889	RAD51C	Variable expressivity	HP:0003828
+5889	RAD51C	Anemic pallor	HP:0001017
+5889	RAD51C	Visual impairment	HP:0000505
+5889	RAD51C	Microcephaly	HP:0000252
+5889	RAD51C	Ptosis	HP:0000508
+5889	RAD51C	Reduced bone mineral density	HP:0004349
+5892	RAD51D	Multifactorial inheritance	HP:0001426
+5892	RAD51D	Autosomal dominant inheritance	HP:0000006
+5892	RAD51D	Breast carcinoma	HP:0003002
+7552	ZNF711	Macrocephaly	HP:0000256
+7552	ZNF711	Drooling	HP:0002307
+7552	ZNF711	Narrow chest	HP:0000774
+7552	ZNF711	X-linked inheritance	HP:0001417
+7552	ZNF711	X-linked recessive inheritance	HP:0001419
+7552	ZNF711	Dolichocephaly	HP:0000268
+7552	ZNF711	X-linked dominant inheritance	HP:0001423
+7552	ZNF711	Macrotia	HP:0000400
+7552	ZNF711	Delayed gross motor development	HP:0002194
+7552	ZNF711	Long face	HP:0000276
+7552	ZNF711	Sensorineural hearing impairment	HP:0000407
+7552	ZNF711	Synophrys	HP:0000664
+7552	ZNF711	Decreased testicular size	HP:0008734
+7552	ZNF711	Depressed nasal bridge	HP:0005280
+7552	ZNF711	Poor speech	HP:0002465
+7552	ZNF711	Enuresis	HP:0000805
+7552	ZNF711	Dental crowding	HP:0000678
+7552	ZNF711	Intellectual disability, moderate	HP:0002342
+7552	ZNF711	Broad thumb	HP:0011304
+7552	ZNF711	Long foot	HP:0001833
+7552	ZNF711	Mandibular prognathia	HP:0000303
+7552	ZNF711	Thick lower lip vermilion	HP:0000179
+7552	ZNF711	Tented upper lip vermilion	HP:0010804
+7552	ZNF711	Uplifted earlobe	HP:0009909
+7552	ZNF711	Macroorchidism	HP:0000053
+7552	ZNF711	Hypertelorism	HP:0000316
+7552	ZNF711	Cognitive impairment	HP:0100543
+7552	ZNF711	Kyphoscoliosis	HP:0002751
+7552	ZNF711	Absent speech	HP:0001344
+7552	ZNF711	Open mouth	HP:0000194
+7552	ZNF711	Behavioral abnormality	HP:0000708
+7552	ZNF711	Psychosis	HP:0000709
+7552	ZNF711	Blepharophimosis	HP:0000581
+7552	ZNF711	Upslanted palpebral fissure	HP:0000582
+7552	ZNF711	Broad nasal tip	HP:0000455
+7552	ZNF711	Agitation	HP:0000713
+7552	ZNF711	Generalized myoclonic seizures	HP:0002123
+7552	ZNF711	Autism	HP:0000717
+7552	ZNF711	Aggressive behavior	HP:0000718
+7552	ZNF711	Anteverted nares	HP:0000463
+7552	ZNF711	Abnormal facial shape	HP:0001999
+7552	ZNF711	Flat face	HP:0012368
+7552	ZNF711	Prominent forehead	HP:0011220
+7552	ZNF711	High palate	HP:0000218
+7552	ZNF711	Thin upper lip vermilion	HP:0000219
+7552	ZNF711	Stereotypic behavior	HP:0000733
+7552	ZNF711	Short attention span	HP:0000736
+7552	ZNF711	Intellectual disability	HP:0001249
+7552	ZNF711	Seizures	HP:0001250
+7552	ZNF711	Short stature	HP:0004322
+7552	ZNF711	Anxiety	HP:0000739
+7552	ZNF711	Muscular hypotonia	HP:0001252
+7552	ZNF711	Joint hypermobility	HP:0001382
+7552	ZNF711	Strabismus	HP:0000486
+7552	ZNF711	Intellectual disability, mild	HP:0001256
+7552	ZNF711	Abnormality of the distal phalanx of finger	HP:0009832
+7552	ZNF711	Delayed speech and language development	HP:0000750
+7552	ZNF711	Small for gestational age	HP:0001518
+7552	ZNF711	Global developmental delay	HP:0001263
+7552	ZNF711	Hyperactivity	HP:0000752
+7552	ZNF711	Variable expressivity	HP:0003828
+7552	ZNF711	Motor delay	HP:0001270
+7552	ZNF711	Severe Myopia	HP:0011003
+7552	ZNF711	Microcephaly	HP:0000252
+7552	ZNF711	Short nose	HP:0003196

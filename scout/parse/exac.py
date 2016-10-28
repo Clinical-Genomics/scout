@@ -13,6 +13,7 @@ def parse_exac_line(line, header):
             exac_info(dict): A dictionary with the relevant info
     """
     exac_gene = {}
+    line = line.rstrip().split('\t')
     raw_info = dict(zip(header, line))
     exac_gene['hgnc_symbol'] = raw_info['gene']
     exac_gene['pli_score'] = float(raw_info['pLI'])
@@ -35,9 +36,8 @@ def parse_exac_genes(lines):
     header = []
     logger.info("Parsing exac genes...")
     for index, line in enumerate(lines):
-        line = line.rstrip().split('\t')
         if index == 0:
-            header = line
+            header = line.rstrip().split('\t')
         else:
             exac_gene = parse_exac_line(line, header)
             

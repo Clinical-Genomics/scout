@@ -7,7 +7,12 @@ import yaml
 
 from scout.adapter import MongoAdapter
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
-from scout.parse import (parse_case, parse_gene_panel, parse_variant)
+from scout.parse import (parse_case, parse_gene_panel, parse_variant, 
+                         parse_hgnc_genes, parse_ensembl_transcripts,
+                         parse_exac_genes, parse_hpo_genes, parse_hpo_phenotypes,
+                         parse_hpo_diseases)
+
+from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 
@@ -26,6 +31,12 @@ scout_yaml_config = 'tests/fixtures/config1.yaml'
 gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
+hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
+ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
+exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
+hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
+hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
+hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
 
 ##################### File fixtures #####################
 @pytest.fixture
@@ -34,6 +45,41 @@ def config_file(request):
     print('')
     return scout_yaml_config
 
+@pytest.fixture
+def hgnc_file(request):
+    """Get the path to a hgnc file"""
+    print('')
+    return hgnc_path
+
+@pytest.fixture
+def transcripts_file(request):
+    """Get the path to a ensembl transcripts file"""
+    print('')
+    return ensembl_transcript_path
+
+@pytest.fixture
+def exac_file(request):
+    """Get the path to a exac genes file"""
+    print('')
+    return exac_genes_path
+
+@pytest.fixture
+def hpo_genes_file(request):
+    """Get the path to the hpo genes file"""
+    print('')
+    return hpo_genes_path
+
+@pytest.fixture
+def hpo_terms_file(request):
+    """Get the path to the hpo terms file"""
+    print('')
+    return hpo_terms_path
+
+@pytest.fixture
+def hpo_disease_file(request):
+    """Get the path to the hpo disease file"""
+    print('')
+    return hpo_disease_path
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -70,6 +116,96 @@ def scout_config(request, config_file):
     with open(config_file) as in_handle:
         data = yaml.load(in_handle)
     return data
+
+
+##################### Gene fixtures #####################
+
+@pytest.fixture
+def hgnc_handle(request, hgnc_file):
+    """Get a file handle to a hgnc file"""
+    print('')
+    return open(hgnc_file, 'r')
+
+@pytest.fixture
+def hgnc_genes(request, hgnc_handle):
+    """Get a dictionary with hgnc genes"""
+    print('')
+    return parse_hgnc_genes(hgnc_handle)
+
+@pytest.fixture
+def transcripts_handle(request, transcripts_file):
+    """Get a file handle to a ensembl transcripts file"""
+    print('')
+    return open(transcripts_file, 'r')
+
+@pytest.fixture
+def transcripts(request, transcripts_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def exac_handle(request, exac_file):
+    """Get a file handle to a ensembl gene file"""
+    print('')
+    return open(exac_file, 'r')
+
+@pytest.fixture
+def exac_genes(request, exac_handle):
+    """Get the parsed exac genes"""
+    print('')
+    return parse_exac_genes(exac_handle)
+
+@pytest.fixture
+def hpo_genes_handle(request, hpo_genes_file):
+    """Get a file handle to a hpo gene file"""
+    print('')
+    return open(hpo_genes_file, 'r')
+
+@pytest.fixture
+def hpo_genes(request, hpo_genes_handle):
+    """Get the exac genes"""
+    print('')
+    return parse_hpo_genes(hpo_genes_handle)
+
+@pytest.fixture
+def genes(request, transcripts_handle, hgnc_handle, exac_handle, 
+          hpo_genes_handle):
+    """Get a dictionary with the linked genes"""
+    print('')
+    gene_dict = link_genes(
+        ensembl_lines=transcripts_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=hgnc_handle, 
+        hpo_lines=hpo_genes_handle
+    )
+    
+    return link_genes
+
+@pytest.fixture
+def hpo_terms_handle(request, hpo_terms_file):
+    """Get a file handle to a hpo terms file"""
+    print('')
+    return open(hpo_terms_file, 'r')
+
+@pytest.fixture
+def hpo_terms(request, hpo_terms_handle):
+    """Get a dictionary with the hpo terms"""
+    print('')
+    return parse_hpo_phenotypes(hpo_terms_handle)
+
+@pytest.fixture
+def hpo_disease_handle(request, hpo_disease_file):
+    """Get a file handle to a hpo disease file"""
+    print('')
+    return open(hpo_disease_file, 'r')
+
+@pytest.fixture
+def hpo_diseases(request, hpo_disease_handle):
+    """Get a file handle to a hpo disease file"""
+    print('')
+    diseases = parse_hpo_diseases(hpo_disease_handle)
+    return diseases
 
 
 ##################### Case fixtures #####################

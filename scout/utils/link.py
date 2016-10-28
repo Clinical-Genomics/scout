@@ -5,16 +5,16 @@ from scout.parse import (parse_hgnc_genes, parse_ensembl_transcripts,
 
 logger = logging.getLogger(__name__)
 
-def link_genes(ensembl_transcripts, hgnc_genes, exac_genes, hpo_lines):
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
     """Gather information from different sources and return a gene dict
     
         Extract information collected from a number of sources and combine them 
         into a gene dict with HGNC symbols as keys.
     
         Args:
-            ensembl_genes(iterable(str))
-            hgnc_genes(iterable(str))
-            exac_genes(iterable(str))
+            ensembl_lines(iterable(str))
+            hgnc_lines(iterable(str))
+            exac_lines(iterable(str))
             hpo_lines(iterable(str))
         
         Yields:
@@ -23,7 +23,7 @@ def link_genes(ensembl_transcripts, hgnc_genes, exac_genes, hpo_lines):
     genes = {}
     logger.info("Linking genes and transcripts")
     #Parse the ensembl gene info
-    for transcript in parse_ensembl_transcripts(ensembl_transcripts):
+    for transcript in parse_ensembl_transcripts(ensembl_lines):
         logger.debug("Found transcript with ensembl id %s" % 
                       transcript['ensembl_transcript_id'])
         parsed_transcript = {}
@@ -58,7 +58,7 @@ def link_genes(ensembl_transcripts, hgnc_genes, exac_genes, hpo_lines):
                     }
                 }
 
-    for hgnc_gene in parse_hgnc_genes(hgnc_genes):
+    for hgnc_gene in parse_hgnc_genes(hgnc_lines):
         hgnc_symbol = hgnc_gene['hgnc_symbol']
         if hgnc_symbol in genes:
             gene = genes[hgnc_symbol]
@@ -72,7 +72,7 @@ def link_genes(ensembl_transcripts, hgnc_genes, exac_genes, hpo_lines):
             gene['ucsc_id'] = hgnc_gene['ucsc_id']
             gene['vega_id'] = hgnc_gene['vega_id']
     
-    for exac_gene in parse_exac_genes(exac_genes):
+    for exac_gene in parse_exac_genes(exac_lines):
         hgnc_symbol = exac_gene['hgnc_symbol']
         if hgnc_symbol in genes:
             genes[hgnc_symbol]['pli_score'] = exac_gene['pli_score']
