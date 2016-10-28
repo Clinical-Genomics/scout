@@ -8,7 +8,7 @@ from scout.exceptions import VcfError
 
 logger=logging.getLogger(__name__)
 
-def parse_variant(variant_dict, case, variant_type='clinical'):
+def parse_variant(variant_dict, case, variant_type='clinical', rank_results_header=None):
     """Return a parsed variant
 
         Get all the necessary information to build a variant object
@@ -21,6 +21,7 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
         Yields:
             variant(dict): Parsed variant
     """
+    rank_results_header = rank_results_header or []
     variant = {}
     # Create the ID for the variant
     case_id = case['case_id']
@@ -170,6 +171,12 @@ def parse_variant(variant_dict, case, variant_type='clinical'):
     variant['conservation'] = parse_conservations(variant_dict)
 
     variant['callers'] = parse_callers(variant_dict)
+    
+    rank_result = variant_dict['info_dict'].get('RankResult')
+    if rank_result:
+        results = [int(i) for i in rank_result[0].split('|')]
+        variant['rank_result'] = dict(zip(rank_results_header, results))
+    
 
     return variant
 

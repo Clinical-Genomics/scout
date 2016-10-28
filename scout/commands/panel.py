@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 @click.command()
 @click.option('-d', '--date', help='date of gene panel')
-@click.optin('-n', '--name', help='display name for the panel')
+@click.option('-n', '--name', help='display name for the panel')
 @click.option('-v', '--version', help='panel version', default=1.0)
 @click.option('-t', '--type', default='clinical')
 @click.argument('panel_id')

@@ -40,6 +40,10 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                              " database.".format(case_obj['owner']))
 
     variants = VCFParser(infile=variant_file)
+    rank_results_header = []
+    for info_line in variants.metadata.info_lines:
+        if info_line['ID'] == 'RankResult':
+            rank_results_header = info_line['Description'].split('|')
 
     try:
         for variant in variants:
@@ -48,7 +52,8 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 variant=variant,
                 case_obj=case_obj,
                 institute_obj=institute_obj,
-                variant_type=variant_type
+                variant_type=variant_type,
+                rank_results_header=rank_results_header
             )
     except Exception as e:
         logger.error(e.message)
@@ -60,7 +65,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
 
 
 def load_variant(adapter, variant, case_obj, institute_obj,
-                 variant_type='clinical'):
+                 variant_type='clinical', rank_results_header=None):
     """Load a variant into the database
 
         Parse the variant, create a mongoengine object and load it into
@@ -72,14 +77,17 @@ def load_variant(adapter, variant, case_obj, institute_obj,
             case_obj(Case)
             institute_obj(Institute)
             variant_type(str)
+            rank_results_header(list)
 
         Returns:
             variant_obj(Variant): mongoengine Variant object
     """
+    rank_results_header = rank_results_header or []
     parsed_variant = parse_variant(
         variant_dict=variant,
         case=case_obj,
-        variant_type=variant_type
+        variant_type=variant_type,
+        rank_results_header=rank_results_header
     )
 
     variant_obj = build_variant(

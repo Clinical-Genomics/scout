@@ -3,17 +3,20 @@ from scout.exceptions import VcfError
 
 def test_parse_minimal(minimal_snv, minimal_case):
     """Test to parse a minimal variant"""
-    parsed_variant = parse_variant(minimal_snv, minimal_case, variant_type='clinical')
+    parsed_variant = parse_variant(minimal_snv, minimal_case, 
+                                   variant_type='clinical')
     
     assert parsed_variant['position'] == int(minimal_snv['POS'])
     assert parsed_variant['category'] == 'snv'
 
-def test_parse_one_snv_from_file(one_file_variant, parsed_case):
+def test_parse_one_snv_from_file(one_file_variant, parsed_case, rank_results_header):
     """docstring for test_parse_all_variants"""
-
     for variant in one_file_variant:
-        parsed_variant = parse_variant(variant, parsed_case)
+        parsed_variant = parse_variant(variant, parsed_case,
+                                       rank_results_header=rank_results_header)
+        
         assert parsed_variant['chromosome'] == '1'
+        assert parsed_variant['rank_result']['Consequence'] == 5
 
 def test_parse_small_sv(minimal_sv, minimal_case):
     parsed_variant = parse_variant(minimal_sv, minimal_case)
