@@ -40,29 +40,30 @@ def build_variant(variant, institute):
     variant_obj['mate_id'] = variant.get('mate_id')
     
     gt_types = []
-    for sample in variant['samples']:
+    for sample in variant.get('samples', []):
         gt_call = build_genotype(sample)
         gt_types.append(gt_call)
+
     variant_obj['samples'] = gt_types
-    
-    variant_obj.genetic_models = variant['genetic_models']
-    
+
+    variant_obj.genetic_models = variant.get('genetic_models')
+
     # Add the compounds
     compounds = []
-    for compound in variant['compounds']:
+    for compound in variant.get('compounds', []):
         compound_obj = build_compound(compound)
         compounds.append(compound_obj)
     variant_obj['compounds'] = compounds
-    
+
     # Add the genes with transcripts
     genes = []
-    for gene in variant['genes']:
+    for gene in variant.get('genes', []):
         gene_obj = build_gene(gene)
         genes.append(gene_obj)
     variant_obj['genes'] = genes
-    
-    variant_obj['hgnc_symbols'] = variant['hgnc_symbols']
-    variant_obj['ensembl_gene_ids'] = variant['ensembl_gene_ids']
+
+    variant_obj['hgnc_symbols'] = variant.get('hgnc_symbols')
+    variant_obj['ensembl_gene_ids'] = variant.get('ensembl_gene_ids')
     
     # Add the callers
     call_info = variant.get('callers', {})
@@ -78,5 +79,15 @@ def build_variant(variant, institute):
     
     variant_obj['gene_lists'] = variant.get('gene_lists')
     variant_obj['expected_inheritance'] = variant.get('expected_inheritance')
+    
+    rank_results = []
+    for category in variant.get('rank_result',[]):
+        rank_result = {
+            'Category': category,
+            'Score': variant['rank_result'][category]
+        }
+        rank_results.append(category)
+    variant_obj['rank_score_results'] = rank_results
+        
     
     return variant_obj

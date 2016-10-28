@@ -10,7 +10,7 @@ import itertools
 from mongoengine import (Document, EmbeddedDocument, EmbeddedDocumentField,
                          FloatField, IntField, ListField, StringField,
                          ReferenceField, SortedListField, Q, BooleanField,
-                         DoesNotExist)
+                         DoesNotExist, DictField)
 
 from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
                              VARIANT_CALL)
@@ -85,6 +85,7 @@ class Variant(Document):
     alternative = StringField(required=True)
 
     rank_score = FloatField(required=True)
+    rank_score_results = ListField(DictField())
     variant_rank = IntField()
     institute = ReferenceField('Institute', required=True)
 

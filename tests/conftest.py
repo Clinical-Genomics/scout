@@ -419,6 +419,18 @@ def one_file_sv_variant(request):
     return variant
 
 @pytest.fixture(scope='function')
+def rank_results_header(request, one_variant_file):
+    logger.info("Return a VCF parser with one variant")
+    variant = VCFParser(infile=one_variant_file)
+    rank_results = []
+    for info_line in variant.metadata.info_lines:
+        if info_line['ID'] == 'RankResult':
+            rank_results = info_line['Description'].split('|')
+    
+    return rank_results
+
+
+@pytest.fixture(scope='function')
 def sv_variants(request, sv_file):
     logger.info("Return a VCF parser many svs")
     variants = VCFParser(infile=sv_file)
