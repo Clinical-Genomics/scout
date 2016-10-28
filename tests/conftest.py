@@ -9,7 +9,8 @@ from scout.adapter import MongoAdapter
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse import (parse_case, parse_gene_panel, parse_variant, 
                          parse_hgnc_genes, parse_ensembl_transcripts,
-                         parse_exac_genes, parse_hpo_genes)
+                         parse_exac_genes, parse_hpo_genes, parse_hpo_phenotypes,
+                         parse_hpo_diseases)
 
 from scout.utils.link import link_genes
 from scout.log import init_log
@@ -35,6 +36,7 @@ ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
 exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
 hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
 hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
+hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
 
 ##################### File fixtures #####################
 @pytest.fixture
@@ -72,6 +74,12 @@ def hpo_terms_file(request):
     """Get the path to the hpo terms file"""
     print('')
     return hpo_terms_path
+
+@pytest.fixture
+def hpo_disease_file(request):
+    """Get the path to the hpo disease file"""
+    print('')
+    return hpo_disease_path
 
 @pytest.fixture(scope='function')
 def variant_file(request):
@@ -179,6 +187,25 @@ def hpo_terms_handle(request, hpo_terms_file):
     """Get a file handle to a hpo terms file"""
     print('')
     return open(hpo_terms_file, 'r')
+
+@pytest.fixture
+def hpo_terms(request, hpo_terms_handle):
+    """Get a dictionary with the hpo terms"""
+    print('')
+    return parse_hpo_phenotypes(hpo_terms_handle)
+
+@pytest.fixture
+def hpo_disease_handle(request, hpo_disease_file):
+    """Get a file handle to a hpo disease file"""
+    print('')
+    return open(hpo_disease_file, 'r')
+
+@pytest.fixture
+def hpo_diseases(request, hpo_disease_handle):
+    """Get a file handle to a hpo disease file"""
+    print('')
+    diseases = parse_hpo_diseases(hpo_disease_handle)
+    return diseases
 
 
 ##################### Case fixtures #####################
