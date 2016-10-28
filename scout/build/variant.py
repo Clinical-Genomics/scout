@@ -83,8 +83,8 @@ def build_variant(variant, institute):
     rank_results = []
     for category in variant.get('rank_result', []):
         rank_result = {
-            'Category': category,
-            'Score': variant['rank_result'][category]
+            'category': category,
+            'score': variant['rank_result'][category]
         }
         rank_results.append(rank_result)
     variant_obj['rank_score_results'] = rank_results

@@ -221,9 +221,7 @@
 {% endblock %}
 
 {% block content %}
-
   <div class="variant-segments">
-
     <div class="variant-segments-row">
         <div id="causatives" class="md-card">
             <div class="md-card-header">Matching causatives from other cases</div>
@@ -716,6 +714,18 @@
       </div>
     </div>
 
+    {% if variant.rank_score_results %}
+      <div id="rank-score-results" class="variant-segments-row">
+        <div class="md-card">
+          <div class="md-card-header">Rank score results</div>
+
+          <div class="md-card-body mod-scrollable-big">
+            {{ rs_results_table(variant.rank_score_results) }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
     <div id="compounds" class="variant-segments-row">
       <div class="md-card">
         <div class="md-card-header">Overlapping SVs</div>
@@ -1002,3 +1012,25 @@
   </core-modal>
 
 {% endblock %}
+
+{% macro rs_results_table(rank_score_results) %}
+  <table class="default-table">
+    <thead>
+      <tr>
+        {% for result in rank_score_results %}
+          <th>{{ result.category }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        {% for result in rank_score_results %}
+          <td>
+            {{ result.score }}
+          </td>
+        {% endfor %}
+      <tr>
+    </tbody>
+  </table>
+{% endmacro %}
