@@ -87,6 +87,10 @@ h3 {
   align-items: center;
 }
 
+.bg-warning {
+    background-color: #ffe0b2;
+}
+
 .layout-center {
   @extend .layout;
   justify-content: center;

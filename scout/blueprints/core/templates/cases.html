@@ -2,6 +2,56 @@
 
 {% set page_title = 'Cases' %}
 
+{% macro case_box(case, institute_id) %}
+{% set missing_panel = case.missing_panel %}
+{% set has_missing = (not case.analysis_checked and missing_panel) %}
+<div class="md-card {% if has_missing %}bg-warning{% endif %}">
+  <div class="md-card-body--padded">
+    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case.display_name) }}" class="md-item">
+      {% if case.events %}
+        <div class="md-item-icon">
+          <div class="dot-indicator"></div>
+        </div>
+      {% endif %}
+
+      <div class="md-item-label">{{ case.display_name }}</div>
+
+      {% if case.assignee %}
+        <div class="tag">{{ case.assignee.first_name }}</div>
+      {% endif %}
+    </a>
+
+    <div class="md-item-subtitle">
+      {% if has_missing %}
+        <a href="{{ url_for('core.variants', institute_id=institute_id,
+                            case_id=case.display_name, variant_type='clinical',
+                            gene_lists=[missing_panel.panel_name]) }}">
+            Missing genes for {{ missing_panel.panel_name|replace('-MISSING', '') }}
+        </a> |
+      {% endif %}
+      {% if case.is_research %}
+        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
+      {% else %}
+        <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
+      {% endif %}
+       |
+      {% if case.analysis_date %}
+          <span>{{ case.analysis_date.split()|first }}</span> |
+      {% endif %}
+      {% if case.analysis_type != 'unknown' %}
+        <span class="md-badge is-{{ case.analysis_type }}">{{ case.analysis_type|upper }}</span>
+      {% endif %}
+      {% if case.is_rerun %}
+        <span class="md-badge--success">rerun</span> |
+      {% endif %}
+      {% if case.analysis_checked %}
+          <span class="md-badge--success">checked</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% block toolbar_left %}
   {{ super() }}
 
