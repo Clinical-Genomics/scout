@@ -89,27 +89,6 @@ class AppFactory(object):
             else:
                 extension(self.app)
 
-        @babel.localeselector
-        def get_locale():
-            """Determine locale to use for translations."""
-            accept_languages = current_app.config.get('ACCEPT_LANGUAGES')
-
-            # first check request args
-            session_language = request.args.get('lang')
-            print(session_language)
-            if session_language in accept_languages:
-                return session_language
-
-            # language can be forced in config
-            user_language = current_app.config.get('REPORT_LANGUAGE')
-            if user_language:
-                return user_language
-
-            # try to guess the language from the user accept header that
-            # the browser transmits.  We support de/fr/en in this example.
-            # The best match wins.
-            return request.accept_languages.best_match(accept_languages)
-
     def _register_blueprints(self):
         """Configure blueprints in views."""
         for blueprint_path, url_prefix in self.app.config.get('BLUEPRINTS', []):
