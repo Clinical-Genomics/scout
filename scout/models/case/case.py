@@ -171,6 +171,13 @@ class Case(Document):
         """Return an id using both owner and case."""
         return "{this.owner}-{this.display_name}".format(this=self)
 
+    @property
+    def missing_panel(self):
+        """Return a panel of missing genes if it exists."""
+        for panel in self.clinical_panels:
+            if panel.panel_name.endswith('-MISSING'):
+                return panel
+
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
