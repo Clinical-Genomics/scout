@@ -1,7 +1,9 @@
 import logging
 
-from scout.parse import (parse_hgnc_genes, parse_ensembl_transcripts, 
-                         parse_exac_genes, parse_hpo_genes)
+from scout.parse.hgnc import parse_hgnc_genes
+from scout.parse.ensembl import parse_ensembl_transcripts
+from scout.parse.exac import parse_exac_genes
+from scout.parse.hpo import parse_hpo_genes
 
 logger = logging.getLogger(__name__)
 

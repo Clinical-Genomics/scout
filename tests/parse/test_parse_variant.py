@@ -1,4 +1,5 @@
-from scout.parse import parse_variant, parse_case
+from scout.parse.case import parse_case
+from scout.parse.variant import parse_variant
 from scout.exceptions import VcfError
 
 def test_parse_minimal(minimal_snv, minimal_case):

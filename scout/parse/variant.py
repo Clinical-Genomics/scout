@@ -2,11 +2,11 @@ import logging
 
 from scout.utils.md5 import generate_md5_key
 from scout.parse.genotype import parse_genotypes
-from scout.parse.compound import parse_compunds
+from scout.parse.compound import parse_compounds
 from scout.parse.clnsig import parse_clnsig
 from scout.parse.gene import parse_genes
 from scout.parse.frequency import parse_frequencies
-from scout.parse.consevation import parse_conservations
+from scout.parse.conservation import parse_conservations
 from scout.parse.ids import parse_ids
 from scout.parse.callers import parse_callers
 
@@ -118,7 +118,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['genetic_models'] = genetic_models
 
     # Add the clnsig prediction
-    clnsig_accessions = get_clnsig(variant_dict)
+    clnsig_accessions = parse_clnsig(variant_dict)
     if clnsig_accessions:
         variant['clnsig'] = 5
         variant['clnsigacc'] = clnsig_accessions

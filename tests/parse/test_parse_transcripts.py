@@ -42,11 +42,6 @@ def test_parse_transcripts():
     variant = {
         'ALT': 'C',
         'vep_info': csq_info,
-        'info_dict': {
-            'Ensembl_transcript_to_refseq_transcript' : ["POC1A:ENST00000296484>NM_"\
-            "015426/XM_005265019|ENST00000394970>NM_001161580|ENST00000474012"\
-            ">NM_001161581"]
-        }
         }
     
     
@@ -55,4 +50,3 @@ def test_parse_transcripts():
         if transcript['transcript_id'] == 'ENST00000296484':
             assert transcript['sift_prediction'] == 'deleterious'
             assert transcript['functional_annotations'] == ['missense_variant']
-            assert set(transcript['refseq_ids']) == set(['XM_005265019', 'NM_015426'])

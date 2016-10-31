@@ -1,7 +1,7 @@
 import logging
 from vcf_parser import VCFParser
 
-from scout.parse import parse_variant
+from scout.parse.variant import parse_variant
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
 

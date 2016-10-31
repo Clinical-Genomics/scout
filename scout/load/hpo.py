@@ -2,7 +2,7 @@ import logging
 
 from datetime import datetime
 
-from scout.parse import (parse_hpo_phenotypes, parse_hpo_diseases)
+from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases)
 from scout.build import (build_hpo_term, build_disease_term)
 
 logger = logging.getLogger(__name__)
