@@ -1,4 +1,4 @@
-from scout.parse import parse_callers
+from scout.parse.callers import parse_callers
 
 def test_parse_callers():
     variant = {

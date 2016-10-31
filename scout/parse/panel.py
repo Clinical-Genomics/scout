@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from codecs import open
 
-
 def parse_genes(panel_path, panel_name):
     """Parse a file with genes and return the hgnc ids
 

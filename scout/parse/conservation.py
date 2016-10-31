@@ -1,6 +1,5 @@
 from scout.constants import CONSERVATION
 
-
 def parse_conservations(variant):
     """Parse the conservation predictors
     

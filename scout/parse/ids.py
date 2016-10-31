@@ -1,6 +1,5 @@
 from scout.utils.md5 import generate_md5_key
 
-
 def parse_ids(variant, case, variant_type):
     """Construct the necessary ids for a variant
 

@@ -12,28 +12,7 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 import logging
 
 from scout.constants import SO_TERMS
-from . import (get_omim_gene_ids, get_omim_phenotype_ids, parse_transcripts,
-               parse_disease_associated)
-
-def parse_gene_descriptions(variant):
-    """Get the gene descriptions for the variant
-    
-        Args:
-            variant(dict): A Variant dictionary
-        
-        Returns:
-            descriptions(dict): Dict with {hgcn_symbol: description}
-    """
-    vcf_key = 'Gene_description'
-    vcf_entry = variant['info_dict'].get(vcf_key, [])
-    descriptions = {}
-    for gene_info in vcf_entry:
-        splitted_gene = gene_info.split(':')
-        hgnc_symbol = splitted_gene[0]
-        description = splitted_gene[1]
-        descriptions[hgnc_symbol] = description
-    
-    return descriptions
+from scout.parse.transcript import (parse_transcripts)
 
 def parse_genes(variant):
     """Get the gene from transcripts.
@@ -42,26 +21,13 @@ def parse_genes(variant):
           variant(dict)
     
         Returns:
-          genes (list(dict)): A list with mongo engine object that 
-                              represents the genes
+          genes (list(dict)): A list with dictionaries that represents genes
     
     """
     transcripts = parse_transcripts(variant)
-    disease_associated_transcripts = parse_disease_associated(variant)
+    
     genes_to_transcripts = {}
     genes = []
-
-    # Get the omim ids for each gene
-    mim_ids = get_omim_gene_ids(variant)
-
-    # Get the phenotype ids for each gene
-    phenotype_mim_ids = get_omim_phenotype_ids(variant)
-
-    # A dictionary with clinical gene descriptions
-    gene_descriptions = parse_gene_descriptions(variant)
-
-    # Genes can have reduced penetrance
-    reduced_penetrance = set(variant['info_dict'].get('Reduced_penetrance', []))
 
     # Group all transcripts by gene
     for transcript in transcripts:
@@ -101,41 +67,7 @@ def parse_genes(variant):
             'hgnc_symbol': gene_id,
             'ensembl_gene_id': ensembl_gene_id,
             'region_annotation': SO_TERMS[most_severe_consequence]['region'],
-            'description': gene_descriptions.get(gene_id, ''),
         }
-        genes.append(gene)    
-
-    ######################################################################
-    ## There are two types of OMIM terms, one is the OMIM gene entry    ##
-    ## and one is for the phenotypic terms.                             ##
-    ## Each key in the 'omim_terms' dictionary reprecents a gene id.    ##
-    ## Values are a dictionary with 'omim_gene_id' = omim_gene_id and   ##
-    ## 'phenotypic_terms' = [list of OmimPhenotypeObjects]              ##
-    ######################################################################
-    
-    for gene in genes:
-        hgnc_symbol = gene['hgnc_symbol']
-        # Fill in the gene mim id
-        if hgnc_symbol in mim_ids:
-            gene['omim_gene_id'] = mim_ids[hgnc_symbol]
-        else:
-            gene['omim_gene_id'] = None
-        # Add the associated phenotpyes
-        if hgnc_symbol in phenotype_mim_ids:
-            gene['phenotype_terms'] = phenotype_mim_ids[hgnc_symbol]
-        else:
-            gene['phenotype_terms'] = None
-        
-        if hgnc_symbol in reduced_penetrance:
-            gene['reduced_penetrance'] = True
-        else:
-            gene['reduced_penetrance'] = False
-        
-        if hgnc_symbol in disease_associated_transcripts:
-            gene['disease_associated'] = list(disease_associated_transcripts[hgnc_symbol])
-        else:
-            gene['disease_associated'] = None
-            
+        genes.append(gene)
 
     return genes
-    

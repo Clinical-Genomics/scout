@@ -1,8 +1,6 @@
-from scout.parse import parse_genes
+from scout.parse.transcript import parse_transcripts
 
-
-
-def test_get_genes():
+def test_parse_transcripts():
     csq_entry = "C|missense_variant|MODERATE|POC1A|ENSG00000164087|"\
     "Transcript|ENST00000296484|protein_coding|4/11||ENST00000296484.2"\
     ":c.322A>G|ENSP00000296484.2:p.Ser108Gly|362|322|108|S/G|Agt/Ggt"\
@@ -52,12 +50,9 @@ def test_get_genes():
         }
     
     
-    genes = parse_genes(variant)
-    # for transcript in transcripts:
-    #     if transcript.transcript_id == 'ENST00000296484':
-    #         assert transcript.sift_prediction == 'deleterious'
-    #         assert transcript.functional_annotations == ['missense_variant']
-    #         assert set(transcript.refseq_ids) == set(['XM_005265019', 'NM_015426'])
-    for gene in genes:
-        assert gene['hgnc_symbol'] == 'POC1A'
-    assert len(genes) == 1
+    transcripts = parse_transcripts(variant)
+    for transcript in transcripts:
+        if transcript['transcript_id'] == 'ENST00000296484':
+            assert transcript['sift_prediction'] == 'deleterious'
+            assert transcript['functional_annotations'] == ['missense_variant']
+            assert set(transcript['refseq_ids']) == set(['XM_005265019', 'NM_015426'])

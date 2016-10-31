@@ -1,8 +1,14 @@
 import logging
 
 from scout.utils.md5 import generate_md5_key
-from . import (parse_genotypes, parse_compounds, get_clnsig, parse_genes,
-               parse_frequencies, parse_conservations, parse_ids, parse_callers)
+from scout.parse.genotype import parse_genotypes
+from scout.parse.compound import parse_compunds
+from scout.parse.clnsig import parse_clnsig
+from scout.parse.gene import parse_genes
+from scout.parse.frequency import parse_frequencies
+from scout.parse.consevation import parse_conservations
+from scout.parse.ids import parse_ids
+from scout.parse.callers import parse_callers
 
 from scout.exceptions import VcfError
 
@@ -77,7 +83,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
         if variant['sub_category'] == 'bnd':
             if variant_dict['info_dict'].get('MATEID'):
                 variant['mate_id'] = variant_dict['info_dict']['MATEID'][0]
-            #For translocations we set lenth to infinity
+            #For translocations we set lenth to a huge number
             variant['length'] = int(10e10)
             variant['end'] = int(10e10)
         else:
@@ -87,15 +93,6 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
                 variant['length'] = -1
 
             variant['end'] = int(variant_dict['info_dict']['END'][0])
-
-
-    ################# Gene Lists #################
-    # If a variant belongs to any gene lists we check which ones
-    gene_lists = variant_dict['info_dict'].get('Clinical_db_gene_annotation')
-    if gene_lists:
-        variant['gene_lists'] = list(set(gene_lists))
-    else:
-        variant['gene_lists'] = None
 
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
@@ -120,13 +117,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     genetic_models = variant_dict.get('genetic_models',{}).get(case_name,[])
     variant['genetic_models'] = genetic_models
 
-    expected_inheritance = variant_dict['info_dict'].get('Genetic_disease_model')
-    if expected_inheritance:
-        variant['expected_inheritance'] = expected_inheritance
-    else:
-        variant['expected_inheritance'] = None
-
-    # Add the clinsig prediction
+    # Add the clnsig prediction
     clnsig_accessions = get_clnsig(variant_dict)
     if clnsig_accessions:
         variant['clnsig'] = 5

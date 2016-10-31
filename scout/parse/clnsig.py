@@ -1,7 +1,8 @@
 import logging
 
 logger = logging.getLogger(__name__)
-def get_clnsig(variant):
+
+def parse_clnsig(variant):
     """Get the clnsig information
 
         We are only interested when clnsig = 5. So for each 5 we return the
@@ -11,7 +12,7 @@ def get_clnsig(variant):
             variant (dict): A Variant dictionary
 
         Returns:
-            clnsig_accsessions(list)
+            clnsig_accsessions(list): A list with clnsig accessions
     """
     clnsig_key = 'SnpSift_CLNSIG'
     accession_key = 'SnpSift_CLNACC'
