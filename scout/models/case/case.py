@@ -174,9 +174,13 @@ class Case(Document):
     @property
     def missing_panel(self):
         """Return a panel of missing genes if it exists."""
-        for panel in self.clinical_panels:
-            if panel.panel_name.endswith('-MISSING'):
+        if self.updated_at > datetime(2016, 9, 1):
+            missing_id = "{}-MISSING".format(self.default_panels[0])
+            panel = GenePanel.objects.filter(institute=self.owner,
+                                             panel_name=missing_id).first()
+            if panel in self.clinical_panels:
                 return panel
+        return None
 
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"

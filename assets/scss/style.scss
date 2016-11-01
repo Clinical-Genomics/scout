@@ -272,6 +272,11 @@ core-icon {
   text-decoration: none;
 }
 
+.md-label--warning {
+    @extend .md-label;
+    background-color: #e07c24;  // dark orange
+}
+
 .md-label-icon {
   padding: .3rem .4rem;
   background-color: rgba(#000, .05);
