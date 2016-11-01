@@ -176,6 +176,12 @@ class Case(Document):
         """Return an id using both owner and case."""
         return "{this.owner}-{this.display_name}".format(this=self)
 
+    @property
+    def analyzed_at(self):
+        """Convert the analysis date to a real datetime obj."""
+        parts = [int(part) for part in self.analysis_date.split('-')]
+        return datetime(*parts)
+
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))

@@ -8,11 +8,12 @@ from flask import (abort, Blueprint, current_app, flash, redirect, request,
                    url_for, make_response, Response)
 from flask_login import login_required, current_user
 from flask_mail import Message
+from housekeeper.store import api
 import query_phenomizer
 
 from scout.models import Case, Variant
 from scout.constants import SEVERE_SO_TERMS
-from scout.extensions import mail, store, loqusdb
+from scout.extensions import mail, store, loqusdb, housekeeper
 from scout.utils.helpers import templated, validate_user
 
 from .forms import init_filters_form, process_filters_form, GeneListUpload
@@ -104,6 +105,32 @@ def case(institute_id, case_id):
     default_panel_names = [panel.name_and_version for panel
                            in case_model.default_panel_objs()]
 
+    # archive date
+    today = datetime.date.today()
+    hk_run = api.runs(case_name=case_model.owner_case_id,
+                      run_date=case_model.analyzed_at).first()
+    if hk_run:
+        archive_date = hk_run.will_cleanup_at.date()
+        diff_days = (archive_date - today).days
+        if diff_days < 0:
+            # case already to be archived!
+            status = 'past'
+        elif diff_days <= 10:
+            # case is soon to be archived (0-10 days)
+            status = 'close'
+        elif diff_days <= 30:
+            # case is scheduled for archive (11-30 days)
+            status = 'before'
+        else:
+            # case is not to be archived soon (>30 days)
+            status = 'long'
+        archive = {
+            'date': archive_date,
+            'status': status
+        }
+    else:
+        archive = {}
+
     return dict(institute=inst_mod, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
@@ -111,7 +138,7 @@ def case(institute_id, case_id):
                 sample_map=sample_map, collaborators=collab_ids,
                 hpo_groups=PHENOTYPE_GROUPS,
                 hpo_ids=request.args.getlist('hpo_id'),
-                causatives=causatives)
+                causatives=causatives, archive=archive)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
@@ -736,3 +763,17 @@ def hpoterms():
                    'id': term.hpo_id} for term in terms]
     return Response(dumps(json_terms),
                     mimetype='application/json; charset=utf-8')
+
+
+@core.route('/api/v1/<institute_id>/cases/<case_id>/postpone', methods=['POST'])
+def postpone(institute_id, case_id):
+    """Postpone the clean up (archive) date of a case."""
+    validate_user(current_user, institute_id)
+    case_model = store.case(institute_id, case_id)
+    hk_run = api.runs(case_name=case_model.owner_case_id,
+                      run_date=case_model.analyzed_at).first()
+    api.postpone(hk_run)
+    new_date = hk_run.will_cleanup_at.date()
+    flash("updated archive date to: {}".format(new_date), 'info')
+    housekeeper.manager.commit()
+    return redirect(request.referrer)

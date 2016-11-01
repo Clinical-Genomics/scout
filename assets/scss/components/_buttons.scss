@@ -36,6 +36,11 @@ $button-color: $primary-color !default;
 
     background-color: lighten($button-color, 3%);
   }
+
+  &.bg-warning {
+    // red
+    background-color: #f14d32;
+  }
 }
 
 // flat button
