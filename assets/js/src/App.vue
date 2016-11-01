@@ -38,7 +38,13 @@
             }
           })
       },
-      saveHpoterm (hpo_id) {
+      saveHpoterm (data) {
+        if (data.query.startsWith('HP:') && data.query.length === 10) {
+          let hpo_id = data.query
+        } else {
+          let hpo_id = data.id
+        }
+
         superagent
           .post(`${location.pathname}/phenotype_terms`)
           .type('form')
