@@ -96,6 +96,10 @@ h3 {
   align-items: center;
 }
 
+.bg-warning {
+  background-color: #ffe0b2;
+}
+
 .is-hidden {
   display: none;
 }
@@ -266,6 +270,11 @@ core-icon {
 
   // link reset
   text-decoration: none;
+}
+
+.md-label--warning {
+    @extend .md-label;
+    background-color: #e07c24;  // dark orange
 }
 
 .md-label-icon {

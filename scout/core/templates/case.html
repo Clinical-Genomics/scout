@@ -99,6 +99,22 @@
     </div>
   </form>
 
+  <form class="{{ 'md-label' if case.analysis_checked else 'md-label--warning' }}" action="{{ url_for('core.mark_checked', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
+    {% if case.analysis_checked %}
+      <input class="is-hidden" name="unmark" value="true"></input>
+    {% endif %}
+    <div class="md-label-icon">
+      {% if case.analysis_checked %}
+        <core-icon icon="check-box"></core-icon>
+      {% else %}
+        <core-icon icon="check-box-outline-blank"></core-icon>
+      {% endif %}
+    </div>
+    <button type="submit" class="md-label-text">
+      {{ 'Unmark checked' if case.analysis_checked else 'Mark checked' }}
+    </button>
+  </form>
+
   {% if case.assignee %}
     <form class="case-assign" action="{{ url_for('core.remove_assignee',
                              institute_id=institute.display_name,
@@ -209,22 +225,6 @@
       <button type="submit" class="md-label-text">Coverage report</button>
     </form>
   {% endif %}
-
-  <form class="md-label" action="{{ url_for('core.mark_checked', institute_id=institute_id, case_id=case_id) }}" method="post" accept-charset="utf-8">
-    {% if case.analysis_checked %}
-      <input class="is-hidden" name="unmark" value="true"></input>
-    {% endif %}
-    <div class="md-label-icon">
-      {% if case.analysis_checked %}
-        <core-icon icon="check-box"></core-icon>
-      {% else %}
-        <core-icon icon="check-box-outline-blank"></core-icon>
-      {% endif %}
-    </div>
-    <button type="submit" class="md-label-text">
-      {{ 'Unmark checked' if case.analysis_checked else 'Mark checked' }}
-    </button>
-  </form>
 
   {% if case.rank_model_version %}
       <div class="md-label">
