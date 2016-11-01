@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from mongoengine import (Document, StringField, ListField, EmbeddedDocument,
-                         IntField, FloatField, EmbeddedDocumentField, 
+                         IntField, FloatField, EmbeddedDocumentField,
                          BooleanField)
 
 class HgncAlias(Document):
@@ -16,20 +16,18 @@ class HgncTranscript(EmbeddedDocument):
     refseq_id = StringField(required=True)
     start = IntField(required=True)
     end = IntField(required=True)
-    
+
 
 class HgncGene(Document):
-    #This works like a dictionary where hgnc_symbol is the correct id and
-    #values are all aliases
     hgnc_symbol = StringField(required=True, unique=True)
     ensembl_id = StringField(required=True)
-    
+
     hgnc_id = IntField()
-    
+
     chromosome = StringField(required=True)
     start = IntField(required=True)
     end = IntField(required=True)
-    
+
     description = StringField()
     aliases = ListField(StringField())
     entrez_id = IntField()
@@ -40,8 +38,8 @@ class HgncGene(Document):
     uniprot_ids = ListField(StringField())
     vega_id = StringField()
     transcripts = ListField(EmbeddedDocumentField(HgncTranscript))
-    
-    #Inheritance information
+
+    # Inheritance information
     incomplete_penetrance = BooleanField()
     ar = BooleanField()
     ad = BooleanField()
@@ -50,11 +48,21 @@ class HgncGene(Document):
     xd = BooleanField()
     x = BooleanField()
     y = BooleanField()
-    
+
+    @property
+    def inheritance(self):
+        """Return a list of inheritance information."""
+        return [('AR', self.ar), ('AD', self.ad), ('MT', self.mt),
+                ('XR', self.xr), ('XD', self.xd), ('X', self.x), ('Y', self.y)]
+
+    @property
+    def position(self):
+        return "{this.chromosome}:{this.start}-{this.end}".format(this=self)
+
     @property
     def hgnc_link(self):
         """Link to gene in HGNC"""
-        url_template = ("http://www.genenames.org/cgi-bin/gene_symbol_report"\
+        url_template = ("http://www.genenames.org/cgi-bin/gene_symbol_report"
                         "?hgnc_id=HGNC:{}")
         return url_template.format(self.hgnc_id)
 
@@ -63,12 +71,11 @@ class HgncGene(Document):
         """Link to gene in genecards.org"""
         url_template = ("http://www.genecards.org/cgi-bin/carddisp.pl?gene={}")
         return url_template.format(self.hgnc_symbol)
-        
+
     meta = {
         'index_background': True,
-        'indexes':[
+        'indexes': [
             'hgnc_id',
-            ('chromosome' ,'+start', '+end'),
+            ('chromosome', '+start', '+end'),
         ]
     }
-    
