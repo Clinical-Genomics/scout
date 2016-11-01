@@ -6,6 +6,7 @@ from scout.log import init_log
 from scout.adapter import MongoAdapter
 from . import (load, transfer, wipe, delete_case, genes, export, institute,
                hpo, panel, init_command)
+from .cases import cases
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
@@ -33,26 +34,26 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
     mongo_configs = {}
     configs = {}
     if config:
-        logger.info("Use config file {0}".format(config))
+        logger.debug("Use config file {0}".format(config))
         configs = ConfigObj(config)
 
     if mongodb:
         mongo_configs['mongodb'] = mongodb
     else:
         mongo_configs['mongodb'] = configs.get('mongodb', 'variantDatabase')
-    logger.info("Setting mongodb to {0}".format(mongo_configs['mongodb']))
+    logger.debug("Setting mongodb to {0}".format(mongo_configs['mongodb']))
 
     if host:
         mongo_configs['host'] = host
     else:
         mongo_configs['host'] = configs.get('host', 'localhost')
-    logger.info("Setting host to {0}".format(mongo_configs['host']))
+    logger.debug("Setting host to {0}".format(mongo_configs['host']))
 
     if port:
         mongo_configs['port'] = port
     else:
         mongo_configs['port'] = int(configs.get('port', 27017))
-    logger.info("Setting port to {0}".format(mongo_configs['port']))
+    logger.debug("Setting port to {0}".format(mongo_configs['port']))
 
     if username:
         mongo_configs['username'] = username
@@ -64,9 +65,9 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
     else:
         mongo_configs['password'] = configs.get('password')
 
-    logger.info("Setting up a mongo adapter")
+    logger.debug("Setting up a mongo adapter")
     mongo_adapter = MongoAdapter()
-    logger.info("Connecting to database")
+    logger.debug("Connecting to database")
     mongo_adapter.connect_to_database(
         database=mongo_configs['mongodb'],
         host=mongo_configs['host'],
@@ -88,3 +89,4 @@ cli.add_command(hpo)
 cli.add_command(export)
 cli.add_command(institute)
 cli.add_command(panel)
+cli.add_command(cases)

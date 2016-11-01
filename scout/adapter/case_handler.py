@@ -70,7 +70,8 @@ class CaseHandler(object):
         """Fetch all institutes."""
         return Institute.objects
 
-    def cases(self, collaborator=None, query=None, skip_assigned=False, has_causatives=False):
+    def cases(self, collaborator=None, query=None, skip_assigned=False,
+              has_causatives=False, reruns=False):
         """Fetches all cases from the backend.
 
         Args:
@@ -82,9 +83,9 @@ class CaseHandler(object):
         Yields:
             Cases ordered by date
         """
-        logger.info("Fetch all cases")
+        logger.debug("Fetch all cases")
         if collaborator:
-            logger.info("Use collaborator {0}".format(collaborator))
+            logger.debug("Use collaborator {0}".format(collaborator))
             case_query = Case.objects(
                 Q(owner=collaborator) | Q(collaborators=collaborator)
             )
@@ -107,6 +108,9 @@ class CaseHandler(object):
 
         if has_causatives:
             case_query = case_query.filter(causatives__exists=True)
+
+        if reruns:
+            case_query = case_query.filter(rerun_requested=True)
 
         return case_query.order_by('-updated_at')
 
