@@ -10,12 +10,12 @@ genes_bp = Blueprint('genes', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/genes/static')
 
 
-@genes_bp.route('/genes/<hgnc_symbol>')
+@genes_bp.route('/genes/<symbol>')
 @templated('genes/gene.html')
 @login_required
-def gene(hgnc_symbol):
+def gene(symbol):
     """Render information about a gene."""
-    gene_obj = store.hgnc_gene(hgnc_symbol)
+    gene_obj = store.hgnc_gene(symbol)
     if gene_obj is None:
         return abort(404)
     return dict(gene=gene_obj)

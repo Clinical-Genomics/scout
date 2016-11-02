@@ -261,8 +261,10 @@
 
         <!-- HGNC -->
         <div class="variants-row-item is-scrollable">
-          {% for hgnc_id, omim_link in variant.omim_annotation_links %}
-            <a target="_blank" href="{{ omim_link }}">{{ hgnc_id }}</a>
+          {% for hgnc_symbol in variant.hgnc_symbols %}
+            <a href="{{ url_for('genes.gene', symbol=hgnc_symbol) }}">
+              {{ hgnc_symbol }}
+            </a>
           {% endfor %}
         </div>
 

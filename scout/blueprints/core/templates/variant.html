@@ -356,7 +356,9 @@
 
                 <tr class="{{ row_class }}">
                   <td>
-                    {{ transcript.hgnc_symbol }}
+                    <a href="{{ url_for('genes.gene', symbol=transcript.hgnc_symbol) }}">
+                      {{ transcript.hgnc_symbol }}
+                    </a>
                     {% if transcript.is_canonical %}
                       <span class="dot-indicator" title="CANONICAL"></span>
                     {% endif %}
@@ -547,7 +549,11 @@
             <tbody>
               {% for gene, phenotype in variant.omim_phenotypes %}
                 <tr>
-                  <td>{{ gene.hgnc_symbol }}</td>
+                  <td>
+                    <a href="{{ url_for('genes.gene', symbol=gene.hgnc_symbol) }}">
+                      {{ gene.hgnc_symbol }}
+                    </a>
+                  </td>
                   <td>
                     <a href="{{ phenotype.omim_link }}" target="_blank">
                       {{ phenotype.phenotype_id }}
