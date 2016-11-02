@@ -12,6 +12,14 @@ genes_bp = Blueprint('genes', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/genes/static')
 
 
+@genes_bp.route('/genes')
+@templated('genes/genes.html')
+@login_required
+def genes():
+    """Render seach box for genes."""
+    return dict()
+
+
 @genes_bp.route('/genes/<symbol>')
 @templated('genes/gene.html')
 @login_required
@@ -25,7 +33,7 @@ def gene(symbol):
 
 @genes_bp.route('/api/v1/genes')
 @login_required
-def genes():
+def api_genes():
     """Return JSON data about genes."""
     query = request.args.get('query')
     # filter genes by matching query to gene information

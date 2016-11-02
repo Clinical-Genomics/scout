@@ -1,0 +1,11 @@
+{% extends "genes/layout.html" %}
+
+{% block vue_block %}
+  <div class="container-fluid clear-navbar">
+    <div class="row">
+      <div class="col-md-12">
+        <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
+      </div>
+    </div>
+  </div>
+{% endblock %}
