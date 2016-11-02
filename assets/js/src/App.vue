@@ -70,6 +70,9 @@
             }
           })
       },
+      visitGene (data) {
+        window.location.href = `/genes/${data.id}`;
+      },
       showModal () {
         this.modalVisible = true
       },
@@ -101,7 +104,7 @@
       'drawer-panel': DrawerPanel,
       'markdown-editor': MarkdownEditor,
       'core-modal': CoreModal,
-      'typeahead': Typeahead
+      'typeahead': Typeahead,
     }
   }
 </script>
@@ -115,7 +118,6 @@
     height: 100%;
     width: 100%;
     overflow: auto;
-    padding: 0;
     margin: 0;
   }
 

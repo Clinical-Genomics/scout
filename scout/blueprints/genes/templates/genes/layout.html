@@ -8,6 +8,12 @@
       href="{{ url_for('genes.static', filename='styles.css') }}">
 {% endblock %}
 
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/2.3.0/superagent.min.js" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename='build.js') }}"></script>
+{% endblock %}
+
 {% block navbar %}
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -22,4 +28,10 @@
       </div>
     </div>
   </nav>
+{% endblock %}
+
+{% block content %}
+  <div id="app">
+    {% block vue_block %}{% endblock %}
+  </div>
 {% endblock %}

@@ -1,15 +1,14 @@
 {% extends "genes/layout.html" %}
 
-{% block navbar_content %}
-  <form class="navbar-form navbar-left">
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Gene">
-    </div>
-  </form>
-{% endblock %}
-
-{% block content %}
+{% block vue_block %}
   <div class="container-fluid clear-navbar">
+    {# ROW 0 #}
+    <div class="row">
+      <div class="col-md-12">
+        <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
+      </div>
+    </div>
+
     {# ROW 1 #}
     <div class="row">
       <div class="col-md-12">
