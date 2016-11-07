@@ -5,7 +5,7 @@
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import absolute_import, unicode_literals
-from flask_wtf import Form
+from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
                      SelectMultipleField, RadioField, DateField, SelectField)
