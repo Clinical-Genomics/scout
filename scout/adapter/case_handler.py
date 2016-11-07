@@ -71,7 +71,7 @@ class CaseHandler(object):
         return Institute.objects
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
-              has_causatives=False, reruns=False):
+              has_causatives=False, reruns=False, finished=False):
         """Fetches all cases from the backend.
 
         Args:
@@ -111,6 +111,9 @@ class CaseHandler(object):
 
         if reruns:
             case_query = case_query.filter(rerun_requested=True)
+
+        if finished:
+            case_query = case_query.filter(status__in=['solved', 'archived'])
 
         return case_query.order_by('-updated_at')
 
