@@ -12,7 +12,7 @@ from scout.parse.callers import parse_callers
 
 from scout.exceptions import VcfError
 
-logger=logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 def parse_variant(variant_dict, case, variant_type='clinical', rank_results_header=None):
     """Return a parsed variant
@@ -170,8 +170,3 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     
 
     return variant
-
-
-
-
-

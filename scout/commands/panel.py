@@ -3,7 +3,7 @@ import logging
 
 import click
 
-from scout.parse import parse_gene_panel
+from scout.parse.panel import parse_gene_panel
 from scout.build import build_panel
 from scout.load import load_panel
 

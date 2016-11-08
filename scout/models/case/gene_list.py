@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, ListField, StringField, FloatField,
-                         IntField, BooleanField)
+                         IntField, BooleanField, EmbeddedDocument, 
+                         EmbeddedDocumentField, MapField)
 
-
-class Gene(Document):
+class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
 
-    chromosome = StringField(required=True)
-    start = IntField(required=True)
-    stop = IntField(required=True)
     hgnc_symbol = StringField(required=True)
-    ensembl_gene_id = StringField(required=True)
-    description = StringField()
-    locus = StringField()
-    mim_id = IntField()
-    protein_name = StringField()
+
+    disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
 
 
@@ -23,12 +17,14 @@ class GenePanel(Document):
 
     meta = {'strict': False}
 
-    institute = StringField(required=True)
     panel_name = StringField(required=True, unique_with='version')
     version = FloatField(required=True)
     date = StringField(required=True)
     display_name = StringField()
+    # This is a list of hgnc symbols
     genes = ListField(StringField())
+    # This is a list of gene objects
+    gene_objects = MapField(EmbeddedDocumentField(Gene))
 
     @property
     def name_and_version(self):

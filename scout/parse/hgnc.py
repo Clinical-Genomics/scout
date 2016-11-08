@@ -24,30 +24,34 @@ def parse_hgnc_line(line, header):
         aliases = [hgnc_symbol]
         previous_names = raw_info['prev_symbol']
         if previous_names:
-            aliases += previous_names.split('|')
-        
+            aliases += previous_names.strip('"').split('|')
+
         hgnc_gene['previous'] = aliases
-        
+
         omim_id = raw_info.get('omim_id')
         if omim_id:
             hgnc_gene['omim_ids'] = omim_id.strip('"').split('|')
         else:
             hgnc_gene['omim_ids'] = None
-        
+
         entrez_id = hgnc_gene['entrez_id'] = raw_info.get('entrez_id')
         if entrez_id:
             hgnc_gene['entrez_id'] = int(entrez_id)
         else:
             hgnc_gene['entrez_id'] = None
-        
-        hgnc_gene['ref_seq'] = raw_info.get('refseq_accession')
-        
+
+        ref_seq = raw_info.get('refseq_accession')
+        if ref_seq:
+            hgnc_gene['ref_seq'] = ref_seq.strip('"').split('|')
+        else:
+            hgnc_gene['ref_seq'] = None
+
         uniprot_ids = raw_info.get('uniprot_ids')
         if uniprot_ids:
-            hgnc_gene['uniprot_ids'] = uniprot_ids.split('|')
+            hgnc_gene['uniprot_ids'] = uniprot_ids.strip('""').split('|')
         else:
             hgnc_gene['uniprot_ids'] = None
-        
+
         ucsc_id = raw_info.get('ucsc_id')
         if ucsc_id:
             hgnc_gene['ucsc_id'] = ucsc_id
@@ -59,9 +63,8 @@ def parse_hgnc_line(line, header):
             hgnc_gene['vega_id'] = vega_id
         else:
             hgnc_gene['vega_id'] = None
-
-    return hgnc_gene
     
+    return hgnc_gene
 
 def parse_hgnc_genes(lines):
     """Parse lines with hgnc formated genes

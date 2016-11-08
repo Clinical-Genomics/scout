@@ -61,7 +61,7 @@ def genes(ctx, hgnc, ensembl, exac, hpo, export_genes, export_transcripts):
     adapter=ctx.obj['adapter']
     if export_genes:
         print("#Chrom\tStart\tEnd\thgnc_symbol")
-        for gene in adapter.hgnc_genes():
+        for gene in adapter.all_genes():
             gene_string = ("{0}\t{1}\t{2}\t{3}")
             print(gene_string.format(
                 gene.chromosome,
@@ -72,7 +72,7 @@ def genes(ctx, hgnc, ensembl, exac, hpo, export_genes, export_transcripts):
     
     elif export_transcripts:
         print("#Chrom\tStart\tEnd\tTranscript\tRefSeq\thgnc_symbol")
-        for gene in adapter.hgnc_genes():
+        for gene in adapter.all_genes():
             for transcript in gene.transcripts:
                 transcript_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}")
                 print(transcript_string.format(

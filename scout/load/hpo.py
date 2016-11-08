@@ -17,7 +17,7 @@ def load_hpo(adapter, hpo_lines, disease_lines):
             disease_lines(iterable(str))
     """
     gene_objs = {}
-    for gene in adapter.hgnc_genes():
+    for gene in adapter.all_genes():
         gene_objs[gene.hgnc_symbol] = gene
 
     logger.info("All genes fetched")

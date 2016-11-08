@@ -77,9 +77,7 @@ def build_variant(variant, institute):
     variant_obj['gerp_conservation'] = conservation_info.get('gerp', [])
     variant_obj['phylop_conservation'] = conservation_info.get('phylop', [])
 
-    variant_obj['gene_lists'] = variant.get('gene_lists')
-    variant_obj['expected_inheritance'] = variant.get('expected_inheritance')
-
+    # Add the rank score results
     rank_results = []
     for category in variant.get('rank_result', []):
         rank_result = {

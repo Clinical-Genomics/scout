@@ -3,9 +3,7 @@ import logging
 
 from scout.models import GenePanel
 
-
 logger = logging.getLogger(__name__)
-
 
 def build_panel(panel_info):
     """Build a mongoengine GenePanel
@@ -15,7 +13,6 @@ def build_panel(panel_info):
 
         Returns:
             panel_obj(GenePanel)
-
 
     """
     logger.info("Building panel with id: {0}".format(panel_info['id']))
