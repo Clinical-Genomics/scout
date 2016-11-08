@@ -10,7 +10,7 @@ def build_hgnc_transcript(transcript):
             transcript_obj(HgncTranscript)
     """
     transcript_obj = HgncTranscript(
-        ensembl_transcript_id = transcript['ensembl_transcript_id'],
+        ensembl_transcript_id = transcript['enst_id'],
         refseq_id = transcript['refseq'],
         start = transcript['start'],
         end = transcript['end'],

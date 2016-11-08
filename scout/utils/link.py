@@ -19,8 +19,16 @@ def add_transcript(gene, parsed_transcript):
     """Add a transcript to a gene if it is not already there"""
     if parsed_transcript:
         refseq_identifyer = parsed_transcript['refseq']
-        if not refseq_identifyer in gene['transcripts']:
-            gene['transcripts'][refseq_identifyer] = parsed_transcript
+        enstid = parsed_transcript['enst_id']
+        # If the transcript is already added
+        if enstid in gene['transcripts']:
+            #We check if the current transcript is one of the identifiers
+            if refseq_identifyer:
+                # print(refseq_identifyer, gene['ref_seq'])
+                if refseq_identifyer in gene['ref_seq']:
+                    gene['transcripts'][enstid] = parsed_transcript
+        else:
+            gene['transcripts'][enstid] = parsed_transcript
     
 
 def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
@@ -82,18 +90,17 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
         elif transcript['refseq_mrna_predicted']:
             refseq_identifyer = transcript['refseq_mrna_predicted']
 
-        if refseq_identifyer:
-            parsed_transcript['ensembl_transcript_id'] = transcript['ensembl_transcript_id']
-            parsed_transcript['refseq'] = refseq_identifyer
-            parsed_transcript['start'] = transcript['transcript_start']
-            parsed_transcript['end'] = transcript['transcript_end']
+        parsed_transcript['enst_id'] = transcript['ensembl_transcript_id']
+        parsed_transcript['refseq'] = refseq_identifyer
+        parsed_transcript['start'] = transcript['transcript_start']
+        parsed_transcript['end'] = transcript['transcript_end']
 
         # First check if the symbol is one if the current symbols
         if hgnc_symbol in genes:
             gene = genes[hgnc_symbol]
             add_gene_coordinates(gene, transcript)
             add_transcript(gene, parsed_transcript)
-            
+
         else:
             if hgnc_symbol in gene_aliases:
                 for gene_symbol in gene_aliases[hgnc_symbol]:

@@ -32,7 +32,7 @@ def parse_hgnc_line(line, header):
         if omim_id:
             hgnc_gene['omim_ids'] = omim_id.strip('"').split('|')
         else:
-            hgnc_gene['omim_ids'] = None
+            hgnc_gene['omim_ids'] = []
 
         entrez_id = hgnc_gene['entrez_id'] = raw_info.get('entrez_id')
         if entrez_id:
@@ -44,13 +44,13 @@ def parse_hgnc_line(line, header):
         if ref_seq:
             hgnc_gene['ref_seq'] = ref_seq.strip('"').split('|')
         else:
-            hgnc_gene['ref_seq'] = None
+            hgnc_gene['ref_seq'] = []
 
         uniprot_ids = raw_info.get('uniprot_ids')
         if uniprot_ids:
             hgnc_gene['uniprot_ids'] = uniprot_ids.strip('""').split('|')
         else:
-            hgnc_gene['uniprot_ids'] = None
+            hgnc_gene['uniprot_ids'] = []
 
         ucsc_id = raw_info.get('ucsc_id')
         if ucsc_id:

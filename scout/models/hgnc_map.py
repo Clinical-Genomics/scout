@@ -13,7 +13,7 @@ class HgncAlias(Document):
 
 class HgncTranscript(EmbeddedDocument):
     ensembl_transcript_id = StringField(required=True)
-    refseq_id = StringField(required=True)
+    refseq_id = StringField()
     start = IntField(required=True)
     end = IntField(required=True)
 
