@@ -5,17 +5,19 @@
 Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import absolute_import, unicode_literals
-from flask_wtf import Form
+from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
-                     SelectMultipleField, RadioField)
+                     SelectMultipleField, RadioField, DateField, SelectField)
 from wtforms import widgets
 
-from scout.constants import GENETIC_MODELS, SO_TERMS, FEATURE_TYPES
+from scout.constants import (GENETIC_MODELS, SO_TERMS, FEATURE_TYPES,
+                             CLINSIG_MAP)
 from scout._compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
+CLINSIG_OPTIONS = [('', '')] + CLINSIG_MAP.items()
 
 
 def process_filters_form(form):
@@ -97,6 +99,7 @@ class FiltersForm(Form):
   region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
   functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
   genetic_models = MultiCheckboxField(choices=GENETIC_MODELS)
+  clinsig = SelectField('CLINSIG', choices=CLINSIG_OPTIONS)
 
 
 class GeneListUpload(Form):
@@ -111,7 +114,10 @@ def init_filters_form(get_args):
   to reason about what is supposed to be a list and what is not.
   """
   # initialize the normal way to get lists inserted correctly
-  form = FiltersForm(**get_args)
+  args = get_args.to_dict()
+  if args.get('clinsig'):
+    args['clinsig'] = int(args['clinsig'])
+  form = FiltersForm(**args)
 
   for field_name in ['thousand_genomes_frequency', 'exac_frequency',
                      'cadd_score']:

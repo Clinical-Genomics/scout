@@ -129,3 +129,15 @@ SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown'}
 REV_SEX_MAP = {value: key for key, value in SEX_MAP.items()}
 PHENOTYPE_MAP = {1: 'unaffected', 2: 'affected', 0: 'unknown', -9: 'unknown'}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
+
+CLINSIG_MAP = {
+    0: 'Uncertain significance',
+    1: 'not provided',
+    2: 'Benign',
+    3: 'Likely benign',
+    4: 'Likely pathogenic',
+    5: 'Pathogenic',
+    6: 'drug response',
+    7: 'histocompatibility',
+    255: 'other'
+}

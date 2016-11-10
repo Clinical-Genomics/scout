@@ -70,7 +70,8 @@ def setup_test(context, email, name="Paul Anderson"):
     )
 
     for index in [1, 2]:
-        config = yaml.load(open("tests/fixtures/config{}.yaml".format(index)))
+        with open("tests/fixtures/config{}.yaml".format(index)) as in_handle:
+            config = yaml.load(in_handle)
         load_scout(adapter=adapter, config=config)
 
 

@@ -436,6 +436,8 @@ def variants(institute_id, case_id, variant_type):
 
     # add variant type to query
     query = dict(**form.data)
+    query['clinsig'] = (int(query['clinsig']) if query['clinsig'].isdigit()
+                        else None)
     query['variant_type'] = variant_type
 
     # handle HPO gene list separately

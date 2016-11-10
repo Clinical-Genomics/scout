@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class QueryHandler(object):
-    
+
     def build_query(self, case_id, query=None, variant_ids=None, category='snv'):
         """Build a mongo query
 
@@ -39,28 +39,28 @@ class QueryHandler(object):
         mongo_query['case_id'] = case_id
         logger.debug("Querying category %s" % category)
         mongo_query['category'] = category
-        
+
         # We need to check if there is any query specified in the input query
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
         logger.debug("Set variant type to %s" % mongo_query['variant_type'])
-        
+
         mongo_query['$and'] = []
-                    
+
         if query.get('chrom'):
             chromosome = query['chrom']
             mongo_query['chromosome'] = chromosome
             #Only check coordinates if there is a chromosome
             if (query.get('start') and query.get('end')):
                 mongo_query['position'] = {'$lte': int(query['end'])}
-                
+
                 mongo_query['end'] = {'$gte': int(query['start'])}
-                
+
 
         if query.get('thousand_genomes_frequency'):
             thousandg = query.get('thousand_genomes_frequency')
             if thousandg == '-1':
                 mongo_query['thousand_genomes_frequency'] = {'$exists': False}
-            
+
             else:
                 mongo_query['$and'].append(
                     {
@@ -90,7 +90,7 @@ class QueryHandler(object):
             cadd = query['cadd_score']
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
-            
+
             if query.get('cadd_inclusive') == 'yes':
                 cadd_query = {
                     '$or': [
@@ -111,39 +111,43 @@ class QueryHandler(object):
         if query.get('hgnc_symbols'):
             hgnc_symbols = query['hgnc_symbols']
             mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
-            
+
             logger.debug("Adding hgnc_symbols: %s to query" %
                          ', '.join(hgnc_symbols))
 
         if query.get('gene_lists'):
             gene_lists = query['gene_lists']
             mongo_query['gene_lists'] = {'$in': gene_lists}
-            
+
             logger.debug("Adding gene_lists: %s to query" %
                          ', '.join(gene_lists))
 
         if query.get('functional_annotations'):
             functional = query['functional_annotations']
             mongo_query['genes.functional_annotation'] = {'$in': functional}
-            
-            logger.debug("Adding functional_annotations %s to query" % 
+
+            logger.debug("Adding functional_annotations %s to query" %
                          ', '.join(functional))
 
         if query.get('region_annotations'):
             region = query['region_annotations']
             mongo_query['genes.region_annotation'] = {'$in': region}
 
-            logger.debug("Adding region_annotations %s to query" % 
+            logger.debug("Adding region_annotations %s to query" %
                          ', '.join(region))
+
+        if query.get('clinsig'):
+            rank = query['clinsig']
+            logger.debug("add CLINSIG filter for rank: %s", rank)
+            mongo_query['clnsig'] = rank
 
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}
 
-            logger.debug("Adding variant_ids %s to query" % 
+            logger.debug("Adding variant_ids %s to query" %
                 ', '.join(variant_ids))
 
         if not mongo_query['$and']:
             del mongo_query['$and']
 
         return mongo_query
-    
