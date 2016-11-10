@@ -47,7 +47,7 @@ class GeneHandler(object):
             Returns:
                 result()
         """
-        logger.info("Fetching genes with symbol %s" % hgnc_symbol)
+        logger.debug("Fetching genes with symbol %s" % hgnc_symbol)
 
         return HgncGene.objects(aliases=hgnc_symbol)
 

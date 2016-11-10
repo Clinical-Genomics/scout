@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, ListField, StringField, FloatField,
-                         IntField, BooleanField, EmbeddedDocument, 
-                         EmbeddedDocumentField, MapField)
+                         DateTimeField, BooleanField, EmbeddedDocument, 
+                         EmbeddedDocumentField, MapField, ReferenceField)
+
+from scout.models.hgnc_map import HgncGene
 
 class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
 
-    hgnc_symbol = StringField(required=True)
+    hgnc_gene = ReferenceField(HgncGene, required=True)
 
     disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
+    mosaicism = BooleanField(default=False)
 
 
 class GenePanel(Document):
@@ -18,13 +21,13 @@ class GenePanel(Document):
     meta = {'strict': False}
 
     panel_name = StringField(required=True, unique_with='version')
+    institute = StringField()
     version = FloatField(required=True)
-    date = StringField(required=True)
+    date = DateTimeField(required=True)
     display_name = StringField()
-    # This is a list of hgnc symbols
-    genes = ListField(StringField())
-    # This is a list of gene objects
+    # This is a dictionary with gene objects
     gene_objects = MapField(EmbeddedDocumentField(Gene))
+    # {'ADK':Gene}
 
     @property
     def name_and_version(self):

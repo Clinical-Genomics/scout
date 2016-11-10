@@ -21,12 +21,20 @@ def parse_hgnc_line(line, header):
         hgnc_gene['hgnc_id'] = int(raw_info['hgnc_id'].split(':')[-1])
         hgnc_gene['description'] = raw_info['name']
         # We want to have the current symbol as an alias
-        aliases = [hgnc_symbol]
+        aliases = set([hgnc_symbol, hgnc_symbol.upper()])
+        # We then need to add both the previous symbols and 
+        # alias symbols
         previous_names = raw_info['prev_symbol']
         if previous_names:
-            aliases += previous_names.strip('"').split('|')
+            for alias in previous_names.strip('"').split('|'):
+                aliases.add(alias)
+        
+        alias_symbols = raw_info['alias_symbol']
+        if alias_symbols:
+            for alias in alias_symbols.strip('"').split('|'):
+                aliases.add(alias)
 
-        hgnc_gene['previous'] = aliases
+        hgnc_gene['previous'] = list(aliases)
 
         omim_id = raw_info.get('omim_id')
         if omim_id:
