@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import gzip
 from invoke import run, task
 from invoke.util import log
 from codecs import open
 
-from configobj import ConfigObj
 import yaml
-
 from mongoengine import connect
+
 from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
 from scout.load import (load_scout, load_hgnc_genes, load_hpo)
-
 from scout import logger
 from scout.log import init_log
 
@@ -26,15 +23,13 @@ hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_disease
 
 init_log(logger, loglevel='INFO')
 
+
 @task
 def setup_test(context, email, name="Paul Anderson"):
     """docstring for setup"""
     db_name = 'test-database'
     adapter = MongoAdapter()
-    adapter.connect_to_database(
-        database=db_name
-    )
-
+    adapter.connect_to_database(database=db_name)
     adapter.drop_database()
 
     institute_obj = Institute(
@@ -42,7 +37,6 @@ def setup_test(context, email, name="Paul Anderson"):
         display_name='test-institute',
         sanger_recipients=[email]
     )
-
     adapter.add_institute(institute_obj)
     institute = adapter.institute(institute_id=institute_obj.internal_id)
     Whitelist(email=email).save()
@@ -51,38 +45,34 @@ def setup_test(context, email, name="Paul Anderson"):
                 roles=['admin'],
                 institutes=[institute])
     user.save()
-    
+
     hgnc_handle = open(hgnc_path, 'r')
     ensembl_handle = open(ensembl_transcript_path, 'r')
     exac_handle = open(exac_genes_path, 'r')
     hpo_genes_handle = open(hpo_genes_path, 'r')
     hpo_terms_handle = open(hpo_terms_path, 'r')
     hpo_disease_handle = open(hpo_disease_path, 'r')
-    
-    #Load the genes and transcripts
+
+    # Load the genes and transcripts
     load_hgnc_genes(
         adapter=adapter,
-        ensembl_lines=ensembl_handle, 
-        hgnc_lines=hgnc_handle, 
+        ensembl_lines=ensembl_handle,
+        hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         hpo_lines=hpo_genes_handle,
     )
-    
-    #Load the hpo terms and diseases
+
+    # Load the hpo terms and diseases
     load_hpo(
-        adapter=adapter, 
-        hpo_lines=hpo_terms_handle, 
+        adapter=adapter,
+        hpo_lines=hpo_terms_handle,
         disease_lines=hpo_disease_handle
     )
 
     for index in [1, 2]:
-        config = yaml.load(open("tests/fixtures/config{}.yaml".format(index), 'r'))
-        load_scout(
-            adapter=adapter,
-            config=config,
-        )
-    
-    
+        config = yaml.load(open("tests/fixtures/config{}.yaml".format(index)))
+        load_scout(adapter=adapter, config=config)
+
 
 @task
 def teardown(context):

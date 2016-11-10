@@ -601,7 +601,7 @@
           (<a target="_blank"
               href="http://compbio.charite.de/hpoweb/showterm?id=HP:0000018">HPO web</a>)
         </div>
-        <typeahead v-on:send="saveHpoterm"></typeahead>
+        <typeahead url="/api/v1/hpo-terms" v-on:send="saveHpoterm"></typeahead>
         <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
             <div class="md-card-body-list mod-scrollable-big">
               {% for hpo_term in case.phenotype_terms %}

@@ -44,6 +44,7 @@ class BaseConfig(object):
                   ('scout.blueprints.api.api', None),
                   ('scout.blueprints.pileup.pileup_bp', None),
                   ('scout.blueprints.sv.sv_bp', None),
+                  ('scout.blueprints.genes.genes_bp', None),
                   ('chanjo_report.server.blueprints.report_bp', '/reports')]
 
     EXTENSIONS = ['scout.extensions.store',
@@ -86,6 +87,9 @@ class DevelopmentConfig(BaseConfig):
     """docstring for DefaultConfig"""
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+    # don't require internet connection
+    BOOTSTRAP_SERVE_LOCAL = True
 
     # Flask-DebugToolbar
     DEBUG_TB_ENABLED = True

@@ -16,6 +16,8 @@
       {% block main_drawer %}
         {{ core_item('Home', icon='home', href=url_for('frontend.index')) }}
 
+        {{ core_item('Genes', icon='home', href=url_for('genes.genes')) }}
+
         {{ core_item('User Guide', icon='book', href='http://clinical-genomics.github.io/scout/user-guide/pages/', target='_blank') }}
 
         {{ core_item('Changes', icon='history', href='https://github.com/Clinical-Genomics/scout', target='_blank') }}
