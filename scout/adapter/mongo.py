@@ -18,14 +18,14 @@ import logging
 from mongoengine import (connect, DoesNotExist)
 from mongoengine.connection import (get_connection, _get_db)
 
-from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler, 
+from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler,
                GeneHandler, HpoHandler)
 from scout.models import User, HgncAlias
 
 logger = logging.getLogger(__name__)
 
 
-class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler, 
+class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
                    GeneHandler, HpoHandler):
 
     """Adapter for cummunication with a mongo database."""
@@ -48,8 +48,8 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
         password = config.get('MONGODB_PASSWORD', None)
         self.connect_to_database(
             database,
-            host=self.host,
-            port=self.port,
+            host=host,
+            port=port,
             username=username,
             password=password
         )
@@ -65,7 +65,7 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
             username(str)
             password(str)
         """
-        logger.info("Connecting to database {0}".format(database))
+        logger.debug("Connecting to database {0}".format(database))
         self.mongodb_name = database
         self.host = host
         self.port = port
@@ -87,7 +87,6 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
         logger.info("Drop database {0}".format(self.mongodb_name))
         self.db.drop_database(self.mongodb_name)
         logger.debug("Database dropped")
-        return
 
     def update_dynamic_gene_list(self, case, gene_list):
         """Update the dynamic gene list for a case
