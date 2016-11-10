@@ -30,14 +30,10 @@ class GeneHandler(object):
                 gene_obj(HgncGene)
         """
         logger.debug("Fetching gene %s" % hgnc_id)
-        if isinstance(hgnc_id, int):
-            try:
-                gene_obj = HgncGene.objects.get(hgnc_id=hgnc_id)
-            except DoesNotExist:
-                gene_obj = None
-        else:
-            gene_obj = HgncGene.objects(hgnc_symbol=hgnc_id).first()
-
+        try:
+            gene_obj = HgncGene.objects.get(hgnc_id=hgnc_id)
+        except DoesNotExist:
+            gene_obj = None
         return gene_obj
 
     def hgnc_genes(self, hgnc_symbol):
@@ -64,4 +60,3 @@ class GeneHandler(object):
         logger.info("Fetching all genes")
 
         return HgncGene.objects().order_by('chromosome')
-
