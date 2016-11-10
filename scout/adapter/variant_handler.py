@@ -31,7 +31,6 @@ class VariantHandler(object):
             result(Iterable[Variant])
         """
         logger.info("Fetching variants from {0}".format(case_id))
-
         if variant_ids:
             nr_of_variants = len(variant_ids)
         else:
