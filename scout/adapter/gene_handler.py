@@ -6,6 +6,7 @@ from scout.models import HgncGene
 
 logger = logging.getLogger(__name__)
 
+
 class GeneHandler(object):
 
     def load_hgnc_gene(self, gene_obj):
@@ -21,29 +22,32 @@ class GeneHandler(object):
 
     def hgnc_gene(self, hgnc_id):
         """Fetch a hgnc gene
-        
+
             Args:
                 hgnc_id(int)
-        
+
             Returns:
                 gene_obj(HgncGene)
         """
         logger.debug("Fetching gene %s" % hgnc_id)
-        try:
-            gene_obj = HgncGene.objects.get(hgnc_id=hgnc_id)
-        except DoesNotExist:
-            gene_obj = None
+        if isinstance(hgnc_id, int):
+            try:
+                gene_obj = HgncGene.objects.get(hgnc_id=hgnc_id)
+            except DoesNotExist:
+                gene_obj = None
+        else:
+            gene_obj = HgncGene.objects(hgnc_symbol=hgnc_id).first()
 
         return gene_obj
 
     def hgnc_genes(self, hgnc_symbol):
         """Fetch all hgnc genes that match a hgnc symbol
-        
+
             Check both hgnc_symbol and aliases
-        
+
             Args:
                 hgnc_symbol(str)
-        
+
             Returns:
                 result()
         """
@@ -53,7 +57,7 @@ class GeneHandler(object):
 
     def all_genes(self):
         """Fetch all hgnc genes
-        
+
             Returns:
                 result()
         """

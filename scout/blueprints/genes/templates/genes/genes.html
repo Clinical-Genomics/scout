@@ -9,3 +9,20 @@
     </div>
   </div>
 {% endblock %}
+
+{% block content %}
+  {{ super() }}
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Genes</div>
+        <ul class="list-group">
+          {% for gene in genes %}
+            <li class="list-group-item">{{ gene.hgnc_symbol }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

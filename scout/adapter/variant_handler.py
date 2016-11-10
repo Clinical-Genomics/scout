@@ -63,13 +63,13 @@ class VariantHandler(object):
         gene_panels = gene_panels or []
         try:
             variant_obj = Variant.objects.get(document_id=document_id)
-            for variant_gene in variant.genes:
+            for variant_gene in variant_obj.genes:
                 hgnc_symbol = variant_gene.hgnc_symbol
                 for panel_obj in gene_panels:
                     if hgnc_symbol in panel_obj.gene_objects:
                         gene_obj = panel_obj.gene_objects[hgnc_symbol]
                         variant_gene.panel_info = gene_obj
-                
+
                 variant_gene.common = self.hgnc_gene(hgnc_symbol)
 
         except DoesNotExist:

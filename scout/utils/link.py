@@ -15,6 +15,7 @@ def add_gene_coordinates(gene, transcript):
     gene['start'] = transcript['gene_start']
     gene['end'] = transcript['gene_end']
 
+
 def add_transcript(gene, parsed_transcript):
     """Add a transcript to a gene if it is not already there"""
     if parsed_transcript:
@@ -22,19 +23,19 @@ def add_transcript(gene, parsed_transcript):
         enstid = parsed_transcript['enst_id']
         # If the transcript is already added
         if enstid in gene['transcripts']:
-            #We check if the current transcript is one of the identifiers
+            # We check if the current transcript is one of the identifiers
             if refseq_identifyer:
                 # print(refseq_identifyer, gene['ref_seq'])
                 if refseq_identifyer in gene['ref_seq']:
                     gene['transcripts'][enstid] = parsed_transcript
         else:
             gene['transcripts'][enstid] = parsed_transcript
-    
+
 
 def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
     """Gather information from different sources and return a gene dict
 
-        Extract information collected from a number of sources and combine them 
+        Extract information collected from a number of sources and combine them
         into a gene dict with HGNC symbols as keys.
 
         Args:
@@ -73,11 +74,11 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
                     gene_aliases[old_symbol].append(hgnc_symbol)
                 else:
                     gene_aliases[old_symbol] = [hgnc_symbol]
-    
-    #Parse and add the ensembl gene info
+
+    # Parse and add the ensembl gene info
     for transcript in parse_ensembl_transcripts(ensembl_lines):
-        logger.debug("Found transcript with ensembl id %s" % 
-                      transcript['ensembl_transcript_id'])
+        logger.debug("Found transcript with ensembl id %s" %
+                     transcript['ensembl_transcript_id'])
 
         hgnc_symbol = transcript['hgnc_symbol']
 
@@ -105,7 +106,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
             if hgnc_symbol in gene_aliases:
                 for gene_symbol in gene_aliases[hgnc_symbol]:
                     gene = genes[gene_symbol]
-                    
+
                     if not gene.get('ensembl_gene_id'):
                         add_gene_coordinates(gene, transcript)
                         add_transcript(gene, parsed_transcript)
@@ -113,13 +114,13 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
     for exac_gene in parse_exac_genes(exac_lines):
         hgnc_symbol = exac_gene['hgnc_symbol']
         if hgnc_symbol in genes:
-            gene = genes[gene_symbol]
+            gene = genes[hgnc_symbol]
             gene['pli_score'] = exac_gene['pli_score']
         else:
             if hgnc_symbol in gene_aliases:
                 for gene_symbol in gene_aliases[hgnc_symbol]:
                     gene = genes[gene_symbol]
-                    if not 'pli_score' in gene:
+                    if 'pli_score' not in gene:
                         gene['pli_score'] = exac_gene['pli_score']
 
     hpo_genes = parse_hpo_genes(hpo_lines)
@@ -143,5 +144,5 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
                 gene['x'] = True
             if hpo_info.get('y'):
                 gene['y'] = True
-    
+
     return genes

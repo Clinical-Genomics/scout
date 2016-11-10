@@ -20,7 +20,7 @@ class HgncTranscript(EmbeddedDocument):
 
 class HgncGene(Document):
     hgnc_id = IntField(primary_key=True)
-    
+
     hgnc_symbol = StringField(required=True, unique=True)
     ensembl_id = StringField(required=True)
 
@@ -95,7 +95,7 @@ class HgncGene(Document):
         """Link to gene in ucsc database"""
         url_template = ("http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene={}")
         return url_template.format(self.ucsc_id)
-    
+
     def __repr__(self):
         return ("HgncGene(hgnc_id={this.hgnc_id},hgnc_symbol={this.hgnc_symbol})".format(this=self))
 

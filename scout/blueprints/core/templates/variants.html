@@ -267,7 +267,7 @@
         <!-- HGNC -->
         <div class="variants-row-item is-scrollable">
           {% for hgnc_symbol in variant.hgnc_symbols %}
-            <a href="{{ url_for('genes.gene', symbol=hgnc_symbol) }}">
+            <a href="{{ url_for('genes.gene', hgnc_symbol=hgnc_symbol) }}">
               {{ hgnc_symbol }}
             </a>
           {% endfor %}
