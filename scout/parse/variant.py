@@ -48,7 +48,7 @@ def get_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=No
         # If lenth is same lenth is same as alternative
         if ref_len == alt_len:
             coordinates['length'] = alt_len
-            coordinates['end'] = variant['position'] + (alt_len -1)
+            coordinates['end'] = position + (alt_len -1)
             if alt_len == 1:
                 coordinates['sub_category'] = 'snv'
             else:
@@ -61,16 +61,16 @@ def get_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=No
         # Alt > Ref we have an insertion
         elif ref_len < alt_len:
             coordinates['length'] = alt_len - ref_len
-            coordinates['end'] = variant['position'] + (alt_len - 1)
+            coordinates['end'] = position + (alt_len - 1)
             coordinates['sub_category'] = 'indel'
 
-    elif variant['category'] == 'sv':
+    elif category == 'sv':
         if svtype:
             coordinates['sub_category'] = svtype
         else:
             raise VcfError("SVs has to have SVTYPE")
         
-        if variant['sub_category'] == 'bnd':
+        if coordinates['sub_category'] == 'bnd':
             if mate_id:
                 coordinates['mate_id'] = mate_id
             #For translocations we set lenth to infinity
@@ -82,7 +82,7 @@ def get_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=No
             else:
                 # -1 would indicate uncertain length
                 coordinates['length'] = -1
-
+            
             coordinates['end'] = int(end)
 
     return coordinates
@@ -126,6 +126,12 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['quality'] = float(variant_dict['QUAL'])
     variant['filters'] = variant_dict['FILTER'].split(';')
     variant['variant_type'] = variant_type
+    
+    variant['dbsnp_id'] = None
+    dbsnp_id = variant_dict['ID']
+    if dbsnp_id != '.':
+        variant['dbsnp_id'] = dbsnp_id
+    
     # This is the id of other position in translocations
     variant['mate_id'] = None
 
@@ -134,15 +140,18 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     # position = start
     variant['position'] = int(variant_dict['POS'])
     
-    sv_type = variant_dict['info_dict'].get('SVTYPE')
-    if sv_type:
-        svtype = svtype[0]
+    svtype = variant_dict['info_dict'].get('SVTYPE')
+    if svtype:
+        svtype = svtype[0].lower()
+
     svlen = variant_dict['info_dict'].get('SVLEN')
     if svlen:
         svlen = svlen[0]
+    
     end = variant_dict['info_dict'].get('END')
     if end:
         end = end[0]
+    
     mate_id = variant_dict['info_dict'].get('MATEID')
     if mate_id:
         mate_id = mate_id[0]
@@ -155,7 +164,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
         svtype=svtype, 
         svlen=svlen, 
         end=end,
-        mate_id=end,
+        mate_id=mate_id,
     )
     
     variant['sub_category'] = coordinates['sub_category']
@@ -187,7 +196,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['genetic_models'] = genetic_models
 
     # Add the clinsig prediction
-    clnsig_accessions = get_clnsig(variant_dict)
+    clnsig_accessions = parse_clnsig(variant_dict)
     if clnsig_accessions:
         variant['clnsig'] = 5
         variant['clnsigacc'] = clnsig_accessions
@@ -199,19 +208,12 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
 
     variant['genes'] = parse_genes(variant_dict)
 
-    hgnc_symbols = set([])
-    ensembl_gene_ids = set([])
+    hgnc_ids = set([])
 
     for gene in variant['genes']:
-        hgnc_symbols.add(gene['hgnc_symbol'])
-        ensembl_gene_ids.add(gene['ensembl_gene_id'])
+        hgnc_ids.add(gene['hgnc_id'])
 
-    variant['hgnc_symbols'] = list(hgnc_symbols)
-    variant['ensembl_gene_ids'] = list(ensembl_gene_ids)
-
-    ################# Add a list with the dbsnp ids #################
-
-    variant['db_snp_ids'] = variant_dict['ID'].split(';')
+    variant['hgnc_ids'] = list(hgnc_ids)
 
     ################# Add the frequencies #################
 

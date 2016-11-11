@@ -12,12 +12,7 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 import logging
 
 from scout.constants import SO_TERMS
-<<<<<<< 20bf2e616ba7db6aa47ea6f4ab08d452804d8827
 from scout.parse.transcript import (parse_transcripts)
-=======
-from . import (get_omim_gene_ids, get_omim_phenotype_ids, parse_transcripts,
-               parse_disease_associated)
->>>>>>> Move to new structure with internal genes
 
 def parse_genes(variant):
     """Get the gene from transcripts.

@@ -100,10 +100,12 @@ class Variant(Document):
                                 ordering='combined_score', reverse=True)
 
     genes = ListField(EmbeddedDocumentField(Gene))
-    db_snp_ids = ListField(StringField())
+    db_snp_id = StringField()
+    
     # Gene ids:
+    hgnc_ids = ListField(IntField())
     hgnc_symbols = ListField(StringField())
-    ensembl_gene_ids = ListField(StringField())
+    
     # Frequencies:
     thousand_genomes_frequency = FloatField()
     exac_frequency = FloatField()

@@ -59,5 +59,5 @@ def test_get_genes():
     #         assert transcript.functional_annotations == ['missense_variant']
     #         assert set(transcript.refseq_ids) == set(['XM_005265019', 'NM_015426'])
     for gene in genes:
-        assert gene['hgnc_symbol'] == 'POC1A'
+        assert gene['hgnc_id'] == 24488
     assert len(genes) == 1
