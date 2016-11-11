@@ -86,12 +86,6 @@ class Transcript(EmbeddedDocument):
                 .format(self.smart_domain))
 
     @property
-    def refseq_links(self):
-        for refseq_id in self.refseq_ids:
-            yield (refseq_id,
-                   "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id))
-
-    @property
     def ensembl_link(self):
         return ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t={}"
                 .format(self.transcript_id))
