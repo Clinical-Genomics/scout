@@ -100,7 +100,7 @@ class Variant(Document):
                                 ordering='combined_score', reverse=True)
 
     genes = ListField(EmbeddedDocumentField(Gene))
-    db_snp_id = StringField()
+    dbsnp_id = StringField()
     
     # Gene ids:
     hgnc_ids = ListField(IntField())

@@ -39,6 +39,10 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
         raise IntegrityError("Institute {0} does not exist in"
                              " database.".format(case_obj['owner']))
 
+    hgnc_genes = {}
+    for gene in adapter.all_genes():
+        hgnc_genes[gene.hgnc_id] = gene
+
     variants = VCFParser(infile=variant_file)
     rank_results_header = []
     for info_line in variants.metadata.info_lines:
@@ -52,6 +56,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 variant=variant,
                 case_obj=case_obj,
                 institute_obj=institute_obj,
+                hgnc_genes=hgnc_genes,
                 variant_type=variant_type,
                 rank_results_header=rank_results_header
             )
@@ -64,7 +69,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     adapter.add_variant_rank(case_obj, variant_type, category=category)
 
 
-def load_variant(adapter, variant, case_obj, institute_obj,
+def load_variant(adapter, variant, case_obj, institute_obj, hgnc_genes,
                  variant_type='clinical', rank_results_header=None):
     """Load a variant into the database
 
@@ -76,6 +81,7 @@ def load_variant(adapter, variant, case_obj, institute_obj,
             variant(vcf_parser.Variant)
             case_obj(Case)
             institute_obj(Institute)
+            hgnc_genes(dict[HgncGene])
             variant_type(str)
             rank_results_header(list)
 
@@ -92,7 +98,8 @@ def load_variant(adapter, variant, case_obj, institute_obj,
 
     variant_obj = build_variant(
         variant=parsed_variant,
-        institute=institute_obj
+        institute=institute_obj,
+        hgnc_genes=hgnc_genes
     )
 
     adapter.load_variant(variant_obj)
