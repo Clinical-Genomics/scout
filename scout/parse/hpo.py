@@ -46,11 +46,12 @@ def parse_hpo_disease(hpo_line):
     hpo_line = hpo_line.rstrip().split('\t')
     hpo_info = {}
     disease = hpo_line[0].split(':')
-    if disease[0] == 'OMIM':
-        hpo_info['mim_nr'] = int(disease[1])
-        hpo_info['hgnc_symbol'] = hpo_line[1]
-        hpo_info['hpo_id'] = hpo_line[3]
-        hpo_info['description'] = hpo_line[4]
+    
+    hpo_info['source'] = disease[0]
+    hpo_info['disease_nr'] = int(disease[1])
+    hpo_info['hgnc_symbol'] = hpo_line[1]
+    hpo_info['hpo_id'] = hpo_line[3]
+    hpo_info['description'] = hpo_line[4]
     
     return hpo_info
 
@@ -92,18 +93,22 @@ def parse_hpo_diseases(hpo_lines):
         if index > 0:
             mim_info = parse_hpo_disease(line)
             if mim_info:
-                mim_nr = mim_info['mim_nr']
+                disease_nr = mim_info['disease_nr']
                 hgnc_symbol = mim_info['hgnc_symbol']
+                source = mim_info['source']
                 hpo_term = mim_info['hpo_id']
-                if mim_nr in diseases:
-                    diseases[mim_nr]['hgnc_symbols'].add(hgnc_symbol)
-                    diseases[mim_nr]['hpo_terms'].add(hpo_term)
+                
+                if disease_nr in diseases:
+                    diseases[disease_nr]['hgnc_symbols'].add(hgnc_symbol)
+                    diseases[disease_nr]['hpo_terms'].add(hpo_term)
                 else:
-                    diseases[mim_nr] = {
-                        'mim_nr': mim_nr,
+                    diseases[disease_nr] = {
+                        'disease_nr': disease_nr,
+                        'source': source,
                         'hgnc_symbols': set([hgnc_symbol]),
                         'hpo_terms': set([hpo_term]),
                     }
+
     logger.info("Parsing done.")
     return diseases
     

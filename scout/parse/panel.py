@@ -34,7 +34,9 @@ def parse_genes(panel_path):
 
                 transcripts = gene_info.get('disease_associated_transcripts')
                 if transcripts:
-                    gene['disease_associated_transcripts'] = transcripts.split(',')
+                    gene['disease_associated_transcripts'] = [
+                        transcript.split('.')[0] for transcript in transcripts.split(',')
+                    ]
                 else:
                     gene['disease_associated_transcripts'] = []
                 
