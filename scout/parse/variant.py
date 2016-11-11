@@ -14,6 +14,80 @@ from scout.exceptions import VcfError
 
 logger = logging.getLogger(__name__)
 
+def get_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=None):
+    """Find out the coordinates for a variant
+    
+        Args:
+            ref(str)
+            alt(str)
+            position(int)
+            category(str)
+            svtype(str)
+            svlen(int)
+            end(int)
+            mate_id(str)
+        
+        Returns:
+            coordinates(dict): A dictionary on the form:
+            {
+                'end':<int>, 
+                'length':<int>, 
+                'sub_category':<str>,
+                'mate_id':<str>,
+            }
+    """
+    coordinates = {
+        'end': None,
+        'length': None,
+        'sub_category': None,
+        'mate_id':None,
+    }
+    if category == 'snv':
+        ref_len = len(ref)
+        alt_len = len(alt)
+        # If lenth is same lenth is same as alternative
+        if ref_len == alt_len:
+            coordinates['length'] = alt_len
+            coordinates['end'] = variant['position'] + (alt_len -1)
+            if alt_len == 1:
+                coordinates['sub_category'] = 'snv'
+            else:
+                coordinates['sub_category'] = 'indel'
+        # Ref > Alt we have an deletion
+        elif ref_len > alt_len:
+            coordinates['length'] = ref_len - alt_len
+            coordinates['end'] = position + (ref_len - 1)
+            coordinates['sub_category'] = 'indel'
+        # Alt > Ref we have an insertion
+        elif ref_len < alt_len:
+            coordinates['length'] = alt_len - ref_len
+            coordinates['end'] = variant['position'] + (alt_len - 1)
+            coordinates['sub_category'] = 'indel'
+
+    elif variant['category'] == 'sv':
+        if svtype:
+            coordinates['sub_category'] = svtype
+        else:
+            raise VcfError("SVs has to have SVTYPE")
+        
+        if variant['sub_category'] == 'bnd':
+            if mate_id:
+                coordinates['mate_id'] = mate_id
+            #For translocations we set lenth to infinity
+            coordinates['length'] = int(10e10)
+            coordinates['end'] = int(10e10)
+        else:
+            if svlen:
+                coordinates['length'] = abs(int(svlen))
+            else:
+                # -1 would indicate uncertain length
+                coordinates['length'] = -1
+
+            coordinates['end'] = int(end)
+
+    return coordinates
+    
+
 def parse_variant(variant_dict, case, variant_type='clinical', rank_results_header=None):
     """Return a parsed variant
 
@@ -59,40 +133,35 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['chromosome'] = variant_dict['CHROM']
     # position = start
     variant['position'] = int(variant_dict['POS'])
-    if variant['category'] == 'snv':
-        ref_len = len(variant['reference'])
-        alt_len = len(variant['alternative'])
-        if ref_len == alt_len:
-            variant['end'] = variant['position']
-            variant['length'] = 1
-            variant['sub_category'] = 'snv'
-        elif ref_len > alt_len:
-            variant['length'] = ref_len - alt_len
-            variant['end'] = variant['position'] + (ref_len - 1)
-            variant['sub_category'] = 'indel'
-        elif ref_len < alt_len:
-            variant['length'] = alt_len - ref_len
-            variant['end'] = variant['position'] + (alt_len - 1)
-            variant['sub_category'] = 'indel'
-
-    elif variant['category'] == 'sv':
-        try:
-            variant['sub_category'] = variant_dict['info_dict']['SVTYPE'][0].lower()
-        except KeyError:
-            raise VcfError("SVs has to have SVTYPE")
-        if variant['sub_category'] == 'bnd':
-            if variant_dict['info_dict'].get('MATEID'):
-                variant['mate_id'] = variant_dict['info_dict']['MATEID'][0]
-            #For translocations we set lenth to a huge number
-            variant['length'] = int(10e10)
-            variant['end'] = int(10e10)
-        else:
-            try:
-                variant['length'] = abs(int(variant_dict['info_dict']['SVLEN'][0]))
-            except KeyError:
-                variant['length'] = -1
-
-            variant['end'] = int(variant_dict['info_dict']['END'][0])
+    
+    sv_type = variant_dict['info_dict'].get('SVTYPE')
+    if sv_type:
+        svtype = svtype[0]
+    svlen = variant_dict['info_dict'].get('SVLEN')
+    if svlen:
+        svlen = svlen[0]
+    end = variant_dict['info_dict'].get('END')
+    if end:
+        end = end[0]
+    mate_id = variant_dict['info_dict'].get('MATEID')
+    if mate_id:
+        mate_id = mate_id[0]
+    
+    coordinates = get_coordinates(
+        ref=variant['reference'], 
+        alt=variant['alternative'],
+        position=variant['position'],
+        category=variant['category'], 
+        svtype=svtype, 
+        svlen=svlen, 
+        end=end,
+        mate_id=end,
+    )
+    
+    variant['sub_category'] = coordinates['sub_category']
+    variant['mate_id'] = coordinates['mate_id']
+    variant['end'] = coordinates['end']
+    variant['length'] = coordinates['length']
 
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
@@ -117,8 +186,8 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     genetic_models = variant_dict.get('genetic_models',{}).get(case_name,[])
     variant['genetic_models'] = genetic_models
 
-    # Add the clnsig prediction
-    clnsig_accessions = parse_clnsig(variant_dict)
+    # Add the clinsig prediction
+    clnsig_accessions = get_clnsig(variant_dict)
     if clnsig_accessions:
         variant['clnsig'] = 5
         variant['clnsigacc'] = clnsig_accessions

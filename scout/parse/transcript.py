@@ -23,10 +23,7 @@ def parse_transcripts(variant):
             transcript['transcript_id'] = transcript_id
 
             # Add the hgnc gene identifier
-            transcript['hgnc_symbol'] = vep_entry.get('SYMBOL', '').split('.')[0]
-
-            # Add the ensembl gene identifier
-            transcript['ensembl_id'] = vep_entry.get('Gene', '')
+            transcript['hgnc_id'] = vep_entry.get('HGNC_ID')
 
             ########### Fill it with the available information ###########
 

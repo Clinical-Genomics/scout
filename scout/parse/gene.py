@@ -12,7 +12,12 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 import logging
 
 from scout.constants import SO_TERMS
+<<<<<<< 20bf2e616ba7db6aa47ea6f4ab08d452804d8827
 from scout.parse.transcript import (parse_transcripts)
+=======
+from . import (get_omim_gene_ids, get_omim_phenotype_ids, parse_transcripts,
+               parse_disease_associated)
+>>>>>>> Move to new structure with internal genes
 
 def parse_genes(variant):
     """Get the gene from transcripts.
@@ -31,12 +36,12 @@ def parse_genes(variant):
 
     # Group all transcripts by gene
     for transcript in transcripts:
-        hgnc_symbol = transcript['hgnc_symbol']
-        ensembl_gene_id = transcript['ensembl_id']
-        if hgnc_symbol in genes_to_transcripts:
-            genes_to_transcripts[hgnc_symbol].append(transcript)
+        hgnc_id = transcript['hgnc_id']
+
+        if hgnc_id in genes_to_transcripts:
+            genes_to_transcripts[hgnc_id].append(transcript)
         else:
-            genes_to_transcripts[hgnc_symbol] = [transcript]
+            genes_to_transcripts[hgnc_id] = [transcript]
 
     # We need to find out the most severe consequence in all transcripts
     # and save in what transcript we found it
@@ -48,7 +53,7 @@ def parse_genes(variant):
         most_severe_sift = None
         most_severe_polyphen = None
         for transcript in gene_transcripts:
-            ensembl_gene_id = transcript['ensembl_id']
+
             for consequence in transcript['functional_annotations']:
                 new_score = SO_TERMS[consequence]['rank']
                 if new_score < most_severe_score:
@@ -64,10 +69,9 @@ def parse_genes(variant):
             'most_severe_consequence': most_severe_consequence,
             'most_severe_sift': most_severe_sift,
             'most_severe_polyphen': most_severe_polyphen,
-            'hgnc_symbol': gene_id,
-            'ensembl_gene_id': ensembl_gene_id,
+            'hgnc_id': gene_id,
             'region_annotation': SO_TERMS[most_severe_consequence]['region'],
         }
-        genes.append(gene)
+        genes.append(gene)    
 
     return genes
