@@ -1,6 +1,6 @@
-from scout.parse import get_clnsig
+from scout.parse.clnsig import parse_clnsig
 
-def test_get_clnsig():
+def test_parse_clnsig():
     variant = {
         'info_dict':{
             'SnpSift_CLNACC': [
@@ -12,5 +12,5 @@ def test_get_clnsig():
             
             }
     }
-    clnsig_annotations = get_clnsig(variant)
+    clnsig_annotations = parse_clnsig(variant)
     assert len(clnsig_annotations) == 6

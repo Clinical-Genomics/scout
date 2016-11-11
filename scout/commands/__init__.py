@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .query_genes import hgnc_query
 from .init import init as init_command
 from .utils import get_file_handle
 from .load_hpo import hpo

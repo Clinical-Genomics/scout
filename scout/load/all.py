@@ -2,7 +2,7 @@
 import logging
 
 from . import load_case, load_variants, delete_variants
-from scout.parse import parse_case
+from scout.parse.case import parse_case
 from scout.build import build_case
 
 log = logging.getLogger(__name__)

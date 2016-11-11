@@ -1,5 +1,5 @@
 import logging
-from scout.parse import parse_compounds
+from scout.parse.compound import parse_compounds
 
 def test_parse_compounds(parsed_case):
     variant = {

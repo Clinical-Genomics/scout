@@ -260,7 +260,7 @@ class CaseHandler(object):
             GenePanel: gene panel object
         """
         try:
-            logger.info("Fetch gene panel {0}, version {1} from database".format(
+            logger.debug("Fetch gene panel {0}, version {1} from database".format(
                 panel_id, version
             ))
             panel = GenePanel.objects.get(panel_name=panel_id, version=version)
@@ -275,13 +275,15 @@ class CaseHandler(object):
             Args:
                 panel_obj(GenePanel)
         """
-        logger.info("Adding panel {0}, version {1} to database".format(
-            panel_obj['panel_name'], panel_obj['version']
+        panel_name = panel_obj['panel_name']
+        panel_version = panel_obj['version']
+        
+        logger.info("loading panel {0}, version {1} to database".format(
+            panel_name, panel_version
         ))
-        if self.gene_panel(panel_obj['panel_name'], panel_obj['version']):
+        if self.gene_panel(panel_name, panel_version):
             raise IntegrityError("Panel {0} with version {1} already"\
                                  " exist in database".format(
-                                 panel_obj['panel_name'], panel_obj['version']
-                                 ))
+                                 panel_name, panel_version))
         panel_obj.save()
-        logger.info("Panel saved")
+        logger.debug("Panel saved")

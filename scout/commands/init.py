@@ -45,6 +45,10 @@ def init(ctx, institute_name, user_name, user_mail):
     
     adapter = ctx.obj['adapter']
     
+    logger.info("Deleting previous database")
+    adapter.drop_database()
+    logger.info("Database deleted")
+    
     if not adapter.institute(institute_id=institute_name):
         institute_obj = build_institute(
             internal_id = institute_name,

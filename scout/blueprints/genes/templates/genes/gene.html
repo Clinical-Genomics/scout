@@ -23,14 +23,13 @@
       </div>
 
       <div class="col-md-6">
-        {{ transcripts(gene) }}
+        {{ inheritance(gene) }}
       </div>
     </div>
 
-    {# ROW 3 #}
     <div class="row">
       <div class="col-md-12">
-        {{ inheritance(gene) }}
+        {{ transcripts(gene) }}
       </div>
     </div>
   </div>
@@ -81,7 +80,7 @@
           {% set extra_class = None %}
         {% endif %}
         <li class="list-group-item {{ extra_class if extra_class }}">
-          {{ transcript.refseq_id }} {% if extra_class %}<small>(primary)</small>{% endif %}
+          {{ transcript.refseq_id or transcript.ensembl_transcript_id }} {% if extra_class %}<small>(primary)</small>{% endif %}
         </li>
       {% endfor %}
     </ul>

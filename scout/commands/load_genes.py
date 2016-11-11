@@ -23,6 +23,9 @@ import logging
 import click
 
 from scout.load import load_hgnc_genes
+from scout.resources import (hgnc_path, exac_path, transcripts_path, 
+                             hpogenes_path)
+
 
 from . import get_file_handle
 
@@ -31,84 +34,54 @@ logger = logging.getLogger(__name__)
 @click.command()
 @click.option('--hgnc',
                 type=click.Path(exists=True),
+                default=hgnc_path,
                 help="Path to hgnc file",
 )
 @click.option('--ensembl',
                 type=click.Path(exists=True),
+                default=transcripts_path,
                 help="Path to ensembl transcripts file",
 )
 @click.option('--exac',
                 type=click.Path(exists=True),
+                default=exac_path,
                 help="Path to exac gene file",
 )
 @click.option('--hpo',
                 type=click.Path(exists=True),
+                default=hpogenes_path,
                 help="Path to HPO gene file",
 )
-@click.option('--export-genes',
-                is_flag=True,
-                help="Export all genes from the database"
-)
-@click.option('--export-transcripts',
-                is_flag=True,
-                help="Export all refseq transcripts from the database"
-)
 @click.pass_context
-def genes(ctx, hgnc, ensembl, exac, hpo, export_genes, export_transcripts):
+def genes(ctx, hgnc, ensembl, exac, hpo):
     """
     Load the hgnc aliases to the mongo database.
     """
     adapter=ctx.obj['adapter']
-    if export_genes:
-        print("#Chrom\tStart\tEnd\thgnc_symbol")
-        for gene in adapter.hgnc_genes():
-            gene_string = ("{0}\t{1}\t{2}\t{3}")
-            print(gene_string.format(
-                gene.chromosome,
-                gene.start,
-                gene.end,
-                gene.hgnc_symbol
-            ))
-    
-    elif export_transcripts:
-        print("#Chrom\tStart\tEnd\tTranscript\tRefSeq\thgnc_symbol")
-        for gene in adapter.hgnc_genes():
-            for transcript in gene.transcripts:
-                transcript_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}")
-                print(transcript_string.format(
-                    gene.chromosome,
-                    transcript.start,
-                    transcript.end,
-                    transcript.ensembl_transcript_id,
-                    transcript.refseq_id,
-                    gene.hgnc_symbol
-                ))
-            
-    
-    else:
-        if not (hgnc and ensembl and exac and hpo):
-            logger.info("Please provide all gene files")
-            ctx.abort()
 
-        logger.info("Loading hgnc file from {0}".format(hgnc))
-        hgnc_handle = get_file_handle(hgnc)
-        
-        logger.info("Loading ensembl transcript file from {0}".format(
-                    ensembl))
-        ensembl_handle = get_file_handle(ensembl)
-        
-        logger.info("Loading exac gene file from {0}".format(
-                    exac))
-        exac_handle = get_file_handle(exac)
-        
-        logger.info("Loading HPO gene file from {0}".format(
-                    hpo))
-        hpo_handle = get_file_handle(hpo)
-        
-        load_hgnc_genes(
-            adapter=adapter,
-            ensembl_lines=ensembl_handle, 
-            hgnc_lines=hgnc_handle, 
-            exac_lines=exac_handle,
-            hpo_lines=hpo_handle
-        )
+    if not (hgnc and ensembl and exac and hpo):
+        logger.info("Please provide all gene files")
+        ctx.abort()
+
+    logger.info("Loading hgnc file from {0}".format(hgnc))
+    hgnc_handle = get_file_handle(hgnc)
+    
+    logger.info("Loading ensembl transcript file from {0}".format(
+                ensembl))
+    ensembl_handle = get_file_handle(ensembl)
+    
+    logger.info("Loading exac gene file from {0}".format(
+                exac))
+    exac_handle = get_file_handle(exac)
+    
+    logger.info("Loading HPO gene file from {0}".format(
+                hpo))
+    hpo_handle = get_file_handle(hpo)
+    
+    load_hgnc_genes(
+        adapter=adapter,
+        ensembl_lines=ensembl_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=exac_handle,
+        hpo_lines=hpo_handle
+    )

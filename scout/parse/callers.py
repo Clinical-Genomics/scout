@@ -6,7 +6,8 @@ def parse_callers(variant):
             variant(dict): A variant dictionary
     
         Returns:
-            callers(dict)
+            callers(dict): A dictionary on the form 
+            {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
     """
     callers = {
         'gatk': None,

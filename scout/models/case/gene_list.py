@@ -1,34 +1,33 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, ListField, StringField, FloatField,
-                         IntField, BooleanField)
+                         DateTimeField, BooleanField, EmbeddedDocument, 
+                         EmbeddedDocumentField, MapField, ReferenceField)
 
+from scout.models.hgnc_map import HgncGene
 
-class Gene(Document):
+class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
 
-    chromosome = StringField(required=True)
-    start = IntField(required=True)
-    stop = IntField(required=True)
-    hgnc_symbol = StringField(required=True)
-    ensembl_gene_id = StringField(required=True)
-    description = StringField()
-    locus = StringField()
-    mim_id = IntField()
-    protein_name = StringField()
+    hgnc_gene = ReferenceField(HgncGene, required=True)
+
+    disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
+    mosaicism = BooleanField(default=False)
 
 
 class GenePanel(Document):
 
     meta = {'strict': False}
 
-    institute = StringField(required=True)
     panel_name = StringField(required=True, unique_with='version')
+    institute = StringField()
     version = FloatField(required=True)
-    date = StringField(required=True)
+    date = DateTimeField(required=True)
     display_name = StringField()
-    genes = ListField(StringField())
+    # This is a dictionary with gene objects
+    gene_objects = MapField(EmbeddedDocumentField(Gene))
+    # {'ADK':Gene}
 
     @property
     def name_and_version(self):

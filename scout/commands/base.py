@@ -1,11 +1,10 @@
 import click
-from configobj import ConfigObj
 
 from scout import __version__, logger
 from scout.log import init_log
 from scout.adapter import MongoAdapter
 from . import (load, transfer, wipe, delete_case, genes, export, institute,
-               hpo, panel, init_command)
+               hpo, panel, init_command, hgnc_query)
 from .cases import cases
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
@@ -90,3 +89,4 @@ cli.add_command(export)
 cli.add_command(institute)
 cli.add_command(panel)
 cli.add_command(cases)
+cli.add_command(hgnc_query)

@@ -1,5 +1,5 @@
 import pytest
-from scout.parse import parse_case
+from scout.parse.case import parse_case
 from scout.parse.case import parse_ped
 from scout.exceptions import PedigreeError
 

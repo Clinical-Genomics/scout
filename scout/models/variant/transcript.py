@@ -9,6 +9,7 @@ from mongoengine import (EmbeddedDocument, StringField, ListField, BooleanField)
 
 from scout.constants import (SO_TERMS, CONSEQUENCE, FEATURE_TYPES)
 
+
 class Transcript(EmbeddedDocument):
     # The ensemble transcript id
     transcript_id = StringField(required=True)
@@ -16,7 +17,7 @@ class Transcript(EmbeddedDocument):
     refseq_ids = ListField(StringField())
     # The hgnc gene id
     hgnc_symbol = StringField()
-    
+
     ### Protein specific predictions ###
     # The ensemble protein id
     protein_id = StringField()
@@ -32,7 +33,7 @@ class Transcript(EmbeddedDocument):
     prosite_profile = StringField()
     # The smart id for the product
     smart_domain = StringField()
-    
+
     # The biotype annotation for the transcript
     biotype = StringField()
     # The functional annotations for the transcript
@@ -49,7 +50,7 @@ class Transcript(EmbeddedDocument):
     coding_sequence_name = StringField()
     # The amino acid change on the transcript e.g. 'p.Phe32Ser'
     protein_sequence_name = StringField()
-    
+
     # If the transcript is relevant
     is_canonical = BooleanField()
     # If the transcript is marked as diesease associated in gene panel

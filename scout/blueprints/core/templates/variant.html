@@ -282,15 +282,6 @@
             </div>
           </div>
 
-          <div class="variant-row-item">
-              <div>Gene panels</div>
-              <div class="variant-row-item-sublist">
-              {% for panel in variant.gene_lists %}
-                  <div class="variant-row-item-sublist-item">{{ panel }}</div>
-              {% endfor %}
-              </div>
-          </div>
-
           <div class="variant-list-item">
             <div>CLINSIG</div>
             <div>
@@ -299,9 +290,9 @@
                 {{ variant.clnsig_human }}
 
                 [{% for clnsigacc in variant.clnsigacc %}
-                    <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clnsigacc }}" target="_blank">
-                        {{ loop.index }}
-                    </a>{% if not loop.last %}, {% endif %}
+                  <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clnsigacc }}" target="_blank">
+                    {{ loop.index }}
+                  </a>{% if not loop.last %}, {% endif %}
                 {% endfor %}]
               {% else %}
                 {{ variant.clnsig_human }}
@@ -309,17 +300,19 @@
             </div>
           </div>
 
-          <div class="variant-row-item">
-            <div>SNPedia</div>
+          {% if variant.db_snp_ids %}
+            <div class="variant-row-item">
+              <div>SNPedia</div>
 
-            <div class="variant-row-item-sublist">
-              {% for rsnumber in variant.db_snp_ids %}
-                <a target="_blank" href="http://snpedia.com/index.php/{{ rsnumber }}" class="variant-row-item-sublist-item">
-                  {{ rsnumber }}
-                </a>
-              {% endfor %}
+              <div class="variant-row-item-sublist">
+                {% for rsnumber in variant.db_snp_ids %}
+                  <a target="_blank" href="http://snpedia.com/index.php/{{ rsnumber }}" class="variant-row-item-sublist-item">
+                    {{ rsnumber }}
+                  </a>
+                {% endfor %}
+              </div>
             </div>
-          </div>
+          {% endif %}
 
           <div class="variant-row-item">
             <div>Coverage</div>
@@ -759,10 +752,18 @@
             <tbody>
               {% for gene in variant.genes %}
                 <tr>
-                  <td>{{ gene.hgnc_symbol }}</td>
                   <td>
-                    <a target="_blank" href="{{ gene.ensembl_link }}">
-                      {{ gene.ensembl_gene_id }}
+                    {% if gene.common %}
+                      <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
+                        {{ gene.hgnc_symbol }}
+                      </a>
+                    {% else %}
+                      {{ gene.hgnc_symbol }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ gene.common.ensembl_link }}">
+                      {{ gene.common.ensembl_id }}
                     </a>
                   </td>
                   <td>{{ gene.description or '' }}</td>

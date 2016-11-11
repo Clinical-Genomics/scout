@@ -8,7 +8,6 @@ from scout.build import build_hgnc_gene
 
 logger = logging.getLogger(__name__)
 
-
 def load_hgnc_genes(adapter, ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
     """Load genes with transcripts into the database
 
@@ -25,14 +24,20 @@ def load_hgnc_genes(adapter, ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
         exac_lines=exac_lines,
         hpo_lines=hpo_lines,
     )
+    
     logger.info("Loading the genes and transcripts...")
     
     start_time = datetime.now()
-    
+    non_existing = 0
     for nr_genes, hgnc_symbol in enumerate(genes):
+        
         gene = genes[hgnc_symbol]
-        gene_obj = build_hgnc_gene(gene)
-        adapter.load_hgnc_gene(gene_obj)
+        if not 'ensembl_gene_id' in gene:
+            non_existing += 1
+        else:
+            gene_obj = build_hgnc_gene(gene)
+            adapter.load_hgnc_gene(gene_obj)
         
     logger.info("Loading done. {0} genes loaded".format(nr_genes))
     logger.info("Time to load genes: {0}".format(datetime.now() - start_time))
+    logger.info("Nr of genes not present in GRCh37:{0}".format(non_existing))

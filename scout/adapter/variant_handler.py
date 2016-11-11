@@ -21,17 +21,16 @@ class VariantHandler(object):
         Arguments:
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
-            variant_ids(list(str))
+            variant_ids(List[str])
             category(str): 'sv' or 'snv'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: 'variant_rank' or 'rank_score'
 
         Yields:
-            Variant objects
+            result(Iterable[Variant])
         """
         logger.info("Fetching variants from {0}".format(case_id))
-
         if variant_ids:
             nr_of_variants = len(variant_ids)
         else:
@@ -50,19 +49,32 @@ class VariantHandler(object):
                              .limit(nr_of_variants))
         return result
 
-    def variant(self, document_id=None, variant_id=None, case_id=None):
+    def variant(self, document_id, gene_panels=None):
         """Returns the specified variant.
 
            Arguments:
                document_id : A md5 key that represents the variant
+               gene_panels(List[GenePanel])
 
            Returns:
-               variant_object: A odm variant object
+               variant_object(Variant): A odm variant object
         """
+        gene_panels = gene_panels or []
         try:
-            return Variant.objects.get(document_id=document_id)
+            variant_obj = Variant.objects.get(document_id=document_id)
+            for variant_gene in variant_obj.genes:
+                hgnc_symbol = variant_gene.hgnc_symbol
+                for panel_obj in gene_panels:
+                    if hgnc_symbol in panel_obj.gene_objects:
+                        gene_obj = panel_obj.gene_objects[hgnc_symbol]
+                        variant_gene.panel_info = gene_obj
+
+                variant_gene.common = self.hgnc_gene(hgnc_symbol)
+
         except DoesNotExist:
-            return None
+            variant_obj = None
+
+        return variant_obj
 
     def get_causatives(self, institute_id):
         """Return all causative variants for an institute

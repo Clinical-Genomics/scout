@@ -7,10 +7,13 @@ import yaml
 
 from scout.adapter import MongoAdapter
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
-from scout.parse import (parse_case, parse_gene_panel, parse_variant, 
-                         parse_hgnc_genes, parse_ensembl_transcripts,
-                         parse_exac_genes, parse_hpo_genes, parse_hpo_phenotypes,
-                         parse_hpo_diseases)
+from scout.parse.case import parse_case
+from scout.parse.panel import parse_gene_panel
+from scout.parse.variant import parse_variant
+from scout.parse.hgnc import parse_hgnc_genes
+from scout.parse.ensembl import parse_ensembl_transcripts
+from scout.parse.exac import parse_exac_genes
+from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases)
 
 from scout.utils.link import link_genes
 from scout.log import init_log

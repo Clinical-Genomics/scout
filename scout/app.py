@@ -47,11 +47,10 @@ class AppFactory(object):
         self.app_config = None
         self.app = None
 
-    def __call__(self, app_name=None, config=None, config_obj=None, **kwargs):
+    def __call__(self, config=None, config_obj=None, **kwargs):
         # initialize the application
         self.app_config = config
-        self.app = Flask(app_name or DevelopmentConfig.PROJECT,
-                         instance_relative_config=True, **kwargs)
+        self.app = Flask(__name__, instance_relative_config=True, **kwargs)
 
         self._configure_app(config_obj=config_obj)
         self._bind_extensions()
