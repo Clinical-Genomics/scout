@@ -540,7 +540,7 @@
         </div>
       </div>
 
-      {# <div id="omim" class="md-card">
+      <div id="omim" class="md-card">
         <div class="md-card-header">OMIM phenotypes</div>
         <div class="md-card-body mod-scrollable">
           <table class="default-table--flex">
@@ -552,19 +552,17 @@
               </tr>
             </thead>
             <tbody>
-              {% for gene, phenotype in variant.omim_phenotypes %}
+              {% for gene, term in variant.disease_terms %}
                 <tr>
                   <td>
-                    <a href="{{ url_for('genes.gene', symbol=gene.hgnc_symbol) }}">
-                      {{ gene.hgnc_symbol }}
+                    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                      {{ gene.common.hgnc_symbol }}
                     </a>
                   </td>
                   <td>
-                    <a href="{{ phenotype.omim_link }}" target="_blank">
-                      {{ phenotype.phenotype_id }}
-                    </a>
+                    <a href="{{ term.disease_link }}">{{ term.display_name }}</a>
                   </td>
-                  <td>{{ phenotype.disease_models|sort|join(', ') }}</td>
+                  <td>{{ term.inheritance_models|join(', ') }}</td>
                 </tr>
               {% else %}
                 <tr>
@@ -574,7 +572,7 @@
             </tbody>
           </table>
         </div>
-      </div> #}
+      </div>
     </div>
 
     <div id="details" class="variant-segments-row">

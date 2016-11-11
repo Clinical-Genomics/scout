@@ -66,6 +66,9 @@ class VariantHandler(object):
                 hgnc_id = variant_gene.hgnc_id
                 variant_gene.common = self.hgnc_gene(hgnc_id)
 
+                disease_terms = self.disease_terms(hgnc_id)
+                variant_gene.disease_terms = disease_terms
+
                 if variant_gene.common is not None:
                     vep_transcripts = {tx.transcript_id: tx for tx in
                                        variant_gene.transcripts}

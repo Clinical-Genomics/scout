@@ -191,16 +191,11 @@ class Variant(Document):
             yield gene.hgnc_symbol, omim_link
 
     @property
-    def omim_phenotypes(self):
-        """Return a list of OMIM phenotypes with related gene information."""
-        added_phenotypes = set()
+    def disease_terms(self):
+        """Return all disease terms."""
         for gene in self.genes:
-            for phenotype in gene.omim_phenotypes:
-                if phenotype.phenotype_id in added_phenotypes:
-                    continue
-                else:
-                    added_phenotypes.add(phenotype.phenotype_id)
-                    yield gene, phenotype
+            for term in gene.disease_terms:
+                yield gene, term
 
     @property
     def omim_inheritance_models(self):
