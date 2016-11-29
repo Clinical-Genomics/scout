@@ -21,7 +21,7 @@ class HpoTerm(Document):
             'hpo_id',
         ]
     }
-    
+
     def __str__(self):
         return ("HpoTerm(hpo_id={this.hpo_id},descriptopn='{this.description}',"
                 "genes={this.genes})".format(this=self))
@@ -37,7 +37,7 @@ class DiseaseTerm(Document):
 
     meta = {
         'index_background': True,
-        'indexes':[
+        'indexes': [
             'disease_id',
             'genes'
         ]
@@ -47,12 +47,16 @@ class DiseaseTerm(Document):
     def disease_link(self):
         """Return a disease link to omim or orphanet."""
         link = "http://www.omim.org/entry/{0}"
-        
+
         if self.source == 'ORPHANET':
             link = "http://www.orpha.net/consor/cgi-bin/Disease_Search.php?"\
                    "lng=EN&data_id={0}"
-        
+
         return link.format(self.disease_id)
+
+    @property
+    def display_name(self):
+        return ':'.join([self.source, str(self.disease_id)])
 
     def __str__(self):
         return ("DiseaseTerm(disease_id={this.disease_id},source={this.source},"

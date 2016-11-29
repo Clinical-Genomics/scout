@@ -3,10 +3,10 @@ import datetime
 
 def match_date(date):
     """Check if a string is a valid date
-    
+
         Args:
             date(str)
-    
+
         Returns:
             bool
     """
@@ -18,13 +18,13 @@ def match_date(date):
 
 def get_date(date):
     """Return a datetime object if there is a valid date
-    
+
         Raise exception if date is not valid
         Return todays date if no date where added
-    
+
         Args:
             date(str)
-    
+
         Returns:
             date_obj(datetime.date)
     """
@@ -41,6 +41,6 @@ def get_date(date):
                 date = date.split('/')
             date_obj = datetime.date(*(int(number) for number in date))
         else:
-            raise Exception("Date %s is invalid" % date)
-    
+            raise ValueError("Date %s is invalid" % date)
+
     return date_obj

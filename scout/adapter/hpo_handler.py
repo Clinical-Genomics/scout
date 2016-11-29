@@ -36,10 +36,10 @@ class HpoHandler(object):
         if query:
             return HpoTerm.objects(description__icontains=query)
         return HpoTerm.objects()
-    
+
     def disease_terms(self, hgnc_id=None):
         """Return all disease terms that overlaps a gene
-            
+
             If no gene, return all disease terms
         """
         if hgnc_id:

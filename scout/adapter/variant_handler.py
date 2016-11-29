@@ -63,13 +63,37 @@ class VariantHandler(object):
         try:
             variant_obj = Variant.objects.get(document_id=document_id)
             for variant_gene in variant_obj.genes:
-                hgnc_symbol = variant_gene.hgnc_symbol
-                for panel_obj in gene_panels:
-                    if hgnc_symbol in panel_obj.gene_objects:
-                        gene_obj = panel_obj.gene_objects[hgnc_symbol]
-                        variant_gene.panel_info = gene_obj
+                hgnc_id = variant_gene.hgnc_id
+                variant_gene.common = self.hgnc_gene(hgnc_id)
 
-                variant_gene.common = self.hgnc_gene(hgnc_symbol)
+                disease_terms = self.disease_terms(hgnc_id)
+                variant_gene.disease_terms = disease_terms
+
+                if variant_gene.common is not None:
+                    vep_transcripts = {tx.transcript_id: tx for tx in
+                                       variant_gene.transcripts}
+
+                    # fill in common information for transcripts
+                    for hgnc_transcript in variant_gene.common.transcripts:
+                        hgnc_txid = hgnc_transcript.ensembl_transcript_id
+                        if hgnc_txid in vep_transcripts:
+                            vep_transcripts[hgnc_txid] = hgnc_transcript
+
+                    # fill in panel specific information for genes
+                    hgnc_symbol = variant_gene.common.hgnc_symbol
+                    for panel_obj in gene_panels:
+                        # loop over keys in "map field"
+                        if hgnc_symbol in panel_obj.gene_objects:
+                            gene_obj = panel_obj.gene_objects[hgnc_symbol]
+                            variant_gene.panel_info = gene_obj
+
+                        for panel_tx in gene_obj.disease_associated_transcripts:
+                            if panel_tx.ensembl_id in vep_transcripts:
+                                vep_tx = vep_transcripts[panel_tx.ensembl_id]
+                                vep_tx.is_disease_associated = True
+                            else:
+                                logger.debug("didn't find transcript: %s",
+                                             panel_tx.ensembl_id)
 
         except DoesNotExist:
             variant_obj = None

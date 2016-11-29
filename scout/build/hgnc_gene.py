@@ -2,10 +2,10 @@ from scout.models import (HgncTranscript, HgncGene)
 
 def build_hgnc_transcript(transcript):
     """Build a HgncTranscript object
-    
+
         Args:
             transcript(dict): Transcript information
-        
+
         Returns:
             transcript_obj(HgncTranscript)
     """
@@ -15,15 +15,15 @@ def build_hgnc_transcript(transcript):
         start = transcript['start'],
         end = transcript['end'],
     )
-    
+
     return transcript_obj
 
 def build_hgnc_gene(gene):
     """Build a HgncGene
-    
+
         Args:
             gene(dict): Gene information
-    
+
         Returns:
             gene_obj(HgncGene)
     """
@@ -34,7 +34,7 @@ def build_hgnc_gene(gene):
         start = gene['start'],
         end = gene['end'],
     )
-    
+
     gene_obj.hgnc_id = gene.get('hgnc_id')
     gene_obj.description = gene.get('description')
     gene_obj.aliases = gene.get('previous_symbols', [])
@@ -45,15 +45,15 @@ def build_hgnc_gene(gene):
     gene_obj.ucsc_id = gene.get('ucsc_id')
     gene_obj.uniprot_ids = gene.get('uniprot_ids', [])
     gene_obj.vega_id = gene.get('vega_id')
-    
+
     transcript_objs = []
     for transcript_id in gene['transcripts']:
         transcript = gene['transcripts'][transcript_id]
         transcript_objs.append(build_hgnc_transcript(transcript))
-    
+
     if transcript_objs:
         gene_obj.transcripts = transcript_objs
-    
+
     gene_obj.incomplete_penetrance = gene.get('incomplete_penetrance', False)
     gene_obj.ad = gene.get('ad', False)
     gene_obj.ar = gene.get('ar', False)
