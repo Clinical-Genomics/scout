@@ -20,14 +20,27 @@ logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option('-v', '--vcf', type=click.Path(exists=True),
-              help='path to clinical VCF file to be loaded')
-@click.option('-sv', '--vcf-sv', type=click.Path(exists=True),
-              help='path to clinical SV VCF file to be loaded')
-@click.option('-o', '--owner', help='parent institute for the case')
-@click.option('-p', '--ped', type=click.File('r'))
-@click.option('-u', '--update', is_flag=True)
-@click.argument('config', type=click.File('r'), required=False)
+@click.option('-v', '--vcf', 
+              type=click.Path(exists=True),
+              help='path to clinical VCF file to be loaded'
+)
+@click.option('-sv', '--vcf-sv', 
+              type=click.Path(exists=True),
+              help='path to clinical SV VCF file to be loaded'
+)
+@click.option('-o', '--owner', 
+              help='parent institute for the case'
+)
+@click.option('-p', '--ped', 
+              type=click.File('r')
+)
+@click.option('-u', '--update', 
+              is_flag=True
+)
+@click.argument('config', 
+              type=click.File('r'), 
+              required=False
+)
 @click.pass_context
 def load(context, vcf, vcf_sv, owner, ped, update, config):
     """Add a new case to Scout."""
@@ -35,6 +48,7 @@ def load(context, vcf, vcf_sv, owner, ped, update, config):
         click.echo("you have to provide either config or ped file")
         context.abort()
     config_data = yaml.load(config) if config else {}
+    
     config_data['vcf'] = vcf if vcf else config_data.get('vcf')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['owner'] = owner if owner else config_data.get('owner')
@@ -42,6 +56,7 @@ def load(context, vcf, vcf_sv, owner, ped, update, config):
     if 'vcf' not in config_data:
         logger.warn("Please provide a vcf file (use '--vcf')")
         context.abort()
+    
     elif 'owner' not in config_data:
         logger.warn("Please provide an owner for the case (use '--owner')")
         context.abort()

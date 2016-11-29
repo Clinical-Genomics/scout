@@ -63,7 +63,7 @@ class CaseHandler(object):
         try:
             return Institute.objects.get(internal_id=institute_id)
         except DoesNotExist:
-            logger.warning("Could not find institute {0}".format(institute_id))
+            logger.debug("Could not find institute {0}".format(institute_id))
             return None
 
     def institutes(self):

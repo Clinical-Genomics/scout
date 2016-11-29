@@ -3,27 +3,48 @@ import click
 from scout import __version__, logger
 from scout.log import init_log
 from scout.adapter import MongoAdapter
-from . import (load, transfer, wipe, delete_case, genes, export, institute,
-               hpo, panel, init_command, hgnc_query)
+from . import (load, transfer, wipe, genes, export, institute, hpo, panel, 
+               init_command, hgnc_query, convert)
 from .cases import cases
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
 @click.group()
-@click.option('-l', '--logfile', type=click.Path(exists=False),
-              help="Path to log file. If none logging is printed to stderr.")
-@click.option('--loglevel', default='INFO', type=click.Choice(LOG_LEVELS),
-              help="Set the level of log output.")
-@click.option('-db', '--mongodb', help='Default=variantDatabase')
-@click.option('-u', '--username', type=str)
-@click.option('-p', '--password', type=str)
-@click.option('-port', '--port', type=int,
-              help="Specify port to look for the mongo database [27017]")
-@click.option('-h', '--host', default='localhost', show_default=True,
-              help="Specify the host where to look for the mongo database.")
-@click.option('-c', '--config', type=click.Path(exists=True),
-              help="Specify the path to a config file with database info.")
+@click.option('-l', '--logfile', 
+              type=click.Path(exists=False),
+              help="Path to log file. If none logging is printed to stderr."
+)
+@click.option('--loglevel', 
+              default='INFO', 
+              type=click.Choice(LOG_LEVELS),
+              help="Set the level of log output.",
+              show_default=True,
+)
+@click.option('-db', '--mongodb', 
+              default='variantDatabase',
+              show_default=True,
+)
+@click.option('-u', '--username', 
+              type=str
+)
+@click.option('-p', '--password',
+              type=str
+)
+@click.option('-port', '--port', 
+              default=27017,
+              show_default=True,
+              help="Specify port to look for the mongo database"
+)
+@click.option('-h', '--host', 
+              default='localhost', 
+              show_default=True,
+              help="Specify the host where to look for the mongo database."
+)
+@click.option('-c', '--config', 
+              type=click.Path(exists=True),
+              help="Specify the path to a config file with database info."
+)
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
@@ -81,7 +102,6 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
 cli.add_command(load)
 cli.add_command(transfer)
 cli.add_command(wipe)
-cli.add_command(delete_case)
 cli.add_command(genes)
 cli.add_command(init_command)
 cli.add_command(hpo)
@@ -89,4 +109,5 @@ cli.add_command(export)
 cli.add_command(institute)
 cli.add_command(panel)
 cli.add_command(cases)
+cli.add_command(convert)
 cli.add_command(hgnc_query)

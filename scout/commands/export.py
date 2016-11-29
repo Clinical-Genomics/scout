@@ -22,18 +22,30 @@ logger = logging.getLogger(__name__)
                 is_flag=True,
                 help="Export all genes from the database"
 )
+@click.option('--gene-file',
+              type=click.Path(exists=True),
+              help="Return the genes on correct format based on hgnc ids in "\
+                   "infile"
+)
 @click.option('--transcripts',
                 is_flag=True,
                 help="Export all refseq transcripts from the database"
 )
 @click.pass_context
-def export(ctx, collaborator, genes, transcripts):
+def export(ctx, collaborator, genes, transcripts, gene_file):
     """
     Export variants from the mongo database.
     """
     logger.info("Running scout export")
     adapter = ctx.obj['adapter']
     if genes:
+        # genes_in = set()
+        # if gene_file:
+        #     with open(gene_file, 'r') as f:
+        #         for line in f:
+        #             if not line.startswith('#'):
+        #                 hgnc_symbol = line.rstrip().split('\t')[0]
+        #                 genes_in.add(hgnc_symbol)
         print("#Chrom\tStart\tEnd\tHgncSymbol\tHgncID")
         for gene in adapter.all_genes():
             gene_string = ("{0}\t{1}\t{2}\t{3}\t{4}")

@@ -16,34 +16,36 @@ log = logging.getLogger(__name__)
     help='display name for the panel'
 )
 @click.option('-v', '--version', 
-    help='panel version', 
+    help='panel version',
+    show_default=True,
     default=1.0
 )
-@click.option('-t', '--type', 
-    default='clinical'
-)
-@click.option('-i', '--institute', 
-    required=True
+@click.option('-t', '--panel-type', 
+    default='clinical',
+    show_default=True,
 )
 @click.option('--panel-id',
-    required = True
+    required=True
 )
-@click.option('--path', 
-    required = True,
+@click.option('--institute',
+    required=True
+)
+@click.option('--path',
+    required=True,
     type=click.Path(exists=True)
 )
 @click.pass_context
-def panel(context, date, name, version, type, panel_id, path, institute):
+def panel(context, date, name, version, panel_type, panel_id, path, institute):
     """Add a gene panel to the database."""
     date = get_date(date)
     
     adapter = context.obj['adapter']
     info = {
         'file': path,
-        'type': type,
+        'institute': institute,
+        'type': panel_type,
         'date': date,
         'version': version,
-        'institute': institute,
         'name': panel_id,
         'full_name': name or panel_id
     }

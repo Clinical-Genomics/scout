@@ -9,7 +9,7 @@ def parse_genes(panel_path):
         panel_path(str): Path to gene panel file
 
     Returns:
-        genes(list(dict)): List of hgnc ids
+        genes(list(dict)): Dictionaries with relevant gene info
     """
     genes = []
     header = []

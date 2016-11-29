@@ -36,5 +36,5 @@ def institute(ctx, internal_id, display_name):
             sanger_recipients=None
         )
     except Exception as e:
-        logger.warning(e.message)
+        logger.warning(e)
         ctx.abort()
