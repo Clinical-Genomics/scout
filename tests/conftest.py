@@ -484,14 +484,14 @@ def parsed_sv_variants(request, sv_variants, parsed_case):
 def variant_objs(request, parsed_variants, institute_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (build_variant(variant, institute_obj)
+    return (build_variant(variant, institute_obj, {})
             for variant in parsed_variants)
 
 @pytest.fixture(scope='function')
 def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (build_variant(variant, institute_obj)
+    return (build_variant(variant, institute_obj, {})
             for variant in parsed_sv_variants)
 
 

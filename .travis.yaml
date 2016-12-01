@@ -1,0 +1,17 @@
+
+language: python
+
+python:
+    - "3.5"
+
+services:
+    - mongodb
+
+script:
+    - py.test tests/
+
+install:
+    - pip install -r requirements.txt .
+
+notifications:
+    email: false
