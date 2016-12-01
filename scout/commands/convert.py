@@ -51,7 +51,9 @@ def convert(context, panel, date, name, version):
                 genes_found = []
                 gene_info = dict(zip(header,line.split('\t')))
                 # pp(gene_info)
-                hgnc_symbol = gene_info['hgnc_symbol']
+                hgnc_symbol = gene_info.get('hgnc_symbol')
+                if not hgnc_symbol:
+                    pass
                 result_genes = [gene for gene in adapter.hgnc_genes(hgnc_symbol)]
                 
                 for gene in result_genes:
