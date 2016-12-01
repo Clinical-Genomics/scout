@@ -29,7 +29,7 @@ Flask-OAuthlib>=0.9.2
 Flask-SSLify
 
 # Chanjo coverage reports
-chanjo-report==3.0.4
+# chanjo-report==3.0.4
 
 # misc. extensions
 Flask-Babel
@@ -51,4 +51,4 @@ python-dateutil
 arrow
 query_phenomizer>=0.5
 phizz>=0.2.1
-loqusdb>=0.1.2
+loqusdb>=0.5
