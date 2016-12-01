@@ -13,16 +13,14 @@ from scout.load import (load_scout, load_hgnc_genes, load_hpo)
 from scout import logger
 from scout.log import init_log
 
-hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
-ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
-exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
-hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
-hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
-
+hgnc_path = "tests/fixtures/resources/hgnc_reduced_set.txt"
+ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_reduced.txt"
+exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
+hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt"
+hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
+hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt"
 
 init_log(logger, loglevel='INFO')
-
 
 @task
 def setup_test(context, email, name="Paul Anderson"):

@@ -35,12 +35,12 @@ scout_yaml_config = 'tests/fixtures/config1.yaml'
 panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
-hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
-ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
-exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
-hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
-hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
+hgnc_path = "tests/fixtures/resources/hgnc_reduced_set.txt"
+ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_reduced.txt"
+exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
+hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt"
+hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
+hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt"
 
 ##################### File fixtures #####################
 @pytest.fixture
