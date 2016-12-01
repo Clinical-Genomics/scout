@@ -14,7 +14,7 @@ def build_gene(gene):
             gene_obj(Gene)
     """
     gene_obj = Gene(
-        hgnc_symbol = gene['hgnc_symbol']
+        hgnc_id = gene['hgnc_id']
     )
 
     transcripts = []

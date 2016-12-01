@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 import logging
+import datetime
 
 from vcf_parser import VCFParser
 import yaml
@@ -31,7 +32,7 @@ one_sv = "tests/fixtures/1.one.SV.vcf"
 ped_path = "tests/fixtures/1.ped"
 scout_config_file = "tests/fixtures/config1.ini"
 scout_yaml_config = 'tests/fixtures/config1.yaml'
-gene_list_file = "tests/fixtures/gene_lists/gene_list_test.txt"
+panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
 hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
@@ -47,6 +48,12 @@ def config_file(request):
     """Get the path to a config file"""
     print('')
     return scout_yaml_config
+
+@pytest.fixture
+def panel_1_file(request):
+    """Get the path to a config file"""
+    print('')
+    return panel_1_path
 
 @pytest.fixture
 def hgnc_file(request):
@@ -381,9 +388,10 @@ def variant_database(request, adapter, institute_obj, parsed_user, case_obj,
 def panel_info(request):
     "Return one panel info as specified in tests/fixtures/config1.ini"
     panel = {
-            'date': '2015-10-21',
-            'file': 'tests/fixtures/gene_lists/gene_list_test.txt',
+            'date': datetime.date.today(),
+            'file': panel_1_path,
             'type': 'clinical',
+            'institute': 'cust000',
             'version': '0.1',
             'name': 'Panel1',
             'full_name': 'Panel 1'
@@ -394,8 +402,7 @@ def panel_info(request):
 @pytest.fixture(scope='function')
 def parsed_panel(request, panel_info):
     """docstring for parsed_panels"""
-    owner = 'cust000'
-    panel = parse_gene_panel(panel_info, owner)
+    panel = parse_gene_panel(panel_info)
 
     return panel
 
@@ -477,14 +484,14 @@ def parsed_sv_variants(request, sv_variants, parsed_case):
 def variant_objs(request, parsed_variants, institute_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (build_variant(variant, institute_obj)
+    return (build_variant(variant, institute_obj, {})
             for variant in parsed_variants)
 
 @pytest.fixture(scope='function')
 def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (build_variant(variant, institute_obj)
+    return (build_variant(variant, institute_obj, {})
             for variant in parsed_sv_variants)
 
 

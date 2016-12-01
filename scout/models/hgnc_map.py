@@ -4,6 +4,7 @@ from mongoengine import (Document, StringField, ListField, EmbeddedDocument,
                          IntField, FloatField, EmbeddedDocumentField,
                          BooleanField)
 
+
 class HgncAlias(Document):
     #This works like a dictionary where hgnc_symbol is the correct id and
     #values are all aliases
@@ -16,6 +17,10 @@ class HgncTranscript(EmbeddedDocument):
     refseq_id = StringField()
     start = IntField(required=True)
     end = IntField(required=True)
+
+    @property
+    def refseq_link(self):
+        return "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(self.refseq_id)
 
 
 class HgncGene(Document):
@@ -93,14 +98,41 @@ class HgncGene(Document):
     @property
     def ucsc_link(self):
         """Link to gene in ucsc database"""
-        url_template = ("http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene={}")
+        url_template = ("http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&"
+                        "hgg_chrom=none&hgg_type=knownGene&hgg_gene={}")
         return url_template.format(self.ucsc_id)
+
+    @property
+    def reactome_link(self):
+        url_template = ("http://www.reactome.org/content/query?q={}&"
+                        "species=Homo+sapiens&species=Entries+without+species&"
+                        "cluster=true")
+        return url_template.format(self.ensembl_id)
+
+    @property
+    def hpa_link(self):
+        return "http://www.proteinatlas.org/search/{}".format(self.ensembl_id)
+
+    @property
+    def string_link(self):
+        return ("http://string-db.org/newstring_cgi/show_network_section."
+                "pl?identifier={}".format(self.ensembl_id))
+
+    @property
+    def expression_atlas_link(self):
+        url_template = ("https://www.ebi.ac.uk/gxa/genes/{}?"
+                        "bs=%7B%22homo+sapiens%22%3A%7B%22CELL_LINE%22%3Atrue"
+                        "%2C%22ORGANISM_PART%22%3Atrue%7D%7D&ds=%7B%22species"
+                        "%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D")
+        return url_template.format(self.ensembl_id)
+
 
     def __repr__(self):
         return ("HgncGene(hgnc_id={this.hgnc_id},hgnc_symbol={this.hgnc_symbol})".format(this=self))
 
     def __str__(self):
-        return ("HgncGene(hgnc_id={this.hgnc_id},hgnc_symbol={this.hgnc_symbol},aliases={this.aliases})".format(this=self))
+        return ("HgncGene(hgnc_id={this.hgnc_id},hgnc_symbol={this.hgnc_symbol}"
+                ",aliases={this.aliases})".format(this=self))
 
     meta = {
         'index_background': True,

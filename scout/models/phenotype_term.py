@@ -5,9 +5,9 @@ from mongoengine import (Document, EmbeddedDocument, StringField, ListField,
 from scout.models import HgncGene
 
 class HpoTerm(Document):
-    hpo_id = StringField(required=True, unique=True)
+    hpo_id = StringField(primary_key=True)
     description = StringField()
-    genes = ListField(ReferenceField('HgncGene'))
+    genes = ListField(IntField())
 
     @property
     def hpo_link(self):
@@ -22,17 +22,46 @@ class HpoTerm(Document):
         ]
     }
 
+    def __str__(self):
+        return ("HpoTerm(hpo_id={this.hpo_id},descriptopn='{this.description}',"
+                "genes={this.genes})".format(this=self))
+
 class DiseaseTerm(Document):
     #This is usually the mimnr for the disease
-    disease_id = IntField(required=True, unique=True)
-    
-    genes = ListField(ReferenceField('HgncGene'))
-    hpo_terms = ListField(ReferenceField('HpoTerm'))
-    
+    disease_id = IntField(required=True)
+
+    source = StringField(required=True)
+
+    genes = ListField(IntField())
+    hpo_terms = ListField(StringField())
+
+    meta = {
+        'index_background': True,
+        'indexes': [
+            'disease_id',
+            'genes'
+        ]
+    }
+
     @property
-    def omim_link(self):
-        """Return a OMIM phenotype link."""
-        return "http://www.omim.org/entry/{}".format(self.disease_id)
+    def disease_link(self):
+        """Return a disease link to omim or orphanet."""
+        link = "http://www.omim.org/entry/{0}"
+
+        if self.source == 'ORPHANET':
+            link = "http://www.orpha.net/consor/cgi-bin/Disease_Search.php?"\
+                   "lng=EN&data_id={0}"
+
+        return link.format(self.disease_id)
+
+    @property
+    def display_name(self):
+        return ':'.join([self.source, str(self.disease_id)])
+
+    def __str__(self):
+        return ("DiseaseTerm(disease_id={this.disease_id},source={this.source},"
+                "genes={this.genes},hpo_terms={this.hpo_terms})".format(this=self))
+
 
 class PhenotypeTerm(EmbeddedDocument):
     phenotype_id = StringField()

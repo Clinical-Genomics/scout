@@ -49,14 +49,13 @@ def init(ctx, institute_name, user_name, user_mail):
     adapter.drop_database()
     logger.info("Database deleted")
     
-    if not adapter.institute(institute_id=institute_name):
-        institute_obj = build_institute(
-            internal_id = institute_name,
-            display_name = institute_name,
-            sanger_recipients = [user_mail]
-        )
+    institute_obj = build_institute(
+        internal_id = institute_name,
+        display_name = institute_name,
+        sanger_recipients = [user_mail]
+    )
         
-        adapter.add_institute(institute_obj)
+    adapter.add_institute(institute_obj)
     
     institute = adapter.institute(institute_id=institute_name)
     

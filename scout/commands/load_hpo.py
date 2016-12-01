@@ -18,18 +18,20 @@ from scout.load import load_hpo
 
 from .utils import get_file_handle
 
+from scout.resources import (hpoterms_path, hpodisease_path)
+
 logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option('--hpo-terms',
                 type=click.Path(exists=True),
                 help="Path to hpo file",
-                required=True
+                default=hpoterms_path
 )
 @click.option('--hpo-disease',
                 type=click.Path(exists=True),
                 help="Path to file with hpo diseases",
-                required=True
+                default=hpodisease_path
 )
 @click.pass_context
 def hpo(ctx, hpo_terms, hpo_disease):

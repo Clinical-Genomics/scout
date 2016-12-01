@@ -2,12 +2,13 @@ from scout.models import Variant
 
 from . import (build_genotype, build_compound, build_gene)
 
-def build_variant(variant, institute):
+def build_variant(variant, institute, hgnc_genes):
     """Build a mongoengine Variant based on parsed information
 
         Args:
             variant(dict)
             institute(Institute): A mongoengine institute
+            hgnc_genes(dict[HgncGene])
 
         Returns:
             variant_obj(Variant)
@@ -32,7 +33,7 @@ def build_variant(variant, institute):
 
     variant_obj['end'] = variant.get('end')
     variant_obj['length'] = variant.get('length')
-    variant_obj['db_snp_ids'] = variant.get('db_snp_ids')
+    variant_obj['dbsnp_id'] = variant.get('dbsnp_id')
 
     variant_obj['category'] = variant.get('category')
     variant_obj['sub_category'] = variant.get('sub_category')
@@ -62,8 +63,15 @@ def build_variant(variant, institute):
         genes.append(gene_obj)
     variant_obj['genes'] = genes
 
-    variant_obj['hgnc_symbols'] = variant.get('hgnc_symbols')
-    variant_obj['ensembl_gene_ids'] = variant.get('ensembl_gene_ids')
+    variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
+    
+    hgnc_symbols = []
+    for hgnc_id in variant_obj['hgnc_ids']:
+        hgnc_gene = hgnc_genes.get(hgnc_id)
+        if hgnc_gene:
+            hgnc_symbols.append(hgnc_gene.hgnc_symbol)
+
+    variant_obj['hgnc_symbols'] = hgnc_symbols
 
     # Add the callers
     call_info = variant.get('callers', {})

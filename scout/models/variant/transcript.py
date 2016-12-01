@@ -5,7 +5,8 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 """
 from __future__ import (absolute_import, division)
 
-from mongoengine import (EmbeddedDocument, StringField, ListField, BooleanField)
+from mongoengine import (EmbeddedDocument, StringField, ListField, BooleanField,
+                         IntField)
 
 from scout.constants import (SO_TERMS, CONSEQUENCE, FEATURE_TYPES)
 
@@ -13,10 +14,8 @@ from scout.constants import (SO_TERMS, CONSEQUENCE, FEATURE_TYPES)
 class Transcript(EmbeddedDocument):
     # The ensemble transcript id
     transcript_id = StringField(required=True)
-    # The refseq transcript id(s)
-    refseq_ids = ListField(StringField())
     # The hgnc gene id
-    hgnc_symbol = StringField()
+    hgnc_id = IntField()
 
     ### Protein specific predictions ###
     # The ensemble protein id
@@ -53,12 +52,6 @@ class Transcript(EmbeddedDocument):
 
     # If the transcript is relevant
     is_canonical = BooleanField()
-    # If the transcript is marked as diesease associated in gene panel
-    is_disease_associated = BooleanField()
-
-    @property
-    def refseq_ids_string(self):
-        return ', '.join(self.refseq_ids)
 
     @property
     def absolute_exon(self):
@@ -91,12 +84,6 @@ class Transcript(EmbeddedDocument):
     def smart_domain_link(self):
         return ("http://smart.embl.de/smart/search.cgi?keywords={}"
                 .format(self.smart_domain))
-
-    @property
-    def refseq_links(self):
-        for refseq_id in self.refseq_ids:
-            yield (refseq_id,
-                   "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id))
 
     @property
     def ensembl_link(self):

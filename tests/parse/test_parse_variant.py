@@ -25,7 +25,7 @@ def test_parse_small_sv(minimal_sv, minimal_case):
     assert parsed_variant['category'] == 'sv'
     assert parsed_variant['sub_category'] == 'bnd'
     assert parsed_variant['position'] == int(minimal_sv['POS'])
-    assert parsed_variant['hgnc_symbols'] == ['NUDC']
+    assert parsed_variant['hgnc_ids'] == [8045]
     assert parsed_variant['mate_id'] == 'MantaBND:454:0:1:0:0:0:1'
 
 def test_parse_one_sv_from_file(one_file_sv_variant, parsed_case):

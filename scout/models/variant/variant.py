@@ -100,10 +100,12 @@ class Variant(Document):
                                 ordering='combined_score', reverse=True)
 
     genes = ListField(EmbeddedDocumentField(Gene))
-    db_snp_ids = ListField(StringField())
+    dbsnp_id = StringField()
+
     # Gene ids:
+    hgnc_ids = ListField(IntField())
     hgnc_symbols = ListField(StringField())
-    ensembl_gene_ids = ListField(StringField())
+
     # Frequencies:
     thousand_genomes_frequency = FloatField()
     exac_frequency = FloatField()
@@ -153,7 +155,14 @@ class Variant(Document):
 
     @property
     def reduced_penetrance_genes(self):
-        return (gene for gene in self.genes if gene.reduced_penetrance)
+        for gene in self.genes:
+            name = gene.common.hgnc_symbol
+            common_penetrance = gene.common.incomplete_penetrance
+            if hasattr(gene, 'panel_info'):
+                panel_penetrance = gene.panel_info.reduced_penetrance
+            else:
+                panel_penetrance = False
+            yield name, common_penetrance, panel_penetrance
 
     def has_comments(self, case):
         """
@@ -182,16 +191,11 @@ class Variant(Document):
             yield gene.hgnc_symbol, omim_link
 
     @property
-    def omim_phenotypes(self):
-        """Return a list of OMIM phenotypes with related gene information."""
-        added_phenotypes = set()
+    def disease_terms(self):
+        """Return all disease terms."""
         for gene in self.genes:
-            for phenotype in gene.omim_phenotypes:
-                if phenotype.phenotype_id in added_phenotypes:
-                    continue
-                else:
-                    added_phenotypes.add(phenotype.phenotype_id)
-                    yield gene, phenotype
+            for term in gene.disease_terms:
+                yield gene, term
 
     @property
     def omim_inheritance_models(self):
@@ -281,20 +285,21 @@ class Variant(Document):
         for gene in self.genes:
             # loop over each child transcript for the gene
             for transcript in gene.transcripts:
-            # yield the parent gene, child transcript combo
-                yield transcript
+                # yield the parent gene, child transcript combo
+                yield gene, transcript
 
     @property
     def refseq_transcripts(self):
         """Yield all transcripts with a RefSeq id."""
         ref_seqs = {}
         for gene in self.genes:
-            for transcript in gene.common.transcripts:
-                if transcript.refseq_id:
-                    ref_seqs[transcript.ensembl_id] = transcript.refseq_id
-        for transcript in self.transcripts:
-            if transcript.ensembl_transcript_id in ref_seqs:
-                yield (transcript, ref_seqs[transcript.ensembl_transcript_id])
+            for hgnc_transcript in gene.common.transcripts:
+                if hgnc_transcript.refseq_id:
+                    ensembl_tx_id = hgnc_transcript.ensembl_transcript_id
+                    ref_seqs[ensembl_tx_id] = hgnc_transcript.refseq_id
+        for _, vep_transcript in self.transcripts:
+            if vep_transcript.transcript_id in ref_seqs:
+                yield (vep_transcript, ref_seqs[vep_transcript.transcript_id])
 
     @property
     def protein_changes(self):

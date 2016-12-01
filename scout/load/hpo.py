@@ -5,6 +5,8 @@ from datetime import datetime
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases)
 from scout.build import (build_hpo_term, build_disease_term)
 
+from pprint import pprint as pp
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,11 +26,7 @@ def load_hpo(adapter, hpo_lines, disease_lines):
     
     load_hpo_terms(adapter, hpo_lines, gene_objs)
     
-    hpo_objs = {}
-    for hpo_term in adapter.hpo_terms():
-        hpo_objs[hpo_term.hpo_id] = hpo_term
-    
-    load_disease_terms(adapter, disease_lines, gene_objs, hpo_objs)
+    load_disease_terms(adapter, disease_lines, gene_objs)
 
 def load_hpo_terms(adapter, hpo_lines, gene_objs):
     """Load the hpo terms into the database
@@ -42,24 +40,24 @@ def load_hpo_terms(adapter, hpo_lines, gene_objs):
     start_time = datetime.now()
 
     logger.info("Loading the hpo terms...")
-    for nr_terms, hgnc_id in enumerate(hpo_terms):
-        hpo_info = hpo_terms[hgnc_id]
+    for nr_terms, hpo_id in enumerate(hpo_terms):
+        hpo_info = hpo_terms[hpo_id]
         hpo_obj = build_hpo_term(hpo_info)
         
-        hgnc_genes = []
+        hgnc_ids = []
         for hgnc_symbol in hpo_info['hgnc_symbols']:
             if hgnc_symbol in gene_objs:
-                hgnc_genes.append(gene_objs[hgnc_symbol])
-        hpo_obj.genes = hgnc_genes
-
+                gene_obj = gene_objs[hgnc_symbol]
+                hgnc_ids.append(gene_obj.hgnc_id)
+        hpo_obj.genes = hgnc_ids
         adapter.load_hpo_term(hpo_obj)
     
     logger.info("Loading done. Nr of terms loaded {0}".format(nr_terms))
     logger.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
-def load_disease_terms(adapter, hpo_disease_lines, gene_objs, hpo_objs):
-    """Load the hpo terms into the database
+def load_disease_terms(adapter, hpo_disease_lines, gene_objs):
+    """Load the hpo phenotype terms into the database
 
         Args:
             adapter(MongoAdapter)
@@ -75,17 +73,13 @@ def load_disease_terms(adapter, hpo_disease_lines, gene_objs, hpo_objs):
         disease_info = mim_terms[disease_id]
         disease_obj = build_disease_term(disease_info)
         
-        hgnc_genes = []
+        hgnc_ids = []
         for hgnc_symbol in disease_info['hgnc_symbols']:
             if hgnc_symbol in gene_objs:
-                hgnc_genes.append(gene_objs[hgnc_symbol])
-        disease_obj.genes = hgnc_genes
-
-        hpo_terms = []
-        for hpo_id in disease_info['hpo_terms']:
-            if hpo_id in hpo_objs:
-                hpo_terms.append(hpo_objs[hpo_id])
-        disease_obj.hpo_terms = hpo_terms
+                gene_obj = gene_objs[hgnc_symbol]
+                hgnc_ids.append(gene_obj.hgnc_id)
+        
+        disease_obj.genes = hgnc_ids
         
         adapter.load_disease_term(disease_obj)
     

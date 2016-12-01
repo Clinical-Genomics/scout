@@ -13,7 +13,7 @@ def build_transcript(transcript):
     transcript_obj = Transcript(
         transcript_id = transcript['transcript_id']
     )
-    transcript_obj.hgnc_symbol = transcript['hgnc_symbol']
+    transcript_obj.hgnc_id = transcript['hgnc_id']
 
     transcript_obj.protein_id = transcript['protein_id']
     transcript_obj.sift_prediction = transcript['sift_prediction']

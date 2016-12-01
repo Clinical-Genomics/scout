@@ -37,6 +37,16 @@ class HpoHandler(object):
             return HpoTerm.objects(description__icontains=query)
         return HpoTerm.objects()
 
+    def disease_terms(self, hgnc_id=None):
+        """Return all disease terms that overlaps a gene
+
+            If no gene, return all disease terms
+        """
+        if hgnc_id:
+            return DiseaseTerm.objects(genes=hgnc_id)
+        else:
+            return DiseaseTerm.objects()
+
     def load_disease_term(self, disease_obj):
         """Load a disease term into the database"""
         logger.debug("Loading disease %s into database", disease_obj.disease_id)
