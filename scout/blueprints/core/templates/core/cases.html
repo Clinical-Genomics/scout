@@ -1,0 +1,111 @@
+{% extends "core/layout.html" %}
+
+{% block top_nav %}
+  <li class="active">
+    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {{ search_form() }}
+      </div>
+    </div>
+
+    {% for group_id, case_group in cases.items() %}
+      <h4>{{ group_id|capitalize }}</h4>
+      <div class="panel panel-default">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="col-xs-4">Case</th>
+              <th class="col-xs-3">Analysis date</th>
+              <th class="col-xs-2">Link</th>
+              <th class="col-xs-2">Sequencing</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for case in case_group %}
+              {{ case_row(case) }}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endfor %}
+
+    <div class="panel panel-default">
+      <div class="panel-body text-center">
+        Found <strong>{{ found_cases }}</strong> cases
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% macro search_form() %}
+  <form action="{{ url_for('core.cases', institute_id=institute_id) }}" method="GET" accept-charset="utf-8">
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-10">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-search"></span>
+            </span>
+            <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"></input>
+          </div>
+        </div>
+        <div class="col-xs-2">
+          <button type="submit" class="form-control">Search</input>
+        </div>
+      </div>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
+      </label>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro case_row(case) %}
+  <tr>
+    <td>
+      <a href="{{ url_for('core.case', institute_id=case.owner, case_id=case.display_name) }}">
+        {{ case.display_name }}
+      </a>
+      {% if case.assignee %}
+        <span class="badge pull-right">
+          {{ case.assignee.first_name }}
+        </span>
+      {% endif %}
+    </td>
+    <td>
+      {{ case.analysis_date.split()|first }}
+      {% if case.is_rerun %}
+        <span class="badge pull-right">rerun</span>
+      {% endif %}
+    </td>
+    <td>
+      {% if case.is_research %}
+        <a href="{{ url_for('core.variants', institute_id=case.owner, case_id=case.display_name, variant_type='research') }}">Research variants</a>
+      {% else %}
+        <a href="{{ url_for('core.variants', institute_id=case.owner, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
+      {% endif %}
+    </td>
+    <td>
+      {% if case.analysis_type == 'wgs' %}
+        {% set label_class = 'primary' %}
+      {% elif case.analysis_type == 'wes' %}
+        {% set label_class = 'warning' %}
+      {% else %}
+        {% set label_class = 'default' %}
+      {% endif %}
+      <span class="label label-{{ label_class }}">
+        {{ (case.analysis_type or 'unknown')|upper }}
+      </span>
+    </td>
+  </tr>
+{% endmacro %}

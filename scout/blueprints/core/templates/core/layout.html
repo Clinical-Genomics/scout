@@ -1,0 +1,23 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+  {{ super() }}
+
+  <link rel="stylesheet"
+        href="{{ url_for('core.static', filename='simplex.min.css') }}">
+  <link rel="stylesheet"
+        href="{{ url_for('core.static', filename='styles.css') }}">
+{% endblock %}
+
+{% block navbar %}
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{{ url_for('frontend.index') }}">Scout</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        {% block top_nav %}{% endblock %}
+      </ul>
+    </div>
+  </nav>
+{% endblock %}

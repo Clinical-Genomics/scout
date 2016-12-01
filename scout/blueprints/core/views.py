@@ -20,7 +20,8 @@ from .forms import init_filters_form, process_filters_form, GeneListUpload
 from .utils import genecov_links
 from .constants import PHENOTYPE_GROUPS
 
-core = Blueprint('core', __name__, template_folder='templates')
+core = Blueprint('core', __name__, template_folder='templates',
+                 static_folder='static', static_url_path='/core/static')
 
 
 @core.route('/institutes')
@@ -49,7 +50,7 @@ def institute_settings(institute_id):
 
 
 @core.route('/<institute_id>')
-@templated('cases.html')
+@templated('core/cases.html')
 @login_required
 def cases(institute_id):
     """View all cases.
@@ -75,7 +76,7 @@ def cases(institute_id):
 
 
 @core.route('/<institute_id>/<case_id>')
-@templated('case.html')
+@templated('core/case.html')
 @login_required
 def case(institute_id, case_id):
     """View a specific case."""

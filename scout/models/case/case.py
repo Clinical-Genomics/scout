@@ -192,3 +192,6 @@ class Case(Document):
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
+
+    def __unicode__(self):
+        return self.display_name
