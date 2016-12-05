@@ -1,32 +1,26 @@
 {% macro action_bar(institute, case, archive_data, sample_map, collaborators) %}
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-xs-2">{{ analysis_type(case) }}</div>
-        <div class="col-xs-2">{{ prioritize(institute, case) }}</div>
-        <div class="col-xs-2">{{ assign(institute, case) }}</div>
-        <div class="col-xs-2">{{ status(institute, case) }}</div>
-        {% if not (case.is_archived or case.is_research) %}
-          <div class="col-xs-2">{{ research(case) }}</div>
-        {% endif %}
-        <div class="col-xs-2">{{ rerun(case) }}</div>
-      </div>
-      <div class="row">
-        <div class="col-xs-2">{{ archive(archive_data) }}</div>
-        <div class="col-xs-2">{{ coverage_report(institute, case, sample_map) }}</div>
-        <div class="col-xs-2">{{ rank_model(case) }}</div>
-        <div class="col-xs-8">{{ share_case(institute, case, collaborators) }}</div>
-      </div>
-    </div>
-  </div>
+  <ul class="nav nav-sidebar">
+    <li>{{ analysis_type(case) }}</li>
+    <li>{{ prioritize(institute, case) }}</li>
+    <li>{{ assign(institute, case) }}</li>
+    <li>{{ status(institute, case) }}</li>
+    {% if not (case.is_archived or case.is_research) %}
+      <li>{{ research(case) }}</li>
+    {% endif %}
+    <li>{{ rerun(case) }}</li>
+    <li>{{ archive(archive_data) }}</li>
+    <li>{{ coverage_report(institute, case, sample_map) }}</li>
+    <li>{{ rank_model(case) }}</li>
+    <li>{{ share_case(institute, case, collaborators) }}</li>
+  </ul>
 {% endmacro %}
 
 {% macro analysis_type(case) %}
-  <div class="btn-group">
-    <div class="btn btn-default btn-sm" disabled>
+  <div class="nav-sidebar-item clearfix btn-group">
+    <div class="btn btn-default" disabled>
       <span class="glyphicon glyphicon-th-large"></span>
     </div>
-    <div class="btn btn-default btn-sm" disabled>
+    <div class="btn btn-default" disabled>
       {{ case.analysis_type|upper }}
     </div>
   </div>
@@ -39,11 +33,11 @@
     {% else %}
       <input type="hidden" name="status" readonly value="prioritized">
     {% endif %}
-    <div class="btn-group">
-      <button type="submit" class="btn btn-default btn-sm">
+    <div class="nav-sidebar-item clearfix btn-group">
+      <button type="submit" class="btn btn-default">
         <span class="glyphicon glyphicon-{{ 'star' if case.status == 'prioritized' else 'star-empty' }}"></span>
       </button>
-      <button type="submit" class="btn btn-default btn-sm">
+      <button type="submit" class="btn btn-default">
         {{ 'De-prioritize' if case.status == 'prioritized' else 'Prioritize' }}
       </button>
     </div>
@@ -56,11 +50,11 @@
           action="{{ url_for('core.remove_assignee',
                              institute_id=institute.id,
                              case_id=case.display_name) }}">
-      <div class="btn-group">
-        <button type="submit" class="btn btn-default btn-sm">
+      <div class="nav-sidebar-item clearfix btn-group">
+        <button type="submit" class="btn btn-default">
           <span class="glyphicon glyphicon-remove"></span>
         </button>
-        <button type="submit" class="btn btn-default btn-sm">
+        <button type="submit" class="btn btn-default">
           {{ case.assignee.name }}
         </button>
       </div>
@@ -71,11 +65,11 @@
                              institute_id=institute.id,
                              case_id=case.display_name) }}"
           title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-      <div class="btn-group">
-        <button type="submit" class="btn btn-default btn-sm">
+      <div class="nav-sidebar-item clearfix btn-group">
+        <button type="submit" class="btn btn-default">
           <span class="glyphicon glyphicon-user"></span>
         </button>
-        <button type="submit" class="btn btn-default btn-sm">
+        <button type="submit" class="btn btn-default">
           Assign yourself
         </button>
       </div>
@@ -87,19 +81,19 @@
   <form method="POST"
         action="{{ url_for('api.case_status', institute_id=institute.id, case_id=case.display_name) }}">
 
-    <div class="btn-group">
-      <button type="submit" class="btn btn-default btn-sm">
+    <div class="nav-sidebar-item clearfix btn-group">
+      <button type="submit" class="btn btn-default">
         <span class="glyphicon glyphicon-tag"></span>
       </button>
-      <button type="submit" class="btn btn-default btn-sm">
+      <button type="submit" class="btn btn-default">
         {{ case.status|capitalize }}
       </button>
       {% if case.status != 'archived' %}
-        <button type="submit" class="btn btn-warning btn-sm" name="status" value="archived" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
+        <button type="submit" class="btn btn-warning" name="status" value="archived" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
           Archive
         </button>
       {% else %}
-        <button type="submit" class="btn btn-default btn-sm" name="status" value="active">
+        <button type="submit" class="btn btn-default" name="status" value="active">
           Unarchive
         </button>
       {% endif %}
@@ -109,21 +103,21 @@
 
 {% macro research(case) %}
   {% if case.research_requested %}
-    <div class="btn-group">
-      <div class="btn btn-default btn-sm" disabled>
+    <div class="nav-sidebar-item clearfix btn-group">
+      <div class="btn btn-default" disabled>
         <span class="glyphicon glyphicon-education"></span>
       </div>
-      <div class="btn btn-default btn-sm" disabled>
+      <div class="btn btn-default" disabled>
         <i>Research pending</i>
       </div>
     </div>
   {% else %}
-    <div class="btn-group" v-on:click="showModal">
-      <div class="btn btn-default btn-sm">
+    <div class="nav-sidebar-item clearfix btn-group" v-on:click="showModal">
+      <div class="btn btn-default">
         <span class="glyphicon glyphicon-education"></span>
       </div>
-      <div class="btn btn-default btn-sm">
-        Request research list
+      <div class="btn btn-default">
+        Request research
       </div>
     </div>
   {% endif %}
@@ -131,38 +125,38 @@
 
 {% macro rerun(case) %}
   {% if case.rerun_requested %}
-    <div class="btn-group">
-      <div class="btn btn-default btn-sm" disabled>
+    <div class="nav-sidebar-item clearfix btn-group">
+      <div class="btn btn-default" disabled>
         <span class="glyphicon glyphicon-retweet"></span>
       </div>
-      <div class="btn btn-default btn-sm" disabled>
+      <div class="btn btn-default" disabled>
         <i>Rerun pending</i>
       </div>
     </div>
   {% else %}
-    <div class="btn-group" v-on:click="showSecondModal">
-      <div class="btn btn-default btn-sm">
+    <div class="nav-sidebar-item clearfix btn-group" v-on:click="showSecondModal">
+      <div class="btn btn-default">
         <span class="glyphicon glyphicon-retweet"></span>
       </div>
-      <div class="btn btn-default btn-sm">Request rerun</div>
+      <div class="btn btn-default">Request rerun</div>
     </div>
   {% endif %}
 {% endmacro %}
 
 {% macro archive(archive_data) %}
   {% if archive.status == 'past' %}
-    <div class="btn-group">
-      <div class="btn btn-default btn-sm" disabled>
+    <div class="nav-sidebar-item clearfix btn-group">
+      <div class="btn btn-default" disabled>
         <span class="glyphicon glyphicon-trash"></span>
       </div>
-      <div class="btn btn-default btn-sm" disabled>Archived</div>
+      <div class="btn btn-default" disabled>Archived</div>
     </div>
   {% elif archive.status == 'long' %}
-    <div class="btn-group">
-      <div class="btn btn-default btn-sm" disabled>
+    <div class="nav-sidebar-item clearfix btn-group">
+      <div class="btn btn-default" disabled>
         <span class="glyphicon glyphicon-trash"></span>
       </div>
-      <div class="btn btn-default btn-sm" disabled>
+      <div class="btn btn-default" disabled>
         Will be archived: {{ archive.date }}
       </div>
     </div>
@@ -178,21 +172,21 @@
       <input type="hidden" name="{{ sample_id }}" value="{{ display_name }}"></input>
     {% endfor %}
 
-    <div class="btn-group">
-      <div class="btn btn-default btn-sm">
+    <div class="nav-sidebar-item clearfix btn-group">
+      <div class="btn btn-default">
         <span class="glyphicon glyphicon-ok-sign"></span>
       </div>
-      <div type="submit" class="btn btn-default btn-sm">Coverage report</div>
+      <div type="submit" class="btn btn-default">Coverage report</div>
     </div>
   </form>
 {% endmacro %}
 
 {% macro rank_model(case) %}
-  <div class="btn-group">
-    <div class="btn btn-default btn-sm" disabled>
+  <div class="nav-sidebar-item clearfix btn-group">
+    <div class="btn btn-default" disabled>
       <span class="glyphicon glyphicon-barcode"></span>
     </div>
-    <div class="btn btn-default btn-sm" disabled>
+    <div class="btn btn-default" disabled>
       Rank model: {{ case.rank_model_version }}
     </div>
   </div>
@@ -202,11 +196,11 @@
   {% if case.owner == institute.id %}
     {% if collaborators %}
       <form method="POST" action="{{ url_for('core.share_case', institute_id=institute.id, case_id=case_id) }}">
-        <div class="btn-group">
-          <div class="btn btn-default btn-sm" disabled>
+        <div class="nav-sidebar-item clearfix btn-group">
+          <div class="btn btn-default" disabled>
             <span class="glyphicon glyphicon-cog"></span>
           </div>
-          <button type="submit" class="btn btn-default btn-sm">Share</button>
+          <button type="submit" class="btn btn-default">Share</button>
           <select class="form-control" name="collaborator">
             {% for collab_id in collaborators %}
               <option value="{{ collab_id }}">{{ collab_id }}</option>
@@ -218,11 +212,11 @@
     {% if case.o_collaborators %}
       <form method="POST" action="{{ url_for('core.share_case', institute_id=institute.id, case_id=case_id) }}">
         <input type="hidden" name="revoke" />
-        <div class="btn-group">
-          <div class="btn btn-default btn-sm" disabled>
+        <div class="nav-sidebar-item clearfix btn-group">
+          <div class="btn btn-default" disabled>
             <span class="glyphicon glyphicon-cog"></span>
           </div>
-          <button type="submit" class="btn btn-default btn-sm">
+          <button type="submit" class="btn btn-default">
             Revoke access
           </button>
           <select class="form-control" name="collaborator">

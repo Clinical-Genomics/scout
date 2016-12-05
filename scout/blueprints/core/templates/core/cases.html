@@ -8,64 +8,93 @@
   </li>
 {% endblock %}
 
-{% block content %}
-  <div class="container-fluid">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        {{ search_form() }}
-      </div>
+{% block content_main %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      {{ search_form() }}
     </div>
-
-    {% for group_id, case_group in cases.items() %}
-      <h4>{{ group_id|capitalize }}</h4>
-      <div class="panel panel-default">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th class="col-xs-4">Case</th>
-              <th class="col-xs-3">Analysis date</th>
-              <th class="col-xs-2">Link</th>
-              <th class="col-xs-2">Sequencing</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for case in case_group %}
-              {{ case_row(case) }}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endfor %}
-
-    <div class="panel panel-default">
-      <div class="panel-body text-center">
-        Found <strong>{{ found_cases }}</strong> cases
-      </div>
+    <div class="panel-footer text-center">
+      Found <strong>{{ found_cases }}</strong> cases
     </div>
   </div>
+
+  {% if prio_cases.first() %}
+    <div class="panel panel-default">
+      <table class="table table-hover">
+        <thead>
+          <tr class="active">
+            <th class="col-xs-4">Case</th>
+            <th class="col-xs-2">Status</th>
+            <th class="col-xs-2">Analysis date</th>
+            <th class="col-xs-2">Link</th>
+            <th class="col-xs-2">Sequencing</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for case in prio_cases %}
+            {{ case_row(case) }}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  <div class="panel panel-default">
+    <table class="table table-hover">
+      <thead>
+        <tr class="active">
+          <th class="col-xs-4">Case</th>
+          <th class="col-xs-2">Status</th>
+          <th class="col-xs-2">Analysis date</th>
+          <th class="col-xs-2">Link</th>
+          <th class="col-xs-2">Sequencing</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for group_id, case_group in cases %}
+          {% for case in case_group %}
+            {{ case_row(case) }}
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script>
+    $(function () {
+      $('table').stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+    })
+  </script>
 {% endblock %}
 
 {% macro search_form() %}
   <form action="{{ url_for('core.cases', institute_id=institute_id) }}" method="GET" accept-charset="utf-8">
-    <div class="form-group">
-      <div class="row">
-        <div class="col-xs-10">
-          <div class="input-group">
-            <span class="input-group-addon">
-              <span class="glyphicon glyphicon-search"></span>
-            </span>
-            <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"></input>
-          </div>
-        </div>
-        <div class="col-xs-2">
-          <button type="submit" class="form-control">Search</input>
+    <div class="row">
+      <div class="col-md-8 col-xs-8">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-search"></span>
+          </span>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"></input>
         </div>
       </div>
-    </div>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
-      </label>
+      <div class="col-md-2 col-xs-4">
+        <button type="submit" class="form-control">Search</input>
+      </div>
+      <div class="col-md-2 col-xs-12">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
+          </label>
+        </div>
+      </div>
     </div>
   </form>
 {% endmacro %}
@@ -82,6 +111,7 @@
         </span>
       {% endif %}
     </td>
+    <td><span class="label label-info">{{ case.status }}</span></td>
     <td>
       {{ case.analysis_date.split()|first }}
       {% if case.is_rerun %}

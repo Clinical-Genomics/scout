@@ -12,6 +12,7 @@ from housekeeper.store import api
 import query_phenomizer
 
 from scout.models import Case, Variant
+from scout.models.case import STATUS as CASE_STATUSES
 from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb, housekeeper
 from scout.utils.helpers import templated, validate_user
@@ -60,19 +61,18 @@ def cases(institute_id):
     query = request.args.get('query')
     skip_assigned = request.args.get('skip_assigned')
     institute = validate_user(current_user, institute_id)
-    case_groups = {}
     case_models = store.cases(collaborator=institute_id, query=query,
                               skip_assigned=skip_assigned)
-    for case_model in case_models:
-        if case_model.status not in case_groups:
-            case_groups[case_model.status] = []
-        case_groups[case_model.status].append(case_model)
+    prio_cases = case_models.filter(status=CASE_STATUSES[0])
+    case_groups = []
+    for case_status in CASE_STATUSES[1:]:
+        case_groups.append((case_status, case_models.filter(status=case_status)))
 
     missed_cutoff = datetime.datetime(2016, 2, 19)
     return dict(institute=institute, institute_id=institute_id,
                 cases=case_groups, found_cases=len(case_models), query=query,
                 skip_assigned=skip_assigned, severe_so_terms=SEVERE_SO_TERMS,
-                missed_cutoff=missed_cutoff)
+                missed_cutoff=missed_cutoff, prio_cases=prio_cases)
 
 
 @core.route('/<institute_id>/<case_id>')
@@ -375,7 +375,7 @@ def upload_gene_list():
 
 @core.route('/<institute_id>/<case_id>/<variant_type>',
             methods=['GET', 'POST'])
-@templated('variants.html')
+@templated('core/variants.html')
 @login_required
 def variants(institute_id, case_id, variant_type):
     """View all variants for a single case."""
@@ -467,7 +467,7 @@ def variants(institute_id, case_id, variant_type):
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
-@templated('variant.html')
+@templated('core/variant.html')
 @login_required
 def variant(institute_id, case_id, variant_id):
     """View a single variant in a single case."""

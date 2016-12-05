@@ -1,3 +1,97 @@
+body {
+    padding-top: 50px;
+}
+
+.modal-backdrop {
+    z-index: 1020;
+}
+
 .no-padding {
     padding: 0;
+}
+
+.popover {
+    max-width: none;
+}
+
+.popover-content > table {
+    margin-bottom: 0;
+}
+
+.main {
+    padding-top: 20px;
+}
+
+.main>.nav-pills {
+    margin-bottom: 20px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+}
+
+.nav-sidebar {
+    margin-right: -21px;
+    margin-bottom: 20px;
+    margin-left: -20px;
+}
+
+.nav-sidebar-item {
+    padding: 5px 15px;
+    display: block;
+}
+
+/* Custom theme */
+.navbar-inverse {
+    background-color: #00bcd4;
+    border-color: rgb(0, 153, 172);
+}
+
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-text,
+.navbar-inverse .navbar-nav>li>a {
+    color: #fff;
+}
+
+@media (max-width: 767px) {
+    .navbar-inverse .navbar-nav .open .dropdown-menu>li>a {
+        color: #fff;
+    }
+}
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:focus,
+.navbar-inverse .navbar-nav>.active>a:hover,
+.navbar-inverse .navbar-nav>.open>a,
+.navbar-inverse .navbar-nav>.open>a:focus,
+.navbar-inverse .navbar-nav>.open>a:hover {
+    background-color: rgb(0, 171, 193);
+}
+
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+    border-color: rgb(0, 153, 172);
+}
+
+.navbar-inverse .navbar-toggle {
+    border-color: rgb(0, 153, 172);
+}
+
+.navbar-inverse .navbar-toggle:focus, .navbar-inverse .navbar-toggle:hover {
+    background-color: #00bcd4;
+}
+
+.panel-heading {
+    padding: 5px 10px;
+    font-weight: 500;
 }

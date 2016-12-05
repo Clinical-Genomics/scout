@@ -1,45 +1,64 @@
 {% extends "core/layout.html" %}
 {% from "core/case/action-bar.html" import action_bar %}
+{% from "core/utils.html" import comments_panel %}
+
+{% block top_nav %}
+  <li>
+    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+{% endblock %}
 
 {% block content %}
   <div class="container-fluid">
-    {{ action_bar(institute, case, archive, sample_map, collaborators) }}
-
-    {% if archive.status in ('before', 'close') %}
-      <div class="row">
-        <div class="col-xs-12">{{ postpone_btn() }}</div>
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+        {{ action_bar(institute, case, archive, sample_map, collaborators) }}
       </div>
-    {% endif %}
 
-    {{ variant_buttons() }}
-    {{ matching_list() }}
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        {% if archive.status in ('before', 'close') %}
+          <div class="row">
+            <div class="col-xs-12">{{ postpone_btn() }}</div>
+          </div>
+        {% endif %}
 
-    <div class="row">
-      <div class="col-md-4">{{ individuals_table() }}</div>
-      <div class="col-md-4">{{ pedigree_panel() }}</div>
-      <div class="col-md-4">{{ synopsis_panel() }}</div>
-    </div>
+        {{ variant_buttons() }}
+        {{ matching_list() }}
 
-    <div class="row">
-      <div class="col-md-4">{{ candidates_list() }}</div>
-      <div class="col-md-4">{{ causatives_list() }}</div>
-      <div class="col-md-4">{{ diagnosis_panel() }}</div>
-    </div>
+        <div class="row">
+          <div class="col-md-4">{{ individuals_table() }}</div>
+          <div class="col-md-4">{{ pedigree_panel() }}</div>
+          <div class="col-md-4">{{ synopsis_panel() }}</div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-4">{{ phenotype_groups_panel() }}</div>
-      <div class="col-md-4">{{ phenotypes_panel() }}</div>
-      <div class="col-md-4">{{ hpo_genelist_panel() }}</div>
-    </div>
+        <div class="row">
+          <div class="col-md-4">{{ candidates_list() }}</div>
+          <div class="col-md-4">{{ causatives_list() }}</div>
+          <div class="col-md-4">{{ diagnosis_panel() }}</div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-4">{{ comments_panel() }}</div>
-      <div class="col-md-4">{{ comment_input_panel() }}</div>
-      <div class="col-md-4">{{ genepanels_table() }}</div>
-    </div>
+        <div class="row">
+          <div class="col-md-4">{{ phenotype_groups_panel() }}</div>
+          <div class="col-md-4">{{ phenotypes_panel() }}</div>
+          <div class="col-md-4">{{ hpo_genelist_panel() }}</div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-12">{{ activity_panel() }}</div>
+        <div class="row">
+          <div class="col-md-5">{{ comments_panel(institute, case, current_user, case_comments|reverse) }}</div>
+          <div class="col-md-7">{{ genepanels_table() }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">{{ activity_panel() }}</div>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
@@ -306,10 +325,10 @@
 {% macro diagnosis_form(type) %}
   <form action="{{ url_for('core.case_diagnosis', institute_id=institute.id, case_id=case.display_name) }}" method="POST">
     <div class="row">
-      <div class="col-xs-9">
+      <div class="col-xs-8">
         <input class="form-control" name="omim_id" placeholder="OMIM:XXX" pattern="OMIM:[0-9]+">
       </div>
-      <div class="col-xs-3">
+      <div class="col-xs-4">
         <button class="btn btn-default form-control" type="submit" name="{{ type }}">
           Add
         </button>
@@ -335,7 +354,7 @@
                                case_id=case.display_name,
                                is_group='yes') }}">
         <div class="row">
-          <div class="col-xs-9">
+          <div class="col-xs-8">
             <select class="form-control" name="hpo_term">
               <option>Add HPO group...</option>
               {% for hpo_id, group in hpo_groups.iteritems() %}
@@ -345,7 +364,7 @@
               {% endfor %}
             </select>
           </div>
-          <div class="col-xs-3">
+          <div class="col-xs-4">
             <button class="btn btn-default form-control" type="submit">Add</button>
           </div>
         </div>
@@ -430,62 +449,6 @@
         <li class="list-group-item">No gene list generated</li>
       {% endfor %}
     </ul>
-  </div>
-{% endmacro %}
-
-{% macro comments_panel() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Comments</div>
-    <ul class="list-group">
-      {% for comment in case_comments|reverse %}
-        <li class="list-group-item">
-          <div class="row">
-            <div class="col-xs-12">{{ comment.content }}</div>
-          </div>
-          <div class="row">
-            <div class="col-xs-12">
-              <form method="POST"
-                    action="{{ url_for('api.delete_event',
-                                       institute_id=institute.internal_id,
-                                       case_id=case.display_name,
-                                       event_id=comment.id) }}">
-                <small>
-                  <br>
-                  <strong>{{ comment.author.name }}</strong>
-                  on {{ comment.created_at.date() }}
-                  {% if comment.created_at < case.updated_at %}
-                    <span class="label label-default">OLD</span>
-                  {% endif %}
-                </small>
-                {% if comment.author.id == current_user.id %}
-                  <div class="pull-right">
-                    <button class="btn btn-link btn-sm no-padding" type="submit">
-                      <span class="glyphicon glyphicon-remove"></span>
-                    </button>
-                  </div>
-                {% endif %}
-              </form>
-            </div>
-          </div>
-        </li>
-      {% else %}
-        <li class="list-group-item">No case comments yet</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endmacro %}
-
-{% macro comment_input_panel() %}
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <form action="{{ url_for('api.create_event', institute_id=institute_id, case_id=case_id) }}" method="POST">
-        <input type="hidden" name="link" value="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-        <div class="form-group">
-          <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
-        </div>
-        <button class="btn btn-default form-control" type="submit">Comment</button>
-      </form>
-    </div>
   </div>
 {% endmacro %}
 

@@ -6,7 +6,7 @@ from flask_login import login_required
 from scout.admin import UserModelView
 from scout.extensions import admin
 from scout.models import (User, Institute, Variant, Whitelist, Case, GenePanel,
-                          Event)
+                          Event, HgncGene)
 from scout.utils.helpers import templated
 
 user = Blueprint('profile', __name__, template_folder='templates')
@@ -35,6 +35,7 @@ admin.add_view(ModelView(Institute))
 admin.add_view(CaseView(Case))
 admin.add_view(VariantView(Variant))
 admin.add_view(VariantView(GenePanel))
+admin.add_view(VariantView(HgncGene))
 admin.add_view(VariantView(Event))
 
 

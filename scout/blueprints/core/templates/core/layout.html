@@ -4,20 +4,61 @@
   {{ super() }}
 
   <link rel="stylesheet"
-        href="{{ url_for('core.static', filename='simplex.min.css') }}">
-  <link rel="stylesheet"
         href="{{ url_for('core.static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
 {% endblock %}
 
 {% block navbar %}
-  <nav class="navbar navbar-inverse">
+  <nav class="navbar navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
+        <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
         <a class="navbar-brand" href="{{ url_for('frontend.index') }}">Scout</a>
       </div>
-      <ul class="nav navbar-nav navbar-right">
-        {% block top_nav %}{% endblock %}
-      </ul>
+
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+          {% block top_nav %}{% endblock %}
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          {% block top_nav_right %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="#" onclick="document.querySelector('#hidden-logout').click()">
+                    Logout
+                  </a>
+                  <form action="{{ url_for('login.logout') }}" method="POST">
+                    <button type="submit" id="hidden-logout" hidden></button>
+                  </form>
+                </li>
+                {% if current_user.has_role('admin') %}
+                  <li>
+                    <a href="{{ url_for('admin.index') }}">Admin</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </li>
+          {% endblock %}
+        </ul>
+      </div>
     </div>
   </nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid main">
+    {% block content_main %}{% endblock %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='build.js') }}"></script>
 {% endblock %}
