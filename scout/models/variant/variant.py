@@ -19,7 +19,6 @@ from scout.models import Event
 
 ######## These are defined terms for different categories ########
 
-
 class Compound(EmbeddedDocument):
     # This must be the document_id for this variant
     variant = StringField(required=True)
@@ -39,6 +38,11 @@ class Compound(EmbeddedDocument):
                 pass
         return self._variant_obj
 
+class Clinsig(EmbeddedDocument):
+    value = IntField()
+    accession = StringField()
+    revstat = StringField()
+    
 
 class GTCall(EmbeddedDocument):
     sample_id = StringField()
@@ -114,8 +118,7 @@ class Variant(Document):
     local_frequency = FloatField()
     # Predicted deleteriousness:
     cadd_score = FloatField()
-    clnsig = IntField()
-    clnsigacc = ListField(StringField())
+    clnsig = ListField(EmbeddedDocumentField(Clinsig))
     spidex = FloatField()
 
     # Callers

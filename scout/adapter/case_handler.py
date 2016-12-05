@@ -136,7 +136,7 @@ class CaseHandler(object):
                 Q(display_name=case_id)
             ))
         except DoesNotExist:
-            logger.warning("Could not find case {0}".format(case_id))
+            logger.debug("Could not find case {0}".format(case_id))
             return None
 
     def case_ind(self, ind_id):
@@ -152,14 +152,13 @@ class CaseHandler(object):
             case_id(str)
 
         """
-        logger.info("Fetch case {0} from institute {1}".format(
-            case_id, institute_id))
-
+        
         case_obj = self.case(institute_id, case_id)
         if case_obj:
             logger.info("Deleting case {0}".format(case_obj.case_id))
             case_obj.delete()
             logger.debug("Case deleted")
+            
             return case_obj
             # TODO Add event for deleting case?
         else:

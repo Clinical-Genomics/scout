@@ -3,7 +3,7 @@ import logging
 
 import click
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @click.command()
@@ -32,14 +32,14 @@ def cases(context, institute, reruns, finished, delete, case_id):
     
     if delete:
         if not case_id:
-            logger.warning("Please specify the id of the case that should be "
+            click.echo("Please specify the id of the case that should be "
                            "deleted with flag '-c/--case_id'.")
-            ctx.abort()
+            context.abort()
 
         if not institute:
-            logger.warning("Please specify the owner of the case that should be "
+            click.echo("Please specify the owner of the case that should be "
                            "deleted with flag '-i/--institute'.")
-            ctx.abort()
+            context.abort()
         
         logger.info("Running deleting case {0}".format(case_id))
         
@@ -49,12 +49,11 @@ def cases(context, institute, reruns, finished, delete, case_id):
         )
 
         if case:
-            logger.info("Delete the clinical variants for case {0}".format(
-                        case.case_id))
             adapter.delete_variants(case_id=case.case_id, variant_type='clinical')
-            logger.info("Delete the research variants for case {0}".format(
-                        case.case_id))
             adapter.delete_variants(case_id=case.case_id, variant_type='research')
+        else:
+            logger.warning("Case does not exist in database")
+            context.abort()
         
     else:
         models = adapter.cases(collaborator=institute, reruns=reruns,

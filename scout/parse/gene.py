@@ -33,10 +33,11 @@ def parse_genes(variant):
     for transcript in transcripts:
         hgnc_id = transcript['hgnc_id']
 
-        if hgnc_id in genes_to_transcripts:
-            genes_to_transcripts[hgnc_id].append(transcript)
-        else:
-            genes_to_transcripts[hgnc_id] = [transcript]
+        if hgnc_id:
+            if hgnc_id in genes_to_transcripts:
+                genes_to_transcripts[hgnc_id].append(transcript)
+            else:
+                genes_to_transcripts[hgnc_id] = [transcript]
 
     # We need to find out the most severe consequence in all transcripts
     # and save in what transcript we found it
