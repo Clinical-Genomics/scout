@@ -1,6 +1,10 @@
 {% extends "core/layout.html" %}
-{% from "core/case/action-bar.html" import action_bar %}
-{% from "core/utils.html" import comments_panel %}
+{% from "core/case/action-bar.html" import action_bar, research_modal, rerun_modal %}
+{% from "core/utils.html" import comments_panel, activity_panel %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
+{% endblock %}
 
 {% block top_nav %}
   <li>
@@ -19,7 +23,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-3 col-md-2 sidebar">
-        {{ action_bar(institute, case, archive, sample_map, collaborators) }}
+        {{ action_bar(institute, case, sample_map, collaborators) }}
       </div>
 
       <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -40,8 +44,8 @@
 
         <div class="row">
           <div class="col-md-4">{{ candidates_list() }}</div>
-          <div class="col-md-4">{{ causatives_list() }}</div>
           <div class="col-md-4">{{ diagnosis_panel() }}</div>
+          <div class="col-md-4">{{ comments_panel(institute, case, current_user, case_comments|reverse) }}</div>
         </div>
 
         <div class="row">
@@ -51,16 +55,18 @@
         </div>
 
         <div class="row">
-          <div class="col-md-5">{{ comments_panel(institute, case, current_user, case_comments|reverse) }}</div>
-          <div class="col-md-7">{{ genepanels_table() }}</div>
+          <div class="col-md-12">{{ genepanels_table() }}</div>
         </div>
 
         <div class="row">
-          <div class="col-md-12">{{ activity_panel() }}</div>
+          <div class="col-md-12">{{ activity_panel(case_events|reverse) }}</div>
         </div>
       </div>
     </div>
   </div>
+
+  {{ research_modal(institute, case) }}
+  {{ rerun_modal(institute, case) }}
 {% endblock %}
 
 {% macro postpone_btn() %}
@@ -72,33 +78,19 @@
 {% endmacro %}
 
 {% macro variant_buttons() %}
-  <ul class="nav nav-pills nav-justified">
-    <li>
-      <a href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
-    </li>
-    {% if case.has_svvariants %}
-      <li>
-        <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}">
-          Clinical SV variants
-        </a>
-      </li>
-    {% endif %}
-    {% if case.is_research %}
-      <li>
-        <a href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}">
-          Research variants
-        </a>
-      </li>
+  <div class="form-group">
+    <div class="btn-group btn-group-justified">
+      <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
 
-      {% if case.has_svvariants %}
-        <li>
-          <a href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}">
-            Research SV variants
-          </a>
-        </li>
+      <a class="btn btn-default" href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}">Clinical SV variants</a>
+
+      {% if case.is_research %}
+        <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
+
+        <a class="btn btn-default" href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}">Research SV variants</a>
       {% endif %}
-    {% endif %}
-  </ul>
+    </div>
+  </div>
 {% endmacro %}
 
 {% macro matching_list() %}
@@ -170,6 +162,36 @@
 
 {% macro candidates_list() %}
   <div class="panel panel-default">
+    <div class="panel-heading">Marked as causative</div>
+    <ul class="list-group">
+      {% for variant in case.causatives %}
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-xs-8">
+              <span class="glyphicon glyphicon-ok-circle"></span>
+              <a href="{{ url_for('core.variant',
+                                  institute_id=institute.id,
+                                  case_id=case.display_name,
+                                  variant_id=variant.id) }}">
+                {{ variant.hgnc_symbols|join(', ') }}
+              </a>
+              {% if variant.sanger_ordered %}
+                <span class="label label-success">Sanger ordered</span>
+              {% endif %}
+            </div>
+            <div class="col-xs-4">
+              {{ remove_form(url_for('core.unmark_causative',
+                                     institute_id=institute.internal_id,
+                                     case_id=case.display_name,
+                                     variant_id=variant.id)) }}
+            </div>
+          </div>
+        </li>
+      {% else %}
+        <li class="list-group-item">No variants marked causative.</li>
+      {% endfor %}
+    </ul>
+
     <div class="panel-heading">Stong candidates</div>
     <table class="table table-hover">
       <colgroup>
@@ -243,40 +265,6 @@
       </button>
     </div>
   </form>
-{% endmacro %}
-
-{% macro causatives_list() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Marked as causative</div>
-    <ul class="list-group">
-      {% for variant in case.causatives %}
-        <li class="list-group-item">
-          <div class="row">
-            <div class="col-xs-8">
-              <span class="glyphicon glyphicon-ok-circle"></span>
-              <a href="{{ url_for('core.variant',
-                                  institute_id=institute.id,
-                                  case_id=case.display_name,
-                                  variant_id=variant.id) }}">
-                {{ variant.hgnc_symbols|join(', ') }}
-              </a>
-              {% if variant.sanger_ordered %}
-                <span class="label label-success">Sanger ordered</span>
-              {% endif %}
-            </div>
-            <div class="col-xs-4">
-              {{ remove_form(url_for('core.unmark_causative',
-                                     institute_id=institute.internal_id,
-                                     case_id=case.display_name,
-                                     variant_id=variant.id)) }}
-            </div>
-          </div>
-        </li>
-      {% else %}
-        <li class="list-group-item">No variants marked causative.</li>
-      {% endfor %}
-    </ul>
-  </div>
 {% endmacro %}
 
 {% macro diagnosis_panel() %}
@@ -495,23 +483,5 @@
         {% endfor %}
       </tbody>
     </table>
-  </div>
-{% endmacro %}
-
-{% macro activity_panel() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Activity</div>
-    <ul class="list-group">
-      {% for event in case_events|reverse %}
-        <li class="list-group-item">
-          <strong>{{ event.author.name }}</strong>
-          {{ event.display_info }}
-          <a href="{{ event.link }}">{{ event.subject }}</a>
-          at <span class="timestamp">{{ event.created_at.date() }}</span>
-        </li>
-      {% else %}
-        <li class="list-group-item">No activity yet</li>
-      {% endfor %}
-    </ul>
   </div>
 {% endmacro %}

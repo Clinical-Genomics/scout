@@ -1,5 +1,9 @@
 {% extends "core/layout.html" %}
 
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - Cases
+{% endblock %}
+
 {% block top_nav %}
   <li class="active">
     <a href="{{ url_for('core.cases', institute_id=institute_id) }}">

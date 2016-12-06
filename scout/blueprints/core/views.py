@@ -26,7 +26,7 @@ core = Blueprint('core', __name__, template_folder='templates',
 
 
 @core.route('/institutes')
-@templated('institutes.html')
+@templated('core/institutes.html')
 @login_required
 def institutes():
     """View all institutes that the current user belongs to."""
@@ -36,7 +36,7 @@ def institutes():
         institute = institute_objs[0]
         return redirect(url_for('.cases', institute_id=institute.internal_id))
     else:
-        return dict(institutes=institute_objs)
+        return dict(institutes=institute_objs, Case=Case)
 
 
 @core.route('/institutes/<institute_id>/settings', methods=['POST'])
@@ -488,7 +488,7 @@ def variant(institute_id, case_id, variant_id):
 
     # coverage link for gene
     coverage_links = genecov_links(case_model.individuals,
-                                   variant_model.hgnc_symbols)
+                                   variant_model.genes)
 
     prev_variant = store.previous_variant(document_id=variant_id)
     next_variant = store.next_variant(document_id=variant_id)

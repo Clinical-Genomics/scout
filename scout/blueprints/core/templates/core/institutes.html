@@ -1,0 +1,27 @@
+{% extends "core/layout.html" %}
+
+{% block title %}
+  {{ super() }} - Institutes
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="active">
+    <span class="navbar-text">Institutes</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  <div class="panel panel-default">
+    <ul class="list-group">
+      {% for institute in institutes %}
+        <li class="list-group-item">
+          <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}">
+            {{ institute.display_name }}
+          </a>
+          <span class="badge">{{ institute.cases(Case).count() }} cases</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

@@ -101,3 +101,21 @@
     </tbody>
   </table>
 {% endmacro %}
+
+{% macro activity_panel(events) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Activity</div>
+    <ul class="list-group">
+      {% for event in events %}
+        <li class="list-group-item">
+          <strong>{{ event.author.name }}</strong>
+          {{ event.display_info }}
+          <a href="{{ event.link }}">{{ event.subject }}</a>
+          at <span class="timestamp">{{ event.created_at.date() }}</span>
+        </li>
+      {% else %}
+        <li class="list-group-item">No activity yet</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}

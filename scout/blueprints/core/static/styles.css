@@ -2,10 +2,6 @@ body {
     padding-top: 50px;
 }
 
-.modal-backdrop {
-    z-index: 1020;
-}
-
 .no-padding {
     padding: 0;
 }
@@ -31,7 +27,6 @@ body {
     top: 51px;
     bottom: 0;
     left: 0;
-    z-index: 1000;
     display: block;
     padding: 20px;
     overflow-x: hidden;
@@ -52,6 +47,11 @@ body {
 }
 
 /* Custom theme */
+/* push the hamburger-menu icon to the left */
+.navbar-left {
+    margin-left: -15px;
+}
+
 .navbar-inverse {
     background-color: #00bcd4;
     border-color: rgb(0, 153, 172);
@@ -91,7 +91,22 @@ body {
     background-color: #00bcd4;
 }
 
+.navbar-btn,
+.navbar-btn:hover,
+.navbar-btn:active {
+    margin-right: 5px;
+    border-color: rgb(0, 153, 172);
+}
+
 .panel-heading {
     padding: 5px 10px;
     font-weight: 500;
+}
+
+.table-fixed {
+    table-layout: fixed;
+}
+
+.border-top {
+    border-top: 1px solid #ddd;
 }
