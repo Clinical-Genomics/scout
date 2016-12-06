@@ -248,23 +248,26 @@ class CaseHandler(object):
 
         return case
 
-    def gene_panel(self, panel_id, version):
+    def gene_panel(self, panel_id, version=None):
         """Fetch a gene panel.
 
         Args:
             panel_id (str): unique id for the panel
-            version (str): version of the panel
+            version (str): version of the panel. If 'None' latest version will be returned 
 
         Returns:
             GenePanel: gene panel object
         """
-        try:
-            logger.debug("Fetch gene panel {0}, version {1} from database".format(
-                panel_id, version
-            ))
-            panel = GenePanel.objects.get(panel_name=panel_id, version=version)
-        except DoesNotExist:
-            return None
+        if version:
+            try:
+                logger.debug("Fetch gene panel {0}, version {1} from database".format(
+                    panel_id, version
+                ))
+                panel = GenePanel.objects.get(panel_name=panel_id, version=version)
+            except DoesNotExist:
+                panel = None
+        else:
+            panel = GenePanel.objects(panel_name=panel_id).order_by('-version').first()
 
         return panel
 

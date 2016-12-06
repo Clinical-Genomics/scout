@@ -14,6 +14,11 @@ import logging
 
 import click
 
+from scout.export.gene import export_genes
+from scout.export.transcript import export_transcripts
+from scout.export.variant import export_causatives
+from scout.export.panel import export_panels
+
 logger = logging.getLogger(__name__)
 
 @click.command()
@@ -31,76 +36,48 @@ logger = logging.getLogger(__name__)
                 is_flag=True,
                 help="Export all refseq transcripts from the database"
 )
+@click.option('--panel',
+                multiple=True,
+                help="Export gene panels to .bed format"
+)
 @click.pass_context
-def export(ctx, collaborator, genes, transcripts, gene_file):
+def export(ctx, collaborator, genes, transcripts, gene_file, panel):
     """
     Export variants from the mongo database.
     """
     logger.info("Running scout export")
     adapter = ctx.obj['adapter']
-    if genes:
-        # genes_in = set()
-        # if gene_file:
-        #     with open(gene_file, 'r') as f:
-        #         for line in f:
-        #             if not line.startswith('#'):
-        #                 hgnc_symbol = line.rstrip().split('\t')[0]
-        #                 genes_in.add(hgnc_symbol)
-        print("#Chrom\tStart\tEnd\tHgncSymbol\tHgncID")
-        for gene in adapter.all_genes():
-            gene_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
-            print(gene_string.format(
-                gene.chromosome,
-                gene.start,
-                gene.end,
-                gene.hgnc_symbol,
-                gene.hgnc_id
-            ))
     
-    elif transcripts:
-        print("#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID")
-        for gene in adapter.all_genes():
-            for transcript in gene.transcripts:
-                transcript_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}")
-                print(transcript_string.format(
-                    gene.chromosome,
-                    transcript.start,
-                    transcript.end,
-                    transcript.ensembl_transcript_id,
-                    transcript.refseq_id,
-                    gene.hgnc_symbol,
-                    gene.hgnc_id
-                ))
-    else:
-        # Store variants in a dictionary to avoid duplicated
-        causative_variants = {}
+    header = []
+    function = []
+    
+    if panel:
+        click.echo(panel)
+        export_panels(adapter, panel)
+    elif genes:
+        header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
+        function = export_genes(adapter)
 
-        vcf_header = [
+    elif transcripts:
+        header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
+        function = export_transcripts(adapter)
+    
+    else:
+        if not collaborator:
+            click.echo("Please provide a collaborator to export variants")
+            ctx.abort()
+        
+        header = [
             "##fileformat=VCFv4.2",
             "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
         ]
         
-        for line in vcf_header:
-            print(line)
-        
-        #put variants in a dict to get unique ones
-        variants = {}
-        for variant in adapter.get_causatives(institute_id=collaborator):
-            variant_id = '_'.join(variant.variant_id.split('_')[:-1])
-            variants[variant_id] = variant
-        
-        for variant_id in variants:
-            variant = variants[variant_id]
-            variant_line = [
-                variant.chromosome,
-                str(variant.position),
-                ';'.join(variant.db_snp_ids),
-                variant.reference,
-                variant.alternative,
-                str(variant.quality),
-                ';'.join(variant.filters),
-                '.',
-            ]
-            print('\t'.join(variant_line))
-            
+        function = export_causatives(adapter,collaborator)
+
+    for line in header:
+        print(line)
+    
+    for obj in function:
+        print(obj)
+    
     

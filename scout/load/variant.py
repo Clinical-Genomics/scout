@@ -55,7 +55,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     start_insertion = datetime.now()
     start_five_thousand = datetime.now()
     nr_variants = 0
-    nr_inserted = 0
+    nr_inserted  = 0
     try:
         
         for nr_variants, variant in enumerate(variants):
