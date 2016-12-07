@@ -33,7 +33,7 @@ def process_filters_form(form):
                                       form.hgnc_symbols.data[0].split(',')
                                       if x]
 
-    if isinstance(form.cadd_inclusive.data, unicode):
+    if isinstance(form.cadd_inclusive.data, text_type):
         if 'no' in form.cadd_inclusive.data:
             form.cadd_inclusive.data = 'no'
         else:
