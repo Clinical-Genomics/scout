@@ -102,7 +102,7 @@ class Case(Document):
         """Combine all gene ids for default gene panels."""
         distinct_genes = set()
         for panel in self.default_panel_objs():
-            distinct_genes.update(panel.genes)
+            distinct_genes.update(panel.gene_objects.keys())
         return distinct_genes
 
     @property

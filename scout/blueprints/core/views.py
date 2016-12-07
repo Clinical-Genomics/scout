@@ -143,7 +143,7 @@ def case(institute_id, case_id):
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
-@templated('gene-panel.html')
+@templated('core/gene-panel.html')
 @login_required
 def gene_panel(institute_id, case_id, panel_id):
     """Show the list of genes associated with a gene panel."""

@@ -68,6 +68,10 @@ body {
     margin-left: -20px;
 }
 
+.nav-sidebar > .active {
+    background-color: var(--bg-color);
+}
+
 .nav-sidebar-heading {
     padding: 15px;
     border-bottom: 1px solid var(--border-color);
