@@ -60,11 +60,10 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 variant_type=variant_type,
                 rank_results_header=rank_results_header
             )
-    except Exception as e:
-        logger.error(e.message)
+    except Exception as error:
         logger.info("Deleting inserted variants")
         delete_variants(adapter, case_obj, variant_type)
-        raise e
+        raise error
 
     adapter.add_variant_rank(case_obj, variant_type, category=category)
 
