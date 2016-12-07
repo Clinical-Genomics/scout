@@ -17,7 +17,7 @@ from scout.compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
-CLINSIG_OPTIONS = [('', '')] + CLINSIG_MAP.items()
+CLINSIG_OPTIONS = [('', '')] + list(CLINSIG_MAP.items())
 
 
 def process_filters_form(form):

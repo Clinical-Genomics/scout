@@ -1,14 +1,8 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %}
-  Scout
-{% endblock %}
+{% extends "layouts/base.html" %}
 
 {% block styles %}
   {{ super() }}
 
-  <link rel="stylesheet"
-        href="{{ url_for('core.static', filename='styles.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
 {% endblock %}
 
@@ -68,10 +62,4 @@
       </div>
     </div>
   </nav>
-{% endblock %}
-
-{% block content %}
-  <div class="container-fluid main">
-    {% block content_main %}{% endblock %}
-  </div>
 {% endblock %}
