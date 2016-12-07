@@ -23,24 +23,22 @@
   </div>
 
   {% if prio_cases.first() %}
-    <div class="panel panel-default">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th class="col-xs-4">Case</th>
-            <th class="col-xs-2">Status</th>
-            <th class="col-xs-2">Analysis date</th>
-            <th class="col-xs-2">Link</th>
-            <th class="col-xs-2">Sequencing</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for case in prio_cases %}
-            {{ case_row(case) }}
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <table class="table table-hover table-special">
+      <thead>
+        <tr>
+          <th class="col-xs-4">Case</th>
+          <th class="col-xs-2">Status</th>
+          <th class="col-xs-2">Analysis date</th>
+          <th class="col-xs-2">Link</th>
+          <th class="col-xs-2">Sequencing</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for case in prio_cases %}
+          {{ case_row(case) }}
+        {% endfor %}
+      </tbody>
+    </table>
   {% endif %}
 
   <table class="table table-hover table-special">

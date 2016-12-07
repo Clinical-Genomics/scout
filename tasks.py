@@ -39,12 +39,21 @@ def setup_test(context, email, name="Paul Anderson"):
     )
     adapter.add_institute(institute_obj)
     institute = adapter.institute(institute_id=institute_obj.internal_id)
+    # create user to test login
     Whitelist(email=email).save()
     user = User(email=email,
-                name=name,
+                name=' '.join(email.split('@')[0].split('.')),
                 roles=['admin'],
                 institutes=[institute])
     user.save()
+
+    # create user to test without login
+    Whitelist(email='paul.anderson@magnolia.com')
+    new_user = User(email='paul.anderson@magnolia.com',
+                    name='Paul T. Anderson',
+                    roles=['admin'],
+                    institutes=[institute])
+    new_user.save()
 
     hgnc_handle = open(hgnc_path, 'r')
     ensembl_handle = open(ensembl_transcript_path, 'r')

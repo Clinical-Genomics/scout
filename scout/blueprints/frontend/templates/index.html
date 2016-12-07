@@ -12,13 +12,16 @@
 
         <p><small>Version <strong>{{ version }}</strong></small></p>
 
-        <p>
-          {% if config.LOGIN_DISABLED %}
-            <a class="btn btn-primary btn-lg" href="{{ url_for('core.institutes') }}" class="landing-header-login">Go to scout</a>
-          {% else %}
-            <a class="btn btn-primary btn-lg" href="{{ url_for('login.signin') }}" class="landing-header-login">Sign in</a>
-          {% endif %}
-        </p>
+        {% if current_user.is_authenticated %}
+          <p>Welcome <strong>{{ current_user.name }}</strong></p>
+          <p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('core.institutes') }}">Go to Scout</a>
+          </p>
+        {% else %}
+          <p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('login.signin') }}">Sign in</a>
+          </p>
+        {% endif %}
       </header>
       <main>
         <img width="250" src="{{ url_for('frontend.static', filename='logo-scilifelab.png') }}">
