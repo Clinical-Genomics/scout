@@ -368,7 +368,7 @@
           <div class="col-xs-7">
             <select class="form-control" name="hpo_term">
               <option>Add HPO group...</option>
-              {% for hpo_id, group in hpo_groups.iteritems() %}
+              {% for hpo_id, group in hpo_groups.items() %}
                 <option value="{{ hpo_id }}">
                   {{ group.name }} ({{ group.abbr }})
                 </option>

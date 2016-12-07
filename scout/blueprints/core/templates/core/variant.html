@@ -341,7 +341,7 @@
           <td>
             <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">View alignment</a>
           </td>
-          {% for gene_id, link in coverage_links.iteritems() %}
+          {% for gene_id, link in coverage_links.items() %}
             <td>
               <a target="_blank" href="{{ link }}">{{ gene_id }}</a>
             </td>
