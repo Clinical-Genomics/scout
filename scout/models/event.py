@@ -66,7 +66,7 @@ VERBS_MAP = {
   "update_diagnosis": "updated diagnosis for",
 }
 
-VERBS = VERBS_MAP.keys()
+VERBS = list(VERBS_MAP.keys())
 
 
 class Event(Document):
