@@ -24,6 +24,8 @@ if not is_py2:
     iteritems = operator.methodcaller('items')
     iterkeys = operator.methodcaller('keys')
     itervalues = operator.methodcaller('values')
+    import urllib.parse
+    unquote = urllib.parse.unquote
 
 else:
     # Python 2
@@ -38,3 +40,5 @@ else:
     iteritems = operator.methodcaller('iteritems')
     iterkeys = operator.methodcaller('iterkeys')
     itervalues = operator.methodcaller('itervalues')
+    import urllib2
+    unquote = urllib2.unquote

@@ -13,7 +13,7 @@ from wtforms import widgets
 
 from scout.constants import (GENETIC_MODELS, SO_TERMS, FEATURE_TYPES,
                              CLINSIG_MAP)
-from scout._compat import text_type
+from scout.compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]

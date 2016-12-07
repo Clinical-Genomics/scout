@@ -3,15 +3,14 @@
 from __future__ import absolute_import, unicode_literals
 import dateutil
 import os
-import urllib2
 
 import arrow
-from flask import Flask, render_template, current_app, request
+from flask import Flask, render_template, current_app
 from jinja2 import is_undefined
 from werkzeug.utils import import_string
 
 from .settings import DevelopmentConfig
-from .extensions import babel
+from scout.compat import unquote
 
 
 class NoContextProcessorException(Exception):
@@ -235,4 +234,4 @@ class AppFactory(object):
         @self.app.template_filter()
         def url_decode(string):
             """Decode a string with encoded hex values."""
-            return urllib2.unquote(string)
+            return unquote(string)
