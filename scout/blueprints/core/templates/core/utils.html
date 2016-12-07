@@ -105,7 +105,7 @@
 {% macro activity_panel(events) %}
   <div class="panel panel-default">
     <div class="panel-heading">Activity</div>
-    <ul class="list-group">
+    <ul class="list-group list-group-scrollable">
       {% for event in events %}
         <li class="list-group-item">
           <strong>{{ event.author.name }}</strong>

@@ -26,7 +26,7 @@
     <div class="panel panel-default">
       <table class="table table-hover">
         <thead>
-          <tr class="active">
+          <tr>
             <th class="col-xs-4">Case</th>
             <th class="col-xs-2">Status</th>
             <th class="col-xs-2">Analysis date</th>
@@ -43,26 +43,36 @@
     </div>
   {% endif %}
 
-  <div class="panel panel-default">
-    <table class="table table-hover">
-      <thead>
-        <tr class="active">
-          <th class="col-xs-4">Case</th>
-          <th class="col-xs-2">Status</th>
-          <th class="col-xs-2">Analysis date</th>
-          <th class="col-xs-2">Link</th>
-          <th class="col-xs-2">Sequencing</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for group_id, case_group in cases %}
-          {% for case in case_group %}
-            {{ case_row(case) }}
-          {% endfor %}
+  <table class="table table-hover table-special">
+    <thead>
+      <tr>
+        <th class="col-xs-4">Case</th>
+        <th class="col-xs-2">Status</th>
+        <th class="col-xs-2">Analysis date</th>
+        <th class="col-xs-2">Link</th>
+        <th class="col-xs-2">Sequencing</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for group_id, case_group in cases %}
+        {% for case in case_group %}
+          {{ case_row(case) }}
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
+        {% for case in case_group %}
+          {{ case_row(case) }}
+        {% endfor %}
+        {% for case in case_group %}
+          {{ case_row(case) }}
+        {% endfor %}
+        {% for case in case_group %}
+          {{ case_row(case) }}
+        {% endfor %}
+        {% for case in case_group %}
+          {{ case_row(case) }}
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 
 {% block scripts %}

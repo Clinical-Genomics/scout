@@ -32,14 +32,17 @@
 
 {% block content_main %}
   <div class="row">
-    <div class="col-xs-12"></div>
+    <div class="col-xs-12">
+
+    </div>
   </div>
   <div class="row">
     <div class="col-xs-12">{{ matching_variants() }}</div>
   </div>
   <div class="row">
-    <div class="col-xs-6">{{ panel_summary() }}</div>
-    <div class="col-xs-6">{{ transcript_overview() }}</div>
+    <div class="col-xs-4">{{ panel_basics() }}</div>
+    <div class="col-xs-4">{{ panel_summary() }}</div>
+    <div class="col-xs-4">{{ transcript_overview() }}</div>
   </div>
   <div class="row">
     <div class="col-xs-3">{{ frequency_list() }}</div>
@@ -202,6 +205,64 @@
   </div>
 {% endmacro %}
 
+{% macro panel_basics() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Basics</div>
+    <table class="table table-bordered table-fixed">
+      <tbody>
+        <tr>
+          <td>
+            Position
+            <span class="pull-right"><strong>{{ variant.chromosome }}:{{ variant.position }}</strong></span>
+          </td>
+          <td>
+            Change
+            <span class="pull-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="table table-bordered">
+      <thead class="border-top">
+        <tr class="active">
+          <th>Gene</th>
+          <th>Region</th>
+          <th>Function</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          <tr>
+            <th>{{ gene.common.hgnc_symbol }}</th>
+            <td>{{ gene.region_annotation }}</td>
+            <td>{{ gene.functional_annotation }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="panel-body">
+      <form action="{{ url_for('api.manual_rank', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}" method="POST">
+        <label>Priority</label>
+        <div class="row">
+          <div class="col-xs-8">
+            <select name="manual_rank" class="form-control">
+              {% for rank in manual_rank_options %}
+                <option {% if rank == variant.manual_rank %}selected{% endif %}
+                        value="{{ rank }}">
+                  {{ rank }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button type="submit" class="btn btn-default form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endmacro %}
+
 {% macro panel_summary() %}
   <div class="panel panel-default">
     <div class="panel-heading">Summary</div>
@@ -227,7 +288,7 @@
       <tbody class="border-top">
         <tr>
           <td>
-            Matches OMIM inheritance
+            Matches OMIM inhert.
             {% if variant.is_matching_inheritance %}
               <span class="label label-success pull-right">Yes</span>
             {% else %}
@@ -274,13 +335,20 @@
       {% endif %}
     </ul>
     <div class="panel-heading">Gene coverage</div>
-    <ul class="list-group">
-      <li class="list-group-item">
-        {% for gene_id, link in coverage_links.iteritems() %}
-          <a target="_blank" href="{{ link }}">{{ gene_id }}</a>
-        {% endfor %}
-      </li>
-    </ul>
+    <table class="table table-bordered table-fixed">
+      <tbody>
+        <tr>
+          <td>
+            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">View alignment</a>
+          </td>
+          {% for gene_id, link in coverage_links.iteritems() %}
+            <td>
+              <a target="_blank" href="{{ link }}">{{ gene_id }}</a>
+            </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
   </div>
 {% endmacro %}
 

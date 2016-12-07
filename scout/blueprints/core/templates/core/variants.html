@@ -74,7 +74,7 @@
   <div class="table-responsive">
     <table class="table table-bordered table-hover">
       <thead>
-        <tr class="active">
+        <tr>
           <th class="col-xs-1" title="Rank position">Rank</th>
           <th title="Rank score">Score</th>
           <th title="Chromosome">Chr.</th>
@@ -185,8 +185,8 @@
     {# We might have some more variants not loaded #}
     <div class="container-fluid">
       {{ query_dict.update({'skip': current_batch})|default('', True) }}
-      <div class="well well-sm text-center">
-        <a href="{{ url_for('core.variants', institute_id=institute_id,
+      <div class="form-group text-center">
+        <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute_id,
                           case_id=case_id, variant_type=variant_type, **query_dict) }}">
           Next page
         </a>

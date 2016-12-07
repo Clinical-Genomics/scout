@@ -1,9 +1,8 @@
 {% macro action_bar(institute, case, sample_map, collaborators) %}
   <ul class="nav nav-sidebar">
-    <li>
-      <div class="nav-sidebar-item">
-        <h4>Case: {{ case.display_name }}</h4>
-      </div>
+    <li class="nav-sidebar-heading">
+      Case
+      <h4>{{ case.display_name }}</h4>
     </li>
     <li>{{ analysis_type(case) }}</li>
     <li>{{ status(institute, case) }}</li>

@@ -12,16 +12,24 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="panel panel-default">
-    <ul class="list-group">
-      {% for institute in institutes %}
-        <li class="list-group-item">
-          <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}">
-            {{ institute.display_name }}
-          </a>
-          <span class="badge">{{ institute.cases(Case).count() }} cases</span>
-        </li>
-      {% endfor %}
-    </ul>
-  </div>
+  {% for institute in institutes %}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-8">
+            <h3 class="panel-title">
+              <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}">
+                {{ institute.display_name }}
+              </a>
+            </h3>
+          </div>
+          <div class="col-xs-4">
+            <span class="badge pull-right">
+              {{ institute.cases(Case).count() }} cases
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 {% endblock %}

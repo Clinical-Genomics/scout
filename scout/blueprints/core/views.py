@@ -242,8 +242,9 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
             # POST a new phenotype to the list
             phenotype_term = request.form['hpo_term']
             if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
+                hpo_term = phenotype_term.split(' | ', 1)[0]
                 store.add_phenotype(institute, case_model, current_user,
-                                    case_url, hpo_term=phenotype_term,
+                                    case_url, hpo_term=hpo_term,
                                     is_group=is_group)
             else:
                 # assume omim id
@@ -330,6 +331,7 @@ def hpo_genes(username, password, hpo_ids):
         return list(set(itertools.chain.from_iterable(nested_genes)))
     except SystemExit:
         return None
+
 
 @core.route('/<institute_id>/<case_id>/coverage_report', methods=['GET'])
 def coverage_report(institute_id, case_id):
@@ -761,8 +763,8 @@ def hpoterms():
     query = request.args.get('query')
     if query is None:
         return abort(500)
-    terms = store.hpo_terms(query=query)
-    json_terms = [{'title': term.description,
+    terms = store.hpo_terms(query=query).limit(8)
+    json_terms = [{'name': '{} | {}'.format(term.hpo_id, term.description),
                    'id': term.hpo_id} for term in terms]
     return Response(dumps(json_terms),
                     mimetype='application/json; charset=utf-8')
