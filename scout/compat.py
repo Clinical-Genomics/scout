@@ -26,6 +26,8 @@ if not is_py2:
     itervalues = operator.methodcaller('values')
     import urllib.parse
     unquote = urllib.parse.unquote
+    import functools
+    reduce = functools.reduce
 
 else:
     # Python 2
@@ -42,3 +44,4 @@ else:
     itervalues = operator.methodcaller('itervalues')
     import urllib2
     unquote = urllib2.unquote
+    reduce = reduce
