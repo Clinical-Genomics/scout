@@ -1,13 +1,13 @@
 import logging
 
-from mongoengine import (DoesNotExist, Q)
-
+from mongoengine import Q
 import phizz
 
-from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm)
-from scout.exceptions import (IntegrityError)
+from scout.models import Event, PhenotypeTerm
+from scout.compat import reduce
 
 logger = logging.getLogger(__name__)
+
 
 class EventHandler(object):
     """Class to handle events for the mongo adapter"""
@@ -101,7 +101,6 @@ class EventHandler(object):
 
         query = reduce(lambda old_filter, next_filter: old_filter & next_filter, filters)
         return Event.objects.filter(query)
-
 
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
@@ -272,7 +271,7 @@ class EventHandler(object):
         """
         logger.info("Creating event for opening research for case"
                     " {0}".format(case.display_name))
-        
+
         self.create_event(
             institute=institute,
             case=case,
@@ -365,7 +364,7 @@ class EventHandler(object):
             phenotype_id (str): A phenotype id
         """
         logger.info("Removing HPO term from case {0}".format(case.display_name))
-        
+
         if is_group:
             terms = case.phenotype_groups
         else:

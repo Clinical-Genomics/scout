@@ -8,7 +8,7 @@ from __future__ import (absolute_import, division)
 from mongoengine import (EmbeddedDocument, StringField, ListField, BooleanField,
                          IntField)
 
-from scout.constants import (SO_TERMS, CONSEQUENCE, FEATURE_TYPES)
+from scout.constants import (SO_TERM_KEYS, CONSEQUENCE, FEATURE_TYPES)
 
 
 class Transcript(EmbeddedDocument):
@@ -36,7 +36,7 @@ class Transcript(EmbeddedDocument):
     # The biotype annotation for the transcript
     biotype = StringField()
     # The functional annotations for the transcript
-    functional_annotations = ListField(StringField(choices=SO_TERMS.keys()))
+    functional_annotations = ListField(StringField(choices=SO_TERM_KEYS))
     # The region annotations for the transcripts
     region_annotations = ListField(StringField(choices=FEATURE_TYPES))
     # The exon number in the transcript e.g '2/7'

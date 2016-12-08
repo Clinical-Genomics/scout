@@ -74,7 +74,7 @@ def parse_ped(ped_stream, family_type='mip'):
     if len(pedigree.families) != 1:
         raise PedigreeError("Only one case per ped file is allowed")
 
-    family_id = pedigree.families.keys()[0]
+    family_id = list(pedigree.families.keys())[0]
     family = pedigree.families[family_id]
 
     samples = [{

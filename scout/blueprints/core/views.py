@@ -12,6 +12,7 @@ from housekeeper.store import api
 import query_phenomizer
 
 from scout.models import Case, Variant
+from scout.models.case import STATUS as CASE_STATUSES
 from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb, housekeeper
 from scout.utils.helpers import templated, validate_user
@@ -20,11 +21,12 @@ from .forms import init_filters_form, process_filters_form, GeneListUpload
 from .utils import genecov_links
 from .constants import PHENOTYPE_GROUPS
 
-core = Blueprint('core', __name__, template_folder='templates')
+core = Blueprint('core', __name__, template_folder='templates',
+                 static_folder='static', static_url_path='/core/static')
 
 
 @core.route('/institutes')
-@templated('institutes.html')
+@templated('core/institutes.html')
 @login_required
 def institutes():
     """View all institutes that the current user belongs to."""
@@ -34,7 +36,7 @@ def institutes():
         institute = institute_objs[0]
         return redirect(url_for('.cases', institute_id=institute.internal_id))
     else:
-        return dict(institutes=institute_objs)
+        return dict(institutes=institute_objs, Case=Case)
 
 
 @core.route('/institutes/<institute_id>/settings', methods=['POST'])
@@ -49,7 +51,7 @@ def institute_settings(institute_id):
 
 
 @core.route('/<institute_id>')
-@templated('cases.html')
+@templated('core/cases.html')
 @login_required
 def cases(institute_id):
     """View all cases.
@@ -59,23 +61,22 @@ def cases(institute_id):
     query = request.args.get('query')
     skip_assigned = request.args.get('skip_assigned')
     institute = validate_user(current_user, institute_id)
-    case_groups = {}
     case_models = store.cases(collaborator=institute_id, query=query,
                               skip_assigned=skip_assigned)
-    for case_model in case_models:
-        if case_model.status not in case_groups:
-            case_groups[case_model.status] = []
-        case_groups[case_model.status].append(case_model)
+    prio_cases = case_models.filter(status=CASE_STATUSES[0])
+    case_groups = []
+    for case_status in CASE_STATUSES[1:]:
+        case_groups.append((case_status, case_models.filter(status=case_status)))
 
     missed_cutoff = datetime.datetime(2016, 2, 19)
     return dict(institute=institute, institute_id=institute_id,
                 cases=case_groups, found_cases=len(case_models), query=query,
                 skip_assigned=skip_assigned, severe_so_terms=SEVERE_SO_TERMS,
-                missed_cutoff=missed_cutoff)
+                missed_cutoff=missed_cutoff, prio_cases=prio_cases)
 
 
 @core.route('/<institute_id>/<case_id>')
-@templated('case.html')
+@templated('core/case.html')
 @login_required
 def case(institute_id, case_id):
     """View a specific case."""
@@ -142,7 +143,7 @@ def case(institute_id, case_id):
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
-@templated('gene-panel.html')
+@templated('core/gene-panel.html')
 @login_required
 def gene_panel(institute_id, case_id, panel_id):
     """Show the list of genes associated with a gene panel."""
@@ -241,8 +242,9 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
             # POST a new phenotype to the list
             phenotype_term = request.form['hpo_term']
             if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
+                hpo_term = phenotype_term.split(' | ', 1)[0]
                 store.add_phenotype(institute, case_model, current_user,
-                                    case_url, hpo_term=phenotype_term,
+                                    case_url, hpo_term=hpo_term,
                                     is_group=is_group)
             else:
                 # assume omim id
@@ -330,6 +332,7 @@ def hpo_genes(username, password, hpo_ids):
     except SystemExit:
         return None
 
+
 @core.route('/<institute_id>/<case_id>/coverage_report', methods=['GET'])
 def coverage_report(institute_id, case_id):
     """Serve coverage report for a case directly from the database."""
@@ -374,7 +377,7 @@ def upload_gene_list():
 
 @core.route('/<institute_id>/<case_id>/<variant_type>',
             methods=['GET', 'POST'])
-@templated('variants.html')
+@templated('core/variants.html')
 @login_required
 def variants(institute_id, case_id, variant_type):
     """View all variants for a single case."""
@@ -466,7 +469,7 @@ def variants(institute_id, case_id, variant_type):
 
 
 @core.route('/<institute_id>/<case_id>/variants/<variant_id>')
-@templated('variant.html')
+@templated('core/variant.html')
 @login_required
 def variant(institute_id, case_id, variant_id):
     """View a single variant in a single case."""
@@ -487,7 +490,7 @@ def variant(institute_id, case_id, variant_id):
 
     # coverage link for gene
     coverage_links = genecov_links(case_model.individuals,
-                                   variant_model.hgnc_symbols)
+                                   variant_model.genes)
 
     prev_variant = store.previous_variant(document_id=variant_id)
     next_variant = store.next_variant(document_id=variant_id)
@@ -760,8 +763,8 @@ def hpoterms():
     query = request.args.get('query')
     if query is None:
         return abort(500)
-    terms = store.hpo_terms(query=query)
-    json_terms = [{'title': term.description,
+    terms = store.hpo_terms(query=query).limit(8)
+    json_terms = [{'name': '{} | {}'.format(term.hpo_id, term.description),
                    'id': term.hpo_id} for term in terms]
     return Response(dumps(json_terms),
                     mimetype='application/json; charset=utf-8')

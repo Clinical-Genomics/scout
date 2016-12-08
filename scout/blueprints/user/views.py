@@ -5,7 +5,8 @@ from flask_login import login_required
 
 from scout.admin import UserModelView
 from scout.extensions import admin
-from scout.models import User, Institute, Variant, Whitelist, Case, GenePanel
+from scout.models import (User, Institute, Variant, Whitelist, Case, GenePanel,
+                          Event, HgncGene)
 from scout.utils.helpers import templated
 
 user = Blueprint('profile', __name__, template_folder='templates')
@@ -19,7 +20,7 @@ class CaseView(ModelView):
     form_columns = ['display_name', 'owner', 'collaborators', 'individuals',
                     'status', 'is_research', 'default_panels',
                     'gender_check', 'clinical_panels', 'phenotype_terms',
-                    'dynamic_gene_list']
+                    'dynamic_gene_list', 'suspects', 'causatives']
 
 
 class VariantView(ModelView):
@@ -34,6 +35,8 @@ admin.add_view(ModelView(Institute))
 admin.add_view(CaseView(Case))
 admin.add_view(VariantView(Variant))
 admin.add_view(VariantView(GenePanel))
+admin.add_view(VariantView(HgncGene))
+admin.add_view(VariantView(Event))
 
 
 @user.route('/profile/<user_id>')

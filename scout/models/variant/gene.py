@@ -3,7 +3,7 @@ from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField,
                          ListField, IntField, BooleanField)
 
 from .transcript import Transcript
-from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERMS)
+from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 
 from scout.models import PhenotypeTerm
 
@@ -14,7 +14,7 @@ class Gene(EmbeddedDocument):
     # A list of Transcript objects
     transcripts = ListField(EmbeddedDocumentField(Transcript))
     # This is the worst functional impact of all transcripts
-    functional_annotation = StringField(choices=SO_TERMS.keys())
+    functional_annotation = StringField(choices=SO_TERM_KEYS)
     # This is the region of the most severe functional impact
     region_annotation = StringField(choices=FEATURE_TYPES)
     # This is most severe sift prediction of all transcripts

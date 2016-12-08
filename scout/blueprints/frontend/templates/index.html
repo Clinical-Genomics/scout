@@ -1,141 +1,32 @@
 {% extends 'layouts/base.html' %}
 
-{% block body %}
-
-	<div class="landing-page">
-
-		<header class="landing-header">
-			<div class="landing-header-brand">
-				<div class="landing-header-logo"></div>
-				<div class="landing-header-title">Scout</div>
-			</div>
-
-      {% if config.LOGIN_DISABLED %}
-        <a href="{{ url_for('core.institutes') }}" class="landing-header-login">
-          Go to scout
-        </a>
-      {% else %}
-        <a href="{{ url_for('login.signin') }}" class="landing-header-login">
-          Sign in
-        </a>
-      {% endif %}
-		</header>
-
-		<div class="landing-hero">
-
-			<div class="landing-hero-tagline">Analyze VCFs quicker and easier.</div>
-			<div class="landing-hero-summary">
-				<p>
-					Scout allows you to browse VCFs in a web browser, identify
-					compound pairs, and solve cases as a team.
-				</p>
-
+{% block content %}
+    <div class="container">
+      <header class="jumbotron">
+        <h1>Scout</h1>
+        <p>Analyze VCFs quicker and easier</p>
         <p>
-          <small>Version <strong>{{ version }}</strong></small>
+          Scout allows you to browse VCFs in a web browser, identify
+          compound pairs, and solve cases as a team.
         </p>
-			</div>
 
-		</div>
+        <p><small>Version <strong>{{ version }}</strong></small></p>
 
-		<section id="feature-web-interface" class="landing-feature">
-			<div class="landing-feature-left">
-				<div class="landing-feature-title">Web interface</div>
-				<div class="landing-feature-summary">
-					Browse complex VCF files in an intuative web interface.
-				</div>
-			</div>
-
-			<div class="landing-feature-right"></div>
-		</section>
-
-		<section id="feature-compounds" class="landing-feature">
-			<div class="landing-feature-left"></div>
-
-			<div class="landing-feature-right">
-				<div class="landing-feature-title">Track progress</div>
-				<div class="landing-feature-summary">
-					Mark and save your calls about disease causing variants.
-				</div>
-			</div>
-		</section>
-
-		<section id="feature-track" class="landing-feature">
-			<div class="landing-feature-left">
-				<div class="landing-feature-title">Compounds</div>
-				<div class="landing-feature-summary">
-					Easily identify compound heterozygote mutations.
-				</div>
-			</div>
-
-			<div class="landing-feature-right"></div>
-		</section>
-
-		<section id="feature-collaborate" class="landing-feature">
-			<div class="landing-feature-left"></div>
-
-			<div class="landing-feature-right">
-				<div class="landing-feature-title">Collaboration</div>
-				<div class="landing-feature-summary">
-					Collaborate across your team by commenting and sharing activity.
-				</div>
-			</div>
-		</section>
-
-    <section id="feature-track" class="landing-feature">
-      <div class="landing-feature-left">
-        <div class="landing-feature-title">HPO terms</div>
-        <div class="landing-feature-summary">
-          Associate Human Phenotype Ontology terms with a case and create dynamic gene list filters. <small><strong>EXPERIMENTAL</strong></small>
-        </div>
-      </div>
-
-      <div class="landing-feature-right"></div>
-    </section>
-
-    <section id="feature-track" class="landing-feature">
-      <div class="landing-feature-left">
-        <div class="landing-feature-title">IGV browser</div>
-        <div class="landing-feature-summary">
-          Launch an IGV browser session to study reads and variants from all samples in a case. <small><strong>UPCOMING</strong></small>
-        </div>
-      </div>
-
-      <div class="landing-feature-right"></div>
-    </section>
-
-		<section id="user-guide" class="landing-box">
-			<div class="user-guide-box">
-				<div class="user-guide-summary">
-					For more information read the comprehensive
-				</div>
-				<a href="http://www.clinicalgenomics.se/scout/user-guide/pages/"
-           class="user-guide-btn" target="_blank">
-          User Guide
-        </a>
-
-				<div class="user-guide-project-info">
-					... or visit the <a href="https://github.com/Clinical-Genomics/scout"  target="_blank">project GitHub repo</a>.
-				</div>
-
-        <div class="user-guide-project-info">
-          We also keep a <a href="https://github.com/Clinical-Genomics/scout/issues"  target="_blank">list of known issues</a>.
-        </div>
-			</div>
-		</section>
-
-		<section id="affiliations" class="landing-box">
-			<div class="landing-affiliations-summary">Developed at</div>
-			<div class="landing-affiliations">
-        <div class="landing-affiliation">
-          <img src="{{ url_for('frontend.static', filename='logo-scilifelab.png') }}">
-        </div>
-
-        <div class="landing-affiliation">
-          <img src="{{ url_for('frontend.static', filename='logo-karolinska.png') }}">
-        </div>
-			</div>
-		</section>
-
+        {% if current_user.is_authenticated %}
+          <p>Welcome <strong>{{ current_user.name }}</strong></p>
+          <p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('core.institutes') }}">Go to Scout</a>
+          </p>
+        {% else %}
+          <p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('login.signin') }}">Sign in</a>
+          </p>
+        {% endif %}
+      </header>
+      <main>
+        <img width="250" src="{{ url_for('frontend.static', filename='logo-scilifelab.png') }}">
+        <img class="pull-right" width="250" src="{{ url_for('frontend.static', filename='logo-karolinska.png') }}">
+      </main>
+    </div>
 	</div>
-
 {% endblock %}

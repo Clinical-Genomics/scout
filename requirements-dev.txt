@@ -1,0 +1,17 @@
+# everything the developer needs in addition to the production requirements
+
+# testing
+ipython
+ipdb
+pytest
+coverage
+coveralls
+flake8
+
+# packaging
+wheel>=0.23
+
+# utils
+invoke
+bumpversion
+fabric

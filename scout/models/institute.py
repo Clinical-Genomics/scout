@@ -26,6 +26,10 @@ class Institute(Document):
     coverage_cutoff = IntField(default=10)
     frequency_cutoff = FloatField(default=0.01)
 
+    def cases(self, Case):
+        """Return all cases that have the institute as owner."""
+        return Case.objects(owner=self.internal_id)
+
     def __unicode__(self):
         return self.display_name
 

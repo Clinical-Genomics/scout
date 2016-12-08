@@ -36,6 +36,11 @@ def load_user(user_id):
 
 @login.route('/login')
 def signin():
+    if current_app.config.get('LOGIN_DISABLED'):
+        fake_user = User.objects(email='paul.anderson@magnolia.com').first()
+        if fake_user and login_user(fake_user, remember=True):
+            return redirect(url_for('core.institutes'))
+
     callback_url = url_for('.authorized', _external=True)
     return google.authorize(callback=callback_url)
 
@@ -46,14 +51,13 @@ def reauth():
     if confirm_login():
         flash('Reauthenticated', 'success')
     return redirect(request.args.get('next') or request.referrer or
-                    url_for('frontend.index'))
+                    url_for('core.institutes'))
 
 
-@login.route('/logout', methods=['POST'])
+@login.route('/logout')
 @login_required
 def logout():
     logout_user()
-    session.pop('google_token', None)
     flash('Logged out', 'success')
     return redirect(url_for('frontend.index'))
 
@@ -94,7 +98,7 @@ def authorized(oauth_response):
     if login_user(user_obj, remember=True):
         store.update_access(user_obj)
         flash('Logged in', 'success')
-        return redirect(request.args.get('next') or url_for('frontend.index'))
+        return redirect(request.args.get('next') or url_for('core.institutes'))
 
     flash('Sorry, you could not log in', 'warning')
-    return redirect('frontend.index')
+    return redirect(url_for('frontend.index'))

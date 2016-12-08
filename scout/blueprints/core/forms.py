@@ -8,43 +8,43 @@ from __future__ import absolute_import, unicode_literals
 from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField
 from wtforms import (DecimalField as _DecimalField, Field,
-                     SelectMultipleField, RadioField, DateField, SelectField)
+                     SelectMultipleField, RadioField, SelectField)
 from wtforms import widgets
 
 from scout.constants import (GENETIC_MODELS, SO_TERMS, FEATURE_TYPES,
                              CLINSIG_MAP)
-from scout._compat import text_type
+from scout.compat import text_type
 
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
-CLINSIG_OPTIONS = [('', '')] + CLINSIG_MAP.items()
+CLINSIG_OPTIONS = [('', '')] + list(CLINSIG_MAP.items())
 
 
 def process_filters_form(form):
-  """Make some necessary corrections to the form data.
+    """Make some necessary corrections to the form data.
 
-  This should ideally be handled with ``form.validate_on_submit`` but
-  this will have to do in the mean time.
-  """
-  # make sure HGNC symbols are handled correctly
-  if len(form.hgnc_symbols.data) == 1:
-    if ',' in form.hgnc_symbols.data[0]:
-      form.hgnc_symbols.data = [x.strip() for x in
-                                form.hgnc_symbols.data[0].split(',')
-                                if x]
+    This should ideally be handled with ``form.validate_on_submit`` but
+    this will have to do in the mean time.
+    """
+    # make sure HGNC symbols are handled correctly
+    if len(form.hgnc_symbols.data) == 1:
+        if ',' in form.hgnc_symbols.data[0]:
+            form.hgnc_symbols.data = [x.strip() for x in
+                                      form.hgnc_symbols.data[0].split(',')
+                                      if x]
 
-  if isinstance(form.cadd_inclusive.data, unicode):
-    if 'no' in form.cadd_inclusive.data:
-        form.cadd_inclusive.data = 'no'
-    else:
-        form.cadd_inclusive.data = 'yes'
+    if isinstance(form.cadd_inclusive.data, text_type):
+        if 'no' in form.cadd_inclusive.data:
+            form.cadd_inclusive.data = 'no'
+        else:
+            form.cadd_inclusive.data = 'yes'
 
-  # correct decimal fields
-  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
-                     'cadd_score']:
-    field = getattr(form, field_name)
-    if field.data:
-      field.data = float(field.data)
+    # correct decimal fields
+    for field_name in ['thousand_genomes_frequency', 'exac_frequency',
+                       'cadd_score']:
+        field = getattr(form, field_name)
+        if field.data:
+            field.data = float(field.data)
 
 
 class DecimalField(_DecimalField):
@@ -74,19 +74,9 @@ class ListField(Field):
       return ''
 
 
-class MultiCheckboxField(SelectMultipleField):
-  """A multiple-select, except displays a list of checkboxes.
-
-  Iterating the field will produce subfields, allowing custom rendering
-  of the enclosed checkbox fields.
-  """
-  widget = widgets.ListWidget(prefix_label=False)
-  option_widget = widgets.CheckboxInput()
-
-
 class FiltersForm(Form):
   # choices populated dynamically
-  gene_lists = MultiCheckboxField(choices=[])
+  gene_lists = SelectMultipleField(choices=[])
   hgnc_symbols = ListField()
 
   thousand_genomes_frequency = DecimalField('1000 Genomes', places=None)
@@ -96,9 +86,9 @@ class FiltersForm(Form):
                               choices=[('yes', 'Yes'), ('no', 'No')],
                               default='no')
 
-  region_annotations = MultiCheckboxField(choices=REGION_ANNOTATIONS)
-  functional_annotations = MultiCheckboxField(choices=FUNC_ANNOTATIONS)
-  genetic_models = MultiCheckboxField(choices=GENETIC_MODELS)
+  region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
+  functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
+  genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
   clinsig = SelectField('CLINSIG', choices=CLINSIG_OPTIONS)
 
 
@@ -107,26 +97,22 @@ class GeneListUpload(Form):
 
 
 def init_filters_form(get_args):
-  """Initialize the filters form with GET request data.
+    """Initialize the filters form with GET request data.
 
-  This is to get around some inconsistencies in the way the WTForms
-  seems to handle GET request arguments. I suppose that it's difficult
-  to reason about what is supposed to be a list and what is not.
-  """
-  # initialize the normal way to get lists inserted correctly
-  args = get_args.to_dict()
-  if args.get('clinsig'):
-    args['clinsig'] = int(args['clinsig'])
-  form = FiltersForm(**args)
+    This is to get around some inconsistencies in the way the WTForms
+    seems to handle GET request arguments. I suppose that it's difficult
+    to reason about what is supposed to be a list and what is not.
+    """
+    # initialize the normal way to get lists inserted correctly
+    form = FiltersForm(get_args)
+    for field_name in ['thousand_genomes_frequency', 'exac_frequency',
+                       'cadd_score']:
+        field = getattr(form, field_name)
 
-  for field_name in ['thousand_genomes_frequency', 'exac_frequency',
-                     'cadd_score']:
-    field = getattr(form, field_name)
+        if field.data:
+            field.data = field.data[0] if field.data[0] else None
 
-    if field.data:
-      field.data = field.data[0] if field.data[0] else None
-
-  form.gene_lists.data = [gene_list for gene_list
-                          in (form.gene_lists.data or [])
-                          if gene_list]
-  return form
+    form.gene_lists.data = [gene_list for gene_list
+                            in (form.gene_lists.data or [])
+                            if gene_list]
+    return form

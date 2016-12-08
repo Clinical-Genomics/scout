@@ -102,7 +102,8 @@ class Case(Document):
         """Combine all gene ids for default gene panels."""
         distinct_genes = set()
         for panel in self.default_panel_objs():
-            distinct_genes.update(panel.genes)
+            for gene_id in panel.gene_objects.keys():
+                distinct_genes.update(gene_id)
         return distinct_genes
 
     @property
@@ -192,3 +193,6 @@ class Case(Document):
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
+
+    def __unicode__(self):
+        return self.display_name
