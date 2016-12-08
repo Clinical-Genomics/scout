@@ -1,6 +1,4 @@
 from mongoengine.connection import get_connection
-import mongomock
-
 
 def test_adapter(adapter):
     assert adapter.mongodb_name == 'test'
