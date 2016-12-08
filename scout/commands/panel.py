@@ -6,9 +6,12 @@ import click
 from scout.load import load_panel
 from scout.utils.date import get_date
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 @click.command()
+@click.argument('path',
+    type=click.Path(exists=True)
+)
 @click.option('-d', '--date', 
     help='date of gene panel. Default is today.',
 )
@@ -25,19 +28,35 @@ log = logging.getLogger(__name__)
     show_default=True,
 )
 @click.option('--panel-id',
-    required=True
 )
 @click.option('--institute',
-    required=True
-)
-@click.option('--path',
-    required=True,
-    type=click.Path(exists=True)
 )
 @click.pass_context
 def panel(context, date, name, version, panel_type, panel_id, path, institute):
     """Add a gene panel to the database."""
-    date = get_date(date)
+    with open(path, 'r') as f:
+        for line in f:
+            line = line.rstrip()
+            if line.startswith('##'):
+                info = line[2:].split('=')
+                name = info[0]
+                value = info[1]
+                if name == 'panel_id':
+                    panel_id = value
+                elif name == 'institute':
+                    institute = value
+                elif name == 'version':
+                    version = float(value)
+                elif name == 'date':
+                    date = value
+                elif name == 'display_name':
+                    name = value
+                
+    try:
+        date = get_date(date)
+    except ValueError as error:
+        logger.warning(error)
+        context.abort()
     
     adapter = context.obj['adapter']
     info = {
@@ -49,6 +68,9 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
         'name': panel_id,
         'full_name': name or panel_id
     }
+    
+    # from pprint import pprint as pp
+    # pp(info)
     
     load_panel(
         adapter=adapter,

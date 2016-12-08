@@ -52,7 +52,7 @@ def export(ctx, collaborator, genes, transcripts, gene_file, panel):
     function = []
     
     if panel:
-        click.echo(panel)
+        logger.info("Exporting panels: {}".format(', '.join(panel)))
         export_panels(adapter, panel)
     elif genes:
         header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]

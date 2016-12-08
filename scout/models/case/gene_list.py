@@ -14,6 +14,7 @@ class Gene(EmbeddedDocument):
     disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
     mosaicism = BooleanField(default=False)
+    database_entry_version = StringField()
 
 
 class GenePanel(Document):

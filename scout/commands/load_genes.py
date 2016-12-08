@@ -52,12 +52,28 @@ logger = logging.getLogger(__name__)
                 default=hpogenes_path,
                 help="Path to HPO gene file",
 )
+@click.option('--update',
+                is_flag=True,
+                help="If the gene set should be rebuilded"
+)
 @click.pass_context
-def genes(ctx, hgnc, ensembl, exac, hpo):
+def genes(ctx, hgnc, ensembl, exac, hpo, update):
     """
     Load the hgnc aliases to the mongo database.
     """
     adapter=ctx.obj['adapter']
+    
+    #Test if the genes are loaded
+    gene = adapter.hgnc_gene(257)
+    if gene:
+        if update:
+            logger.warning("Dropping all gene information")
+            adapter.drop_genes()
+            logger.info("Genes dropped")
+        else:
+            logger.info("Genes are already loaded")
+            logger.info("If you wish to update genes use '--update'")
+            ctx.abort()
 
     if not (hgnc and ensembl and exac and hpo):
         logger.info("Please provide all gene files")

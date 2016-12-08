@@ -48,7 +48,8 @@ def parse_genes(panel_path):
                 
                 manual_mosaicism = gene_info.get('mosaicism')
                 manual_reduced_penetrance = gene_info.get('reduced_penetrance')
-                
+                gene['database_entry_version'] = gene_info.get('database_entry_version')
+
                 gene['mosaicism'] = False
                 gene['reduced_penetrance'] = False
                 if manual_reduced_penetrance:
