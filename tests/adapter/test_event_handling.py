@@ -360,6 +360,7 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
 def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
     logger.info("Add specific comment for a variant")
     content = "hello"
+    # GIVEN a populated database with variants
     institute = variant_database.institute(
         institute_id=institute_obj.internal_id
     )
@@ -373,6 +374,7 @@ def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
     variant =  Variant.objects.first()
     variant_id = variant.id
     
+    # WHEN commenting on a variant
     variant_database.comment(
         institute=institute,
         case=case,
@@ -382,10 +384,10 @@ def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
         content=content,
         comment_level='specific'
     )
-    #Assert that the synopsis has been added to the case
+    # THEN the variant should have comments
     updated_variant = variant_database.variant(variant_id)
     assert updated_variant.has_comments(case=case) == True
 
-    #Check that the event exists
+    # THEN a event should have been created
     event = Event.objects.get(verb='comment')
     assert event.link == 'commentlink'

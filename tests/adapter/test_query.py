@@ -3,8 +3,12 @@ from scout.models import Variant
 def test_build_query(adapter):
     case_id = 'cust000'
     
+    # GIVEN a empty database
+    
+    # WHEN building a query
     query = adapter.build_query(case_id)
     
+    # THEN the query should be on the right format
     assert query['case_id'] == case_id
     assert query['category'] == 'snv'
     assert query['variant_type'] == 'clinical'

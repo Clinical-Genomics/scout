@@ -5,8 +5,8 @@ CHROMOSOMES = ('1','2','3','4','5','6','7','8','9','10','11','12','13','14',
 def export_panels(adapter, panels):
     """Export all genes in gene panels"""
     headers = []
-    header_string = ("##gene_panel=<ID={0},version={1},updated_at={2},diplay_name={3}")
-    contig_string = ("##contig=<ID={0}")
+    header_string = ("##gene_panel={0},version={1},updated_at={2},display_name={3}")
+    contig_string = ("##contig={0}")
     bed_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
     genes = {}
     chromosomes_found = set()
