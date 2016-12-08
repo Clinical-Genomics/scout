@@ -359,19 +359,10 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
 
 
 @pytest.fixture(scope='function')
-def variant_database(request, adapter, institute_obj, parsed_user, case_obj,
-                     variant_objs, sv_variant_objs):
+def variant_database(request, populated_database, variant_objs, sv_variant_objs):
     """Returns an adapter to a database populated with user, institute, case
        and variants"""
-    adapter.add_institute(institute_obj)
-    adapter.getoradd_user(
-        email=parsed_user['email'],
-        name=parsed_user['name'],
-        location=parsed_user['location'],
-        institutes=parsed_user['institutes']
-    )
-    adapter.add_case(case_obj)
-
+    adapter = populated_database
     # Load variants
     for variant in variant_objs:
         adapter.load_variant(variant)

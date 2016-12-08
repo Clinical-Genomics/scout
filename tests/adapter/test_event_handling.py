@@ -357,23 +357,35 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
     assert event.link == 'removehpolink'
     event.delete()
 
-# def test_specific_comment(populated_database, institute_obj, case_obj, user_obj):
-#     logger.info("Add specific comment for a variant")
-#     content = "hello"
-#     setup_database.comment(
-#         institute=get_institute,
-#         case=get_case,
-#         user=get_user,
-#         link='commentlink',
-#         variant=get_variant,
-#         content=content,
-#         comment_level='specific'
-#     )
-#     #Assert that the synopsis has been added to the case
-#     updated_variant = Variant.objects.first()
-#     assert updated_variant.has_comments(case=get_case) == True
-#
-#     #Check that the event exists
-#     event = Event.objects.get(verb='comment')
-#     assert event.link == 'commentlink'
-#     event.delete()
+def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
+    logger.info("Add specific comment for a variant")
+    content = "hello"
+    institute = variant_database.institute(
+        institute_id=institute_obj.internal_id
+    )
+    case = variant_database.case(
+        institute_id=institute_obj.internal_id, 
+        case_id=case_obj.display_name
+    )
+    user = variant_database.user(
+        email = user_obj.email
+    )
+    variant =  Variant.objects.first()
+    variant_id = variant.id
+    
+    variant_database.comment(
+        institute=institute,
+        case=case,
+        user=user,
+        link='commentlink',
+        variant=variant,
+        content=content,
+        comment_level='specific'
+    )
+    #Assert that the synopsis has been added to the case
+    updated_variant = variant_database.variant(variant_id)
+    assert updated_variant.has_comments(case=case) == True
+
+    #Check that the event exists
+    event = Event.objects.get(verb='comment')
+    assert event.link == 'commentlink'
