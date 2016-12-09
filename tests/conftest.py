@@ -3,6 +3,8 @@ import pytest
 import logging
 import datetime
 
+from scout.utils.handle import get_file_handle
+
 from vcf_parser import VCFParser
 import yaml
 
@@ -114,8 +116,8 @@ def ped_file(request):
 def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print('')
-    with open(config_file) as in_handle:
-        data = yaml.load(in_handle)
+    in_handle = get_file_handle(config_file)
+    data = yaml.load(in_handle)
     return data
 
 
@@ -125,7 +127,7 @@ def scout_config(request, config_file):
 def hgnc_handle(request, hgnc_file):
     """Get a file handle to a hgnc file"""
     print('')
-    return open(hgnc_file, 'r')
+    return get_file_handle(hgnc_file)
 
 @pytest.fixture
 def hgnc_genes(request, hgnc_handle):
@@ -137,7 +139,7 @@ def hgnc_genes(request, hgnc_handle):
 def transcripts_handle(request, transcripts_file):
     """Get a file handle to a ensembl transcripts file"""
     print('')
-    return open(transcripts_file, 'r')
+    return get_file_handle(transcripts_file)
 
 @pytest.fixture
 def transcripts(request, transcripts_handle):
@@ -149,7 +151,7 @@ def transcripts(request, transcripts_handle):
 def exac_handle(request, exac_file):
     """Get a file handle to a ensembl gene file"""
     print('')
-    return open(exac_file, 'r')
+    return get_file_handle(exac_file)
 
 @pytest.fixture
 def exac_genes(request, exac_handle):
@@ -161,7 +163,7 @@ def exac_genes(request, exac_handle):
 def hpo_genes_handle(request, hpo_genes_file):
     """Get a file handle to a hpo gene file"""
     print('')
-    return open(hpo_genes_file, 'r')
+    return get_file_handle(hpo_genes_file)
 
 @pytest.fixture
 def hpo_genes(request, hpo_genes_handle):
@@ -177,17 +179,17 @@ def genes(request, transcripts_handle, hgnc_handle, exac_handle,
     gene_dict = link_genes(
         ensembl_lines=transcripts_handle, 
         hgnc_lines=hgnc_handle, 
-        exac_lines=hgnc_handle, 
+        exac_lines=exac_handle, 
         hpo_lines=hpo_genes_handle
     )
     
-    return link_genes
+    return gene_dict
 
 @pytest.fixture
 def hpo_terms_handle(request, hpo_terms_file):
     """Get a file handle to a hpo terms file"""
     print('')
-    return open(hpo_terms_file, 'r')
+    return get_file_handle(hpo_terms_file)
 
 @pytest.fixture
 def hpo_terms(request, hpo_terms_handle):
@@ -199,7 +201,7 @@ def hpo_terms(request, hpo_terms_handle):
 def hpo_disease_handle(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
-    return open(hpo_disease_file, 'r')
+    return get_file_handle(hpo_disease_file)
 
 @pytest.fixture
 def hpo_diseases(request, hpo_disease_handle):
@@ -325,6 +327,14 @@ def user_obj(request, parsed_user):
       institutes=parsed_user['institutes']
     )
     return user
+
+
+@pytest.fixture(scope='function')
+def gene_database(request, adapter, genes):
+    "Returns an adapter to a database populated with user, institute and case"
+    load_hgnc_genes(adapter, genes)
+
+    return adapter
 
 
 @pytest.fixture(scope='function')

@@ -68,7 +68,7 @@ class CaseHandler(object):
 
     def institutes(self):
         """Fetch all institutes."""
-        return Institute.objects
+        return Institute.objects()
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False):

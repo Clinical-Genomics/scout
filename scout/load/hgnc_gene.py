@@ -8,23 +8,14 @@ from scout.build import build_hgnc_gene
 
 logger = logging.getLogger(__name__)
 
-def load_hgnc_genes(adapter, ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
+def load_hgnc_genes(adapter, genes):
     """Load genes with transcripts into the database
 
         Args:
             adapter(MongoAdapter)
-            ensembl_lines(iterable(str))
-            hgnc_lines(iterable(str))
-            exac_lines(iterable(str))
-            hpo_lines(iterable(str))
+            genes(dict): Dictionary with gene symbols as keys and gene
+                         info as values
     """
-    genes = link_genes(
-        ensembl_lines=ensembl_lines,
-        hgnc_lines=hgnc_lines,
-        exac_lines=exac_lines,
-        hpo_lines=hpo_lines,
-    )
-    
     logger.info("Loading the genes and transcripts...")
     
     start_time = datetime.now()

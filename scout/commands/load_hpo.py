@@ -16,7 +16,7 @@ import click
 
 from scout.load import load_hpo
 
-from .utils import get_file_handle
+from scout.utils.handle import get_file_handle
 
 from scout.resources import (hpoterms_path, hpodisease_path)
 

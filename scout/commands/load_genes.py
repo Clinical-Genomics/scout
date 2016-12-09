@@ -27,7 +27,8 @@ from scout.resources import (hgnc_path, exac_path, transcripts_path,
                              hpogenes_path)
 
 
-from . import get_file_handle
+from scout.utils.link import link_genes
+from scout.utils.handle import get_file_handle
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +95,14 @@ def genes(ctx, hgnc, ensembl, exac, hpo, update):
                 hpo))
     hpo_handle = get_file_handle(hpo)
     
+    genes = link_genes(
+        ensembl_lines=ensembl_lines,
+        hgnc_lines=hgnc_lines,
+        exac_lines=exac_lines,
+        hpo_lines=hpo_lines,
+    )
+    
     load_hgnc_genes(
         adapter=adapter,
-        ensembl_lines=ensembl_handle, 
-        hgnc_lines=hgnc_handle, 
-        exac_lines=exac_handle,
-        hpo_lines=hpo_handle
+        genes=genes, 
     )

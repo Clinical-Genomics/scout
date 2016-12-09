@@ -9,9 +9,11 @@ from mongoengine import connect
 
 from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
-from scout.load import (load_scout, load_hgnc_genes, load_hpo)
+from scout.load import (load_scout, load_hgnc_genes, load_hpo, load_institute)
 from scout import logger
 from scout.log import init_log
+from scout.utils.handle import get_file_handle
+from scout.utils.link import link_genes
 
 hgnc_path = "tests/fixtures/resources/hgnc_reduced_set.txt"
 ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_reduced.txt"
@@ -30,13 +32,20 @@ def setup_test(context, email, name="Paul Anderson"):
     adapter.connect_to_database(database=db_name)
     adapter.drop_database()
 
-    institute_obj = Institute(
-        internal_id='cust000',
-        display_name='test-institute',
-        sanger_recipients=[email]
+    institute_info = {
+        'internal_id': 'cust000',
+        'display_name': 'test-institute',
+        'sanger_recipients': [email]
+    }
+    
+    load_institute(
+        adapter=adapter,
+        internal_id=institute_info['internal_id'], 
+        display_name=institute_info['display_name'], 
+        sanger_recipients=institute_info['sanger_recipients']
     )
-    adapter.add_institute(institute_obj)
-    institute = adapter.institute(institute_id=institute_obj.internal_id)
+    
+    institute = adapter.institute(institute_id=institute_info['internal_id'])
     # create user to test login
     Whitelist(email=email).save()
     user = User(email=email,
@@ -53,20 +62,23 @@ def setup_test(context, email, name="Paul Anderson"):
                     institutes=[institute])
     new_user.save()
 
-    hgnc_handle = open(hgnc_path, 'r')
-    ensembl_handle = open(ensembl_transcript_path, 'r')
-    exac_handle = open(exac_genes_path, 'r')
-    hpo_genes_handle = open(hpo_genes_path, 'r')
-    hpo_terms_handle = open(hpo_terms_path, 'r')
-    hpo_disease_handle = open(hpo_disease_path, 'r')
+    hgnc_handle = get_file_handle(hgnc_path)
+    ensembl_handle = get_file_handle(ensembl_transcript_path)
+    exac_handle = get_file_handle(exac_genes_path)
+    hpo_genes_handle = get_file_handle(hpo_genes_path)
+    hpo_terms_handle = get_file_handle(hpo_terms_path)
+    hpo_disease_handle = get_file_handle(hpo_disease_path)
 
+    genes = link_genes(
+        ensembl_lines=ensembl_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=exac_handle, 
+        hpo_lines=hpo_genes_handle
+    )
     # Load the genes and transcripts
     load_hgnc_genes(
         adapter=adapter,
-        ensembl_lines=ensembl_handle,
-        hgnc_lines=hgnc_handle,
-        exac_lines=exac_handle,
-        hpo_lines=hpo_genes_handle,
+        genes=genes,
     )
 
     # Load the hpo terms and diseases
@@ -75,7 +87,10 @@ def setup_test(context, email, name="Paul Anderson"):
         hpo_lines=hpo_terms_handle,
         disease_lines=hpo_disease_handle
     )
-
+    
+    ## TODO load some gene panels
+    ## TODO update the config files
+    
     for index in [1, 2]:
         with open("tests/fixtures/config{}.yaml".format(index)) as in_handle:
             config = yaml.load(in_handle)
