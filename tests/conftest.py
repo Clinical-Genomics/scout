@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 vcf_research_file = "tests/fixtures/643594.research.vcf"
 sv_research_path = "tests/fixtures/1.SV.vcf"
 vcf_clinical_file = "tests/fixtures/643594.clinical.vcf"
-sv_clinical_path = "tests/fixtures/1.SV.vcf"
+sv_clinical_path = "tests/fixtures/643594.clinical.SV.vcf"
 ped_path = "tests/fixtures/1.ped"
 scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
@@ -413,7 +413,10 @@ def one_variant(request, variant_clinical_file):
 def one_sv_variant(request, sv_clinical_file):
     logger.info("Return one parsed SV variant")
     variant_parser = VCFParser(infile=sv_clinical_file)
-    variant = variant_parser.next()
+
+    for variant in variant_parser:
+        break
+
     return variant
 
 @pytest.fixture(scope='function')
@@ -428,9 +431,9 @@ def rank_results_header(request, variant_clinical_file):
     return rank_results
 
 @pytest.fixture(scope='function')
-def sv_clinical_variants(request, sv_clinical_variants):
+def sv_variants(request, sv_clinical_file):
     logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=sv_clinical_variants)
+    variants = VCFParser(infile=sv_clinical_file)
     return variants
 
 @pytest.fixture(scope='function')
@@ -447,11 +450,10 @@ def parsed_variant(request, one_variant, parsed_case):
     return variant_dict
 
 @pytest.fixture(scope='function')
-def parsed_sv_variant(request, one_file_sv_variant, parsed_case):
+def parsed_sv_variant(request, one_sv_variant, parsed_case):
     """Return a parsed variant"""
     print('')
-    for variant in one_file_sv_variant:
-        variant_dict = parse_variant(variant, parsed_case)
+    variant_dict = parse_variant(one_sv_variant, parsed_case)
     return variant_dict
 
 @pytest.fixture(scope='function')
