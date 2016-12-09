@@ -53,11 +53,7 @@ def test_get_genes():
     
     
     genes = parse_genes(variant)
-    # for transcript in transcripts:
-    #     if transcript.transcript_id == 'ENST00000296484':
-    #         assert transcript.sift_prediction == 'deleterious'
-    #         assert transcript.functional_annotations == ['missense_variant']
-    #         assert set(transcript.refseq_ids) == set(['XM_005265019', 'NM_015426'])
+    
     for gene in genes:
         assert gene['hgnc_id'] == 24488
     assert len(genes) == 1

@@ -52,3 +52,4 @@ arrow
 query_phenomizer>=0.5
 phizz>=0.2.1
 loqusdb>=0.5
+pyyaml

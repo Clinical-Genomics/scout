@@ -19,19 +19,18 @@ from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_di
 from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
-
+from scout.load import load_hgnc_genes
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
-vcf_file = "tests/fixtures/1.downsampled.vcf"
-sv_path = "tests/fixtures/1.SV.vcf"
-one_variant = "tests/fixtures/1.one.vcf"
-one_sv = "tests/fixtures/1.one.SV.vcf"
+vcf_research_file = "tests/fixtures/643594.research.vcf"
+sv_research_path = "tests/fixtures/1.SV.vcf"
+vcf_clinical_file = "tests/fixtures/643594.clinical.vcf"
+sv_clinical_path = "tests/fixtures/1.SV.vcf"
 ped_path = "tests/fixtures/1.ped"
-scout_config_file = "tests/fixtures/config1.ini"
-scout_yaml_config = 'tests/fixtures/config1.yaml'
+scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
@@ -92,24 +91,16 @@ def hpo_disease_file(request):
     return hpo_disease_path
 
 @pytest.fixture(scope='function')
-def variant_file(request):
+def variant_clinical_file(request):
     """Get the path to a variant file"""
     print('')
-    return vcf_file
-
+    return vcf_clinical_file
 
 @pytest.fixture(scope='function')
-def one_variant_file(request):
+def sv_clinical_file(request):
     """Get the path to a variant file"""
     print('')
-    return one_variant
-
-
-@pytest.fixture(scope='function')
-def sv_file(request):
-    """Get the path to a variant file"""
-    print('')
-    return sv_path
+    return sv_clinical_path
 
 
 @pytest.fixture(scope='function')
@@ -219,39 +210,31 @@ def hpo_diseases(request, hpo_disease_handle):
 
 
 ##################### Case fixtures #####################
+
 @pytest.fixture(scope='function')
-def case_lines(request):
+def ped_lines(request, scout_config):
     """Get the lines for a case"""
-    lines = [
+    case_lines = [
         "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
-        "337334-testset	ADM1136A1	0	0	1	1",
-        "337334-testset	ADM1136A2	ADM1136A1	ADM1136A3	1	2",
-        "337334-testset	ADM1136A3	0	0	2	1",
-    ]
-    return lines
+        "643594	ADM1059A1	0	0	1	1",
+        "643594	ADM1059A2	ADM1059A1	ADM1059A3	1	2",
+        "643594	ADM1059A3	0	0	2	1",
+        ]
+    return case_lines
 
 
 @pytest.fixture(scope='function')
-def parsed_case(request, case_lines, scout_config):
+def case_lines(request, scout_config):
     """Get the lines for a case"""
-    case = parse_case(scout_config, ped=case_lines)
+    case = parse_case(scout_config)
     return case
 
 
 @pytest.fixture(scope='function')
-def minimal_case(request):
-    print('')
-    logger.info("setup a vcf case")
-    case = {
-        'case_id': "337334",
-        'display_name': "337334",
-        'owner': 'cust000',
-        'collaborators': ['cust000'],
-        'individuals': []
-    }
-
+def parsed_case(request, scout_config):
+    """Get the lines for a case"""
+    case = parse_case(scout_config)
     return case
-
 
 @pytest.fixture(scope='function')
 def case_obj(request, parsed_case):
@@ -295,13 +278,14 @@ def client(request):
 
 
 @pytest.fixture(scope='function')
-def adapter(request):
+def adapter(request, client):
     """Get an adapter connected to mongomock database"""
+    mongo_client = client
+    
     database = 'test'
     host = 'localhost'
     port = 27017
 
-    mongo_client = MongoAdapter()
     mongo_client.connect_to_database(
         database=database,
         host=host,
@@ -354,6 +338,14 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
         institutes=parsed_user['institutes']
     )
     adapter.add_case(case_obj)
+    
+    # load_hgnc_genes(
+    #     adapter=adapter,
+    #     ensembl_lines=ensembl_handle,
+    #     hgnc_lines=hgnc_handle,
+    #     exac_lines=exac_handle,
+    #     hpo_lines=hpo_handle
+    # )
 
     return adapter
 
@@ -408,21 +400,26 @@ def panel_obj(request, parsed_panel):
 
 ##################### Variant fixtures #####################
 @pytest.fixture(scope='function')
-def one_file_variant(request, one_variant_file):
-    logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=one_variant_file)
+def one_variant(request, variant_clinical_file):
+    logger.info("Return one parsed variant")
+    variant_parser = VCFParser(infile=variant_clinical_file)
+    
+    for variant in variant_parser:
+        break
+    
     return variant
 
 @pytest.fixture(scope='function')
-def one_file_sv_variant(request):
-    logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=one_sv)
+def one_sv_variant(request, sv_clinical_file):
+    logger.info("Return one parsed SV variant")
+    variant_parser = VCFParser(infile=sv_clinical_file)
+    variant = variant_parser.next()
     return variant
 
 @pytest.fixture(scope='function')
-def rank_results_header(request, one_variant_file):
+def rank_results_header(request, variant_clinical_file):
     logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=one_variant_file)
+    variant = VCFParser(infile=variant_clinical_file)
     rank_results = []
     for info_line in variant.metadata.info_lines:
         if info_line['ID'] == 'RankResult':
@@ -430,25 +427,23 @@ def rank_results_header(request, one_variant_file):
     
     return rank_results
 
-
 @pytest.fixture(scope='function')
-def sv_variants(request, sv_file):
+def sv_clinical_variants(request, sv_clinical_variants):
     logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=sv_file)
+    variants = VCFParser(infile=sv_clinical_variants)
     return variants
 
 @pytest.fixture(scope='function')
-def variants(request, variant_file):
+def variants(request, variant_clinical_file):
     logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=variant_file)
+    variants = VCFParser(infile=variant_clinical_file)
     return variants
 
 @pytest.fixture(scope='function')
-def parsed_variant(request, one_file_variant, parsed_case):
+def parsed_variant(request, one_variant, parsed_case):
     """Return a parsed variant"""
     print('')
-    for variant in one_file_variant:
-        variant_dict = parse_variant(variant, parsed_case)
+    variant_dict = parse_variant(variant, parsed_case)
     return variant_dict
 
 @pytest.fixture(scope='function')
@@ -484,96 +479,3 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     print('')
     return (build_variant(variant, institute_obj, {})
             for variant in parsed_sv_variants)
-
-
-
-@pytest.fixture(scope='function')
-def minimal_snv(request):
-    """Simulate a variant dictionary from vcf parser"""
-    variant = {
-        'CHROM':'1',
-        'POS':'27232819',
-        'REF':'A',
-        'ALT':'T',
-        'ID':'rs1',
-        'FILTER':'PASS',
-        'QUAL':'164',
-        'info_dict': {},
-        'compound_variants': {},
-        'vep_info': {},
-
-    }
-    return variant
-
-@pytest.fixture(scope='function')
-def minimal_sv(request):
-    """Simulate a variant dictionary from vcf parser"""
-    variant = {
-        'CHROM':'1',
-        'POS':'10',
-        'REF':'A',
-        'ALT':'C',
-        'ID':'rs1',
-        'FILTER':'PASS',
-        'QUAL':'1000',
-        'INFO':'.',
-        'info_dict': {},
-        'compound_variants': {},
-        'vep_info': {},
-        'rank_scores': {'15026-miptest': '-2'},
-        'variant_id': '1_27232819_T_T]16:89585536]',
-        'info_dict':{
-            'Ensembl_transcript_to_refseq_transcript': ["NUDC:ENST00000321265>NM_006600/"\
-            "XM_005245726|ENST00000435827|ENST00000452707|ENST00000484772"],
-            'Gene_description': ['NUDC:nudC_nuclear_distribution_protein'],
-            'MATEID':['MantaBND:454:0:1:0:0:0:1'],
-            'SVTYPE':['BND'],
-        },
-        'vep_info': {
-            u'T]16': [
-                {
-                    'APPRIS': '',
-                    'Allele': 'T]16',
-                    'Amino_acids': '',
-                    'BIOTYPE': 'protein_coding',
-                    'CANONICAL': '',
-                    'CCDS': '',
-                    'CDS_position': '',
-                    'Codons': '',
-                    'Consequence': 'intron_variant',
-                    'DISTANCE': '',
-                    'DOMAINS': '',
-                    'ENSP': 'ENSP00000404020',
-                    'EXON': '',
-                    'Existing_variation': '',
-                    'FLAGS': 'cds_end_NF',
-                    'Feature': 'ENST00000435827',
-                    'Feature_type': 'Transcript',
-                    'Gene': 'ENSG00000090273',
-                    'HGNC_ID': '8045',
-                    'HGVS_OFFSET': '',
-                    'HGVSc': '',
-                    'HGVSp': '',
-                    'HIGH_INF_POS': '',
-                    'IMPACT': 'MODIFIER',
-                    'INTRON': '2/6',
-                    'MOTIF_NAME': '',
-                    'MOTIF_POS': '',
-                    'MOTIF_SCORE_CHANGE': '',
-                    'PolyPhen': '',
-                    'Protein_position': '',
-                    'SIFT': '',
-                    'STRAND': '1',
-                    'SWISSPROT': '',
-                    'SYMBOL': 'NUDC',
-                    'SYMBOL_SOURCE': 'HGNC',
-                    'TREMBL': '',
-                    'TSL': '',
-                    'UNIPARC': 'UPI0002A475AB',
-                    'cDNA_position': ''
-                }
-            ],
-            'T]16:89585536]': []
-        }
-    }
-    return variant
