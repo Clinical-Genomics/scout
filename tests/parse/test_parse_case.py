@@ -7,7 +7,7 @@ from scout.exceptions import PedigreeError
 def test_parse_case(scout_config, case_lines):
     # GIVEN you load sample information from PED file
     case_data = parse_case(scout_config, ped=case_lines)
-    assert case_data['owner'] == scout_config['institute']
+    assert case_data['owner'] == scout_config['owner']
 
 
 def test_parse_case_two_cases():
