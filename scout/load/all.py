@@ -26,14 +26,14 @@ def load_scout(adapter, config, ped=None, update=False):
     log.info("Load SNV variants for case %s", case_obj.case_id)
     load_variants(adapter=adapter, variant_file=config['vcf_snv'],
                   case_obj=case_obj, variant_type='clinical', category='snv', 
-                  hgnc_genes=hgnc_genes, rank_treshold=config['rank_treshold'])
+                  hgnc_genes=hgnc_genes, rank_treshold=config.get('rank_treshold'))
 
     if config.get('vcf_sv'):
         log.info("Load SV variants for case %s", case_obj.case_id)
         load_variants(adapter=adapter, variant_file=config['vcf_sv'],
                       case_obj=case_obj, variant_type='clinical',
                       category='sv', hgnc_genes=hgnc_genes, 
-                      rank_treshold=config['rank_treshold'])
+                      rank_treshold=config.get('rank_treshold'))
 
         case_obj.has_svvariants = True
         case_obj.save()

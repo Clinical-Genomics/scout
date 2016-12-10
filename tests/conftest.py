@@ -21,7 +21,7 @@ from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_di
 from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
-from scout.load import load_hgnc_genes
+from scout.load import (load_hgnc_genes, load_panel)
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
@@ -335,6 +335,24 @@ def gene_database(request, adapter, genes):
     load_hgnc_genes(adapter, genes)
 
     return adapter
+
+@pytest.fixture(scope='function')
+def panel_database(request, gene_database, panel_info, institute_obj, parsed_user):
+    "Returns an adapter to a database populated with user, institute and case"
+    mongo_adapter = gene_database
+    mongo_adapter.add_institute(institute_obj)
+    mongo_adapter.getoradd_user(
+        email=parsed_user['email'],
+        name=parsed_user['name'],
+        location=parsed_user['location'],
+        institutes=parsed_user['institutes']
+    )
+    load_panel(
+        adapter=mongo_adapter, 
+        panel_info=panel_info
+    )
+    
+    return mongo_adapter
 
 
 @pytest.fixture(scope='function')

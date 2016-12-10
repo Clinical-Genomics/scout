@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
+import datetime
+
 from invoke import run, task
 from invoke.util import log
 from codecs import open
@@ -10,6 +13,7 @@ from mongoengine import connect
 from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
 from scout.load import (load_scout, load_hgnc_genes, load_hpo, load_institute)
+from scout.load.panel import load_panel
 from scout import logger
 from scout.log import init_log
 from scout.utils.handle import get_file_handle
@@ -23,6 +27,7 @@ hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype
 hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt"
 
 panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
+scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 
 init_log(logger, loglevel='INFO')
 
@@ -100,12 +105,15 @@ def setup_test(context, email, name="Paul Anderson"):
         'full_name': 'Test panel',
     } 
     
-    ## TODO update the config files
+    load_panel(
+        adapter=adapter, 
+        panel_info=panel_info
+    )
     
-    for index in [1, 2]:
-        with open("tests/fixtures/config{}.yaml".format(index)) as in_handle:
+    # for index in [1, 2]:
+    with open(scout_yaml_config, 'r') as in_handle:
             config = yaml.load(in_handle)
-        load_scout(adapter=adapter, config=config)
+    load_scout(adapter=adapter, config=config)
 
 
 @task

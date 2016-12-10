@@ -95,7 +95,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
 
 def load_variant(adapter, variant, case_obj, institute_obj, hgnc_genes,
                  variant_type='clinical', rank_results_header=None,
-                 rank_treshold=5):
+                 rank_treshold=None):
     """Load a variant into the database
 
         Parse the variant, create a mongoengine object and load it into
@@ -113,6 +113,7 @@ def load_variant(adapter, variant, case_obj, institute_obj, hgnc_genes,
         Returns:
             variant_obj(Variant): mongoengine Variant object
     """
+    rank_treshold = rank_treshold or 5
     rank_results_header = rank_results_header or []
     parsed_variant = parse_variant(
         variant_dict=variant,
