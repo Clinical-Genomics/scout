@@ -385,9 +385,9 @@ def panel_info(request):
             'file': panel_1_path,
             'type': 'clinical',
             'institute': 'cust000',
-            'version': '0.1',
-            'name': 'Panel1',
-            'full_name': 'Panel 1'
+            'version': '1.0',
+            'name': 'panel1',
+            'full_name': 'Test panel'
         }
     return panel
 
@@ -401,9 +401,9 @@ def parsed_panel(request, panel_info):
 
 
 @pytest.fixture(scope='function')
-def panel_obj(request, parsed_panel):
+def panel_obj(request, parsed_panel, gene_database):
     """docstring for parsed_panels"""
-    panel = build_panel(panel_info)
+    panel = build_panel(parsed_panel, gene_database)
 
     return panel
 

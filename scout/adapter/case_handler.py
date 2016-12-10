@@ -248,7 +248,7 @@ class CaseHandler(object):
 
         return case
 
-    def gene_panel(self, panel_id, version=None):
+    def gene_panel(self, panel_id=None, version=None):
         """Fetch a gene panel.
 
         Args:
@@ -259,17 +259,21 @@ class CaseHandler(object):
             GenePanel: gene panel object
         """
         if version:
+            if not panel_id:
+                raise SyntaxError("Please provide a panel id")
             try:
                 logger.debug("Fetch gene panel {0}, version {1} from database".format(
                     panel_id, version
                 ))
-                panel = GenePanel.objects.get(panel_name=panel_id, version=version)
+                result = GenePanel.objects.get(panel_name=panel_id, version=version)
             except DoesNotExist:
-                panel = None
+                result = None
+        elif panel_id:
+            result = GenePanel.objects(panel_name=panel_id).order_by('-version').first()
         else:
-            panel = GenePanel.objects(panel_name=panel_id).order_by('-version').first()
+            result = GenePanel.objects()
 
-        return panel
+        return result
 
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database

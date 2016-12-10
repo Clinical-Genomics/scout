@@ -22,6 +22,8 @@ hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_
 hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
 hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt"
 
+panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
+
 init_log(logger, loglevel='INFO')
 
 @task
@@ -88,7 +90,16 @@ def setup_test(context, email, name="Paul Anderson"):
         disease_lines=hpo_disease_handle
     )
     
-    ## TODO load some gene panels
+    panel_info ={
+        'date': datetime.date.today(),
+        'file': panel_1_path,
+        'type': 'clinical',
+        'institute': 'cust000',
+        'version': '1.0',
+        'name': 'panel1',
+        'full_name': 'Test panel',
+    } 
+    
     ## TODO update the config files
     
     for index in [1, 2]:

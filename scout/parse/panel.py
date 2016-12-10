@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from codecs import open
+from scout.utils.handle import get_file_handle
 from scout.models.case.gene_list import Gene
 
 def parse_genes(panel_path):
@@ -14,50 +14,50 @@ def parse_genes(panel_path):
     genes = []
     header = []
 
-    with open(panel_path, 'r') as f:
-        for line in f:
-            line = line.rstrip()
-            if line.startswith('#'):
-                if not line.startswith('##'):
-                    header = [word.lower() for word in line[1:].split('\t')]
+    f = get_file_handle(panel_path)
+    for line in f:
+        line = line.rstrip()
+        if line.startswith('#'):
+            if not line.startswith('##'):
+                header = [word.lower() for word in line[1:].split('\t')]
+        else:
+            line = line.split('\t')
+            gene = {}
+            gene_info = dict(zip(header, line))
+            #These are the panels that the gene belongs to:
+            gene['hgnc_id'] = gene_info.get('hgnc_id')
+            hgnc_symbol = gene_info.get('hgnc_symbol')
+            if hgnc_symbol:
+                gene['hgnc_symbol'] = hgnc_symbol.upper()
             else:
-                line = line.split('\t')
-                gene = {}
-                gene_info = dict(zip(header, line))
-                #These are the panels that the gene belongs to:
-                gene['hgnc_id'] = gene_info.get('hgnc_id')
-                hgnc_symbol = gene_info.get('hgnc_symbol')
-                if hgnc_symbol:
-                    gene['hgnc_symbol'] = hgnc_symbol.upper()
-                else:
-                    gene['hgnc_symbol'] = None
+                gene['hgnc_symbol'] = None
 
-                transcripts = gene_info.get('disease_associated_transcripts')
-                if transcripts:
-                    gene['disease_associated_transcripts'] = [
-                        transcript.split('.')[0] for transcript in transcripts.split(',')
-                    ]
-                else:
-                    gene['disease_associated_transcripts'] = []
-                
-                models = gene_info.get('genetic_disease_models')
-                if models:
-                    gene['genetic_disease_models'] = models.split(',')
-                else:
-                    gene['genetic_disease_models'] = []
-                
-                manual_mosaicism = gene_info.get('mosaicism')
-                manual_reduced_penetrance = gene_info.get('reduced_penetrance')
-                gene['database_entry_version'] = gene_info.get('database_entry_version')
+            transcripts = gene_info.get('disease_associated_transcripts')
+            if transcripts:
+                gene['disease_associated_transcripts'] = [
+                    transcript.split('.')[0] for transcript in transcripts.split(',')
+                ]
+            else:
+                gene['disease_associated_transcripts'] = []
+            
+            models = gene_info.get('genetic_disease_models')
+            if models:
+                gene['genetic_disease_models'] = models.split(',')
+            else:
+                gene['genetic_disease_models'] = []
+            
+            manual_mosaicism = gene_info.get('mosaicism')
+            manual_reduced_penetrance = gene_info.get('reduced_penetrance')
+            gene['database_entry_version'] = gene_info.get('database_entry_version')
 
-                gene['mosaicism'] = False
-                gene['reduced_penetrance'] = False
-                if manual_reduced_penetrance:
-                    gene['reduced_penetrance'] = True
-                if manual_mosaicism:
-                    gene['mosaicism'] = True
+            gene['mosaicism'] = False
+            gene['reduced_penetrance'] = False
+            if manual_reduced_penetrance:
+                gene['reduced_penetrance'] = True
+            if manual_mosaicism:
+                gene['mosaicism'] = True
 
-                genes.append(gene)
+            genes.append(gene)
 
     return genes
 

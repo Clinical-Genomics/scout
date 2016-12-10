@@ -32,5 +32,13 @@ samples:
     sex: female
     expected_coverage: 30
 
-default_gene_panels:
-  - IEM
+vcf_snv: tests/fixtures/643594.clinical.vcf
+vcf_sv: tests/fixtures/643594.clinical.SV.vcf
+
+madeline: tests/fixtures/madeline.xml
+default_panels: [Panel1]
+
+# meta data
+rank_model_version: 1.12
+analysis_date: 2016-10-12 14:00:46
+human_genome_build: GRCh.37
