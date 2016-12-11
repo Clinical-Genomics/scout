@@ -31,6 +31,7 @@ scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 
 init_log(logger, loglevel='INFO')
 
+
 @task
 def setup_test(context, email, name="Paul Anderson"):
     """docstring for setup"""
@@ -44,14 +45,14 @@ def setup_test(context, email, name="Paul Anderson"):
         'display_name': 'test-institute',
         'sanger_recipients': [email]
     }
-    
+
     load_institute(
         adapter=adapter,
-        internal_id=institute_info['internal_id'], 
-        display_name=institute_info['display_name'], 
+        internal_id=institute_info['internal_id'],
+        display_name=institute_info['display_name'],
         sanger_recipients=institute_info['sanger_recipients']
     )
-    
+
     institute = adapter.institute(institute_id=institute_info['internal_id'])
     # create user to test login
     Whitelist(email=email).save()
@@ -77,9 +78,9 @@ def setup_test(context, email, name="Paul Anderson"):
     hpo_disease_handle = get_file_handle(hpo_disease_path)
 
     genes = link_genes(
-        ensembl_lines=ensembl_handle, 
-        hgnc_lines=hgnc_handle, 
-        exac_lines=exac_handle, 
+        ensembl_lines=ensembl_handle,
+        hgnc_lines=hgnc_handle,
+        exac_lines=exac_handle,
         hpo_lines=hpo_genes_handle
     )
     # Load the genes and transcripts
@@ -94,8 +95,8 @@ def setup_test(context, email, name="Paul Anderson"):
         hpo_lines=hpo_terms_handle,
         disease_lines=hpo_disease_handle
     )
-    
-    panel_info ={
+
+    panel_info = {
         'date': datetime.date.today(),
         'file': panel_1_path,
         'type': 'clinical',
@@ -103,13 +104,13 @@ def setup_test(context, email, name="Paul Anderson"):
         'version': '1.0',
         'name': 'panel1',
         'full_name': 'Test panel',
-    } 
-    
+    }
+
     load_panel(
-        adapter=adapter, 
+        adapter=adapter,
         panel_info=panel_info
     )
-    
+
     # for index in [1, 2]:
     with open(scout_yaml_config, 'r') as in_handle:
             config = yaml.load(in_handle)

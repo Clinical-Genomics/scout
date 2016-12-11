@@ -40,5 +40,6 @@ default_panels: [Panel1]
 
 # meta data
 rank_model_version: 1.12
+rank_threshold: -100
 analysis_date: 2016-10-12 14:00:46
 human_genome_build: GRCh.37
