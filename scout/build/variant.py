@@ -1,6 +1,6 @@
 from scout.models import Variant
 
-from . import (build_genotype, build_compound, build_gene)
+from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
 def build_variant(variant, institute, hgnc_genes):
     """Build a mongoengine Variant based on parsed information
@@ -72,6 +72,13 @@ def build_variant(variant, institute, hgnc_genes):
             hgnc_symbols.append(hgnc_gene.hgnc_symbol)
 
     variant_obj['hgnc_symbols'] = hgnc_symbols
+
+    # Add the clnsig ocbjects
+    clnsig_objects = []
+    for entry in variant.get('clnsig',[]):
+        clnsig_obj = build_clnsig(entry)
+        clnsig_objects.append(clnsig_obj)
+    variant_obj['clnsig'] = clnsig_objects
 
     # Add the callers
     call_info = variant.get('callers', {})

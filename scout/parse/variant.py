@@ -196,14 +196,8 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['genetic_models'] = genetic_models
 
     # Add the clinsig prediction
-    clnsig_accessions = parse_clnsig(variant_dict)
-    if clnsig_accessions:
-        variant['clnsig'] = 5
-        variant['clnsigacc'] = clnsig_accessions
-    else:
-        variant['clnsig'] = None
-        variant['clnsigacc'] = None
-
+    variant['clnsig'] = parse_clnsig(variant_dict)
+    
     ################# Add the gene and transcript information #################
 
     variant['genes'] = parse_genes(variant_dict)
@@ -227,8 +221,8 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
 
     spidex = variant_dict['info_dict'].get('SPIDEX')
     if spidex:
-        value = spidex[0]
-        variant['spidex'] = spidex
+        value = float(spidex[0])
+        variant['spidex'] = value
 
     variant['conservation'] = parse_conservations(variant_dict)
 

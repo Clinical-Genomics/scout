@@ -37,7 +37,7 @@ def parse_case(config, ped=None):
                          else []),
     } for sample in config['samples']]
 
-    owner = config['institute']
+    owner = config['owner']
     family_id = config['family']
     case_data = {
         'owner': owner,

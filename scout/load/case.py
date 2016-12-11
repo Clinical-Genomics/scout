@@ -18,6 +18,8 @@ def load_case(adapter, case_obj, update=False):
         case_obj (Case): case object to persist to the database
         update(bool): If existing case should be updated
     """
+    logger.info('Loading case {} into database'.format(case_obj.display_name))
+    
     owner = case_obj.owner
     institute_obj = adapter.institute(institute_id=owner)
     if not institute_obj:

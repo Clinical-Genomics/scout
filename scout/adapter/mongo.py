@@ -114,9 +114,12 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
 
         return user_obj
 
-    def user(self, email):
+    def user(self, email=None):
         """Fetch a user from the database."""
-        user_obj = User.objects.get(email=email)
+        if email:
+            user_obj = User.objects.get(email=email)
+        else:
+            user_obj = User.objects()
         return user_obj
 
     def update_access(self, user_obj):

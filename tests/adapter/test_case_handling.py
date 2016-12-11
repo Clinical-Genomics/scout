@@ -25,33 +25,58 @@ def test_add_cases(adapter, case_obj, institute_obj):
 
 
 def test_add_existing_case(adapter, case_obj, institute_obj):
+    # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.add_institute(institute_obj)
 
     adapter.add_case(case_obj)
+    # WHEN adding a existing case to the database
     with pytest.raises(IntegrityError):
+    # THEN it should raise integrity error
         adapter.add_case(case_obj)
 
 
 def test_get_case(adapter, case_obj, institute_obj):
+    # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.add_institute(institute_obj)
     adapter.add_case(case_obj)
     logger.info("Testing to get case")
 
+    # WHEN retreiving an existing case from the database
     result = adapter.case(
         institute_id=case_obj.owner,
         case_id=case_obj.display_name
     )
+    # THEN we should get the correct case
     assert result.owner == case_obj.owner
+
+def test_get_non_existing_case(adapter, case_obj, institute_obj):
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.add_institute(institute_obj)
+    adapter.add_case(case_obj)
+    logger.info("Testing to get case")
+
+    # WHEN retreiving an non existing case from the database
+    result = adapter.case(
+        institute_id=case_obj.owner,
+        case_id='hello'
+    )
+    # THEN we should get None back
+    assert result == None
 
 
 def test_add_user(adapter, institute_obj, parsed_user):
+    # GIVEN an empty database (no users)
+    assert adapter.user().count() == 0
     adapter.add_institute(institute_obj)
+    # WHEN adding a user to the database
     adapter.getoradd_user(
         email=parsed_user['email'],
         name=parsed_user['name'],
         location=parsed_user['location'],
         institutes=parsed_user['institutes']
     )
+    # THEN we should get the correct user
     assert adapter.user(email=parsed_user['email']).name == parsed_user['name']

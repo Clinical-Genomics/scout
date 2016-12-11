@@ -2,8 +2,8 @@ from scout.parse.exac import (parse_exac_line, parse_exac_genes)
 
 def test_parse_exac_line(exac_handle):
     """Test to parse a exac line"""
-    header = exac_handle.next().rstrip().split('\t')
-    first_gene = exac_handle.next()
+    header = next(exac_handle).rstrip().split('\t')
+    first_gene = next(exac_handle)
     
     gene_info = parse_exac_line(header=header, line=first_gene)
     

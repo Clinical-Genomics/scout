@@ -1,8 +1,8 @@
 from scout.parse.hpo import (parse_hpo_phenotype, parse_hpo_phenotypes)
 
 def test_parse_hpo_term(hpo_terms_handle):
-    header = hpo_terms_handle.next()
-    first_term = hpo_terms_handle.next()
+    header = next(hpo_terms_handle)
+    first_term = next(hpo_terms_handle)
     hpo_info = parse_hpo_phenotype(first_term)
     
     assert hpo_info['hpo_id'] == first_term.rstrip().split('\t')[0]

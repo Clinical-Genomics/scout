@@ -1,3 +1,4 @@
+from .clnsig import (build_clnsig)
 from .hpo import (build_hpo_term, build_disease_term)
 from .hgnc_gene import build_hgnc_gene
 from .institute import build_institute

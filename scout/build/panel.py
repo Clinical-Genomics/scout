@@ -52,6 +52,8 @@ def build_gene(gene_info, adapter):
         gene_obj.reduced_penetrance = gene_info['reduced_penetrance']
     if gene_info['mosaicism']:
         gene_obj.mosaicism = gene_info['mosaicism']
+    if gene_info['database_entry_version']:
+        gene_obj.database_entry_version = gene_info['database_entry_version']
 
     return gene_obj
 

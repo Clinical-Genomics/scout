@@ -47,7 +47,7 @@ def build_hgnc_gene(gene):
     gene_obj.vega_id = gene.get('vega_id')
 
     transcript_objs = []
-    for transcript_id in gene['transcripts']:
+    for transcript_id in gene.get('transcripts',[]):
         transcript = gene['transcripts'][transcript_id]
         transcript_objs.append(build_hgnc_transcript(transcript))
 

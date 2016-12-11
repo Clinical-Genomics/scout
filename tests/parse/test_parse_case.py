@@ -4,10 +4,12 @@ from scout.parse.case import parse_ped
 from scout.exceptions import PedigreeError
 
 
-def test_parse_case(scout_config, case_lines):
-    # GIVEN you load sample information from PED file
-    case_data = parse_case(scout_config, ped=case_lines)
-    assert case_data['owner'] == scout_config['institute']
+def test_parse_case(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have a owner
+    assert case_data['owner'] == scout_config['owner']
 
 
 def test_parse_case_two_cases():
@@ -26,13 +28,13 @@ def test_parse_case_two_cases():
         parse_case(config, ped=case_lines)
 
 
-def test_parse_ped(case_lines):
+def test_parse_ped(ped_lines):
     # GIVEN a pedigree with three samples
-    assert len(case_lines) == 4
+    assert len(ped_lines) == 4
     # WHEN parsing out relevant sample info
-    family_id, samples = parse_ped(case_lines)
+    family_id, samples = parse_ped(ped_lines)
     # THEN it should return stuff
-    assert family_id == '337334-testset'
+    assert family_id == '643594'
     assert len(samples) == 3
     # assert samples[0]['sample_id'] == 'ADM1136A1'
     # assert samples[0]['sex'] == 'male'

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
+import datetime
+
 from invoke import run, task
 from invoke.util import log
 from codecs import open
@@ -9,20 +12,24 @@ from mongoengine import connect
 
 from scout.adapter import MongoAdapter
 from scout.models import (User, Whitelist, Institute)
-from scout.load import (load_scout, load_hgnc_genes, load_hpo)
+from scout.load import (load_scout, load_hgnc_genes, load_hpo, load_institute)
+from scout.load.panel import load_panel
 from scout import logger
 from scout.log import init_log
+from scout.utils.handle import get_file_handle
+from scout.utils.link import link_genes
 
-hgnc_path = "tests/fixtures/resources/hgnc_complete_set.txt"
-ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_37.txt"
-exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt"
-hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
-hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
+hgnc_path = "tests/fixtures/resources/hgnc_reduced_set.txt"
+ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_reduced.txt"
+exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
+hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt"
+hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
+hpo_disease_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt"
 
+panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
+scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 
 init_log(logger, loglevel='INFO')
-
 
 @task
 def setup_test(context, email, name="Paul Anderson"):
@@ -32,13 +39,20 @@ def setup_test(context, email, name="Paul Anderson"):
     adapter.connect_to_database(database=db_name)
     adapter.drop_database()
 
-    institute_obj = Institute(
-        internal_id='cust000',
-        display_name='test-institute',
-        sanger_recipients=[email]
+    institute_info = {
+        'internal_id': 'cust000',
+        'display_name': 'test-institute',
+        'sanger_recipients': [email]
+    }
+    
+    load_institute(
+        adapter=adapter,
+        internal_id=institute_info['internal_id'], 
+        display_name=institute_info['display_name'], 
+        sanger_recipients=institute_info['sanger_recipients']
     )
-    adapter.add_institute(institute_obj)
-    institute = adapter.institute(institute_id=institute_obj.internal_id)
+    
+    institute = adapter.institute(institute_id=institute_info['internal_id'])
     # create user to test login
     Whitelist(email=email).save()
     user = User(email=email,
@@ -55,20 +69,23 @@ def setup_test(context, email, name="Paul Anderson"):
                     institutes=[institute])
     new_user.save()
 
-    hgnc_handle = open(hgnc_path, 'r')
-    ensembl_handle = open(ensembl_transcript_path, 'r')
-    exac_handle = open(exac_genes_path, 'r')
-    hpo_genes_handle = open(hpo_genes_path, 'r')
-    hpo_terms_handle = open(hpo_terms_path, 'r')
-    hpo_disease_handle = open(hpo_disease_path, 'r')
+    hgnc_handle = get_file_handle(hgnc_path)
+    ensembl_handle = get_file_handle(ensembl_transcript_path)
+    exac_handle = get_file_handle(exac_genes_path)
+    hpo_genes_handle = get_file_handle(hpo_genes_path)
+    hpo_terms_handle = get_file_handle(hpo_terms_path)
+    hpo_disease_handle = get_file_handle(hpo_disease_path)
 
+    genes = link_genes(
+        ensembl_lines=ensembl_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=exac_handle, 
+        hpo_lines=hpo_genes_handle
+    )
     # Load the genes and transcripts
     load_hgnc_genes(
         adapter=adapter,
-        ensembl_lines=ensembl_handle,
-        hgnc_lines=hgnc_handle,
-        exac_lines=exac_handle,
-        hpo_lines=hpo_genes_handle,
+        genes=genes,
     )
 
     # Load the hpo terms and diseases
@@ -77,11 +94,26 @@ def setup_test(context, email, name="Paul Anderson"):
         hpo_lines=hpo_terms_handle,
         disease_lines=hpo_disease_handle
     )
-
-    for index in [1, 2]:
-        with open("tests/fixtures/config{}.yaml".format(index)) as in_handle:
+    
+    panel_info ={
+        'date': datetime.date.today(),
+        'file': panel_1_path,
+        'type': 'clinical',
+        'institute': 'cust000',
+        'version': '1.0',
+        'name': 'panel1',
+        'full_name': 'Test panel',
+    } 
+    
+    load_panel(
+        adapter=adapter, 
+        panel_info=panel_info
+    )
+    
+    # for index in [1, 2]:
+    with open(scout_yaml_config, 'r') as in_handle:
             config = yaml.load(in_handle)
-        load_scout(adapter=adapter, config=config)
+    load_scout(adapter=adapter, config=config)
 
 
 @task

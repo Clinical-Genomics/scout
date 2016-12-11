@@ -22,7 +22,7 @@ from scout.models import (User, Whitelist)
 
 from scout.load import (load_hgnc_genes, load_hpo)
 
-from .utils import get_file_handle
+from scout.utils.handle import get_file_handle
 
 logger = logging.getLogger(__name__)
 

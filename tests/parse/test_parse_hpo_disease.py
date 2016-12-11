@@ -1,8 +1,8 @@
 from scout.parse.hpo import (parse_hpo_disease, parse_hpo_diseases)
 
 def test_parse_disease(hpo_disease_handle):
-    header = hpo_disease_handle.next()
-    first_disease = hpo_disease_handle.next()
+    header = next(hpo_disease_handle).rstrip()
+    first_disease = next(hpo_disease_handle)
     disease_info = parse_hpo_disease(first_disease)
     
     assert disease_info['disease_nr'] == int(first_disease.rstrip().split('\t')[0].split(':')[1])
