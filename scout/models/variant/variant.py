@@ -180,8 +180,9 @@ class Variant(Document):
 
     @property
     def clnsig_human(self):
-        human_str = CLINSIG_MAP.get(self.clnsig, 'not provided')
-        return human_str
+        for clinsig_obj in self.clnsig:
+            human_str = CLINSIG_MAP.get(clinsig_obj.value, 'not provided')
+            yield clinsig_obj, human_str
 
     @property
     def omim_annotation_links(self):

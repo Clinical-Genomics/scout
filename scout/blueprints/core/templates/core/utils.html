@@ -48,7 +48,7 @@
         </div>
         <div class="row">
           {% if variant_id %}
-            <div class="col-xs-5">
+            <div class="col-xs-6">
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="level" value="global">
@@ -57,7 +57,7 @@
               </div>
             </div>
           {% endif %}
-          <div class="col-xs-{{ 7 if variant_id else 12 }}">
+          <div class="col-xs-{{ 6 if variant_id else 12 }}">
             <button class="btn btn-default form-control" type="submit">Comment</button>
           </div>
         </div>
