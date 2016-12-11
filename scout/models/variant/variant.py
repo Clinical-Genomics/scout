@@ -42,7 +42,7 @@ class Clinsig(EmbeddedDocument):
     value = IntField()
     accession = StringField()
     revstat = StringField()
-    
+
 
 class GTCall(EmbeddedDocument):
     sample_id = StringField()
@@ -325,15 +325,12 @@ class Variant(Document):
 
         Combines multiple metrics into a single call.
         """
-        most_common_frequency = max(self.thousand_genomes_frequency,
-                                    self.exac_frequency)
-
+        most_common_frequency = max(self.thousand_genomes_frequency or 0,
+                                    self.exac_frequency or 0)
         if most_common_frequency > .05:
             return 'common'
-
         elif most_common_frequency > .01:
             return 'uncommon'
-
         else:
             return 'rare'
 
