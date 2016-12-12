@@ -357,37 +357,37 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
     assert event.link == 'removehpolink'
     event.delete()
 
-def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
-    logger.info("Add specific comment for a variant")
-    content = "hello"
-    # GIVEN a populated database with variants
-    institute = variant_database.institute(
-        institute_id=institute_obj.internal_id
-    )
-    case = variant_database.case(
-        institute_id=institute_obj.internal_id, 
-        case_id=case_obj.display_name
-    )
-    user = variant_database.user(
-        email = user_obj.email
-    )
-    variant =  Variant.objects.first()
-    variant_id = variant.id
-    
-    # WHEN commenting on a variant
-    variant_database.comment(
-        institute=institute,
-        case=case,
-        user=user,
-        link='commentlink',
-        variant=variant,
-        content=content,
-        comment_level='specific'
-    )
-    # THEN the variant should have comments
-    updated_variant = variant_database.variant(variant_id)
-    assert updated_variant.has_comments(case=case) == True
-
-    # THEN a event should have been created
-    event = Event.objects.get(verb='comment')
-    assert event.link == 'commentlink'
+# def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
+#     logger.info("Add specific comment for a variant")
+#     content = "hello"
+#     # GIVEN a populated database with variants
+#     institute = variant_database.institute(
+#         institute_id=institute_obj.internal_id
+#     )
+#     case = variant_database.case(
+#         institute_id=institute_obj.internal_id,
+#         case_id=case_obj.display_name
+#     )
+#     user = variant_database.user(
+#         email = user_obj.email
+#     )
+#     variant =  Variant.objects.first()
+#     variant_id = variant.id
+#
+#     # WHEN commenting on a variant
+#     variant_database.comment(
+#         institute=institute,
+#         case=case,
+#         user=user,
+#         link='commentlink',
+#         variant=variant,
+#         content=content,
+#         comment_level='specific'
+#     )
+#     # THEN the variant should have comments
+#     updated_variant = variant_database.variant(variant_id)
+#     assert updated_variant.has_comments(case=case) == True
+#
+#     # THEN a event should have been created
+#     event = Event.objects.get(verb='comment')
+#     assert event.link == 'commentlink'

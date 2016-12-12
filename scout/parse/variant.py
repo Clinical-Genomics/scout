@@ -9,6 +9,7 @@ from scout.parse.frequency import parse_frequencies
 from scout.parse.conservation import parse_conservations
 from scout.parse.ids import parse_ids
 from scout.parse.callers import parse_callers
+from scout.parse.rank_score import parse_rank_score
 
 from scout.exceptions import VcfError
 
@@ -175,7 +176,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
 
-    rank_score = float(variant_dict.get('rank_scores', {}).get(case_name, 0.0))
+    rank_score = parse_rank_score(variant_dict, case_name)
     variant['rank_score'] = rank_score
 
     ################# Add gt calls #################

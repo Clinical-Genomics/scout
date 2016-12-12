@@ -91,6 +91,18 @@ def build_variant(variant, institute, hgnc_genes):
     variant_obj['phast_conservation'] = conservation_info.get('phast', [])
     variant_obj['gerp_conservation'] = conservation_info.get('gerp', [])
     variant_obj['phylop_conservation'] = conservation_info.get('phylop', [])
+    
+    # Add the frequencies
+    frequencies = variant.get('frequencies', {})
+    variant_obj['thousand_genomes_frequency'] = frequencies.get('thousand_g')
+    variant_obj['exac_frequency'] = frequencies.get('exac')
+    variant_obj['max_thousand_genomes_frequency'] = frequencies.get('thousand_g_max')
+    variant_obj['max_exac_frequency'] = frequencies.get('exac_max')
+    
+    # Add the severity predictors
+    
+    variant_obj['cadd_score'] = variant.get('cadd_score')
+    variant_obj['spidex'] = variant.get('spidex')
 
     # Add the rank score results
     rank_results = []
@@ -100,6 +112,7 @@ def build_variant(variant, institute, hgnc_genes):
             'score': variant['rank_result'][category]
         }
         rank_results.append(rank_result)
+    
     variant_obj['rank_score_results'] = rank_results
 
     return variant_obj
