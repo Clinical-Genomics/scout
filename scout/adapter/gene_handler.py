@@ -58,11 +58,9 @@ class GeneHandler(object):
                 result()
         """
         logger.info("Fetching all genes")
-
         return HgncGene.objects().order_by('chromosome')
-    
+
     def drop_genes(self):
         """Delete the genes collection"""
         logger.info("Dropping the HgncGene collection")
-        
         print(HgncGene.drop_collection())

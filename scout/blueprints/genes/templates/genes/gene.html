@@ -1,37 +1,43 @@
 {% extends "genes/layout.html" %}
 
-{% block vue_block %}
-  <div class="container-fluid clear-navbar">
-    {# ROW 0 #}
-    <div class="row">
-      <div class="col-md-12">
-        <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
-      </div>
-    </div>
+{% block title %}
+  {{ super() }} - Genes - {{ gene.hgnc_symbol }}
+{% endblock %}
 
-    {# ROW 1 #}
-    <div class="row">
-      <div class="col-md-12">
-        {{ header(gene) }}
-      </div>
-    </div>
+{% block top_nav %}
+  <li>
+    <a href="{{ url_for('genes.genes') }}">Genes</a>
+  </li>
+  <li class="active">
+    <a href="{{ url_for('genes.gene', hgnc_symbol=gene.hgnc_id) }}">
+      {{ gene.hgnc_symbol }}
+    </a>
+  </li>
+{% endblock %}
 
-    {# ROW 2 #}
-    <div class="row">
-      <div class="col-md-6">
-        {{ overview(gene) }}
-      </div>
+{% block content_main %}
+  {{ super() }}
 
-      <div class="col-md-6">
-        {{ inheritance(gene) }}
-      </div>
+  {# ROW 0 #}
+  <div class="row">
+    <div class="col-md-12">
+      <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
     </div>
+  </div>
 
-    <div class="row">
-      <div class="col-md-12">
-        {{ transcripts(gene) }}
-      </div>
-    </div>
+  {# ROW 1 #}
+  <div class="row">
+    <div class="col-md-12">{{ header(gene) }}</div>
+  </div>
+
+  {# ROW 2 #}
+  <div class="row">
+    <div class="col-md-6">{{ overview(gene) }}</div>
+    <div class="col-md-6">{{ inheritance(gene) }}</div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">{{ transcripts(gene) }}</div>
   </div>
 {% endblock %}
 

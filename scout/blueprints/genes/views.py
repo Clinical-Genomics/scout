@@ -16,9 +16,12 @@ genes_bp = Blueprint('genes', __name__, template_folder='templates',
 @login_required
 def genes():
     """Render seach box for genes."""
-    genes = (store.hgnc_genes(request.args['query'])
-             if 'query' in request.args else [])
-    return dict(genes=genes)
+    query = request.args.get('query', '')
+    if '|' in query:
+        hgnc_id = int(query.split(' | ', 1)[0])
+        return redirect(url_for('.gene', hgnc_id=hgnc_id))
+    gene_q = store.all_genes().limit(20)
+    return dict(genes=gene_q)
 
 
 @genes_bp.route('/genes/<int:hgnc_id>')
@@ -52,6 +55,6 @@ def api_genes():
         Q(aliases__icontains=query) or
         Q(description__icontains=query)
     )
-    gene_data = [{'id': gene.hgnc_id, 'title': gene.hgnc_symbol}
-                 for gene in gene_query]
-    return jsonify(results=gene_data)
+    json_terms = [{'name': '{} | {}'.format(gene.hgnc_id, gene.hgnc_symbol),
+                   'id': gene.hgnc_id} for gene in gene_query]
+    return jsonify(json_terms)
