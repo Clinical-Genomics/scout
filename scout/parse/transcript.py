@@ -22,7 +22,7 @@ def parse_transcripts(variant):
             transcript_id = vep_entry.get('Feature', '').split(':')[0]
             transcript['transcript_id'] = transcript_id
 
-            # Add the hgnc gene identifier
+            # Add the hgnc gene identifiers
             hgnc_id = vep_entry.get('HGNC_ID')
             if hgnc_id:
                 transcript['hgnc_id'] = int(hgnc_id)

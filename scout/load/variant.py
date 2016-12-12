@@ -27,7 +27,7 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
 
 
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
-                  category='snv', hgnc_genes={}, rank_treshold=5):
+                  category='snv', rank_treshold=5):
     """Load all variantt in variants
 
         Args:
@@ -64,7 +64,6 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 variant=variant,
                 case_obj=case_obj,
                 institute_obj=institute_obj,
-                hgnc_genes=hgnc_genes,
                 variant_type=variant_type,
                 rank_results_header=rank_results_header,
                 rank_treshold=rank_treshold,
@@ -93,7 +92,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     adapter.add_variant_rank(case_obj, variant_type, category=category)
 
 
-def load_variant(adapter, variant, case_obj, institute_obj, hgnc_genes,
+def load_variant(adapter, variant, case_obj, institute_obj,
                  variant_type='clinical', rank_results_header=None,
                  rank_treshold=None):
     """Load a variant into the database
@@ -127,7 +126,6 @@ def load_variant(adapter, variant, case_obj, institute_obj, hgnc_genes,
         variant_obj = build_variant(
             variant=parsed_variant,
             institute=institute_obj,
-            hgnc_genes=hgnc_genes
         )
 
         adapter.load_variant(variant_obj)

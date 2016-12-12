@@ -2,7 +2,7 @@ from scout.models import Variant
 
 from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
-def build_variant(variant, institute, hgnc_genes):
+def build_variant(variant, institute):
     """Build a mongoengine Variant based on parsed information
 
         Args:
@@ -61,17 +61,11 @@ def build_variant(variant, institute, hgnc_genes):
     for gene in variant.get('genes', []):
         gene_obj = build_gene(gene)
         genes.append(gene_obj)
+    
     variant_obj['genes'] = genes
 
     variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
-    
-    hgnc_symbols = []
-    for hgnc_id in variant_obj['hgnc_ids']:
-        hgnc_gene = hgnc_genes.get(hgnc_id)
-        if hgnc_gene:
-            hgnc_symbols.append(hgnc_gene.hgnc_symbol)
-
-    variant_obj['hgnc_symbols'] = hgnc_symbols
+    variant_obj['hgnc_symbols'] = variant.get('hgnc_symbols')
 
     # Add the clnsig ocbjects
     clnsig_objects = []
