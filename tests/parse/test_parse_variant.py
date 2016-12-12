@@ -44,3 +44,12 @@ def test_parse_many_svs(sv_variants, parsed_case):
             assert False
         assert parsed_variant['chromosome'] == variant['CHROM']
 
+def test_parse_cadd(variants, parsed_case):
+    # GIVEN some parsed variant dicts
+    for variant in variants:
+    # WHEN score is present
+        if 'CADD' in variant['info_dict']:
+            cadd_score = float(variant['info_dict']['CADD'][0])
+            parsed_variant = parse_variant(variant, parsed_case)
+    # THEN make sure that the cadd score is parsed correct
+            assert parsed_variant['cadd_score'] == cadd_score

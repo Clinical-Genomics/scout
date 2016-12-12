@@ -428,6 +428,23 @@ def panel_obj(request, parsed_panel, gene_database):
 
 ##################### Variant fixtures #####################
 @pytest.fixture(scope='function')
+def basic_variant_dict(request):
+    """Return a variant dict with the required information"""
+    variant = {
+        'CHROM': '1',
+        'ID': '.',
+        'POS': '10',
+        'REF': 'A',
+        'ALT': 'C',
+        'QUAL': '100',
+        'FILTER': 'PASS',
+        'FORMAT': 'GT',
+        'INFO': '.',
+        'info_dict':{},
+    }
+    return variant
+
+@pytest.fixture(scope='function')
 def one_variant(request, variant_clinical_file):
     logger.info("Return one parsed variant")
     variant_parser = VCFParser(infile=variant_clinical_file)
@@ -474,7 +491,7 @@ def variants(request, variant_clinical_file):
 def parsed_variant(request, one_variant, parsed_case):
     """Return a parsed variant"""
     print('')
-    variant_dict = parse_variant(variant, parsed_case)
+    variant_dict = parse_variant(one_variant, parsed_case)
     return variant_dict
 
 @pytest.fixture(scope='function')
