@@ -49,7 +49,7 @@ def parse_genes(variant):
         most_severe_sift = None
         most_severe_polyphen = None
         for transcript in gene_transcripts:
-
+            
             for consequence in transcript['functional_annotations']:
                 new_score = SO_TERMS[consequence]['rank']
                 if new_score < most_severe_score:

@@ -183,50 +183,86 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     )
     populated_database.load_variant(sv_one)
     
-    assert populated_database.variants(case_id, category='snv').count() == 2
-    assert populated_database.variants(case_id, category='sv').count() == 1
-    
+    result = populated_database.variants(case_id, category='snv')
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 2
+
+    result = populated_database.variants(case_id, category='sv')
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
+        
     #Try to match only snv_one
     query = {'chrom': '1', 'start': 10, 'end':10}
     result = populated_database.variants(case_id, category='snv', query=query)
-    assert result.count() == 1
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
 
     #Try to match only both snvs
     query = {'chrom': '1', 'start': 5, 'end':20}
     result = populated_database.variants(case_id, category='snv', query=query)
-    assert result.count() == 2
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 2
 
     #Try interval larger than sv
     query = {'chrom': '1', 'start': 5, 'end':20}
     result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 1
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
 
     #Try interval lower overlap sv
     query = {'chrom': '1', 'start': 5, 'end':8}
     result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 1
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
 
     #Try interval outside sv
     query = {'chrom': '1', 'start': 5, 'end':7}
     result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 0
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 0
 
     #Try minimal interval sv
     query = {'chrom': '1', 'start': 10, 'end':10}
     result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 1
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
 
     # test function
     result = populated_database.overlapping(snv_one)
-    assert result.count() == 1
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
 
     # test function
     result = populated_database.overlapping(snv_two)
-    assert result.count() == 0
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 0
 
     # test function
     result = populated_database.overlapping(sv_one)
-    assert result.count() == 1
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
 
 
 

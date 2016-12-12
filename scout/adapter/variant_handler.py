@@ -10,7 +10,54 @@ logger = logging.getLogger(__name__)
 
 class VariantHandler(object):
     """Methods to handle variants in the mongo adapter"""
+    
+    
+    def add_gene_info(self, variant_obj, gene_panels = None):
+        """Add extra information about genes"""
+        gene_panels = gene_panels or []
+        hgnc_symbols = set()
+        for variant_gene in variant_obj.genes:
+            hgnc_id = variant_gene.hgnc_id
+            hgnc_gene = self.hgnc_gene(hgnc_id)
+            hgnc_symbol = None
+            variant_gene.common = hgnc_gene
+            if hgnc_gene:
+                hgnc_symbol = hgnc_gene.hgnc_symbol
+            
+            if hgnc_symbol:
+                variant_gene.hgnc_symbol = hgnc_symbol
+                hgnc_symbols.add(hgnc_symbol)
 
+            disease_terms = self.disease_terms(hgnc_id)
+            variant_gene.disease_terms = disease_terms
+
+            if hgnc_gene is not None:
+                vep_transcripts = {tx.transcript_id: tx for tx in
+                                   variant_gene.transcripts}
+
+                # fill in common information for transcripts
+                for hgnc_transcript in hgnc_gene.transcripts:
+                    hgnc_txid = hgnc_transcript.ensembl_transcript_id
+                    if hgnc_txid in vep_transcripts:
+                        vep_transcripts[hgnc_txid] = hgnc_transcript
+
+                # fill in panel specific information for genes
+                for panel_obj in gene_panels:
+                    # loop over keys in "map field"
+                    if hgnc_symbol in panel_obj.gene_objects:
+                        gene_obj = panel_obj.gene_objects[hgnc_symbol]
+                        variant_gene.panel_info = gene_obj
+
+                    for panel_tx in gene_obj.disease_associated_transcripts:
+                        if panel_tx.ensembl_id in vep_transcripts:
+                            vep_tx = vep_transcripts[panel_tx.ensembl_id]
+                            vep_tx.is_disease_associated = True
+                        else:
+                            logger.debug("didn't find transcript: %s",
+                                         panel_tx.ensembl_id)
+        variant_obj.hgnc_symbols = list(hgnc_symbols)
+        return variant_obj
+        
     def variants(self, case_id, query=None, variant_ids=None,
                  category='snv', nr_of_variants=10, skip=0,
                  sort_key='variant_rank'):
@@ -47,7 +94,10 @@ class VariantHandler(object):
                              .order_by(sort_key)
                              .skip(skip)
                              .limit(nr_of_variants))
-        return result
+        
+        for variant_obj in result:
+            self.add_gene_info(variant_obj)
+            yield(variant_obj)
 
     def variant(self, document_id, gene_panels=None):
         """Returns the specified variant.
@@ -61,39 +111,8 @@ class VariantHandler(object):
         """
         gene_panels = gene_panels or []
         try:
-            variant_obj = Variant.objects.get(document_id=document_id)
-            for variant_gene in variant_obj.genes:
-                hgnc_id = variant_gene.hgnc_id
-                variant_gene.common = self.hgnc_gene(hgnc_id)
-
-                disease_terms = self.disease_terms(hgnc_id)
-                variant_gene.disease_terms = disease_terms
-
-                if variant_gene.common is not None:
-                    vep_transcripts = {tx.transcript_id: tx for tx in
-                                       variant_gene.transcripts}
-
-                    # fill in common information for transcripts
-                    for hgnc_transcript in variant_gene.common.transcripts:
-                        hgnc_txid = hgnc_transcript.ensembl_transcript_id
-                        if hgnc_txid in vep_transcripts:
-                            vep_transcripts[hgnc_txid] = hgnc_transcript
-
-                    # fill in panel specific information for genes
-                    hgnc_symbol = variant_gene.common.hgnc_symbol
-                    for panel_obj in gene_panels:
-                        # loop over keys in "map field"
-                        if hgnc_symbol in panel_obj.gene_objects:
-                            gene_obj = panel_obj.gene_objects[hgnc_symbol]
-                            variant_gene.panel_info = gene_obj
-
-                        for panel_tx in gene_obj.disease_associated_transcripts:
-                            if panel_tx.ensembl_id in vep_transcripts:
-                                vep_tx = vep_transcripts[panel_tx.ensembl_id]
-                                vep_tx.is_disease_associated = True
-                            else:
-                                logger.debug("didn't find transcript: %s",
-                                             panel_tx.ensembl_id)
+            result = Variant.objects.get(document_id=document_id)
+            variant_obj = self.add_gene_info(result, gene_panels)
 
         except DoesNotExist:
             variant_obj = None
