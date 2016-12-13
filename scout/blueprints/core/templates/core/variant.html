@@ -236,7 +236,7 @@
         <tbody>
           {% for gene in variant.genes %}
             <tr>
-              <th>{{ gene.common.hgnc_symbol }}</th>
+              <th>{{ gene_link(gene) }}</th>
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
             </tr>
@@ -540,6 +540,10 @@
               {% endif %}
             </td>
           </tr>
+        {% else %}
+          <tr>
+            <td colspan="3">No annotations found</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -725,11 +729,7 @@
       <tbody>
         {% for gene in variant.genes %}
           <tr>
-            <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
-                {{ gene.common.hgnc_symbol }}
-              </a>
-            </td>
+            <td>{{ gene_link(gene) }}</td>
             <td>
               <a target="_blank" href="{{ gene.common.ensembl_link }}">
                 {{ gene.common.ensembl_id }}
@@ -900,10 +900,12 @@
 {% macro external_links() %}
   <div class="panel panel-default">
     {% for gene in variant.genes %}
-      <div class="panel-heading">External links: {{ gene.common.hgnc_symbol }}</div>
+      <div class="panel-heading">
+        External links: {{ gene.common.hgnc_symbol or "HGNC:%s"|format(gene.hgnc_id) }}
+      </div>
       <div class="panel-body">
         <div class="btn-group btn-group-justified">
-          <a href="{{ gene.common.ensembl_link }}" class="btn btn-default">Ensemble</a>
+          <a href="{{ gene.common.ensembl_link }}" class="btn btn-default">Ensembl</a>
           <a href="{{ gene.common.hpa_link }}" class="btn btn-default">HPA</a>
           <a href="{{ gene.common.string_link }}" class="btn btn-default">STRING</a>
           <a href="{{ variant.ucsc_link }}" class="btn btn-default">UCSC</a>
@@ -915,6 +917,16 @@
       </div>
     {% endfor %}
   </div>
+{% endmacro %}
+
+{% macro gene_link(gene) %}
+  {% if gene.common %}
+    <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
+      {{ gene.common.hgnc_symbol }}
+    </a>
+  {% else %}
+    <a href="{{ gene.genecards_link }}">HGNC:{{ gene.hgnc_id }}</a>
+  {% endif %}
 {% endmacro %}
 
 {% block scripts %}

@@ -12,10 +12,12 @@ def genecov_links(individuals, genes=None):
     kwargs['sample_id'] = [sample.individual_id for sample in individuals]
     kwargs['link'] = 'core.pileup_range'
     if genes:
-        gene_ids = (gene.common.hgnc_symbol for gene in genes)
-        coverage_links = {gene_id: url_for('report.gene', gene_id=gene_id,
-                                           **kwargs)
-                          for gene_id in gene_ids}
+        coverage_links = {}
+        for gene in genes:
+            gene_id = (gene.common.hgnc_symbol if gene.common else
+                       "HGNC:{}".format(gene.hgnc_id))
+        coverage_links[gene_id] = url_for('report.gene', gene_id=gene.hgnc_id,
+                                          **kwargs)
         return coverage_links
     else:
         return kwargs

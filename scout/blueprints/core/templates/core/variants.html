@@ -134,9 +134,13 @@
 
 {% macro cell_gene(variant) %}
   {% for gene in variant.genes %}
-    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-      {{ gene.hgnc_symbol or gene.hgnc_id }}
-    </a>
+    {% if gene.hgnc_symbol %}
+      <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+        {{ gene.hgnc_symbol }}
+      </a>
+    {% else %}
+      <span class="text-muted">HGNC:{{ gene.hgnc_id }}</span>
+    {% endif %}
   {% endfor %}
 {% endmacro %}
 

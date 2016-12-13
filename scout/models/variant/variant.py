@@ -159,13 +159,14 @@ class Variant(Document):
     @property
     def reduced_penetrance_genes(self):
         for gene in self.genes:
-            name = gene.common.hgnc_symbol
-            common_penetrance = gene.common.incomplete_penetrance
-            if hasattr(gene, 'panel_info'):
-                panel_penetrance = gene.panel_info.reduced_penetrance
-            else:
-                panel_penetrance = False
-            yield name, common_penetrance, panel_penetrance
+            if gene.common:
+                name = gene.common.hgnc_symbol
+                common_penetrance = gene.common.incomplete_penetrance
+                if hasattr(gene, 'panel_info'):
+                    panel_penetrance = gene.panel_info.reduced_penetrance
+                else:
+                    panel_penetrance = False
+                yield name, common_penetrance, panel_penetrance
 
     def has_comments(self, case):
         """
@@ -297,10 +298,11 @@ class Variant(Document):
         """Yield all transcripts with a RefSeq id."""
         ref_seqs = {}
         for gene in self.genes:
-            for hgnc_transcript in gene.common.transcripts:
-                if hgnc_transcript.refseq_id:
-                    ensembl_tx_id = hgnc_transcript.ensembl_transcript_id
-                    ref_seqs[ensembl_tx_id] = hgnc_transcript.refseq_id
+            if gene.common:
+                for hgnc_transcript in gene.common.transcripts:
+                    if hgnc_transcript.refseq_id:
+                        ensembl_tx_id = hgnc_transcript.ensembl_transcript_id
+                        ref_seqs[ensembl_tx_id] = hgnc_transcript.refseq_id
         for _, vep_transcript in self.transcripts:
             if vep_transcript.transcript_id in ref_seqs:
                 yield (vep_transcript, ref_seqs[vep_transcript.transcript_id])

@@ -1,11 +1,9 @@
 from __future__ import absolute_import, division
 from mongoengine import (EmbeddedDocument, EmbeddedDocumentField, StringField,
-                         ListField, IntField, BooleanField)
+                         ListField, IntField)
 
 from .transcript import Transcript
 from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
-
-from scout.models import PhenotypeTerm
 
 
 class Gene(EmbeddedDocument):
@@ -21,6 +19,11 @@ class Gene(EmbeddedDocument):
     sift_prediction = StringField(choices=CONSEQUENCE)
     # This is most severe polyphen prediction of all transcripts
     polyphen_prediction = StringField(choices=CONSEQUENCE)
+
+    @property
+    def genecards_link(self):
+        return ("http://www.genecards.org/cgi-bin/carddisp.pl?gene={}"
+                .format(self.hgnc_id))
 
     @property
     def omim_link(self):

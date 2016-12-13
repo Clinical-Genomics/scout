@@ -164,7 +164,7 @@ class VariantHandler(object):
                 case_obj(Case)
                 variant_type(str)
         """
-        variants = self.variants(
+        variants, _ = self.variants(
             case_id=case_obj['case_id'],
             nr_of_variants=-1,
             category=category,
@@ -256,7 +256,7 @@ class VariantHandler(object):
 
     def load_variant(self, variant_obj):
         """Load a variant object"""
-        logger.debug("Loading variant %s into database" % variant_obj['variant_id'])
+        logger.debug("Loading variant %s into database", variant_obj['variant_id'])
         variant_obj.save()
         logger.debug("Variant saved")
 
@@ -266,6 +266,6 @@ class VariantHandler(object):
                  'chrom': variant_obj.chromosome,
                  'start': variant_obj.position,
                  'end': variant_obj.end}
-        variants = self.variants(variant_obj.case_id, category=category,
-                                 nr_of_variants=-1, query=query)
+        variants, _ = self.variants(variant_obj.case_id, category=category,
+                                    nr_of_variants=-1, query=query)
         return variants
