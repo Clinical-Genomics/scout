@@ -13,10 +13,8 @@ def test_load_variants(populated_database, variant_objs, case_obj):
     
     # THEN the same number of variants should have been loaded
     nr_variants = 0
-    result = populated_database.variants(case_id=case_id, nr_of_variants=-1)
-    for variant in result:
-        nr_variants += 1
-    assert nr_variants == index+1
+    result, count = populated_database.variants(case_id=case_id, nr_of_variants=-1)
+    assert count == index+1
 
 def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
     """Test to load variants into a mongo database"""
@@ -29,11 +27,8 @@ def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
         populated_database.load_variant(variant_obj)
     
     # THEN the same number of SV variants should have been loaded
-    result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='sv')
-    nr_variants = 0
-    for variant in result:
-        nr_variants += 1
-    assert nr_variants == index+1
+    result, count = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='sv')
+    assert count == index+1
 
 
 # def test_get_variant(variant_database):
