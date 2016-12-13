@@ -12,6 +12,7 @@ script:
 
 install:
     - pip install -r requirements.txt .
+    - mongo --version
 
 notifications:
     email: false
