@@ -38,7 +38,6 @@
 
 {% block content %}
   <div class="container-fluid main">
-
     <div class="panel-group" id="accordion">
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -53,7 +52,6 @@
         </div>
       </div>
     </div>
-
     {# MESSAGES #}
     <div class="row">
       <div class="col-xs-12">
@@ -70,7 +68,6 @@
       </div>
     </div>
   </div>
-
   <div class="table-responsive">
     <table class="table table-bordered table-hover">
       <thead>
@@ -181,7 +178,7 @@
 {% endmacro %}
 
 {% macro footer() %}
-  {% if variants.count() > current_batch %}
+  {% if variants_count > current_batch %}
     {# We might have some more variants not loaded #}
     <div class="container-fluid">
       {{ query_dict.update({'skip': current_batch})|default('', True) }}

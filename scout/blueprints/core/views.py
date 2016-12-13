@@ -449,11 +449,12 @@ def variants(institute_id, case_id, variant_type):
         query['gene_lists'] = []
 
     # fetch list of variants
-    variant_models = store.variants(case_model.case_id, query=query,
-                                    nr_of_variants=per_page, skip=skip)
+    all_variants, count = store.variants(case_model.case_id, query=query,
+                                         nr_of_variants=per_page, skip=skip)
 
     query_dict = {key: request.args.getlist(key) for key in request.args.keys()}
-    return dict(variants=variant_models,
+    return dict(variants=all_variants,
+                variants_count=count,
                 case=case_model,
                 case_id=case_id,
                 institute=institute,

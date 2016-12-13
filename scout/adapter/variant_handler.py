@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class VariantHandler(object):
+
     """Methods to handle variants in the mongo adapter"""
-    
-    
-    def add_gene_info(self, variant_obj, gene_panels = None):
+
+    def add_gene_info(self, variant_obj, gene_panels=None):
         """Add extra information about genes"""
         gene_panels = gene_panels or []
         hgnc_symbols = set()
@@ -23,7 +23,7 @@ class VariantHandler(object):
             variant_gene.common = hgnc_gene
             if hgnc_gene:
                 hgnc_symbol = hgnc_gene.hgnc_symbol
-            
+
             if hgnc_symbol:
                 variant_gene.hgnc_symbol = hgnc_symbol
                 hgnc_symbols.add(hgnc_symbol)
@@ -57,7 +57,7 @@ class VariantHandler(object):
                                          panel_tx.ensembl_id)
         variant_obj.hgnc_symbols = list(hgnc_symbols)
         return variant_obj
-        
+
     def variants(self, case_id, query=None, variant_ids=None,
                  category='snv', nr_of_variants=10, skip=0,
                  sort_key='variant_rank'):
@@ -94,10 +94,10 @@ class VariantHandler(object):
                              .order_by(sort_key)
                              .skip(skip)
                              .limit(nr_of_variants))
-        
-        for variant_obj in result:
-            self.add_gene_info(variant_obj)
-            yield(variant_obj)
+
+        all_variants = (self.add_gene_info(variant_obj) for variant_obj in
+                        result)
+        return all_variants, result.count()
 
     def variant(self, document_id, gene_panels=None):
         """Returns the specified variant.
