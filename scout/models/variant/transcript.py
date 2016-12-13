@@ -61,12 +61,6 @@ class Transcript(EmbeddedDocument):
         """Determine if transcript is exonic or not."""
         return 'exonic' in self.region_annotations
 
-    def stringify(self):
-        return ("{this.hgnc_symbol}:{this.refseq_ids_string}"
-                ":exon{this.absolute_exon}:{this.coding_sequence_name}"
-                ":{this.protein_sequence_name}"
-                .format(this=self))
-
     @property
     def swiss_prot_link(self):
         return "http://www.uniprot.org/uniprot/{}".format(self.swiss_prot)

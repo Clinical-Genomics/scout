@@ -17,7 +17,6 @@ from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
 from .gene import Gene
 from scout.models import Event
 
-######## These are defined terms for different categories ########
 
 class Compound(EmbeddedDocument):
     # This must be the document_id for this variant
@@ -37,6 +36,7 @@ class Compound(EmbeddedDocument):
             except DoesNotExist:
                 pass
         return self._variant_obj
+
 
 class Clinsig(EmbeddedDocument):
     value = IntField()
@@ -205,12 +205,12 @@ class Variant(Document):
     @property
     def omim_inheritance_models(self):
         """Return a list of OMIM inheritance models (phenotype based)."""
-        models = ((phenotype.disease_models for phenotype in gene.omim_phenotypes)
-                      for gene in self.genes)
+        models = ((phenotype.disease_models for phenotype in
+                   gene.omim_phenotypes) for gene in self.genes)
 
         # untangle multiple nested list of list of lists...
         return set(
-          itertools.chain.from_iterable(itertools.chain.from_iterable(models))
+            itertools.chain.from_iterable(itertools.chain.from_iterable(models))
         )
 
     @property
@@ -301,8 +301,10 @@ class Variant(Document):
             if gene.common:
                 for hgnc_transcript in gene.common.transcripts:
                     if hgnc_transcript.refseq_id:
+                        hgnc_transcript.hgnc_symbol = gene.common.hgnc_symbol
+                        hgnc_transcript.hgnc_id = gene.common.hgnc_id
                         ensembl_tx_id = hgnc_transcript.ensembl_transcript_id
-                        ref_seqs[ensembl_tx_id] = hgnc_transcript.refseq_id
+                        ref_seqs[ensembl_tx_id] = hgnc_transcript
         for _, vep_transcript in self.transcripts:
             if vep_transcript.transcript_id in ref_seqs:
                 yield (vep_transcript, ref_seqs[vep_transcript.transcript_id])

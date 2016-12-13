@@ -84,4 +84,3 @@ class PhenotypeTerm(EmbeddedDocument):
                 "disease_models={2})".format(
                 self.phenotype_id, self.feature, self.disease_models
                 )
-
