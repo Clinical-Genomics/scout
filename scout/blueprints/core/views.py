@@ -476,7 +476,8 @@ def variant(institute_id, case_id, variant_id):
     """View a single variant in a single case."""
     institute = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
-    variant_model = store.variant(document_id=variant_id)
+    default_panels = case_model.default_panel_objs()
+    variant_model = store.variant(variant_id, default_panels)
     if variant_model is None:
         return abort(404, 'variant not found')
 

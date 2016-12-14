@@ -90,13 +90,8 @@ class Case(Document):
     def default_panel_objs(self):
         """Match gene panels with default references."""
         for panel in self.clinical_panels:
-            try:
-                if panel.panel_name in self.default_panels:
-                    yield panel
-            except AttributeError as error:
-                logger.warn(error.message)
-                self.clinical_panels.remove(panel)
-                self.save()
+            if panel.panel_name in self.default_panels:
+                yield panel
 
     def default_genes(self):
         """Combine all gene ids for default gene panels."""

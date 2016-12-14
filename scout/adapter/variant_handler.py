@@ -48,13 +48,6 @@ class VariantHandler(object):
                         gene_obj = panel_obj.gene_objects[hgnc_symbol]
                         variant_gene.panel_info = gene_obj
 
-                    for panel_tx in gene_obj.disease_associated_transcripts:
-                        if panel_tx.ensembl_id in vep_transcripts:
-                            vep_tx = vep_transcripts[panel_tx.ensembl_id]
-                            vep_tx.is_disease_associated = True
-                        else:
-                            logger.debug("didn't find transcript: %s",
-                                         panel_tx.ensembl_id)
         variant_obj.hgnc_symbols = list(hgnc_symbols)
         return variant_obj
 

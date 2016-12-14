@@ -61,6 +61,13 @@ class HgncGene(Document):
                 ('XR', self.xr), ('XD', self.xd), ('X', self.x), ('Y', self.y)]
 
     @property
+    def expected_inheritance(self):
+        """Return all models that are expected."""
+        for model, is_expected in self.inheritance:
+            if is_expected:
+                yield model
+
+    @property
     def position(self):
         return "{this.chromosome}:{this.start}-{this.end}".format(this=self)
 

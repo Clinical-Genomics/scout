@@ -31,7 +31,9 @@ vcf_snv: tests/fixtures/1.downsampled.vcf
 vcf_sv: tests/fixtures/1.SV.vcf
 
 madeline: tests/fixtures/madeline.xml
-default_panels: [Panel1]
+default_panels: [panel1]
+gene_panels:
+	- panel1
 
 # meta data
 rank_model_version: 1.12

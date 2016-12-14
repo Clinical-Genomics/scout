@@ -121,6 +121,18 @@ class Variant(Document):
     clnsig = ListField(EmbeddedDocumentField(Clinsig))
     spidex = FloatField()
 
+    @property
+    def spidex_human(self):
+        """Translate SPIDEX annotation to human readable string."""
+        if self.spidex is None:
+            return 'not_reported'
+        elif abs(self.spidex) < 1:
+            return 'low'
+        elif abs(self.spidex) < 2:
+            return 'medium'
+        else:
+            return 'high'
+
     # Callers
     gatk = StringField(choices=VARIANT_CALL, default='Not Used')
     samtools = StringField(choices=VARIANT_CALL, default='Not Used')
@@ -132,10 +144,18 @@ class Variant(Document):
     phylop_conservation = ListField(StringField(choices=CONSERVATION))
     # Database options:
     gene_lists = ListField(StringField())
-    expected_inheritance = ListField(StringField())
     manual_rank = IntField(choices=[0, 1, 2, 3, 4, 5])
 
     acmg_evaluation = StringField(choices=ACMG_TERMS)
+
+    @property
+    def expected_inheritance(self):
+        """Gather information from common gene information."""
+        all_models = set()
+        for gene in self.genes:
+            for model in gene.common.expected_inheritance:
+                all_models.add(model)
+        return list(all_models)
 
     @property
     def case_displayname(self):

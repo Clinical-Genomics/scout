@@ -20,6 +20,9 @@ class Gene(EmbeddedDocument):
     # This is most severe polyphen prediction of all transcripts
     polyphen_prediction = StringField(choices=CONSEQUENCE)
 
+    # will be filled in dynamically
+    # disease_terms
+
     @property
     def genecards_link(self):
         return ("http://www.genecards.org/cgi-bin/carddisp.pl?gene={}"

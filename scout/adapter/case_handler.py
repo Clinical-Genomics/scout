@@ -152,13 +152,13 @@ class CaseHandler(object):
             case_id(str)
 
         """
-        
+
         case_obj = self.case(institute_id, case_id)
         if case_obj:
             logger.info("Deleting case {0}".format(case_obj.case_id))
             case_obj.delete()
             logger.debug("Case deleted")
-            
+
             return case_obj
             # TODO Add event for deleting case?
         else:
@@ -253,7 +253,7 @@ class CaseHandler(object):
 
         Args:
             panel_id (str): unique id for the panel
-            version (str): version of the panel. If 'None' latest version will be returned 
+            version (str): version of the panel. If 'None' latest version will be returned
 
         Returns:
             GenePanel: gene panel object
@@ -283,7 +283,7 @@ class CaseHandler(object):
         """
         panel_name = panel_obj['panel_name']
         panel_version = panel_obj['version']
-        
+
         logger.info("loading panel {0}, version {1} to database".format(
             panel_name, panel_version
         ))
