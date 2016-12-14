@@ -12,7 +12,6 @@ from . import STATUS
 from .individual import Individual
 from .gene_list import GenePanel
 from scout.models import PhenotypeTerm
-from scout.constants import ANALYSIS_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -46,38 +45,31 @@ class Case(Document):
     is_research = BooleanField(default=False)
     research_requested = BooleanField(default=False)
     rerun_requested = BooleanField(default=False)
+    
+    analysis_date = DateTimeField()
+    analysis_dates = ListField(DateTimeField())
 
     # default_panels specifies which gene lists that should be shown when
     # the case is opened
-    default_panels = ListField(StringField())
-    clinical_panels = ListField(ReferenceField(GenePanel))
-    research_panels = ListField(ReferenceField(GenePanel))
+    default_panels = ListField(ReferenceField(GenePanel))
+    gene_panels = ListField(ReferenceField(GenePanel))
+    
     dynamic_gene_list = ListField(DictField())
 
     genome_build = StringField()
     genome_version = FloatField()
 
-    analysis_date = StringField()
-    analysis_dates = ListField(StringField())
     rank_model_version = StringField()
-    analysis_type = StringField(choices=ANALYSIS_TYPES)
 
-    gender_check = StringField(choices=['unconfirmed', 'confirm', 'deviation'],
-                               default='unconfirmed')
     phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
     phenotype_groups = ListField(EmbeddedDocumentField(PhenotypeTerm))
     # madeline info is a full xml file
     madeline_info = StringField()
-    vcf_file = StringField()
+    
+    vcf_files = DictField()
 
     diagnosis_phenotypes = ListField(IntField())
     diagnosis_genes = ListField(IntField())
-
-    # completed analysis
-    analysis_checked = BooleanField()
-
-    # The coverage report will be read as a binary blob
-    coverage_report = BinaryField()
 
     has_svvariants = BooleanField(default=False)
 
@@ -87,16 +79,10 @@ class Case(Document):
         return [collab_id for collab_id in self.collaborators if
                 collab_id != self.owner]
 
-    def default_panel_objs(self):
-        """Match gene panels with default references."""
-        for panel in self.clinical_panels:
-            if panel.panel_name in self.default_panels:
-                yield panel
-
     def default_genes(self):
         """Combine all gene ids for default gene panels."""
         distinct_genes = set()
-        for panel in self.default_panel_objs():
+        for panel in self.default_panels:
             for gene_id in panel.gene_objects.keys():
                 distinct_genes.update(gene_id)
         return distinct_genes
@@ -111,13 +97,8 @@ class Case(Document):
         return self.status in ('solved', 'archived')
 
     @property
-    def is_new(self):
-        """Check if the analysis was preformed with latest rank model."""
-        return self.rank_model_version == '1.16'
-
-    @property
     def is_rerun(self):
-        return self.analysis_dates and len(self.analysis_dates) > 1
+        return len(self.analysis_dates) > 1
 
     @property
     def hpo_gene_ids(self):
@@ -155,35 +136,11 @@ class Case(Document):
         return [individual.individual_id for individual in self.individuals]
 
     @property
-    def all_panels(self):
-        """Yield all gene lists (both clinical and research)."""
-        return itertools.chain(self.clinical_panels,
-                               self.research_panels)
-
-    @property
-    def sorted_clinical_panels(self):
+    def sorted_gene_panels(self):
         """Return clinical panels sorted by name."""
-        panels = sorted(self.clinical_panels,
+        panels = sorted(self.gene_panels,
                         key=lambda panel: panel.display_name)
         return panels
-
-    @property
-    def owner_case_id(self):
-        """Return an id using both owner and case."""
-        return "{this.owner}-{this.display_name}".format(this=self)
-
-    @property
-    def analyzed_at(self):
-        """Convert the analysis date to a real datetime obj."""
-        parts = [int(part) for part in self.analysis_date.split('-')]
-        return datetime(*parts)
-
-    @property
-    def missing_panel(self):
-        """Return a panel of missing genes if it exists."""
-        for panel in self.clinical_panels:
-            if panel.panel_name.endswith('-MISSING'):
-                return panel
 
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
