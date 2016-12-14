@@ -24,8 +24,14 @@
         {% endif %}
       </header>
       <main>
-        <img width="250" src="{{ url_for('frontend.static', filename='logo-scilifelab.png') }}">
-        <img class="pull-right" width="250" src="{{ url_for('frontend.static', filename='logo-karolinska.png') }}">
+        <div class="row">
+          <div class="col-xs-12 col-sm-6">
+            <img class="img-responsive center-block" width="250" src="{{ url_for('frontend.static', filename='logo-scilifelab.png') }}">
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <img class="img-responsive center-block" width="250" src="{{ url_for('frontend.static', filename='logo-karolinska.png') }}">
+          </div>
+        </div>
       </main>
     </div>
 	</div>

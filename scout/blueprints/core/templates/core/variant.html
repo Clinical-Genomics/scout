@@ -40,20 +40,20 @@
     <div class="col-xs-12">{{ matching_variants() }}</div>
   </div>
   <div class="row">
-    <div class="col-xs-4">{{ panel_basics() }}</div>
-    <div class="col-xs-4">{{ panel_summary() }}</div>
-    <div class="col-xs-4">{{ transcript_overview() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-4">{{ panel_basics() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-4">{{ panel_summary() }}</div>
+    <div class="col-xs-12 col-md-4">{{ transcript_overview() }}</div>
   </div>
   <div class="row">
-    <div class="col-xs-3">{{ frequency_list() }}</div>
-    <div class="col-xs-3">{{ severity_list() }}</div>
-    <div class="col-xs-3">{{ inheritance_panel() }}</div>
-    <div class="col-xs-3">{{ omim_phenotypes() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-3">{{ frequency_list() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-3">{{ severity_list() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-3">{{ inheritance_panel() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-3">{{ omim_phenotypes() }}</div>
   </div>
   <div class="row">
-    <div class="col-xs-4">{{ comments_panel(institute, case, current_user, comments|reverse, variant_id=variant_id) }}</div>
-    <div class="col-xs-5">{{ gtcall_panel() }}</div>
-    <div class="col-xs-3">{{ pedigree_panel() }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-4">{{ comments_panel(institute, case, current_user, comments|reverse, variant_id=variant_id) }}</div>
+    <div class="col-xs-12 col-sm-6 col-md-5">{{ gtcall_panel() }}</div>
+    <div class="col-xs-12 col-md-3">{{ pedigree_panel() }}</div>
   </div>
   {% if variant.has_compounds %}
     <div class="row">

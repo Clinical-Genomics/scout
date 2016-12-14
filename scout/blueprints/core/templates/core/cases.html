@@ -23,42 +23,12 @@
   </div>
 
   {% if prio_cases.first() %}
-    <table class="table table-hover table-special">
-      <thead>
-        <tr>
-          <th class="col-xs-4">Case</th>
-          <th class="col-xs-2">Status</th>
-          <th class="col-xs-2">Analysis date</th>
-          <th class="col-xs-2">Link</th>
-          <th class="col-xs-2">Sequencing</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for case in prio_cases %}
-          {{ case_row(case) }}
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      {{ cases_table([('priority', prio_cases)]) }}
+    </div>
   {% endif %}
 
-  <table class="table table-hover table-special">
-    <thead>
-      <tr>
-        <th class="col-xs-4">Case</th>
-        <th class="col-xs-2">Status</th>
-        <th class="col-xs-2">Analysis date</th>
-        <th class="col-xs-2">Link</th>
-        <th class="col-xs-2">Sequencing</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for group_id, case_group in cases %}
-        {% for case in case_group %}
-          {{ case_row(case) }}
-        {% endfor %}
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">{{ cases_table(cases) }}</div>
 {% endblock %}
 
 {% block scripts %}
@@ -97,6 +67,27 @@
       </div>
     </div>
   </form>
+{% endmacro %}
+
+{% macro cases_table(case_groups) %}
+  <table class="table table-hover table-special">
+    <thead>
+      <tr>
+        <th class="col-xs-4">Case</th>
+        <th class="col-xs-2">Status</th>
+        <th class="col-xs-2">Analysis date</th>
+        <th class="col-xs-2">Link</th>
+        <th class="col-xs-2">Sequencing</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for group_id, case_group in case_groups %}
+        {% for case in case_group %}
+          {{ case_row(case) }}
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
 {% endmacro %}
 
 {% macro case_row(case) %}
