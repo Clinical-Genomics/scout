@@ -27,4 +27,6 @@ def build_individual(ind):
     ind_obj.mother = ind.get('mother')
     ind_obj.capture_kits = ind.get('capture_kits', [])
     ind_obj.bam_file = ind.get('bam_file')
+    ind_obj.analysis_type = ind.get('analysis_type')
+    
     return ind_obj

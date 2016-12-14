@@ -10,6 +10,7 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 
 """
 import logging
+import datetime
 
 import click
 import yaml
@@ -51,6 +52,8 @@ def load(context, vcf, vcf_sv, owner, ped, update, config):
 
     config_data = yaml.load(config) if config else {}
 
+    if not config_data:
+        config_data['analysis_date'] = datetime.date.today()
     config_data['vcf_snv'] = vcf if vcf else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['owner'] = owner if owner else config_data.get('owner')
@@ -70,6 +73,6 @@ def load(context, vcf, vcf_sv, owner, ped, update, config):
     
     try:
         load_scout(context.obj['adapter'], config_data, ped=ped, update=update)
-    except (IntegrityError, ValueError, ConfigError) as error:
+    except (IntegrityError, ValueError, ConfigError, KeyError) as error:
         click.echo(error)
         context.abort()

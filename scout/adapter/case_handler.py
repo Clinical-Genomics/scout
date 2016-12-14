@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import datetime
 
 from mongoengine import (DoesNotExist, Q)
 
@@ -197,56 +198,42 @@ class CaseHandler(object):
         )
 
         logger.debug("Updating collaborators")
-        case['collaborators'] = list(set(case['collaborators'] + existing_case.collaborators))
+        existing_case['collaborators'] = list(set(case['collaborators'] + existing_case.collaborators))
 
-        logger.debug("Updating is_research to {0}".format(
-            existing_case.is_research))
-        case['is_research'] = existing_case['is_research']
+        logger.debug("Updating individuals")
+        existing_case['individuals'] = case['individuals']
 
-        logger.debug("Updating created_at to {0}".format(
-            existing_case['created_at']))
-        case['created_at'] = existing_case['created_at']
-
-        logger.debug("Updating assignee")
-        case['assignee'] = existing_case['assignee']
-
-        logger.debug("Updating suspects")
-        case['suspects'] = existing_case['suspects']
-
-        logger.debug("Updating causatives")
-        case['causatives'] = existing_case['causatives']
-
-        logger.debug("Updating synopsis")
-        case['synopsis'] = existing_case['synopsis']
-
-        logger.debug("Updating status to {0}".format(
-            existing_case['status']))
-        case['status'] = existing_case['status']
-
-        logger.debug("Updating gender_check to {0}".format(
-            existing_case['gender_check']))
-        case['gender_check'] = existing_case['gender_check']
-
-        logger.debug("Updating phenotype_terms")
-        case['phenotype_terms'] = existing_case['phenotype_terms']
-
-        logger.debug("Updating complete status")
-        if 'analysis_checked' in existing_case:
-            case['analysis_checked'] = existing_case['analysis_checked']
+        logger.debug("Updating updated_at")
+        existing_case['updated_at'] = datetime.datetime.now()
 
         logger.debug("Updating analysis dates")
         if 'analysis_dates' in existing_case:
             if case['analysis_date'] not in existing_case['analysis_dates']:
-                case['analysis_dates'] = (existing_case['analysis_dates'] +
+                existing_case['analysis_dates'] = (existing_case['analysis_dates'] +
                                           case['analysis_dates'])
-
-        logger.info("Deleting old case {0}".format(
-            existing_case['case_id']))
-        existing_case.delete()
+        
+        logger.debug("Updating rerun requested to False")
+        existing_case.rerun_requested = False
+        
+        existing_case.default_panels = case.default_panels
+        existing_case.gene_panels = case.gene_panels
+        
+        existing_case.genome_build = case.genome_build
+        existing_case.genome_version = case.genome_version
+        
+        existing_case.rank_model_version = case.rank_model_version
+        
+        existing_case.madeline_info = case.madeline_info
+        
+        existing_case.vcf_files = case.vcf_files
+        
+        existing_case.has_svvariants = case.has_svvariants
+        
+        existing_case.save()
 
         ##TODO Add event for updating case?
 
-        return case
+        return existing_case
 
     def gene_panel(self, panel_id=None, version=None):
         """Fetch a gene panel.

@@ -36,10 +36,18 @@ def load_scout(adapter, config, ped=None, update=False):
     log.info("Check that the panels exists")
     if not check_panels(adapter, config.get('gene_panels',[]), config.get('default_panels')):
         raise ConfigError("Some panel(s) does not exist in the database")
+    
     log.debug('parse case data from config and ped')
     case_data = parse_case(config, ped)
     log.debug('build case object from parsed case data')
     case_obj = build_case(case_data)
+    
+    default_panels = config.get('default_panels',[])
+    for panel in config.get('gene_panels',[]):
+        case_obj.gene_panels.append(adapter.gene_panel(panel))
+        if panel in default_panels:
+            case_obj.default_panels.append(adapter.gene_panel(panel))
+    
     log.debug('load case object into database')
     load_case(adapter, case_obj, update=update)
 
@@ -57,6 +65,3 @@ def load_scout(adapter, config, ped=None, update=False):
                       case_obj=case_obj, variant_type='clinical',
                       category='sv',
                       rank_treshold=config.get('rank_threshold'))
-
-        case_obj.has_svvariants = True
-        case_obj.save()

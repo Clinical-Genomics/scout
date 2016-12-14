@@ -738,6 +738,21 @@ class EventHandler(object):
         case_model.rerun_requested = True
         case_model.save()
 
+    # def update_case(self, institute_model, case_model, link):
+    #     """Request a case to be re-analyzed."""
+    #
+    #     self.create_event(
+    #         institute=institute_model,
+    #         case=case_model,
+    #         link=link,
+    #         category='case',
+    #         verb='rerun',
+    #         subject=case_model.display_name
+    #     )
+    #
+    #     case_model.rerun_requested = True
+    #     case_model.save()
+
     def share(self, institute_model, case_model, collaborator_id,
               user_model, link):
         """Share a case with a new institute."""

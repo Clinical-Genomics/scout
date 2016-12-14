@@ -43,17 +43,20 @@ def parse_case(config, ped=None):
         'owner': owner,
         'collaborators': [owner],
         # Q: can we switch to a dash? we use this across other apps
-        'case_id': "{}_{}".format(owner, family_id),
+        'case_id': "{}-{}".format(owner, family_id),
         'display_name': family_id,
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
-        'analysis_date': config.get('analysis_date'),
+        'analysis_date': config['analysis_date'],
         'individuals': individuals,
-        'vcf_snv': config.get('vcf_snv'),
-        'vcf_sv': config.get('vcf_sv'),
-        'vcf_snv_research': config.get('vcf_snv_research'),
-        'vcf_sv_research': config.get('vcf_sv_research'),
+        'vcf_files':{
+            'vcf_snv': config.get('vcf_snv'),
+            'vcf_sv': config.get('vcf_sv'),
+            'vcf_snv_research': config.get('vcf_snv_research'),
+            'vcf_sv_research': config.get('vcf_sv_research'),
+        },
         'default_panels': config.get('default_panels'),
+        'gene_panels': config.get('gene_panels'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db
