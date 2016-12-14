@@ -58,6 +58,7 @@ def load(context, vcf, vcf_sv, owner, ped, update, config):
 
     from pprint import pprint as pp
     pp(config_data)
+    context.abort()
     
     if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
         logger.warn("Please provide a vcf file (use '--vcf')")
