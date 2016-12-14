@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import abort, Blueprint, request
 from flask_login import login_required, current_user
-from flask_mongoengine import Pagination
 
 from scout.extensions import store
 from scout.utils.helpers import templated, validate_user
@@ -20,17 +19,26 @@ def variants(institute_id, case_id):
     if case_model is None:
         abort(404)
 
+    per_page = 50
+    skip = int(request.args.get('skip', 0))
+    current_batch = skip + per_page
+
     # fetch list of variants
     query = {'variant_type': request.args.get('variant_type', 'clinical')}
-    variant_q = store.variants(case_model.case_id, category='sv', query=query)
-    page_num = int(request.args.get('page', 1))
-    page = Pagination(variant_q, page=page_num, per_page=100)
+    all_variants, count = store.variants(case_model.case_id,
+                                         category='sv',
+                                         query=query,
+                                         nr_of_variants=per_page,
+                                         skip=skip)
     return dict(case=case_model,
                 case_id=case_id,
                 institute=institute,
                 institute_id=institute_id,
-                variants=page,
-                query=query)
+                variants=all_variants,
+                variants_count=count,
+                current_batch=current_batch,
+                query=query,
+                per_page=per_page, skip=skip)
 
 
 @sv_bp.route('/<institute_id>/<case_id>/sv/variants/<variant_id>')

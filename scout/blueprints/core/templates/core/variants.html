@@ -90,7 +90,7 @@
         {% for variant in variants %}
           <tr>
             <td>{{ cell_rank(variant) }}</td>
-            <td class="text-right">{{ variant.rank_score }}</td>
+            <td class="text-right">{{ variant.rank_score|int }}</td>
             <td>{{ variant.chromosome }}</td>
             <td>{{ cell_gene(variant) }}</td>
             <td class="text-right">{{ cell_1000g(variant) }}</td>
@@ -105,7 +105,7 @@
         {% else %}
           <tr>
             <td colspan="{{ 10 if variant_type == 'clinical' else 9 }}">
-              No matching variants.
+              No matching variants
             </td>
           </tr>
         {% endfor %}
@@ -187,8 +187,7 @@
     <div class="container-fluid">
       {{ query_dict.update({'skip': current_batch})|default('', True) }}
       <div class="form-group text-center">
-        <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute_id,
-                          case_id=case_id, variant_type=variant_type, **query_dict) }}">
+        <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, **query_dict) }}">
           Next page
         </a>
       </div>
