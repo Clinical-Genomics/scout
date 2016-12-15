@@ -59,17 +59,19 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     try:
         
         for nr_variants, variant in enumerate(variants):
-            variant_obj = load_variant(
-                adapter=adapter,
-                variant=variant,
-                case_obj=case_obj,
-                institute_obj=institute_obj,
+            
+            parsed_variant = parse_variant(
+                variant_dict=variant,
+                case=case_obj,
                 variant_type=variant_type,
-                rank_results_header=rank_results_header,
-                rank_treshold=rank_treshold,
+                rank_results_header=rank_results_header
             )
             
-            if variant_obj:
+            if parsed_variant.get('rank_score',0) > rank_treshold:
+                variant_obj = build_variant(
+                    variant=parsed_variant,
+                    institute=institute_obj,
+                )
                 nr_inserted += 1
             
             if (nr_variants != 0 and nr_variants % 5000 == 0):
@@ -92,9 +94,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     adapter.add_variant_rank(case_obj, variant_type, category=category)
 
 
-def load_variant(adapter, variant, case_obj, institute_obj,
-                 variant_type='clinical', rank_results_header=None,
-                 rank_treshold=None):
+def load_variant(adapter, variant_obj):
     """Load a variant into the database
 
         Parse the variant, create a mongoengine object and load it into
@@ -102,32 +102,8 @@ def load_variant(adapter, variant, case_obj, institute_obj,
 
         Args:
             adapter(MongoAdapter)
-            variant(vcf_parser.Variant)
-            case_obj(Case)
-            institute_obj(Institute)
-            hgnc_genes(dict[HgncGene])
-            variant_type(str)
-            rank_results_header(list)
+            variant_obj(scout.models.Variant)
 
-        Returns:
-            variant_obj(Variant): mongoengine Variant object
     """
-    rank_treshold = rank_treshold or 5
-    rank_results_header = rank_results_header or []
-    parsed_variant = parse_variant(
-        variant_dict=variant,
-        case=case_obj,
-        variant_type=variant_type,
-        rank_results_header=rank_results_header
-    )
     
-    variant_obj = None
-    if parsed_variant.get('rank_score',0) > rank_treshold:
-        variant_obj = build_variant(
-            variant=parsed_variant,
-            institute=institute_obj,
-        )
-
-        adapter.load_variant(variant_obj)
-    
-    return variant_obj
+    adapter.load_variant(variant_obj)

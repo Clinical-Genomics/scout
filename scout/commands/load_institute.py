@@ -16,7 +16,7 @@ from scout.load import load_institute
 @click.pass_context
 def institute(ctx, internal_id, display_name):
     """
-    Manage institutes
+    Load a institute to the 
     
     """
     adapter = ctx.obj['adapter']

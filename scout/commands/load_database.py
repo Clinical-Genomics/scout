@@ -15,64 +15,32 @@ import datetime
 import click
 import yaml
 
-from scout.load import load_scout
 from scout.exceptions import (IntegrityError, ConfigError)
 
-logger = logging.getLogger(__name__)
+from scout.commands.case import case as case_command
+from scout.commands.load_institute import institute as institute_command
+from scout.commands.load_hpo import hpo as hpo_command
+from scout.commands.load_genes import genes as genes_command
+from scout.commands.load_panel import panel as panel_command
 
+logger = logging.getLogger(__name__)
+    
 
 @click.command()
-@click.option('--vcf', 
-              type=click.Path(exists=True),
-              help='path to clinical VCF file to be loaded'
-)
-@click.option('--vcf-sv', 
-              type=click.Path(exists=True),
-              help='path to clinical SV VCF file to be loaded'
-)
-@click.option('--owner', 
-              help='parent institute for the case'
-)
-@click.option('--ped', 
-              type=click.File('r')
-)
-@click.option('-u', '--update', 
-              is_flag=True
-)
-@click.argument('config', 
-              type=click.File('r'), 
-              required=False
-)
 @click.pass_context
-def load(context, vcf, vcf_sv, owner, ped, update, config):
-    """Add a new case to Scout."""
-    if config is None and ped is None:
-        click.echo("you have to provide either config or ped file")
-        context.abort()
+def region(context):
+    """Load all variants in a region to a existing case"""
+    pass
 
-    config_data = yaml.load(config) if config else {}
-
-    if not config_data:
-        config_data['analysis_date'] = datetime.date.today()
-    config_data['vcf_snv'] = vcf if vcf else config_data.get('vcf_snv')
-    config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
-    config_data['owner'] = owner if owner else config_data.get('owner')
-    config_data['rank_treshold'] = config_data.get('rank_treshold') or 5
-
-    # from pprint import pprint as pp
-    # pp(config_data)
-    # context.abort()
+@click.group()
+@click.pass_context
+def load(context):
+    """Load the Scout database."""
+    pass
     
-    if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
-        logger.warn("Please provide a vcf file (use '--vcf')")
-        context.abort()
-
-    if not config_data.get('owner'):
-        logger.warn("Please provide an owner for the case (use '--owner')")
-        context.abort()
-    
-    try:
-        load_scout(context.obj['adapter'], config_data, ped=ped, update=update)
-    except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-        click.echo(error)
-        context.abort()
+load.add_command(case_command)
+load.add_command(institute_command)
+load.add_command(genes_command)
+load.add_command(region)
+load.add_command(hpo_command)
+load.add_command(panel_command)

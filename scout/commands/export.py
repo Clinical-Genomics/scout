@@ -3,7 +3,7 @@
 """
 export.py
 
-Export variants from a scout database
+Export objects from a scout database
 
 Created by Måns Magnusson on 2016-05-11.
 Copyright (c) 2016 ScoutTeam__. All rights reserved.
@@ -22,61 +22,92 @@ from scout.export.panel import export_panels
 logger = logging.getLogger(__name__)
 
 
+
+
 @click.command()
-@click.option('-c', '--collaborator')
-@click.option('--genes',
-                is_flag=True,
-                help="Export all genes from the database"
-)
-@click.option('--gene-file',
-              type=click.Path(exists=True),
-              help="Return the genes on correct format based on hgnc ids in "\
-                   "infile"
-)
-@click.option('--transcripts',
-                is_flag=True,
-                help="Export all refseq transcripts from the database"
-)
 @click.option('--panel',
                 multiple=True,
                 help="Export gene panels to .bed format"
 )
+@click.pass_context
+def panel(context, panel):
+    """Export a gene panel to .bed like format"""
+    logger.info("Running scout export panel")
+    adapter = context.obj['adapter']
+    
+    if not panel:
+        logger.warning("Please provide at least one gene panel")
+        context.abort()
+
+    logger.info("Exporting panels: {}".format(', '.join(panel)))
+    export_panels(adapter, panel)
+
+@click.command()
+@click.pass_context
+def genes(context):
+    """Export all genes to .bed like format"""
+    logger.info("Running scout export genes")
+    adapter = context.obj['adapter']
+    
+    header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
+
+    for line in header:
+        print(line)
+
+    for gene in export_genes(adapter):
+        print(gene)
+
+@click.command()
+@click.pass_context
+def transcripts(context):
+    """Export all transcripts to .bed like format"""
+    logger.info("Running scout export transcripts")
+    adapter = context.obj['adapter']
+    
+    header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
+
+    for line in header:
+        print(line)
+
+    for transcript in export_transcripts(adapter):
+        print(transcript)
+
+@click.command()
+@click.option('-c', '--collaborator')
+@click.pass_context
+def variants(context, collaborator):
+    """Export causatives for a collaborator in .vcf format"""
+    logger.info("Running scout export variants")
+    adapter = context.obj['adapter']
+    
+    header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
+
+    if not collaborator:
+        click.echo("Please provide a collaborator to export variants")
+        ctx.abort()
+
+    header = [
+        "##fileformat=VCFv4.2",
+        "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
+    ]
+
+    for line in header:
+        print(line)
+
+    for variant in export_causatives(adapter, collaborator):
+        print(variant)
+
+
+@click.group()
 @click.pass_context
 def export(ctx, collaborator, genes, transcripts, gene_file, panel):
     """
     Export variants from the mongo database.
     """
     logger.info("Running scout export")
-    adapter = ctx.obj['adapter']
 
-    header = []
-    function = []
+export.add_command(panel)
+export.add_command(genes)
+export.add_command(transcripts)
+export.add_command(variants)
 
-    if panel:
-        logger.info("Exporting panels: {}".format(', '.join(panel)))
-        export_panels(adapter, panel)
-    elif genes:
-        header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
-        function = export_genes(adapter)
-
-    elif transcripts:
-        header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
-        function = export_transcripts(adapter)
-
-    else:
-        if not collaborator:
-            click.echo("Please provide a collaborator to export variants")
-            ctx.abort()
-
-        header = [
-            "##fileformat=VCFv4.2",
-            "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
-        ]
-
-        function = export_causatives(adapter, collaborator)
-
-    for line in header:
-        print(line)
-
-    for obj in function:
-        print(obj)
