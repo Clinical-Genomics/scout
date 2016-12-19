@@ -2,33 +2,34 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def parse_hgnc_line(line, header):
     """Parse an hgnc formated line
-    
+
         Args:
             line(list): A list with hgnc gene info
             header(list): A list with the header info
-        
+
         Returns:
             hgnc_info(dict): A dictionary with the relevant info
     """
     hgnc_gene = {}
     line = line.rstrip().split('\t')
     raw_info = dict(zip(header, line))
-    if not 'Withdrawn' in raw_info['status']:
+    if 'Withdrawn' not in raw_info['status']:
         hgnc_symbol = raw_info['symbol']
         hgnc_gene['hgnc_symbol'] = hgnc_symbol
         hgnc_gene['hgnc_id'] = int(raw_info['hgnc_id'].split(':')[-1])
         hgnc_gene['description'] = raw_info['name']
         # We want to have the current symbol as an alias
         aliases = set([hgnc_symbol, hgnc_symbol.upper()])
-        # We then need to add both the previous symbols and 
+        # We then need to add both the previous symbols and
         # alias symbols
         previous_names = raw_info['prev_symbol']
         if previous_names:
             for alias in previous_names.strip('"').split('|'):
                 aliases.add(alias)
-        
+
         alias_symbols = raw_info['alias_symbol']
         if alias_symbols:
             for alias in alias_symbols.strip('"').split('|'):
@@ -71,16 +72,17 @@ def parse_hgnc_line(line, header):
             hgnc_gene['vega_id'] = vega_id
         else:
             hgnc_gene['vega_id'] = None
-    
+
     return hgnc_gene
+
 
 def parse_hgnc_genes(lines):
     """Parse lines with hgnc formated genes
-        
+
         This is designed to take a dump with genes from HGNC.
-        This is downloaded from: 
+        This is downloaded from:
         ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt
-    
+
         Args:
             lines(iterable(str)): An iterable with HGNC formated genes
         Yields:
