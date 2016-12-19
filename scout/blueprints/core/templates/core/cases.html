@@ -104,7 +104,7 @@
     </td>
     <td><span class="label label-info">{{ case.status }}</span></td>
     <td>
-      {{ case.analysis_date.split()|first }}
+      {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
         <span class="badge pull-right">rerun</span>
       {% endif %}
