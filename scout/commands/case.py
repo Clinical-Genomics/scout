@@ -70,7 +70,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
               help='institute id of related cases'
 )
 @click.option('-c', '--case_id',
-              default=None
+                  default=None
 )
 @click.pass_context
 def delete_case(context, institute, case_id):

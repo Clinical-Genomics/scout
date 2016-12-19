@@ -25,9 +25,22 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
         variant_type=variant_type
     )
 
+def check_coordinates(variant, coordinates):
+    """Check if the variant is in the interval given by the coordinates
+    
+        Args:
+            variant(dict)
+            coordinates
+    """
+    if variant['chromosome'] == coordinates['chrom']:
+        pos = variant['position']
+        if (pos >= coordinates['start'] and pos <= coordinates['end']):
+            return True
+    return False 
 
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
-                  category='snv', rank_treshold=5):
+                  category='snv', rank_treshold=5, chrom=None, start=None, 
+                  end=None):
     """Load all variantt in variants
 
         Args:
@@ -35,7 +48,11 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             variant_file(str): Path to variant file
             case(Case)
             variant_type(str)
-
+            category(str): 'snv' or 'sv'
+            rank_treshold(int)
+            chrom(str)
+            start(int)
+            end(int)
     """
 
     institute_obj = adapter.institute(institute_id=case_obj['owner'])
@@ -56,6 +73,15 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     start_five_thousand = datetime.now()
     nr_variants = 0
     nr_inserted  = 0
+    
+    coordinates = False
+    if chrom:
+        coordinates = {
+            'chrom':chrom, 
+            'start': start, 
+            'end': end
+        }
+    
     try:
         
         for nr_variants, variant in enumerate(variants):
@@ -66,14 +92,27 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 variant_type=variant_type,
                 rank_results_header=rank_results_header
             )
+            variant_obj = None
+            if coordinates:
+                if check_coordinates(parsed_variant, coordinates):
+                    variant_obj = build_variant(
+                        variant=parsed_variant,
+                        institute=institute_obj,
+                    )
             
-            if parsed_variant.get('rank_score',0) > rank_treshold:
+            elif parsed_variant.get('rank_score',0) > rank_treshold:
                 variant_obj = build_variant(
                     variant=parsed_variant,
                     institute=institute_obj,
                 )
-                nr_inserted += 1
             
+            if variant_obj:
+                try:
+                    load_variant(adapter, variant_obj)
+                    nr_inserted += 1
+                except IntegrityError as e:
+                    pass
+
             if (nr_variants != 0 and nr_variants % 5000 == 0):
                 logger.info("{} variants processed".format(nr_variants))
                 logger.info("Time to parse variants: {0}".format(
@@ -105,5 +144,4 @@ def load_variant(adapter, variant_obj):
             variant_obj(scout.models.Variant)
 
     """
-    
     adapter.load_variant(variant_obj)

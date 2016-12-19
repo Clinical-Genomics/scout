@@ -100,9 +100,9 @@ def variants(context, collaborator):
 
 @click.group()
 @click.pass_context
-def export(ctx, collaborator, genes, transcripts, gene_file, panel):
+def export(ctx):
     """
-    Export variants from the mongo database.
+    Export objects from the mongo database.
     """
     logger.info("Running scout export")
 

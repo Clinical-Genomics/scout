@@ -17,6 +17,8 @@ import yaml
 
 from scout.exceptions import (IntegrityError, ConfigError)
 
+from scout.models import (User, Whitelist)
+
 from scout.commands.case import case as case_command
 from scout.commands.load_institute import institute as institute_command
 from scout.commands.load_hpo import hpo as hpo_command
@@ -27,10 +29,54 @@ logger = logging.getLogger(__name__)
     
 
 @click.command()
+@click.option('--hgnc-id',
+    type=int,
+    help="Use a existing hgnc id to define the region",
+)
+@click.option('--institute-name',
+    required = True,
+    help = "Specify the institute that the case belongs to"
+)
+@click.option('--case-name',
+    required = True,
+    help = "Name of case"
+)
+@click.option('-c','--chromosome')
+@click.option('-s','--start', type=int)
+@click.option('-e','--end', type=int)
 @click.pass_context
-def region(context):
+def region(context, hgnc_id, chromosome, start, end):
     """Load all variants in a region to a existing case"""
     pass
+
+@click.command()
+@click.option('-i', '--institute-name',
+    required = True,
+)
+@click.option('-u', '--user-name',
+    default = 'Clark Kent',
+)
+@click.option('-m', '--user-mail',
+    default = 'clark.kent@mail.com',
+)
+@click.pass_context
+def user(context, institute_name, user_name, user_mail):
+    """Add a user to the database"""
+    adapter = context.obj['adapter']
+    
+    institute = adapter.institute(institute_id=institute_name)
+    
+    if not institute:
+        logger.info("Institute {0} does not exist".format(institute_name))
+        context.abort()
+
+    Whitelist(email=user_mail).save()
+    user = User(email=user_mail,
+                name=user_name,
+                roles=['admin'],
+                institutes=[institute])
+    user.save()
+    
 
 @click.group()
 @click.pass_context
@@ -44,3 +90,4 @@ load.add_command(genes_command)
 load.add_command(region)
 load.add_command(hpo_command)
 load.add_command(panel_command)
+load.add_command(user)
