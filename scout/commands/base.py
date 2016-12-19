@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 import click
+import yaml
 
 from scout import __version__, logger
 from scout.log import init_log
 from scout.adapter import MongoAdapter
-from . import (load, transfer, wipe, genes, export, institute, hpo, panel, 
+from . import (load, transfer, wipe, genes, export, institute, hpo, panel,
                init_command, hgnc_query, convert)
 from .cases import cases
 
@@ -11,37 +13,37 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
 @click.group()
-@click.option('-l', '--logfile', 
+@click.option('-l', '--logfile',
               type=click.Path(exists=False),
               help="Path to log file. If none logging is printed to stderr."
 )
-@click.option('--loglevel', 
-              default='INFO', 
+@click.option('--loglevel',
+              default='INFO',
               type=click.Choice(LOG_LEVELS),
               help="Set the level of log output.",
               show_default=True,
 )
-@click.option('-db', '--mongodb', 
+@click.option('-db', '--mongodb',
               default='variantDatabase',
               show_default=True,
 )
-@click.option('-u', '--username', 
+@click.option('-u', '--username',
               type=str
 )
 @click.option('-p', '--password',
               type=str
 )
-@click.option('-port', '--port', 
+@click.option('-port', '--port',
               default=27017,
               show_default=True,
               help="Specify port to look for the mongo database"
 )
-@click.option('-h', '--host', 
-              default='localhost', 
+@click.option('-h', '--host',
+              default='localhost',
               show_default=True,
               help="Specify the host where to look for the mongo database."
 )
-@click.option('-c', '--config', 
+@click.option('-c', '--config',
               type=click.Path(exists=True),
               help="Specify the path to a config file with database info."
 )
@@ -55,7 +57,8 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
     configs = {}
     if config:
         logger.debug("Use config file {0}".format(config))
-        configs = ConfigObj(config)
+        with open(config, 'r') as in_handle:
+            configs = yaml.load(in_handle)
 
     if mongodb:
         mongo_configs['mongodb'] = mongodb
