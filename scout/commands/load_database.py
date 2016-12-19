@@ -15,64 +15,79 @@ import datetime
 import click
 import yaml
 
-from scout.load import load_scout
 from scout.exceptions import (IntegrityError, ConfigError)
 
-logger = logging.getLogger(__name__)
+from scout.models import (User, Whitelist)
 
+from scout.commands.case import case as case_command
+from scout.commands.load_institute import institute as institute_command
+from scout.commands.load_hpo import hpo as hpo_command
+from scout.commands.load_genes import genes as genes_command
+from scout.commands.load_panel import panel as panel_command
+
+logger = logging.getLogger(__name__)
+    
 
 @click.command()
-@click.option('--vcf', 
-              type=click.Path(exists=True),
-              help='path to clinical VCF file to be loaded'
+@click.option('--hgnc-id',
+    type=int,
+    help="Use a existing hgnc id to define the region",
 )
-@click.option('--vcf-sv', 
-              type=click.Path(exists=True),
-              help='path to clinical SV VCF file to be loaded'
+@click.option('--institute-name',
+    required = True,
+    help = "Specify the institute that the case belongs to"
 )
-@click.option('--owner', 
-              help='parent institute for the case'
+@click.option('--case-name',
+    required = True,
+    help = "Name of case"
 )
-@click.option('--ped', 
-              type=click.File('r')
+@click.option('-c','--chromosome')
+@click.option('-s','--start', type=int)
+@click.option('-e','--end', type=int)
+@click.pass_context
+def region(context, hgnc_id, chromosome, start, end):
+    """Load all variants in a region to a existing case"""
+    pass
+
+@click.command()
+@click.option('-i', '--institute-name',
+    required = True,
 )
-@click.option('-u', '--update', 
-              is_flag=True
+@click.option('-u', '--user-name',
+    default = 'Clark Kent',
 )
-@click.argument('config', 
-              type=click.File('r'), 
-              required=False
+@click.option('-m', '--user-mail',
+    default = 'clark.kent@mail.com',
 )
 @click.pass_context
-def load(context, vcf, vcf_sv, owner, ped, update, config):
-    """Add a new case to Scout."""
-    if config is None and ped is None:
-        click.echo("you have to provide either config or ped file")
-        context.abort()
-
-    config_data = yaml.load(config) if config else {}
-
-    if not config_data:
-        config_data['analysis_date'] = datetime.date.today()
-    config_data['vcf_snv'] = vcf if vcf else config_data.get('vcf_snv')
-    config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
-    config_data['owner'] = owner if owner else config_data.get('owner')
-    config_data['rank_treshold'] = config_data.get('rank_treshold') or 5
-
-    # from pprint import pprint as pp
-    # pp(config_data)
-    # context.abort()
+def user(context, institute_name, user_name, user_mail):
+    """Add a user to the database"""
+    adapter = context.obj['adapter']
     
-    if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
-        logger.warn("Please provide a vcf file (use '--vcf')")
+    institute = adapter.institute(institute_id=institute_name)
+    
+    if not institute:
+        logger.info("Institute {0} does not exist".format(institute_name))
         context.abort()
 
-    if not config_data.get('owner'):
-        logger.warn("Please provide an owner for the case (use '--owner')")
-        context.abort()
+    Whitelist(email=user_mail).save()
+    user = User(email=user_mail,
+                name=user_name,
+                roles=['admin'],
+                institutes=[institute])
+    user.save()
     
-    try:
-        load_scout(context.obj['adapter'], config_data, ped=ped, update=update)
-    except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-        click.echo(error)
-        context.abort()
+
+@click.group()
+@click.pass_context
+def load(context):
+    """Load the Scout database."""
+    pass
+    
+load.add_command(case_command)
+load.add_command(institute_command)
+load.add_command(genes_command)
+load.add_command(region)
+load.add_command(hpo_command)
+load.add_command(panel_command)
+load.add_command(user)

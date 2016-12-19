@@ -5,6 +5,8 @@ from mongoengine import DoesNotExist, Q
 
 from scout.models import Variant
 
+from scout.exceptions.database import IntegrityError
+
 logger = logging.getLogger(__name__)
 
 
@@ -250,6 +252,8 @@ class VariantHandler(object):
     def load_variant(self, variant_obj):
         """Load a variant object"""
         logger.debug("Loading variant %s into database", variant_obj['variant_id'])
+        if Variant.objects(document_id=variant_obj.document_id):
+            raise IntegrityError("Variant {} already exists in database".format(variant_obj.display_name))
         variant_obj.save()
         logger.debug("Variant saved")
 

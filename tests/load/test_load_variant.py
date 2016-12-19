@@ -1,4 +1,122 @@
+import pytest
 
-def test_load_variants(populated_database, variant_objs):
-    """Test to load variants into a mongo database"""
-    pass
+from scout.load.variant import (load_variant, load_variants)
+from scout.models.variant.variant import Variant
+
+from scout.exceptions.database import IntegrityError
+
+# def test_load_variants(populated_database, variant_objs):
+#     """Test to load variants into a mongo database"""
+#     pass
+
+def test_load_variant(populated_database, variant_obj):
+    """Test to load a variant into a mongo database"""
+    # GIVEN a database without any variants
+    assert Variant.objects().count() == 0
+    
+    # WHEN loading a variant into the database
+    load_variant(
+        adapter=populated_database, 
+        variant_obj=variant_obj
+    )
+    # THEN assert the variant is loaded
+    
+    assert Variant.objects.get(variant_id = variant_obj.variant_id)
+
+def test_load_variant_twice(populated_database, variant_obj):
+    """Test to load a variant into a mongo database"""
+    # GIVEN a database without any variants
+    assert Variant.objects().count() == 0
+    
+    # WHEN loading a variant into the database twice
+    load_variant(
+        adapter=populated_database, 
+        variant_obj=variant_obj
+    )
+    
+    # THEN a IntegrityError should be raised
+    with pytest.raises(IntegrityError):
+        load_variant(
+            adapter=populated_database, 
+            variant_obj=variant_obj
+        )
+
+def test_load_variants(populated_database, case_obj, variant_clinical_file):
+    """Test to load a variant into a mongo database"""
+    # GIVEN a database without any variants
+    assert Variant.objects().count() == 0
+    
+    # WHEN loading a variant into the database
+    rank_treshold = 0
+    load_variants(
+            adapter=populated_database, 
+            variant_file=variant_clinical_file, 
+            case_obj=case_obj, 
+            variant_type='clinical',
+            category='snv', 
+            rank_treshold=rank_treshold, 
+            chrom=None, 
+            start=None, 
+            end=None, 
+    )
+    # THEN assert the variant is loaded
+    
+    assert Variant.objects().count() > 0
+    
+    for variant in Variant.objects():
+        assert variant.rank_score >= rank_treshold
+        assert variant.category == 'snv'
+
+def test_load_sv_variants(populated_database, case_obj, sv_clinical_file):
+    """Test to load a variant into a mongo database"""
+    # GIVEN a database without any variants
+    assert Variant.objects().count() == 0
+    
+    # WHEN loading a variant into the database
+    rank_treshold = 0
+    load_variants(
+            adapter=populated_database, 
+            variant_file=sv_clinical_file, 
+            case_obj=case_obj, 
+            variant_type='clinical',
+            category='sv', 
+            rank_treshold=rank_treshold, 
+            chrom=None, 
+            start=None, 
+            end=None, 
+    )
+    # THEN assert the variant is loaded
+    
+    assert Variant.objects().count() > 0
+    
+    for variant in Variant.objects():
+        assert variant.rank_score >= rank_treshold
+        assert variant.category == 'sv'
+
+def test_load_region(populated_database, case_obj, variant_clinical_file):
+    """Test to load a variant into a mongo database"""
+    # GIVEN a database without any variants
+    assert Variant.objects().count() == 0
+    
+    # WHEN loading a variant into the database
+    chrom = '1'
+    start = 7847367
+    end = 156126553
+    load_variants(
+            adapter=populated_database, 
+            variant_file=variant_clinical_file, 
+            case_obj=case_obj, 
+            variant_type='clinical',
+            category='snv', 
+            chrom=chrom, 
+            start=start, 
+            end=end, 
+    )
+    # THEN assert the variant is loaded
+    
+    assert Variant.objects().count() > 0
+    
+    for variant in Variant.objects():
+        assert variant.chromosome == chrom
+        assert variant.position <= end
+        assert variant.end >= start

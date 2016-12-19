@@ -261,6 +261,7 @@ def parsed_institute(request):
 @pytest.fixture(scope='function')
 def institute_obj(request, parsed_institute):
     print('')
+    logger.info('Building a institute')
     institute = build_institute(
         internal_id=parsed_institute['institute_id'],
         display_name=parsed_institute['display_name'],
@@ -282,6 +283,7 @@ def client(request):
 @pytest.fixture(scope='function')
 def adapter(request, client):
     """Get an adapter connected to mongomock database"""
+    logger.info("Connecting to database...")
     mongo_client = client
     
     database = 'test'
@@ -293,6 +295,7 @@ def adapter(request, client):
         host=host,
         port=port
     )
+    logger.info("Connected to database")
 
     def teardown():
         print('\n')
@@ -493,6 +496,15 @@ def parsed_variant(request, one_variant, parsed_case):
     print('')
     variant_dict = parse_variant(one_variant, parsed_case)
     return variant_dict
+
+@pytest.fixture(scope='function')
+def variant_obj(request, parsed_variant, populated_database):
+    """Return a variant object"""
+    print('')
+    institute_id = 'cust000'
+    institute_obj = populated_database.institute(institute_id=institute_id)
+    variant = build_variant(parsed_variant, institute_obj)
+    return variant
 
 @pytest.fixture(scope='function')
 def parsed_sv_variant(request, one_sv_variant, parsed_case):

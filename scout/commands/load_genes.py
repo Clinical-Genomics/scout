@@ -16,8 +16,6 @@ Created by Måns Magnusson on 2015-01-14.
 Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 
 """
-from codecs import open
-import gzip
 import logging
 
 import click

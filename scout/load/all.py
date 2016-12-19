@@ -31,8 +31,40 @@ def check_panels(adapter, panels, default_panels=None):
             panels_exist = False
     return panels_exist
 
+def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None, start=None, end=None):
+    """Load all variants in a region defined by a hgnc id
+    
+        Args:
+            adapter(MongoAdapter)
+            case_id(str): Case id
+            hgnc_id(int): If all variants from a gene should be uploaded
+            chrom(str): If variants from coordinates should be uploaded
+            start(int): Start position for region
+            end(int): Stop position for region
+    """
+    if hgnc_id:
+        gene_obj = adapter.hgnc_gene(hgnc_id)
+        if not gene_obj:
+            ValueError("Gene {} does not exist in database".format(hgnc_id))
+        chrom = gene_obj.chromosome
+        start = gene_obj.start
+        end = gene_obj.end
+    
+    case_obj = adapter.case(institute_id=owner, case_id=case_id)
+    if not case_obj:
+        raise ValueError("Case {} does not exist in database".format(case_id))
+    
+    
 def load_scout(adapter, config, ped=None, update=False):
-    """Load a new case from a Scout config."""
+    """Load a new case from a Scout config.
+    
+        Args:
+            adapter(MongoAdapter)
+            config(dict): loading info
+            ped(Iterable(str)): Pedigree ingformation
+            update(bool): If existing case should be updated
+        
+    """
     log.info("Check that the panels exists")
     if not check_panels(adapter, config.get('gene_panels',[]), config.get('default_panels')):
         raise ConfigError("Some panel(s) does not exist in the database")

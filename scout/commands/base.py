@@ -5,9 +5,17 @@ import yaml
 from scout import __version__, logger
 from scout.log import init_log
 from scout.adapter import MongoAdapter
-from . import (load, transfer, wipe, genes, export, institute, hpo, panel,
-               init_command, hgnc_query, convert)
-from .cases import cases
+
+from scout.commands.load_database import load
+from scout.commands.export import export
+
+from scout.commands.case import cases
+
+from scout.commands.wipe_database import wipe
+from scout.commands.transfer import transfer
+from scout.commands.init import init as init_command
+from scout.commands.convert import convert
+from scout.commands.query_genes import hgnc_query
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
@@ -77,12 +85,7 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
 cli.add_command(load)
 cli.add_command(transfer)
 cli.add_command(wipe)
-cli.add_command(genes)
 cli.add_command(init_command)
-cli.add_command(hpo)
 cli.add_command(export)
-cli.add_command(institute)
-cli.add_command(panel)
-cli.add_command(cases)
 cli.add_command(convert)
 cli.add_command(hgnc_query)

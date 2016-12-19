@@ -8,8 +8,6 @@ Created by Måns Magnusson on 2016-10-25.
 Copyright (c) 2016 __MoonsoInc__. All rights reserved.
 """
 
-from codecs import open
-import gzip
 import logging
 
 import click
