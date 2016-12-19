@@ -70,9 +70,6 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
         'full_name': name or panel_id
     }
     
-    # from pprint import pprint as pp
-    # pp(info)
-    
     load_panel(
         adapter=adapter,
         panel_info=info
