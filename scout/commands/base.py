@@ -23,26 +23,13 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
               help="Set the level of log output.",
               show_default=True,
 )
-@click.option('-db', '--mongodb',
-              default='variantDatabase',
-              show_default=True,
-)
-@click.option('-u', '--username',
-              type=str
-)
-@click.option('-p', '--password',
-              type=str
-)
+@click.option('-db', '--mongodb')
+@click.option('-u', '--username')
+@click.option('-p', '--password')
 @click.option('-port', '--port',
-              default=27017,
-              show_default=True,
-              help="Specify port to look for the mongo database"
-)
+              help="Specify port to look for the mongo database")
 @click.option('-h', '--host',
-              default='localhost',
-              show_default=True,
-              help="Specify the host where to look for the mongo database."
-)
+              help="Specify the host where to look for the mongo database.")
 @click.option('-c', '--config',
               type=click.Path(exists=True),
               help="Specify the path to a config file with database info."
@@ -60,33 +47,18 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
         with open(config, 'r') as in_handle:
             configs = yaml.load(in_handle)
 
-    if mongodb:
-        mongo_configs['mongodb'] = mongodb
-    else:
-        mongo_configs['mongodb'] = configs.get('mongodb', 'variantDatabase')
+    mongo_configs['mongodb'] = (mongodb or configs.get('mongodb') or
+                                'variantDatabase')
     logger.debug("Setting mongodb to {0}".format(mongo_configs['mongodb']))
 
-    if host:
-        mongo_configs['host'] = host
-    else:
-        mongo_configs['host'] = configs.get('host', 'localhost')
+    mongo_configs['host'] = (host or configs.get('host') or 'localhost')
     logger.debug("Setting host to {0}".format(mongo_configs['host']))
 
-    if port:
-        mongo_configs['port'] = port
-    else:
-        mongo_configs['port'] = int(configs.get('port', 27017))
+    mongo_configs['port'] = (port or configs.get('port') or 27017)
     logger.debug("Setting port to {0}".format(mongo_configs['port']))
 
-    if username:
-        mongo_configs['username'] = username
-    else:
-        mongo_configs['username'] = configs.get('username')
-
-    if password:
-        mongo_configs['password'] = password
-    else:
-        mongo_configs['password'] = configs.get('password')
+    mongo_configs['username'] = username or configs.get('username')
+    mongo_configs['password'] = password or configs.get('password')
 
     logger.debug("Setting up a mongo adapter")
     mongo_adapter = MongoAdapter()
