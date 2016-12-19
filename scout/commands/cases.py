@@ -7,15 +7,15 @@ logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option('-i', '--institute', 
+@click.option('-i', '--institute',
               help='institute id of related cases'
 )
-@click.option('-r', '--reruns', 
-              is_flag=True, 
+@click.option('-r', '--reruns',
+              is_flag=True,
               help='requested to be rerun'
 )
-@click.option('-f', '--finished', 
-              is_flag=True, 
+@click.option('-f', '--finished',
+              is_flag=True,
               help='archived or solved'
 )
 @click.option('--delete',
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def cases(context, institute, reruns, finished, delete, case_id):
     """Interact with cases in the database."""
     adapter = context.obj['adapter']
-    
+
     if delete:
         if not case_id:
             click.echo("Please specify the id of the case that should be "
@@ -40,9 +40,9 @@ def cases(context, institute, reruns, finished, delete, case_id):
             click.echo("Please specify the owner of the case that should be "
                            "deleted with flag '-i/--institute'.")
             context.abort()
-        
+
         logger.info("Running deleting case {0}".format(case_id))
-        
+
         case = adapter.delete_case(
             institute_id=institute,
             case_id=case_id
@@ -54,9 +54,9 @@ def cases(context, institute, reruns, finished, delete, case_id):
         else:
             logger.warning("Case does not exist in database")
             context.abort()
-        
+
     else:
         models = adapter.cases(collaborator=institute, reruns=reruns,
                            finished=finished)
         for model in models:
-            click.echo(model.owner_case_id)
+            click.echo(model.case_id)

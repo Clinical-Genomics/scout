@@ -503,7 +503,7 @@
             <td>{{ panel.date if panel.date }}</td>
             <td>{{ panel.genes|length }}</td>
             <td>
-              <form action="{{ url_for('report.group', group_id=case.owner_case_id) }}" method="POST" target="_blank">
+              <form action="{{ url_for('report.group', group_id=case.case_id) }}" method="POST" target="_blank">
                 <input type="hidden" name="level" value="{{ case.coverage_cutoff }}">
                 <input type="hidden" name="panel_name" value="{{ panel.name_and_version }}">
                 <input type="hidden" name="gene_ids" value="{{ panel.genes|join(',') }}">

@@ -108,7 +108,7 @@ def case(institute_id, case_id):
 
     # archive date
     today = datetime.date.today()
-    hk_run = api.runs(case_name=case_model.owner_case_id,
+    hk_run = api.runs(case_name=case_model.case_id,
                       run_date=case_model.analyzed_at).first()
     if hk_run:
         archive_date = hk_run.will_cleanup_at.date()
@@ -297,7 +297,7 @@ def sampleid_map(case_model):
     # map internal + external sample ids
     sample_map = {"alt_{}".format(sample.individual_id): sample.display_name
                   for sample in case_model.individuals}
-    group_id = "alt_{}".format(case_model.owner_case_id)
+    group_id = "alt_{}".format(case_model.case_id)
     sample_map[group_id] = case_model.display_name
     return sample_map
 
@@ -777,7 +777,7 @@ def postpone(institute_id, case_id):
     """Postpone the clean up (archive) date of a case."""
     validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
-    hk_run = api.runs(case_name=case_model.owner_case_id,
+    hk_run = api.runs(case_name=case_model.case_id,
                       run_date=case_model.analyzed_at).first()
     api.postpone(hk_run)
     new_date = hk_run.will_cleanup_at.date()
