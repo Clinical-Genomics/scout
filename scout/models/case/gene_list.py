@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, ListField, StringField, FloatField,
-                         DateTimeField, BooleanField, EmbeddedDocument, 
+                         DateTimeField, BooleanField, EmbeddedDocument,
                          EmbeddedDocumentField, MapField, ReferenceField)
 
 from scout.models.hgnc_map import HgncGene
+
 
 class Gene(EmbeddedDocument):
 
