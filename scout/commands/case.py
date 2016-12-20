@@ -7,7 +7,7 @@ from scout.load import load_scout
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('case', short_help='Load a case')
 @click.pass_context
 @click.option('--vcf', 
               type=click.Path(exists=True),
@@ -114,12 +114,27 @@ def delete_case(context, institute, case_id):
               is_flag=True, 
               help='archived or solved'
 )
+@click.option('--causatives', 
+              is_flag=True, 
+              help='Has causative variants'
+)
+@click.option('--research-requested', 
+              is_flag=True, 
+              help='If research is requested'
+)
+@click.option('--is-research', 
+              is_flag=True, 
+              help='If case is in research mode'
+)
 @click.pass_context
-def cases(context, institute, reruns, finished, delete):
+def cases(context, institute, reruns, finished, causatives, research_requested,
+          is_research):
     """Interact with cases existing in the database."""
     adapter = context.obj['adapter']
     
     models = adapter.cases(collaborator=institute, reruns=reruns,
-                           finished=finished)
+                           finished=finished, has_causatives=causatives,
+                           research_requested=research_requested,
+                           is_research=is_research)
     for model in models:
-        click.echo(model.owner_case_id)
+        click.echo(model.case_id)

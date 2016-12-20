@@ -9,7 +9,7 @@ from scout.utils.handle import get_file_handle
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('panel', short_help='Load a gene panel')
 @click.argument('path',
     type=click.Path(exists=True)
 )
@@ -69,9 +69,6 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
         'name': panel_id,
         'full_name': name or panel_id
     }
-    
-    # from pprint import pprint as pp
-    # pp(info)
     
     load_panel(
         adapter=adapter,

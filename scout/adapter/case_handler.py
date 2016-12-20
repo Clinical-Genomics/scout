@@ -72,7 +72,8 @@ class CaseHandler(object):
         return Institute.objects()
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
-              has_causatives=False, reruns=False, finished=False):
+              has_causatives=False, reruns=False, finished=False, 
+              research_requested=False, is_research=False):
         """Fetches all cases from the backend.
 
         Args:
@@ -115,6 +116,12 @@ class CaseHandler(object):
 
         if finished:
             case_query = case_query.filter(status__in=['solved', 'archived'])
+
+        if research_requested:
+            case_query = case_query.filter(research_requested=True)
+
+        if is_research:
+            case_query = case_query.filter(is_research=True)
 
         return case_query.order_by('-updated_at')
 

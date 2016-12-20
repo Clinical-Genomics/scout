@@ -53,8 +53,36 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None, start=None, e
     case_obj = adapter.case(institute_id=owner, case_id=case_id)
     if not case_obj:
         raise ValueError("Case {} does not exist in database".format(case_id))
+
+    log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"\
+             " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
     
+    load_variants(adapter=adapter, variant_file=config['vcf_snv'],
+                  case_obj=case_obj, variant_type='clinical', category='snv',
+                  chrom=chrom, start=start, end=end)
     
+    if config.get('vcf_sv'):
+        log.info("Load clinical SV variants for case: {0} region: chr {1}, start"\
+             " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
+        load_variants(adapter=adapter, variant_file=config['vcf_sv_clinical'],
+                      case_obj=case_obj, variant_type='clinical',
+                      category='sv', chrom=chrom, start=start, end=end)
+    
+    if case_obj.is_research:
+        log.info("Load research SNV variants for case: {0} region: chr {1}, start"\
+             " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
+        load_variants(adapter=adapter, variant_file=config['vcf_snv_research'],
+                      case_obj=case_obj, variant_type='research', category='snv',
+                      chrom=chrom, start=start, end=end)
+        
+        if config.get('vcf_sv_research'):
+            log.info("Load research SV variants for case: {0} region: chr {1}, start"\
+                 " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
+            load_variants(adapter=adapter, variant_file=config['vcf_sv_research'],
+                          case_obj=case_obj, variant_type='research',
+                          category='sv', chrom=chrom, start=start, end=end)
+    
+
 def load_scout(adapter, config, ped=None, update=False):
     """Load a new case from a Scout config.
     
@@ -86,12 +114,12 @@ def load_scout(adapter, config, ped=None, update=False):
     log.info("Delete variants for case %s", case_obj.case_id)
     delete_variants(adapter=adapter, case_obj=case_obj)
 
-    log.info("Load SNV variants for case %s", case_obj.case_id)
+    log.info("Load clinical SNV variants for case %s", case_obj.case_id)
     load_variants(adapter=adapter, variant_file=config['vcf_snv'],
                   case_obj=case_obj, variant_type='clinical', category='snv',
                   rank_treshold=config.get('rank_threshold'))
 
-    if config.get('vcf_sv'):
+    if config.get('vcf_sv_clinical'):
         log.info("Load SV variants for case %s", case_obj.case_id)
         load_variants(adapter=adapter, variant_file=config['vcf_sv'],
                       case_obj=case_obj, variant_type='clinical',

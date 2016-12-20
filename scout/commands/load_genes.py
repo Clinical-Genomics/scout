@@ -30,7 +30,7 @@ from scout.utils.handle import get_file_handle
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('genes', short_help='Load all genes')
 @click.option('--hgnc',
                 type=click.Path(exists=True),
                 default=hgnc_path,

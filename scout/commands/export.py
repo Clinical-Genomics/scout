@@ -24,14 +24,17 @@ logger = logging.getLogger(__name__)
 
 
 
-@click.command()
-@click.option('--panel',
-                multiple=True,
-                help="Export gene panels to .bed format"
+@click.command('panel', short_help='Export gene panels')
+@click.argument('panel',
+                nargs=-1,
+                metavar='<panel_name>'
 )
 @click.pass_context
 def panel(context, panel):
-    """Export a gene panel to .bed like format"""
+    """Export gene panels to .bed like format.
+    
+        Specify any number of panels on the command line
+    """
     logger.info("Running scout export panel")
     adapter = context.obj['adapter']
     
@@ -42,7 +45,7 @@ def panel(context, panel):
     logger.info("Exporting panels: {}".format(', '.join(panel)))
     export_panels(adapter, panel)
 
-@click.command()
+@click.command('genes', short_help='Export genes')
 @click.pass_context
 def genes(context):
     """Export all genes to .bed like format"""
@@ -57,7 +60,7 @@ def genes(context):
     for gene in export_genes(adapter):
         print(gene)
 
-@click.command()
+@click.command('transcripts', short_help='Export transcripts')
 @click.pass_context
 def transcripts(context):
     """Export all transcripts to .bed like format"""
@@ -72,7 +75,7 @@ def transcripts(context):
     for transcript in export_transcripts(adapter):
         print(transcript)
 
-@click.command()
+@click.command('variants', short_help='Export variants')
 @click.option('-c', '--collaborator')
 @click.pass_context
 def variants(context, collaborator):

@@ -20,7 +20,7 @@ from scout.resources import (hpoterms_path, hpodisease_path)
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('hpo', short_help='Load hpo terms')
 @click.option('--hpo-terms',
                 type=click.Path(exists=True),
                 help="Path to hpo file",
