@@ -8,7 +8,7 @@ from scout.models.user import User
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('panels', short_help='Display gene panels')
 @click.pass_context
 def panels(context):
     """Show all gene panels in the database"""
@@ -18,7 +18,7 @@ def panels(context):
     for panel_obj in adapter.gene_panel():
         click.echo('\t'.join([panel_obj.panel_name, str(panel_obj.version)]))
 
-@click.command()
+@click.command('users', short_help='Display users')
 @click.pass_context
 def users(context):
     """Show all users in the database"""
@@ -29,7 +29,7 @@ def users(context):
     for user_obj in User.objects():
         click.echo(user_obj.name)
 
-@click.command()
+@click.command('institutes', short_help='Display institutes')
 @click.pass_context
 def institutes(context):
     """Show all institutes in the database"""

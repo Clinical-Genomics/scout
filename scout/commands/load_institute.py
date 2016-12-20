@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 from scout.load import load_institute
 
-@click.command()
+@click.command('institute', short_help='Load a institute')
 @click.option('-i', '--internal_id',
                 type=str,
                 required=True

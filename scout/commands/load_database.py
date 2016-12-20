@@ -25,10 +25,12 @@ from scout.commands.load_hpo import hpo as hpo_command
 from scout.commands.load_genes import genes as genes_command
 from scout.commands.load_panel import panel as panel_command
 
+from scout.load.all import load_region
+
 logger = logging.getLogger(__name__)
     
 
-@click.command()
+@click.command('region', short_help='Load variants from region')
 @click.option('--hgnc-id',
     type=int,
     help="Use a existing hgnc id to define the region",
@@ -45,11 +47,24 @@ logger = logging.getLogger(__name__)
 @click.option('-s','--start', type=int)
 @click.option('-e','--end', type=int)
 @click.pass_context
-def region(context, hgnc_id, chromosome, start, end):
+def region(context, hgnc_id, case_name, institute_name, chromosome, start, end):
     """Load all variants in a region to a existing case"""
-    pass
+    adapter = context.obj['adapter']
+    
+    try:
+        load_region(
+            adapter=adapter, 
+            case_id=case_name, 
+            owner=institute_name, 
+            hgnc_id=hgnc_id, 
+            chrom=chromosome, 
+            start=start, 
+            end=end)
+    except Error as err:
+        logger.warning(err)
+        context.abort()
 
-@click.command()
+@click.command('region', short_help='Load a user')
 @click.option('-i', '--institute-name',
     required = True,
 )

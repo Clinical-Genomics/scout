@@ -7,7 +7,7 @@ from scout.load import load_scout
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('case', short_help='Load a case')
 @click.pass_context
 @click.option('--vcf', 
               type=click.Path(exists=True),
