@@ -63,7 +63,7 @@ def logout():
 
 
 @login.route('/authorized')
-@google.authorized_response
+@google.authorized_handler
 def authorized(oauth_response):
     if oauth_response is None:
         flash("Access denied: reason={} error={}"
