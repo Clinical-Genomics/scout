@@ -129,6 +129,9 @@ def parse_case(config, ped=None):
     family_id = config['family']
 
     individuals = parse_individuals(config['samples'])
+    
+    if not 'vcf_snv' in config:
+        raise ConfigError("A case has to have a snv vcf")
 
     case_data = {
         'owner': owner,
@@ -138,11 +141,11 @@ def parse_case(config, ped=None):
         'display_name': family_id,
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
-        'rank_score_treshold': config.get('rank_score_treshold',5),
+        'rank_score_treshold': config.get('rank_treshold',5),
         'analysis_date': config['analysis_date'],
         'individuals': individuals,
         'vcf_files':{
-            'vcf_snv': config.get('vcf_snv'),
+            'vcf_snv': config['vcf_snv'],
             'vcf_sv': config.get('vcf_sv'),
             'vcf_snv_research': config.get('vcf_snv_research'),
             'vcf_sv_research': config.get('vcf_sv_research'),

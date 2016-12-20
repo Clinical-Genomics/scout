@@ -11,6 +11,38 @@ def test_parse_case(scout_config):
     # THEN the case should have a owner
     assert case_data['owner'] == scout_config['owner']
 
+def test_parse_case_gene_panels(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have the same panels like the config
+    assert case_data['gene_panels'] == scout_config['gene_panels']
+
+def test_parse_case_default_panels(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have the same panels like the config
+    assert case_data['default_panels'] == scout_config['default_panels']
+
+def test_parse_case_rank_treshold(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have the same panels like the config
+    assert case_data['rank_score_treshold'] == scout_config['rank_treshold']
+
+def test_parse_ped_file(ped_file):
+    # GIVEN a pedigree with three samples
+    with open(ped_file, 'r') as case_lines:
+        # WHEN parsing out relevant sample info
+        family_id, samples = parse_ped(case_lines)
+    # THEN it should return correct family id
+    assert family_id == '643594'
+    # THEN it should return correct number of individuals
+    assert len(samples) == 3
+
+
 def test_parse_ped():
     # GIVEN a pedigree with three samples
     case_lines = [

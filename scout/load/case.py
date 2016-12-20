@@ -25,6 +25,16 @@ def load_case(adapter, case_obj, update=False):
     if not institute_obj:
         message = "Institute {} does not exist in database".format(owner)
         raise ValueError(message)
+    
+    gene_panels = []
+    default_panels = []
+    for panel in case_obj.gene_panels:
+        panel_obj = adapter.gene_panel(panel_id=panel)
+        gene_panels.append(panel_obj)
+        if panel in case_obj.default_panels:
+            default_panels.append(panel_obj)
+    case_obj.gene_panels = gene_panels
+    case_obj.default_panels = default_panels
 
     # Check if case exists in database
     existing_case = adapter.case(institute_id=owner,
