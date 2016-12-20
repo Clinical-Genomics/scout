@@ -29,7 +29,7 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     """Returns the currently active user as an object."""
     try:
-        return User.objects.get(id=ObjectId(user_id))
+        return User.objects.get(id=ObjectId(user_id.decode('utf-8')))
     except DoesNotExist:
         return None
 
