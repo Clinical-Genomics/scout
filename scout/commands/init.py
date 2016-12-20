@@ -28,7 +28,7 @@ from scout.utils.link import link_genes
 logger = logging.getLogger(__name__)
 
 
-@click.command()
+@click.command('init', short_help='Initialize a scout instance')
 @click.option('-i', '--institute-name', default='test')
 @click.option('-u', '--user-name', default='Clark Kent')
 @click.option('-m', '--user-mail', default='clark.kent@mail.com')

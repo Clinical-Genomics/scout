@@ -2,7 +2,7 @@
 import click
 
 
-@click.command()
+@click.command('transfer', short_help='Transfer cases between institutes')
 @click.argument('orig_cust')
 @click.argument('case_id')
 @click.argument('new_cust')

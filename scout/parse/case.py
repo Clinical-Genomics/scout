@@ -3,11 +3,107 @@ import logging
 from path import path
 from ped_parser import FamilyParser
 
-from scout.exceptions import PedigreeError
-from scout.constants import PHENOTYPE_MAP, SEX_MAP
+from scout.exceptions import (PedigreeError, ConfigError)
+from scout.constants import (PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP, 
+                             REV_PHENOTYPE_MAP)
 
 logger = logging.getLogger(__name__)
 
+def parse_individual(sample):
+    """Parse individual information
+    
+        Args:
+            sample (dict)
+        
+        Returns:
+            {
+                'individual_id': str,
+                'father': str,
+                'mother': str,
+                'display_name': str,
+                'sex': str,
+                'phenotype': str,
+                'bam_file': str,
+                'analysis_type': str,
+                'capture_kits': list(str),
+            }
+            
+    """
+    ind_info = {}
+    if not 'sample_id' in sample:
+        raise PedigreeError("One sample is missing 'sample_id'")
+    sample_id = sample['sample_id']
+    # Check the sex
+    if not 'sex' in sample:
+        raise PedigreeError("Sample %s is missing 'sex'" % sample_id)
+    sex = sample['sex']
+    if not sex in REV_SEX_MAP:
+        logger.warning("'sex' is only allowed to have values from {}".format(
+                             ', '.join(list(REV_SEX_MAP.keys()))))
+        raise PedigreeError("Individual %s have wrong formated sex" % sample_id)
+    
+    # Check the phenotype
+    if not 'phenotype' in sample:
+        raise PedigreeError("Sample %s is missing 'phenotype'" 
+                            % sample_id)
+    phenotype = sample['phenotype']
+    if not phenotype in REV_PHENOTYPE_MAP:
+        logger.warning("'phenotype' is only allowed to have values from {}".format(
+                       ', '.join(list(REV_PHENOTYPE_MAP.keys()))))
+        raise PedigreeError("Individual %s have wrong formated phenotype" % sample_id)
+    
+    ind_info['individual_id'] = sample_id
+    ind_info['display_name'] = sample.get('sample_name', sample['sample_id'])
+    
+    ind_info['sex'] = sex
+    ind_info['phenotype'] = phenotype
+    
+    ind_info['father'] = sample.get('father')
+    ind_info['mother'] = sample.get('mother')
+
+    ind_info['bam_file'] = sample.get('bam_path')
+    ind_info['analysis_type'] = sample.get('analysis_type')
+    ind_info['capture_kits'] = ([sample.get('capture_kit')] if 'capture_kit' in sample
+                                 else [])
+    
+    return ind_info
+
+def parse_individuals(samples):
+    """Parse the individual information
+        
+        Reformat sample information to proper individuals
+        
+        Args:
+            samples(list(dict))
+    
+        Returns:
+            individuals(list(dict))
+    """
+    individuals = []
+    if len(samples) == 0:
+        raise PedigreeError("No samples could be found")
+
+    ind_ids = set()
+    for sample_info in samples:
+        parsed_ind = parse_individual(sample_info)
+        individuals.append(parsed_ind)
+        ind_ids.add(parsed_ind['individual_id'])
+    
+    # Check if relations are correct
+    for parsed_ind in individuals:
+        father = parsed_ind['father']
+        if (father and father != '0'):
+            if not father in ind_ids:
+                raise PedigreeError('father %s does not exist in family' 
+                                    % father)
+        mother = parsed_ind['mother']
+        if (mother and mother != '0'):
+            if not mother in ind_ids:
+                raise PedigreeError('mother %s does not exist in family' 
+                                    % mother)
+    
+    return individuals
+    
 
 def parse_case(config, ped=None):
     """Parse case information from config or PED files.
@@ -19,26 +115,21 @@ def parse_case(config, ped=None):
     Returns:
         dict: parsed case data
     """
+    if not 'owner' in config:
+        raise ConfigError("A case has to have a owner")
+    owner = config['owner']
+
     if ped:
         family_id, samples = parse_ped(ped)
         config['family'] = family_id
         config['samples'] = samples
 
-    individuals = [{
-        'individual_id': sample['sample_id'],
-        'father': sample.get('father'),
-        'mother': sample.get('mother'),
-        'display_name': sample.get('sample_name', sample['sample_id']),
-        'sex': sample['sex'],
-        'phenotype': sample['phenotype'],
-        'bam_file': sample.get('bam_path'),
-        'analysis_type': sample.get('analysis_type'),
-        'capture_kits': ([sample.get('capture_kit')] if 'capture_kit' in sample
-                         else []),
-    } for sample in config['samples']]
-
-    owner = config['owner']
+    if not 'family' in config:
+        raise ConfigError("A case has to have a 'family'")
     family_id = config['family']
+
+    individuals = parse_individuals(config['samples'])
+
     case_data = {
         'owner': owner,
         'collaborators': [owner],

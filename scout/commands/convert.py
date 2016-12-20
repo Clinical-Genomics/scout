@@ -11,7 +11,7 @@ from scout.utils.handle import get_file_handle
 
 log = logging.getLogger(__name__)
 
-@click.command()
+@click.command('convert', short_help='Convert gene panels')
 @click.argument('panel',
     required=True,
     type=click.Path(exists=True)

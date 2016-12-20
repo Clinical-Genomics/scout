@@ -1,6 +1,6 @@
 import pytest
-from scout.parse.case import parse_case
-from scout.parse.case import parse_ped
+from scout.parse.case import (parse_case, parse_ped, parse_individuals, 
+                              parse_individual)
 from scout.exceptions import PedigreeError
 
 
@@ -11,31 +11,137 @@ def test_parse_case(scout_config):
     # THEN the case should have a owner
     assert case_data['owner'] == scout_config['owner']
 
+def test_parse_ped():
+    # GIVEN a pedigree with three samples
+    case_lines = [
+        "#Family ID\tIndividual ID\tPaternal ID\tMaternal ID\tSex\tPhenotype",
+        "636808\tADM1059A1\t0\t0\t1\t1",
+        "636808\tADM1059A2\tADM1059A1\tADM1059A3\t1\t2",
+        "636808\tADM1059A3\t0\t0\t2\t1",
+    ]
+    
+    # WHEN parsing out relevant sample info
+    family_id, samples = parse_ped(case_lines)
+    # THEN it should return correct family id
+    assert family_id == '636808'
+    # THEN it should return correct number of individuals
+    assert len(samples) == 3
 
-def test_parse_case_two_cases():
+# ## Test how problems are handeled when parsing a case
+
+def test_parse_case_two_cases_ped():
     # GIVEN ped lines from multiple families
     case_lines = [
-        "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
-        "636808	ADM1059A1	0	0	1	1",
-        "636808	ADM1059A2	ADM1059A1	ADM1059A3	1	2",
-        "636808	ADM1059A3	0	0	2	1",
-        "636809	ADM1059A3	0	0	2	1",
+        "#Family ID\tIndividual ID\tPaternal ID\tMaternal ID\tSex\tPhenotype",
+        "636808\tADM1059A1\t0\t0\t1\t1",
+        "636808\tADM1059A2\tADM1059A1\tADM1059A3\t1\t2",
+        "636808\tADM1059A3\t0\t0\t2\t1",
+        "636809\tADM1059A3\t0\t0\t2\t1",
     ]
     # WHEN parsing case info
-    config = {'institute': 'test_institute'}
+    config = {'owner': 'test_institute'}
     # THEN it should raise since there are multiple families
     with pytest.raises(PedigreeError):
         parse_case(config, ped=case_lines)
 
+def test_no_individuals():
+    # GIVEN a list with no indioviduals
+    samples = []
+    # WHEN parsing the individuals
+    with pytest.raises(PedigreeError):
+        # THEN error should be raised since a family has to have individuals
+        parse_individuals(samples)
 
-def test_parse_ped(ped_lines):
-    # GIVEN a pedigree with three samples
-    assert len(ped_lines) == 4
-    # WHEN parsing out relevant sample info
-    family_id, samples = parse_ped(ped_lines)
-    # THEN it should return stuff
-    assert family_id == '643594'
-    assert len(samples) == 3
-    # assert samples[0]['sample_id'] == 'ADM1136A1'
-    # assert samples[0]['sex'] == 'male'
-    # assert samples[0]['phenotype'] == 'unaffected'
+def test_parse_missing_id():
+    # GIVEN a individual without sample_id
+    sample_info = {
+        'sex':'male',
+        'phenotype':'affected',
+    }
+    # WHEN a individual is parsed
+    with pytest.raises(PedigreeError):
+        # THEN a PedigreeError should be raised
+        parse_individual(sample_info)
+
+def test_parse_missing_sex():
+    # GIVEN a individual without sex    
+    sample_info = {
+        'sample_id':'1',
+        'phenotype':'affected',
+    }
+    # WHEN a individual is parsed
+    with pytest.raises(PedigreeError):
+        # THEN a PedigreeError should be raised
+        parse_individual(sample_info)
+
+def test_parse_missing_phenotype():
+    # GIVEN a individual without phenotype
+    sample_info = {
+        'sample_id':'1',
+        'sex':'male',
+    }
+    # WHEN a individual is parsed
+    with pytest.raises(PedigreeError):
+        # THEN a PedigreeError should be raised
+        parse_individual(sample_info)
+
+def test_parse_wrong_phenotype():
+    # GIVEN a individual with wrong phenotype format
+    sample_info = {
+        'sample_id':'1',
+        'sex':'male',
+        'phenotype':'not-affected',
+    }
+    # WHEN a individual is parsed
+    with pytest.raises(PedigreeError):
+        # THEN a PedigreeError should be raised
+        parse_individual(sample_info)
+
+def test_parse_wrong_sex():
+    # GIVEN a individual with wrong sex format
+    sample_info = {
+        'sample_id':'1',
+        'sex':'flale',
+        'phenotype':'affected',
+    }
+    # WHEN a individual is parsed
+    with pytest.raises(PedigreeError):
+        # THEN a PedigreeError should be raised
+        parse_individual(sample_info)
+
+
+
+def test_wrong_relations():
+    """docstring for test_wrong_relations"""
+    # GIVEN a individual with correct family info
+    sample_info = {
+        'sample_id':'1',
+        'sex':'male',
+        'phenotype':'affected',
+        'mother': '3',
+        'father': '2'
+    }
+    mother_info = {
+        'sample_id':'3',
+        'sex':'female',
+        'phenotype':'unaffected',
+        'mother': '0',
+        'father': '0'
+    }
+    father_info = {
+        'sample_id':'2',
+        'sex':'male',
+        'phenotype':'unaffected',
+        'mother': '0',
+        'father': '0'
+    }
+    samples = [sample_info, mother_info, father_info]
+    #Nothong should happend here
+    assert parse_individuals(samples)
+    
+    # WHEN changing mother id in proband
+    sample_info['mother'] = '5'
+    # THEN a PedigreeError should be raised
+    with pytest.raises(PedigreeError):
+        parse_individuals(samples)
+    

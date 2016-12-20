@@ -12,7 +12,7 @@ import click
 
 logger = logging.getLogger(__name__)
 
-@click.command()
+@click.command('hgnc_query', short_help='Check if genes exist')
 @click.option('--hgnc-symbol', '-s',
                 help="A valid hgnc symbol",
 )
