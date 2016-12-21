@@ -3,13 +3,33 @@ from scout.parse.case import (parse_case, parse_ped, parse_individuals,
                               parse_individual)
 from scout.exceptions import PedigreeError
 
-
 def test_parse_case(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have a owner
     assert case_data['owner'] == scout_config['owner']
+
+def test_parse_case(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case a correct case id
+    assert case_data['case_id'] == '{0}-{1}'.format(scout_config['owner'], scout_config['family'])
+
+def test_parse_case_madeline(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case a correct case id
+    assert case_data['madeline_info']
+
+def test_parse_case_collaborators(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have a list with collaborators
+    assert case_data['collaborators'] == [scout_config['owner']]
 
 def test_parse_case_gene_panels(scout_config):
     # GIVEN you load sample information from a scout config
@@ -32,6 +52,16 @@ def test_parse_case_rank_treshold(scout_config):
     # THEN the case should have the same panels like the config
     assert case_data['rank_score_treshold'] == scout_config['rank_treshold']
 
+def test_parse_case_vcf_files(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should the same vcf files as specified in the 
+    assert case_data['vcf_files']['vcf_snv'] == scout_config['vcf_snv']
+    assert case_data['vcf_files']['vcf_sv'] == scout_config['vcf_sv']
+    assert case_data['vcf_files']['vcf_snv_research'] == scout_config['vcf_snv_research']
+    assert case_data['vcf_files']['vcf_sv_research'] == scout_config['vcf_sv_research']
+
 def test_parse_ped_file(ped_file):
     # GIVEN a pedigree with three samples
     with open(ped_file, 'r') as case_lines:
@@ -42,6 +72,12 @@ def test_parse_ped_file(ped_file):
     # THEN it should return correct number of individuals
     assert len(samples) == 3
 
+def test_parse_case_minimal_config(minimal_config):
+    # GIVEN a minimal config
+    # WHEN parsing the config
+    case_data = parse_case(minimal_config)
+    # THEN assert is was parsed correct
+    assert case_data
 
 def test_parse_ped():
     # GIVEN a pedigree with three samples

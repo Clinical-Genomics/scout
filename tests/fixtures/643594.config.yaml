@@ -34,6 +34,8 @@ samples:
 
 vcf_snv: tests/fixtures/643594.clinical.vcf
 vcf_sv: tests/fixtures/643594.clinical.SV.vcf
+vcf_snv_research: tests/fixtures/643594.research.vcf
+vcf_sv_research: tests/fixtures/643594.research.SV.vcf
 
 madeline: tests/fixtures/madeline.xml
 default_panels: [panel1]

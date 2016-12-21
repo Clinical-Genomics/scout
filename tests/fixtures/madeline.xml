@@ -1,8 +1,7 @@
 <?xml version="1.0" standalone="no"?>
-<svg version="1.1"  id="svgDC" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  width="279.72" height="266.884"  onload="init()" >
+ <svg version="1.1"  id="svgDC" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  width="279.72" height="266.884"  onload="init()" >
  <defs>
   <style type="text/css"><![CDATA[
-
 
 line{
 	stroke:#000;
@@ -192,14 +191,6 @@ text{
 	fill: #000;
 }
 
-.blackInk{
-	fill: #000;
-}
-
-.whiteInk{
-	fill: #fff;
-}
-
 ]]></style>
  <script type="text/javascript" xlink:href="javascript/madeline.js"></script>
  <marker id="endArrow" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" orient="auto" markerWidth="5" markerHeight="4">  <polyline points="0,0 10,5 0,10 1,5" fill="#000" /> </marker>
@@ -213,49 +204,49 @@ text{
  </g>
 
   <g class="drawing">
-  <text x="557.36" y="30" text-anchor="middle"  class="header" >337334</text>
-  <clipPath id="NA12877_clipPath">
+  <text x="557.36" y="30" text-anchor="middle"  class="header" >643594</text>
+  <clipPath id="ADM1059A1_clipPath">
    <rect x="500.66" y="38.66" width="22.68" height="22.68" />
   </clipPath>
-<g clip-path="url(#NA12877_clipPath)">
-<circle cx="512" cy="50" r="16.0372" style="fill:#0000a0;stroke:none;"/>
-  <text x="512" y="54.3588" text-anchor="middle"  class="whiteInkLetter_1" >U</text>
+<g clip-path="url(#ADM1059A1_clipPath)">
+<circle cx="512" cy="50" r="16.0372" style="fill:#ffd802;stroke:none;"/>
+  <text x="512" y="54.3588" text-anchor="middle"  class="blackInkLetter_1" >U</text>
 </g>
-  <rect x="500.66" y="38.66" width="22.68" height="22.68" id="NA12877" class="solid">
-	<title>NA12877</title>
+  <rect x="500.66" y="38.66" width="22.68" height="22.68" id="ADM1059A1" class="solid">
+	<title>ADM1059A1</title>
 </rect>
-<path d="M 498.77 63.23 l -8.7318 3.7422 l 1.8711 1.8711 l -3.1185 3.1185 l 1.2474 1.2474 l 3.1185 -3.1185 l 1.8711 1.8711 z" />
-  <text x="512" y="92.5845" text-anchor="middle" >NA12877</text>
+  <text x="512" y="92.5845" text-anchor="middle" >ADM1059A1</text>
   <line x1="523.34" y1="50" x2="591.38" y2="50" />
 <g>
-<circle cx="602.72" cy="50" r="11.34" style="fill:#0000a0;stroke:none;"/>
-  <text x="602.72" y="54.3588" text-anchor="middle"  class="whiteInkLetter_1" >U</text>
+<circle cx="602.72" cy="50" r="11.34" style="fill:#ffd802;stroke:none;"/>
+  <text x="602.72" y="54.3588" text-anchor="middle"  class="blackInkLetter_1" >U</text>
 </g>
-<circle cx="602.72" cy="50" r="11.34" id="NA12878" class="solid">
-	<title>NA12878</title>
+<circle cx="602.72" cy="50" r="11.34" id="ADM1059A3" class="solid">
+	<title>ADM1059A3</title>
 </circle>
-<path d="M 589.49 63.23 l -8.7318 3.7422 l 1.8711 1.8711 l -3.1185 3.1185 l 1.2474 1.2474 l 3.1185 -3.1185 l 1.8711 1.8711 z" />
-  <text x="602.72" y="92.5845" text-anchor="middle" >NA12878</text>
-  <line class="mating" id="NA12878:NA12877" x1="557.36" y1="50" x2="557.36" y2="123.907" />
+  <text x="602.72" y="92.5845" text-anchor="middle" >ADM1059A3</text>
+  <line class="mating" id="ADM1059A3:ADM1059A1" x1="557.36" y1="50" x2="557.36" y2="123.907" />
   <line class="solid" x1="557.36" y1="123.907" x2="557.36" y2="152.257" />
-  <clipPath id="NA12882_clipPath">
+  <clipPath id="ADM1059A2_clipPath">
    <rect x="546.02" y="152.257" width="22.68" height="22.68" />
   </clipPath>
-<g clip-path="url(#NA12882_clipPath)">
+<g clip-path="url(#ADM1059A2_clipPath)">
 <circle cx="557.36" cy="163.597" r="16.0372" style="fill:#0000a0;stroke:none;"/>
-  <text x="557.36" y="167.956" text-anchor="middle"  class="whiteInkLetter_1" >U</text>
+  <text x="557.36" y="167.956" text-anchor="middle"  class="whiteInkLetter_1" >A</text>
 </g>
-  <rect x="546.02" y="152.257" width="22.68" height="22.68" id="NA12882" class="solid">
-	<title>NA12882</title>
+  <rect x="546.02" y="152.257" width="22.68" height="22.68" id="ADM1059A2" class="solid">
+	<title>ADM1059A2</title>
 </rect>
-<path d="M 544.13 176.827 l -8.7318 3.7422 l 1.8711 1.8711 l -3.1185 3.1185 l 1.2474 1.2474 l 3.1185 -3.1185 l 1.8711 1.8711 z" />
-  <text x="557.36" y="206.181" text-anchor="middle" >NA12882</text>
+  <text x="557.36" y="206.181" text-anchor="middle" >ADM1059A2</text>
   </g>
   <g class="legend">
   <text x="421.28" y="50" text-anchor="middle" >Affected</text>
   <rect  x="379.7" y="53.78" width="83.16" height="18.3356" style="fill:#0000a0;"  />
-  <text x="421.28" y="67.5123" text-anchor="middle"  class="whiteInkLetter_1" >U</text>
+  <text x="421.28" y="67.5123" text-anchor="middle"  class="whiteInkLetter_1" >A</text>
+  <rect  x="379.7" y="72.1156" width="83.16" height="18.3356" style="fill:#ffd802;"  />
+  <text x="421.28" y="85.8479" text-anchor="middle"  class="blackInkLetter_1" >U</text>
   </g>
 
  </g>
  </svg>
+

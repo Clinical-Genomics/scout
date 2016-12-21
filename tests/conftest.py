@@ -120,6 +120,21 @@ def scout_config(request, config_file):
     data = yaml.load(in_handle)
     return data
 
+@pytest.fixture(scope='function')
+def minimal_config(request, scout_config):
+    """Return a minimal config"""
+    config = scout_config
+    config.pop('madeline')
+    config.pop('vcf_sv')
+    config.pop('vcf_snv_research')
+    config.pop('vcf_sv_research')
+    config.pop('gene_panels')
+    config.pop('default_panels')
+    config.pop('rank_model_version')
+    config.pop('rank_treshold')
+    config.pop('human_genome_build')
+    
+    return config
 
 ##################### Gene fixtures #####################
 
