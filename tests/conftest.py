@@ -443,6 +443,19 @@ def panel_obj(request, parsed_panel, gene_database):
 
     return panel
 
+@pytest.fixture(scope='function')
+def gene_panels(request, parsed_case):
+    """Return a list with the gene panels of parsed case"""
+    panels = parsed_case['gene_panels']
+
+    return panels
+
+@pytest.fixture(scope='function')
+def default_panels(request, parsed_case):
+    """Return a list with the gene panels of parsed case"""
+    panels = parsed_case['default_panels']
+
+    return panels
 
 ##################### Variant fixtures #####################
 @pytest.fixture(scope='function')

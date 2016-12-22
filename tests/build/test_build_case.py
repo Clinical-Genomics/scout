@@ -30,6 +30,8 @@ def test_build_case(parsed_case):
     assert case_obj.genome_build == parsed_case['genome_build']
     
     assert case_obj.rank_model_version == parsed_case['rank_model_version']
+    assert case_obj.rank_score_treshold == parsed_case['rank_score_treshold']
+    
     assert case_obj.phenotype_terms == []
     assert case_obj.phenotype_groups == []
     
