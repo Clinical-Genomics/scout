@@ -8,7 +8,6 @@ services:
     - mongodb
 
 script:
-    - mongod --fork --logpath /dev/null --dbpath=data/db
     - py.test tests/
 
 install:
