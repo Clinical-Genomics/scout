@@ -17,6 +17,9 @@ class Gene(EmbeddedDocument):
     mosaicism = BooleanField(default=False)
     database_entry_version = StringField()
 
+    def __unicode__(self):
+        return "{this.hgnc_gene.hgnc_symbol}".format(this=self)
+
 
 class GenePanel(Document):
 

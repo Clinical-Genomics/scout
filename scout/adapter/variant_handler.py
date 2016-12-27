@@ -104,7 +104,6 @@ class VariantHandler(object):
            Returns:
                variant_object(Variant): A odm variant object
         """
-        gene_panels = gene_panels or []
         try:
             result = Variant.objects.get(document_id=document_id)
             variant_obj = self.add_gene_info(result, gene_panels)

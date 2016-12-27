@@ -19,7 +19,7 @@ class Case(Document):
 
     """Represents a case (family) of individuals (samples)."""
 
-    meta = {'index_background': True,'strict': False}
+    meta = {'index_background': True, 'strict': False}
 
     # This is a string with the id for the family:
     case_id = StringField(primary_key=True, required=True)
