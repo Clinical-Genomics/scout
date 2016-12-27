@@ -23,6 +23,10 @@ class VariantView(ModelView):
     column_exclude_list = ['variant_id', 'compounds']
 
 
+class PanelView(ModelView):
+    column_exclude_list = ['gene_objects']
+
+
 # register admin views - TODO: move!
 admin.add_view(ModelView(Whitelist))
 admin.add_view(UserModelView(User))
@@ -30,9 +34,9 @@ admin.add_view(UserModelView(User))
 admin.add_view(ModelView(Institute))
 admin.add_view(CaseView(Case))
 admin.add_view(VariantView(Variant))
-admin.add_view(VariantView(GenePanel))
-admin.add_view(VariantView(HgncGene))
-admin.add_view(VariantView(Event))
+admin.add_view(PanelView(GenePanel))
+admin.add_view(ModelView(HgncGene))
+admin.add_view(ModelView(Event))
 
 
 @user.route('/profile/<user_id>')
