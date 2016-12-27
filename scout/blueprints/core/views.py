@@ -154,7 +154,7 @@ def gene_panel(institute_id, case_id, panel_id):
     # coverage link for gene
     covlink_kwargs = genecov_links(case_model.individuals)
 
-    for panel in case_model.clinical_panels:
+    for panel in case_model.gene_panels:
         if panel.panel_name == panel_id:
             gene_panel = panel
     return dict(institute=institute_model, case=case_model,
@@ -405,16 +405,12 @@ def variants(institute_id, case_id, variant_type):
     form = init_filters_form(request.args)
     # dynamically add choices to gene lists selection
     if variant_type == 'research':
-        if case_model.is_research:
-            gene_lists = case_model.all_panels
-        else:
+        if not case_model.is_research:
             # research mode not activated
             return abort(403)
-    else:
-        gene_lists = case_model.clinical_panels
 
     gene_list_names = [(item.panel_name, (item.display_name or item.panel_name))
-                       for item in gene_lists]
+                       for item in case_model.gene_panels]
     form.gene_lists.choices = gene_list_names
 
     # make sure HGNC symbols are correctly handled
