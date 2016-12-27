@@ -15,8 +15,10 @@ user = Blueprint('profile', __name__, template_folder='templates')
 class CaseView(ModelView):
     column_filters = ['display_name', 'owner', 'status']
     column_searchable_list = ('display_name', 'owner')
-    column_exclude_list = ['madeline_info', 'dynamic_gene_list']
-    form_excluded_columns = ['madeline_info', 'dynamic_gene_list']
+    column_exclude_list = ['madeline_info', 'dynamic_gene_list', 'synopsis',
+                           'vcf_files']
+    form_excluded_columns = ['madeline_info', 'dynamic_gene_list', 'vcf_files',
+                             'suspects', 'causatives']
 
 
 class VariantView(ModelView):
