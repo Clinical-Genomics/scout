@@ -23,7 +23,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-3 col-md-2 sidebar">
-        {{ action_bar(institute, case, sample_map, collaborators) }}
+        {{ action_bar(institute, case, collaborators) }}
       </div>
 
       <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -505,13 +505,10 @@
             <td>{{ panel.date if panel.date }}</td>
             <td>{{ panel.gene_objects|length }}</td>
             <td>
-              <form action="{{ url_for('report.group', group_id=case.case_id) }}" method="POST" target="_blank">
+              <form action="{{ url_for('report.report', group_id=case.case_id) }}" method="POST" target="_blank">
                 <input type="hidden" name="level" value="{{ case.coverage_cutoff }}">
                 <input type="hidden" name="panel_name" value="{{ panel.name_and_version }}">
                 <input type="hidden" name="gene_ids" value="{{ panel.genes|join(',') }}">
-                {% for sample_id, display_name in sample_map.items() %}
-                  <input type="hidden" name="{{ sample_id }}" value="{{ display_name }}">
-                {% endfor %}
                 <button type="submit" class="btn btn-link form-control">View</button>
               </form>
             </td>

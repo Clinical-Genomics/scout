@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, sample_map, collaborators) %}
+{% macro action_bar(institute, case, collaborators) %}
   <ul class="nav nav-sidebar">
     <li class="nav-sidebar-heading">
       Case
@@ -11,7 +11,7 @@
       <li>{{ research(case) }}</li>
     {% endif %}
     <li>{{ rerun(case) }}</li>
-    <li>{{ coverage_report(institute, case, sample_map) }}</li>
+    <li>{{ coverage_report(institute, case) }}</li>
     <li>{{ rank_model(case) }}</li>
     <li>{{ share_case(institute, case, collaborators) }}</li>
   </ul>
@@ -166,7 +166,7 @@
   </form>
 {% endmacro %}
 
-{% macro coverage_report(institute, case, sample_map) %}
+{% macro coverage_report(institute, case) %}
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-ok-sign"></span>

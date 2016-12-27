@@ -96,8 +96,6 @@ def case(institute_id, case_id):
     case_comments = store.events(inst_mod, case=case_model, comments=True)
     case_events = store.events(inst_mod, case=case_model)
 
-    sample_map = sampleid_map(case_model)
-
     # matching causatives
     causatives = (variant for variant in store.check_causatives(case_model)
                   if variant not in case_model.causatives)
@@ -136,8 +134,7 @@ def case(institute_id, case_id):
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
                 case_id=case_id, panel_names=default_panel_names,
-                sample_map=sample_map, collaborators=collab_ids,
-                hpo_groups=PHENOTYPE_GROUPS,
+                collaborators=collab_ids, hpo_groups=PHENOTYPE_GROUPS,
                 hpo_ids=request.args.getlist('hpo_id'),
                 causatives=causatives, archive=archive)
 
