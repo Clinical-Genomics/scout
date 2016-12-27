@@ -37,7 +37,7 @@ class GenePanel(Document):
     @property
     def gene_ids(self):
         for gene in self.gene_objects.values():
-            yield gene.hgnc_id
+            yield gene.hgnc_gene.hgnc_id
 
     @property
     def name_and_version(self):
