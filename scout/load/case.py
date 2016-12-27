@@ -25,7 +25,7 @@ def load_case(adapter, case_obj, update=False, gene_panels=None,
     default_panels = default_panels or []
     
     logger.info('Loading case {} into database'.format(case_obj.display_name))
-    
+
     owner = case_obj.owner
     institute_obj = adapter.institute(institute_id=owner)
     if not institute_obj:

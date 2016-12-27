@@ -29,6 +29,8 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     """Returns the currently active user as an object."""
     try:
+        if not isinstance(user_id, str):
+            user_id = user_id.decode('utf-8')
         return User.objects.get(id=ObjectId(user_id))
     except DoesNotExist:
         return None
@@ -63,7 +65,7 @@ def logout():
 
 
 @login.route('/authorized')
-@google.authorized_response
+@google.authorized_handler
 def authorized(oauth_response):
     if oauth_response is None:
         flash("Access denied: reason={} error={}"

@@ -1,35 +1,26 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 
 import click
+import yaml
 
 from scout.load import load_scout
+from scout.exceptions import IntegrityError, ConfigError
 
 logger = logging.getLogger(__name__)
 
+
 @click.command('case', short_help='Load a case')
+@click.option('--vcf', type=click.Path(exists=True),
+              help='path to clinical VCF file to be loaded')
+@click.option('--vcf-sv', type=click.Path(exists=True),
+              help='path to clinical SV VCF file to be loaded')
+@click.option('--owner', help='parent institute for the case')
+@click.option('--ped', type=click.File('r'))
+@click.option('-u', '--update', is_flag=True)
+@click.argument('config', type=click.File('r'), required=False)
 @click.pass_context
-@click.option('--vcf', 
-              type=click.Path(exists=True),
-              help='path to clinical VCF file to be loaded'
-)
-@click.option('--vcf-sv', 
-              type=click.Path(exists=True),
-              help='path to clinical SV VCF file to be loaded'
-)
-@click.option('--owner', 
-              help='parent institute for the case'
-)
-@click.option('--ped', 
-              type=click.File('r')
-)
-@click.option('-u', '--update', 
-              is_flag=True
-)
-@click.argument('config', 
-              type=click.File('r'), 
-              required=False
-)
 def case(context, vcf, vcf_sv, owner, ped, update, config):
     """Load a case into the database"""
     if config is None and ped is None:
@@ -53,7 +44,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     if not config_data.get('owner'):
         logger.warn("Please provide an owner for the case (use '--owner')")
         context.abort()
-    
+
     try:
         load_scout(context.obj['adapter'], config_data, ped=ped, update=update)
     except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -62,17 +53,13 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
 
 
 @click.command('delete_case', short_help='Delete a case')
-@click.option('-i', '--institute', 
-              help='institute id of related cases'
-)
-@click.option('-c', '--case_id',
-                  default=None
-)
+@click.option('-i', '--institute', help='institute id of related cases')
+@click.option('-c', '--case_id')
 @click.pass_context
 def delete_case(context, institute, case_id):
     """Delete a case and it's variants from the database"""
     adapter = context.obj['adapter']
-    
+
     if not case_id:
         click.echo("Please specify the id of the case that should be "
                        "deleted with flag '-c/--case_id'.")
@@ -82,9 +69,9 @@ def delete_case(context, institute, case_id):
         click.echo("Please specify the owner of the case that should be "
                        "deleted with flag '-i/--institute'.")
         context.abort()
-    
+
     logger.info("Running deleting case {0}".format(case_id))
-    
+
     case = adapter.delete_case(
         institute_id=institute,
         case_id=case_id
@@ -96,30 +83,30 @@ def delete_case(context, institute, case_id):
     else:
         logger.warning("Case does not exist in database")
         context.abort()
-    
+
 
 @click.command('cases', short_help='Fetch cases')
 @click.option('-i', '--institute', 
               help='institute id of related cases'
 )
-@click.option('-r', '--reruns', 
-              is_flag=True, 
+@click.option('-r', '--reruns',
+              is_flag=True,
               help='requested to be rerun'
 )
-@click.option('-f', '--finished', 
-              is_flag=True, 
+@click.option('-f', '--finished',
+              is_flag=True,
               help='archived or solved'
 )
-@click.option('--causatives', 
-              is_flag=True, 
+@click.option('--causatives',
+              is_flag=True,
               help='Has causative variants'
 )
-@click.option('--research-requested', 
-              is_flag=True, 
+@click.option('--research-requested',
+              is_flag=True,
               help='If research is requested'
 )
-@click.option('--is-research', 
-              is_flag=True, 
+@click.option('--is-research',
+              is_flag=True,
               help='If case is in research mode'
 )
 @click.pass_context
@@ -127,7 +114,7 @@ def cases(context, institute, reruns, finished, causatives, research_requested,
           is_research):
     """Interact with cases existing in the database."""
     adapter = context.obj['adapter']
-    
+
     models = adapter.cases(collaborator=institute, reruns=reruns,
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
