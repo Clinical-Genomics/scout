@@ -382,9 +382,11 @@
     <div class="panel-heading">Disease associated transcripts</div>
     <div class="panel-body">
       {% for gene in variant.genes %}
-        {% for tx_id in gene.panel_info.disease_associated_transcripts %}
-          {{ gene.common.hgnc_symbol or gene.hgnc_id }}:{{ tx_id }}
-        {% endfor %}
+        {% if gene.panel_info %}
+          {% for tx_id in gene.panel_info.disease_associated_transcripts %}
+            {{ gene.common.hgnc_symbol or gene.hgnc_id }}:{{ tx_id }}
+          {% endfor %}
+        {% endif %}
       {% endfor %}
     </div>
   </div>

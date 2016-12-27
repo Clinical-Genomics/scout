@@ -45,10 +45,8 @@ class VariantHandler(object):
 
                 # fill in panel specific information for genes
                 for panel_obj in gene_panels:
-                    # loop over keys in "map field"
-                    if hgnc_symbol in panel_obj.gene_objects:
-                        gene_obj = panel_obj.gene_objects[hgnc_symbol]
-                        variant_gene.panel_info = gene_obj
+                    gene_obj = panel_obj.gene_objects.get(hgnc_symbol)
+                    variant_gene.panel_info = gene_obj
 
         variant_obj.hgnc_symbols = list(hgnc_symbols)
         return variant_obj
