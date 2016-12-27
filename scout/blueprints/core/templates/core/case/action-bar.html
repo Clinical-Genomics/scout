@@ -4,7 +4,7 @@
       Case
       <h4>{{ case.display_name }}</h4>
     </li>
-    <li>{{ analysis_type(case) }}</li>
+    <li>{{ analysis_date(case) }}</li>
     <li>{{ status(institute, case) }}</li>
     <li>{{ assign(institute, case) }}</li>
     {% if not (case.is_archived or case.is_research) %}
@@ -17,13 +17,13 @@
   </ul>
 {% endmacro %}
 
-{% macro analysis_type(case) %}
+{% macro analysis_date(case) %}
   <div class="nav-sidebar-item">
     <h5>
-      <span class="glyphicon glyphicon-th-large"></span>
-      Analysis type
+      <span class="glyphicon glyphicon-time"></span>
+      Analysis date
     </h5>
-    {{ case.analysis_type|upper }}
+    {{ case.analysis_date.date() }}
   </div>
 {% endmacro %}
 

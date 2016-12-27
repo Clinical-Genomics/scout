@@ -109,7 +109,7 @@ def case(institute_id, case_id):
     # archive date
     today = datetime.date.today()
     hk_run = api.runs(case_name=case_model.case_id,
-                      run_date=case_model.analyzed_at).first()
+                      run_date=case_model.analysis_date).first()
     if hk_run:
         archive_date = hk_run.will_cleanup_at.date()
         diff_days = (archive_date - today).days
