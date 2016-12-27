@@ -2,7 +2,6 @@ from __future__ import (absolute_import)
 import os
 import logging
 from datetime import datetime
-import itertools
 
 from mongoengine import (Document, StringField, ListField, ReferenceField,
                          EmbeddedDocumentField, DateTimeField, BooleanField,
@@ -44,7 +43,7 @@ class Case(Document):
     is_research = BooleanField(default=False)
     research_requested = BooleanField(default=False)
     rerun_requested = BooleanField(default=False)
-    
+
     analysis_date = DateTimeField()
     analysis_dates = ListField(DateTimeField())
 
@@ -52,7 +51,7 @@ class Case(Document):
     # the case is opened
     default_panels = ListField(ReferenceField(GenePanel))
     gene_panels = ListField(ReferenceField(GenePanel))
-    
+
     dynamic_gene_list = ListField(DictField())
 
     genome_build = StringField()
@@ -65,7 +64,7 @@ class Case(Document):
     phenotype_groups = ListField(EmbeddedDocumentField(PhenotypeTerm))
     # madeline info is a full xml file
     madeline_info = StringField()
-    
+
     vcf_files = DictField()
 
     diagnosis_phenotypes = ListField(IntField())

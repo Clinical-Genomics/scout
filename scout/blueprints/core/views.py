@@ -104,7 +104,7 @@ def case(institute_id, case_id):
 
     # default coverage report
     default_panel_names = [panel.name_and_version for panel
-                           in case_model.default_panel_objs()]
+                           in case_model.default_panels]
 
     # archive date
     today = datetime.date.today()
@@ -476,8 +476,7 @@ def variant(institute_id, case_id, variant_id):
     """View a single variant in a single case."""
     institute = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
-    default_panels = case_model.default_panel_objs()
-    variant_model = store.variant(variant_id, default_panels)
+    variant_model = store.variant(variant_id, case_model.default_panels)
     if variant_model is None:
         return abort(404, 'variant not found')
 
