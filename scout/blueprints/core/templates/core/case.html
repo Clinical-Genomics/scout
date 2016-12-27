@@ -81,7 +81,7 @@
 {% macro variant_buttons() %}
   <div class="form-group">
     <div class="btn-group btn-group-justified">
-      <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panels) }}">Clinical variants</a>
+      <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name, variant_type='clinical', gene_lists=case.default_panel_ids) }}">Clinical variants</a>
 
       <a class="btn btn-default" href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}">Clinical SV variants</a>
 

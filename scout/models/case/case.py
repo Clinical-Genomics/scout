@@ -87,6 +87,11 @@ class Case(Document):
         return distinct_genes
 
     @property
+    def default_panel_ids(self):
+        """Return ids for the default panels."""
+        return [panel.panel_name for panel in self.default_panels]
+
+    @property
     def is_solved(self):
         """Check if the case is marked as solved."""
         return self.status == 'solved'
