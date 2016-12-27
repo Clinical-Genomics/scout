@@ -9,7 +9,7 @@ from scout.adapter import MongoAdapter
 from scout.commands.load_database import load
 from scout.commands.export import export
 
-from scout.commands.case import cases
+from scout.commands.case import cases, delete_case
 
 from scout.commands.wipe_database import wipe
 from scout.commands.transfer import transfer
@@ -91,3 +91,5 @@ cli.add_command(export)
 cli.add_command(convert)
 cli.add_command(hgnc_query)
 cli.add_command(view_command)
+cli.add_command(cases)
+cli.add_command(delete_case)

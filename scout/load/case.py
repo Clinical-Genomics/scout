@@ -6,7 +6,7 @@ from scout.exceptions import IntegrityError
 logger = logging.getLogger(__name__)
 
 
-def load_case(adapter, case_obj, update=False, gene_panels=None, 
+def load_case(adapter, case_obj, update=False, gene_panels=None,
               default_panels=None):
     """Load a case into the database
 
@@ -23,15 +23,13 @@ def load_case(adapter, case_obj, update=False, gene_panels=None,
     """
     gene_panels = gene_panels or []
     default_panels = default_panels or []
-    
     logger.info('Loading case {} into database'.format(case_obj.display_name))
-
     owner = case_obj.owner
     institute_obj = adapter.institute(institute_id=owner)
     if not institute_obj:
         message = "Institute {} does not exist in database".format(owner)
         raise ValueError(message)
-    
+
     panel_objs = []
     default_panels_objs = []
     for panel in gene_panels:
