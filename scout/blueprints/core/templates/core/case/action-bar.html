@@ -172,7 +172,7 @@
       <span class="glyphicon glyphicon-ok-sign"></span>
       Coverage report
     </h5>
-    <form method="POST" action="{{ url_for('report.group', group_id=case.case_id) }}" target="_blank">
+    <form method="POST" action="{{ url_for('report.report', group_id=case.case_id) }}" target="_blank">
       <input type="hidden" name="level" value="{{ institute.coverage_cutoff }}"></input>
       <input type="hidden" name="panel_name" value="{{ panel_names|join(', ') }}"></input>
       <input type="hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
