@@ -100,16 +100,20 @@ def load_scout(adapter, config, ped=None, update=False):
     log.debug('parse case data from config and ped')
     case_data = parse_case(config, ped)
     log.debug('build case object from parsed case data')
-    case_obj = build_case(case_data)
     
-    default_panels = config.get('default_panels',[])
-    for panel in config.get('gene_panels',[]):
-        case_obj.gene_panels.append(adapter.gene_panel(panel))
-        if panel in default_panels:
-            case_obj.default_panels.append(adapter.gene_panel(panel))
+    case_obj = build_case(case_data)
+
+    gene_panels = config.get('gene_panels')
+    default_panels = config.get('default_panels')
     
     log.debug('load case object into database')
-    load_case(adapter, case_obj, update=update)
+    load_case(
+        adapter=adapter, 
+        case_obj=case_obj, 
+        update=update, 
+        gene_panels=gene_panels, 
+        default_panels=default_panels
+    )
 
     log.info("Delete variants for case %s", case_obj.case_id)
     delete_variants(adapter=adapter, case_obj=case_obj)

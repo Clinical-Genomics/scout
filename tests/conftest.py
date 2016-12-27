@@ -31,7 +31,7 @@ vcf_research_file = "tests/fixtures/643594.research.vcf"
 sv_research_path = "tests/fixtures/1.SV.vcf"
 vcf_clinical_file = "tests/fixtures/643594.clinical.vcf"
 sv_clinical_path = "tests/fixtures/643594.clinical.SV.vcf"
-ped_path = "tests/fixtures/1.ped"
+ped_path = "tests/fixtures/643594.ped"
 scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
 madeline_file = "tests/fixtures/madeline.xml"
@@ -120,6 +120,21 @@ def scout_config(request, config_file):
     data = yaml.load(in_handle)
     return data
 
+@pytest.fixture(scope='function')
+def minimal_config(request, scout_config):
+    """Return a minimal config"""
+    config = scout_config
+    config.pop('madeline')
+    config.pop('vcf_sv')
+    config.pop('vcf_snv_research')
+    config.pop('vcf_sv_research')
+    config.pop('gene_panels')
+    config.pop('default_panels')
+    config.pop('rank_model_version')
+    config.pop('rank_treshold')
+    config.pop('human_genome_build')
+    
+    return config
 
 ##################### Gene fixtures #####################
 
@@ -428,6 +443,19 @@ def panel_obj(request, parsed_panel, gene_database):
 
     return panel
 
+@pytest.fixture(scope='function')
+def gene_panels(request, parsed_case):
+    """Return a list with the gene panels of parsed case"""
+    panels = parsed_case['gene_panels']
+
+    return panels
+
+@pytest.fixture(scope='function')
+def default_panels(request, parsed_case):
+    """Return a list with the gene panels of parsed case"""
+    panels = parsed_case['default_panels']
+
+    return panels
 
 ##################### Variant fixtures #####################
 @pytest.fixture(scope='function')

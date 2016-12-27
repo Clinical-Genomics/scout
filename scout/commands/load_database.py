@@ -64,7 +64,7 @@ def region(context, hgnc_id, case_name, institute_name, chromosome, start, end):
         logger.warning(err)
         context.abort()
 
-@click.command('region', short_help='Load a user')
+@click.command('user', short_help='Load a user')
 @click.option('-i', '--institute-name',
     required = True,
 )

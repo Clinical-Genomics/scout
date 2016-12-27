@@ -37,10 +37,6 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     config_data['owner'] = owner if owner else config_data.get('owner')
     config_data['rank_treshold'] = config_data.get('rank_treshold') or 5
 
-    from pprint import pprint as pp
-    pp(config_data)
-    context.abort()
-
     if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
         logger.warn("Please provide a vcf file (use '--vcf')")
         context.abort()
@@ -56,7 +52,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
         context.abort()
 
 
-@click.command()
+@click.command('delete_case', short_help='Delete a case')
 @click.option('-i', '--institute', help='institute id of related cases')
 @click.option('-c', '--case_id')
 @click.pass_context
@@ -89,8 +85,8 @@ def delete_case(context, institute, case_id):
         context.abort()
 
 
-@click.command()
-@click.option('-i', '--institute',
+@click.command('cases', short_help='Fetch cases')
+@click.option('-i', '--institute', 
               help='institute id of related cases'
 )
 @click.option('-r', '--reruns',

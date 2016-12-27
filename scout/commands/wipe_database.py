@@ -21,7 +21,7 @@ def abort_if_false(ctx, param, value):
         ctx.abort()
 
 
-@click.command()
+@click.command('wipe', short_help="Wipe a scout instance")
 @click.option("--yes",
     is_flag=True,
     callback=abort_if_false,

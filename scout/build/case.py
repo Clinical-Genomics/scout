@@ -34,7 +34,8 @@ def build_case(case_data):
 
     # Meta data
     case_obj.genome_build = case_data.get('genome_build')
-    case_obj.rank_model_version = str(case_data.get('rank_model_version'))
+    case_obj.rank_model_version = case_data.get('rank_model_version')
+    case_obj.rank_score_treshold = case_data.get('rank_score_treshold')
 
     analysis_date = case_data['analysis_date']
     
@@ -43,10 +44,9 @@ def build_case(case_data):
 
     # Files
     case_obj.madeline_info = case_data.get('madeline_info')
-    case_obj.vcf_files['vcf_snv'] = case_data['vcf_files']
-    
+    case_obj.vcf_files = case_data['vcf_files']
+
     if (case_obj.vcf_files.get('vcf_sv') or case_obj.vcf_files.get('vcf_sv_research')):
         case_obj.has_svvariants = True
-    
-    
+
     return case_obj
