@@ -494,7 +494,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for panel in case.sorted_clinical_panels %}
+        {% for panel in case.gene_panels %}
           <tr>
             <td>
               <a href="{{ url_for('core.gene_panel', institute_id=institute.id, case_id=case.display_name, panel_id=panel.panel_name) }}">
@@ -503,7 +503,7 @@
             </td>
             <td>{{ panel.version }}</td>
             <td>{{ panel.date if panel.date }}</td>
-            <td>{{ panel.genes|length }}</td>
+            <td>{{ panel.gene_objects|length }}</td>
             <td>
               <form action="{{ url_for('report.group', group_id=case.case_id) }}" method="POST" target="_blank">
                 <input type="hidden" name="level" value="{{ case.coverage_cutoff }}">
