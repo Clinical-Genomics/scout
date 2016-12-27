@@ -506,7 +506,7 @@
             <td>{{ panel.gene_objects|length }}</td>
             <td>
               <form action="{{ url_for('report.report', group_id=case.case_id, panel_name=panel.name_and_version, level=institute.coverage_cutoff) }}" method="POST" target="_blank">
-                <input type="hidden" name="gene_ids" value="{{ panel.genes|join(',') }}">
+                <input type="hidden" name="gene_ids" value="{{ panel.gene_ids|join(',') }}">
                 <button type="submit" class="btn btn-link btn-sm form-control">View</button>
               </form>
             </td>

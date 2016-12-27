@@ -35,6 +35,11 @@ class GenePanel(Document):
     # {'ADK':Gene}
 
     @property
+    def gene_ids(self):
+        for gene in self.gene_objects.values():
+            yield gene.hgnc_id
+
+    @property
     def name_and_version(self):
         """Return the name of the panel and version."""
         return "{this.display_name} ({this.version})".format(this=self)
