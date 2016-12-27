@@ -19,7 +19,7 @@ def load_case(adapter, case_obj, update=False):
         update(bool): If existing case should be updated
     """
     logger.info('Loading case {} into database'.format(case_obj.display_name))
-    
+
     owner = case_obj.owner
     institute_obj = adapter.institute(institute_id=owner)
     if not institute_obj:
