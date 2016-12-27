@@ -176,9 +176,6 @@
       <input type="hidden" name="level" value="{{ institute.coverage_cutoff }}"></input>
       <input type="hidden" name="panel_name" value="{{ panel_names|join(', ') }}"></input>
       <input type="hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
-      {% for sample_id, display_name in sample_map.items() %}
-        <input type="hidden" name="{{ sample_id }}" value="{{ display_name }}"></input>
-      {% endfor %}
 
       <button type="submit" class="btn btn-default form-control">View report</button>
     </form>
