@@ -147,7 +147,6 @@ def gene_panel(institute_id, case_id, panel_id):
     institute_model = validate_user(current_user, institute_id)
     case_model = store.case(institute_id, case_id)
 
-    sample_map = sampleid_map(case_model)
     # coverage link for gene
     covlink_kwargs = genecov_links(case_model.individuals)
 
@@ -155,8 +154,7 @@ def gene_panel(institute_id, case_id, panel_id):
         if panel.panel_name == panel_id:
             gene_panel = panel
     return dict(institute=institute_model, case=case_model,
-                panel=gene_panel, covlink_kwargs=covlink_kwargs,
-                sample_map=sample_map)
+                panel=gene_panel, covlink_kwargs=covlink_kwargs)
 
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
