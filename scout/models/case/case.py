@@ -87,6 +87,10 @@ class Case(Document):
         return distinct_genes
 
     @property
+    def panel_names(self):
+        return [panel.name_and_version for panel in self.default_panels]
+
+    @property
     def default_panel_ids(self):
         """Return ids for the default panels."""
         return [panel.panel_name for panel in self.default_panels]

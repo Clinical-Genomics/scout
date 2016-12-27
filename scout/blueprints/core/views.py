@@ -100,10 +100,6 @@ def case(institute_id, case_id):
     causatives = (variant for variant in store.check_causatives(case_model)
                   if variant not in case_model.causatives)
 
-    # default coverage report
-    default_panel_names = [panel.name_and_version for panel
-                           in case_model.default_panels]
-
     # archive date
     today = datetime.date.today()
     hk_run = api.runs(case_name=case_model.case_id,
@@ -133,8 +129,8 @@ def case(institute_id, case_id):
     return dict(institute=inst_mod, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
                 case_events=case_events, institute_id=institute_id,
-                case_id=case_id, panel_names=default_panel_names,
-                collaborators=collab_ids, hpo_groups=PHENOTYPE_GROUPS,
+                case_id=case_id, collaborators=collab_ids,
+                hpo_groups=PHENOTYPE_GROUPS,
                 hpo_ids=request.args.getlist('hpo_id'),
                 causatives=causatives, archive=archive)
 
