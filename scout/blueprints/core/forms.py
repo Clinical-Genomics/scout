@@ -105,13 +105,6 @@ def init_filters_form(get_args):
     """
     # initialize the normal way to get lists inserted correctly
     form = FiltersForm(get_args)
-    for field_name in ['thousand_genomes_frequency', 'exac_frequency',
-                       'cadd_score']:
-        field = getattr(form, field_name)
-
-        if field.data:
-            field.data = field.data[0] if field.data[0] else None
-
     form.gene_lists.data = [gene_list for gene_list
                             in (form.gene_lists.data or [])
                             if gene_list]
