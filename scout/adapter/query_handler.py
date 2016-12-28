@@ -15,7 +15,6 @@ class QueryHandler(object):
                 'cadd_score': float,
                 'genetic_models': list(str),
                 'hgnc_symbols': list,
-                'gene_lists': list(str),
                 'region_annotations': list,
                 'functional_annotations': list,
                 'variant_type': str(('research', 'clinical')),
@@ -114,13 +113,6 @@ class QueryHandler(object):
 
             logger.debug("Adding hgnc_symbols: %s to query" %
                          ', '.join(hgnc_symbols))
-
-        if query.get('gene_lists'):
-            gene_lists = query['gene_lists']
-            mongo_query['gene_lists'] = {'$in': gene_lists}
-
-            logger.debug("Adding gene_lists: %s to query" %
-                         ', '.join(gene_lists))
 
         if query.get('functional_annotations'):
             functional = query['functional_annotations']

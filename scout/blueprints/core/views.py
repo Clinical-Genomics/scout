@@ -433,7 +433,13 @@ def variants(institute_id, case_id, variant_type):
     # handle HPO gene list separately
     if query['gene_lists'] == ['hpo']:
         query['hgnc_symbols'] = case_model.hpo_gene_ids
-        query['gene_lists'] = []
+    else:
+        # get HGNC symbols from selected gene panels
+        gene_symbols = set(query['hgnc_symbols'])
+        for panel_id in query['gene_lists']:
+            panel_obj = store.gene_panel(panel_id)
+            gene_symbols.update(panel_obj.gene_symbols)
+        query['hgnc_symbols'] = list(gene_symbols)
 
     # fetch list of variants
     all_variants, count = store.variants(case_model.case_id, query=query,

@@ -40,6 +40,10 @@ class GenePanel(Document):
             yield gene.hgnc_gene.hgnc_id
 
     @property
+    def gene_symbols(self):
+        return self.gene_objects.keys()
+
+    @property
     def name_and_version(self):
         """Return the name of the panel and version."""
         return "{this.display_name} ({this.version})".format(this=self)

@@ -177,7 +177,7 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute_id, case_id, variant.compounds) }}">Compounds</a>
+    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute_id, case_id, variant.compounds[:5]) }}">Compounds</a>
   {% endif %}
 {% endmacro %}
 
