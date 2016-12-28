@@ -62,6 +62,15 @@
               <span class="pull-right">{{ panel.date.date() }}</span>
             </li>
             <li class="list-group-item">
+              Coverage report
+              <a class="pull-right" href="#" onclick="document.getElementById('report-form').submit();">
+                View
+              </a>
+              <form id="report-form" action="{{ url_for('report.report', group_id=case.case_id, panel_name=panel.name_and_version, level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+                <input type="hidden" name="gene_ids" value="{{ panel.gene_ids|join(',') }}">
+              </form>
+            </li>
+            <li class="list-group-item">
               Coverage overview
               <span class="pull-right">
                 <a href="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.sample_ids, gene_id=panel.genes|join(','), exonlink='core.pileup_range') }}" target="_blank">

@@ -489,7 +489,6 @@
           <th>Panel</th>
           <th>Version</th>
           <th>Last update</th>
-          <th>Coverage</th>
         </tr>
       </thead>
       <tbody>
@@ -502,12 +501,6 @@
             </td>
             <td>{{ panel.version }}</td>
             <td>{{ panel.date.date() if panel.date }}</td>
-            <td>
-              <form action="{{ url_for('report.report', group_id=case.case_id, panel_name=panel.name_and_version, level=institute.coverage_cutoff) }}" method="POST" target="_blank">
-                <input type="hidden" name="gene_ids" value="{{ panel.gene_ids|join(',') }}">
-                <button type="submit" class="btn btn-link btn-sm form-control">View</button>
-              </form>
-            </td>
           </tr>
         {% else %}
           <tr>
