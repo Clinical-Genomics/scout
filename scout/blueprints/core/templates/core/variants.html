@@ -95,8 +95,8 @@
             <td>{{ cell_gene(variant) }}</td>
             <td class="text-right">{{ cell_1000g(variant) }}</td>
             <td class="text-right">{{ cell_cadd(variant) }}</td>
-            <td>{{ variant.region_annotations|join(',') }}</td>
-            <td>{{ variant.functional_annotations|join(',') }}</td>
+            <td>{{ variant.region_annotations|join(', ') }}</td>
+            <td>{{ variant.functional_annotations|join(', ') }}</td>
             {% if variant_type == 'clinical' %}
               <td>{{ variant.expected_inheritance|join(', ') }}</td>
             {% endif %}
