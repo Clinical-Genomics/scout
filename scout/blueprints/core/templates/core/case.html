@@ -22,7 +22,12 @@
 {% block content %}
   <div class="container-fluid">
     <div class="row">
-      <div class="col-sm-3 col-md-2 sidebar">
+      {% if case.status == 'solved' %}
+        {% set bg_class = 'bg-success' %}
+      {% elif case.status == 'archived' %}
+        {% set bg_class = 'bg-warning' %}
+      {% endif %}
+      <div class="col-sm-3 col-md-2 sidebar {{ bg_class if bg_class }}">
         {{ action_bar(institute, case, collaborators) }}
       </div>
 

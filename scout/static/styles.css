@@ -50,6 +50,16 @@ body {
     margin-bottom: 20px;
 }
 
+.bg-success {
+	/* light green */
+	background-color: #dff0d8;
+}
+
+.bg-warning {
+	/* light red */
+	background-color: #f0d8d8;
+}
+
 .sidebar {
     position: fixed;
     top: 51px;
