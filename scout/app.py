@@ -8,6 +8,7 @@ import arrow
 from flask import Flask, render_template, current_app
 from jinja2 import is_undefined
 from werkzeug.utils import import_string
+from chanjo_report.server.app import configure_template_filters
 
 from .settings import DevelopmentConfig
 from scout.compat import unquote
@@ -172,6 +173,9 @@ class AppFactory(object):
 
     def _configure_template_filters(self):
         """Configure custom Jinja2 template filters."""
+        # chanjo-report
+        configure_template_filters(self.app)
+
         @self.app.template_filter()
         def human_date(value):
             time_zone = current_app.config['TIME_ZONE']
