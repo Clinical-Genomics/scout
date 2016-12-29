@@ -468,7 +468,7 @@
     <div class="panel-heading">
       HPO gene list ({{ case.dynamic_gene_list|length }} genes)
     </div>
-    <ul class="list-group">
+    <ul class="list-group fixed-panel">
       {% for hpo_gene in case.dynamic_gene_list %}
         <li class="list-group-item" title="{{ hpo_gene.description }}">
           {{ hpo_gene.gene_id }}
@@ -483,32 +483,34 @@
 {% macro genepanels_table() %}
   <div class="panel panel-default">
     <div class="panel-heading">Gene panels</div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Panel</th>
-          <th>Version</th>
-          <th>Last update</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for panel in case.gene_panels %}
+    <div class="table-responsive fixed-panel">
+      <table class="table">
+        <thead>
           <tr>
-            <td>
-              <a href="{{ url_for('core.gene_panel', institute_id=institute.id, case_id=case.display_name, panel_id=panel.panel_name) }}">
-                {{ panel.display_name }}
-              </a>
-            </td>
-            <td>{{ panel.version }}</td>
-            <td>{{ panel.date.date() if panel.date }}</td>
+            <th>Panel</th>
+            <th>Version</th>
+            <th>Last update</th>
           </tr>
-        {% else %}
-          <tr>
-            <td colspan="5">No panels linked to case</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for panel in case.gene_panels %}
+            <tr>
+              <td>
+                <a href="{{ url_for('core.gene_panel', institute_id=institute.id, case_id=case.display_name, panel_id=panel.panel_name) }}">
+                  {{ panel.display_name }}
+                </a>
+              </td>
+              <td>{{ panel.version }}</td>
+              <td>{{ panel.date.date() if panel.date }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">No panels linked to case</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endmacro %}
 

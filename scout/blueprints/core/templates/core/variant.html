@@ -549,30 +549,32 @@
 {% macro omim_phenotypes() %}
   <div class="panel panel-default">
     <div class="panel-heading">OMIM phenotypes</div>
-    <table class="table table-bordered table-condensed">
-      <thead>
-        <tr>
-          <th>Gene</th>
-          <th>Phenotype</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for gene, term in variant.disease_terms %}
+    <div class="table-responsive fixed-panel">
+      <table class="table table-bordered table-condensed">
+        <thead>
           <tr>
-            <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                {{ gene.common.hgnc_symbol }}
-              </a>
-            </td>
-            <td><a href="{{ term.disease_link }}">{{ term.display_name }}</a></td>
+            <th>Gene</th>
+            <th>Phenotype</th>
           </tr>
-        {% else %}
-          <tr>
-            <td colspan="3">No OMIM phenotypes</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for gene, term in variant.disease_terms %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol }}
+                </a>
+              </td>
+              <td><a href="{{ term.disease_link }}">{{ term.display_name }}</a></td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="3">No OMIM phenotypes</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endmacro %}
 
@@ -625,7 +627,7 @@
 {% macro pedigree_panel() %}
   <div class="panel panel-default">
     <div class="panel-heading">Individuals</div>
-    <div class="panel-body">
+    <div class="panel-body table-responsive">
       {% if case.individuals|length == 1 %}
         <!-- Don't expect a pedigree visualization -->
         <p>Single sample case: {{ case.individuals.0.display_name }}</p>
@@ -651,7 +653,7 @@
         <thead>
           <tr>
             {% for result in variant.rank_score_results %}
-              <th><small>{{ result.category }}</small></th>
+              <th><small>{{ result.category|replace('_', ' ') }}</small></th>
             {% endfor %}
           </tr>
         </thead>
@@ -672,41 +674,43 @@
 {% macro overlapping_svs() %}
   <div class="panel panel-default">
     <div class="panel-heading">Overlapping SVs</div>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Variant</th>
-          <th>Combined score</th>
-          <th>Rank score</th>
-          <th>Length</th>
-          <th>Region</th>
-          <th>Function</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for sv_variant in sv_compounds %}
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
           <tr>
-            <td>
-              <a href="{{url_for('sv.variant',
-                                 institute_id=institute_id,
-                                 case_id=case_id,
-                                 variant_id=sv_variant.document_id)}}">
-                {{ sv_variant.db_snp_ids|join(', ') }}
-              </a>
-            </td>
-            <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
-            <td class="text-right">{{ sv_variant.rank_score }}</td>
-            <td class="text-right">{{ sv_variant.length }}</td>
-            <td>{{ sv_variant.region_annotations|join(',') }}</td>
-            <td>{{ sv_variant.functional_annotations|join(',') }}</td>
+            <th>Variant</th>
+            <th>Combined score</th>
+            <th>Rank score</th>
+            <th>Length</th>
+            <th>Region</th>
+            <th>Function</th>
           </tr>
-        {% else %}
-          <tr>
-            <td colspan="6">No overlapping SVs found</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for sv_variant in sv_compounds %}
+            <tr>
+              <td>
+                <a href="{{url_for('sv.variant',
+                                   institute_id=institute_id,
+                                   case_id=case_id,
+                                   variant_id=sv_variant.document_id)}}">
+                  {{ sv_variant.db_snp_ids|join(', ') }}
+                </a>
+              </td>
+              <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
+              <td class="text-right">{{ sv_variant.rank_score }}</td>
+              <td class="text-right">{{ sv_variant.length }}</td>
+              <td>{{ sv_variant.region_annotations|join(',') }}</td>
+              <td>{{ sv_variant.functional_annotations|join(',') }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6">No overlapping SVs found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endmacro %}
 
@@ -738,7 +742,7 @@
 {% endmacro %}
 
 {% macro transcripts_panel() %}
-  <div class="panel panel-default">
+  <div class="panel panel-default table-responsive">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -801,7 +805,7 @@
 {% endmacro %}
 
 {% macro proteins_panel() %}
-  <div class="panel panel-default">
+  <div class="panel panel-default table-responsive">
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -897,7 +901,7 @@
       <div class="panel-heading">
         External links: {{ gene.common.hgnc_symbol or "HGNC:%s"|format(gene.hgnc_id) }}
       </div>
-      <div class="panel-body">
+      <div class="panel-body table-responsive">
         <div class="btn-group btn-group-justified">
           <a href="{{ gene.common.ensembl_link }}" class="btn btn-default">Ensembl</a>
           <a href="{{ gene.common.hpa_link }}" class="btn btn-default">HPA</a>

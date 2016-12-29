@@ -15,6 +15,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+.fixed-panel {
+	max-height: 300px;
+	overflow-y: scroll;
+}
+
 .flex {
     display: flex;
     align-items: center;
