@@ -8,8 +8,6 @@ from scout.parse.variant import parse_variant
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
 
-from pprint import pprint as pp
-
 logger = logging.getLogger(__name__)
 
 
@@ -25,9 +23,10 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
         variant_type=variant_type
     )
 
+
 def check_coordinates(variant, coordinates):
     """Check if the variant is in the interval given by the coordinates
-    
+
         Args:
             variant(dict)
             coordinates
@@ -36,10 +35,11 @@ def check_coordinates(variant, coordinates):
         pos = variant['position']
         if (pos >= coordinates['start'] and pos <= coordinates['end']):
             return True
-    return False 
+    return False
+
 
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
-                  category='snv', rank_treshold=5, chrom=None, start=None, 
+                  category='snv', rank_threshold=5, chrom=None, start=None,
                   end=None):
     """Load all variantt in variants
 
@@ -49,14 +49,14 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             case(Case)
             variant_type(str)
             category(str): 'snv' or 'sv'
-            rank_treshold(int)
+            rank_threshold(int)
             chrom(str)
             start(int)
             end(int)
     """
 
     institute_obj = adapter.institute(institute_id=case_obj['owner'])
-    
+
     if not institute_obj:
         raise IntegrityError("Institute {0} does not exist in"
                              " database.".format(case_obj['owner']))
@@ -67,25 +67,23 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     for info_line in variants.metadata.info_lines:
         if info_line['ID'] == 'RankResult':
             rank_results_header = info_line['Description'].split('|')
-    
+
     logger.info("Start inserting variants into database")
     start_insertion = datetime.now()
     start_five_thousand = datetime.now()
     nr_variants = 0
-    nr_inserted  = 0
-    
+    nr_inserted = 0
+
     coordinates = False
     if chrom:
         coordinates = {
-            'chrom':chrom, 
-            'start': start, 
+            'chrom': chrom,
+            'start': start,
             'end': end
         }
-    
+
     try:
-        
         for nr_variants, variant in enumerate(variants):
-            
             parsed_variant = parse_variant(
                 variant_dict=variant,
                 case=case_obj,
@@ -99,18 +97,18 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                         variant=parsed_variant,
                         institute=institute_obj,
                     )
-            
-            elif parsed_variant.get('rank_score',0) > rank_treshold:
+
+            elif parsed_variant.get('rank_score', 0) > rank_threshold:
                 variant_obj = build_variant(
                     variant=parsed_variant,
                     institute=institute_obj,
                 )
-            
+
             if variant_obj:
                 try:
                     load_variant(adapter, variant_obj)
                     nr_inserted += 1
-                except IntegrityError as e:
+                except IntegrityError as error:
                     pass
 
             if (nr_variants != 0 and nr_variants % 5000 == 0):
@@ -118,7 +116,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 logger.info("Time to parse variants: {0}".format(
                             datetime.now() - start_five_thousand))
                 start_five_thousand = datetime.now()
-                
+
     except Exception as error:
         logger.info("Deleting inserted variants")
         delete_variants(adapter, case_obj, variant_type)

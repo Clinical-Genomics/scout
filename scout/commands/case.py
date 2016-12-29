@@ -35,7 +35,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     config_data['vcf_snv'] = vcf if vcf else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['owner'] = owner if owner else config_data.get('owner')
-    config_data['rank_treshold'] = config_data.get('rank_treshold') or 5
+    config_data['rank_threshold'] = config_data.get('rank_threshold') or 8
 
     if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
         logger.warn("Please provide a vcf file (use '--vcf')")
@@ -86,7 +86,7 @@ def delete_case(context, institute, case_id):
 
 
 @click.command('cases', short_help='Fetch cases')
-@click.option('-i', '--institute', 
+@click.option('-i', '--institute',
               help='institute id of related cases'
 )
 @click.option('-r', '--reruns',
