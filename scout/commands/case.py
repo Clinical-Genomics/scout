@@ -8,7 +8,7 @@ import yaml
 from scout.load import load_scout
 from scout.exceptions import IntegrityError, ConfigError
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 @click.command('case', short_help='Load a case')
@@ -29,6 +29,16 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
 
     config_data = yaml.load(config) if config else {}
 
+    # check if the analysis is from a newer analysis
+    adapter = context.obj['adapter']
+    existing_case = adapter.case(config_data['owner'], config_data['family'])
+    if existing_case:
+        new_analysisdate = config_data.get('analysis_date')
+        if new_analysisdate and new_analysisdate > existing_case.analysis_date:
+            log.info("updated analysis - updating existing case")
+            # update by default!
+            update = True
+
     if not config_data:
         config_data['analysis_date'] = datetime.date.today()
 
@@ -38,15 +48,15 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     config_data['rank_threshold'] = config_data.get('rank_threshold') or 5
 
     if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
-        logger.warn("Please provide a vcf file (use '--vcf')")
+        log.warn("Please provide a vcf file (use '--vcf')")
         context.abort()
 
     if not config_data.get('owner'):
-        logger.warn("Please provide an owner for the case (use '--owner')")
+        log.warn("Please provide an owner for the case (use '--owner')")
         context.abort()
 
     try:
-        load_scout(context.obj['adapter'], config_data, ped=ped, update=update)
+        load_scout(adapter, config_data, ped=ped, update=update)
     except (IntegrityError, ValueError, ConfigError, KeyError) as error:
         click.echo(error)
         context.abort()
@@ -70,7 +80,7 @@ def delete_case(context, institute, case_id):
                        "deleted with flag '-i/--institute'.")
         context.abort()
 
-    logger.info("Running deleting case {0}".format(case_id))
+    log.info("Running deleting case {0}".format(case_id))
 
     case = adapter.delete_case(
         institute_id=institute,
@@ -81,7 +91,7 @@ def delete_case(context, institute, case_id):
         adapter.delete_variants(case_id=case.case_id, variant_type='clinical')
         adapter.delete_variants(case_id=case.case_id, variant_type='research')
     else:
-        logger.warning("Case does not exist in database")
+        log.warning("Case does not exist in database")
         context.abort()
 
 
