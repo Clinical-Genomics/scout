@@ -73,6 +73,15 @@ class Case(Document):
     has_svvariants = BooleanField(default=False)
 
     @property
+    def analysis_type(self):
+        """Determine compound sequencing/analysis type."""
+        types = set(sample.analysis_type for sample in self.individuals)
+        if len(types) == 1:
+            return types.pop()
+        else:
+            return 'mixed'
+
+    @property
     def o_collaborators(self):
         """Other collaborators than the owner of the case."""
         return [collab_id for collab_id in self.collaborators if

@@ -125,7 +125,7 @@
         {% set label_class = 'default' %}
       {% endif %}
       <span class="label label-{{ label_class }}">
-        {{ (case.analysis_type or 'unknown')|upper }}
+        {{ case.analysis_type|upper }}
       </span>
     </td>
   </tr>

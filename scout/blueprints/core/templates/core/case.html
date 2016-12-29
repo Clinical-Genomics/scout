@@ -117,26 +117,28 @@
 {% macro individuals_table() %}
   <div class="panel panel-default">
     <div class="panel-heading">Individuals</div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Sample</th>
-          <th>Sex</th>
-          <th>Phenotype</th>
-          <th>Sequencing</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ind in case.individuals %}
-          <tr {% if ind.phenotype_human == 'affected' %}class="bg-danger"{% endif %}>
-            <td>{{ ind.display_name }}</td>
-            <td>{{ ind.sex_human }}</td>
-            <td>{{ ind.phenotype_human }}</td>
-            <td>{{ ind.analysis_type|upper }}</td>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sample</th>
+            <th>Sex</th>
+            <th>Phenotype</th>
+            <th>Sequencing</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for ind in case.individuals %}
+            <tr {% if ind.phenotype_human == 'affected' %}class="bg-danger"{% endif %}>
+              <td>{{ ind.display_name }}</td>
+              <td>{{ ind.sex_human }}</td>
+              <td>{{ ind.phenotype_human }}</td>
+              <td>{{ ind.analysis_type|upper }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endmacro %}
 
