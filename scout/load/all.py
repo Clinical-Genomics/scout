@@ -127,7 +127,7 @@ def load_scout(adapter, config, ped=None, update=False):
                   case_obj=case_obj, variant_type='clinical', category='snv',
                   rank_treshold=config.get('rank_threshold'))
 
-    if config.get('vcf_sv_clinical'):
+    if config.get('vcf_sv'):
         log.info("Load SV variants for case %s", case_obj.case_id)
         load_variants(adapter=adapter, variant_file=config['vcf_sv'],
                       case_obj=case_obj, variant_type='clinical',
