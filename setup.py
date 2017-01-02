@@ -26,7 +26,7 @@ def parse_reqs(req_path='./requirements.txt'):
 
 setup(
     name='scout-browser',
-    version='1.5.1',
+    version='2.0.0',
     url='https://github.com/Clinical-Genomics/scout',
     description='Clinical DNA variant visualizer and browser.',
     author='Robin Andeer',
@@ -36,18 +36,18 @@ setup(
     zip_safe=False,
     install_requires=parse_reqs(),
     entry_points=dict(
-       console_scripts=[
-           'scout = scout.commands:cli',
+        console_scripts=[
+            'scout = scout.commands:cli',
         ]
     ),
     test_suite='tests',
     classifiers=[
-      'Environment :: Web Environment',
-      'Intended Audience :: Developers',
-      'License :: OSI Approved :: BSD License',
-      'Operating System :: OS Independent',
-      'Programming Language :: Python',
-      'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-      'Topic :: Software Development :: Libraries'
+        'Environment :: Web Environment',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development :: Libraries'
     ]
 )
