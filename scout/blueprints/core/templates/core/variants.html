@@ -13,7 +13,7 @@
     </a>
   </li>
   <li class="active">
-    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_lists=case.default_panels) }}">
+    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_lists=case.default_panel_ids) }}">
       {{ variant_type|capitalize }} variants
     </a>
   </li>

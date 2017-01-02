@@ -7,8 +7,7 @@ from flask import url_for
 def genecov_links(individuals, genes=None):
     """Return links for coverage for all samples in a case."""
     # map internal + external sample ids
-    kwargs = {"alt_{}".format(sample.individual_id): sample.display_name
-              for sample in individuals}
+    kwargs = {}
     kwargs['sample_id'] = [sample.individual_id for sample in individuals]
     kwargs['link'] = 'core.pileup_range'
     if genes:
