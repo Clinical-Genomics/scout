@@ -1,5 +1,5 @@
 import pytest
-from scout.parse.case import (parse_case, parse_ped, parse_individuals, 
+from scout.parse.case import (parse_case, parse_ped, parse_individuals,
                               parse_individual)
 from scout.exceptions import PedigreeError
 
@@ -45,18 +45,18 @@ def test_parse_case_default_panels(scout_config):
     # THEN the case should have the same panels like the config
     assert case_data['default_panels'] == scout_config['default_panels']
 
-def test_parse_case_rank_treshold(scout_config):
+def test_parse_case_rank_threshold(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
-    assert case_data['rank_score_treshold'] == scout_config['rank_treshold']
+    assert case_data['rank_score_threshold'] == scout_config['rank_threshold']
 
 def test_parse_case_vcf_files(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
-    # THEN the case should the same vcf files as specified in the 
+    # THEN the case should the same vcf files as specified in the
     assert case_data['vcf_files']['vcf_snv'] == scout_config['vcf_snv']
     assert case_data['vcf_files']['vcf_sv'] == scout_config['vcf_sv']
     assert case_data['vcf_files']['vcf_snv_research'] == scout_config['vcf_snv_research']
@@ -87,7 +87,7 @@ def test_parse_ped():
         "636808\tADM1059A2\tADM1059A1\tADM1059A3\t1\t2",
         "636808\tADM1059A3\t0\t0\t2\t1",
     ]
-    
+
     # WHEN parsing out relevant sample info
     family_id, samples = parse_ped(case_lines)
     # THEN it should return correct family id
@@ -132,7 +132,7 @@ def test_parse_missing_id():
         parse_individual(sample_info)
 
 def test_parse_missing_sex():
-    # GIVEN a individual without sex    
+    # GIVEN a individual without sex
     sample_info = {
         'sample_id':'1',
         'phenotype':'affected',
@@ -206,10 +206,10 @@ def test_wrong_relations():
     samples = [sample_info, mother_info, father_info]
     #Nothong should happend here
     assert parse_individuals(samples)
-    
+
     # WHEN changing mother id in proband
     sample_info['mother'] = '5'
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
         parse_individuals(samples)
-    
+

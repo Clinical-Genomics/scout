@@ -143,7 +143,7 @@ def parse_case(config, ped=None):
         'display_name': family_id,
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
-        'rank_score_treshold': config.get('rank_score_treshold', 5),
+        'rank_score_threshold': config.get('rank_score_threshold', 5),
         'analysis_date': config['analysis_date'],
         'individuals': individuals,
         'vcf_files': {

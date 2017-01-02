@@ -58,7 +58,7 @@ class Case(Document):
     genome_version = FloatField()
 
     rank_model_version = FloatField()
-    rank_score_treshold = IntField(default=5)
+    rank_score_threshold = IntField(default=5)
 
     phenotype_terms = ListField(EmbeddedDocumentField(PhenotypeTerm))
     phenotype_groups = ListField(EmbeddedDocumentField(PhenotypeTerm))

@@ -35,10 +35,10 @@ def build_case(case_data):
     # Meta data
     case_obj.genome_build = case_data.get('genome_build')
     case_obj.rank_model_version = case_data.get('rank_model_version')
-    case_obj.rank_score_treshold = case_data.get('rank_score_treshold')
+    case_obj.rank_score_threshold = case_data.get('rank_score_threshold')
 
     analysis_date = case_data['analysis_date']
-    
+
     case_obj.analysis_date = analysis_date
     case_obj.analysis_dates.append(analysis_date)
 

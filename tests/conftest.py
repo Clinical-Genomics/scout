@@ -131,9 +131,9 @@ def minimal_config(request, scout_config):
     config.pop('gene_panels')
     config.pop('default_panels')
     config.pop('rank_model_version')
-    config.pop('rank_treshold')
+    config.pop('rank_threshold')
     config.pop('human_genome_build')
-    
+
     return config
 
 ##################### Gene fixtures #####################
@@ -187,17 +187,17 @@ def hpo_genes(request, hpo_genes_handle):
     return parse_hpo_genes(hpo_genes_handle)
 
 @pytest.fixture
-def genes(request, transcripts_handle, hgnc_handle, exac_handle, 
+def genes(request, transcripts_handle, hgnc_handle, exac_handle,
           hpo_genes_handle):
     """Get a dictionary with the linked genes"""
     print('')
     gene_dict = link_genes(
-        ensembl_lines=transcripts_handle, 
-        hgnc_lines=hgnc_handle, 
-        exac_lines=exac_handle, 
+        ensembl_lines=transcripts_handle,
+        hgnc_lines=hgnc_handle,
+        exac_lines=exac_handle,
         hpo_lines=hpo_genes_handle
     )
-    
+
     return gene_dict
 
 @pytest.fixture
@@ -300,7 +300,7 @@ def adapter(request, client):
     """Get an adapter connected to mongomock database"""
     logger.info("Connecting to database...")
     mongo_client = client
-    
+
     database = 'test'
     host = 'localhost'
     port = 27017
@@ -366,10 +366,10 @@ def panel_database(request, gene_database, panel_info, institute_obj, parsed_use
         institutes=parsed_user['institutes']
     )
     load_panel(
-        adapter=mongo_adapter, 
+        adapter=mongo_adapter,
         panel_info=panel_info
     )
-    
+
     return mongo_adapter
 
 
@@ -384,7 +384,7 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
         institutes=parsed_user['institutes']
     )
     adapter.add_case(case_obj)
-    
+
     # load_hgnc_genes(
     #     adapter=adapter,
     #     ensembl_lines=ensembl_handle,
@@ -479,10 +479,10 @@ def basic_variant_dict(request):
 def one_variant(request, variant_clinical_file):
     logger.info("Return one parsed variant")
     variant_parser = VCFParser(infile=variant_clinical_file)
-    
+
     for variant in variant_parser:
         break
-    
+
     return variant
 
 @pytest.fixture(scope='function')
@@ -503,7 +503,7 @@ def rank_results_header(request, variant_clinical_file):
     for info_line in variant.metadata.info_lines:
         if info_line['ID'] == 'RankResult':
             rank_results = info_line['Description'].split('|')
-    
+
     return rank_results
 
 @pytest.fixture(scope='function')
