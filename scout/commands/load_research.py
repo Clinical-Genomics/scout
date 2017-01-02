@@ -10,8 +10,9 @@ log = logging.getLogger(__name__)
 @click.command(short_help='Upload research variants')
 @click.option('-c', '--case-id', help='family or case id')
 @click.option('-i', '--institute', help='institute id of related cases')
+@click.option('-f', '--force', help='upload research even if not requested')
 @click.pass_context
-def research(context, case_id, institute):
+def research(context, case_id, institute, force):
     """Upload research variants to cases
 
         If a case is specified, all variants found for that case will be
@@ -38,7 +39,7 @@ def research(context, case_id, institute):
         case_objs = adapter.cases(research_requested=True)
 
     for case_obj in case_objs:
-        if case_obj.research_requested:
+        if force or case_obj.research_requested:
             log.info("Load research SNV for: %s", case_obj.case_id)
             load_variants(
                 adapter=adapter,
