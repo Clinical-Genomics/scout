@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 @click.command(short_help='Upload research variants')
 @click.option('-c', '--case-id', help='family or case id')
 @click.option('-i', '--institute', help='institute id of related cases')
-@click.option('-f', '--force', help='upload research even if not requested')
+@click.option('-f', '--force', is_flag=True, help='upload without request')
 @click.pass_context
 def research(context, case_id, institute, force):
     """Upload research variants to cases
@@ -59,3 +59,5 @@ def research(context, case_id, institute, force):
                     category='sv',
                     rank_treshold=case_obj.rank_score_treshold,
                 )
+        else:
+            log.warn("research not requested, use '--force'")
