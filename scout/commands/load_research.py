@@ -59,5 +59,8 @@ def research(context, case_id, institute, force):
                     category='sv',
                     rank_threshold=case_obj.rank_score_threshold,
                 )
+            case_obj.is_research = True
+            case_obj.research_requested = False
+            case_obj.save()
         else:
             log.warn("research not requested, use '--force'")
