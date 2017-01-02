@@ -93,6 +93,9 @@ msgstr "används för täckningsanalys baserat på sekvensmappning."
 msgid "Duplicates, reads with mapping quality less than 10 as well as bases with a base quality less than 10 are not included in the analysis."
 msgstr "Duplikat, läsningar med en mappningskvalitet mindre än 10 samt baser med en baskvalitet mindre än 10 inkluderas ej i analysen."
 
+msgid "Bases that overlap between read pairs are only counted once."
+msgstr "Baser som överlappar mellan läspar räknas endast en gång."
+
 msgid "The parts of the genome that has been analyzed"
 msgstr "De delar av genomet som har analyserats"
 
