@@ -11,7 +11,7 @@ from flask_mail import Message
 from housekeeper.store import api
 import query_phenomizer
 
-from scout.models import Case, Variant
+from scout.models import Case, Institute, Variant
 from scout.models.case import STATUS as CASE_STATUSES
 from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb, housekeeper
@@ -30,7 +30,11 @@ core = Blueprint('core', __name__, template_folder='templates',
 @login_required
 def institutes():
     """View all institutes that the current user belongs to."""
-    institute_objs = current_user.institutes
+    if current_user.has_role('admin'):
+        # show all institutes for admins
+        institute_objs = Institute.objects
+    else:
+        institute_objs = current_user.institutes
     if len(institute_objs) == 1:
         # there no choice of institutes to make, redirect to only institute
         institute = institute_objs[0]

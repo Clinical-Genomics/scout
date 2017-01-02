@@ -47,7 +47,7 @@ def research(context, case_id, institute, force):
                 case_obj=case_obj,
                 variant_type='research',
                 category='snv',
-                rank_treshold=case_obj.rank_score_treshold,
+                rank_threshold=case_obj.rank_score_threshold,
             )
             if case_obj.vcf_files.get('vcf_sv_research'):
                 log.info("Load research SV for: %s", case_obj.case_id)
@@ -57,7 +57,7 @@ def research(context, case_id, institute, force):
                     case_obj=case_obj,
                     variant_type='research',
                     category='sv',
-                    rank_treshold=case_obj.rank_score_treshold,
+                    rank_threshold=case_obj.rank_score_threshold,
                 )
         else:
             log.warn("research not requested, use '--force'")

@@ -35,7 +35,8 @@ def validate_user(current_user, institute_id):
     except DoesNotExist:
         return abort(404)
 
-    if institute not in current_user.institutes:
+    is_admin = current_user.has_role('admin')
+    if not is_admin and institute not in current_user.institutes:
         flash('You do not have access to this institute.')
         return abort(403)
 
