@@ -24,7 +24,7 @@
 
 {% block content %}
   <div class="table-responsive">
-    <table class="table table-bordered table-hover">
+    <table id="variantsTable" class="table table-bordered table-hover">
       <thead>
         <tr>
           <th>Rank #</th>
@@ -107,11 +107,15 @@
 {% endmacro %}
 
 {% block scripts %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/1.4.4/jquery.floatThead.min.js"></script>
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 
   <script>
-    var $table = $("#variantsTable");
-    $table.floatThead({});
+    $(function () {
+      $("#variantsTable").stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+    })
   </script>
 {% endblock %}

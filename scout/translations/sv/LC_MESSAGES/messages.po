@@ -99,14 +99,11 @@ msgstr "Baser som överlappar mellan läspar räknas endast en gång."
 msgid "The parts of the genome that has been analyzed"
 msgstr "De delar av genomet som har analyserats"
 
-msgid "is composed of all protein coding, exonic intervals"
-msgstr "omfattar alla proteinkodande, exoniska intervall"
+msgid "is composed of all exonic (non-UTR) regions defined in"
+msgstr "omfattar alla exoniska (icke-UTR) regioner definierade i"
 
-msgid "referenced in the"
-msgstr "som anges i"
-
-msgid "CCDS database"
-msgstr "CCDS-databasen"
+msgid "that match transcripts in"
+msgstr "som matchar transkript i"
 
 msgid "Additionally, the data also includes spicing sites"
 msgstr "Därutöver, inkluderas även splitsningpositioner"
