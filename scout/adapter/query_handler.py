@@ -54,7 +54,6 @@ class QueryHandler(object):
 
                 mongo_query['end'] = {'$gte': int(query['start'])}
 
-
         if query.get('thousand_genomes_frequency'):
             thousandg = query.get('thousand_genomes_frequency')
             if thousandg == '-1':
