@@ -72,7 +72,7 @@ class CaseHandler(object):
         return Institute.objects()
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
-              has_causatives=False, reruns=False, finished=False, 
+              has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False):
         """Fetches all cases from the backend.
 
@@ -218,24 +218,24 @@ class CaseHandler(object):
             if case['analysis_date'] not in existing_case['analysis_dates']:
                 existing_case['analysis_dates'] = (existing_case['analysis_dates'] +
                                           case['analysis_dates'])
-        
+
         logger.debug("Updating rerun requested to False")
         existing_case.rerun_requested = False
-        
+
         existing_case.default_panels = case.default_panels
         existing_case.gene_panels = case.gene_panels
-        
+
         existing_case.genome_build = case.genome_build
         existing_case.genome_version = case.genome_version
-        
+
         existing_case.rank_model_version = case.rank_model_version
-        
+
         existing_case.madeline_info = case.madeline_info
-        
+
         existing_case.vcf_files = case.vcf_files
-        
+
         existing_case.has_svvariants = case.has_svvariants
-        
+
         existing_case.save()
 
         ##TODO Add event for updating case?
@@ -263,9 +263,9 @@ class CaseHandler(object):
             except DoesNotExist:
                 result = None
         elif panel_id:
-            result = GenePanel.objects(panel_name=panel_id).order_by('-version').first()
+            result = GenePanel.objects(panel_name=panel_id).order_by('-version')
         else:
-            result = GenePanel.objects()
+            result = GenePanel.objects
 
         return result
 

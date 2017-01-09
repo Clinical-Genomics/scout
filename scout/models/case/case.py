@@ -151,13 +151,6 @@ class Case(Document):
     def sample_ids(self):
         return [individual.individual_id for individual in self.individuals]
 
-    @property
-    def sorted_gene_panels(self):
-        """Return clinical panels sorted by name."""
-        panels = sorted(self.gene_panels,
-                        key=lambda panel: panel.display_name)
-        return panels
-
     def __repr__(self):
         return ("Case(case_id={0}, display_name={1}, owner={2})"
                 .format(self.case_id, self.display_name, self.owner))
