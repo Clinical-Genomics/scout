@@ -11,7 +11,7 @@ def load_panel(adapter, panel_info):
     """Load a gene panel into the databse"""
     panel_data = parse_gene_panel(panel_info)
     panel_obj = build_panel(panel_data, adapter)
-    
+
     # Check if the panel exists in database
     panel = adapter.gene_panel(panel_obj['panel_name'], panel_obj['version'])
 

@@ -21,6 +21,14 @@ class Gene(EmbeddedDocument):
         return "{this.hgnc_gene.hgnc_symbol}".format(this=self)
 
 
+class GeneMeta(EmbeddedDocument):
+    hgnc_id = StringField()
+    symbol = StringField()
+
+    def __unicode__(self):
+        return "{this.hgnc_id}: {this.symbol}".format(this=self)
+
+
 class GenePanel(Document):
 
     meta = {'strict': False}
@@ -33,15 +41,17 @@ class GenePanel(Document):
     # This is a dictionary with gene objects
     gene_objects = MapField(EmbeddedDocumentField(Gene))
     # {'ADK':Gene}
+    genes = ListField(EmbeddedDocument(GeneMeta))
 
     @property
     def gene_ids(self):
-        for gene in self.gene_objects.values():
-            yield gene.hgnc_gene.hgnc_id
+        for gene in self.genes:
+            yield gene.hgnc_id
 
     @property
     def gene_symbols(self):
-        return self.gene_objects.keys()
+        for gene in self.genes:
+            yield gene.symbol
 
     @property
     def name_and_version(self):

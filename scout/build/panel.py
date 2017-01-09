@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.models.case.gene_list import (GenePanel, Gene)
+from scout.models.case.gene_list import (GenePanel, Gene, GeneMeta)
 
 logger = logging.getLogger(__name__)
+
 
 def get_hgnc_id(gene_info, adapter):
     """Get the hgnc id for a gene
@@ -39,12 +40,13 @@ def get_hgnc_id(gene_info, adapter):
             true_id = gene.hgnc_id
     return true_id
 
+
 def build_gene(gene_info, adapter):
     """Build a gene panel gene object"""
     hgnc_id = get_hgnc_id(gene_info, adapter)
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
 
-    gene_obj = Gene(hgnc_gene = hgnc_gene)
+    gene_obj = Gene(hgnc_gene=hgnc_gene)
 
     if gene_info['disease_associated_transcripts']:
         gene_obj.disease_associated_transcripts = gene_info['disease_associated_transcripts']
@@ -56,6 +58,7 @@ def build_gene(gene_info, adapter):
         gene_obj.database_entry_version = gene_info['database_entry_version']
 
     return gene_obj
+
 
 def build_panel(panel_info, adapter):
     """Build a mongoengine GenePanel
@@ -81,6 +84,10 @@ def build_panel(panel_info, adapter):
 
     for gene_info in panel_info['genes']:
         hgnc_symbol = gene_info['hgnc_symbol']
-        panel_obj.gene_objects[hgnc_symbol] = build_gene(gene_info, adapter)
+        gene_obj = build_gene(gene_info, adapter)
+        panel_obj.gene_objects[hgnc_symbol] = gene_obj
+        new_meta = GeneMeta(hgnc_id=gene_obj.hgnc_gene.hgnc_id,
+                            symbol=hgnc_symbol)
+        panel_obj.genes.append(new_meta)
 
     return panel_obj

@@ -55,7 +55,7 @@
             </li>
             <li class="list-group-item">
               Number of genes
-              <span class="pull-right">{{ panel.gene_objects|length }}</span>
+              <span class="pull-right">{{ panel.genes|length }}</span>
             </li>
             <li class="list-group-item">
               Date
@@ -73,7 +73,7 @@
             <li class="list-group-item">
               Coverage overview
               <span class="pull-right">
-                <a href="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.sample_ids, gene_id=panel.genes|join(','), exonlink='core.pileup_range') }}" target="_blank">
+                <a href="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.sample_ids, gene_id=panel.gene_ids|join(','), exonlink='core.pileup_range') }}" target="_blank">
                   {{ case.display_name }}
                 </a>
               </span>
@@ -84,10 +84,10 @@
         <div class="panel panel-default">
           <div class="panel-heading">Included genes (coverage)</div>
           <ul class="list-group">
-            {% for gene_symbol, gene in panel.gene_objects.items() %}
+            {% for gene in panel.genes %}
               <li class="list-group-item">
-                <a href="{{ url_for('report.gene', gene_id=gene.gene_id, **covlink_kwargs) }}" target="_blank">
-                  {{ gene_symbol }}
+                <a href="{{ url_for('report.gene', gene_id=gene.hgnc_id, **covlink_kwargs) }}" target="_blank">
+                  {{ gene.symbol }}
                 </a>
               </li>
             {% endfor %}
