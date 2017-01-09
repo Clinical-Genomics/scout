@@ -41,7 +41,7 @@ class GenePanel(Document):
     # This is a dictionary with gene objects
     gene_objects = MapField(EmbeddedDocumentField(Gene))
     # {'ADK':Gene}
-    genes = ListField(EmbeddedDocument(GeneMeta))
+    genes = ListField(EmbeddedDocumentField(GeneMeta))
 
     @property
     def gene_ids(self):
