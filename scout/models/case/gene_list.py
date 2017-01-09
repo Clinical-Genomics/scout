@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, ListField, StringField, FloatField,
                          DateTimeField, BooleanField, EmbeddedDocument,
-                         EmbeddedDocumentField, MapField, ReferenceField)
+                         EmbeddedDocumentField, MapField, ReferenceField,
+                         IntField)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -22,7 +23,7 @@ class Gene(EmbeddedDocument):
 
 
 class GeneMeta(EmbeddedDocument):
-    hgnc_id = StringField()
+    hgnc_id = IntField()
     symbol = StringField()
 
     def __unicode__(self):
