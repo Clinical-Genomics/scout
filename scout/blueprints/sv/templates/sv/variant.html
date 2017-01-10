@@ -28,6 +28,10 @@
 {% endblock %}
 
 {% block content_main %}
+  {% if variant.missing_data %}
+    <div class="alert alert-warning">Showing only first 30 genes!</div>
+  {% endif %}
+
   <div class="row">
     <div class="col-md-6">
       <ul class="list-group">

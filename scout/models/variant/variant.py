@@ -121,6 +121,8 @@ class Variant(Document):
     clnsig = ListField(EmbeddedDocumentField(Clinsig))
     spidex = FloatField()
 
+    missing_data = BooleanField(default=False)
+
     @property
     def spidex_human(self):
         """Translate SPIDEX annotation to human readable string."""

@@ -31,11 +31,9 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="row">
-    <div class="col-xs-12">
-
-    </div>
-  </div>
+  {% if variant.missing_data %}
+    <div class="alert alert-warning">Showing only first 30 genes!</div>
+  {% endif %}
   <div class="row">
     <div class="col-xs-12">{{ matching_variants() }}</div>
   </div>

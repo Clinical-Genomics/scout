@@ -2,6 +2,7 @@ from scout.models import Variant
 
 from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
+
 def build_variant(variant, institute):
     """Build a mongoengine Variant based on parsed information
 
@@ -58,10 +59,15 @@ def build_variant(variant, institute):
 
     # Add the genes with transcripts
     genes = []
-    for gene in variant.get('genes', []):
+    for index, gene in enumerate(variant.get('genes', [])):
         gene_obj = build_gene(gene)
         genes.append(gene_obj)
-    
+        if index > 30:
+            # avoid uploading too much data (specifically for SV variants)
+            # mark variant as missing data
+            variant_obj['missing_data'] = True
+            break
+
     variant_obj['genes'] = genes
 
     variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
@@ -69,7 +75,7 @@ def build_variant(variant, institute):
 
     # Add the clnsig ocbjects
     clnsig_objects = []
-    for entry in variant.get('clnsig',[]):
+    for entry in variant.get('clnsig', []):
         clnsig_obj = build_clnsig(entry)
         clnsig_objects.append(clnsig_obj)
     variant_obj['clnsig'] = clnsig_objects
@@ -85,16 +91,16 @@ def build_variant(variant, institute):
     variant_obj['phast_conservation'] = conservation_info.get('phast', [])
     variant_obj['gerp_conservation'] = conservation_info.get('gerp', [])
     variant_obj['phylop_conservation'] = conservation_info.get('phylop', [])
-    
+
     # Add the frequencies
     frequencies = variant.get('frequencies', {})
     variant_obj['thousand_genomes_frequency'] = frequencies.get('thousand_g')
     variant_obj['exac_frequency'] = frequencies.get('exac')
     variant_obj['max_thousand_genomes_frequency'] = frequencies.get('thousand_g_max')
     variant_obj['max_exac_frequency'] = frequencies.get('exac_max')
-    
+
     # Add the severity predictors
-    
+
     variant_obj['cadd_score'] = variant.get('cadd_score')
     variant_obj['spidex'] = variant.get('spidex')
 
@@ -106,7 +112,7 @@ def build_variant(variant, institute):
             'score': variant['rank_result'][category]
         }
         rank_results.append(rank_result)
-    
+
     variant_obj['rank_score_results'] = rank_results
 
     return variant_obj
