@@ -27,7 +27,7 @@ def check_panels(adapter, panels, default_panels=None):
             log.warning("Default panels have to be defined in panels")
             panels_exist = False
     for panel in panels:
-        if not adapter.gene_panel(panel_id=panel):
+        if not adapter.gene_panel(panel).first():
             log.warning("Panel {} does not exist in database".format(panel))
             panels_exist = False
     return panels_exist

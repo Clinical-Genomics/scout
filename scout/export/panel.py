@@ -13,7 +13,7 @@ def export_panels(adapter, panels):
     genes = {}
     chromosomes_found = set()
     for panel_id in panels:
-        panel_obj = adapter.gene_panel(panel_id)
+        panel_obj = adapter.gene_panel(panel_id).first()
         headers.append(header_string.format(
             panel_obj.panel_name,
             panel_obj.version,
