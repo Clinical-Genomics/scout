@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
+from flask_login import current_user
 
 from scout import __version__
 
@@ -15,4 +16,6 @@ def index():
     Doesn't require a user to login. But if they are logged in, they
     should be passed along to their personalized start page (TODO).
     """
+    if current_user.is_authenticated():
+        return redirect(url_for('core.institutes'))
     return render_template('index.html', version=__version__)
