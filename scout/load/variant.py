@@ -105,6 +105,12 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 )
 
             if variant_obj:
+                # convert to primary HGNC symbols
+                primary_symbols = []
+                for hgnc_symbol in variant_obj.hgnc_symbols:
+                    primary_symbol = adapter.to_hgnc(hgnc_symbol)
+                    primary_symbols.append(primary_symbol)
+
                 try:
                     load_variant(adapter, variant_obj)
                     nr_inserted += 1
