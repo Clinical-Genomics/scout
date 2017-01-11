@@ -87,13 +87,13 @@ class HgncGene(Document):
     @property
     def entrez_link(self):
         """Link to gene in ncbi.org"""
-        url_template = ("https://www.ncbi.nlm.nih.gov/gene/{}")
+        url_template = ("https://www.ncbi.nlm.nih.gov/gquery/?term={}")
         return url_template.format(self.entrez_id)
 
     @property
-    def ensembl_link(self):
+    def ensembl_link(self, is_hg38=False):
         """Link to gene in ensembl.org"""
-        url_template = ("http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
+        url_template = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
         return url_template.format(self.ensembl_id)
 
     @property
