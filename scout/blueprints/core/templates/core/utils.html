@@ -42,7 +42,7 @@
     </ul>
     <div class="panel-footer">
       <form action="{{ url_for('api.create_event', institute_id=institute.internal_id, case_id=case.display_name, variant_id=variant_id) }}" method="POST">
-        <input type="hidden" name="link" value="{{ url_for('core.variant', institute_id=institute_id, case_id=case_id, variant_id=variant_id) if variant_id else url_for('core.case', institute_id=institute.internal_id, case_id=case.display_name) }}">
+        <input type="hidden" name="link" value="{{ url_for('core.variant', institute_id=institute.internal_id, case_id=case.display_name, variant_id=variant_id) if variant_id else url_for('core.case', institute_id=institute.internal_id, case_id=case.display_name) }}">
         <div class="form-group">
           <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
         </div>
