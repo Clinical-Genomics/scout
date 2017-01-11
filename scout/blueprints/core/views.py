@@ -378,7 +378,7 @@ def variants(institute_id, case_id, variant_type):
     """View all variants for a single case."""
     per_page = 50
     current_gene_lists = [gene_list for gene_list
-                          in request.args.getlist('gene_lists') if gene_list]
+                          in request.args.getlist('gene_panels') if gene_list]
 
     # fetch all variants for a specific case
     institute = validate_user(current_user, institute_id)
@@ -404,9 +404,9 @@ def variants(institute_id, case_id, variant_type):
             # research mode not activated
             return abort(403)
 
-    gene_list_names = [(item.panel_name, (item.display_name or item.panel_name))
-                       for item in case_model.gene_panels]
-    form.gene_lists.choices = gene_list_names
+    gene_panel_names = [(item.panel_name, (item.display_name or item.panel_name))
+                        for item in case_model.gene_panels]
+    form.gene_panels.choices = gene_panel_names
 
     # make sure HGNC symbols are correctly handled
     if request.args.get('hgnc_symbols'):
@@ -435,15 +435,15 @@ def variants(institute_id, case_id, variant_type):
     query['variant_type'] = variant_type
 
     # handle HPO gene list separately
-    if query['gene_lists'] == ['hpo']:
-        query['hgnc_symbols'] = case_model.hpo_gene_ids
+    if query['gene_panels'] == ['hpo']:
+        query['hgnc_symbols'] = query['hgnc_symbols'] + case_model.hpo_gene_ids
     else:
         # get HGNC symbols from selected gene panels
         gene_symbols = set(query['hgnc_symbols'])
-        for panel_id in query['gene_lists']:
+        for panel_id in query['gene_panels']:
             panel_obj = store.gene_panel(panel_id).only('genes').first()
             gene_symbols.update(panel_obj.gene_symbols)
-        query['hgnc_symbols'] = list(gene_symbols)
+        query['hgnc_symbols'] = query['hgnc_symbols'] + list(gene_symbols)
 
     # fetch list of variants
     all_variants, count = store.variants(case_model.case_id, query=query,

@@ -76,7 +76,7 @@ class ListField(Field):
 
 class FiltersForm(Form):
   # choices populated dynamically
-  gene_lists = SelectMultipleField(choices=[])
+  gene_panels = SelectMultipleField(choices=[])
   hgnc_symbols = ListField()
 
   thousand_genomes_frequency = DecimalField('1000 Genomes', places=None)
@@ -105,7 +105,6 @@ def init_filters_form(get_args):
     """
     # initialize the normal way to get lists inserted correctly
     form = FiltersForm(get_args)
-    form.gene_lists.data = [gene_list for gene_list
-                            in (form.gene_lists.data or [])
-                            if gene_list]
+    form.gene_panels.data = [panel for panel in (form.gene_panels.data or [])
+                             if panel]
     return form

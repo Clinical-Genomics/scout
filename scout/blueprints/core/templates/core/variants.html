@@ -13,7 +13,7 @@
     </a>
   </li>
   <li class="active">
-    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_lists=case.default_panel_ids) }}">
+    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_panels=case.default_panel_ids) }}">
       {{ variant_type|capitalize }} variants
     </a>
   </li>
@@ -26,12 +26,12 @@
                         institute_id=institute_id,
                         case_id=case_id,
                         variant_type=variant_type,
-                        gene_lists=['hpo']) }}">
+                        gene_panels=['hpo']) }}">
       HPO gene list
     </a>
   </li>
   <li>
-    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_lists=case.default_panel_ids) }}">Reset filters</a>
+    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_panels=case.default_panel_ids) }}">Reset filters</a>
   </li>
   {{ super() }}
 {% endblock %}
@@ -202,8 +202,8 @@
     <div class="form-group">
       <div class="row">
         <div class="col-xs-3">
-          {{ form.gene_lists.label(class="control-label") }}
-          {{ form.gene_lists(class="form-control") }}
+          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels(class="form-control") }}
         </div>
         <div class="col-xs-3">
           {{ form.region_annotations.label(class="control-label") }}
@@ -270,7 +270,7 @@
                           functional_annotations=severe_so_terms,
                           region_annotations=['exonic', 'splicing'],
                           thousand_genomes_frequency=institute.frequency_cutoff,
-                          gene_lists=current_gene_lists,
+                          gene_panels=current_gene_lists,
                           hgnc_symbols=form.hgnc_symbols.data) }}"
                  class="btn btn-default form-control">
                 Clinical filter
