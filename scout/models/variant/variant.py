@@ -367,9 +367,9 @@ class Variant(Document):
     def sv_frequencies(self):
         """Return all SV frequencies."""
         return [
-            '1000G', self.thousand_genomes_frequency,
-            '1000G (left)', self.thousand_genomes_frequency_left,
-            '1000G (right)', self.thousand_genomes_frequency_right,
+            ('1000G', self.thousand_genomes_frequency),
+            ('1000G (left)', self.thousand_genomes_frequency_left),
+            ('1000G (right)', self.thousand_genomes_frequency_right),
         ]
 
     @property
