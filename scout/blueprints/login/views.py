@@ -21,6 +21,7 @@ def get_google_token():
 
 login_manager.login_view = 'login.signin'
 login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
 login_manager.refresh_view = 'login.reauth'
 login_manager.anonymous_user = AnonymousUser
 
