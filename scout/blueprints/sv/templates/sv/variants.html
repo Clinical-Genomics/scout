@@ -91,7 +91,7 @@
     <td>{{ 'inf' if variant.length == 100000000000 else variant.length }}</td>
     <td>{{ variant.region_annotations[:3]|join(', ') }}</td>
     <td>{{ variant.functional_annotations[:3]|join(', ') }}</td>
-    <td>{{ variant.thousand_genomes_frequency if variant.thousand_genomes_frequency }}</td>
+    <td>{{ variant.thousand_genomes_frequency|human_decimal }}</td>
     <td>
       {% if variant.hgnc_symbols|length >= 5 %}
         {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
