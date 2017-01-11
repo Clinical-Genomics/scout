@@ -20,7 +20,7 @@ from mongoengine.connection import (get_connection, _get_db)
 
 from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler,
                GeneHandler, HpoHandler)
-from scout.models import User, HgncAlias
+from scout.models import User, HgncGene
 
 logger = logging.getLogger(__name__)
 
@@ -125,21 +125,6 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
     def update_access(self, user_obj):
         user_obj.accessed_at = datetime.utcnow()
         user_obj.save()
-
-    def add_hgnc_alias(self, hgnc_gene):
-        """Add objects to HgncAlias
-
-            Args:
-                hgnc_gene(dict):A dictionary with hgnc genes
-        """
-        symbol = hgnc_gene['hgnc_symbol']
-        aliases = ', '.join(hgnc_gene['aliases'])
-        logger.debug("Addind gene %s with aliases %s", symbol, aliases)
-        hgnc_gene_obj = HgncAlias(hgnc_symbol=hgnc_gene['hgnc_symbol'],
-                                  aliases=hgnc_gene['aliases'])
-        hgnc_gene_obj.save()
-
-        return hgnc_gene_obj
 
     def to_hgnc(self, hgnc_alias):
         """Check if a hgnc symbol is an alias
