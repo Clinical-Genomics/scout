@@ -54,7 +54,7 @@ class QueryHandler(object):
 
                 mongo_query['end'] = {'$gte': int(query['start'])}
 
-        if query.get('thousand_genomes_frequency'):
+        if query.get('thousand_genomes_frequency') is not None:
             thousandg = query.get('thousand_genomes_frequency')
             if thousandg == '-1':
                 mongo_query['thousand_genomes_frequency'] = {'$exists': False}
@@ -70,7 +70,7 @@ class QueryHandler(object):
                     })
             logger.debug("Adding thousand_genomes_frequency to query")
 
-        if query.get('exac_frequency'):
+        if query.get('exac_frequency') is not None:
             exac = query['exac_frequency']
             if exac == '-1':
                 mongo_query['thousand_genomes_frequency'] = {'$exists': False}
@@ -84,7 +84,7 @@ class QueryHandler(object):
                         ]
                     })
 
-        if query.get('cadd_score'):
+        if query.get('cadd_score') is not None:
             cadd = query['cadd_score']
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
