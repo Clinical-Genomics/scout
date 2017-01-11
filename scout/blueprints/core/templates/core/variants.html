@@ -261,6 +261,9 @@
           <label class="control-label">Submit</label>
           <div class="row">
             <div class="col-xs-6">
+              <button class="btn btn-primary form-control">Filter variants</button>
+            </div>
+            <div class="col-xs-6">
               <a href="{{ url_for('core.variants', institute_id=institute_id,
                           case_id=case_id,
                           variant_type=variant_type,
@@ -272,9 +275,6 @@
                  class="btn btn-default form-control">
                 Clinical filter
               </a>
-            </div>
-            <div class="col-xs-6">
-              <button class="btn btn-primary form-control">Filter variants</button>
             </div>
           </div>
         </div>
