@@ -166,12 +166,12 @@
     <ul class="list-group">
       {% for freq_name, value in variant.sv_frequencies %}
         <li class="list-group-item">
+          {{ freq_name }}
           {% if value %}
             <span class="badge">{{ variant.thousand_genomes_frequency }}</span>
           {% else %}
             <span class="pull-left">-</span>
           {% endif %}
-          {{ freq_name }}
         </li>
       {% endfor %}
     </ul>
