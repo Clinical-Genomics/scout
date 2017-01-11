@@ -43,7 +43,7 @@ def process_filters_form(form):
     for field_name in ['thousand_genomes_frequency', 'exac_frequency',
                        'cadd_score']:
         field = getattr(form, field_name)
-        if field.data:
+        if field.data or field.data == 0:
             field.data = float(field.data)
 
 

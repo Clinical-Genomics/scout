@@ -420,7 +420,7 @@ def variants(institute_id, case_id, variant_type):
                 if hgnc_alias != real_symbol:
                     flash("alias: {} -> {}".format(hgnc_alias, real_symbol), "info")
             else:
-                flash("couldn't find HGNC id: {}".format(hgnc_alias), "danger")
+                flash("couldn't find gene: {}".format(hgnc_alias), "danger")
     else:
         hgnc_symbols = []
     form.hgnc_symbols.data = hgnc_symbols
