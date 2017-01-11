@@ -136,7 +136,7 @@ class HgncGene(Document):
     @property
     def omim_links(self):
         for omim_id in self.omim_ids:
-            yield omim_id, "http://omim.org/gene/{}".format(omim_id)
+            yield omim_id, "http://omim.org/entry/{}".format(omim_id)
 
     def __repr__(self):
         return ("HgncGene(hgnc_id={this.hgnc_id},hgnc_symbol={this.hgnc_symbol})".format(this=self))
