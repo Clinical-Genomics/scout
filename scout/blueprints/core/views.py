@@ -410,20 +410,20 @@ def variants(institute_id, case_id, variant_type):
 
     # make sure HGNC symbols are correctly handled
     if request.args.get('hgnc_symbols'):
-        raw_hgncids = [hgnc_id.strip().upper() for hgnc_id in
-                       request.args.get('hgnc_symbols').split(',') if hgnc_id]
-        hgnc_ids = []
-        for hgnc_alias in raw_hgncids:
-            real_id = store.to_hgnc(hgnc_alias)
-            if real_id:
-                hgnc_ids.append(real_id)
-                if hgnc_alias != real_id:
-                    flash("alias: {} -> {}".format(hgnc_alias, real_id), "info")
+        raw_symbols = [symbol.strip().upper() for symbol in
+                       request.args.get('hgnc_symbols').split(',') if symbol]
+        hgnc_symbols = []
+        for hgnc_alias in raw_symbols:
+            real_symbol = store.to_hgnc(hgnc_alias)
+            if real_symbol:
+                hgnc_symbols.append(real_symbol)
+                if hgnc_alias != real_symbol:
+                    flash("alias: {} -> {}".format(hgnc_alias, real_symbol), "info")
             else:
-                flash("couldn't find HGNC id: {}".format(hgnc_alias), "error")
+                flash("couldn't find HGNC id: {}".format(hgnc_alias), "danger")
     else:
-        hgnc_ids = []
-    form.hgnc_symbols.data = hgnc_ids
+        hgnc_symbols = []
+    form.hgnc_symbols.data = hgnc_symbols
 
     # preprocess some of the results before submitting query to adapter
     process_filters_form(form)
