@@ -560,7 +560,7 @@
             <tr>
               <td>
                 {% for omim_id, omim_link in gene.common.omim_links %}
-                  <a href="{{ omim_link }}">
+                  <a href="{{ omim_link }}" target="_blank">
                     {{ gene.common.hgnc_symbol }}:{{ omim_id }}
                   </a>
                 {% endfor %}

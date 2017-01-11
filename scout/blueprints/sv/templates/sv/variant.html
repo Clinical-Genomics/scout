@@ -242,7 +242,7 @@
               <td>{{ gene.common.description|replace('_', ' ') }}</td>
               <td>
                 {% for omim_id, omim_link in gene.common.omim_links %}
-                  <a href="{{ omim_link }}">{{ omim_id }}</a>
+                  <a href="{{ omim_link }}" target="_blank">{{ omim_id }}</a>
                 {% endfor %}
               </td>
             </tr>
