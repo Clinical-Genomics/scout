@@ -390,8 +390,10 @@ def variants(institute_id, case_id, variant_type):
     skip = int(request.args.get('skip', 0))
 
     # update case status if currently inactive
-    if (case_model.status == 'inactive' and not
-            current_app.config.get('LOGIN_DISABLED')):
+    is_admin = current_user.has_role('admin')
+    login_off = current_app.config.get('LOGIN_DISABLED')
+    case_inactive = case_model.status == 'inactive'
+    if (case_inactive and not (is_admin or login_off)):
         link = url_for('.case', institute_id=institute_id, case_id=case_id)
         store.update_status(institute, case_model, current_user, 'active',
                             link)
