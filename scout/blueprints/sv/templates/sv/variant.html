@@ -164,14 +164,16 @@
   <div class="panel panel-default">
     <div class="panel-heading">Frequencies</div>
     <ul class="list-group">
-      <li class="list-group-item">
-        {% if variant.thousand_genomes_frequency %}
-          <span class="badge">{{ variant.thousand_genomes_frequency }}</span>
-          1000G
-        {% else %}
-          <i>No frequencies found</i>
-        {% endif %}
-      </li>
+      {% for freq_name, value in variant.sv_frequencies %}
+        <li class="list-group-item">
+          {% if value %}
+            <span class="badge">{{ variant.thousand_genomes_frequency }}</span>
+          {% else %}
+            <span class="pull-left">-</span>
+          {% endif %}
+          {{ freq_name }}
+        </li>
+      {% endfor %}
     </ul>
   </div>
 {% endmacro %}

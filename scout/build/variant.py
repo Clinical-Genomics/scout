@@ -95,6 +95,8 @@ def build_variant(variant, institute):
     # Add the frequencies
     frequencies = variant.get('frequencies', {})
     variant_obj['thousand_genomes_frequency'] = frequencies.get('thousand_g')
+    variant_obj['thousand_genomes_frequency_left'] = frequencies.get('thousand_g_left')
+    variant_obj['thousand_genomes_frequency_right'] = frequencies.get('thousand_g_right')
     variant_obj['exac_frequency'] = frequencies.get('exac')
     variant_obj['max_thousand_genomes_frequency'] = frequencies.get('thousand_g_max')
     variant_obj['max_exac_frequency'] = frequencies.get('exac_max')

@@ -112,6 +112,8 @@ class Variant(Document):
 
     # Frequencies:
     thousand_genomes_frequency = FloatField()
+    thousand_genomes_frequency_left = FloatField()
+    thousand_genomes_frequency_right = FloatField()
     exac_frequency = FloatField()
     max_thousand_genomes_frequency = FloatField()
     max_exac_frequency = FloatField()
@@ -360,6 +362,15 @@ class Variant(Document):
             return 'uncommon'
         else:
             return 'rare'
+
+    @property
+    def sv_frequencies(self):
+        """Return all SV frequencies."""
+        return [
+            '1000G', self.thousand_genomes_frequency,
+            '1000G (left)', self.thousand_genomes_frequency_left,
+            '1000G (right)', self.thousand_genomes_frequency_right,
+        ]
 
     @property
     def manual_rank_level(self):
