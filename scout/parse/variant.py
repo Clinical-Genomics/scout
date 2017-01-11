@@ -51,15 +51,16 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
 
     variant['reference'] = variant_dict['REF']
     variant['alternative'] = variant_dict['ALT']
-    variant['quality'] = float(variant_dict['QUAL'])
+    variant['quality'] = (None if variant_dict['QUAL'] == '.' else
+                          float(variant_dict['QUAL']))
     variant['filters'] = variant_dict['FILTER'].split(';')
     variant['variant_type'] = variant_type
-    
+
     variant['dbsnp_id'] = None
     dbsnp_id = variant_dict['ID']
     if dbsnp_id != '.':
         variant['dbsnp_id'] = dbsnp_id
-    
+
     # This is the id of other position in translocations
     variant['mate_id'] = None
 
@@ -67,7 +68,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['chromosome'] = variant_dict['CHROM']
     # position = start
     variant['position'] = int(variant_dict['POS'])
-    
+
     svtype = variant_dict['info_dict'].get('SVTYPE')
     if svtype:
         svtype = svtype[0].lower()
@@ -75,26 +76,26 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     svlen = variant_dict['info_dict'].get('SVLEN')
     if svlen:
         svlen = svlen[0]
-    
+
     end = variant_dict['info_dict'].get('END')
     if end:
         end = end[0]
-    
+
     mate_id = variant_dict['info_dict'].get('MATEID')
     if mate_id:
         mate_id = mate_id[0]
-    
+
     coordinates = parse_coordinates(
-        ref=variant['reference'], 
+        ref=variant['reference'],
         alt=variant['alternative'],
         position=variant['position'],
-        category=variant['category'], 
-        svtype=svtype, 
-        svlen=svlen, 
+        category=variant['category'],
+        svtype=svtype,
+        svlen=svlen,
         end=end,
         mate_id=mate_id,
     )
-    
+
     variant['sub_category'] = coordinates['sub_category']
     variant['mate_id'] = coordinates['mate_id']
     variant['end'] = coordinates['end']
@@ -125,7 +126,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
 
     # Add the clinsig prediction
     variant['clnsig'] = parse_clnsig(variant_dict)
-    
+
     ################# Add the gene and transcript information #################
 
     variant['genes'] = parse_genes(variant_dict)
@@ -155,11 +156,10 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['conservation'] = parse_conservations(variant_dict)
 
     variant['callers'] = parse_callers(variant_dict)
-    
+
     rank_result = variant_dict['info_dict'].get('RankResult')
     if rank_result:
         results = [int(i) for i in rank_result[0].split('|')]
         variant['rank_result'] = dict(zip(rank_results_header, results))
-    
 
     return variant
