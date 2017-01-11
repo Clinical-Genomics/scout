@@ -591,7 +591,7 @@ def email_sanger(institute_id, case_id, variant_id):
 
     recipients = institute.sanger_recipients
     if len(recipients) == 0:
-        flash('No sanger recipients added to the institute.')
+        flash('No sanger recipients added to the institute.', 'info')
         return abort(403)
 
     # build variant page URL

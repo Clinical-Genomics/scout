@@ -70,12 +70,12 @@ def authorized(oauth_response):
     if oauth_response is None:
         flash("Access denied: reason={} error={}"
               .format(request.args['error_reason'],
-                      request.args['error_description']))
+                      request.args['error_description']), 'danger')
         return abort(403)
 
     elif isinstance(oauth_response, OAuthException):
         current_app.logger.warning(oauth_response.message)
-        flash("{} - try again!".format(oauth_response.message))
+        flash("{} - try again!".format(oauth_response.message), 'warning')
         return redirect(url_for('frontend.index'))
 
     # add token to session, do it before validation to be able to fetch
@@ -90,7 +90,7 @@ def authorized(oauth_response):
     try:
         faux_user = Whitelist.objects.get(email=google_data['email'])
     except DoesNotExist:
-        flash('Your email is not on the whitelist, contact an admin.')
+        flash('Your email is not on the whitelist, contact an admin.', 'danger')
         return abort(403)
 
     user_obj = store.getoradd_user(google_data['email'], google_data['name'],

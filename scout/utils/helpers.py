@@ -37,7 +37,7 @@ def validate_user(current_user, institute_id):
 
     is_admin = current_user.has_role('admin')
     if not is_admin and institute not in current_user.institutes:
-        flash('You do not have access to this institute.')
+        flash('You do not have access to this institute.', 'danger')
         return abort(403)
 
     return institute
