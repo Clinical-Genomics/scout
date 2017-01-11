@@ -559,9 +559,11 @@
           {% for gene, term in variant.disease_terms %}
             <tr>
               <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol }}
-                </a>
+                {% for omim_id, omim_link in gene.common.omim_links %}
+                  <a href="{{ omim_link }}">
+                    {{ gene.common.hgnc_symbol }}:{{ omim_id }}
+                  </a>
+                {% endfor %}
               </td>
               <td><a href="{{ term.disease_link }}">{{ term.display_name }}</a></td>
             </tr>

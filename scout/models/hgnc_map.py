@@ -133,6 +133,10 @@ class HgncGene(Document):
                         "%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D")
         return url_template.format(self.ensembl_id)
 
+    @property
+    def omim_links(self):
+        for omim_id in self.omim_ids:
+            yield omim_id, "http://omim.org/gene/{}".format(omim_id)
 
     def __repr__(self):
         return ("HgncGene(hgnc_id={this.hgnc_id},hgnc_symbol={this.hgnc_symbol})".format(this=self))

@@ -27,7 +27,3 @@ class Gene(EmbeddedDocument):
     def genecards_link(self):
         return ("http://www.genecards.org/cgi-bin/carddisp.pl?gene={}"
                 .format(self.hgnc_id))
-
-    @property
-    def omim_link(self):
-        return "http://omim.org/entry/{}".format(self.omim_gene_entry)

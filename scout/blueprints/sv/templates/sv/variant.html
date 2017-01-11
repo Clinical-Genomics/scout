@@ -115,9 +115,6 @@
           <td>
             <a class="btn btn-link form-control" href="https://www.solvebio.com/variant/GRCh37-chr{{ variant.chromosome }}-{{ variant.position }}-{{ variant.end }}-{{ variant.alternative }}" target="_blank">SolveBio</a>
           </td>
-          <td>
-            <a class="btn btn-link form-control" href="http://tools.genes.toronto.edu/" target="_blank">SPANR</a>
-          </td>
         </tr>
       </tbody>
     </table>
@@ -236,17 +233,17 @@
                 </a>
               </td>
               <td>
-                <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{ gene.ensembl_gene_id }}" target="_blank">
-                  {{ gene.ensembl_gene_id }}
+                <a target="_blank" href="{{ gene.common.ensembl_link }}">
+                  {{ gene.common.ensembl_id }}
                 </a>
               </td>
-
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation }}</td>
-
-              <td>{{ gene.description|replace('_', ' ') }}</td>
+              <td>{{ gene.common.description|replace('_', ' ') }}</td>
               <td>
-                <a href="{{ gene.omim_link }}">{{ gene.omim_gene_entry }}</a>
+                {% for omim_id, omim_link in gene.common.omim_links %}
+                  <a href="{{ omim_link }}">{{ omim_id }}</a>
+                {% endfor %}
               </td>
             </tr>
           {% endfor %}
