@@ -124,7 +124,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 start_five_thousand = datetime.now()
 
     except Exception as error:
-        logger.info("Deleting inserted variants")
+        logger.warning("Deleting inserted variants")
         delete_variants(adapter, case_obj, variant_type)
         raise error
 

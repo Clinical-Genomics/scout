@@ -58,7 +58,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     try:
         load_scout(adapter, config_data, ped=ped, update=update)
     except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-        click.echo(error)
+        log.exception(error)
         context.abort()
 
 
