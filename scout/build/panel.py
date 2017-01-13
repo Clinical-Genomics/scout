@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.models.case.gene_list import (GenePanel, Gene, GeneMeta)
+from scout.models.case.gene_list import GenePanel, Gene
 
 logger = logging.getLogger(__name__)
 
@@ -9,18 +9,19 @@ logger = logging.getLogger(__name__)
 def get_hgnc_id(gene_info, adapter):
     """Get the hgnc id for a gene
 
-        The proprity order will be
-        1. if there is a hgnc id this one will be choosen
-        2. if the hgnc symbol matches a genes proper hgnc symbol
-        3. if the symbol ony matches aliases on several genes one will be
-           choosen at random
+    The proprity order will be:
 
-        Args:
-            gene_info(dict)
-            adapter
+    1. if there is a hgnc id this one will be choosen
+    2. if the hgnc symbol matches a genes proper hgnc symbol
+    3. if the symbol ony matches aliases on several genes one will be
+       choosen at random
 
-        Returns:
-            true_id(int)
+    Args:
+        gene_info(dict)
+        adapter
+
+    Returns:
+        true_id(int)
     """
     hgnc_id = gene_info.get('hgnc_id')
     hgnc_symbol = gene_info.get('hgnc_symbol')
@@ -46,7 +47,10 @@ def build_gene(gene_info, adapter):
     hgnc_id = get_hgnc_id(gene_info, adapter)
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
 
-    gene_obj = Gene(hgnc_gene=hgnc_gene)
+    gene_obj = Gene(
+        hgnc_id=hgnc_id,
+        hgnc_symbol=hgnc_gene.hgnc_symbol,
+    )
 
     if gene_info['disease_associated_transcripts']:
         gene_obj.disease_associated_transcripts = gene_info['disease_associated_transcripts']
@@ -83,11 +87,7 @@ def build_panel(panel_info, adapter):
     panel_obj.display_name = panel_info['display_name']
 
     for gene_info in panel_info['genes']:
-        hgnc_symbol = gene_info['hgnc_symbol']
         gene_obj = build_gene(gene_info, adapter)
-        panel_obj.gene_objects[hgnc_symbol] = gene_obj
-        new_meta = GeneMeta(hgnc_id=gene_obj.hgnc_gene.hgnc_id,
-                            symbol=hgnc_symbol)
-        panel_obj.genes.append(new_meta)
+        panel_obj.genes[gene_obj.hgnc_id] = gene_obj
 
     return panel_obj

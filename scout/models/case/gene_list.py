@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 from mongoengine import (Document, ListField, StringField, FloatField,
                          DateTimeField, BooleanField, EmbeddedDocument,
-                         EmbeddedDocumentField, MapField, ReferenceField,
-                         IntField)
-
-from scout.models.hgnc_map import HgncGene
+                         EmbeddedDocumentField, MapField, IntField)
 
 
 class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
 
-    hgnc_gene = ReferenceField(HgncGene, required=True)
+    hgnc_id = IntField()
+    hgnc_symbol = StringField()
 
     disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
@@ -19,15 +17,7 @@ class Gene(EmbeddedDocument):
     database_entry_version = StringField()
 
     def __unicode__(self):
-        return "{this.hgnc_gene.hgnc_symbol}".format(this=self)
-
-
-class GeneMeta(EmbeddedDocument):
-    hgnc_id = IntField()
-    symbol = StringField()
-
-    def __unicode__(self):
-        return "{this.hgnc_id}: {this.symbol}".format(this=self)
+        return "{this.hgnc_symbol}".format(this=self)
 
 
 class GenePanel(Document):
@@ -40,19 +30,16 @@ class GenePanel(Document):
     date = DateTimeField(required=True)
     display_name = StringField()
     # This is a dictionary with gene objects
-    gene_objects = MapField(EmbeddedDocumentField(Gene))
-    # {'ADK':Gene}
-    genes = ListField(EmbeddedDocumentField(GeneMeta))
+    genes = MapField(EmbeddedDocumentField(Gene))
 
     @property
     def gene_ids(self):
-        for gene in self.genes:
-            yield gene.hgnc_id
+        return self.genes.keys()
 
     @property
     def gene_symbols(self):
-        for gene in self.genes:
-            yield gene.symbol
+        for gene in self.genes.values():
+            yield gene.hgnc_symbol
 
     @property
     def name_and_version(self):
