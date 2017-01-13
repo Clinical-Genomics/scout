@@ -168,7 +168,7 @@
         <li class="list-group-item">
           {{ freq_name }}
           {% if value %}
-            <span class="badge">{{ value }}</span>
+            <span class="badge">{{ value|human_decimal }}</span>
           {% else %}
             <span class="pull-right">-</span>
           {% endif %}
