@@ -33,17 +33,17 @@ def check_panels(adapter, panels, default_panels=None):
     return panels_exist
 
 
-def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None, start=None,
-                end=None):
-    """Load all variants in a region defined by a hgnc id
+def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
+                start=None, end=None):
+    """Load all variants in a region defined by a HGNC id
 
-        Args:
-            adapter(MongoAdapter)
-            case_id(str): Case id
-            hgnc_id(int): If all variants from a gene should be uploaded
-            chrom(str): If variants from coordinates should be uploaded
-            start(int): Start position for region
-            end(int): Stop position for region
+    Args:
+        adapter (MongoAdapter)
+        case_id (str): Case id
+        hgnc_id (int): If all variants from a gene should be uploaded
+        chrom (str): If variants from coordinates should be uploaded
+        start (int): Start position for region
+        end (int): Stop position for region
     """
     if hgnc_id:
         gene_obj = adapter.hgnc_gene(hgnc_id)
@@ -60,29 +60,35 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None, start=None,
     log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
              " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
 
-    load_variants(adapter=adapter, variant_file=config['vcf_snv'],
+    load_variants(adapter=adapter, variant_file=case_obj.vcf_files['vcf_snv'],
                   case_obj=case_obj, variant_type='clinical', category='snv',
                   chrom=chrom, start=start, end=end)
 
-    if config.get('vcf_sv'):
-        log.info("Load clinical SV variants for case: {0} region: chr {1}, start"\
-             " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
-        load_variants(adapter=adapter, variant_file=config['vcf_sv_clinical'],
+    vcf_sv_file = case_obj.vcf_files.get('vcf_sv')
+    if vcf_sv_file:
+        log.info("Load clinical SV variants for case: {0} region: chr {1}, "
+                 "start {2}, end {3}".format(case_obj.case_id, chrom, start,
+                                             end))
+        load_variants(adapter=adapter, variant_file=vcf_sv_file,
                       case_obj=case_obj, variant_type='clinical',
                       category='sv', chrom=chrom, start=start, end=end)
 
     if case_obj.is_research:
-        log.info("Load research SNV variants for case: {0} region: chr {1}, start"\
-             " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
-        load_variants(adapter=adapter, variant_file=config['vcf_snv_research'],
-                      case_obj=case_obj, variant_type='research', category='snv',
-                      chrom=chrom, start=start, end=end)
+        log.info("Load research SNV variants for case: {0} region: chr {1}, "
+                 "start {2}, end {3}".format(case_obj.case_id, chrom, start,
+                                             end))
+        vcf_snv_research = case_obj.vcf_files['vcf_snv_research']
+        load_variants(adapter=adapter, variant_file=vcf_snv_research,
+                      case_obj=case_obj, variant_type='research',
+                      category='snv', chrom=chrom, start=start, end=end)
 
-        if config.get('vcf_sv_research'):
-            log.info("Load research SV variants for case: {0} region: chr {1}, start"\
-                 " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
-            load_variants(adapter=adapter, variant_file=config['vcf_sv_research'],
-                          case_obj=case_obj, variant_type='research',
+        vcf_sv_research = case_obj.vcf_files['vcf_sv_research']
+        if vcf_sv_research:
+            log.info("Load research SV variants for case: {0} region: chr {1},"
+                     " start {2}, end {3}".format(case_obj.case_id, chrom,
+                                                  start, end))
+            load_variants(adapter=adapter, case_obj=case_obj,
+                          variant_type='research', variant_file=vcf_sv_research,
                           category='sv', chrom=chrom, start=start, end=end)
 
 
