@@ -62,7 +62,7 @@
     <div class="col-xs-12">{{ rankscore_panel() }}</div>
   </div>
   <div class="row">
-    <div class="col-xs-12">{{ overlapping_svs() }}</div>
+    <div class="col-xs-12">{{ overlapping_panel() }}</div>
   </div>
   <div class="row">
     <div class="col-xs-12">
@@ -671,7 +671,7 @@
   </div>
 {% endmacro %}
 
-{% macro overlapping_svs() %}
+{% macro overlapping_panel() %}
   <div class="panel panel-default">
     <div class="panel-heading">Overlapping SVs</div>
     <div class="table-responsive">
@@ -687,14 +687,14 @@
           </tr>
         </thead>
         <tbody>
-          {% for sv_variant in sv_compounds %}
+          {% for sv_variant in overlapping_svs %}
             <tr>
               <td>
                 <a href="{{url_for('sv.variant',
                                    institute_id=institute_id,
                                    case_id=case_id,
                                    variant_id=sv_variant.document_id)}}">
-                  {{ sv_variant.db_snp_ids|join(', ') }}
+                  {{ sv_variant.display_name|truncate(20, True) }}
                 </a>
               </td>
               <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>

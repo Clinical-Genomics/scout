@@ -250,19 +250,18 @@ class VariantHandler(object):
 
     def load_variant(self, variant_obj):
         """Load a variant object"""
-        logger.debug("Loading variant %s into database", variant_obj['variant_id'])
+        logger.debug("Loading variant %s into database",
+                     variant_obj['variant_id'])
         if Variant.objects(document_id=variant_obj.document_id):
-            raise IntegrityError("Variant {} already exists in database".format(variant_obj.display_name))
+            raise IntegrityError("Variant {} already exists in database"
+                                 .format(variant_obj.display_name))
         variant_obj.save()
         logger.debug("Variant saved")
 
     def overlapping(self, variant_obj):
         category = 'sv' if variant_obj.category == 'snv' else 'snv'
-        first_gene = variant_obj.genes[0]
         query = {'variant_type': variant_obj.variant_type,
-                 'chrom': variant_obj.chromosome,
-                 'start': first_gene.common.start,
-                 'end': first_gene.common.end}
+                 'hgnc_symbols': variant_obj.hgnc_symbols}
         variants, _ = self.variants(variant_obj.case_id, category=category,
                                     nr_of_variants=-1, query=query)
         return variants
