@@ -258,10 +258,11 @@ class VariantHandler(object):
 
     def overlapping(self, variant_obj):
         category = 'sv' if variant_obj.category == 'snv' else 'snv'
+        first_gene = variant_obj.genes[0]
         query = {'variant_type': variant_obj.variant_type,
                  'chrom': variant_obj.chromosome,
-                 'start': variant_obj.position,
-                 'end': variant_obj.end}
+                 'start': first_gene.common.start,
+                 'end': first_gene.common.end}
         variants, _ = self.variants(variant_obj.case_id, category=category,
                                     nr_of_variants=-1, query=query)
         return variants
