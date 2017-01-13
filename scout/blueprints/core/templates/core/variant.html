@@ -679,6 +679,7 @@
         <thead>
           <tr>
             <th>Variant</th>
+            <th>Gene</th>
             <th>Combined score</th>
             <th>Rank score</th>
             <th>Length</th>
@@ -697,6 +698,7 @@
                   {{ sv_variant.display_name|truncate(20, True) }}
                 </a>
               </td>
+              <td>{{ sv_variant.hgnc_symbols|join(', ') }}</td>
               <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.length }}</td>

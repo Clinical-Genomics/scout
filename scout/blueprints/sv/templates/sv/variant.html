@@ -128,6 +128,7 @@
       <thead>
         <tr>
           <th>Variant</th>
+          <th>Gene</th>
           <th>Combined score</th>
           <th>Rank score</th>
           <th>Region</th>
@@ -145,6 +146,7 @@
                 {{ variant.display_name|truncate(20, True) }}
               </a>
             </td>
+            <td>{{ variant.hgnc_symbols|join(', ') }}</td>
             <td class="text-right">{{ rank_score + variant.rank_score }}</td>
             <td class="text-right">{{ variant.rank_score }}</td>
             <td>{{ variant.region_annotations|join(',') }}</td>
