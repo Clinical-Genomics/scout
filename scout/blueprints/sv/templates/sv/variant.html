@@ -168,9 +168,9 @@
         <li class="list-group-item">
           {{ freq_name }}
           {% if value %}
-            <span class="badge">{{ variant.thousand_genomes_frequency }}</span>
+            <span class="badge">{{ value }}</span>
           {% else %}
-            <span class="pull-left">-</span>
+            <span class="pull-right">-</span>
           {% endif %}
         </li>
       {% endfor %}
