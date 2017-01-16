@@ -440,10 +440,10 @@
       <li class="list-group-item">
         <div class="row">
           <div class="col-xs-4">
-            {{ variant.local_obs_old|default('N/A') }} <small>obs.</small>
+            {{ variant.local_obs_old or 'N/A' }} <small>obs.</small>
           </div>
           <div class="col-xs-4">
-            {{ variant.local_obs_hom_old|default('N/A') }} <small>homo.</small>
+            {{ variant.local_obs_hom_old or 'N/A' }} <small>homo.</small>
           </div>
           <div class="col-xs-4">
             {{ variant.local_obs_total_old }} <small>tot.</small>
