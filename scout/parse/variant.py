@@ -142,8 +142,12 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
 
     variant['frequencies'] = parse_frequencies(variant_dict)
     # parse out old local observation count
-    variant['local_obs_old'] = variant_dict['info_dict'].get('Obs')
-    variant['local_obs_hom_old'] = variant_dict['info_dict'].get('Hom')
+    variant['local_obs_old'] = (int(variant_dict['info_dict'].get('Obs')[0])
+                                if variant_dict['info_dict'].get('Obs') else
+                                None)
+    variant['local_obs_hom_old'] = (int(variant_dict['info_dict'].get('Hom')[0])
+                                    if variant_dict['info_dict'].get('Hom') else
+                                    None)
 
     # Add the severity predictions
     cadd = variant_dict['info_dict'].get('CADD')
