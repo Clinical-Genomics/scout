@@ -101,6 +101,10 @@ def build_variant(variant, institute):
     variant_obj['max_thousand_genomes_frequency'] = frequencies.get('thousand_g_max')
     variant_obj['max_exac_frequency'] = frequencies.get('exac_max')
 
+    # add the local observation counts from the old archive
+    variant_obj['local_obs_old'] = variant.get('local_obs_old')
+    variant_obj['local_obs_hom_old'] = variant.get('local_obs_hom_old')
+
     # Add the severity predictors
 
     variant_obj['cadd_score'] = variant.get('cadd_score')

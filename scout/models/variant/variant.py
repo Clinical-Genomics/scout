@@ -118,6 +118,9 @@ class Variant(Document):
     max_thousand_genomes_frequency = FloatField()
     max_exac_frequency = FloatField()
     local_frequency = FloatField()
+    local_obs_old = IntField()
+    local_obs_hom_old = IntField()
+    local_obs_total_old = IntField(default=638)
     # Predicted deleteriousness:
     cadd_score = FloatField()
     clnsig = ListField(EmbeddedDocumentField(Clinsig))
