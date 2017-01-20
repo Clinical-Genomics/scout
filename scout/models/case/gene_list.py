@@ -2,7 +2,7 @@
 from mongoengine import (Document, ListField, StringField, FloatField,
                          DateTimeField, BooleanField, EmbeddedDocument,
                          EmbeddedDocumentField, MapField, ReferenceField,
-                         IntField)
+                         IntField, SortedListField)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -42,7 +42,7 @@ class GenePanel(Document):
     # This is a dictionary with gene objects
     gene_objects = MapField(EmbeddedDocumentField(Gene))
     # {'ADK':Gene}
-    genes = ListField(EmbeddedDocumentField(GeneMeta))
+    genes = SortedListField(EmbeddedDocumentField(GeneMeta), ordering='symbol')
 
     @property
     def gene_ids(self):
