@@ -137,7 +137,7 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
             Returns:
                 hgnc_symbol(str)
         """
-        result = HgncGene.objects(aliases__contains=hgnc_alias)
+        result = HgncGene.objects(aliases=hgnc_alias)
         if result:
             for gene in result:
                 return gene.hgnc_symbol

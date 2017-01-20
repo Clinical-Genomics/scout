@@ -442,9 +442,9 @@ def variants(institute_id, case_id, variant_type):
     else:
         # get HGNC symbols from selected gene panels
         gene_symbols = set(query['hgnc_symbols'])
-        for panel_id in query['gene_panels']:
-            panel_obj = store.gene_panel(panel_id).only('genes').first()
-            gene_symbols.update(panel_obj.gene_symbols)
+        for gene_panel in case_model.gene_panels:
+            if gene_panel.panel_id in query['gene_panels']:
+                gene_symbols.update(gene_panel.gene_symbols)
         query['hgnc_symbols'] = query['hgnc_symbols'] + list(gene_symbols)
 
     # fetch list of variants
