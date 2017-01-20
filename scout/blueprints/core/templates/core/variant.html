@@ -656,8 +656,8 @@
 
 {% macro compounds_panel() %}
   <div class="panel panel-default">
-    <div class="panel-heading">Compounds</div>
-    {{ compounds_table(institute_id, case_id, variant.compounds) }}
+    <div class="panel-heading">Compounds (top 20)</div>
+    {{ compounds_table(institute_id, case_id, variant.compounds[:20]) }}
   </div>
 {% endmacro %}
 
