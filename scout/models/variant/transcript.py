@@ -54,6 +54,17 @@ class Transcript(EmbeddedDocument):
     is_canonical = BooleanField()
 
     @property
+    def refseq_ids_string(self):
+        return ', '.join(self.refseq_ids)
+
+    def stringify(self):
+        """Generate amino acid change as a string."""
+        return ("{this.transcript_id}:"
+                "exon{this.absolute_exon}:{this.coding_sequence_name}:"
+                "{this.protein_sequence_name}"
+                .format(this=self))
+
+    @property
     def absolute_exon(self):
         return (self.exon or '').rpartition('/')[0]
 
