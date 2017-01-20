@@ -599,37 +599,35 @@ def email_sanger(institute_id, case_id, variant_id):
                       case_id=case_id, variant_id=variant_id)
     variant_url = os.path.join(request.host_url, rel_url)
     hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
-    functions = ["<li>{}</li>".format(function) for function in
-                 variant_model.protein_changes]
     gtcalls = ["<li>{}: {}</li>".format(individual.display_name,
                                         individual.genotype_call)
                for individual in variant_model.samples]
 
     html = """
-      <p>Case {case_id}: {variant_id}</p>
-      <p>Scout link: {url}</p>
-      <p>HGNC symbol: {hgnc_symbol}</p>
-      <p>Amino acid change(s): <br> <ul>{functions}</ul></p><br>
-      <p>GT-call: <br> <ul>{gtcalls}</ul></p><br>
-      <p>Ordered by: {name}</p>
-    """.format(
-      case_id=case_id,
-      url=variant_url,
-      variant_id=variant_model.display_name,
-      hgnc_symbol=hgnc_symbol,
-      functions=''.join(functions),
-      gtcalls=''.join(gtcalls),
-      name=current_user.name.encode('utf-8')
-    )
+      <ul">
+        <li>
+          <strong>Case {case_id}</strong>: <a href="{url}">{variant_id}</a>
+        </li>
+        <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
 
-    kwargs = dict(
-      subject="SCOUT: Sanger sequencing of %s" % hgnc_symbol,
-      html=html,
-      sender=current_app.config['MAIL_USERNAME'],
-      recipients=recipients,
-      # cc the sender of the email for confirmation
-      cc=[current_user.email]
-    )
+        <li><strong>GT call</strong></li>
+        {gtcalls}
+
+        <li><strong>Ordered by</strong>: {name}</li>
+      </ul>
+    """.format(case_id=case_id,
+               url=variant_url,
+               variant_id=variant_model.display_name,
+               hgnc_symbol=hgnc_symbol,
+               gtcalls=''.join(gtcalls),
+               name=current_user.name.encode('utf-8'))
+
+    kwargs = dict(subject="SCOUT: Sanger sequencing of %s" % hgnc_symbol,
+                  html=html,
+                  sender=current_app.config['MAIL_USERNAME'],
+                  recipients=recipients,
+                  # cc the sender of the email for confirmation
+                  cc=[current_user.email])
 
     # compose and send the email message
     msg = Message(**kwargs)
