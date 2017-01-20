@@ -94,8 +94,8 @@
           </td>
           <td class='text-right'>{{ compound.combined_score }}</td>
           <td class='text-right'>{{ compound.variant_obj.rank_score }}</td>
-          <td>{{ compound.variant_obj.region_annotations|join(',') }}</td>
-          <td>{{ compound.variant_obj.functional_annotations|join(',') }}</td>
+          <td>{{ compound.variant_obj.region_annotations|join(', ') }}</td>
+          <td>{{ compound.variant_obj.functional_annotations|join(', ') }}</td>
         </tr>
       {% endfor %}
     </tbody>

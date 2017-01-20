@@ -243,13 +243,12 @@ class Variant(Document):
     @property
     def region_annotations(self):
         """Returns a list with region annotation(s)."""
-        region_annotations = []
         if len(self.genes) == 1:
             return [gene.region_annotation for gene in self.genes]
         else:
-            for gene in self.genes:
-                region_annotations.append(':'.join([gene.hgnc_symbol, gene.region_annotation]))
-            return region_annotations
+            annotations = [("{gene.hgnc_symbol}:{gene.region_annotation}"
+                            .format(gene=gene)) for gene in self.genes]
+            return annotations
 
     @property
     def sift_predictions(self):
