@@ -598,8 +598,6 @@ def email_sanger(institute_id, case_id, variant_id):
     rel_url = url_for('.variant', institute_id=institute_id,
                       case_id=case_id, variant_id=variant_id)
     variant_url = os.path.join(request.host_url, rel_url)
-    gene_lists_str = ', '.join(variant_model.gene_lists)
-
     hgnc_symbol = ', '.join(variant_model.hgnc_symbols)
     functions = ["<li>{}</li>".format(function) for function in
                  variant_model.protein_changes]
@@ -611,8 +609,6 @@ def email_sanger(institute_id, case_id, variant_id):
       <p>Case {case_id}: {variant_id}</p>
       <p>Scout link: {url}</p>
       <p>HGNC symbol: {hgnc_symbol}</p>
-      <p>Database: {databases}</p>
-      <p>Chr position: {chromosome_position}</p>
       <p>Amino acid change(s): <br> <ul>{functions}</ul></p><br>
       <p>GT-call: <br> <ul>{gtcalls}</ul></p><br>
       <p>Ordered by: {name}</p>
@@ -621,8 +617,6 @@ def email_sanger(institute_id, case_id, variant_id):
       url=variant_url,
       variant_id=variant_model.display_name,
       hgnc_symbol=hgnc_symbol,
-      databases=gene_lists_str,
-      chromosome_position=variant_model.display_name,
       functions=''.join(functions),
       gtcalls=''.join(gtcalls),
       name=current_user.name.encode('utf-8')
