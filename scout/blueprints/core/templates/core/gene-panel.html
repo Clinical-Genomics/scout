@@ -99,7 +99,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">Included genes (coverage)</div>
           <ul class="list-group">
-            {% for gene in panel.genes %}
+            {% for gene in panel.genes|sort(attribute='symbol') %}
               <li class="list-group-item">
                 <a href="{{ url_for('report.gene', gene_id=gene.hgnc_id, **covlink_kwargs) }}" target="_blank">
                   {{ gene.symbol }}
