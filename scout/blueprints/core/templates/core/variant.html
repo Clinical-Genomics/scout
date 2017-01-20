@@ -360,7 +360,7 @@
                 {{ hgnc_tx.hgnc_symbol }}
               </a>
               {% if transcript.is_canonical %}
-                <span class="badge pull-right" title="cannonical">C</span>
+                <span class="badge pull-right" title="canonical">C</span>
               {% endif %}
             </td>
             <td>{{ hgnc_tx.refseq_id }}</td>
@@ -581,7 +581,7 @@
                   </a>
                 {% endfor %}
               </td>
-              <td><a href="{{ term.disease_link }}">{{ term.display_name }}</a></td>
+              <td><a href="{{ term.disease_link }}" target="_blank">{{ term.display_name }}</a></td>
             </tr>
           {% else %}
             <tr>
