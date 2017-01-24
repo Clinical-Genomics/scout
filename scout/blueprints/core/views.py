@@ -104,31 +104,31 @@ def case(institute_id, case_id):
     causatives = (variant for variant in store.check_causatives(case_model)
                   if variant not in case_model.causatives)
 
-    # archive date
-    today = datetime.date.today()
-    hk_run = api.runs(case_name=case_model.case_id,
-                      run_date=case_model.analysis_date).first()
-    if hk_run:
-        archive_date = hk_run.will_cleanup_at.date()
-        diff_days = (archive_date - today).days
-        if diff_days < 0:
-            # case already to be archived!
-            status = 'past'
-        elif diff_days <= 10:
-            # case is soon to be archived (0-10 days)
-            status = 'close'
-        elif diff_days <= 30:
-            # case is scheduled for archive (11-30 days)
-            status = 'before'
-        else:
-            # case is not to be archived soon (>30 days)
-            status = 'long'
-        archive = {
-            'date': archive_date,
-            'status': status
-        }
-    else:
-        archive = {}
+    # # archive date
+    # today = datetime.date.today()
+    # hk_run = api.runs(case_name=case_model.case_id,
+    #                   run_date=case_model.analysis_date).first()
+    # if hk_run:
+    #     archive_date = hk_run.will_cleanup_at.date()
+    #     diff_days = (archive_date - today).days
+    #     if diff_days < 0:
+    #         # case already to be archived!
+    #         status = 'past'
+    #     elif diff_days <= 10:
+    #         # case is soon to be archived (0-10 days)
+    #         status = 'close'
+    #     elif diff_days <= 30:
+    #         # case is scheduled for archive (11-30 days)
+    #         status = 'before'
+    #     else:
+    #         # case is not to be archived soon (>30 days)
+    #         status = 'long'
+    #     archive = {
+    #         'date': archive_date,
+    #         'status': status
+    #     }
+    # else:
+    #     archive = {}
 
     return dict(institute=inst_mod, case=case_model,
                 statuses=Case.status.choices, case_comments=case_comments,
@@ -136,7 +136,7 @@ def case(institute_id, case_id):
                 case_id=case_id, collaborators=collab_ids,
                 hpo_groups=PHENOTYPE_GROUPS,
                 hpo_ids=request.args.getlist('hpo_id'),
-                causatives=causatives, archive=archive)
+                causatives=causatives)
 
 
 @core.route('/<institute_id>/<case_id>/panels/<panel_id>')
