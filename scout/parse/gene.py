@@ -60,7 +60,7 @@ def parse_genes(variant):
                     most_severe_polyphen = transcript['polyphen_prediction']
 
         gene = {
-            'transcripts': transcripts,
+            'transcripts': gene_transcripts,
             'most_severe_transcript': most_severe_transcript,
             'most_severe_consequence': most_severe_consequence,
             'most_severe_sift': most_severe_sift,

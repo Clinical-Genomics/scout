@@ -10,6 +10,7 @@ from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
+from pprint import pprint as pp
 
 def delete_variants(adapter, case_obj, variant_type='clinical'):
     """Delete all variants for a case of a certain variant type

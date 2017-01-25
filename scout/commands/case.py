@@ -24,14 +24,23 @@ log = logging.getLogger(__name__)
 def case(context, vcf, vcf_sv, owner, ped, update, config):
     """Load a case into the database"""
     if config is None and ped is None:
-        click.echo("you have to provide either config or ped file")
+        click.echo("You have to provide either config or ped file")
         context.abort()
 
     config_data = yaml.load(config) if config else {}
 
     # check if the analysis is from a newer analysis
     adapter = context.obj['adapter']
+    
+    if not 'owner' in config_data:
+        if not owner:
+            click.echo("You have to specify the owner of the case")
+            context.abort()
+        else:
+            config_data['owner'] = owner
+    
     existing_case = adapter.case(config_data['owner'], config_data['family'])
+    
     if existing_case:
         new_analysisdate = config_data.get('analysis_date')
         if new_analysisdate and new_analysisdate > existing_case.analysis_date:
