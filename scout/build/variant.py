@@ -2,7 +2,6 @@ from scout.models import Variant
 
 from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
-
 def build_variant(variant, institute):
     """Build a mongoengine Variant based on parsed information
 
