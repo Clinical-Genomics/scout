@@ -49,9 +49,11 @@ def parse_hpo_disease(hpo_line):
     
     hpo_info['source'] = disease[0]
     hpo_info['disease_nr'] = int(disease[1])
-    hpo_info['hgnc_symbol'] = hpo_line[1]
-    hpo_info['hpo_id'] = hpo_line[3]
-    hpo_info['description'] = hpo_line[4]
+    if len(hpo_line) >= 3:
+        hpo_info['hgnc_symbol'] = hpo_line[2]
+    else:
+        hpo_info['hgnc_symbol'] = None
+    
     
     return hpo_info
 
@@ -91,22 +93,25 @@ def parse_hpo_diseases(hpo_lines):
     logger.info("Parsing hpo diseases...")
     for index, line in enumerate(hpo_lines):
         if index > 0:
-            mim_info = parse_hpo_disease(line)
-            if mim_info:
-                disease_nr = mim_info['disease_nr']
-                hgnc_symbol = mim_info['hgnc_symbol']
-                source = mim_info['source']
-                hpo_term = mim_info['hpo_id']
+            disease_info = parse_hpo_disease(line)
+            if disease_info:
+                disease_nr = disease_info['disease_nr']
+                hgnc_symbol = disease_info['hgnc_symbol']
+                source = disease_info['source']
+                disease_id = "{0}:{1}".format(source, disease_nr)
                 
-                if disease_nr in diseases:
-                    diseases[disease_nr]['hgnc_symbols'].add(hgnc_symbol)
-                    diseases[disease_nr]['hpo_terms'].add(hpo_term)
+                if disease_id in diseases:
+                    if hgnc_symbol:
+                        diseases[disease_id]['hgnc_symbols'].add(hgnc_symbol)
                 else:
-                    diseases[disease_nr] = {
+                    if hgnc_symbol:
+                        hgnc_symbols = set([hgnc_symbol])
+                    else:
+                        hgnc_symbols = set()
+                    diseases[disease_id] = {
                         'disease_nr': disease_nr,
                         'source': source,
-                        'hgnc_symbols': set([hgnc_symbol]),
-                        'hpo_terms': set([hpo_term]),
+                        'hgnc_symbols': hgnc_symbols,
                     }
 
     logger.info("Parsing done.")
