@@ -64,13 +64,13 @@ def load_disease_terms(adapter, hpo_disease_lines, gene_objs):
             hpo_lines(iterable(str))
     """
 
-    mim_terms = parse_hpo_diseases(hpo_disease_lines)
+    disease_terms = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()
 
     logger.info("Loading the hpo disease...")
-    for nr_diseases, disease_id in enumerate(mim_terms):
-        disease_info = mim_terms[disease_id]
+    for nr_diseases, disease_id in enumerate(disease_terms):
+        disease_info = disease_terms[disease_id]
         disease_obj = build_disease_term(disease_info)
         
         hgnc_ids = []

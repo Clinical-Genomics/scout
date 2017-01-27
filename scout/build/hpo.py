@@ -21,7 +21,6 @@ def build_disease_term(disease_info):
     disease_obj = DiseaseTerm(
         disease_id = disease_info['disease_nr'],
         source = disease_info['source'],
-        hpo_terms = list(disease_info['hpo_terms'])
     )
 
     return disease_obj

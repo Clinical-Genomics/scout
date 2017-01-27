@@ -66,3 +66,16 @@ def test_parse_diseases_lines():
 
     assert diseases["OMIM:139500"]['source'] == 'OMIM'
     assert diseases["OMIM:139500"]['hgnc_symbols'] == set([])
+
+def test_parse_diseases(hpo_disease_handle):
+    ## GIVEN a iterable of disease lines
+    ## WHEN parsing the diseases
+    diseases = parse_hpo_diseases(hpo_disease_handle)
+    ## THEN assert that the diseases are parsed correct
+    for disease_id in diseases:
+        source = disease_id.split(':')[0]
+        disease_nr = int(disease_id.split(':')[1])
+        
+        disease_term = diseases[disease_id]
+        assert disease_term['source'] == source
+        assert disease_term['disease_nr'] == disease_nr
