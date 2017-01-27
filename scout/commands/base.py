@@ -20,7 +20,6 @@ from scout.commands.view import view as view_command
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
-
 @click.group()
 @click.option('-l', '--logfile',
               type=click.Path(exists=False),
