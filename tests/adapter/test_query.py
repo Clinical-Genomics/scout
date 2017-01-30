@@ -232,7 +232,7 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     index = 0
     for variant in result:
         index += 1
-    assert index == 0
+    assert index == 1
 
     # test function
     result = populated_database.overlapping(sv_one)
