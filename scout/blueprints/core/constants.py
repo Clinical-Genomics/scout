@@ -64,6 +64,6 @@ PHENOTYPE_GROUPS = {
     },
     'HP:0002011': {
         'name': 'Abnormal CNS morphology',
-        'abbr': 'CNS'
+        'abbr': 'MRI'
     }
 }
