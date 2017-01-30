@@ -452,6 +452,8 @@ def variants(institute_id, case_id, variant_type):
                                          nr_of_variants=per_page, skip=skip)
 
     query_dict = {key: request.args.getlist(key) for key in request.args.keys()}
+    if 'skip' in query_dict:
+        del query_dict['skip']
     return dict(variants=all_variants,
                 variants_count=count,
                 case=case_model,
