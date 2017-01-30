@@ -33,7 +33,6 @@ class DiseaseTerm(Document):
     source = StringField(required=True)
 
     genes = ListField(IntField())
-    hpo_terms = ListField(StringField())
 
     meta = {
         'index_background': True,
@@ -52,6 +51,9 @@ class DiseaseTerm(Document):
             link = "http://www.orpha.net/consor/cgi-bin/Disease_Search.php?"\
                    "lng=EN&data_id={0}"
 
+        elif self.source == 'DECIPHER':
+            link = "https://decipher.sanger.ac.uk/syndrome/{0}#overview"
+
         return link.format(self.disease_id)
 
     @property
@@ -60,7 +62,7 @@ class DiseaseTerm(Document):
 
     def __str__(self):
         return ("DiseaseTerm(disease_id={this.disease_id},source={this.source},"
-                "genes={this.genes},hpo_terms={this.hpo_terms})".format(this=self))
+                "genes={this.genes})".format(this=self))
 
 
 class PhenotypeTerm(EmbeddedDocument):
