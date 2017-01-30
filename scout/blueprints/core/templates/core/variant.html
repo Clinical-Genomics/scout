@@ -934,6 +934,18 @@
           <a href="{{ gene.common.expression_atlas_link }}" class="btn btn-default">Expr. Atlas</a>
         </div>
       </div>
+      <div class="panel-body">
+        <form action="http://marrvel.org/search" method="POST" target="_blank">
+          <button type="submit" class="btn btn-default">MARRVEL</button>
+          <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
+          <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol }}">
+          <input type="hidden" name="OMIMdbCheck" value="on">
+          <input type="hidden" name="ExACdbCheck" value="on">
+          <input type="hidden" name="Geno2MPdbCheck" value="on">
+          <input type="hidden" name="DGVdbCheck" value="on">
+          <input type="hidden" name="DECIPHERdbCheck" value="on">
+        </form>
+      </div>
     {% endfor %}
   </div>
 {% endmacro %}
