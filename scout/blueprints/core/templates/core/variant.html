@@ -67,13 +67,13 @@
   <div class="row">
     <div class="col-xs-12">
       <ul class="nav nav-tabs nav-justified">
-        <li class="active"><a href="#genes" data-toggle="tab">Genes</a></li>
-        <li><a href="#transcripts" data-toggle="tab">Transcripts</a></li>
+        <li><a href="#genes" data-toggle="tab">Genes</a></li>
+        <li class="active"><a href="#transcripts" data-toggle="tab">Transcripts</a></li>
         <li><a href="#proteins" data-toggle="tab">Proteins</a></li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane fade in active" id="genes">{{ genes_panel() }}</div>
-        <div class="tab-pane fade" id="transcripts">{{ transcripts_panel() }}</div>
+        <div class="tab-pane fade" id="genes">{{ genes_panel() }}</div>
+        <div class="tab-pane fade in active" id="transcripts">{{ transcripts_panel() }}</div>
         <div class="tab-pane fade" id="proteins">{{ proteins_panel() }}</div>
       </div>
     </div>
@@ -365,7 +365,10 @@
             </td>
             <td>{{ hgnc_tx.refseq_id }}</td>
             {% if transcript.is_exonic() %}
-              <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
+              <td>
+                {{ (transcript.protein_sequence_name or '')|url_decode }}
+                <small class="text-muted pull-right">{{ (transcript.coding_sequence_name or '')|url_decode }}</small>
+              </td>
             {% else %}
               <td>{{ (transcript.coding_sequence_name or '')|url_decode }}</td>
             {% endif %}
