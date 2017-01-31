@@ -28,7 +28,7 @@ Each gene in a gene panel have to be identified with a hgnc id
 ###Notes on entries
 
 **hgnc_id**: This one have to be a valid hgnc id that exists in scout
-**genetic_disease_models** can be anyone in [AR,AR_hom,AD,XR,XD,MT]
+**genetic_disease_models** can be anyone in [AR,AD,XR,XD,MT,X,Y]
 **mosaicism** Any entry here will be interpreted as true
 **reduced_penetrance** Any entry here will be interpreted as true
 **database_entry_version** This should refer to a earlier version of the panel

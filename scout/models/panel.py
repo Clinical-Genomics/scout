@@ -8,10 +8,9 @@ class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
 
-    hgnc_id = IntField()
+    hgnc_id = IntField(required=True)
     symbol = StringField()
 
-    inheritance_models = ListField(StringField())
     disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
     mosaicism = BooleanField(default=False)

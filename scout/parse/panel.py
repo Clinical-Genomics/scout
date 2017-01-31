@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 from scout.utils.handle import get_file_handle
+
+logger = logging.getLogger(__name__)
+
+VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
 
 def parse_gene(gene_line, header):
     """Parse a gene line with information from a panel file
@@ -54,10 +59,14 @@ def parse_gene(gene_line, header):
     elif 'genetic_inheritance_models' in gene_info:
         models = gene_info.get('genetic_inheritance_models')
 
+    gene['inheritance_models'] = []
     if models:
-        gene['inheritance_models'] = models.split(',')
-    else:
-        gene['inheritance_models'] = []
+        for model in models.split(','):
+            if model in VALID_MODELS:
+                gene['inheritance_models'].append(model)
+            else:
+                logger.warning("Invalid model found in gene %s" % gene['hgnc_id'])
+                logger.info("Skipping model %s" % model)
     
     # If a gene is known to be associated with mosaicism this is annotated
     gene['mosaicism'] = True if gene_info.get('mosaicism') else False
