@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.models.case.gene_list import (GenePanel, Gene, GeneMeta)
+from scout.models.panel import (GenePanel, Gene)
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ def build_panel(panel_info, adapter):
         hgnc_symbol = gene_info['hgnc_symbol']
         gene_obj = build_gene(gene_info, adapter)
         panel_obj.gene_objects[hgnc_symbol] = gene_obj
-        new_meta = GeneMeta(hgnc_id=gene_obj.hgnc_gene.hgnc_id,
+        new_meta = Gene(hgnc_id=gene_obj.hgnc_gene.hgnc_id,
                             symbol=hgnc_symbol)
         panel_obj.genes.append(new_meta)
 

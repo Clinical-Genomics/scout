@@ -41,7 +41,7 @@ Flask-Alchy
 Flask-Bootstrap
 
 # utils
-path.py
+path.py>=10.1
 click
 ped-parser>=1.6
 vcf_parser>=1.5.9
