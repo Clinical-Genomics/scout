@@ -4,7 +4,7 @@ language: python
 python:
     - "3.5"
 
-sudo: false
+sudo: required
 
 services:
     - mongodb
