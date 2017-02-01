@@ -259,7 +259,11 @@ class VariantHandler(object):
         logger.debug("Variant saved")
 
     def overlapping(self, variant_obj):
-        category = 'sv' if variant_obj.category == 'snv' else 'snv'
+        """Return ovelapping variants
+        
+            if variant_obj is sv it will return the overlapping snvs and oposite
+        """
+        category = 'snv' if variant_obj.category == 'sv' else 'sv'
         query = {'variant_type': variant_obj.variant_type,
                  'hgnc_symbols': variant_obj.hgnc_symbols}
         variants, _ = self.variants(variant_obj.case_id, category=category,

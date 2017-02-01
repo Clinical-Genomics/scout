@@ -116,7 +116,17 @@ def test_build_range(adapter):
 
 def test_get_overlapping_variant(populated_database, parsed_case):
     """Add a couple of overlapping variants"""
+    
+    ## GIVEN a database with some basic information but no variants
+    
     case_id = parsed_case['case_id']
+
+    assert populated_database.variants(case_id, category='snv')[1] == 0
+    
+    assert populated_database.variants(case_id, category='sv')[1] == 0
+
+    ## WHEN inserting a couple of variants
+    
     institute_id = parsed_case['owner']
     institute_obj = populated_database.institute(institute_id)
     snv_one = Variant(
@@ -137,6 +147,7 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
+        hgnc_symbols=['ADK']
     )
     populated_database.load_variant(snv_one)
 
@@ -158,6 +169,7 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         rank_score=9,
         variant_rank=2,
         institute=institute_obj,
+        hgnc_symbols=['ADK']
     )
     
     populated_database.load_variant(snv_two)
@@ -180,13 +192,16 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
+        hgnc_symbols=['ADK']
     )
     populated_database.load_variant(sv_one)
     
+    ## THEN make sure that the variants where inserted
     result, count = populated_database.variants(case_id, category='snv')
-    
+    # Thow snvs where loaded
     assert count == 2
 
+    #One SV was added
     result, count = populated_database.variants(case_id, category='sv')
     assert count == 1
         
@@ -239,4 +254,4 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     index = 0
     for variant in result:
         index += 1
-    assert index == 1
+    assert index == 2
