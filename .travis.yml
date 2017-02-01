@@ -1,4 +1,4 @@
-
+---
 language: python
 
 python:
@@ -11,13 +11,6 @@ services:
 
 script:
     - py.test tests/
-
-addons:
-    apt:
-        sources:
-            - mongodb-3.4-precise
-        packages:
-            - mongodb-org-server
 
 install:
     - pip install -r requirements.txt .
