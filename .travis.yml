@@ -4,18 +4,20 @@ language: python
 python:
     - "3.5"
 
-sudo: true
+sudo: false
+
 services:
     - mongodb
-addons:
-	apt:
-		sources:
-			- mongodb-3.4-precise
-		packages:
-			- mongodb-org-server
-		
+
 script:
     - py.test tests/
+
+addons:
+    apt:
+        sources:
+            - mongodb-3.4-precise
+        packages:
+            - mongodb-org-server
 
 install:
     - pip install -r requirements.txt .
