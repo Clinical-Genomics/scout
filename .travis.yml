@@ -4,6 +4,14 @@ language: python
 python:
     - "3.5"
 
+# before_script:
+#     - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+#     - echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
+#     - sudo apt-get update
+#     - sudo apt-get install -y mongodb-org=3.2.0 mongodb-org-server=3.2.0 mongodb-org-shell=3.2.0 mongodb-org-mongos=3.2.0 mongodb-org-tools=3.2.2
+#     - sleep 15
+#     - mongo --version
+
 sudo: required
 
 services:
@@ -21,7 +29,7 @@ addons:
 
 install:
     - pip install -r requirements.txt .
-    - mongo --version
+    # - mongo --version
 
 notifications:
     email: false
