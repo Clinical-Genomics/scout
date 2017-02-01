@@ -7,6 +7,10 @@
     box-sizing: border-box;
 }
 
+a:visited {
+	/* faded pink */
+	color: hsl(314, 31%, 61%);
+}
 
 body {
     padding-top: 50px;
@@ -65,16 +69,6 @@ body {
     box-shadow: -1px 2px 2px 0 rgba(0, 0, 0, 0.14),
                 0 1px 5px 0 rgba(0, 0, 0, 0.12),
                 -1px 3px 1px -2px rgba(0, 0, 0, 0.2);
-}
-
-.bg-warning {
-	/* light red */
-	background-color: #f0d8d8;
-}
-
-.bg-success {
-	/* light green */
-	background-color: #dff0d8;
 }
 
 .nav-sidebar {
@@ -197,4 +191,14 @@ th {
 .table-special > tbody > tr {
     background-color: #fff;
     border: 1px solid #ddd;
+}
+
+.bg-warning {
+	/* light red */
+	background-color: #f0d8d8;
+}
+
+.bg-success {
+	/* light green */
+	background-color: #dff0d8 !important;
 }

@@ -91,7 +91,7 @@
 {% endmacro %}
 
 {% macro case_row(case) %}
-  <tr>
+  <tr {% if case.status == 'solved' %} class="bg-success" {% endif %}>
     <td>
       <a href="{{ url_for('core.case', institute_id=case.owner, case_id=case.display_name) }}">
         {{ case.display_name }}
