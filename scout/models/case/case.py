@@ -9,8 +9,10 @@ from mongoengine import (Document, StringField, ListField, ReferenceField,
 
 from . import STATUS
 from .individual import Individual
-from .gene_list import GenePanel
+
+
 from scout.models import PhenotypeTerm
+from scout.models.panel import GenePanel
 
 logger = logging.getLogger(__name__)
 

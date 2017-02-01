@@ -43,14 +43,14 @@ def test_parse_case_default_panels(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
-    assert case_data['default_panels'] == scout_config['default_panels']
+    assert case_data['default_panels'] == scout_config['default_gene_panels']
 
 def test_parse_case_rank_threshold(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
-    assert case_data['rank_score_threshold'] == scout_config['rank_threshold']
+    assert case_data['rank_score_threshold'] == scout_config['rank_score_threshold']
 
 def test_parse_case_vcf_files(scout_config):
     # GIVEN you load sample information from a scout config

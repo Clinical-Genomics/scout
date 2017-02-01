@@ -1,6 +1,6 @@
 import logging
 
-from path import path
+from path import Path
 from ped_parser import FamilyParser
 
 from scout.exceptions import (PedigreeError, ConfigError)
@@ -158,7 +158,7 @@ def parse_case(config, ped=None):
 
     # add the pedigree figure, this is a xml file which is dumped in the db
     if 'madeline' in config:
-        mad_path = path(config['madeline'])
+        mad_path = Path(config['madeline'])
         if not mad_path.exists():
             raise ValueError("madeline path not found: {}".format(mad_path))
         with mad_path.open('r') as in_handle:

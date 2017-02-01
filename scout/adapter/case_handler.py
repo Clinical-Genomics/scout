@@ -4,7 +4,8 @@ import datetime
 
 from mongoengine import (DoesNotExist, Q)
 
-from scout.models import (Case, GenePanel, Institute, User)
+from scout.models import (Case, Institute, User)
+from scout.models.panel import GenePanel
 from scout.exceptions import (IntegrityError)
 
 logger = logging.getLogger(__name__)

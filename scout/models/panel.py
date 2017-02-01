@@ -4,31 +4,28 @@ from mongoengine import (Document, ListField, StringField, FloatField,
                          EmbeddedDocumentField, MapField, ReferenceField,
                          IntField, SortedListField)
 
-from scout.models.hgnc_map import HgncGene
-
-
 class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
 
-    hgnc_gene = ReferenceField(HgncGene, required=True)
+    hgnc_id = IntField(required=True)
+    symbol = StringField()
 
     disease_associated_transcripts = ListField(StringField())
     reduced_penetrance = BooleanField(default=False)
     mosaicism = BooleanField(default=False)
     database_entry_version = StringField()
 
-    def __unicode__(self):
-        return "{this.hgnc_gene.hgnc_symbol}".format(this=self)
-
-
-class GeneMeta(EmbeddedDocument):
-    hgnc_id = IntField()
-    symbol = StringField()
+    ar = BooleanField()
+    ad = BooleanField()
+    mt = BooleanField()
+    xr = BooleanField()
+    xd = BooleanField()
+    x = BooleanField()
+    y = BooleanField()
 
     def __unicode__(self):
         return "{this.hgnc_id}: {this.symbol}".format(this=self)
-
 
 class GenePanel(Document):
 
@@ -39,10 +36,8 @@ class GenePanel(Document):
     version = FloatField(required=True)
     date = DateTimeField(required=True)
     display_name = StringField()
-    # This is a dictionary with gene objects
-    gene_objects = MapField(EmbeddedDocumentField(Gene))
     # {'ADK':Gene}
-    genes = SortedListField(EmbeddedDocumentField(GeneMeta), ordering='symbol')
+    genes = SortedListField(EmbeddedDocumentField(Gene), ordering='symbol')
 
     @property
     def gene_ids(self):

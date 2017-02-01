@@ -17,9 +17,6 @@ class HpoTerm(Document):
 
     meta = {
         'index_background': True,
-        'indexes':[
-            'hpo_id',
-        ]
     }
 
     def __str__(self):
@@ -37,7 +34,6 @@ class DiseaseTerm(Document):
     meta = {
         'index_background': True,
         'indexes': [
-            'disease_id',
             'genes'
         ]
     }

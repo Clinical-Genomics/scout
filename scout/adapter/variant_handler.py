@@ -15,14 +15,23 @@ class VariantHandler(object):
     """Methods to handle variants in the mongo adapter"""
 
     def add_gene_info(self, variant_obj, gene_panels=None):
-        """Add extra information about genes"""
+        """Add extra information about genes from gene panels"""
         gene_panels = gene_panels or []
         hgnc_symbols = set()
+        
+        extra_info = {}
+        for panel_obj in gene_panels:
+            for gene_info in panel_obj.genes:
+                extra_info[gene_info.hgnc_id] = gene_info
+
         for variant_gene in variant_obj.genes:
             hgnc_id = variant_gene.hgnc_id
             hgnc_gene = self.hgnc_gene(hgnc_id)
             hgnc_symbol = None
+            
             variant_gene.common = hgnc_gene
+            variant_gene.panel_info = extra_info.get(hgnc_id)
+            
             if hgnc_gene:
                 hgnc_symbol = hgnc_gene.hgnc_symbol
 
@@ -41,16 +50,11 @@ class VariantHandler(object):
                 for hgnc_transcript in hgnc_gene.transcripts:
                     hgnc_txid = hgnc_transcript.ensembl_transcript_id
                     if hgnc_txid in vep_transcripts:
-                        vep_transcripts[hgnc_txid] = hgnc_transcript
-
-                # fill in panel specific information for genes
-                for panel_obj in gene_panels:
-                    gene_obj = panel_obj.gene_objects.get(hgnc_symbol)
-                    if gene_obj is not None:
-                        variant_gene.panel_info = gene_obj
-                        break
+                        vep_transcripts[hgnc_txid].common = hgnc_transcript
+            
 
         variant_obj.hgnc_symbols = list(hgnc_symbols)
+
         return variant_obj
 
     def variants(self, case_id, query=None, variant_ids=None,
@@ -259,7 +263,11 @@ class VariantHandler(object):
         logger.debug("Variant saved")
 
     def overlapping(self, variant_obj):
-        category = 'sv' if variant_obj.category == 'snv' else 'snv'
+        """Return ovelapping variants
+        
+            if variant_obj is sv it will return the overlapping snvs and oposite
+        """
+        category = 'snv' if variant_obj.category == 'sv' else 'sv'
         query = {'variant_type': variant_obj.variant_type,
                  'hgnc_symbols': variant_obj.hgnc_symbols}
         variants, _ = self.variants(variant_obj.case_id, category=category,

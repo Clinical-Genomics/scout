@@ -129,9 +129,9 @@ def minimal_config(request, scout_config):
     config.pop('vcf_snv_research')
     config.pop('vcf_sv_research')
     config.pop('gene_panels')
-    config.pop('default_panels')
+    config.pop('default_gene_panels')
     config.pop('rank_model_version')
-    config.pop('rank_threshold')
+    config.pop('rank_score_threshold')
     config.pop('human_genome_build')
 
     return config

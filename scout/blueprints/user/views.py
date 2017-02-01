@@ -26,7 +26,7 @@ class VariantView(ModelView):
 
 
 class PanelView(ModelView):
-    column_exclude_list = ['gene_objects']
+    column_exclude_list = ['genes']
 
 
 # register admin views - TODO: move!

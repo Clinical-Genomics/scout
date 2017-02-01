@@ -10,8 +10,11 @@ def export_panels(adapter, panels):
     header_string = ("##gene_panel={0},version={1},updated_at={2},display_name={3}")
     contig_string = ("##contig={0}")
     bed_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
-    genes = {}
+    
+    panel_geneids = set()
     chromosomes_found = set()
+    hgnc_geneobjs = []
+    
     for panel_id in panels:
         panel_obj = adapter.gene_panel(panel_id).first()
         headers.append(header_string.format(
@@ -20,11 +23,15 @@ def export_panels(adapter, panels):
             panel_obj.date.date(),
             panel_obj.display_name,
         ))
-        for gene_symbol in panel_obj.gene_objects:
-            gene_obj = panel_obj.gene_objects[gene_symbol]
-            genes[gene_symbol] = gene_obj
-            chromosomes_found.add(gene_obj.hgnc_gene.chromosome)
-
+        for gene_obj in panel_obj.genes:
+            panel_geneids.add(gene_obj.hgnc_id)
+            
+    for hgnc_id in panel_geneids:
+        hgnc_geneobj = adapter.hgnc_gene(gene_obj.hgnc_id)
+        hgnc_geneobjs.append(hgnc_geneobj)
+        chromosomes_found.add(hgnc_geneobj.chromosome)
+        
+    
     for chrom in CHROMOSOMES:
         if chrom in chromosomes_found:
             headers.append(contig_string.format(chrom))
@@ -34,9 +41,7 @@ def export_panels(adapter, panels):
     for header in headers:
         print(header)
 
-    for gene_symbol in genes:
-        gene_obj = genes[gene_symbol]
-        hgnc_gene = gene_obj.hgnc_gene
+    for hgnc_gene in hgnc_geneobjs:
         print(bed_string.format(
             hgnc_gene.chromosome,
             hgnc_gene.start,
