@@ -322,18 +322,9 @@ class Variant(Document):
     @property
     def refseq_transcripts(self):
         """Yield all transcripts with a RefSeq id."""
-        ref_seqs = {}
-        for gene in self.genes:
-            if gene.common:
-                for hgnc_transcript in gene.common.transcripts:
-                    if hgnc_transcript.refseq_id:
-                        hgnc_transcript.hgnc_symbol = gene.common.hgnc_symbol
-                        hgnc_transcript.hgnc_id = gene.common.hgnc_id
-                        ensembl_tx_id = hgnc_transcript.ensembl_transcript_id
-                        ref_seqs[ensembl_tx_id] = hgnc_transcript
-        for _, vep_transcript in self.transcripts:
-            if vep_transcript.transcript_id in ref_seqs:
-                yield (vep_transcript, ref_seqs[vep_transcript.transcript_id])
+        for gene, transcript in self.transcripts:
+            if transcript.common and transcript.common.refseq_id:
+                yield gene, transcript
 
     @property
     def protein_changes(self):

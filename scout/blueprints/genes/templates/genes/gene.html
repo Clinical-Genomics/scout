@@ -80,7 +80,7 @@
     <div class="panel-heading">Transcripts</div>
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
-        {% if transcript.refseq_id == gene.primary_transcript %}
+        {% if transcript.refseq_id in gene.primary_transcripts %}
           {% set extra_class = 'list-group-item-info' %}
         {% else %}
           {% set extra_class = None %}

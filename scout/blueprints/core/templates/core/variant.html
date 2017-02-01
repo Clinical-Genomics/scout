@@ -353,17 +353,17 @@
         </tr>
       </thead>
       <tbody>
-        {% for transcript, hgnc_tx in variant.refseq_transcripts %}
-          <tr>
+        {% for gene, transcript in variant.refseq_transcripts %}
+          <tr {% if (gene.common and transcript.common) and transcript.common.refseq_id in gene.common.primary_transcripts %} class="bg-info" {% endif %}>
             <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=hgnc_tx.hgnc_id) }}">
-                {{ hgnc_tx.hgnc_symbol }}
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol }}
               </a>
               {% if transcript.is_canonical %}
                 <span class="badge pull-right" title="canonical">C</span>
               {% endif %}
             </td>
-            <td>{{ hgnc_tx.refseq_id }}</td>
+            <td>{{ transcript.common.refseq_id }}</td>
             {% if transcript.is_exonic() %}
               <td>
                 {{ (transcript.protein_sequence_name or '')|url_decode }}
@@ -786,7 +786,7 @@
             <td>
               {{ gene.common.hgnc_symbol }}
               {% if transcript.is_canonical %}
-                <span class="badge pull-right">*</span>
+                <span class="badge pull-right">C</span>
               {% endif %}
             </td>
             <td>
@@ -795,7 +795,7 @@
               </a>
             </td>
             <td>
-              {% if transcript.common %}
+              {% if transcript.common and transcript.common.refseq_id %}
                 <a href="{{ transcript.common.refseq_link }}">
                   {{ transcript.common.refseq_id }}
                 </a>
