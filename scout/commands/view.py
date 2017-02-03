@@ -15,12 +15,18 @@ def panels(context):
     logger.info("Running scout view panels")
     adapter = context.obj['adapter']
     
-    i = 0
-    for panel_obj in adapter.gene_panel():
-        i += 1
-        click.echo('\t'.join([panel_obj.panel_name, str(panel_obj.version)]))
-    if i == 0:
+    panel_objs = adapter.gene_panel()
+    if panel_objs.count() == 0:
         logger.info("No panels found")
+    else:
+        click.echo("panel_name\tversion\tnr_genes")
+        
+        for panel_obj in panel_objs:
+            click.echo("{0}\t{1}\t{2}".format(
+                panel_obj.panel_name, 
+                str(panel_obj.version),
+                len(panel_obj.genes)
+            ))
 
 @click.command('users', short_help='Display users')
 @click.pass_context

@@ -28,7 +28,7 @@ def get_date(date):
         Returns:
             date_obj(datetime.date)
     """
-    date_obj = datetime.date.today()
+    date_obj = datetime.datetime.now()
     if date:
         if match_date(date):
             if len(date.split('-')) == 3:
@@ -39,7 +39,7 @@ def get_date(date):
                 date = date.split('.')
             else:
                 date = date.split('/')
-            date_obj = datetime.date(*(int(number) for number in date))
+            date_obj = datetime.datetime(*(int(number) for number in date))
         else:
             raise ValueError("Date %s is invalid" % date)
 
