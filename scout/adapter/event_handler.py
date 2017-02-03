@@ -303,29 +303,34 @@ class EventHandler(object):
         """
         try:
             if hpo_term:
-                logger.debug("Fetching info for hpo term {0}".format(hpo_term))
-                hpo_results = phizz.query_hpo([hpo_term])
+                hpo_results = [{'hpo_term':hpo_term}]
             elif omim_term:
                 logger.debug("Fetching info for mim term {0}".format(omim_term))
                 hpo_results = phizz.query_disease([omim_term])
             else:
                 raise ValueError('Must supply either hpo or omim term')
-            logger.debug("Got result {0}".format(
-                         ', '.join(res['hpo_term'] for res in hpo_results)))
         except ValueError as e:
-            # TODO Should ve raise a more proper exception here?
+            ## TODO Should ve raise a more proper exception here?
             raise e
 
         existing_terms = set(term.phenotype_id for term in
                              case.phenotype_terms)
+
         for hpo_result in hpo_results:
-            phenotype_name = hpo_result['hpo_term']
-            description = hpo_result['description']
-            phenotype_term = PhenotypeTerm(phenotype_id=phenotype_name,
-                                           feature=description)
-            if phenotype_term.phenotype_id not in existing_terms:
-                logger.info("Append the phenotype term {0} to case {1}"
-                            .format(phenotype_name, case.display_name))
+            logger.debug("Fetching info for hpo term {0}".format(hpo_term))
+            hpo_obj = self.hpo_term(hpo_result['hpo_term'])
+            if hpo_obj is None:
+                raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
+            
+            phenotype_id = hpo_obj.hpo_id
+            description = hpo_obj.description
+
+            if phenotype_id not in existing_terms:
+                phenotype_term = PhenotypeTerm(
+                                    phenotype_id=phenotype_name,
+                                    feature=description
+                                )
+                
                 case.phenotype_terms.append(phenotype_term)
 
                 logger.info("Creating event for adding phenotype term for case"
