@@ -15,8 +15,12 @@ def panels(context):
     logger.info("Running scout view panels")
     adapter = context.obj['adapter']
     
+    i = 0
     for panel_obj in adapter.gene_panel():
+        i += 1
         click.echo('\t'.join([panel_obj.panel_name, str(panel_obj.version)]))
+    if i == 0:
+        logger.info("No panels found")
 
 @click.command('users', short_help='Display users')
 @click.pass_context
@@ -39,6 +43,51 @@ def institutes(context):
     for institute_obj in adapter.institutes():
         click.echo(institute_obj.internal_id)
 
+@click.command('genes', short_help='Display genes')
+@click.pass_context
+def genes(context):
+    """Show all genes in the database"""
+    logger.info("Running scout view genes")
+    adapter = context.obj['adapter']
+    
+    click.echo("Chromosom\tstart\tend\thgnc_id\thgnc_symbol")
+    for gene_obj in adapter.all_genes():
+        click.echo("{0}\t{1}\t{2}\t{3}\t{4}".format(
+            gene_obj.chromosome,
+            gene_obj.start,
+            gene_obj.end,
+            gene_obj.hgnc_id,
+            gene_obj.hgnc_symbol,
+        ))
+
+@click.command('diseases', short_help='Display all diseases')
+@click.pass_context
+def diseases(context):
+    """Show all diseases in the database"""
+    logger.info("Running scout view diseases")
+    adapter = context.obj['adapter']
+    
+    click.echo("Disease")
+    for disease_obj in adapter.disease_terms():
+        click.echo("{0}:{1}".format(
+            disease_obj.source,
+            disease_obj.disease_id,
+        ))
+
+@click.command('hpo', short_help='Display all hpo terms')
+@click.pass_context
+def hpo(context):
+    """Show all hpo terms in the database"""
+    logger.info("Running scout view hpo")
+    adapter = context.obj['adapter']
+    
+    click.echo("hpo_id\tdescription")
+    for hpo_obj in adapter.hpo_terms():
+        click.echo("{0}\t{1}".format(
+            hpo_obj.hpo_id,
+            hpo_obj.description,
+        ))
+
 
 @click.group()
 @click.pass_context
@@ -52,3 +101,6 @@ view.add_command(cases)
 view.add_command(panels)
 view.add_command(users)
 view.add_command(institutes)
+view.add_command(genes)
+view.add_command(diseases)
+view.add_command(hpo)
