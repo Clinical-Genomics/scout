@@ -92,10 +92,10 @@ def case(institute_id, case_id):
         return abort(404, "Can't find a case '{}' for institute {}"
                           .format(case_id, institute_id))
 
-    irrelevant_ids = ('cust000', inst_mod.display_name)
-    collab_ids = [collab.display_name for collab in store.institutes() if
-                  (collab.display_name not in irrelevant_ids) and
-                  (collab.display_name not in case_model.collaborators)]
+    irrelevant_ids = ('cust000', inst_mod.internal_id)
+    collab_ids = [collab.internal_id for collab in store.institutes() if
+                  (collab.internal_id not in irrelevant_ids) and
+                  (collab.internal_id not in case_model.collaborators)]
 
     case_comments = store.events(inst_mod, case=case_model, comments=True)
     case_events = store.events(inst_mod, case=case_model)
