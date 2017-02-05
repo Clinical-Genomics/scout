@@ -327,7 +327,7 @@ class EventHandler(object):
 
             if phenotype_id not in existing_terms:
                 phenotype_term = PhenotypeTerm(
-                                    phenotype_id=phenotype_name,
+                                    phenotype_id=phenotype_id,
                                     feature=description
                                 )
                 
@@ -344,14 +344,14 @@ class EventHandler(object):
                     category='case',
                     verb='add_phenotype',
                     subject=case.display_name,
-                    content=phenotype_name
+                    content=phenotype_id
                 )
             if is_group:
                 existing_groups = set(term.phenotype_id for term in
                                       case.phenotype_groups)
                 if phenotype_term.phenotype_id not in existing_groups:
                     logger.info("Append the phenotype group {0} to case {1}"
-                                .format(phenotype_name, case.display_name))
+                                .format(phenotype_id, case.display_name))
                     case.phenotype_groups.append(phenotype_term)
 
         case.save()
