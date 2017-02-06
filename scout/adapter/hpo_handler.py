@@ -6,6 +6,9 @@ from scout.models import (HpoTerm, DiseaseTerm)
 
 logger = logging.getLogger(__name__)
 
+from collections import namedtuple
+
+HpoGene = namedtuple('HpoGene', 'hgnc_symbol count')
 
 class HpoHandler(object):
 
@@ -52,3 +55,16 @@ class HpoHandler(object):
         logger.debug("Loading disease %s into database", disease_obj.disease_id)
         disease_obj.save()
         logger.debug("Disease term saved")
+
+    def generate_hpo_gene_list(self, hpo_terms):
+        """Generate a sorted list with namedtuples of hpogenes
+        
+            Each namedtuple of the list looks like (hgnc_id, count)
+        
+            Args:
+                hpo_terms(iterable(str))
+        
+            Returns:
+                hpo_genes(list(HpoGene))
+        """
+        pass

@@ -350,9 +350,18 @@ def user_obj(request, parsed_user):
 
 
 @pytest.fixture(scope='function')
-def gene_database(request, adapter, genes):
+def gene_database(request, populated_database, genes, hpo_terms_handle, 
+    hpo_disease_handle):
     "Returns an adapter to a database populated with user, institute and case"
+    adapter = populated_database
+    
     load_hgnc_genes(adapter, genes)
+
+    load_hpo(
+        adapter=adapter,
+        hpo_lines=hpo_terms_handle,
+        disease_lines=hpo_disease_handle,
+    )
 
     return adapter
 
@@ -376,10 +385,9 @@ def panel_database(request, gene_database, panel_info, institute_obj, parsed_use
 
 
 @pytest.fixture(scope='function')
-def populated_database(request, gene_database, institute_obj, parsed_user, 
-    case_obj, hpo_terms_handle, hpo_disease_handle):
+def populated_database(request, adapter, institute_obj, parsed_user, 
+    case_obj, ):
     "Returns an adapter to a database populated with user, institute and case"
-    adapter = gene_database
     adapter.add_institute(institute_obj)
     adapter.getoradd_user(
         email=parsed_user['email'],
@@ -388,20 +396,6 @@ def populated_database(request, gene_database, institute_obj, parsed_user,
         institutes=parsed_user['institutes']
     )
     adapter.add_case(case_obj)
-    
-    load_hpo(
-        adapter=adapter,
-        hpo_lines=hpo_terms_handle, 
-        disease_lines=hpo_disease_handle, 
-    )
-    
-    # load_hgnc_genes(
-    #     adapter=adapter,
-    #     ensembl_lines=ensembl_handle,
-    #     hgnc_lines=hgnc_handle,
-    #     exac_lines=exac_handle,
-    #     hpo_lines=hpo_handle
-    # )
 
     return adapter
 

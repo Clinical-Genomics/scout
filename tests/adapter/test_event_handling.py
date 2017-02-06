@@ -7,11 +7,14 @@ from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 
+from scout.models.hgnc_map import HgncGene
+from scout.models.phenotype_term import HpoTerm
+
 logger = logging.getLogger(__name__)
 
 def test_assign(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Testing assign a user to a case")
-    # GIVEN a populated database
+    # GIVEN a populated databas
     institute = populated_database.institute(
         institute_id=institute_obj.internal_id
     )
@@ -166,7 +169,26 @@ def test_open_research(populated_database, institute_obj, case_obj, user_obj):
 def test_add_hpo(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Add a HPO term for a case")
     # GIVEN a populated database
-    hpo_term = 'HP:0000878'
+    gene_obj = HgncGene(
+        hgnc_id = 1,
+        hgnc_symbol = 'test',
+        ensembl_id = 'anothertest',
+        chromosome = '1',
+        start = 10,
+        end = 20,
+    )
+    populated_database.load_hgnc_gene(gene_obj)
+    
+    hpo_obj = HpoTerm(
+        hpo_id = 'HP:0000878',
+        description = 'A term',
+        genes = [1]
+    )
+
+    populated_database.load_hpo_term(hpo_obj)
+    
+    hpo_term = hpo_obj.hpo_id
+    
     institute = populated_database.institute(
         institute_id=institute_obj.internal_id
     )
@@ -177,6 +199,7 @@ def test_add_hpo(populated_database, institute_obj, case_obj, user_obj):
     user = populated_database.user(
         email = user_obj.email
     )
+    
     # WHEN adding a hpo term for a case
     populated_database.add_phenotype(
         institute=institute,
@@ -275,7 +298,8 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
     with pytest.raises(DoesNotExist):
         event = Event.objects.get(verb='add_phenotype')
 
-def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
+def test_add_mim(gene_database, institute_obj, case_obj, user_obj):
+    populated_database = gene_database
     logger.info("Add OMIM term for a case")
     #Existing mim phenotype
     mim_term = 'OMIM:613855'
@@ -310,7 +334,27 @@ def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
 
 def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Add a HPO term for a case")
-    hpo_term = 'HP:0000878'
+    
+    gene_obj = HgncGene(
+        hgnc_id = 1,
+        hgnc_symbol = 'test',
+        ensembl_id = 'anothertest',
+        chromosome = '1',
+        start = 10,
+        end = 20,
+    )
+    populated_database.load_hgnc_gene(gene_obj)
+    
+    hpo_obj = HpoTerm(
+        hpo_id = 'HP:0000878',
+        description = 'A term',
+        genes = [1]
+    )
+
+    populated_database.load_hpo_term(hpo_obj)
+    
+    hpo_term = hpo_obj.hpo_id
+    
     institute = populated_database.institute(
         institute_id=institute_obj.internal_id
     )
@@ -329,7 +373,7 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
         hpo_term=hpo_term
     )
     
-    #Assert that the synopsis has been added to the case
+    #Assert that the term was added to the case
     updated_case = Case.objects.get(case_id=case_obj.case_id)
     for term in updated_case.phenotype_terms:
         assert term.phenotype_id == hpo_term
@@ -338,8 +382,6 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
     event = Event.objects.get(verb='add_phenotype')
     assert event.link == 'addhpolink'
     
-    # GIVEN a populated database where a phenotype term was added
-
     # WHEN removing the phenotype term
     populated_database.remove_phenotype(
         institute=institute,
