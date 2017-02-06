@@ -301,7 +301,7 @@ def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
     )
     # THEN the case should have phenotypes
     updated_case = Case.objects.get(case_id=case_obj.case_id)
-    assert len(updated_case.phenotype_terms) != 0
+    assert len(updated_case['phenotype_terms']) != 0
 
     # THEN there should be phenotypes
     for event in Event.objects(verb='add_phenotype'):
