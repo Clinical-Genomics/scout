@@ -19424,3 +19424,12 @@ HP:0011462	Young adult onset	152137	CCDC50
 HP:0011462	Young adult onset	4607	MYBPC3
 HP:0010920	Zonular cataract	1414	CRYBB1
 HP:0010920	Zonular cataract	1421	CRYGD
+HP:0002131	Episodic ataxia	785	CACNB4
+HP:0002131	Episodic ataxia	5009	OTC
+HP:0002131	Episodic ataxia	773	CACNA1A
+HP:0002131	Episodic ataxia	3736	KCNA1
+HP:0002131	Episodic ataxia	5160	PDHA1
+HP:0002131	Episodic ataxia	6507	SLC1A3
+HP:0002131	Episodic ataxia	477	ATP1A2
+HP:0002131	Episodic ataxia	340024	SLC6A19
+HP:0002131	Episodic ataxia	478	ATP1A3

@@ -96,7 +96,6 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                         variant=parsed_variant,
                         institute=institute_obj,
                     )
-
             elif parsed_variant.get('rank_score', 0) > rank_threshold:
                 variant_obj = build_variant(
                     variant=parsed_variant,

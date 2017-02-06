@@ -52,6 +52,7 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
         log.debug("found existing panel")
         name = name or existing_panel.display_name or panel_id
         institute = institute or existing_panel.institute
+    
     info = {
         'file': path,
         'institute': institute,

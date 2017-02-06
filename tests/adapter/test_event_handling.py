@@ -166,7 +166,7 @@ def test_open_research(populated_database, institute_obj, case_obj, user_obj):
 def test_add_hpo(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Add a HPO term for a case")
     # GIVEN a populated database
-    hpo_term = 'HP:0000002'
+    hpo_term = 'HP:0000878'
     institute = populated_database.institute(
         institute_id=institute_obj.internal_id
     )
@@ -278,7 +278,7 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
 def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Add OMIM term for a case")
     #Existing mim phenotype
-    mim_term = 'MIM:614300'
+    mim_term = 'OMIM:613855'
     
     # GIVEN a populated database
     institute = populated_database.institute(
@@ -310,7 +310,7 @@ def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
 
 def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Add a HPO term for a case")
-    hpo_term = 'HP:0000002'
+    hpo_term = 'HP:0000878'
     institute = populated_database.institute(
         institute_id=institute_obj.internal_id
     )

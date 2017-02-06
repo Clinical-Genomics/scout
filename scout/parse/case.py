@@ -122,7 +122,8 @@ def parse_case(config, ped=None):
     owner = config['owner']
 
     if ped:
-        family_id, samples = parse_ped(ped)
+        with open(ped, 'r') as f:
+            family_id, samples = parse_ped(f)
         config['family'] = family_id
         config['samples'] = samples
 
@@ -167,7 +168,7 @@ def parse_case(config, ped=None):
     return case_data
 
 
-def parse_ped(ped_stream, family_type='mip'):
+def parse_ped(ped_stream, family_type='ped'):
     """Parse out minimal family information from a PED file."""
     pedigree = FamilyParser(ped_stream, family_type=family_type)
 

@@ -107,10 +107,9 @@ def test_parse_case_two_cases_ped():
         "636809\tADM1059A3\t0\t0\t2\t1",
     ]
     # WHEN parsing case info
-    config = {'owner': 'test_institute'}
-    # THEN it should raise since there are multiple families
     with pytest.raises(PedigreeError):
-        parse_case(config, ped=case_lines)
+    # THEN it should raise since there are multiple families
+        parse_ped(case_lines)
 
 def test_no_individuals():
     # GIVEN a list with no indioviduals

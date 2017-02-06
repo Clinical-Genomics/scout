@@ -22,6 +22,7 @@ from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 from scout.load import (load_hgnc_genes, load_panel)
+from scout.load.hpo import load_hpo
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
@@ -204,7 +205,8 @@ def genes(request, transcripts_handle, hgnc_handle, exac_handle,
 def hpo_terms_handle(request, hpo_terms_file):
     """Get a file handle to a hpo terms file"""
     print('')
-    return get_file_handle(hpo_terms_file)
+    hpo_lines = get_file_handle(hpo_terms_file)
+    return hpo_lines
 
 @pytest.fixture
 def hpo_terms(request, hpo_terms_handle):
@@ -374,8 +376,10 @@ def panel_database(request, gene_database, panel_info, institute_obj, parsed_use
 
 
 @pytest.fixture(scope='function')
-def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
+def populated_database(request, gene_database, institute_obj, parsed_user, 
+    case_obj, hpo_terms_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with user, institute and case"
+    adapter = gene_database
     adapter.add_institute(institute_obj)
     adapter.getoradd_user(
         email=parsed_user['email'],
@@ -384,7 +388,13 @@ def populated_database(request, adapter, institute_obj, parsed_user, case_obj):
         institutes=parsed_user['institutes']
     )
     adapter.add_case(case_obj)
-
+    
+    load_hpo(
+        adapter=adapter,
+        hpo_lines=hpo_terms_handle, 
+        disease_lines=hpo_disease_handle, 
+    )
+    
     # load_hgnc_genes(
     #     adapter=adapter,
     #     ensembl_lines=ensembl_handle,
