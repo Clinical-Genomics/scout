@@ -28,7 +28,7 @@ def templated(template=None):
     return decorator
 
 
-def validate_user(current_user, institute_id):
+def validate_user(current_user, institute_id, family_id=None):
     # abort with 404 error if case/institute doesn't exist
     try:
         institute = store.institute(institute_id)
@@ -36,8 +36,20 @@ def validate_user(current_user, institute_id):
         return abort(404)
 
     is_admin = current_user.has_role('admin')
-    if not is_admin and institute not in current_user.institutes:
+    if family_id:
+        case_model = store.case(institute_id, family_id)
+        if case_model is None:
+            return abort(404, "Can't find a case '{}' for institute {}"
+                              .format(family_id, institute_id))
+        inst_ids = set(inst.internal_id for inst in current_user.institutes)
+        if not is_admin and len(inst_ids.intersection(case_model.collaborators)) == 0:
+            flash('You do not have access to this case.', 'danger')
+            return abort(403)
+    elif not is_admin and institute not in current_user.institutes:
         flash('You do not have access to this institute.', 'danger')
         return abort(403)
 
-    return institute
+    if family_id:
+        return institute, case_model
+    else:
+        return institute
