@@ -84,18 +84,12 @@ def cases(institute_id):
 @login_required
 def case(institute_id, case_id):
     """View a specific case."""
-    inst_mod = validate_user(current_user, institute_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
 
-    # fetch a single, specific case from the data store
-    case_model = store.case(institute_id, case_id)
-    if case_model is None:
-        return abort(404, "Can't find a case '{}' for institute {}"
-                          .format(case_id, institute_id))
-
-    irrelevant_ids = ('cust000', inst_mod.display_name)
-    collab_ids = [collab.display_name for collab in store.institutes() if
-                  (collab.display_name not in irrelevant_ids) and
-                  (collab.display_name not in case_model.collaborators)]
+    irrelevant_ids = ('cust000', inst_mod.internal_id)
+    collab_ids = [collab.internal_id for collab in store.institutes() if
+                  (collab.internal_id not in irrelevant_ids) and
+                  (collab.internal_id not in case_model.collaborators)]
 
     case_comments = store.events(inst_mod, case=case_model, comments=True)
     case_events = store.events(inst_mod, case=case_model)
@@ -144,8 +138,7 @@ def case(institute_id, case_id):
 @login_required
 def gene_panel(institute_id, case_id, panel_id):
     """Show the list of genes associated with a gene panel."""
-    institute_model = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
 
     # coverage link for gene
     covlink_kwargs = genecov_links(case_model.individuals)
@@ -153,7 +146,7 @@ def gene_panel(institute_id, case_id, panel_id):
     for panel in case_model.gene_panels:
         if panel.panel_name == panel_id:
             gene_panel = panel
-    return dict(institute=institute_model, case=case_model,
+    return dict(institute=inst_mod, case=case_model,
                 panel=gene_panel, covlink_kwargs=covlink_kwargs)
 
 
@@ -222,14 +215,13 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 
     TODO: validate ID and fetch phenotype description before adding to case.
     """
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
     is_group = request.args.get('is_group') == 'yes'
 
     if phenotype_id:
         # DELETE a phenotype from the list
-        store.remove_phenotype(institute, case_model, current_user,
+        store.remove_phenotype(inst_mod, case_model, current_user,
                                case_url, phenotype_id,
                                is_group=is_group)
     else:
@@ -238,12 +230,12 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
             phenotype_term = request.form['hpo_term']
             if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(' | ', 1)[0]
-                store.add_phenotype(institute, case_model, current_user,
+                store.add_phenotype(inst_mod, case_model, current_user,
                                     case_url, hpo_term=hpo_term,
                                     is_group=is_group)
             else:
                 # assume omim id
-                store.add_phenotype(institute, case_model,
+                store.add_phenotype(inst_mod, case_model,
                                     current_user, case_url,
                                     omim_term=phenotype_term)
         except ValueError:
@@ -255,15 +247,14 @@ def case_phenotype(institute_id, case_id, phenotype_id=None):
 @core.route('/<institute_id>/<case_id>/phenotypes', methods=['POST'])
 def phenotypes_gendel(institute_id, case_id):
     """Update the list of genes based on phenotype terms."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
     action = request.form['action']
     hpo_ids = request.form.getlist('hpo_id')
     if action == 'DELETE':
         for hpo_id in hpo_ids:
             # DELETE a phenotype from the list
-            store.remove_phenotype(institute, case_model, current_user,
+            store.remove_phenotype(inst_mod, case_model, current_user,
                                    case_url, hpo_id)
     elif action == 'GENERATE':
         if len(hpo_ids) == 0:
@@ -331,8 +322,7 @@ def hpo_genes(username, password, hpo_ids):
 @core.route('/<institute_id>/<case_id>/coverage_report', methods=['GET'])
 def coverage_report(institute_id, case_id):
     """Serve coverage report for a case directly from the database."""
-    validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
 
     response = make_response(case_model.coverage_report)
     response.headers['Content-Type'] = 'application/pdf'
@@ -381,8 +371,7 @@ def variants(institute_id, case_id, variant_type):
                           in request.args.getlist('gene_panels') if gene_list]
 
     # fetch all variants for a specific case
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
 
     if case_model is None:
         abort(404)
@@ -395,8 +384,7 @@ def variants(institute_id, case_id, variant_type):
     case_inactive = case_model.status == 'inactive'
     if (case_inactive and not (is_admin or login_off)):
         link = url_for('.case', institute_id=institute_id, case_id=case_id)
-        store.update_status(institute, case_model, current_user, 'active',
-                            link)
+        store.update_status(inst_mod, case_model, current_user, 'active', link)
 
     # form submitted as GET
     form = init_filters_form(request.args)
@@ -458,7 +446,7 @@ def variants(institute_id, case_id, variant_type):
                 variants_count=count,
                 case=case_model,
                 case_id=case_id,
-                institute=institute,
+                institute=inst_mod,
                 institute_id=institute_id,
                 current_batch=(skip + per_page),
                 per_page=per_page,
@@ -475,16 +463,15 @@ def variants(institute_id, case_id, variant_type):
 @login_required
 def variant(institute_id, case_id, variant_id):
     """View a single variant in a single case."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     variant_model = store.variant(variant_id, case_model.default_panels)
     if variant_model is None:
         return abort(404, 'variant not found')
 
-    comments = store.events(institute, case=case_model,
+    comments = store.events(inst_mod, case=case_model,
                             variant_id=variant_model.variant_id,
                             comments=True)
-    events = store.events(institute, case=case_model,
+    events = store.events(inst_mod, case=case_model,
                           variant_id=variant_model.variant_id)
 
     individuals = {individual.individual_id: individual
@@ -505,7 +492,7 @@ def variant(institute_id, case_id, variant_id):
     # overlapping SVs
     overlapping_svs = store.overlapping(variant_model)
 
-    return dict(institute=institute, institute_id=institute_id,
+    return dict(institute=inst_mod, institute_id=institute_id,
                 case=case_model, case_id=case_id,
                 variant=variant_model, variant_id=variant_id,
                 comments=comments, events=events,
@@ -519,24 +506,22 @@ def variant(institute_id, case_id, variant_id):
 @core.route('/<institute_id>/<case_id>/<variant_id>/pin', methods=['POST'])
 def pin_variant(institute_id, case_id, variant_id):
     """Pin or unpin a variant from the list of suspects."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
     link = url_for('.variant', institute_id=institute_id, case_id=case_id,
                    variant_id=variant_id)
-    store.pin_variant(institute, case_model, current_user, link, variant_model)
+    store.pin_variant(inst_mod, case_model, current_user, link, variant_model)
     return redirect(request.args.get('next') or request.referrer or link)
 
 
 @core.route('/<institute_id>/<case_id>/<variant_id>/unpin', methods=['POST'])
 def unpin_variant(institute_id, case_id, variant_id):
     """Pin or unpin a variant from the list of suspects."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
     link = url_for('.variant', institute_id=institute_id, case_id=case_id,
                    variant_id=variant_id)
-    store.unpin_variant(institute, case_model, current_user, link,
+    store.unpin_variant(inst_mod, case_model, current_user, link,
                         variant_model)
     return redirect(request.args.get('next') or request.referrer or link)
 
@@ -676,8 +661,7 @@ def pileup_range():
                      stop=request.args['end'])
     # replace first instance of separator (can be part of case id)
     institute_id, case_id = request.args['group'].split('-', 1)
-    validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     link = url_for('pileup.viewer', bam=case_model.bam_files,
                    bai=case_model.bai_files, sample=case_model.sample_names,
                    vcf=case_model.vcf_file, **positions)
@@ -740,13 +724,12 @@ def request_rerun(institute_id, case_id):
 @core.route('/<institute_id>/<case_id>/diagnose', methods=['POST'])
 def case_diagnosis(institute_id, case_id):
     """Pin or unpin a variant from the list of suspects."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
     level = 'phenotype' if 'phenotype' in request.form else 'gene'
     omim_id = request.form['omim_id']
     remove = True if 'remove' in request.args else False
-    store.diagnose(institute, case_model, current_user, link, level=level,
+    store.diagnose(inst_mod, case_model, current_user, link, level=level,
                    omim_id=omim_id, remove=remove)
     return redirect(request.args.get('next') or request.referrer or link)
 
