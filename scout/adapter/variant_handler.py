@@ -18,7 +18,7 @@ class VariantHandler(object):
         """Add extra information about genes from gene panels"""
         gene_panels = gene_panels or []
         hgnc_symbols = set()
-        
+
         extra_info = {}
         for panel_obj in gene_panels:
             for gene_info in panel_obj.genes:
@@ -28,10 +28,10 @@ class VariantHandler(object):
             hgnc_id = variant_gene.hgnc_id
             hgnc_gene = self.hgnc_gene(hgnc_id)
             hgnc_symbol = None
-            
+
             variant_gene.common = hgnc_gene
             variant_gene.panel_info = extra_info.get(hgnc_id)
-            
+
             if hgnc_gene:
                 hgnc_symbol = hgnc_gene.hgnc_symbol
 
@@ -51,7 +51,7 @@ class VariantHandler(object):
                     hgnc_txid = hgnc_transcript.ensembl_transcript_id
                     if hgnc_txid in vep_transcripts:
                         vep_transcripts[hgnc_txid].common = hgnc_transcript
-            
+
 
         variant_obj.hgnc_symbols = list(hgnc_symbols)
 
@@ -145,15 +145,11 @@ class VariantHandler(object):
         """
         #owner is a string
         causatives = self.get_causatives(case_obj.owner)
-
-        fixed_ids = set([])
-        for variant in causatives:
-            variant_id = variant.display_name.split('_')[:-1]
-            fixed_ids.add('_'.join(variant_id + ['research']))
-            fixed_ids.add('_'.join(variant_id + ['clinical']))
-
+        variant_ids = [variant.variant_id for variant in causatives]
+        if len(variant_ids) == 0:
+            return []
         return Variant.objects((Q(case_id=case_obj.case_id) &
-                                Q(display_name__in=list(fixed_ids))))
+                                Q(variant_id__in=variant_ids)))
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
@@ -264,7 +260,7 @@ class VariantHandler(object):
 
     def overlapping(self, variant_obj):
         """Return ovelapping variants
-        
+
             if variant_obj is sv it will return the overlapping snvs and oposite
         """
         category = 'snv' if variant_obj.category == 'sv' else 'sv'

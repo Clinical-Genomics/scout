@@ -62,7 +62,7 @@ class Variant(Document):
 
     # document_id is a md5 string created by institute_genelist_caseid_variantid:
     document_id = StringField(primary_key=True)
-    # variant_id is a md5 string created by variant_id
+    # variant_id is a md5 string created by chrom_pos_ref_alt (simple_id)
     variant_id = StringField(required=True)
     # display name in variant_id (no md5)
     display_name = StringField(required=True)
@@ -398,13 +398,14 @@ class Variant(Document):
 
     meta = {
         'index_background': True,
-        'indexes':[
+        'indexes': [
             'rank_score',
             'variant_id',
-            ('case_id' ,'+variant_rank', '+variant_type', '+thousand_genomes_frequency'),
+            ('case_id', '+variant_rank', '+variant_type', '+thousand_genomes_frequency'),
             ('hgnc_symbols', '+exac_frequency'),
             ('thousand_genomes_frequency', '+genes.functional_annotation',
             '+genes.region_annotation'),
+            ('case_id', 'variant_id')
         ]
     }
 
