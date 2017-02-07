@@ -404,8 +404,9 @@ class Variant(Document):
             ('case_id', '+variant_rank', '+variant_type', '+thousand_genomes_frequency'),
             ('hgnc_symbols', '+exac_frequency'),
             ('thousand_genomes_frequency', '+genes.functional_annotation',
-            '+genes.region_annotation'),
-            ('case_id', 'variant_id')
+             '+genes.region_annotation'),
+            ('case_id', 'variant_id'),
+            ('case_id', 'category', 'variant_type', '-rank_score'),
         ]
     }
 
