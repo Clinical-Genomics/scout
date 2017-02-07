@@ -10,6 +10,7 @@ from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
+
 def delete_variants(adapter, case_obj, variant_type='clinical'):
     """Delete all variants for a case of a certain variant type
 
@@ -103,12 +104,10 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 )
 
             if variant_obj:
-                # convert to primary HGNC symbols
-                primary_symbols = []
-                for hgnc_symbol in variant_obj.hgnc_symbols:
-                    primary_symbol = adapter.to_hgnc(hgnc_symbol)
-                    primary_symbols.append(primary_symbol)
-
+                # link gene panels
+                panels = adapter.find_panels(variant_obj.hgnc_ids)
+                panel_names = set(panel.panel_name for panel in panels)
+                variant_obj.panels = list(panel_names)
                 try:
                     load_variant(adapter, variant_obj)
                     nr_inserted += 1

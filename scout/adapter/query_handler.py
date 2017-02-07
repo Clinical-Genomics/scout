@@ -20,7 +20,8 @@ class QueryHandler(object):
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str,
                 'start': int,
-                'end': int
+                'end': int,
+                'gene_panels': list(str),
             }
 
         Arguments:
@@ -106,12 +107,23 @@ class QueryHandler(object):
             logger.debug("Adding genetic_models: %s to query" %
                          ', '.join(models))
 
-        if query.get('hgnc_symbols'):
-            hgnc_symbols = query['hgnc_symbols']
-            mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
+        if 'hgnc_symbols' in query and 'gene_panels' in query:
+            gene_query = {
+                    '$or': [
+                        {'hgnc_symbols': {'$in': query['hgnc_symbols']}},
+                        {'panels': {'$in': query['gene_panels']}}
+                    ]}
+            mongo_query['$and'].append(gene_query)
+        else:
+            if query.get('hgnc_symbols'):
+                hgnc_symbols = query['hgnc_symbols']
+                mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
+                logger.debug("Adding hgnc_symbols: %s to query" %
+                             ', '.join(hgnc_symbols))
 
-            logger.debug("Adding hgnc_symbols: %s to query" %
-                         ', '.join(hgnc_symbols))
+            if query.get('gene_panels'):
+                gene_panels = query['gene_panels']
+                mongo_query['panels'] = {'$in': gene_panels}
 
         if query.get('functional_annotations'):
             functional = query['functional_annotations']

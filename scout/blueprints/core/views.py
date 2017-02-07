@@ -367,8 +367,8 @@ def upload_gene_list():
 def variants(institute_id, case_id, variant_type):
     """View all variants for a single case."""
     per_page = 50
-    current_gene_lists = [gene_list for gene_list
-                          in request.args.getlist('gene_panels') if gene_list]
+    current_gene_lists = [gene_panel for gene_panel
+                          in request.args.getlist('gene_panels') if gene_panel]
 
     # fetch all variants for a specific case
     inst_mod, case_model = validate_user(current_user, institute_id, case_id)
@@ -427,13 +427,6 @@ def variants(institute_id, case_id, variant_type):
     # handle HPO gene list separately
     if query['gene_panels'] == ['hpo']:
         query['hgnc_symbols'] = query['hgnc_symbols'] + case_model.hpo_gene_ids
-    else:
-        # get HGNC symbols from selected gene panels
-        gene_symbols = set(query['hgnc_symbols'])
-        for gene_panel in case_model.gene_panels:
-            if gene_panel.panel_name in query['gene_panels']:
-                gene_symbols.update(gene_panel.gene_symbols)
-        query['hgnc_symbols'] = query['hgnc_symbols'] + list(gene_symbols)
 
     # fetch list of variants
     all_variants, count = store.variants(case_model.case_id, query=query,

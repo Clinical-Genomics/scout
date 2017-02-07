@@ -27,9 +27,14 @@ class Gene(EmbeddedDocument):
     def __unicode__(self):
         return "{this.hgnc_id}: {this.symbol}".format(this=self)
 
+
 class GenePanel(Document):
 
-    meta = {'strict': False}
+    meta = {
+        'strict': False,
+        'index_background': True,
+        'indexes': ['genes.hgnc_id']
+    }
 
     panel_name = StringField(required=True, unique_with='version')
     institute = StringField()

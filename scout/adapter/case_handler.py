@@ -270,6 +270,10 @@ class CaseHandler(object):
 
         return result
 
+    def find_panels(self, *hgnc_ids):
+        """Lookup panels based on HGNC ids."""
+        return GenePanel.objects(genes__hgnc_id__in=hgnc_ids)
+
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database
 

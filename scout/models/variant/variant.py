@@ -16,6 +16,7 @@ from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
                              VARIANT_CALL, CLINSIG_MAP)
 from .gene import Gene
 from scout.models import Event
+from scout.models.panel import GenePanel
 
 
 class Compound(EmbeddedDocument):
@@ -109,6 +110,7 @@ class Variant(Document):
     # Gene ids:
     hgnc_ids = ListField(IntField())
     hgnc_symbols = ListField(StringField())
+    panels = ListField(StringField())
 
     # Frequencies:
     thousand_genomes_frequency = FloatField()
@@ -377,7 +379,6 @@ class Variant(Document):
         url_template = ("http://exac.broadinstitute.org/variant/"
                       "{this.chromosome}-{this.position}-{this.reference}"
                       "-{this.alternative}")
-
         return url_template.format(this=self)
 
     @property
@@ -393,7 +394,6 @@ class Variant(Document):
         url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"\
                         "position=chr{this.chromosome}:{this.position}"\
                         "-{this.position}&dgv=pack&knownGene=pack&omimGene=pack")
-
         return url_template.format(this=self)
 
     meta = {
