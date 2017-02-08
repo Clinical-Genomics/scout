@@ -53,7 +53,6 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
 
     if existing_case:
         new_analysisdate = config_data.get('analysis_date')
-        print(type(new_analysisdate), type(existing_case.analysis_date))
         if new_analysisdate and new_analysisdate > existing_case.analysis_date:
             log.info("updated analysis - updating existing case")
             # update by default!
