@@ -245,6 +245,8 @@ class CaseHandler(object):
 
     def gene_panel(self, panel_id=None, version=None):
         """Fetch a gene panel.
+        
+        if no panel is sent return all panels
 
         Args:
             panel_id (str): unique id for the panel
@@ -264,9 +266,11 @@ class CaseHandler(object):
             except DoesNotExist:
                 result = None
         elif panel_id:
+            logger.info("Fething gene panels %s from database" % panel_id)
             result = GenePanel.objects(panel_name=panel_id).order_by('-version')
         else:
-            result = GenePanel.objects
+            logger.info("Fething all gene panels from database")
+            result = GenePanel.objects()
 
         return result
 
