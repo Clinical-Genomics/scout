@@ -40,11 +40,11 @@ def check_coordinates(variant, coordinates):
 
 def get_gene_panels(adapter):
     """Fetch all gene panels and group them by gene
-    
+
         Args:
             adapter(MongoAdapter)
         Returns:
-            gene_dict(dict): A dictionary with gene as keys and a list of 
+            gene_dict(dict): A dictionary with gene as keys and a list of
                              panel names as value
     """
     logger.info("Building gene to panels")
@@ -53,7 +53,7 @@ def get_gene_panels(adapter):
         for gene in panel.genes:
             hgnc_symbol = gene['symbol']
             if hgnc_symbol in gene_dict:
-                gene_dict[hgnc_symbol].add[panel.panel_name]
+                gene_dict[hgnc_symbol].add(panel.panel_name)
             else:
                 gene_dict[hgnc_symbol] = set([panel.panel_name])
     logger.info("Gene to panels")
@@ -84,7 +84,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                              " database.".format(case_obj['owner']))
 
     gene_to_panels = get_gene_panels(adapter)
-    
+
     variants = VCFParser(infile=variant_file)
 
     rank_results_header = []
@@ -105,7 +105,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             'start': start,
             'end': end
         }
-    
+
     case_name = case_obj['display_name']
     try:
         for nr_variants, variant in enumerate(variants):
@@ -136,7 +136,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 panel_names = set()
                 for hgnc_symbol in variant_obj['hgnc_symbols']:
                     panel_names = panel_names.union(gene_to_panels.get(hgnc_symbol, set()))
-                
+
                 variant_obj.panels = list(panel_names)
 
                 try:
@@ -150,10 +150,10 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 logger.info("Time to parse variants: {} ".format(
                             datetime.now() - start_five_thousand))
                 start_five_thousand = datetime.now()
-            
+
             if (nr_inserted != 0 and nr_inserted % 5000 == 0):
                 logger.info("%s variants inserted" % nr_inserted)
-    
+
     except Exception as error:
         logger.warning("Deleting inserted variants")
         delete_variants(adapter, case_obj, variant_type)

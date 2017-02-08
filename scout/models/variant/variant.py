@@ -398,15 +398,10 @@ class Variant(Document):
     meta = {
         'index_background': True,
         'indexes': [
-            'rank_score',
-            'variant_id',
-            ('case_id', '+variant_rank', '+variant_type', '+thousand_genomes_frequency'),
-            ('hgnc_symbols', '+exac_frequency'),
-            ('thousand_genomes_frequency', '+genes.functional_annotation',
-             '+genes.region_annotation'),
+            ('case_id', '+variant_type', '+variant_rank', 'panels', '+thousand_genomes_frequency'),
             ('case_id', 'variant_id'),
             ('case_id', 'category', 'variant_type', '-rank_score'),
-            ('case_id', 'category', 'variant_type', 'panels', '-rank_score'),
+            ('case_id', 'category', 'variant_type', 'panels', '+variant_rank'),
         ]
     }
 
