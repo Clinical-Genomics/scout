@@ -27,7 +27,7 @@ def export_panels(adapter, panels):
             panel_geneids.add(gene_obj.hgnc_id)
             
     for hgnc_id in panel_geneids:
-        hgnc_geneobj = adapter.hgnc_gene(gene_obj.hgnc_id)
+        hgnc_geneobj = adapter.hgnc_gene(hgnc_id)
         hgnc_geneobjs.append(hgnc_geneobj)
         chromosomes_found.add(hgnc_geneobj.chromosome)
         
