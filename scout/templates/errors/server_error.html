@@ -3,11 +3,26 @@
 {% extends 'errors/layout.html' %}
 {% set page_title = 'Server error' %}
 {% block body %}
-<h1>Server Error <span>:(</span></h1>
-<p>Inner peacer...</p>
-<script>
-    var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
-</script>
-<script src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
+  <h1>Server Error <span>:(</span></h1>
+
+  {% block flash_message %}
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div id='flash_message_container'>
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category }}">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+  {% endblock %}
+
+  <script>
+      var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
+  </script>
+  <script src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 {% endblock %}
 
