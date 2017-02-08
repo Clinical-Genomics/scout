@@ -168,6 +168,7 @@ class VariantHandler(object):
         for index, variant in enumerate(variants):
             variant.variant_rank = index + 1
             variant.save()
+        logger.info("Updating variant_rank done")
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""

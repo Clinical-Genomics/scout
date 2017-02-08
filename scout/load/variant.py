@@ -7,6 +7,7 @@ from vcf_parser import VCFParser
 from scout.parse.variant import parse_variant
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
+from scout.parse.rank_score import parse_rank_score
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,27 @@ def check_coordinates(variant, coordinates):
             return True
     return False
 
+def get_gene_panels(adapter):
+    """Fetch all gene panels and group them by gene
+    
+        Args:
+            adapter(MongoAdapter)
+        Returns:
+            gene_dict(dict): A dictionary with gene as keys and a list of 
+                             panel names as value
+    """
+    logger.info("Building gene to panels")
+    gene_dict = {}
+    for panel in adapter.gene_panel():
+        for gene in panel.genes:
+            hgnc_symbol = gene['symbol']
+            if hgnc_symbol in gene_dict:
+                gene_dict[hgnc_symbol].add[panel.panel_name]
+            else:
+                gene_dict[hgnc_symbol] = set([panel.panel_name])
+    logger.info("Gene to panels")
+
+    return gene_dict
 
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                   category='snv', rank_threshold=5, chrom=None, start=None,
@@ -61,6 +83,8 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
         raise IntegrityError("Institute {0} does not exist in"
                              " database.".format(case_obj['owner']))
 
+    gene_to_panels = get_gene_panels(adapter)
+    
     variants = VCFParser(infile=variant_file)
 
     rank_results_header = []
@@ -81,33 +105,40 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             'start': start,
             'end': end
         }
-
+    
+    case_name = case_obj['display_name']
     try:
         for nr_variants, variant in enumerate(variants):
-            parsed_variant = parse_variant(
-                variant_dict=variant,
-                case=case_obj,
-                variant_type=variant_type,
-                rank_results_header=rank_results_header
-            )
+            rank_score = parse_rank_score(variant, case_name)
             variant_obj = None
-            if coordinates:
-                if check_coordinates(parsed_variant, coordinates):
+            if chrom or (rank_score > rank_threshold):
+                parsed_variant = parse_variant(
+                    variant_dict=variant,
+                    case=case_obj,
+                    variant_type=variant_type,
+                    rank_results_header=rank_results_header
+                )
+                # If there are coordinates the variant should be loaded
+                if coordinates:
+                    if check_coordinates(parsed_variant, coordinates):
+                        variant_obj = build_variant(
+                            variant=parsed_variant,
+                            institute=institute_obj,
+                        )
+                else:
                     variant_obj = build_variant(
                         variant=parsed_variant,
                         institute=institute_obj,
                     )
-            elif parsed_variant.get('rank_score', 0) > rank_threshold:
-                variant_obj = build_variant(
-                    variant=parsed_variant,
-                    institute=institute_obj,
-                )
 
             if variant_obj:
                 # link gene panels
-                panels = adapter.find_panels(*variant_obj.hgnc_ids)
-                panel_names = set(panel.panel_name for panel in panels)
+                panel_names = set()
+                for hgnc_symbol in variant_obj['hgnc_symbols']:
+                    panel_names = panel_names.union(gene_to_panels.get(hgnc_symbol, set()))
+                
                 variant_obj.panels = list(panel_names)
+
                 try:
                     load_variant(adapter, variant_obj)
                     nr_inserted += 1
@@ -115,18 +146,21 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                     pass
 
             if (nr_variants != 0 and nr_variants % 5000 == 0):
-                logger.info("{} variants processed".format(nr_variants))
-                logger.info("Time to parse variants: {0}".format(
+                logger.info("%s variants parsed" % str(nr_variants))
+                logger.info("Time to parse variants: {} ".format(
                             datetime.now() - start_five_thousand))
                 start_five_thousand = datetime.now()
-
+            
+            if (nr_inserted != 0 and nr_inserted % 5000 == 0):
+                logger.info("%s variants inserted" % nr_inserted)
+    
     except Exception as error:
         logger.warning("Deleting inserted variants")
         delete_variants(adapter, case_obj, variant_type)
         raise error
 
     logger.info("All variants inserted.")
-    logger.info("Number of variants in file: {0}".format(nr_variants))
+    logger.info("Number of variants in file: {0}".format(nr_variants+1))
     logger.info("Number of variants inserted: {0}".format(nr_inserted))
     logger.info("Time to insert variants:{0}".format(
                 datetime.now() - start_insertion))
