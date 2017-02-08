@@ -407,6 +407,7 @@ class Variant(Document):
              '+genes.region_annotation'),
             ('case_id', 'variant_id'),
             ('case_id', 'category', 'variant_type', '-rank_score'),
+            ('case_id', 'category', 'variant_type', 'panels', '-rank_score'),
         ]
     }
 

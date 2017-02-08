@@ -107,7 +107,7 @@ class QueryHandler(object):
             logger.debug("Adding genetic_models: %s to query" %
                          ', '.join(models))
 
-        if 'hgnc_symbols' in query and 'gene_panels' in query:
+        if query.get('hgnc_symbols') and query.get('gene_panels'):
             gene_query = {
                     '$or': [
                         {'hgnc_symbols': {'$in': query['hgnc_symbols']}},
