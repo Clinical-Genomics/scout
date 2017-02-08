@@ -16,7 +16,6 @@ from scout.constants import (CONSERVATION, ACMG_TERMS, GENETIC_MODELS,
                              VARIANT_CALL, CLINSIG_MAP)
 from .gene import Gene
 from scout.models import Event
-from scout.models.panel import GenePanel
 
 
 class Compound(EmbeddedDocument):
@@ -191,7 +190,7 @@ class Variant(Document):
             if gene.common:
                 name = gene.common.hgnc_symbol
                 common_penetrance = gene.common.incomplete_penetrance
-                if hasattr(gene, 'panel_info'):
+                if getattr(gene, 'panel_info', None):
                     panel_penetrance = gene.panel_info.reduced_penetrance
                 else:
                     panel_penetrance = False
@@ -325,7 +324,7 @@ class Variant(Document):
     def refseq_transcripts(self):
         """Yield all transcripts with a RefSeq id."""
         for gene, transcript in self.transcripts:
-            if transcript.common and transcript.common.refseq_id:
+            if getattr(transcript, 'common', None) and transcript.common.refseq_id:
                 yield gene, transcript
 
     @property
