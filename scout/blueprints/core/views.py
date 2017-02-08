@@ -139,7 +139,6 @@ def case(institute_id, case_id):
 def gene_panel(institute_id, case_id, panel_id):
     """Show the list of genes associated with a gene panel."""
     inst_mod, case_model = validate_user(current_user, institute_id, case_id)
-
     # coverage link for gene
     covlink_kwargs = genecov_links(case_model.individuals)
 
@@ -152,11 +151,9 @@ def gene_panel(institute_id, case_id, panel_id):
 
 @core.route('/<institute_id>/<case_id>/assign', methods=['POST'])
 def assign_self(institute_id, case_id):
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
-
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
-    store.assign(institute, case_model, current_user, link)
+    store.assign(inst_mod, case_model, current_user, link)
 
     return redirect(url_for('.case', institute_id=institute_id,
                             case_id=case_id))
@@ -164,11 +161,9 @@ def assign_self(institute_id, case_id):
 
 @core.route('/<institute_id>/<case_id>/unassign', methods=['POST'])
 def remove_assignee(institute_id, case_id):
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
-
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
-    store.unassign(institute, case_model, current_user, link)
+    store.unassign(inst_mod, case_model, current_user, link)
 
     return redirect(url_for('.case', institute_id=institute_id,
                             case_id=case_id))
@@ -177,9 +172,7 @@ def remove_assignee(institute_id, case_id):
 @core.route('/<institute_id>/<case_id>/open_research', methods=['POST'])
 def open_research(institute_id, case_id):
     """Open the research list for a case."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
-
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     # send email to trigger manual load of research variants
     main_recipient = current_app.config['RESEARCH_MODE_RECIPIENT']
 
@@ -187,7 +180,7 @@ def open_research(institute_id, case_id):
     html = """
         <p>{institute}: {case} ({case_id})</p>
         <p>Requested by: {name}</p>
-    """.format(institute=institute.display_name, case=case_model.display_name,
+    """.format(institute=inst_mod.display_name, case=case_model.display_name,
                case_id=case_model.id, name=current_user.name.encode('utf-8'))
 
     # compose and send the email message
@@ -201,7 +194,7 @@ def open_research(institute_id, case_id):
     mail.send(msg)
 
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
-    store.open_research(institute, case_model, current_user, link)
+    store.open_research(inst_mod, case_model, current_user, link)
 
     return redirect(url_for('.case', institute_id=institute_id,
                             case_id=case_id))
@@ -323,7 +316,6 @@ def hpo_genes(username, password, hpo_ids):
 def coverage_report(institute_id, case_id):
     """Serve coverage report for a case directly from the database."""
     inst_mod, case_model = validate_user(current_user, institute_id, case_id)
-
     response = make_response(case_model.coverage_report)
     response.headers['Content-Type'] = 'application/pdf'
     filename = "{}.coverage.pdf".format(case_model.display_name)
@@ -523,14 +515,13 @@ def unpin_variant(institute_id, case_id, variant_id):
             methods=['POST'])
 def mark_causative(institute_id, case_id, variant_id):
     """Mark a variant as confirmed causative."""
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
     link = url_for('.variant', institute_id=institute_id,
                    case_id=case_id, variant_id=variant_id)
     case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
-    store.mark_causative(institute, case_model, current_user, link,
+    store.mark_causative(inst_mod, case_model, current_user, link,
                          variant_model)
 
     # send the user back to the case the was marked as solved
@@ -542,14 +533,13 @@ def mark_causative(institute_id, case_id, variant_id):
 def unmark_causative(institute_id, case_id, variant_id):
     """Remove a variant as confirmed causative for a case."""
     # very basic security check
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     case_url = url_for('.case', institute_id=institute_id, case_id=case_id)
 
     # skip the host part of the URL to make it more flexible
     link = request.referrer.replace(request.host_url, '/')
     variant_model = store.variant(document_id=variant_id)
-    store.unmark_causative(institute, case_model, current_user, link,
+    store.unmark_causative(inst_mod, case_model, current_user, link,
                            variant_model)
 
     # send the user back to the case the was marked as solved
@@ -561,15 +551,14 @@ def unmark_causative(institute_id, case_id, variant_id):
 @login_required
 def email_sanger(institute_id, case_id, variant_id):
     # very basic security check
-    institute = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
 
     if variant_model not in case_model.suspects:
         case_model.suspects.append(variant_model)
         case_model.save()
 
-    recipients = institute.sanger_recipients
+    recipients = inst_mod.sanger_recipients
     if len(recipients) == 0:
         flash('No sanger recipients added to the institute.', 'info')
         return abort(403)
@@ -613,7 +602,7 @@ def email_sanger(institute_id, case_id, variant_id):
     msg = Message(**kwargs)
     mail.send(msg)
 
-    store.order_sanger(institute, case_model, current_user, variant_url,
+    store.order_sanger(inst_mod, case_model, current_user, variant_url,
                        variant_model)
 
     return redirect(variant_url)
@@ -636,13 +625,12 @@ def mark_checked(institute_id, case_id):
 @core.route('/<institute_id>/<case_id>/<variant_id>/validate', methods=['POST'])
 def mark_validation(institute_id, case_id, variant_id):
     """Mark a variant as sanger validated."""
-    institute_model = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     variant_model = store.variant(document_id=variant_id)
     validate_type = request.form['type'] or None
     variant_link = url_for('.variant', institute_id=institute_id,
                            case_id=case_id, variant_id=variant_id)
-    store.validate(institute_model, case_model, current_user, variant_link,
+    store.validate(inst_mod, case_model, current_user, variant_link,
                    variant_model, validate_type)
     return redirect(request.referrer)
 
@@ -664,19 +652,15 @@ def pileup_range():
 @core.route('/<institute_id>/<case_id>/share', methods=['POST'])
 def share_case(institute_id, case_id):
     """Share a case with a different institute."""
-    institute_model = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
-
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     collaborator_id = request.form['collaborator']
     revoke_access = 'revoke' in request.form
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
 
     if revoke_access:
-        store.unshare(institute_model, case_model, collaborator_id,
-                      current_user, link)
+        store.unshare(inst_mod, case_model, collaborator_id, current_user, link)
     else:
-        store.share(institute_model, case_model, collaborator_id,
-                    current_user, link)
+        store.share(inst_mod, case_model, collaborator_id, current_user, link)
 
     return redirect(request.referrer)
 
@@ -684,11 +668,9 @@ def share_case(institute_id, case_id):
 @core.route('/<institute_id>/<case_id>/rerun', methods=['POST'])
 def request_rerun(institute_id, case_id):
     """Request a case to be rerun."""
-    institute_model = validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
-
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
-    store.request_rerun(institute_model, case_model, current_user, link)
+    store.request_rerun(inst_mod, case_model, current_user, link)
 
     # send email to trigger manual load of research variants
     main_recipient = current_app.config['RESEARCH_MODE_RECIPIENT']
@@ -697,7 +679,7 @@ def request_rerun(institute_id, case_id):
     html = """
         <p>{institute}: {case} ({case_id})</p>
         <p>Re-run requested by: {name}</p>
-    """.format(institute=institute_model.display_name,
+    """.format(institute=inst_mod.display_name,
                case=case_model.display_name, case_id=case_model.id,
                name=current_user.name.encode('utf-8'))
 
@@ -710,7 +692,6 @@ def request_rerun(institute_id, case_id):
                   # cc the sender of the email for confirmation
                   cc=[current_user.email])
     mail.send(msg)
-
     return redirect(request.referrer)
 
 
@@ -743,8 +724,7 @@ def hpoterms():
 @core.route('/api/v1/<institute_id>/cases/<case_id>/postpone', methods=['POST'])
 def postpone(institute_id, case_id):
     """Postpone the clean up (archive) date of a case."""
-    validate_user(current_user, institute_id)
-    case_model = store.case(institute_id, case_id)
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
     hk_run = api.runs(case_name=case_model.case_id,
                       run_date=case_model.analyzed_at).first()
     api.postpone(hk_run)
