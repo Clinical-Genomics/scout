@@ -13,28 +13,14 @@ log = logging.getLogger(__name__)
 
 
 @click.command('case', short_help='Load a case')
-@click.option('--vcf', 
-    type=click.Path(exists=True),
-    help='path to clinical VCF file to be loaded'
-)
-@click.option('--vcf-sv', 
-    type=click.Path(exists=True),
-    help='path to clinical SV VCF file to be loaded'
-)
-@click.option('--owner', 
-    help='parent institute for the case', 
-    default='test'
-)
-@click.option('--ped', 
-    type=click.Path(exists=True)
-)
-@click.option('-u', '--update', 
-    is_flag=True
-)
-@click.argument('config', 
-    type=click.File('r'), 
-    required=False
-)
+@click.option('--vcf', type=click.Path(exists=True),
+              help='path to clinical VCF file to be loaded')
+@click.option('--vcf-sv', type=click.Path(exists=True),
+              help='path to clinical SV VCF file to be loaded')
+@click.option('--owner', help='parent institute for the case', default='test')
+@click.option('--ped', type=click.Path(exists=True))
+@click.option('-u', '--update', is_flag=True)
+@click.argument('config', type=click.File('r'), required=False)
 @click.pass_context
 def case(context, vcf, vcf_sv, owner, ped, update, config):
     """Load a case into the database"""
@@ -46,7 +32,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
 
     if not config_data:
         config_data['analysis_date'] = datetime.datetime.now()
-    
+
     if ped:
         with open(ped, 'r') as f:
             family_id, samples = parse_ped(f)
@@ -55,16 +41,16 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     log.info("Use family %s" % config_data['family'])
     # check if the analysis is from a newer analysis
     adapter = context.obj['adapter']
-    
-    if not 'owner' in config_data:
+
+    if 'owner' not in config_data:
         if not owner:
             click.echo("You have to specify the owner of the case")
             context.abort()
         else:
             config_data['owner'] = owner
-    
+
     existing_case = adapter.case(config_data['owner'], config_data['family'])
-    
+
     if existing_case:
         new_analysisdate = config_data.get('analysis_date')
         print(type(new_analysisdate), type(existing_case.analysis_date))
@@ -76,7 +62,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     config_data['vcf_snv'] = vcf if vcf else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['owner'] = config_data.get('owner')
-    config_data['rank_score_threshold'] = config_data.get('rank_score_threshold') or 5
+    config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 5)
 
     if not (config_data.get('vcf_snv') or config_data.get('vcf_sv')):
         log.warn("Please provide a vcf file (use '--vcf')")
@@ -85,7 +71,7 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     if not config_data.get('owner'):
         log.warn("Please provide an owner for the case (use '--owner')")
         context.abort()
-    
+
     try:
         load_scout(adapter, config_data, ped=ped, update=update)
     except (IntegrityError, ValueError, ConfigError, KeyError) as error:
