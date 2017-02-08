@@ -105,7 +105,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
 
             if variant_obj:
                 # link gene panels
-                panels = adapter.find_panels(variant_obj.hgnc_ids)
+                panels = adapter.find_panels(*variant_obj.hgnc_ids)
                 panel_names = set(panel.panel_name for panel in panels)
                 variant_obj.panels = list(panel_names)
                 try:

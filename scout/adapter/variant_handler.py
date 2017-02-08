@@ -52,7 +52,6 @@ class VariantHandler(object):
                     if hgnc_txid in vep_transcripts:
                         vep_transcripts[hgnc_txid].common = hgnc_transcript
 
-
         variant_obj.hgnc_symbols = list(hgnc_symbols)
 
         return variant_obj
