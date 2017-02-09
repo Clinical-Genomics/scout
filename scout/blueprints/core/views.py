@@ -173,30 +173,9 @@ def remove_assignee(institute_id, case_id):
 def open_research(institute_id, case_id):
     """Open the research list for a case."""
     inst_mod, case_model = validate_user(current_user, institute_id, case_id)
-    # send email to trigger manual load of research variants
-    main_recipient = current_app.config['RESEARCH_MODE_RECIPIENT']
-
-    # this should send a JSON document to the SuSy API in the future
-    html = """
-        <p>{institute}: {case} ({case_id})</p>
-        <p>Requested by: {name}</p>
-    """.format(institute=inst_mod.display_name, case=case_model.display_name,
-               case_id=case_model.id, name=current_user.name.encode('utf-8'))
-
-    # compose and send the email message
-    msg = Message(subject=("SCOUT PROD: open research for {}".format(case_model.id)),
-                  html=html,
-                  sender=current_app.config['MAIL_USERNAME'],
-                  recipients=[main_recipient],
-                  # cc the sender of the email for confirmation
-                  cc=[current_user.email])
-    mail.send(msg)
-
     link = url_for('.case', institute_id=institute_id, case_id=case_id)
     store.open_research(inst_mod, case_model, current_user, link)
-
-    return redirect(url_for('.case', institute_id=institute_id,
-                            case_id=case_id))
+    return redirect(url_for('.case', institute_id=institute_id, case_id=case_id))
 
 
 @core.route('/<institute_id>/<case_id>/phenotype_terms', methods=['POST'])
