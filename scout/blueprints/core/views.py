@@ -184,8 +184,7 @@ def open_research(institute_id, case_id):
                case_id=case_model.id, name=current_user.name.encode('utf-8'))
 
     # compose and send the email message
-    msg = Message(subject=("SCOUT: open research mode for {}"
-                           .format(case_model.display_name)),
+    msg = Message(subject=("SCOUT PROD: open research for {}".format(case_model.id)),
                   html=html,
                   sender=current_app.config['MAIL_USERNAME'],
                   recipients=[main_recipient],
