@@ -1,5 +1,7 @@
 import logging
 
+import operator
+
 from mongoengine import DoesNotExist
 
 from scout.models import (HpoTerm, DiseaseTerm)
@@ -8,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 from collections import namedtuple
 
-HpoGene = namedtuple('HpoGene', 'hgnc_symbol count')
+HpoGene = namedtuple('HpoGene', 'hgnc_symbol count total')
 
 class HpoHandler(object):
 
@@ -56,7 +58,7 @@ class HpoHandler(object):
         disease_obj.save()
         logger.debug("Disease term saved")
 
-    def generate_hpo_gene_list(self, hpo_terms):
+    def generate_hpo_gene_list(self, *hpo_terms):
         """Generate a sorted list with namedtuples of hpogenes
         
             Each namedtuple of the list looks like (hgnc_id, count)
@@ -67,4 +69,19 @@ class HpoHandler(object):
             Returns:
                 hpo_genes(list(HpoGene))
         """
-        pass
+        genes = {}
+        for term in hpo_terms:
+            hpo_obj = self.hpo_term(term)
+            if hpo_obj:
+                for hgnc_id in hpo_obj['genes']:
+                    if hgnc_id in genes:
+                        genes[hgnc_id] += 1
+                    else:
+                        genes[hgnc_id] = 1
+            else:
+                logger.warning("Term %s could not be found" % term)
+        
+        sorted_genes = sorted(genes.items(), key=operator.itemgetter(1), reverse=True)
+        
+        return sorted_genes
+                        

@@ -87,7 +87,7 @@ def variants(context, collaborator):
 
     if not collaborator:
         click.echo("Please provide a collaborator to export variants")
-        ctx.abort()
+        context.abort()
 
     header = [
         "##fileformat=VCFv4.2",
@@ -99,6 +99,27 @@ def variants(context, collaborator):
 
     for variant in export_causatives(adapter, collaborator):
         print(variant)
+
+@click.command('hpo_genes', short_help='Export hpo gene list')
+@click.argument('hpo_term',nargs=-1)
+@click.pass_context
+def hpo_genes(context, hpo_term):
+    """Export a list of genes base on hpo terms"""
+    logger.info("Running scout export hpo_genes")
+    adapter = context.obj['adapter']
+    
+    header = ["#Gene_id\tCount"]
+
+    if not hpo_term:
+        click.echo("Please use at least one hpo term")
+        context.abort()
+
+    for line in header:
+        print(line)
+
+    for term in adapter.generate_hpo_gene_list(*hpo_term):
+        print("{0}\t{1}".format(term[0], term[1]))
+
 
 
 @click.group()
@@ -113,4 +134,5 @@ export.add_command(panel)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)
+export.add_command(hpo_genes)
 
