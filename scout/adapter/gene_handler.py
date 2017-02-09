@@ -64,3 +64,10 @@ class GeneHandler(object):
         """Delete the genes collection"""
         logger.info("Dropping the HgncGene collection")
         print(HgncGene.drop_collection())
+
+    def hgncid_to_gene(self):
+        """Return a dictionary with hgnc_id as key and gene_obj as value"""
+        hgnc_dict = {}
+        for gene_obj in self.all_genes():
+            hgnc_dict[gene_obj['hgnc_id']] = gene_obj
+        return hgnc_dict

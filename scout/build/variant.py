@@ -3,7 +3,7 @@ from scout.models import Variant
 from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
 
-def build_variant(variant, institute):
+def build_variant(variant, institute, gene_to_panels = None, hgncid_to_gene=None):
     """Build a mongoengine Variant based on parsed information
 
         Args:
@@ -14,6 +14,9 @@ def build_variant(variant, institute):
         Returns:
             variant_obj(Variant)
     """
+    gene_to_panels = gene_to_panels or {}
+    hgncid_to_gene = hgncid_to_gene or {}
+    
     variant_obj = Variant(
         document_id=variant['ids']['document_id'],
         variant_id=variant['ids']['variant_id'],
@@ -71,7 +74,23 @@ def build_variant(variant, institute):
     variant_obj['genes'] = genes
 
     variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
-    variant_obj['hgnc_symbols'] = variant.get('hgnc_symbols')
+    
+    # Add the hgnc symbols from the database genes
+    hgnc_symbols = []
+    for hgnc_id in variant_obj['hgnc_ids']:
+        gene_obj = hgncid_to_gene.get(hgnc_id)
+        if gene_obj:
+            hgnc_symbols.append(gene_obj.hgnc_symbol)
+    
+    variant_obj['hgnc_symbols'] = hgnc_symbols
+
+    # link gene panels
+    panel_names = set()
+    for hgnc_id in variant_obj['hgnc_ids']:
+        gene_panels = gene_to_panels.get(hgnc_id, set())
+        panel_names = panel_names.union(gene_panels)
+
+    variant_obj['panels'] = list(panel_names)
 
     # Add the clnsig ocbjects
     clnsig_objects = []
