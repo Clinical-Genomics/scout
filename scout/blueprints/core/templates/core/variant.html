@@ -233,6 +233,12 @@
         </tbody>
       </table>
     </div>
+    <ul class="list-group">
+      <li class="list-group-item">
+        Gene panels
+        <span class="pull-right">{{ variant.panels|join(', ') }}</span>
+      </li>
+    </ul>
     <div class="panel-body">
       <form action="{{ url_for('api.manual_rank', institute_id=institute_id, case_id=case_id, variant_id=variant_id) }}" method="POST">
         <label>Priority</label>
