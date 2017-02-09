@@ -7,6 +7,9 @@ from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 
 
 class Gene(EmbeddedDocument):
+
+    meta = {'strict': False}
+
     # The hgnc gene id
     hgnc_id = IntField(required=True)
     # A list of Transcript objects
