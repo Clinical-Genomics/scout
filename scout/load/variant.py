@@ -51,11 +51,11 @@ def get_gene_panels(adapter):
     gene_dict = {}
     for panel in adapter.gene_panel():
         for gene in panel.genes:
-            hgnc_symbol = gene['symbol']
-            if hgnc_symbol in gene_dict:
-                gene_dict[hgnc_symbol].add(panel.panel_name)
+            hgnc_id = gene['hgnc_id']
+            if hgnc_id in gene_dict:
+                gene_dict[hgnc_id].add(panel.panel_name)
             else:
-                gene_dict[hgnc_symbol] = set([panel.panel_name])
+                gene_dict[hgnc_id] = set([panel.panel_name])
     logger.info("Gene to panels")
 
     return gene_dict
@@ -134,8 +134,9 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             if variant_obj:
                 # link gene panels
                 panel_names = set()
-                for hgnc_symbol in variant_obj['hgnc_symbols']:
-                    panel_names = panel_names.union(gene_to_panels.get(hgnc_symbol, set()))
+                for hgnc_id in variant_obj['hgnc_ids']:
+                    gene_panels = gene_to_panels.get(hgnc_id, set())
+                    panel_names = panel_names.union(gene_panels)
 
                 variant_obj.panels = list(panel_names)
 
