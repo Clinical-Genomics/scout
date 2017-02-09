@@ -11,7 +11,7 @@ from flask_mail import Message
 from housekeeper.store import api
 import query_phenomizer
 
-from scout.models import Case, Institute, Variant
+from scout.models import Case, Institute, Variant, HgncGene
 from scout.models.case import STATUS as CASE_STATUSES
 from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb, housekeeper
@@ -227,13 +227,24 @@ def phenotypes_gendel(institute_id, case_id):
             # DELETE a phenotype from the list
             store.remove_phenotype(inst_mod, case_model, current_user,
                                    case_url, hpo_id)
-    elif action == 'GENERATE':
+    elif action == 'PHENOMIZER':
         if len(hpo_ids) == 0:
             hpo_ids = [term.phenotype_id for term in
                        case_model.phenotype_terms]
         update_hpolist(case_model, hpo_ids=hpo_ids)
         case_url = url_for('.case', institute_id=institute_id,
                            case_id=case_id, hpo_id=hpo_ids)
+    elif action == 'GENERATE':
+        if len(hpo_ids) == 0:
+            hpo_ids = [term.phenotype_id for term in
+                       case_model.phenotype_terms]
+        results = store.generate_hpo_gene_list(*hpo_ids)
+        hpo_count = len(hpo_ids)
+        gene_ids = [result[0] for result in results if result[1] == hpo_count]
+        hgnc_genes = (HgncGene.objects(hgnc_id__in=gene_ids)
+                              .only('hgnc_symbol').select_related())
+        hgnc_symbols = [{'gene_id': gene.hgnc_symbol} for gene in hgnc_genes]
+        store.update_dynamic_gene_list(case_model, hgnc_symbols)
 
     return redirect(case_url)
 

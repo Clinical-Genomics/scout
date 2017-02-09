@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from collections import namedtuple
 import logging
 
 import operator
@@ -8,9 +10,8 @@ from scout.models import (HpoTerm, DiseaseTerm)
 
 logger = logging.getLogger(__name__)
 
-from collections import namedtuple
+HpoGene = namedtuple('HpoGene', 'hgnc_id count')
 
-HpoGene = namedtuple('HpoGene', 'hgnc_symbol count total')
 
 class HpoHandler(object):
 
@@ -60,12 +61,12 @@ class HpoHandler(object):
 
     def generate_hpo_gene_list(self, *hpo_terms):
         """Generate a sorted list with namedtuples of hpogenes
-        
+
             Each namedtuple of the list looks like (hgnc_id, count)
-        
+
             Args:
                 hpo_terms(iterable(str))
-        
+
             Returns:
                 hpo_genes(list(HpoGene))
         """
@@ -80,8 +81,6 @@ class HpoHandler(object):
                         genes[hgnc_id] = 1
             else:
                 logger.warning("Term %s could not be found" % term)
-        
+
         sorted_genes = sorted(genes.items(), key=operator.itemgetter(1), reverse=True)
-        
         return sorted_genes
-                        
