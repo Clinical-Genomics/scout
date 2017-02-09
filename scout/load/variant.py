@@ -38,27 +38,15 @@ def check_coordinates(variant, coordinates):
             return True
     return False
 
-def get_gene_panels(adapter):
-    """Fetch all gene panels and group them by gene
 
-        Args:
-            adapter(MongoAdapter)
-        Returns:
-            gene_dict(dict): A dictionary with gene as keys and a list of
-                             panel names as value
-    """
-    logger.info("Building gene to panels")
-    gene_dict = {}
-    for panel in adapter.gene_panel():
-        for gene in panel.genes:
-            hgnc_id = gene['hgnc_id']
-            if hgnc_id in gene_dict:
-                gene_dict[hgnc_id].add(panel.panel_name)
-            else:
-                gene_dict[hgnc_id] = set([panel.panel_name])
-    logger.info("Gene to panels")
-
-    return gene_dict
+def get_rank_results_header(variants):
+    """Return a list with the rank results header"""
+    rank_results_header = []
+    for info_line in variants.metadata.info_lines:
+        if info_line['ID'] == 'RankResult':
+            rank_results_header = info_line['Description'].split('|')
+    return rank_results_header
+    
 
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                   category='snv', rank_threshold=5, chrom=None, start=None,
@@ -83,20 +71,20 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
         raise IntegrityError("Institute {0} does not exist in"
                              " database.".format(case_obj['owner']))
 
-    gene_to_panels = get_gene_panels(adapter)
+    gene_to_panels = adapter.gene_to_panels()
+    
+    hgncid_to_gene = adapter.hgncid_to_gene()
 
     variants = VCFParser(infile=variant_file)
 
-    rank_results_header = []
-    for info_line in variants.metadata.info_lines:
-        if info_line['ID'] == 'RankResult':
-            rank_results_header = info_line['Description'].split('|')
+    rank_results_header = get_rank_results_header(variants)
 
     logger.info("Start inserting variants into database")
     start_insertion = datetime.now()
     start_five_thousand = datetime.now()
     nr_variants = 0
     nr_inserted = 0
+    inserted = 1
 
     coordinates = False
     if chrom:
@@ -106,11 +94,12 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             'end': end
         }
 
-    case_name = case_obj['display_name']
     try:
         for nr_variants, variant in enumerate(variants):
-            rank_score = parse_rank_score(variant, case_name)
+            rank_score = parse_rank_score(variant, case_obj['display_name'])
             variant_obj = None
+            add_variant = False
+            
             if chrom or (rank_score > rank_threshold):
                 parsed_variant = parse_variant(
                     variant_dict=variant,
@@ -118,42 +107,35 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                     variant_type=variant_type,
                     rank_results_header=rank_results_header
                 )
+                add_variant = True
                 # If there are coordinates the variant should be loaded
                 if coordinates:
-                    if check_coordinates(parsed_variant, coordinates):
-                        variant_obj = build_variant(
-                            variant=parsed_variant,
-                            institute=institute_obj,
-                        )
-                else:
+                    if not check_coordinates(parsed_variant, coordinates):
+                        add_variant = False
+                
+                if add_variant:
                     variant_obj = build_variant(
                         variant=parsed_variant,
                         institute=institute_obj,
+                        gene_to_panels = gene_to_panels,
+                        hgncid_to_gene = hgncid_to_gene,
                     )
 
-            if variant_obj:
-                # link gene panels
-                panel_names = set()
-                for hgnc_id in variant_obj['hgnc_ids']:
-                    gene_panels = gene_to_panels.get(hgnc_id, set())
-                    panel_names = panel_names.union(gene_panels)
-
-                variant_obj.panels = list(panel_names)
-
-                try:
-                    load_variant(adapter, variant_obj)
-                    nr_inserted += 1
-                except IntegrityError as error:
-                    pass
-
+                    try:
+                        load_variant(adapter, variant_obj)
+                        nr_inserted += 1
+                    except IntegrityError as error:
+                        pass
+                    
             if (nr_variants != 0 and nr_variants % 5000 == 0):
                 logger.info("%s variants parsed" % str(nr_variants))
                 logger.info("Time to parse variants: {} ".format(
                             datetime.now() - start_five_thousand))
                 start_five_thousand = datetime.now()
 
-            if (nr_inserted != 0 and nr_inserted % 5000 == 0):
+            if (nr_inserted != 0 and nr_inserted % 1000*inserted == 0):
                 logger.info("%s variants inserted" % nr_inserted)
+                inserted += 1
 
     except Exception as error:
         logger.warning("Deleting inserted variants")

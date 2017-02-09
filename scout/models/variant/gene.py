@@ -7,8 +7,10 @@ from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 
 
 class Gene(EmbeddedDocument):
-    # The hgnc gene symbol
+    # The hgnc gene id
     hgnc_id = IntField(required=True)
+    # The hgnc gene symbol
+    hgnc_symbol = StringField()
     # A list of Transcript objects
     transcripts = ListField(EmbeddedDocumentField(Transcript))
     # This is the worst functional impact of all transcripts

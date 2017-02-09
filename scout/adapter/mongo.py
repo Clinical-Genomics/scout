@@ -19,14 +19,14 @@ from mongoengine import (connect, DoesNotExist)
 from mongoengine.connection import (get_connection, _get_db)
 
 from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler,
-               GeneHandler, HpoHandler)
+               GeneHandler, HpoHandler, PanelHandler, InstituteHandler)
 from scout.models import User, HgncGene
 
 logger = logging.getLogger(__name__)
 
 
 class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
-                   GeneHandler, HpoHandler):
+                   GeneHandler, HpoHandler, PanelHandler, InstituteHandler):
 
     """Adapter for cummunication with a mongo database."""
 
