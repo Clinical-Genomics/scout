@@ -68,6 +68,17 @@ class GeneHandler(object):
     def hgncid_to_gene(self):
         """Return a dictionary with hgnc_id as key and gene_obj as value"""
         hgnc_dict = {}
+        logger.info("Building hgncid_to_gene")
         for gene_obj in self.all_genes():
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
+        logger.info("All genes fetched")
+        return hgnc_dict
+    
+    def hgncsymbol_to_gene(self):
+        """Return a dictionary with hgnc_symbol as key and gene_obj as value"""
+        hgnc_dict = {}
+        logger.info("Building hgncsymbol_to_gene")
+        for gene_obj in self.all_genes():
+            hgnc_dict[gene_obj['hgnc_symbol']] = gene_obj
+        logger.info("All genes fetched")
         return hgnc_dict

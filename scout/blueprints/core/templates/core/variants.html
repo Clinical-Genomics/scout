@@ -21,14 +21,19 @@
 
 {% block top_nav_right %}
   <li><p class="navbar-text">Panels: {{ current_gene_lists|join(',') or 'All' }}</p></li>
-  <li>
-    <a href="{{ url_for('core.variants',
-                        institute_id=institute_id,
-                        case_id=case_id,
-                        variant_type=variant_type,
-                        gene_panels=['hpo']) }}">
-      HPO gene list
-    </a>
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">HPO panels <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li>
+        <a href="{{ url_for('core.variants',
+                            institute_id=institute_id,
+                            case_id=case_id,
+                            variant_type=variant_type,
+                            gene_panels=['hpo']) }}">
+          HPO gene list
+        </a>
+      </li>
+    </ul>
   </li>
   <li>
     <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_panels=case.default_panel_ids) }}">Reset filters</a>

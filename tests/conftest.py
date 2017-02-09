@@ -352,34 +352,64 @@ def user_obj(request, parsed_user):
 @pytest.fixture(scope='function')
 def gene_database(request, adapter, genes):
     "Returns an adapter to a database populated with user, institute and case"
+
     load_hgnc_genes(adapter, genes)
 
     return adapter
 
 @pytest.fixture(scope='function')
-def panel_database(request, gene_database, panel_info, institute_obj, parsed_user):
+def hpo_database(request, gene_database, hpo_terms_handle, hpo_disease_handle):
+    "Returns an adapter to a database populated with hpo terms"
+    adapter = gene_database
+
+    load_hpo(
+        adapter=adapter,
+        hpo_lines=hpo_terms_handle,
+        disease_lines=hpo_disease_handle,
+    )
+
+    return adapter
+
+
+@pytest.fixture(scope='function')
+def panel_database(request, hpo_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
-    mongo_adapter = gene_database
-    mongo_adapter.add_institute(institute_obj)
-    mongo_adapter.getoradd_user(
+    adapter = hpo_database
+
+    load_panel(
+        adapter=adapter,
+        panel_info=panel_info
+    )
+
+    return adapter
+
+@pytest.fixture(scope='function')
+def institute_database(request, adapter, institute_obj, parsed_user):
+    "Returns an adapter to a database populated with institute"
+    adapter.add_institute(institute_obj)
+    adapter.getoradd_user(
         email=parsed_user['email'],
         name=parsed_user['name'],
         location=parsed_user['location'],
         institutes=parsed_user['institutes']
     )
-    load_panel(
-        adapter=mongo_adapter,
-        panel_info=panel_info
-    )
 
-    return mongo_adapter
-
+    return adapter
 
 @pytest.fixture(scope='function')
-def populated_database(request, gene_database, institute_obj, parsed_user, 
-    case_obj, hpo_terms_handle, hpo_disease_handle):
-    "Returns an adapter to a database populated with user, institute and case"
-    adapter = gene_database
+def case_database(request, institute_database, case_obj):
+    "Returns an adapter to a database populated with institute, user and case"
+    adapter = institute_database
+
+    adapter.add_case(case_obj)
+
+    return adapter
+
+@pytest.fixture(scope='function')
+def populated_database(request, panel_database, institute_obj, parsed_user, case_obj):
+    "Returns an adapter to a database populated with user, institute case, genes, panels"
+    adapter = panel_database
+
     adapter.add_institute(institute_obj)
     adapter.getoradd_user(
         email=parsed_user['email'],
@@ -388,20 +418,6 @@ def populated_database(request, gene_database, institute_obj, parsed_user,
         institutes=parsed_user['institutes']
     )
     adapter.add_case(case_obj)
-    
-    load_hpo(
-        adapter=adapter,
-        hpo_lines=hpo_terms_handle, 
-        disease_lines=hpo_disease_handle, 
-    )
-    
-    # load_hgnc_genes(
-    #     adapter=adapter,
-    #     ensembl_lines=ensembl_handle,
-    #     hgnc_lines=hgnc_handle,
-    #     exac_lines=exac_handle,
-    #     hpo_lines=hpo_handle
-    # )
 
     return adapter
 

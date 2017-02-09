@@ -7,49 +7,54 @@ from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 
+from scout.models.hgnc_map import HgncGene
+from scout.models.phenotype_term import HpoTerm
+
 logger = logging.getLogger(__name__)
 
-def test_assign(populated_database, institute_obj, case_obj, user_obj):
+def test_assign(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     logger.info("Testing assign a user to a case")
-    # GIVEN a populated database
-    institute = populated_database.institute(
-        institute_id=institute_obj.internal_id
+    # GIVEN a populated databas
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
     )
-    case = populated_database.case(
-        institute_id=institute_obj.internal_id, 
-        case_id=case_obj.display_name
+    case = adapter.case(
+        institute_id=institute_obj['internal_id'], 
+        case_id=case_obj['display_name']
     )
-    user = populated_database.user(
-        email = user_obj.email
+    user = adapter.user(
+        email = user_obj['email']
     )
     # WHEN assigning a user to a case
-    populated_database.assign(
+    adapter.assign(
         institute=institute,
         case=case,
         user=user,
         link='assignlink'
     )
-    updated_case = Case.objects.get(case_id=case_obj.case_id)
+    updated_case = Case.objects.get(case_id=case_obj['case_id'])
     # THEN the case should have the user assigned
-    assert updated_case.assignee == user
+    assert updated_case['assignee'] == user
     # THEN an event should have been created
     event = Event.objects.get(verb='assign')
-    assert event.link == 'assignlink'
+    assert event['link'] == 'assignlink'
 
 
-def test_unassign(populated_database, institute_obj, case_obj, user_obj):
+def test_unassign(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     print('')
-    institute = populated_database.institute(
-        institute_id=institute_obj.internal_id
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
     )
-    case = populated_database.case(
-        institute_id=institute_obj.internal_id, 
-        case_id=case_obj.display_name
+    case = adapter.case(
+        institute_id=institute_obj['internal_id'], 
+        case_id=case_obj['display_name']
     )
-    user = populated_database.user(
-        email = user_obj.email
+    user = adapter.user(
+        email = user_obj['email']
     )
-    populated_database.assign(
+    adapter.assign(
         institute=institute,
         case=case,
         user=user,
@@ -57,10 +62,10 @@ def test_unassign(populated_database, institute_obj, case_obj, user_obj):
     )
     #The user should be added as assignee to the case
     # GIVEN a assigned case
-    updated_case = Case.objects.get(case_id=case_obj.case_id)
+    updated_case = Case.objects.get(case_id=case_obj['case_id'])
 
     # WHEN unassigning a user from a case
-    populated_database.unassign(
+    adapter.unassign(
         institute=institute,
         case=updated_case,
         user=user,
@@ -68,30 +73,31 @@ def test_unassign(populated_database, institute_obj, case_obj, user_obj):
     )
 
     # THEN the case should not be assigned
-    updated_case = Case.objects.get(case_id=case_obj.case_id)
-    assert updated_case.assignee == None
+    updated_case = Case.objects.get(case_id=case_obj['case_id'])
+    assert updated_case['assignee'] == None
     # THEN a unassign event should be created
     event = Event.objects.get(verb='unassign')
-    assert event.link == 'unassignlink'
+    assert event['link'] == 'unassignlink'
 
 
-def test_update_synopsis(populated_database, institute_obj, case_obj, user_obj):
+def test_update_synopsis(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     synopsis = "The updated synopsis"
     logger.info("Testing assign a user to a case")
     # GIVEN a populated database
-    institute = populated_database.institute(
-        institute_id=institute_obj.internal_id
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
     )
-    case = populated_database.case(
-        institute_id=institute_obj.internal_id, 
-        case_id=case_obj.display_name
+    case = adapter.case(
+        institute_id=institute_obj['internal_id'], 
+        case_id=case_obj['display_name']
     )
-    user = populated_database.user(
-        email = user_obj.email
+    user = adapter.user(
+        email = user_obj['email']
     )
 
     # WHEN updating synopsis for a case
-    populated_database.update_synopsis(
+    adapter.update_synopsis(
         institute=institute,
         case=case,
         user=user,
@@ -99,86 +105,109 @@ def test_update_synopsis(populated_database, institute_obj, case_obj, user_obj):
         content=synopsis
     )
     # THEN the case should have the synopsis added
-    updated_case = Case.objects.get(case_id=case_obj.case_id)
+    updated_case = Case.objects.get(case_id=case_obj['case_id'])
     assert updated_case.synopsis == synopsis
 
     # THEN an event for synopsis should have been added
     event = Event.objects.get(verb='synopsis')
-    assert event.content == synopsis
+    assert event['content'] == synopsis
 
-def test_archive_case(populated_database, institute_obj, case_obj, user_obj):
+def test_archive_case(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     logger.info("Set a case to archive status")
     # GIVEN a populated database
-    institute = populated_database.institute(
-        institute_id=institute_obj.internal_id
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
     )
-    case = populated_database.case(
-        institute_id=institute_obj.internal_id, 
-        case_id=case_obj.display_name
+    case = adapter.case(
+        institute_id=institute_obj['internal_id'], 
+        case_id=case_obj['display_name']
     )
-    user = populated_database.user(
-        email = user_obj.email
+    user = adapter.user(
+        email = user_obj['email']
     )
     # WHEN setting a case in archive status
-    populated_database.archive_case(
+    adapter.archive_case(
         institute=institute,
         case=case,
         user=user,
         link='archivelink',
     )
     # THEN the case status should be archived
-    updated_case = Case.objects.get(case_id=case_obj.case_id)
-    assert updated_case.status == 'archived'
+    updated_case = Case.objects.get(case_id=case_obj['case_id'])
+    assert updated_case['status'] == 'archived'
 
     # THEN a event for archiving should be added
     event = Event.objects.get(verb='archive')
-    assert event.link == 'archivelink'
+    assert event['link'] == 'archivelink'
 
-def test_open_research(populated_database, institute_obj, case_obj, user_obj):
+def test_open_research(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     logger.info("Open research for a case")
     # GIVEN a populated database
-    institute = populated_database.institute(
-        institute_id=institute_obj.internal_id
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
     )
-    case = populated_database.case(
-        institute_id=institute_obj.internal_id, 
-        case_id=case_obj.display_name
+    case = adapter.case(
+        institute_id=institute_obj['internal_id'], 
+        case_id=case_obj['display_name']
     )
-    user = populated_database.user(
-        email = user_obj.email
+    user = adapter.user(
+        email = user_obj['email']
     )
     # WHEN setting opening research for a case
-    populated_database.open_research(
+    adapter.open_research(
         institute=institute,
         case=case,
         user=user,
         link='openresearchlink',
     )
     # THEN research_requested should be True
-    updated_case = Case.objects.get(case_id=case_obj.case_id)
-    assert updated_case.research_requested == True
+    updated_case = Case.objects.get(case_id=case_obj['case_id'])
+    assert updated_case['research_requested'] == True
 
     # THEN an event for opening research should be created
     event = Event.objects.get(verb='open_research')
-    assert event.link == 'openresearchlink'
+    assert event['link'] == 'openresearchlink'
     event.delete()
 
-def test_add_hpo(populated_database, institute_obj, case_obj, user_obj):
+def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     logger.info("Add a HPO term for a case")
     # GIVEN a populated database
-    hpo_term = 'HP:0000878'
-    institute = populated_database.institute(
+    gene_obj = HgncGene(
+        hgnc_id = 1,
+        hgnc_symbol = 'test',
+        ensembl_id = 'anothertest',
+        chromosome = '1',
+        start = 10,
+        end = 20,
+    )
+    adapter.load_hgnc_gene(gene_obj)
+    
+    hpo_obj = HpoTerm(
+        hpo_id = 'HP:0000878',
+        description = 'A term',
+        genes = [1]
+    )
+
+    adapter.load_hpo_term(hpo_obj)
+    
+    hpo_term = hpo_obj.hpo_id
+    
+    institute = adapter.institute(
         institute_id=institute_obj.internal_id
     )
-    case = populated_database.case(
+    case = adapter.case(
         institute_id=institute_obj.internal_id, 
         case_id=case_obj.display_name
     )
-    user = populated_database.user(
+    user = adapter.user(
         email = user_obj.email
     )
+    
     # WHEN adding a hpo term for a case
-    populated_database.add_phenotype(
+    adapter.add_phenotype(
         institute=institute,
         case=case,
         user=user,
@@ -245,22 +274,23 @@ def test_add_no_term(populated_database, institute_obj, case_obj, user_obj):
         )
 
 def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_obj):
+    adapter = populated_database
     logger.info("Add OMIM term for a case")
     #Non existing mim phenotype
     mim_term = 'MIM:0000002'
     # GIVEN a populated database
-    institute = populated_database.institute(
+    institute = adapter.institute(
         institute_id=institute_obj.internal_id
     )
-    case = populated_database.case(
+    case = adapter.case(
         institute_id=institute_obj.internal_id, 
         case_id=case_obj.display_name
     )
-    user = populated_database.user(
+    user = adapter.user(
         email = user_obj.email
     )
     # WHEN adding a non existing phenotype term
-    populated_database.add_phenotype(
+    adapter.add_phenotype(
         institute=institute,
         case=case,
         user=user,
@@ -276,23 +306,24 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
         event = Event.objects.get(verb='add_phenotype')
 
 def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
+    adapter = populated_database
     logger.info("Add OMIM term for a case")
     #Existing mim phenotype
     mim_term = 'OMIM:613855'
     
     # GIVEN a populated database
-    institute = populated_database.institute(
+    institute = adapter.institute(
         institute_id=institute_obj.internal_id
     )
-    case = populated_database.case(
+    case = adapter.case(
         institute_id=institute_obj.internal_id, 
         case_id=case_obj.display_name
     )
-    user = populated_database.user(
+    user = adapter.user(
         email = user_obj.email
     )
     # WHEN adding a existing phenotype term
-    populated_database.add_phenotype(
+    adapter.add_phenotype(
         institute=institute,
         case=case,
         user=user,
@@ -308,20 +339,41 @@ def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
         assert event.link == 'mimlink'
         event.delete()
 
-def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
+def test_remove_hpo(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
     logger.info("Add a HPO term for a case")
-    hpo_term = 'HP:0000878'
-    institute = populated_database.institute(
+    
+    gene_obj = HgncGene(
+        hgnc_id = 1,
+        hgnc_symbol = 'test',
+        ensembl_id = 'anothertest',
+        chromosome = '1',
+        start = 10,
+        end = 20,
+    )
+    adapter.load_hgnc_gene(gene_obj)
+    
+    hpo_obj = HpoTerm(
+        hpo_id = 'HP:0000878',
+        description = 'A term',
+        genes = [1]
+    )
+
+    adapter.load_hpo_term(hpo_obj)
+    
+    hpo_term = hpo_obj.hpo_id
+    
+    institute = adapter.institute(
         institute_id=institute_obj.internal_id
     )
-    case = populated_database.case(
+    case = adapter.case(
         institute_id=institute_obj.internal_id, 
         case_id=case_obj.display_name
     )
-    user = populated_database.user(
+    user = adapter.user(
         email = user_obj.email
     )
-    populated_database.add_phenotype(
+    adapter.add_phenotype(
         institute=institute,
         case=case,
         user=user,
@@ -329,7 +381,7 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
         hpo_term=hpo_term
     )
     
-    #Assert that the synopsis has been added to the case
+    #Assert that the term was added to the case
     updated_case = Case.objects.get(case_id=case_obj.case_id)
     for term in updated_case.phenotype_terms:
         assert term.phenotype_id == hpo_term
@@ -338,10 +390,8 @@ def test_remove_hpo(populated_database, institute_obj, case_obj, user_obj):
     event = Event.objects.get(verb='add_phenotype')
     assert event.link == 'addhpolink'
     
-    # GIVEN a populated database where a phenotype term was added
-
     # WHEN removing the phenotype term
-    populated_database.remove_phenotype(
+    adapter.remove_phenotype(
         institute=institute,
         case=updated_case,
         user=user,
