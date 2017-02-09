@@ -549,6 +549,8 @@ def email_sanger(institute_id, case_id, variant_id):
     gtcalls = ["<li>{}: {}</li>".format(individual.display_name,
                                         individual.genotype_call)
                for individual in variant_model.samples]
+    tx_changes = ["<li>{}</li>".format(transcript.stringify(gene.common.hgnc_symbol))
+                  for gene, transcript in variant_model.refseq_transcripts]
 
     html = """
       <ul">
@@ -556,17 +558,20 @@ def email_sanger(institute_id, case_id, variant_id):
           <strong>Case {case_id}</strong>: <a href="{url}">{variant_id}</a>
         </li>
         <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
-
+        <li><strong>Gene panels</strong>: {panels}</li>
         <li><strong>GT call</strong></li>
         {gtcalls}
-
+        <li><strong>Amino acid changes</strong></li>
+        {tx_changes}
         <li><strong>Ordered by</strong>: {name}</li>
       </ul>
     """.format(case_id=case_id,
                url=variant_url,
                variant_id=variant_model.display_name,
                hgnc_symbol=hgnc_symbol,
+               panels=', '.format(variant_model.panels),
                gtcalls=''.join(gtcalls),
+               tx_changes=''.join(tx_changes),
                name=current_user.name.encode('utf-8'))
 
     kwargs = dict(subject="SCOUT: Sanger sequencing of %s" % hgnc_symbol,

@@ -57,12 +57,14 @@ class Transcript(EmbeddedDocument):
     def refseq_ids_string(self):
         return ', '.join(self.refseq_ids)
 
-    def stringify(self):
+    def stringify(self, gene_name=None):
         """Generate amino acid change as a string."""
-        return ("{this.transcript_id}:"
-                "exon{this.absolute_exon}:{this.coding_sequence_name}:"
-                "{this.protein_sequence_name}"
-                .format(this=self))
+        change_str = ("{this.common.refseq_id}:"
+                      "exon{this.absolute_exon}:{this.coding_sequence_name}:"
+                      "{this.protein_sequence_name}".format(this=self))
+        if gene_name:
+            change_str = "{}:".format(gene_name) + change_str
+        return change_str
 
     @property
     def absolute_exon(self):
