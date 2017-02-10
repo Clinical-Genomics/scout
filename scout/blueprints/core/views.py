@@ -239,8 +239,9 @@ def phenotypes_gendel(institute_id, case_id):
             hpo_ids = [term.phenotype_id for term in
                        case_model.phenotype_terms]
         results = store.generate_hpo_gene_list(*hpo_ids)
-        hpo_count = len(hpo_ids)
-        gene_ids = [result[0] for result in results if result[1] == hpo_count]
+        # determine how many HPO terms each gene must match
+        hpo_count = int(request.form.get('min_match', len(hpo_ids)))
+        gene_ids = [result[0] for result in results if result[1] >= hpo_count]
         hgnc_genes = (HgncGene.objects(hgnc_id__in=gene_ids)
                               .only('hgnc_symbol').select_related())
         hgnc_symbols = [{'gene_id': gene.hgnc_symbol} for gene in hgnc_genes]

@@ -460,14 +460,19 @@
       </ul>
       <div class="panel-footer">
         <div class="row">
-          <div class="col-xs-4">
+          <div class="col-xs-3">
             <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
           <div class="col-xs-4">
             <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
           </div>
-          <div class="col-xs-4">
-            <button class="btn btn-default form-control" type="submit" name="action" value="GENERATE">HPO panel</button>
+          <div class="col-xs-5">
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" name="action" value="GENERATE">HPO panel</button>
+              </span>
+              <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
+            </div>
           </div>
         </div>
       </div>
