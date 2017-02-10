@@ -5,13 +5,6 @@ from mongoengine import (Document, StringField, ListField, EmbeddedDocument,
                          BooleanField)
 
 
-class HgncAlias(Document):
-    #This works like a dictionary where hgnc_symbol is the correct id and
-    #values are all aliases
-    hgnc_symbol = StringField(required=True)
-    aliases = ListField(StringField())
-
-
 class HgncTranscript(EmbeddedDocument):
     ensembl_transcript_id = StringField(required=True)
     refseq_id = StringField()
