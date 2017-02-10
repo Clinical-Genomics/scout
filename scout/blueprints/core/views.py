@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
-import itertools
 import os.path
 
 from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
-                   url_for, make_response, Response)
+                   url_for, make_response, Response, render_template)
 from flask_login import login_required, current_user
 from flask_mail import Message
 from housekeeper.store import api
@@ -231,9 +230,20 @@ def phenotypes_gendel(institute_id, case_id):
         if len(hpo_ids) == 0:
             hpo_ids = [term.phenotype_id for term in
                        case_model.phenotype_terms]
-        update_hpolist(case_model, hpo_ids=hpo_ids)
-        case_url = url_for('.case', institute_id=institute_id,
-                           case_id=case_id, hpo_id=hpo_ids)
+
+        username = current_app.config['PHENOMIZER_USERNAME']
+        password = current_app.config['PHENOMIZER_PASSWORD']
+        diseases = hpo_diseases(username, password, hpo_ids)
+        return render_template('core/diseases.html', diseases=diseases,
+                               institute=inst_mod, case=case_model)
+
+    elif action == 'GENES':
+        hgnc_symbols = set()
+        for raw_symbols in request.form.getlist('genes'):
+            hgnc_symbols.update(raw_symbols.split('|'))
+        gene_dicts = [{'gene_id': hgnc_symbol} for hgnc_symbol in hgnc_symbols]
+        store.update_dynamic_gene_list(case_model, gene_dicts)
+
     elif action == 'GENERATE':
         if len(hpo_ids) == 0:
             hpo_ids = [term.phenotype_id for term in
@@ -250,18 +260,6 @@ def phenotypes_gendel(institute_id, case_id):
     return redirect(case_url)
 
 
-def update_hpolist(case_model, hpo_ids):
-    # fetch genes to update dynamic gene list
-    try:
-        username = current_app.config['PHENOMIZER_USERNAME']
-        password = current_app.config['PHENOMIZER_PASSWORD']
-        gene_ids = [{'gene_id': gene_id} for gene_id in
-                    hpo_genes(username, password, hpo_ids)]
-    except KeyError:
-        gene_ids = []
-    store.update_dynamic_gene_list(case_model, gene_ids)
-
-
 def sampleid_map(case_model):
     # map internal + external sample ids
     sample_map = {"alt_{}".format(sample.individual_id): sample.display_name
@@ -271,7 +269,7 @@ def sampleid_map(case_model):
     return sample_map
 
 
-def hpo_genes(username, password, hpo_ids):
+def hpo_diseases(username, password, hpo_ids, p_value_treshold=0.1):
     """Return the list of HGNC symbols that match annotated HPO terms.
 
     Args:
@@ -279,25 +277,22 @@ def hpo_genes(username, password, hpo_ids):
         password (str): password to use for phenomizer connection
 
     Returns:
-        query_result: a list of dictionaries on the form
+        query_result: a generator of dictionaries on the form
         {
             'p_value': float,
-            'gene_id': str,
-            'omim_id': int,
-            'orphanet_id': int,
-            'decipher_id': int,
-            'any_id': int,
-            'mode_of_inheritance': str,
+            'disease_source': str,
+            'disease_nr': int,
+            'gene_symbols': list(str),
             'description': str,
             'raw_line': str
         }
     """
     # skip querying Phenomizer unless at least one HPO terms exists
     try:
-        results = query_phenomizer.query(username, password, hpo_ids)
-        nested_genes = [result['gene_id'].split(', ') for result in results
-                        if result['gene_id'] and result['p_value'] is not None]
-        return list(set(itertools.chain.from_iterable(nested_genes)))
+        results = query_phenomizer.query(username, password, *hpo_ids)
+        diseases = [result for result in results
+                    if result['p_value'] >= p_value_treshold]
+        return diseases
     except SystemExit:
         return None
 
