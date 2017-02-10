@@ -21,8 +21,8 @@ import logging
 import click
 
 from scout.load import load_hgnc_genes
-from scout.resources import (hgnc_path, exac_path, transcripts_path, 
-                             hpogenes_path)
+from scout.resources import (hgnc_path, exac_path, transcripts37_path, 
+                             transcripts38_path, hpogenes_path)
 
 
 from scout.utils.link import link_genes
@@ -36,10 +36,15 @@ logger = logging.getLogger(__name__)
                 default=hgnc_path,
                 help="Path to hgnc file",
 )
-@click.option('--ensembl',
+@click.option('--ensembl37',
                 type=click.Path(exists=True),
-                default=transcripts_path,
-                help="Path to ensembl transcripts file",
+                default=transcripts37_path,
+                help="Path to ensembl transcripts build 37 file",
+)
+@click.option('--ensembl38',
+                type=click.Path(exists=True),
+                default=transcripts38_path,
+                help="Path to ensembl transcripts build 38 file",
 )
 @click.option('--exac',
                 type=click.Path(exists=True),
@@ -55,19 +60,30 @@ logger = logging.getLogger(__name__)
                 is_flag=True,
                 help="If the gene set should be rebuilded"
 )
+@click.option('--build',
+                type=click.Choice(['37', '38']),
+                default='37',
+                help="If the gene set should be rebuilded"
+)
 @click.pass_context
-def genes(ctx, hgnc, ensembl, exac, hpo, update):
+def genes(ctx, hgnc, ensembl37, ensembl38, exac, hpo, update, build):
     """
-    Load the hgnc aliases to the mongo database.
+    Load the hgnc genes to the mongo database.
     """
     adapter=ctx.obj['adapter']
-    
+
     #Test if the genes are loaded
-    gene = adapter.hgnc_gene(257)
-    if gene:
+    if build == '37':
+        ensembl = ensembl37
+    else:
+        ensembl = ensembl38
+
+    nr_genes = adapter.hgnc_gene(build=build).count()
+    logger.info("Nr of genes in build %s: %s" % (build, nr_genes))
+    if nr_genes != 0:
         if update:
             logger.warning("Dropping all gene information")
-            adapter.drop_genes()
+            adapter.drop_genes(build)
             logger.info("Genes dropped")
         else:
             logger.info("Genes are already loaded")
@@ -79,28 +95,29 @@ def genes(ctx, hgnc, ensembl, exac, hpo, update):
         ctx.abort()
 
     logger.info("Loading hgnc file from {0}".format(hgnc))
-    hgnc_handle = get_file_handle(hgnc)
-    
+    hgnc_lines = get_file_handle(hgnc)
+
     logger.info("Loading ensembl transcript file from {0}".format(
                 ensembl))
-    ensembl_handle = get_file_handle(ensembl)
-    
+    ensembl_lines = get_file_handle(ensembl)
+
     logger.info("Loading exac gene file from {0}".format(
                 exac))
-    exac_handle = get_file_handle(exac)
-    
+    exac_lines = get_file_handle(exac)
+
     logger.info("Loading HPO gene file from {0}".format(
                 hpo))
-    hpo_handle = get_file_handle(hpo)
-    
+    hpo_lines = get_file_handle(hpo)
+
     genes = link_genes(
         ensembl_lines=ensembl_lines,
         hgnc_lines=hgnc_lines,
         exac_lines=exac_lines,
         hpo_lines=hpo_lines,
     )
-    
+
     load_hgnc_genes(
         adapter=adapter,
-        genes=genes, 
+        genes=genes,
+        build=build
     )

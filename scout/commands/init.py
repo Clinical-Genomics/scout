@@ -15,7 +15,7 @@ import logging
 
 import click
 
-from scout.resources import (hgnc_path, exac_path, transcripts_path,
+from scout.resources import (hgnc_path, exac_path, transcripts37_path,
                              hpogenes_path, hpoterms_path, hpodisease_path)
 from scout.build import build_institute
 from scout.models import (User, Whitelist)
@@ -67,8 +67,8 @@ def init(ctx, institute_name, user_name, user_mail):
     hgnc_handle = get_file_handle(hgnc_path)
 
     logger.info("Loading ensembl transcript file from {0}".format(
-                transcripts_path))
-    ensembl_handle = get_file_handle(transcripts_path)
+                transcripts37_path))
+    ensembl_handle = get_file_handle(transcripts37_path)
 
     logger.info("Loading exac gene file from {0}".format(
                 exac_path))
