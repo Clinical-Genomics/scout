@@ -38,6 +38,7 @@ def research(context, case_id, institute, force):
         # Fetch all cases that have requested research
         case_objs = adapter.cases(research_requested=True)
 
+    default_threshold = 9
     for case_obj in case_objs:
         if force or case_obj.research_requested:
             log.info("Load research SNV for: %s", case_obj.case_id)
@@ -47,7 +48,7 @@ def research(context, case_id, institute, force):
                 case_obj=case_obj,
                 variant_type='research',
                 category='snv',
-                rank_threshold=case_obj.rank_score_threshold,
+                rank_threshold=default_threshold,
             )
             if case_obj.vcf_files.get('vcf_sv_research'):
                 log.info("Load research SV for: %s", case_obj.case_id)
@@ -57,7 +58,7 @@ def research(context, case_id, institute, force):
                     case_obj=case_obj,
                     variant_type='research',
                     category='sv',
-                    rank_threshold=case_obj.rank_score_threshold,
+                    rank_threshold=default_threshold,
                 )
             case_obj.is_research = True
             case_obj.research_requested = False
