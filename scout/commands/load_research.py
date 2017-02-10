@@ -2,7 +2,7 @@ import logging
 
 import click
 
-from scout.load.variant import load_variants
+from scout.load.variant import load_variants, delete_variants
 
 log = logging.getLogger(__name__)
 
@@ -38,9 +38,12 @@ def research(context, case_id, institute, force):
         # Fetch all cases that have requested research
         case_objs = adapter.cases(research_requested=True)
 
-    default_threshold = 9
+    default_threshold = 8
     for case_obj in case_objs:
         if force or case_obj.research_requested:
+            log.info("Delete variants for case %s", case_obj.case_id)
+            delete_variants(adapter=adapter, case_obj=case_obj, variant_type='research')
+
             log.info("Load research SNV for: %s", case_obj.case_id)
             load_variants(
                 adapter=adapter,
