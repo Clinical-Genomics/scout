@@ -32,7 +32,7 @@ def add_transcript(gene, parsed_transcript):
             gene['transcripts'][enstid] = parsed_transcript
 
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
     """Gather information from different sources and return a gene dict
 
         Extract information collected from a number of sources and combine them
@@ -58,6 +58,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines):
         gene = {}
         gene['hgnc_id'] = hgnc_id
         gene['hgnc_symbol'] = hgnc_symbol
+        gene['build'] = build
         gene['previous_symbols'] = hgnc_gene['previous']
         gene['description'] = hgnc_gene['description']
         gene['omim_ids'] = hgnc_gene['omim_ids']
