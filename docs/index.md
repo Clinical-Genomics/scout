@@ -1,45 +1,29 @@
 # Scout
+
 Analyze VCFs quicker and easier.
 
 --------------
 
-## Overview
-Scout is a **visualizer for VCF files** intended for a clinical audience. As such it will enable advanced features like variant filters in an intutative web interface. Scout enables team collaboration by URL sharing and user comments tied to families and variants.
+## Introduction
 
---------------
+Scout is a web-based **visualizer for VCF files** intended for a clinical audience. Analysis of genomics data generates massive amounts of information. Our tool bridges the gap between the raw output and something that anyone with genetic background can use to analyze and filter out interesting variants involved in rare inherited diseases. Scout also leverages it's centralized database to enable team collaboration through user comments, prioritization and customizable sharing of cases.
 
-**N.B. Portable version of Scout.**
-A more easily installable version of Scout is under early development and we will make further announcements when it's ready for testing.
+## Getting Started
 
---------------
+The general work flow when you work in Scout look something like this:
 
-## Motivation
-DNA sequencing is quickly entering clinical settings. As such doctors and genetcists need tools that cater to non-bioinformatians. Scout is an attempt to provide a simple interface for bioinformaticians and clinicians alike to collaborate on the interpretation of variant calling results.
+### Log in to access your institute's data
 
---------------
+Each user can belong to one or more "institutes" which is used to determine what data you are allowed to see. We rely on [Google OAuth][google-signin] to facilitate the authentication by using Google accounts.
 
-## Installation
-For now, install as:
+### Review the status of ongoing cases
 
-```bash
-$ pip install git+https://github.com/Clinical-Genomics/scout.git
-```
+This view provides a high level overview of all your institutes cases. You can see who is assigned a case, whether new data has recently been uploaded, the type of sequencing etc.
 
-Extended installation instructions, including how to setup MongoDB, will be added in the future. We also plan to define a Vagrantfile to setting up a demo/development environment for testing.
-
---------------
-
-### Roadmap
-We are trying to build Scout piece-by-piece. This is the prioritized order we are planning on implementing those pieces.
-
-1. Release a MVP of the working interface (core functionality)
-2. Take in a first round of feedback from close collaborators
-3. Make sure that the package is installable with pip and/or Vagrant
-
-	- Include logging and error reports
-	- Setup testing suite
-
---------------
+### More to come...
 
 ## Contributing
 See [Development](development).
+
+
+[google-signin]: https://developers.google.com/identity/
