@@ -22,7 +22,7 @@ samples:
     phenotype: str(mandatory), [affected, unaffected, unknown]
     sex: str(mandatory), [male, female, unknown]
     expected_coverage: int(mandatory)
-  
+
 vcf_snv: str(optional)
 vcf_sv: str(optional)
 vcf_snv_research: str(optional)
