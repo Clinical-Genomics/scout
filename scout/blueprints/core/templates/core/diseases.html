@@ -7,7 +7,7 @@
 {% block content_main %}
   <form action="{{ url_for('core.phenotypes_gendel', institute_id=institute.id, case_id=case.display_name) }}" method="POST">
     <div class="panel panel-default">
-      <table class="table table-bordered">
+      <table class="table table-bordered table-hover">
         <thead>
           <tr>
             <th>Select</th>
@@ -26,7 +26,11 @@
                 </div>
               </td>
               <td>{{ disease.p_value }}</td>
-              <td>{{ disease.disease_source }}:{{ disease.disease_nr }}</td>
+              <td>
+                <a href="http://omim.org/entry/{{ disease.disease_nr }}" target="_blank">
+                  {{ disease.disease_source }}:{{ disease.disease_nr }}
+                </a>
+              </td>
               <td>{{ disease.description }}</td>
               <td>{{ disease.gene_symbols|join(', ') }}</td>
             </tr>
@@ -34,7 +38,7 @@
         </tbody>
       </table>
       <div class="panel-footer">
-        <button name="action" value="GENES" type="submit" class="btn btn-primary form-control">Submit</button>
+        <button name="action" value="GENES" type="submit" class="btn btn-primary form-control">Select</button>
       </div>
     </div>
   </form>

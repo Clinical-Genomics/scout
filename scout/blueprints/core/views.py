@@ -240,7 +240,9 @@ def phenotypes_gendel(institute_id, case_id):
     elif action == 'GENES':
         hgnc_symbols = set()
         for raw_symbols in request.form.getlist('genes'):
-            hgnc_symbols.update(raw_symbols.split('|'))
+            # avoid empty lists
+            if raw_symbols:
+                hgnc_symbols.update(raw_symbols.split('|'))
         gene_dicts = [{'gene_id': hgnc_symbol} for hgnc_symbol in hgnc_symbols]
         store.update_dynamic_gene_list(case_model, gene_dicts)
 
