@@ -42,6 +42,7 @@ events:
 
 def interacted_variants(case_id):
     """This is really the only valuable information on variant level."""
+    logger.info("getting variants")
     interactions = Q(manual_rank__exists=True) | Q(sanger_ordered__exists=True)
     query = Variant.objects(Q(case_id=case_id) & interactions)
     for variant in query:
@@ -54,6 +55,7 @@ def interacted_variants(case_id):
 
 def case_events(case_id):
     """Get information about events related to a case."""
+    logger.info("getting events")
     for event in Event.objects(case=case_id):
         yield {
             'link': event.link,
@@ -70,6 +72,7 @@ def case_events(case_id):
 
 def case_stuff(case_obj, info):
     """Get all information possible for a case"""
+    logger.info("getting case stuff")
     info['collaborators'] = [institute for institute in case_obj.collaborators]
     if case_obj.assignee:
         info['assignee'] = case_obj.assignee.email
@@ -100,6 +103,7 @@ def case_stuff(case_obj, info):
 
 def export_case(case_obj):
     """Export information about a case."""
+    logger.info("exporting case: %s", case_obj.case_id)
     customer_id = case_obj.owner
     family_id = case_obj.display_name
 
