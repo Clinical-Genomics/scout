@@ -13,14 +13,14 @@ class GeneHandler(object):
         """Add a gene object with transcripts to the database
 
         Arguments:
-            gene_obj(HgncGene)
+            gene_obj(dict)
 
         """
-        logger.debug("Loading gene {0} into database".format(gene_obj['hgnc_symbol']))
-        gene_obj.save()
+        logger.debug("Loading gene %s into database" % gene_obj['hgnc_symbol'])
+        obj_id = self.db.hgnc_gene.insert_one(gene_obj)
         logger.debug("Gene saved")
 
-    def hgnc_gene(self, hgnc_id):
+    def hgnc_gene(self, hgnc_id, build='37'):
         """Fetch a hgnc gene
 
             Args:
@@ -30,10 +30,8 @@ class GeneHandler(object):
                 gene_obj(HgncGene)
         """
         logger.debug("Fetching gene %s" % hgnc_id)
-        try:
-            gene_obj = HgncGene.objects.get(hgnc_id=hgnc_id)
-        except DoesNotExist:
-            gene_obj = None
+        gene_obj = self.db.hgnc_gene.find_one({'hgnc_id':hgnc_id, 'build': build})
+        
         return gene_obj
 
     def hgnc_genes(self, hgnc_symbol):

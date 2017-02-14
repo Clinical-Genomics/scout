@@ -20,6 +20,7 @@ from mongoengine.connection import (get_connection, _get_db)
 
 from . import (EventHandler, VariantHandler, CaseHandler, QueryHandler,
                GeneHandler, HpoHandler, PanelHandler, InstituteHandler)
+
 from scout.models import User, HgncGene
 
 logger = logging.getLogger(__name__)
