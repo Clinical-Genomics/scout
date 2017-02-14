@@ -271,7 +271,7 @@ def sampleid_map(case_model):
     return sample_map
 
 
-def hpo_diseases(username, password, hpo_ids, p_value_treshold=0.1):
+def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.
 
     Args:
@@ -293,7 +293,7 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=0.1):
     try:
         results = query_phenomizer.query(username, password, *hpo_ids)
         diseases = [result for result in results
-                    if result['p_value'] >= p_value_treshold]
+                    if result['p_value'] <= p_value_treshold]
         return diseases
     except SystemExit:
         return None
