@@ -125,6 +125,8 @@ def export_cases(ctx):
     logger.info("Running export_cases")
     all_cases = {}
     for index, case_obj in enumerate(Case.objects.limit(10000)):
+        if case_obj.owner == 'cust000':
+            continue
         logger.info("case no. %s", index)
         case_info = export_case(case_obj)
         all_cases[case_info['case_id']] = case_info
