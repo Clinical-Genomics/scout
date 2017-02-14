@@ -72,7 +72,7 @@ def case_stuff(case_id, info={}):
     """Get all information possible for a case"""
     case_obj = Case.objects.get(case_id=case_id)
 
-    info['collaborators'] = case_obj.collaborators
+    info['collaborators'] = [institute for institute in case_obj.collaborators]
     if case_obj.assignee:
         info['assignee'] = case_obj.assignee.email
     else:
@@ -125,4 +125,4 @@ def export_cases(ctx):
         customer_id = case_obj.owner
         family_id = case_obj.display_name
         case_info = export_case(customer_id, family_id)
-        print(yaml.dump(case_info))
+        print(yaml.safe_dump(case_info))
