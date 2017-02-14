@@ -68,10 +68,8 @@ def case_events(case_id):
         }
 
 
-def case_stuff(case_id, info={}):
+def case_stuff(case_obj, info):
     """Get all information possible for a case"""
-    case_obj = Case.objects.get(case_id=case_id)
-
     info['collaborators'] = [institute for institute in case_obj.collaborators]
     if case_obj.assignee:
         info['assignee'] = case_obj.assignee.email
@@ -99,17 +97,17 @@ def case_stuff(case_id, info={}):
     for term in case_obj.phenotype_groups:
         info['phenotype_groups'].append(term.phenotype_id)
 
-    return info
 
-
-def export_case(customer_id, family_id):
+def export_case(case_obj):
     """Export information about a case."""
-    case_id = '_'.join([customer_id, family_id])
-    case_info = {'case_id': '-'.join([customer_id, family_id])}
-    case_info['variants'] = list(interacted_variants(case_id))
-    case_info['events'] = list(case_events(case_id))
+    customer_id = case_obj.owner
+    family_id = case_obj.display_name
 
-    case_stuff(case_id, case_info)
+    case_info = {'case_id': '-'.join([customer_id, family_id])}
+    case_info['variants'] = list(interacted_variants(case_obj.case_id))
+    case_info['events'] = list(case_events(case_obj.case_id))
+
+    case_stuff(case_obj, case_info)
 
     return case_info
 
@@ -124,8 +122,6 @@ def export_cases(ctx):
     all_cases = {}
     for index, case_obj in enumerate(Case.objects.limit(10000)):
         logger.info("case no. %s", index)
-        customer_id = case_obj.owner
-        family_id = case_obj.display_name
-        case_info = export_case(customer_id, family_id)
-        all_cases['-'.join([customer_id, family_id])] = case_info
+        case_info = export_case(case_obj)
+        all_cases[case_info['case_id']] = case_info
     print(yaml.safe_dump(all_cases))
