@@ -83,7 +83,9 @@ def case_stuff(case_obj, info):
     info['suspects'] = []
     info['causatives'] = []
     for variant in case_obj.suspects:
-        info['suspects'].append(variant.variant_id)
+        variant_id = getattr(variant, 'variant_id', None)
+        if variant_id:
+            info['suspects'].append(variant_id)
     for variant in case_obj.causatives:
         info['causatives'].append(variant.variant_id)
 
