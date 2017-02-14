@@ -70,7 +70,7 @@ def case_events(case_id):
 
 def case_stuff(case_id, info={}):
     """Get all information possible for a case"""
-    case_obj = Case.get(case_id=case_id)
+    case_obj = Case.objects.get(case_id=case_id)
 
     info['collaborators'] = case_obj.collaborators
     if case_obj.assignee:
