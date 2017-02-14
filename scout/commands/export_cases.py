@@ -121,9 +121,11 @@ def export_cases(ctx):
     Export all cases in the database to yaml
     """
     logger.info("Running export_cases")
+    all_cases = {}
     for index, case_obj in enumerate(Case.objects.limit(10000)):
         logger.info("case no. %s", index)
         customer_id = case_obj.owner
         family_id = case_obj.display_name
         case_info = export_case(customer_id, family_id)
-        print(yaml.safe_dump(case_info))
+        all_cases['-'.join([customer_id, family_id])] = case_info
+    print(yaml.safe_dump(all_cases))
