@@ -57,10 +57,9 @@ def case_events(case_id):
     """Get information about events related to a case."""
     logger.info("getting events")
     for event in Event.objects(case=case_id):
-        yield {
+        event_data = {
             'link': event.link,
             'category': event.category,
-            'author': event.author.email,
             'subject': event.subject,
             'verb': event.verb,
             'content': event.content,
@@ -68,6 +67,10 @@ def case_events(case_id):
             'level': event.level,
             'variant_id': event.variant_id if event.variant_id else None,
         }
+
+        if event.author:
+            event_data['author'] = event.author.email
+        yield event_data
 
 
 def case_stuff(case_obj, info):
