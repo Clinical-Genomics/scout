@@ -74,6 +74,8 @@ class Case(Document):
 
     has_svvariants = BooleanField(default=False)
 
+    is_migrated = BooleanField(default=False)
+
     @property
     def analysis_type(self):
         """Determine compound sequencing/analysis type."""
