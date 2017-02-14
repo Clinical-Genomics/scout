@@ -66,10 +66,8 @@ def case_events(case_id):
             'created_at': event.created_at,
             'level': event.level,
             'variant_id': event.variant_id if event.variant_id else None,
+            'author': getattr(event.author, 'email', None),
         }
-
-        if event.author:
-            event_data['author'] = event.author.email
         yield event_data
 
 
@@ -78,7 +76,7 @@ def case_stuff(case_obj, info):
     logger.info("getting case stuff")
     info['collaborators'] = [institute for institute in case_obj.collaborators]
     if case_obj.assignee:
-        info['assignee'] = case_obj.assignee.email
+        info['assignee'] = getattr(case_obj.assignee, 'email', None)
     else:
         info['assignee'] = None
     # These will be a list of variant ids
