@@ -5,7 +5,7 @@ from scout import __version__, logger
 from scout.log import init_log
 from scout.ext.backend import MongoAdapter
 from . import (load, transfer, wipe, delete_case)
-
+from scout.commands.export_cases import export_cases
 
 @click.group()
 @click.option('-l', '--logfile',
@@ -95,3 +95,4 @@ cli.add_command(load)
 cli.add_command(transfer)
 cli.add_command(wipe)
 cli.add_command(delete_case)
+cli.add_command(export_cases)
