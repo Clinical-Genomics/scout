@@ -49,7 +49,7 @@ configobj
 requests
 python-dateutil
 arrow
-query_phenomizer>=0.5
+query_phenomizer>=1.1
 phizz>=0.2.1
 loqusdb>=0.5
 pyyaml
