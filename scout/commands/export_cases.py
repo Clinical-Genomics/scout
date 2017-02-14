@@ -67,10 +67,11 @@ def case_events(case_id):
             'variant_id': event.variant_id if event.variant_id else None,
         }
 
-def case_stuff(case_id, info = {}):
+
+def case_stuff(case_id, info={}):
     """Get all information possible for a case"""
     case_obj = Case.get(case_id=case_id)
-    
+
     info['collaborators'] = case_obj.collaborators
     if case_obj.assignee:
         info['assignee'] = case_obj.assignee.email
@@ -83,22 +84,23 @@ def case_stuff(case_id, info = {}):
         info['suspects'].append(variant.variant_id)
     for variant in case_obj.causatives:
         info['causatives'].append(variant.variant_id)
-    
+
     info['synopsis'] = case_obj.synopsis
-    
+
     # list of strings with phenptype terms
     info['phenotype_terms'] = []
 
     # list of strings with phenptype terms
     info['phenotype_groups'] = []
-    
+
     for term in case_obj.phenotype_terms:
         info['phenotype_terms'].append(term.phenotype_id)
 
     for term in case_obj.phenotype_groups:
         info['phenotype_groups'].append(term.phenotype_id)
-    
+
     return info
+
 
 def export_case(customer_id, family_id):
     """Export information about a case."""
@@ -106,9 +108,9 @@ def export_case(customer_id, family_id):
     case_info = {'case_id': '-'.join([customer_id, family_id])}
     case_info['variants'] = list(interacted_variants(case_id))
     case_info['events'] = list(case_events(case_id))
-    
+
     case_stuff(case_id, case_info)
-    
+
     return case_info
 
 
@@ -119,12 +121,8 @@ def export_cases(ctx):
     Export all cases in the database to yaml
     """
     logger.info("Running export_cases")
-
-    adapter = ctx.obj['adapter']
-    logger.info("Delete case {0}".format(case_id))
     for case_obj in Case.objects:
         customer_id = case_obj.owner
         family_id = case_obj.display_name
         case_info = export_case(customer_id, family_id)
         print(yaml.dump(case_info))
-        
