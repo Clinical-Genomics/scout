@@ -12,6 +12,7 @@ Copyright (c) 2016 ScoutTeam__. All rights reserved.
 import logging
 
 import click
+from mongoengine import DoesNotExist
 import yaml
 
 from scout.models import Variant, Event
@@ -42,10 +43,12 @@ def update_events(adapter, case_obj, old_events):
         if not event.get('content'):
             logger.debug("skipping event with no content: %s", event['verb'])
             continue
-        user_obj = adapter.user(event['author'])
-        if user_obj is None:
+        try:
+            user_obj = adapter.user(event['author'])
+        except DoesNotExist:
             logger.warn("unable to find user: %s", event['author'])
             continue
+
         institute = adapter.institute(case_obj.owner)
         new_event = Event(case=case_obj, institute=institute, link=event['link'],
                           category=event['category'], author=user_obj,
@@ -72,12 +75,13 @@ def update_case(adapter, case_obj, exported_data):
     if case_obj.assignee is None:
         if exported_data['assignee']:
             mail = exported_data['assignee']
-            user_obj = adapter.user(email=mail)
-            if user_obj:
+            try:
+                user_obj = adapter.user(email=mail)
                 logger.info("Assigning user %s", mail)
                 case_obj.assignee = user_obj
-            else:
+            except DoesNotExist:
                 logger.info("Could not find user user %s", mail)
+                continue
 
     # Add the old suspects
     if exported_data['suspects']:
