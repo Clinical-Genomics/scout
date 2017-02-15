@@ -42,11 +42,11 @@ def update_events(adapter, case_obj, old_events):
         if not event.get('content'):
             logger.debug("skipping event with no content: %s", event['verb'])
             continue
-        user_obj = adapter.user(event['email'])
+        user_obj = adapter.user(event['author'])
         if user_obj is None:
-            logger.warn("unable to find user: %s", event['email'])
+            logger.warn("unable to find user: %s", event['author'])
             continue
-        institute = adapter.institute(case.owner)
+        institute = adapter.institute(case_obj.owner)
         new_event = Event(case=case_obj, institute=institute, link=event['link'],
                           category=event['category'], author=user_obj,
                           subject=event['subject'], verb=event['verb'],
