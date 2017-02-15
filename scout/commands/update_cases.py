@@ -81,7 +81,6 @@ def update_case(adapter, case_obj, exported_data):
                 case_obj.assignee = user_obj
             except DoesNotExist:
                 logger.info("Could not find user user %s", mail)
-                continue
 
     # Add the old suspects
     if exported_data['suspects']:
