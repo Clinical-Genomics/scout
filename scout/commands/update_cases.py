@@ -26,13 +26,16 @@ def update_variants(adapter, case_obj, old_variants):
     for variant in old_variants:
         new_variant = Variant.objects(variant_id=variant['variant_id']).first()
         if new_variant is None:
-            logger.warning("missing variant: %s", variant['variant_id'])
+            logger.warn("missing variant: %s", variant['variant_id'])
             continue
         if variant.get('manual_rank'):
+            logger.info("updating manual rank: %s", variant['manual_rank'])
             new_variant.manual_rank = variant['manual_rank']
         if variant.get('sanger_ordered') is True:
+            logger.info("marking sanger order")
             new_variant.sanger_ordered = True
             if new_variant not in case_obj.suspects:
+                logger.info("adding suspect: %s", variant['variant_id'])
                 new_variant.suspects.append(new_variant)
         yield new_variant
 
@@ -118,19 +121,19 @@ def update_case(adapter, case_obj, exported_data):
     if phenotype_terms:
         logger.info("Updating phenotype terms")
         existing_terms = case_obj.phenotype_terms
-        if len(existing_terms) == 0:
-            for term in phenotype_terms:
-                hpo_obj = adapter.hpo_term(term)
+        existing_ids = set(term.phenotype_id for term in existing_terms)
+        for hpo_id in phenotype_terms:
+            if hpo_id in existing_ids:
+                logger.info("term already added: %s", hpo_id)
+            else:
+                hpo_obj = adapter.hpo_term(hpo_id)
                 if hpo_obj:
-                    new_term = PhenotypeTerm(phenotype_id=term,
+                    new_term = PhenotypeTerm(phenotype_id=hpo_id,
                                              feature=hpo_obj.description)
-                    logger.info("Adding term %s", term)
-                    existing_terms.append(new_term)
+                    logger.info("Adding term %s", hpo_id)
+                    case_obj.phenotype_terms.append(new_term)
                 else:
-                    logger.info("Could not find term %s", term)
-            case_obj.phenotype_terms = existing_terms
-        else:
-            logger.info("Case was already phenotyped")
+                    logger.info("Could not find term %s", hpo_id)
 
     # Update the phenotype groups
     # If the case has a phenotype group, skip to add the groups
@@ -189,6 +192,7 @@ def update_cases(context, exported_cases):
                     new_events = update_events(adapter, case_obj,
                                                exported_info['events'])
                     for new_event in new_events:
+                        logger.info("adding new event: %s", new_event.verb)
                         new_event.save()
             case_obj.is_migrated = True
             case_obj.save()
