@@ -9,13 +9,10 @@ Created by Måns Magnusson on 2016-05-11.
 Copyright (c) 2016 ScoutTeam__. All rights reserved.
 
 """
-
 import logging
 
 import click
 import yaml
-
-from pprint import pprint as pp
 
 from scout.models import Variant
 from scout.models.phenotype_term import PhenotypeTerm
@@ -23,17 +20,17 @@ from scout.models.phenotype_term import PhenotypeTerm
 logger = logging.getLogger(__name__)
 
 
-
 def update_case(adapter, case_obj, exported_data):
     """docstring for update_case"""
     case_id = case_obj.case_id
-    
+
     # Update the collaborators
     if exported_data['collaborators']:
-        collaborators = set([coll for coll in case_obj.collaborators] + exported_data['collaborators'])
+        collaborators = set([coll for coll in case_obj.collaborators] +
+                            exported_data['collaborators'])
         logger.info("Set collaborators to %s ", ', '.join(collaborators))
         case_obj.collaborators = list(collaborators)
-    
+
     # Set assignee
     if case_obj.assignee is None:
         if exported_data['assignee']:
@@ -44,7 +41,7 @@ def update_case(adapter, case_obj, exported_data):
                 case_obj.assignee = user_obj
             else:
                 logger.info("Could not find user user %s", mail)
-    
+
     # Add the old suspects
     if exported_data['suspects']:
         existing_suspects = case_obj.suspects
@@ -68,13 +65,13 @@ def update_case(adapter, case_obj, exported_data):
             else:
                 logger.info("Could not find causative %s in database", causative)
         case_obj.causatives = existing_causatives
-    
+
     # Update the synopsis
     if exported_data['synopsis']:
         if not case_obj.synopsis:
             logger.info("Updating synopsis")
             case_obj.synopsis = exported_data['synopsis']
-    
+
     # Update the phenotype terms
     # If the case is phenotyped, skip to add the terms
     phenotype_terms = exported_data['phenotype_terms']
@@ -85,10 +82,8 @@ def update_case(adapter, case_obj, exported_data):
             for term in phenotype_terms:
                 hpo_obj = adapter.hpo_term(term)
                 if hpo_obj:
-                    new_term = PhenotypeTerm(
-                                    phenotype_id=term,
-                                    feature=hpo_obj.description
-                                )
+                    new_term = PhenotypeTerm(phenotype_id=term,
+                                             feature=hpo_obj.description)
                     logger.info("Adding term %s", term)
                     existing_terms.append(new_term)
                 else:
@@ -107,10 +102,8 @@ def update_case(adapter, case_obj, exported_data):
             for term in phenotype_groups:
                 hpo_obj = adapter.hpo_term(term)
                 if hpo_obj:
-                    new_term = PhenotypeTerm(
-                                    phenotype_id=term,
-                                    feature=hpo_obj.description
-                                )
+                    new_term = PhenotypeTerm(phenotype_id=term,
+                                             feature=hpo_obj.description)
                     logger.info("Adding term %s", term)
                     existing_groups.append(new_term)
                 else:
@@ -118,27 +111,25 @@ def update_case(adapter, case_obj, exported_data):
             case_obj.phenotype_groups = existing_groups
         else:
             logger.info("Case already had phenotype groups")
-    
+
     logger.info("Saving case")
     case_obj.save()
 
 
 @click.command('update_cases', short_help='Update cases')
-@click.argument('exported_cases',
-    type = click.File('r')
-)
+@click.argument('exported_cases', type=click.File('r'))
 @click.pass_context
 def update_cases(context, exported_cases):
     """Update all information that was manually annotated from a old instance
-    
+
         Takes a yaml file
     """
     logger.info("Running scout update cases")
-    
+
     exported_data = yaml.load(exported_cases)
-        
+
     adapter = context.obj['adapter']
-    
+
     for case_obj in adapter.cases():
         if not case_obj.is_migrated:
             case_id = case_obj.case_id
@@ -146,4 +137,3 @@ def update_cases(context, exported_cases):
                 logger.info("Updating case: %s" % case_id)
                 exported_info = exported_data[case_id]
                 update_case(adapter, case_obj, exported_info)
-
