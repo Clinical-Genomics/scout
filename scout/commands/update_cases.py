@@ -168,11 +168,8 @@ def update_cases(context, exported_cases):
         Takes a yaml file
     """
     logger.info("Running scout update cases")
-
     exported_data = yaml.load(exported_cases)
-
     adapter = context.obj['adapter']
-
     for case_obj in adapter.cases():
         logger.debug("working on case: %s", case_obj.case_id)
         if not case_obj.is_migrated:
