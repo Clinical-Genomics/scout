@@ -14,10 +14,47 @@ import logging
 import click
 import yaml
 
-from scout.models import Variant
+from scout.models import Variant, Event
 from scout.models.phenotype_term import PhenotypeTerm
 
 logger = logging.getLogger(__name__)
+
+
+def update_variants(adapter, case_obj, old_variants):
+    """Update new variants with old information."""
+    for variant in old_variants:
+        new_variant = Variant.objects(variant_id=variant['variant_id']).first()
+        if new_variant is None:
+            logger.warning("missing variant: %s", variant['variant_id'])
+            continue
+        if variant.get('manual_rank'):
+            new_variant.manual_rank = variant['manual_rank']
+        if variant.get('sanger_ordered') is True:
+            new_variant.sanger_ordered = True
+            if new_variant not in case_obj.suspects:
+                new_variant.suspects.append(new_variant)
+        yield new_variant
+
+
+def update_events(adapter, case_obj, old_events):
+    """Update old events (comments) for a new case."""
+    for event in old_events:
+        if not event.get('content'):
+            logger.debug("skipping event with no content: %s", event['verb'])
+            continue
+        user_obj = adapter.user(event['email'])
+        if user_obj is None:
+            logger.warn("unable to find user: %s", event['email'])
+            continue
+        institute = adapter.institute(case.owner)
+        new_event = Event(case=case_obj, institute=institute, link=event['link'],
+                          category=event['category'], author=user_obj,
+                          subject=event['subject'], verb=event['verb'],
+                          level=event['level'], content=event['content'],
+                          created_at=event['created_at'])
+        if event['variant_id']:
+            new_event.variant_id = event['variant_id']
+        yield new_event
 
 
 def update_case(adapter, case_obj, exported_data):
@@ -137,3 +174,13 @@ def update_cases(context, exported_cases):
                 logger.info("Updating case: %s" % case_id)
                 exported_info = exported_data[case_id]
                 update_case(adapter, case_obj, exported_info)
+                if exported_info.get('variants'):
+                    new_variants = update_variants(adapter, case_obj,
+                                                   exported_info['variants'])
+                    for new_variant in new_variants:
+                        new_variant.save()
+                if exported_info.get('events'):
+                    new_events = update_events(adapter, case_obj,
+                                               exported_info['events'])
+                    for new_event in new_events:
+                        new_event.save()
