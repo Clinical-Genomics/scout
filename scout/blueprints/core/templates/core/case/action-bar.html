@@ -24,6 +24,9 @@
       Analysis date
     </h5>
     {{ case.analysis_date.date() }}
+    {% if case.is_migrated %}
+      <span class="label label-info">migrated</span>
+    {% endif %}
   </div>
 {% endmacro %}
 

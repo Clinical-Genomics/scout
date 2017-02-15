@@ -171,6 +171,7 @@ def update_cases(context, exported_cases):
     adapter = context.obj['adapter']
 
     for case_obj in adapter.cases():
+        logger.debug("working on case: %s", case_obj.case_id)
         if not case_obj.is_migrated:
             case_id = case_obj.case_id
             if case_id in exported_data:
@@ -178,11 +179,13 @@ def update_cases(context, exported_cases):
                 exported_info = exported_data[case_id]
                 update_case(adapter, case_obj, exported_info)
                 if exported_info.get('variants'):
+                    logger.debug("updating variants")
                     new_variants = update_variants(adapter, case_obj,
                                                    exported_info['variants'])
                     for new_variant in new_variants:
                         new_variant.save()
                 if exported_info.get('events'):
+                    logger.debug("updating events")
                     new_events = update_events(adapter, case_obj,
                                                exported_info['events'])
                     for new_event in new_events:
