@@ -54,7 +54,7 @@ def build_hgnc_gene(gene_info):
             gene_obj(dict)
     
             {
-                _id: Int # This is the hgnc id, required
+                hgnc_id: Int # This is the hgnc id, required
                 
                 hgnc_symbol: str # The primary symbol, required 
                 ensembl_id: str, required

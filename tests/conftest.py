@@ -8,7 +8,12 @@ from scout.utils.handle import get_file_handle
 from vcf_parser import VCFParser
 import yaml
 
+# Adapter stuff
 from scout.adapter import MongoAdapter
+
+from scout.adapter.pymongo import MongoAdapter as PymongoAdapter
+
+
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
@@ -23,6 +28,8 @@ from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 from scout.load import (load_hgnc_genes, load_panel)
 from scout.load.hpo import load_hpo
+
+pytest_plugins = ['fixtures']
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
@@ -45,6 +52,7 @@ hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype
 hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
 
 ##################### File fixtures #####################
+
 @pytest.fixture
 def config_file(request):
     """Get the path to a config file"""
