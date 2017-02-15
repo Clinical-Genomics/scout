@@ -184,3 +184,5 @@ def update_cases(context, exported_cases):
                                                exported_info['events'])
                     for new_event in new_events:
                         new_event.save()
+            case_obj.is_migrated = True
+            case_obj.save()
