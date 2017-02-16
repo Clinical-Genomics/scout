@@ -3,7 +3,6 @@ import logging
 
 from mongoengine import DoesNotExist
 
-from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 

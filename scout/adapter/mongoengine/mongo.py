@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class MongoEngineAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
-                   HpoHandler, PanelHandler, InstituteHandler):
+                   HpoHandler, PanelHandler, InstituteHandler, GeneHandler):
 
     """Adapter for cummunication with a mongo database."""
 

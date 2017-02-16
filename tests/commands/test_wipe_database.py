@@ -1,5 +1,5 @@
-from scout.commands import cli
-from click.testing import CliRunner
+# from scout.commands import cli
+# from click.testing import CliRunner
 
 # def test_delete_database(setup_loaded_database, database_setup):
 #     #Check that a case have been added
