@@ -6,4 +6,4 @@ from .case_handler import CaseHandler
 from .variant_handler import VariantHandler
 from .panel_handler import PanelHandler
 from .institute_handler import InstituteHandler
-from .mongo import MongoAdapter
+from .mongo import MongoEngineAdapter

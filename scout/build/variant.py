@@ -80,7 +80,7 @@ def build_variant(variant, institute, gene_to_panels = None, hgncid_to_gene=None
     for hgnc_id in variant_obj['hgnc_ids']:
         gene_obj = hgncid_to_gene.get(hgnc_id)
         if gene_obj:
-            hgnc_symbols.append(gene_obj.hgnc_symbol)
+            hgnc_symbols.append(gene_obj['hgnc_symbol'])
     
     variant_obj['hgnc_symbols'] = hgnc_symbols
 

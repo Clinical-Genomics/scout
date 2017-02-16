@@ -33,7 +33,7 @@ import logging
 
 from pymongo import MongoClient
 
-from scout.adapter.mongoengine import MongoAdapter as MongoEngine
+from scout.adapter.mongoengine import MongoEngineAdapter
 
 from .hgnc import GeneHandler
 from .case import CaseHandler
@@ -55,7 +55,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.db = database
         self.hgnc_collection = database.hgnc_gene
         # This will be used during the transfer to pymongo
-        self.mongoengine_adapter = MongoEngine(database)
+        self.mongoengine_adapter = MongoEngineAdapter(database)
 
     def getoradd_user(self, email, name, location=None, institutes=None):
         """Get or create a new user."""

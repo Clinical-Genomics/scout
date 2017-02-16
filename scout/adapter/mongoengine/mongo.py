@@ -26,7 +26,7 @@ from scout.models import User, HgncGene
 logger = logging.getLogger(__name__)
 
 
-class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
+class MongoEngineAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
                    HpoHandler, PanelHandler, InstituteHandler):
 
     """Adapter for cummunication with a mongo database."""

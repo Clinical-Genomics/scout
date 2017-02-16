@@ -1,1 +1,1 @@
-from scout.adapter.mongoengine.mongo import MongoAdapter
+from scout.adapter.mongoengine.mongo import MongoEngineAdapter
