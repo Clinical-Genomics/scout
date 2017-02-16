@@ -1,5 +1,5 @@
-from scout.commands import cli
-from click.testing import CliRunner
+# from scout.commands import cli
+# from click.testing import CliRunner
 
 vcf_file = "tests/fixtures/337334.clinical.vcf"
 ped_file = "tests/fixtures/337334.ped"
