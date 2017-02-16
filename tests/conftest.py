@@ -8,7 +8,11 @@ from scout.utils.handle import get_file_handle
 from vcf_parser import VCFParser
 import yaml
 
-from scout.adapter import MongoAdapter
+# Adapter stuff
+from pymongo import MongoClient as RealClient
+from scout.adapter.pymongo import MongoAdapter as PymongoAdapter
+from mongoengine import connect
+
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
@@ -23,6 +27,8 @@ from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 from scout.load import (load_hgnc_genes, load_panel)
 from scout.load.hpo import load_hpo
+
+DATABASE = 'testdb'
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
@@ -44,148 +50,9 @@ hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_
 hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
 hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
 
-##################### File fixtures #####################
-@pytest.fixture
-def config_file(request):
-    """Get the path to a config file"""
-    print('')
-    return scout_yaml_config
-
-@pytest.fixture
-def panel_1_file(request):
-    """Get the path to a config file"""
-    print('')
-    return panel_1_path
-
-@pytest.fixture
-def hgnc_file(request):
-    """Get the path to a hgnc file"""
-    print('')
-    return hgnc_path
-
-@pytest.fixture
-def transcripts_file(request):
-    """Get the path to a ensembl transcripts file"""
-    print('')
-    return ensembl_transcript_path
-
-@pytest.fixture
-def exac_file(request):
-    """Get the path to a exac genes file"""
-    print('')
-    return exac_genes_path
-
-@pytest.fixture
-def hpo_genes_file(request):
-    """Get the path to the hpo genes file"""
-    print('')
-    return hpo_genes_path
-
-@pytest.fixture
-def hpo_terms_file(request):
-    """Get the path to the hpo terms file"""
-    print('')
-    return hpo_terms_path
-
-@pytest.fixture
-def hpo_disease_file(request):
-    """Get the path to the hpo disease file"""
-    print('')
-    return hpo_disease_path
-
-@pytest.fixture(scope='function')
-def variant_clinical_file(request):
-    """Get the path to a variant file"""
-    print('')
-    return vcf_clinical_file
-
-@pytest.fixture(scope='function')
-def sv_clinical_file(request):
-    """Get the path to a variant file"""
-    print('')
-    return sv_clinical_path
-
-
-@pytest.fixture(scope='function')
-def ped_file(request):
-    """Get the path to a ped file"""
-    print('')
-    return ped_path
-
-
-@pytest.fixture(scope='function')
-def scout_config(request, config_file):
-    """Return a dictionary with scout configs"""
-    print('')
-    in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle)
-    return data
-
-@pytest.fixture(scope='function')
-def minimal_config(request, scout_config):
-    """Return a minimal config"""
-    config = scout_config
-    config.pop('madeline')
-    config.pop('vcf_sv')
-    config.pop('vcf_snv_research')
-    config.pop('vcf_sv_research')
-    config.pop('gene_panels')
-    config.pop('default_gene_panels')
-    config.pop('rank_model_version')
-    config.pop('rank_score_threshold')
-    config.pop('human_genome_build')
-
-    return config
 
 ##################### Gene fixtures #####################
 
-@pytest.fixture
-def hgnc_handle(request, hgnc_file):
-    """Get a file handle to a hgnc file"""
-    print('')
-    return get_file_handle(hgnc_file)
-
-@pytest.fixture
-def hgnc_genes(request, hgnc_handle):
-    """Get a dictionary with hgnc genes"""
-    print('')
-    return parse_hgnc_genes(hgnc_handle)
-
-@pytest.fixture
-def transcripts_handle(request, transcripts_file):
-    """Get a file handle to a ensembl transcripts file"""
-    print('')
-    return get_file_handle(transcripts_file)
-
-@pytest.fixture
-def transcripts(request, transcripts_handle):
-    """Get the parsed ensembl transcripts"""
-    print('')
-    return parse_ensembl_transcripts(transcripts_handle)
-
-@pytest.fixture
-def exac_handle(request, exac_file):
-    """Get a file handle to a ensembl gene file"""
-    print('')
-    return get_file_handle(exac_file)
-
-@pytest.fixture
-def exac_genes(request, exac_handle):
-    """Get the parsed exac genes"""
-    print('')
-    return parse_exac_genes(exac_handle)
-
-@pytest.fixture
-def hpo_genes_handle(request, hpo_genes_file):
-    """Get a file handle to a hpo gene file"""
-    print('')
-    return get_file_handle(hpo_genes_file)
-
-@pytest.fixture
-def hpo_genes(request, hpo_genes_handle):
-    """Get the exac genes"""
-    print('')
-    return parse_hpo_genes(hpo_genes_handle)
 
 @pytest.fixture
 def genes(request, transcripts_handle, hgnc_handle, exac_handle,
@@ -201,6 +68,9 @@ def genes(request, transcripts_handle, hgnc_handle, exac_handle,
 
     return gene_dict
 
+#############################################################
+################# Hpo terms fixtures ########################
+#############################################################
 @pytest.fixture
 def hpo_terms_handle(request, hpo_terms_file):
     """Get a file handle to a hpo terms file"""
@@ -227,9 +97,9 @@ def hpo_diseases(request, hpo_disease_handle):
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
 
-
-##################### Case fixtures #####################
-
+#############################################################
+##################### Case fixtures #########################
+#############################################################
 @pytest.fixture(scope='function')
 def ped_lines(request, scout_config):
     """Get the lines for a case"""
@@ -262,7 +132,9 @@ def case_obj(request, parsed_case):
     return case
 
 
-##################### Institute fixtures #####################
+#############################################################
+##################### Institute fixtures ####################
+#############################################################
 @pytest.fixture(scope='function')
 def parsed_institute(request):
     print('')
@@ -286,45 +158,9 @@ def institute_obj(request, parsed_institute):
     )
     return institute
 
-
-##################### Adapter fixtures #####################
-@pytest.fixture(scope='function')
-def client(request):
-    """Get a mongoadapter"""
-    logger.info("Get a mongo adapter")
-    mongo_client = MongoAdapter()
-
-    return mongo_client
-
-
-@pytest.fixture(scope='function')
-def adapter(request, client):
-    """Get an adapter connected to mongomock database"""
-    logger.info("Connecting to database...")
-    mongo_client = client
-
-    database = 'test'
-    host = 'localhost'
-    port = 27017
-
-    mongo_client.connect_to_database(
-        database=database,
-        host=host,
-        port=port
-    )
-    logger.info("Connected to database")
-
-    def teardown():
-        print('\n')
-        logger.info("Deleting database")
-        mongo_client.drop_database()
-        logger.info("Database deleted")
-
-    request.addfinalizer(teardown)
-
-    return mongo_client
-
-
+#############################################################
+##################### User fixtures #########################
+#############################################################
 @pytest.fixture(scope='function')
 def parsed_user(request, institute_obj):
     """Return user info"""
@@ -348,6 +184,42 @@ def user_obj(request, parsed_user):
     )
     return user
 
+
+#############################################################
+##################### Adapter fixtures #####################
+#############################################################
+@pytest.fixture(scope='function')
+def client(request):
+    """Get a client to the mongo database"""
+    logger.info("Get a mongo client")
+    mongo_client = RealClient()
+
+    def teardown():
+        print('\n')
+        logger.info("Deleting database")
+        mongo_client.drop_database(DATABASE)
+        logger.info("Database deleted")
+
+    request.addfinalizer(teardown)
+
+    return mongo_client
+
+
+@pytest.fixture(scope='function')
+def adapter(request, client):
+    """Get an adapter connected to mongom database"""
+    logger.info("Connecting to database...")
+    mongo_client = client
+
+    database = mongo_client[DATABASE]
+    mongo_adapter = PymongoAdapter(database)
+    
+    logger.info("Establish a mongoengine connection")
+    connect(DATABASE)
+    
+    logger.info("Connected to database")
+
+    return mongo_adapter
 
 @pytest.fixture(scope='function')
 def gene_database(request, adapter, genes):
@@ -438,7 +310,9 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
     return adapter
 
 
+#############################################################
 ##################### Panel fixtures #####################
+#############################################################
 @pytest.fixture(scope='function')
 def panel_info(request):
     "Return one panel info as specified in tests/fixtures/config1.ini"
@@ -483,7 +357,9 @@ def default_panels(request, parsed_case):
 
     return panels
 
+#############################################################
 ##################### Variant fixtures #####################
+#############################################################
 @pytest.fixture(scope='function')
 def basic_variant_dict(request):
     """Return a variant dict with the required information"""
@@ -592,3 +468,147 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     print('')
     return (build_variant(variant, institute_obj)
             for variant in parsed_sv_variants)
+
+#############################################################
+##################### File fixtures #####################
+#############################################################
+
+@pytest.fixture
+def config_file(request):
+    """Get the path to a config file"""
+    print('')
+    return scout_yaml_config
+
+@pytest.fixture
+def panel_1_file(request):
+    """Get the path to a config file"""
+    print('')
+    return panel_1_path
+
+@pytest.fixture
+def hgnc_file(request):
+    """Get the path to a hgnc file"""
+    print('')
+    return hgnc_path
+
+@pytest.fixture
+def transcripts_file(request):
+    """Get the path to a ensembl transcripts file"""
+    print('')
+    return ensembl_transcript_path
+
+@pytest.fixture
+def exac_file(request):
+    """Get the path to a exac genes file"""
+    print('')
+    return exac_genes_path
+
+@pytest.fixture
+def hpo_genes_file(request):
+    """Get the path to the hpo genes file"""
+    print('')
+    return hpo_genes_path
+
+@pytest.fixture
+def hpo_terms_file(request):
+    """Get the path to the hpo terms file"""
+    print('')
+    return hpo_terms_path
+
+@pytest.fixture
+def hpo_disease_file(request):
+    """Get the path to the hpo disease file"""
+    print('')
+    return hpo_disease_path
+
+@pytest.fixture(scope='function')
+def variant_clinical_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return vcf_clinical_file
+
+@pytest.fixture(scope='function')
+def sv_clinical_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return sv_clinical_path
+
+
+@pytest.fixture(scope='function')
+def ped_file(request):
+    """Get the path to a ped file"""
+    print('')
+    return ped_path
+
+
+@pytest.fixture(scope='function')
+def scout_config(request, config_file):
+    """Return a dictionary with scout configs"""
+    print('')
+    in_handle = get_file_handle(config_file)
+    data = yaml.load(in_handle)
+    return data
+
+@pytest.fixture(scope='function')
+def minimal_config(request, scout_config):
+    """Return a minimal config"""
+    config = scout_config
+    config.pop('madeline')
+    config.pop('vcf_sv')
+    config.pop('vcf_snv_research')
+    config.pop('vcf_sv_research')
+    config.pop('gene_panels')
+    config.pop('default_gene_panels')
+    config.pop('rank_model_version')
+    config.pop('rank_score_threshold')
+    config.pop('human_genome_build')
+
+    return config
+
+@pytest.fixture
+def hgnc_handle(request, hgnc_file):
+    """Get a file handle to a hgnc file"""
+    print('')
+    return get_file_handle(hgnc_file)
+
+@pytest.fixture
+def hgnc_genes(request, hgnc_handle):
+    """Get a dictionary with hgnc genes"""
+    print('')
+    return parse_hgnc_genes(hgnc_handle)
+
+@pytest.fixture
+def transcripts_handle(request, transcripts_file):
+    """Get a file handle to a ensembl transcripts file"""
+    print('')
+    return get_file_handle(transcripts_file)
+
+@pytest.fixture
+def transcripts(request, transcripts_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def exac_handle(request, exac_file):
+    """Get a file handle to a ensembl gene file"""
+    print('')
+    return get_file_handle(exac_file)
+
+@pytest.fixture
+def exac_genes(request, exac_handle):
+    """Get the parsed exac genes"""
+    print('')
+    return parse_exac_genes(exac_handle)
+
+@pytest.fixture
+def hpo_genes_handle(request, hpo_genes_file):
+    """Get a file handle to a hpo gene file"""
+    print('')
+    return get_file_handle(hpo_genes_file)
+
+@pytest.fixture
+def hpo_genes(request, hpo_genes_handle):
+    """Get the exac genes"""
+    print('')
+    return parse_hpo_genes(hpo_genes_handle)

@@ -3,7 +3,6 @@ import logging
 
 from mongoengine import DoesNotExist
 
-from scout.adapter import MongoAdapter
 from scout.models import (Variant, Case, Event, Institute, PhenotypeTerm, 
                           Institute, User)
 
@@ -175,7 +174,7 @@ def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     logger.info("Add a HPO term for a case")
     # GIVEN a populated database
-    gene_obj = HgncGene(
+    gene_obj = dict(
         hgnc_id = 1,
         hgnc_symbol = 'test',
         ensembl_id = 'anothertest',
@@ -343,7 +342,7 @@ def test_remove_hpo(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     logger.info("Add a HPO term for a case")
     
-    gene_obj = HgncGene(
+    gene_obj = dict(
         hgnc_id = 1,
         hgnc_symbol = 'test',
         ensembl_id = 'anothertest',

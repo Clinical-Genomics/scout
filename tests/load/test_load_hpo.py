@@ -5,7 +5,7 @@ def test_load_disease_terms(gene_database, hpo_disease_handle):
     # GIVEN a populated database with genes
     gene_objs = {}
     for gene in gene_database.all_genes():
-        gene_objs[gene.hgnc_symbol] = gene
+        gene_objs[gene['hgnc_symbol']] = gene
     
     assert len(gene_objs) > 0
     
@@ -25,7 +25,7 @@ def test_load_hpo_terms(gene_database, hpo_terms_handle):
     # GIVEN a populated database with genes
     gene_objs = {}
     for gene in gene_database.all_genes():
-        gene_objs[gene.hgnc_symbol] = gene
+        gene_objs[gene['hgnc_symbol']] = gene
 
     assert len(gene_objs) > 0
     
