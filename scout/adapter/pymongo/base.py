@@ -31,18 +31,44 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 """
 import logging
 
-
 from pymongo import MongoClient
 
-from . import GeneHandler
+from scout.adapter.mongoengine import MongoAdapter as MongoEngine
+
+from .hgnc import GeneHandler
+from .case import CaseHandler
+from .institute import InstituteHandler
+from .event import EventHandler
+from .hpo import HpoHandler
+from .panel import PanelHandler
+from .query import QueryHandler
+from .variant import VariantHandler
 
 logger = logging.getLogger(__name__)
 
-
-class MongoAdapter(GeneHandler):
+class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
+                    HpoHandler, PanelHandler, QueryHandler, VariantHandler):
 
     """Adapter for cummunication with a mongo database."""
 
     def __init__(self, database):
         self.db = database
         self.hgnc_collection = database.hgnc_gene
+        # This will be used during the transfer to pymongo
+        self.mongoengine_adapter = MongoEngine(database)
+
+    def getoradd_user(self, email, name, location=None, institutes=None):
+        """Get or create a new user."""
+        return self.mongoengine_adapter.getoradd_user(
+            email=email,
+            name=name,
+            location=location,
+            institutes=institutes
+        )
+
+    def user(self, email=None):
+        """Fetch a user from the database."""
+        return self.mongoengine_adapter.user(email=email)
+
+    def update_access(self, user_obj):
+        self.mongoengine_adapter.update_access(user_obj=user_obj)

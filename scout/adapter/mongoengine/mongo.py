@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
-                   GeneHandler, HpoHandler, PanelHandler, InstituteHandler):
+                   HpoHandler, PanelHandler, InstituteHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -35,26 +35,26 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
         self.mongodb_name = None
         self.host = None
         self.port = None
-        if app:
-            logger.info("Initializing app")
-            self.init_app(app)
+        # if app:
+        #     logger.info("Initializing app")
+        #     self.init_app(app)
 
-    def init_app(self, app):
-        config = getattr(app, 'config', {})
-
-        host = config.get('MONGODB_HOST', 'localhost')
-        port = config.get('MONGODB_PORT', 27017)
-        database = config.get('MONGODB_DB', 'variantDatabase')
-        username = config.get('MONGODB_USERNAME', None)
-        password = config.get('MONGODB_PASSWORD', None)
-        self.connect_to_database(
-            database,
-            host=host,
-            port=port,
-            username=username,
-            password=password
-        )
-
+    # def init_app(self, app):
+    #     config = getattr(app, 'config', {})
+    #
+    #     host = config.get('MONGODB_HOST', 'localhost')
+    #     port = config.get('MONGODB_PORT', 27017)
+    #     database = config.get('MONGODB_DB', 'variantDatabase')
+    #     username = config.get('MONGODB_USERNAME', None)
+    #     password = config.get('MONGODB_PASSWORD', None)
+    #     self.connect_to_database(
+    #         database,
+    #         host=host,
+    #         port=port,
+    #         username=username,
+    #         password=password
+    #     )
+    #
     def connect_to_database(self, database, host='localhost', port=27017,
                             username=None, password=None):
         """Connect to a mongo database
@@ -66,7 +66,8 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
             username(str)
             password(str)
         """
-        logger.debug("Connecting to database {0}".format(database))
+        logger.info("Connecting to database {0}".format(database))
+        print("Connecting to database {0}".format(database))
         self.mongodb_name = database
         self.host = host
         self.port = port
@@ -77,7 +78,8 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
             username=username,
             password=password
         )
-        logger.debug("Connection established")
+        logger.info("Connection established")
+        print("Connection established")
 
     def get_connection(self):
         """Return a mongoengine connection object"""
