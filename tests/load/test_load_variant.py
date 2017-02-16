@@ -5,6 +5,7 @@ from scout.models.variant.variant import Variant
 
 from scout.exceptions.database import IntegrityError
 
+
 # def test_load_variants(populated_database, variant_objs):
 #     """Test to load variants into a mongo database"""
 #     pass
@@ -120,3 +121,32 @@ def test_load_region(populated_database, case_obj, variant_clinical_file):
         assert variant.chromosome == chrom
         assert variant.position <= end
         assert variant.end >= start
+
+def test_load_variant_multiple_genes(populated_database, parsed_variant):
+    hgnc_ids = []
+    hgncid_to_gene = populated_database.hgncid_to_gene()
+    
+    for i, hgnc_id in enumerate(hgncid_to_gene):
+        if i < 100:
+            hgnc_ids.append(hgnc_id)
+
+    parsed_variant['hgnc_ids'] = hgnc_ids
+    
+    from scout.build import build_variant
+
+    institute_id = 'cust000'
+    institute_obj = populated_database.institute(institute_id=institute_id)
+    variant_obj = build_variant(parsed_variant, institute_obj, hgncid_to_gene = hgncid_to_gene)
+    
+    assert len(variant_obj['hgnc_ids']) == 100
+    
+    load_variant(
+        adapter=populated_database,
+        variant_obj=variant_obj
+    )
+    
+    fetched_variant = Variant.objects.get(variant_id = variant_obj.variant_id)
+    
+    assert len(fetched_variant['hgnc_ids']) == 100
+    assert len(fetched_variant['hgnc_symbols']) == 100
+
