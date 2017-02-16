@@ -44,7 +44,7 @@ def load_hpo_terms(adapter, hpo_lines, gene_objs):
         for hgnc_symbol in hpo_info['hgnc_symbols']:
             if hgnc_symbol in gene_objs:
                 gene_obj = gene_objs[hgnc_symbol]
-                hgnc_ids.append(gene_obj.hgnc_id)
+                hgnc_ids.append(gene_obj['hgnc_id'])
         hpo_obj.genes = hgnc_ids
         adapter.load_hpo_term(hpo_obj)
     
@@ -73,7 +73,7 @@ def load_disease_terms(adapter, hpo_disease_lines, gene_objs):
         for hgnc_symbol in disease_info['hgnc_symbols']:
             if hgnc_symbol in gene_objs:
                 gene_obj = gene_objs[hgnc_symbol]
-                hgnc_ids.append(gene_obj.hgnc_id)
+                hgnc_ids.append(gene_obj['hgnc_id'])
         
         disease_obj.genes = hgnc_ids
         

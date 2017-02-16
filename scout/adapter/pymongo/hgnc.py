@@ -77,3 +77,22 @@ class GeneHandler(object):
             hgnc_dict[gene_obj['hgnc_symbol']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict
+    
+    def to_hgnc(self, hgnc_alias, build='37'):
+        """Check if a hgnc symbol is an alias
+
+            Return the correct hgnc symbol, if not existing return None
+
+            Args:
+                hgnc_alias(str)
+
+            Returns:
+                hgnc_symbol(str)
+        """
+        result = self.hgnc_genes(hgnc_symbol=hgnc_alias, build=build)
+        if result:
+            for gene in result:
+                return gene['hgnc_symbol']
+        else:
+            return None
+    
