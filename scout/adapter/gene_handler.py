@@ -73,7 +73,7 @@ class GeneHandler(object):
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict
-    
+
     def hgncsymbol_to_gene(self):
         """Return a dictionary with hgnc_symbol as key and gene_obj as value"""
         hgnc_dict = {}

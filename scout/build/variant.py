@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+import logging
+
 from scout.models import Variant
 
 from . import (build_genotype, build_compound, build_gene, build_clnsig)
+
+log = logging.getLogger(__name__)
 
 
 def build_variant(variant, institute, gene_to_panels = None, hgncid_to_gene=None):
@@ -16,7 +21,7 @@ def build_variant(variant, institute, gene_to_panels = None, hgncid_to_gene=None
     """
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
-    
+
     variant_obj = Variant(
         document_id=variant['ids']['document_id'],
         variant_id=variant['ids']['variant_id'],
@@ -74,14 +79,16 @@ def build_variant(variant, institute, gene_to_panels = None, hgncid_to_gene=None
     variant_obj['genes'] = genes
 
     variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
-    
+
     # Add the hgnc symbols from the database genes
     hgnc_symbols = []
     for hgnc_id in variant_obj['hgnc_ids']:
         gene_obj = hgncid_to_gene.get(hgnc_id)
         if gene_obj:
             hgnc_symbols.append(gene_obj.hgnc_symbol)
-    
+        else:
+            log.warn("missing HGNC symbol for: %s", hgnc_id)
+
     variant_obj['hgnc_symbols'] = hgnc_symbols
 
     # link gene panels
