@@ -2,15 +2,20 @@
 import click
 import yaml
 
-from scout import __version__, logger
-from scout.log import init_log
-from scout.adapter import MongoAdapter
+# Adapter stuff
+from scout.adapter.pymongo import MongoAdapter
+from scout.adapter.client import get_connection
+from mongoengine import connect
+from pymongo.errors import (ConnectionFailure)
 
+# General, logging
+from scout import (__version__, logger)
+from scout.log import init_log
+
+# Commands
 from scout.commands.load_database import load
 from scout.commands.export import export
-
-from scout.commands.case import cases, delete_case
-
+from scout.commands.case import delete_case
 from scout.commands.wipe_database import wipe
 from scout.commands.transfer import transfer
 from scout.commands.init import init as init_command
@@ -49,6 +54,8 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
         config):
     """Manage Scout interactions."""
     init_log(logger, logfile, loglevel)
+    logger.info("Running scout version %s", __version__)
+
     mongo_configs = {}
     configs = {}
     if config:
@@ -58,7 +65,7 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
 
     mongo_configs['mongodb'] = (mongodb or configs.get('mongodb') or
                                 'variantDatabase')
-    logger.debug("Setting mongodb to {0}".format(mongo_configs['mongodb']))
+    logger.debug("Setting database name to {0}".format(mongo_configs['mongodb']))
 
     mongo_configs['host'] = (host or configs.get('host') or 'localhost')
     logger.debug("Setting host to {0}".format(mongo_configs['host']))
@@ -68,17 +75,30 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
 
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
-
-    logger.debug("Setting up a mongo adapter")
-    mongo_adapter = MongoAdapter()
-    logger.debug("Connecting to database")
-    mongo_adapter.connect_to_database(
-        database=mongo_configs['mongodb'],
+    
+    try:
+        client = get_connection(
+                    host=mongo_configs['host'], 
+                    port=mongo_configs['port'], 
+                    username=mongo_configs['username'], 
+                    password=mongo_configs['password'],
+                )
+    except ConnectionFailure:
+        ctx.abort()
+    
+    # Establish a connection for mongoengine
+    # This will be removed when we onky use pymongo
+    connect(
+        mongo_configs['mongodb'],
         host=mongo_configs['host'],
         port=mongo_configs['port'],
         username=mongo_configs['username'],
         password=mongo_configs['password']
     )
+    
+    database = client[mongo_configs['mongodb']]
+    logger.debug("Setting up a mongo adapter")
+    mongo_adapter = MongoAdapter(database)
     mongo_configs['adapter'] = mongo_adapter
     ctx.obj = mongo_configs
 
@@ -91,6 +111,5 @@ cli.add_command(export)
 cli.add_command(convert)
 cli.add_command(hgnc_query)
 cli.add_command(view_command)
-cli.add_command(cases)
 cli.add_command(delete_case)
 cli.add_command(update_cases)

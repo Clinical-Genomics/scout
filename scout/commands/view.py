@@ -23,9 +23,9 @@ def panels(context):
         
         for panel_obj in panel_objs:
             click.echo("{0}\t{1}\t{2}".format(
-                panel_obj.panel_name, 
-                str(panel_obj.version),
-                len(panel_obj.genes)
+                panel_obj['panel_name'], 
+                str(panel_obj['version']),
+                len(panel_obj['genes'])
             ))
 
 @click.command('users', short_help='Display users')
@@ -37,7 +37,7 @@ def users(context):
     
     ## TODO add a User interface to the adapter
     for user_obj in User.objects():
-        click.echo(user_obj.name)
+        click.echo(user_obj['name'])
 
 @click.command('institutes', short_help='Display institutes')
 @click.pass_context
@@ -47,9 +47,10 @@ def institutes(context):
     adapter = context.obj['adapter']
     
     for institute_obj in adapter.institutes():
-        click.echo(institute_obj.internal_id)
+        click.echo(institute_obj['internal_id'])
 
 @click.command('genes', short_help='Display genes')
+@click.option('-b', 'build', default='37', type=click.Choice(['37','38']))
 @click.pass_context
 def genes(context):
     """Show all genes in the database"""
@@ -57,13 +58,13 @@ def genes(context):
     adapter = context.obj['adapter']
     
     click.echo("Chromosom\tstart\tend\thgnc_id\thgnc_symbol")
-    for gene_obj in adapter.all_genes():
+    for gene_obj in adapter.all_genes(build=build):
         click.echo("{0}\t{1}\t{2}\t{3}\t{4}".format(
-            gene_obj.chromosome,
-            gene_obj.start,
-            gene_obj.end,
-            gene_obj.hgnc_id,
-            gene_obj.hgnc_symbol,
+            gene_obj['chromosome'],
+            gene_obj['start'],
+            gene_obj['end'],
+            gene_obj['hgnc_id'],
+            gene_obj['hgnc_symbol'],
         ))
 
 @click.command('diseases', short_help='Display all diseases')
@@ -76,8 +77,8 @@ def diseases(context):
     click.echo("Disease")
     for disease_obj in adapter.disease_terms():
         click.echo("{0}:{1}".format(
-            disease_obj.source,
-            disease_obj.disease_id,
+            disease_obj['source'],
+            disease_obj['disease_id'],
         ))
 
 @click.command('hpo', short_help='Display all hpo terms')

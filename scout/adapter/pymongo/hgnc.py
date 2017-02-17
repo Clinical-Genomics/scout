@@ -46,14 +46,14 @@ class GeneHandler(object):
 
         return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build':build})
 
-    def all_genes(self):
+    def all_genes(self, build='37'):
         """Fetch all hgnc genes
 
             Returns:
                 result()
         """
         logger.info("Fetching all genes")
-        return self.hgnc_collection.find().sort('chromosome', 1)
+        return self.hgnc_collection.find({'build':build}).sort('chromosome', 1)
 
     def drop_genes(self):
         """Delete the genes collection"""
