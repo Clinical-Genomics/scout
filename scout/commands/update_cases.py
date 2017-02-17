@@ -191,5 +191,6 @@ def update_cases(context, exported_cases):
                     for new_event in new_events:
                         logger.info("adding new event: %s", new_event.verb)
                         new_event.save()
-            case_obj.is_migrated = True
-            case_obj.save()
+
+                case_obj.is_migrated = True
+                case_obj.save()
