@@ -30,6 +30,7 @@
           <th>Rank #</th>
           <th>Score</th>
           <th>Type</th>
+          <th>Chr</th>
           <th>Start loc</th>
           <th>Stop loc</th>
           <th>Length</th>
@@ -86,6 +87,7 @@
     </td>
     <td>{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
+    <td>{{ variant.chromosome }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
     <td>{{ 'inf' if variant.length == 100000000000 else variant.length }}</td>
