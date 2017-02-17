@@ -346,9 +346,6 @@ def upload_gene_list():
 def variants(institute_id, case_id, variant_type):
     """View all variants for a single case."""
     per_page = 50
-    current_gene_lists = [gene_panel for gene_panel
-                          in request.args.getlist('gene_panels') if gene_panel]
-
     # fetch all variants for a specific case
     inst_mod, case_model = validate_user(current_user, institute_id, case_id)
 
@@ -376,6 +373,10 @@ def variants(institute_id, case_id, variant_type):
     gene_panel_names = [(item.panel_name, (item.display_name or item.panel_name))
                         for item in case_model.gene_panels]
     form.gene_panels.choices = gene_panel_names
+    if len(form.gene_panels.data) == 0:
+        if request.args.get('gene_panel') == 'default':
+            # fill in default gene panels
+            form.gene_panels.data = case_model.default_panel_ids
 
     # make sure HGNC symbols are correctly handled
     if request.args.get('hgnc_symbols'):
@@ -424,7 +425,7 @@ def variants(institute_id, case_id, variant_type):
                 per_page=per_page,
                 form=form,
                 severe_so_terms=SEVERE_SO_TERMS,
-                current_gene_lists=current_gene_lists,
+                current_gene_lists=form.gene_panels.data,
                 variant_type=variant_type,
                 upload_form=GeneListUpload(),
                 query_dict=query_dict)
