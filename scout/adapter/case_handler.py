@@ -160,7 +160,8 @@ class CaseHandler(object):
         if 'analysis_dates' in existing_case:
             if case['analysis_date'] not in existing_case['analysis_dates']:
                 existing_case['analysis_dates'] = (existing_case['analysis_dates'] +
-                                          case['analysis_dates'])
+                                                   case['analysis_dates'])
+        existing_case.analysis_date = case['analysis_date']
 
         logger.debug("Updating rerun requested to False")
         existing_case.rerun_requested = False
