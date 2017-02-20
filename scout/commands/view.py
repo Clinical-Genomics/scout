@@ -50,9 +50,9 @@ def institutes(context):
         click.echo(institute_obj['internal_id'])
 
 @click.command('genes', short_help='Display genes')
-@click.option('-b', 'build', default='37', type=click.Choice(['37','38']))
+@click.option('-b', '--build', default='37', type=click.Choice(['37','38']))
 @click.pass_context
-def genes(context):
+def genes(context, build):
     """Show all genes in the database"""
     logger.info("Running scout view genes")
     adapter = context.obj['adapter']

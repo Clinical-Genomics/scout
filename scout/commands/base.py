@@ -23,6 +23,7 @@ from scout.commands.convert import convert
 from scout.commands.query_genes import hgnc_query
 from scout.commands.view import view as view_command
 from scout.commands.update_cases import update_cases
+from scout.commands.delete import delete
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
@@ -113,3 +114,4 @@ cli.add_command(hgnc_query)
 cli.add_command(view_command)
 cli.add_command(delete_case)
 cli.add_command(update_cases)
+cli.add_command(delete)

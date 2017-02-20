@@ -4,6 +4,7 @@ from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.ensembl import parse_ensembl_transcripts
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import parse_hpo_genes
+from scout.parse.omim import get_mim_genes
 
 logger = logging.getLogger(__name__)
 
@@ -21,18 +22,25 @@ def add_transcript(gene, parsed_transcript):
     if parsed_transcript:
         refseq_identifyer = parsed_transcript['refseq']
         enstid = parsed_transcript['enst_id']
+        parsed_transcript['is_primary'] = False
         # If the transcript is already added
         if enstid in gene['transcripts']:
             # We check if the current transcript is one of the identifiers
             if refseq_identifyer:
                 # print(refseq_identifyer, gene['ref_seq'])
                 if refseq_identifyer in gene['ref_seq']:
+                    parsed_transcript['is_primary'] = True
                     gene['transcripts'][enstid] = parsed_transcript
         else:
+            if refseq_identifyer:
+                # print(refseq_identifyer, gene['ref_seq'])
+                if refseq_identifyer in gene['ref_seq']:
+                    parsed_transcript['is_primary'] = True
+
             gene['transcripts'][enstid] = parsed_transcript
 
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, genemap_lines):
     """Gather information from different sources and return a gene dict
 
         Extract information collected from a number of sources and combine them
@@ -42,7 +50,6 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
             ensembl_lines(iterable(str))
             hgnc_lines(iterable(str))
             exac_lines(iterable(str))
-            hpo_lines(iterable(str))
 
         Yields:
             gene(dict): A dictionary with gene information
@@ -51,6 +58,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
     gene_aliases = {}
     logger.info("Linking genes and transcripts")
     # HGNC genes are the main source, these define the gene dataset to use
+    # Try to use as much information as possible from hgnc
     for hgnc_gene in parse_hgnc_genes(hgnc_lines):
         hgnc_symbol = hgnc_gene['hgnc_symbol']
         hgnc_id = hgnc_gene['hgnc_id']
@@ -58,11 +66,11 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
         gene = {}
         gene['hgnc_id'] = hgnc_id
         gene['hgnc_symbol'] = hgnc_symbol
-        gene['build'] = build
         gene['previous_symbols'] = hgnc_gene['previous']
         gene['description'] = hgnc_gene['description']
         gene['omim_ids'] = hgnc_gene['omim_ids']
         gene['entrez_id'] = hgnc_gene['entrez_id']
+        # These are the primary transcripts
         gene['ref_seq'] = hgnc_gene['ref_seq']
         gene['uniprot_ids'] = hgnc_gene['uniprot_ids']
         gene['ucsc_id'] = hgnc_gene['ucsc_id']
@@ -84,16 +92,16 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
         hgnc_symbol = transcript['hgnc_symbol']
 
         parsed_transcript = {}
-        refseq_identifyer = None
+        refseq_identifier = None
         if transcript['refseq_mrna']:
-            refseq_identifyer = transcript['refseq_mrna']
+            refseq_identifier = transcript['refseq_mrna']
         elif transcript['refseq_ncrna']:
-            refseq_identifyer = transcript['refseq_ncrna']
+            refseq_identifier = transcript['refseq_ncrna']
         elif transcript['refseq_mrna_predicted']:
-            refseq_identifyer = transcript['refseq_mrna_predicted']
+            refseq_identifier = transcript['refseq_mrna_predicted']
 
         parsed_transcript['enst_id'] = transcript['ensembl_transcript_id']
-        parsed_transcript['refseq'] = refseq_identifyer
+        parsed_transcript['refseq'] = refseq_identifier
         parsed_transcript['start'] = transcript['transcript_start']
         parsed_transcript['end'] = transcript['transcript_end']
 
@@ -124,26 +132,27 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, build='37'):
                     if 'pli_score' not in gene:
                         gene['pli_score'] = exac_gene['pli_score']
 
-    hpo_genes = parse_hpo_genes(hpo_lines)
-    for hgnc_symbol in hpo_genes:
-        hpo_info = hpo_genes[hgnc_symbol]
+    omim_genes = get_mim_genes(genemap_lines, mim2gene_lines)
+    for hgnc_symbol in omim_genes:
+        omim_info = omim_genes[hgnc_symbol]
+        inheritance = omim_info.get('inheritance', set())
         if hgnc_symbol in genes:
             gene = genes[hgnc_symbol]
-            if hpo_info.get('incomplete_penetrance'):
-                gene['incomplete_penetrance'] = True
-            if hpo_info.get('ar'):
+            # if hpo_info.get('incomplete_penetrance'):
+    #             gene['incomplete_penetrance'] = True
+            if 'AR' in inheritance:
                 gene['ar'] = True
-            if hpo_info.get('ad'):
+            if 'AD' in inheritance:
                 gene['ad'] = True
-            if hpo_info.get('mt'):
+            if 'MT' in inheritance:
                 gene['mt'] = True
-            if hpo_info.get('xd'):
+            if 'XD' in inheritance:
                 gene['xd'] = True
-            if hpo_info.get('xr'):
-                gene['xr'] = True
-            if hpo_info.get('x'):
                 gene['x'] = True
-            if hpo_info.get('y'):
+            if 'XR' in inheritance:
+                gene['xr'] = True
+                gene['x'] = True
+            if 'Y' in inheritance:
                 gene['y'] = True
 
     return genes

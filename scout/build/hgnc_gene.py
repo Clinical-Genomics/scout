@@ -44,7 +44,7 @@ def build_hgnc_transcript(transcript_info, primary_transcripts):
 
     return transcript_obj
 
-def build_hgnc_gene(gene_info):
+def build_hgnc_gene(gene_info, build='37'):
     """Build a hgnc_gene object
 
         Args:
@@ -123,7 +123,7 @@ def build_hgnc_gene(gene_info):
     except TypeError as err:
         raise TypeError("Gene end has to be a integer")
 
-    gene_obj['build'] = gene_info.get('build', '37')
+    gene_obj['build'] = build
     gene_obj['description'] = gene_info.get('description')
     gene_obj['aliases'] = gene_info.get('previous_symbols', [])
     gene_obj['entrez_id'] = gene_info.get('entrez_id')

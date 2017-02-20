@@ -55,6 +55,21 @@ class GeneHandler(object):
         logger.info("Fetching all genes")
         return self.hgnc_collection.find({'build':build}).sort('chromosome', 1)
 
+    def nr_genes(self, build=None):
+        """Return the number of hgnc genes in collection
+        
+        If build is used, return the number of genes of a certain build
+
+            Returns:
+                result()
+        """
+        if build:
+            logger.info("Fetching all genes from build %s",  build)
+        else:
+            logger.info("Fetching all genes")
+            
+        return self.hgnc_collection.find({'build':build}).count()
+
     def drop_genes(self):
         """Delete the genes collection"""
         logger.info("Dropping the hgnc_gene collection")

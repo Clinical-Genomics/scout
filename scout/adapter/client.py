@@ -47,7 +47,8 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
                    .format(quote_plus(username), quote_plus(password), host, port))
         else:
             uri = "mongodb://%s:%s" % (host, port)
-
+    
+    logger.info("Try to connect to mongodb://%s:%s" % (host, port))
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
     except ServerSelectionTimeoutError as err:
