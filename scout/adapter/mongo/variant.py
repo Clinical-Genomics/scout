@@ -35,15 +35,15 @@ class VariantHandler(object):
             result(Iterable[Variant])
         """
         return self.mongoengine_adapter.variants(
-            case_id=case_id, 
-            query=query, 
+            case_id=case_id,
+            query=query,
             variant_ids=variant_ids,
-            category=category, 
-            nr_of_variants=nr_of_variants, 
+            category=category,
+            nr_of_variants=nr_of_variants,
             skip=skip,
             sort_key=sort_key
         )
-                 
+
 
     def variant(self, document_id, gene_panels=None):
         """Returns the specified variant.
@@ -55,10 +55,8 @@ class VariantHandler(object):
            Returns:
                variant_object(Variant): A odm variant object
         """
-        return self.mongoengine_adapter.variants(
-                    document_id=document_id,
-                    gene_panels=gene_panels
-                )
+        return self.mongoengine_adapter.variant(document_id=document_id,
+                                                gene_panels=gene_panels)
 
     def get_causatives(self, institute_id):
         """Return all causative variants for an institute

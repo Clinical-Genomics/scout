@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -24,16 +23,16 @@ class CaseHandler(object):
             Cases ordered by date
         """
         return self.mongoengine_adapter.cases(
-            collaborator=collaborator, 
-            query=query, 
+            collaborator=collaborator,
+            query=query,
             skip_assigned=skip_assigned,
-            has_causatives=has_causatives, 
-            reruns=reruns, 
+            has_causatives=has_causatives,
+            reruns=reruns,
             finished=finished,
-            research_requested=research_requested, 
+            research_requested=research_requested,
             is_research=is_research
         )
-    
+
     def update_dynamic_gene_list(self, case, gene_list):
         """Update the dynamic gene list for a case
 

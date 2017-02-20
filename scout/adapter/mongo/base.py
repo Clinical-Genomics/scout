@@ -64,8 +64,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.db = database
         self.hgnc_collection = database.hgnc_gene
         # This will be used during the transfer to pymongo
-        self.mongoengine_adapter = MongoEngineAdapter(database)
-        print(self.db)
+        self.mongoengine_adapter = MongoEngineAdapter()
 
     def getoradd_user(self, email, name, location=None, institutes=None):
         """Get or create a new user."""
