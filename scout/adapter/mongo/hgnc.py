@@ -28,7 +28,7 @@ class GeneHandler(object):
         """
         logger.debug("Fetching gene %s" % hgnc_id)
         gene_obj = self.hgnc_collection.find_one({'hgnc_id':hgnc_id, 'build': build})
-        
+
         return gene_obj
 
     def hgnc_genes(self, hgnc_symbol, build='37'):
@@ -44,7 +44,7 @@ class GeneHandler(object):
         """
         logger.debug("Fetching genes with symbol %s" % hgnc_symbol)
 
-        return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build':build})
+        return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build': build})
 
     def all_genes(self, build='37'):
         """Fetch all hgnc genes
@@ -68,7 +68,7 @@ class GeneHandler(object):
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict
-    
+
     def hgncsymbol_to_gene(self):
         """Return a dictionary with hgnc_symbol as key and gene_obj as value"""
         hgnc_dict = {}
@@ -77,7 +77,7 @@ class GeneHandler(object):
             hgnc_dict[gene_obj['hgnc_symbol']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict
-    
+
     def to_hgnc(self, hgnc_alias, build='37'):
         """Check if a hgnc symbol is an alias
 
@@ -95,4 +95,4 @@ class GeneHandler(object):
                 return gene['hgnc_symbol']
         else:
             return None
-    
+

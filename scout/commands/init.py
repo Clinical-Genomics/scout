@@ -42,7 +42,9 @@ def init(ctx, institute_name, user_name, user_mail):
     adapter = ctx.obj['adapter']
 
     logger.info("Deleting previous database")
-    adapter.drop_database()
+    collections = ['institute', 'user', 'whitelist']
+    for collection in collections:
+        adapter.db.drop_collection(collection)
     logger.info("Database deleted")
 
     institute_obj = build_institute(

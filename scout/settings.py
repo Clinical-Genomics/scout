@@ -47,8 +47,7 @@ class BaseConfig(object):
                   ('scout.blueprints.genes.genes_bp', None),
                   ('chanjo_report.server.blueprints.report_bp', '/reports')]
 
-    EXTENSIONS = ['scout.extensions.store',
-                  'scout.extensions.toolbar',
+    EXTENSIONS = ['scout.extensions.toolbar',
                   'scout.extensions.admin',
                   'scout.extensions.db',
                   'scout.extensions.oauth',
@@ -61,7 +60,9 @@ class BaseConfig(object):
                   'chanjo_report.server.extensions.api',
                   'scout.extensions.loqusdb',
                   'scout.extensions.bootstrap',
-                  'scout.extensions.housekeeper']
+                  'scout.extensions.housekeeper',
+                  'scout.extensions.mongo',
+                  'scout.extensions.store']
 
     # settings for triggering opening of research mode
     RESEARCH_MODE_RECIPIENT = 'example@domain.com'

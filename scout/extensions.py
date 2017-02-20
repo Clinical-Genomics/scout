@@ -13,6 +13,7 @@ from flask_mail import Mail
 from flask_mongoengine import MongoEngine
 from flask_oauthlib.client import OAuth
 from flask_sslify import SSLify
+from flask_pymongo import PyMongo
 from loqusdb.plugins import MongoAdapter
 import ssl
 from housekeeper.store import api as hkapi
@@ -64,6 +65,7 @@ def get_locale():
 # | Flask-MongoEngine
 # +--------------------------------------------------------------------+
 db = MongoEngine()
+mongo = PyMongo()
 
 # +--------------------------------------------------------------------+
 # | Storage-Adapter

@@ -9,6 +9,7 @@ Flask-Admin>=1.4.0
 
 # Database
 Flask-MongoEngine==0.7.1
+Flask-PyMongo
 mongoengine==0.10.1
 pymongo>=3.2.1
 

@@ -3,7 +3,7 @@ import click
 import yaml
 
 # Adapter stuff
-from scout.adapter.pymongo import MongoAdapter
+from scout.adapter.mongo import MongoAdapter
 from scout.adapter.client import get_connection
 from mongoengine import connect
 from pymongo.errors import (ConnectionFailure)
@@ -40,7 +40,7 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 @click.option('-db', '--mongodb')
 @click.option('-u', '--username')
 @click.option('-p', '--password')
-@click.option('-port', '--port',
+@click.option('-port', '--port', type=int,
               help="Specify port to look for the mongo database")
 @click.option('-h', '--host',
               help="Specify the host where to look for the mongo database.")
@@ -75,17 +75,17 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
 
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
-    
+
     try:
         client = get_connection(
-                    host=mongo_configs['host'], 
-                    port=mongo_configs['port'], 
-                    username=mongo_configs['username'], 
+                    host=mongo_configs['host'],
+                    port=mongo_configs['port'],
+                    username=mongo_configs['username'],
                     password=mongo_configs['password'],
                 )
     except ConnectionFailure:
         ctx.abort()
-    
+
     # Establish a connection for mongoengine
     # This will be removed when we onky use pymongo
     connect(
@@ -95,7 +95,7 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
         username=mongo_configs['username'],
         password=mongo_configs['password']
     )
-    
+
     database = client[mongo_configs['mongodb']]
     logger.debug("Setting up a mongo adapter")
     mongo_adapter = MongoAdapter(database)

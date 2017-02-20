@@ -10,7 +10,7 @@ import yaml
 
 # Adapter stuff
 from pymongo import MongoClient as RealClient
-from scout.adapter.pymongo import MongoAdapter as PymongoAdapter
+from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 from mongoengine import connect
 
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
@@ -213,10 +213,10 @@ def adapter(request, client):
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
-    
+
     logger.info("Establish a mongoengine connection")
     connect(DATABASE)
-    
+
     logger.info("Connected to database")
 
     return mongo_adapter

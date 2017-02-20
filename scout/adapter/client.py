@@ -4,9 +4,9 @@ client.py
 Establish a connection to the database
 
 """
-
 import logging
 
+from pymongo import MongoClient
 from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 
 try:
@@ -17,14 +17,13 @@ except ImportError:
     from urllib import quote_plus
 
 
-from pymongo import MongoClient
-
 logger = logging.getLogger(__name__)
+
 
 def get_connection(host='localhost', port=27017, username=None, password=None,
                    uri=None, app=None, timeout=20):
     """Get a client to the mongo database
-    
+
         host(str): Host of database
         port(int): Port of database
         username(str)
@@ -32,21 +31,20 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
         uri(str)
         app
         timeout(int): How long should the client try to connect
-        
+
     """
     if not uri:
         if app:
             config = getattr(app, 'config', {})
-            
+
             host = config.get('MONGODB_HOST', 'localhost')
             port = config.get('MONGODB_PORT', 27017)
             username = config.get('MONGODB_USERNAME', None)
             password = config.get('MONGODB_PASSWORD', None)
-        
-        
-        if (username and password):
-            uri = "mongodb://%s:%s@%s:%s" % (
-                        quote_plus(user), quote_plus(password), host, port)
+
+        if username and password:
+            uri = ("mongodb://{}:{}@{}:{}/scoutTest"
+                   .format(quote_plus(username), quote_plus(password), host, port))
         else:
             uri = "mongodb://%s:%s" % (host, port)
 
@@ -56,13 +54,5 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
         logger.warning("Connection Refused")
         raise ConnectionFailure
 
-    logger.info("Check if server is available")
-    try:
-        client.admin.command('ismaster')
-    except ConnectionFailure as err:
-        logger.warning("Server not available")
-        raise err
-    
     logger.info("Connection established")
-    
     return client

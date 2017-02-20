@@ -3,7 +3,7 @@
 """
 pymongo.py
 
-This is the new mongo adapter for scout that skips mongoengine and uses pymongo, 
+This is the new mongo adapter for scout that skips mongoengine and uses pymongo,
 it is a communicator for quering and updating the mongodatabase.
 
 
@@ -51,11 +51,21 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
 
     """Adapter for cummunication with a mongo database."""
 
-    def __init__(self, database):
+    def __init__(self, database=None):
+        if database:
+            self.setup(database)
+
+    def init_app(self, app):
+        """Setup via Flask."""
+        self.setup(app.extensions['pymongo']['MONGO'][1])
+
+    def setup(self, database):
+        """Setup connection to database."""
         self.db = database
         self.hgnc_collection = database.hgnc_gene
         # This will be used during the transfer to pymongo
         self.mongoengine_adapter = MongoEngineAdapter(database)
+        print(self.db)
 
     def getoradd_user(self, email, name, location=None, institutes=None):
         """Get or create a new user."""

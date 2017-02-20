@@ -6,7 +6,7 @@ from mongomock import MongoClient
 
 from pymongo import MongoClient as RealClient
 
-from scout.adapter.pymongo import MongoAdapter as PymongoAdapter
+from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 
 from mongoengine import connect
 
@@ -27,7 +27,7 @@ def real_client(request):
     """Get a mongomock client"""
     logger.info("Get a real mongo client")
     real_client = RealClient()
-    
+
     def teardown():
         print('\n')
         logger.info("Deleting database")
@@ -44,7 +44,7 @@ def real_pymongo_adapter(request, real_client):
     logger.info("Get a mongo adapter that uses testdb as database")
     database = real_client[DATABASE]
     adapter = PymongoAdapter(database)
-    
+
     connect(DATABASE)
     logger.info("Connecting the mongoengine adapter")
     # adapter.mongoengine_adapter.connect_to_database('testdb')
@@ -57,7 +57,7 @@ def pymongo_adapter(request, client):
     """Get a mongoadapter"""
     logger.info("Get a mongo adapter that uses testdb as database")
     database = client[DATABASE]
-    
+
     adapter = PymongoAdapter(database)
 
     return adapter

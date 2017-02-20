@@ -12,6 +12,7 @@ from chanjo_report.server.app import configure_template_filters
 
 from .settings import DevelopmentConfig
 from scout.compat import unquote
+from scout.extensions import store, mongo
 
 
 class NoContextProcessorException(Exception):
