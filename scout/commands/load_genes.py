@@ -24,7 +24,7 @@ from pprint import pprint as pp
 
 from scout.load import load_hgnc_genes
 from scout.resources import (hgnc_path, exac_path, transcripts37_path, 
-                             mim2gene_path, genemap2_path)
+                             transcripts38_path, mim2gene_path, genemap2_path)
 
 
 from scout.utils.link import link_genes
@@ -70,7 +70,7 @@ def genes(ctx, update, build):
                     transcripts37_path))
         ensembl_handle = get_file_handle(transcripts37_path)
     else:
-        ensembl_handle = None
+        ensembl_handle = get_file_handle(transcripts38_path)
     
     logger.info("Loading exac gene file from {0}".format(
                 exac_path))
