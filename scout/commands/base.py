@@ -15,7 +15,6 @@ from scout.log import init_log
 # Commands
 from scout.commands.load_database import load
 from scout.commands.export import export
-from scout.commands.case import delete_case
 from scout.commands.wipe_database import wipe
 from scout.commands.transfer import transfer
 from scout.commands.init import init as init_command
@@ -112,6 +111,5 @@ cli.add_command(export)
 cli.add_command(convert)
 cli.add_command(hgnc_query)
 cli.add_command(view_command)
-cli.add_command(delete_case)
 cli.add_command(update_cases)
 cli.add_command(delete)
