@@ -15,8 +15,11 @@ import logging
 
 import click
 
-from scout.resources import (hgnc_path, exac_path, transcripts_path,
+from scout.resources import (hgnc_path, exac_path,
                              hpogenes_path, hpoterms_path, hpodisease_path)
+
+from scout.resources import transcripts37_path as transcripts_path
+
 from scout.build import build_institute
 from scout.models import (User, Whitelist)
 
