@@ -1,4 +1,7 @@
 import logging
+import math
+
+from datetime import datetime
 
 from scout.exceptions import IntegrityError
 from mongoengine import DoesNotExist
@@ -52,7 +55,7 @@ class PanelHandler(object):
                 result = None
         elif panel_id:
             logger.info("Fething gene panels %s from database" % panel_id)
-            result = GenePanel.objects(panel_name=panel_id).order_by('-version')
+            result = GenePanel.objects(panel_name=panel_id).order_by('-version').first()
         else:
             logger.info("Fething all gene panels from database")
             result = GenePanel.objects()
@@ -81,3 +84,63 @@ class PanelHandler(object):
     
         return gene_dict
     
+    def update_panel(self, panel_obj, version=None):
+        """Update a gene panel
+        
+        Updates a gene panel and its version.
+        Add, remove or edit genes.
+        
+        Args:
+            panel_obj(dict): The gene panel that should be updated
+        
+        """
+        version = version or panel_obj['version']
+        
+        # If the user choosed a lower version set it to old version
+        if version < panel_obj['version']:
+            version = panel_obj['version']
+        logger.info("Updating gene panel %s", panel_obj['panel_name'])
+        
+
+        if version == panel_obj['version']:
+            if version.is_integer:
+                new_version = version + 1
+            else:
+                new_version = version or float(math.ceil(version))
+        else:
+            new_version = version
+        logger.info("Updating version to %s", new_version)
+        
+        existing_genes = panel_obj['genes']
+        genes_to_add = [] # List of gene objs
+        genes_to_remove = [] # List of gene objs
+        ids_to_remove = [] # List of hgnc ids
+
+        for gene_obj in panel_obj['pending_genes']:
+            gene_obj['database_entry_version'] = str(new_version)
+            if gene_obj['action'] == 'add':
+                existing_genes.append(gene_obj)
+                genes_to_add.append(gene_obj)
+            elif gene_obj['action'] == 'delete':
+                ids_to_remove.append(gene_obj['hgnc_id'])
+                genes_to_remove.append(gene_obj)
+        
+        new_panel_genes = [gene_obj for gene_obj in existing_genes if gene_obj['hgnc_id'] not in ids_to_remove]
+        
+        new_panel = GenePanel(
+            panel_name = panel_obj['panel_name'],
+            institute = panel_obj['institute'],
+            version = new_version,
+            date = datetime.now(),
+            display_name = panel_obj['display_name'],
+            genes = new_panel_genes,
+            pending_genes = panel_obj['pending_genes'],
+        )
+        
+        self.add_gene_panel(new_panel)
+        
+                
+            
+        
+        
+        

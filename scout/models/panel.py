@@ -4,6 +4,8 @@ from mongoengine import (Document, ListField, StringField, FloatField,
                          EmbeddedDocumentField, MapField, ReferenceField,
                          IntField, SortedListField)
 
+ACTIONS = ['add', 'delete', 'edit']
+
 class Gene(EmbeddedDocument):
 
     meta = {'strict': False}
@@ -24,6 +26,8 @@ class Gene(EmbeddedDocument):
     x = BooleanField()
     y = BooleanField()
 
+    action = StringField(choices=ACTIONS)
+    
     def __unicode__(self):
         return "{this.hgnc_id}: {this.symbol}".format(this=self)
 
@@ -43,6 +47,7 @@ class GenePanel(Document):
     display_name = StringField()
     # {'ADK':Gene}
     genes = SortedListField(EmbeddedDocumentField(Gene), ordering='symbol')
+    pending_genes = ListField(EmbeddedDocumentField(Gene)) # Used when updating gene panels
 
     @property
     def gene_ids(self):
