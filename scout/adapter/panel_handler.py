@@ -140,7 +140,6 @@ class PanelHandler(object):
             date = datetime.now(),
             display_name = panel_obj['display_name'],
             genes = new_panel_genes,
-            pending_genes = panel_obj['pending_genes'],
         )
 
         self.add_gene_panel(new_panel)

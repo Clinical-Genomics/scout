@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
 from mongoengine import Q
@@ -6,7 +8,9 @@ from mongoengine import Q
 from scout.extensions import store
 from scout.utils.helpers import templated, validate_user
 from scout.models import HgncGene
+from scout.models.panel import Gene
 
+log = logging.getLogger(__name__)
 genes_bp = Blueprint('genes', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/genes/static')
 
@@ -75,34 +79,51 @@ def panels(institute_id):
 @login_required
 def panel(panel_id):
     """Edit a gene panel."""
-    gene_panel = store.gene_panel(panel_id).first()
+    gene_panel = store.gene_panel(panel_id)
 
     if request.method == 'POST':
-        if 'gene' in request.form:
-            hgnc_id = request.form['gene']
-            gene_panel.pending_genes.append({
-                'hgnc_id': hgnc_id,
-                'action': 'delete',
-            })
-            gene_panel.save()
+        if 'hgnc_id' in request.form:
+            hgnc_id = int(request.form['hgnc_id'])
+            log.debug("marking gene to be deleted: %s", hgnc_id)
+            for gene in gene_panel['genes']:
+                if gene['hgnc_id'] == hgnc_id:
+                    new_gene = Gene(hgnc_id=hgnc_id, symbol=gene['symbol'],
+                                    action='delete')
+                    gene_panel.pending_genes.append(new_gene)
+                    log.info("adding pending delete of: %s", gene['symbol'])
+                    gene_panel.save()
 
         elif 'newGene' in request.form:
             hgnc_id = request.form['newGene']
             if '|' in hgnc_id:
                 hgnc_id = hgnc_id.split(' | ', 1)[0]
             hgnc_id = int(hgnc_id)
-            panel_genes = {gene.hgnc_id: gene for gene in gene_panel.genes}
+            log.debug("add pending gene: %s", hgnc_id)
+            panel_genes = {gene['hgnc_id']: gene for gene in gene_panel['genes']}
             if hgnc_id not in panel_genes:
                 hgnc_gene = store.hgnc_gene(hgnc_id)
-                gene_panel.pending_genes.append({
-                    'hgnc_id': hgnc_id,
-                    'symbol': hgnc_gene.hgnc_symbol,
-                    'action': 'add',
-                })
+                new_gene = Gene(hgnc_id=hgnc_id, symbol=hgnc_gene['hgnc_symbol'],
+                                action='add')
+                gene_panel.pending_genes.append(new_gene)
+                log.info("added pending gene: %s", new_gene['symbol'])
                 gene_panel.save()
             else:
-                symbol = panel_genes[hgnc_id].symbol
+                symbol = panel_genes[hgnc_id]['symbol']
                 flash("gene already in gene panel: {}".format(symbol), 'warning')
 
-    inst_mod = store.institute(gene_panel.institute)
+    inst_mod = store.institute(gene_panel['institute'])
     return dict(institute=inst_mod, panel=gene_panel)
+
+
+@genes_bp.route('/genes/panels/<panel_id>/update', methods=['POST'])
+@login_required
+def panel_update(panel_id):
+    """Update a panel to a new version."""
+    gene_panel = store.gene_panel(panel_id)
+    if len(gene_panel['pending_genes']) == 0:
+        flash("panel doesn't contain any updates", 'warning')
+        return redirect(url_for('.panel', panel_id=panel['panel_name']))
+    else:
+        log.info("updating panel: %s", gene_panel['panel_name'])
+        store.update_panel(gene_panel)
+        return redirect(url_for('.panels', institute_id=gene_panel['institute']))
