@@ -507,6 +507,16 @@
         <li class="list-group-item">No gene list generated</li>
       {% endfor %}
     </ul>
+    <div class="panel-footer">
+      <a class="btn btn-default form-control"
+         href="{{ url_for('core.variants',
+                          institute_id=institute.id,
+                          case_id=case.display_name,
+                          variant_type='clinical',
+                          gene_panels=['hpo']) }}">
+          Clinical HPO variants
+        </a>
+    </div>
   </div>
 {% endmacro %}
 
