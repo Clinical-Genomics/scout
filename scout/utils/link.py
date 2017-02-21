@@ -68,7 +68,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, genemap_li
         gene['hgnc_symbol'] = hgnc_symbol
         gene['previous_symbols'] = hgnc_gene['previous']
         gene['description'] = hgnc_gene['description']
-        gene['omim_ids'] = hgnc_gene['omim_ids']
+        gene['omim_id'] = hgnc_gene['omim_id']
         gene['entrez_id'] = hgnc_gene['entrez_id']
         # These are the primary transcripts
         gene['ref_seq'] = hgnc_gene['ref_seq']
@@ -138,8 +138,10 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, genemap_li
         inheritance = omim_info.get('inheritance', set())
         if hgnc_symbol in genes:
             gene = genes[hgnc_symbol]
+            # Update the omim id to the one found in omim
+            gene['omim_id'] = omim_info['mim_number']
             # if hpo_info.get('incomplete_penetrance'):
-    #             gene['incomplete_penetrance'] = True
+            #    gene['incomplete_penetrance'] = True
             if 'AR' in inheritance:
                 gene['ar'] = True
             if 'AD' in inheritance:

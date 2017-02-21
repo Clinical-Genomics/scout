@@ -67,7 +67,7 @@ def build_hgnc_gene(gene_info, build='37'):
                 description: str
                 aliases: list(str)
                 entrez_id: int
-                omim_ids: list(int)
+                omim_id: int
                 pli_score: float
                 primary_transcripts: list(str)
                 ucsc_id: str
@@ -127,7 +127,7 @@ def build_hgnc_gene(gene_info, build='37'):
     gene_obj['description'] = gene_info.get('description')
     gene_obj['aliases'] = gene_info.get('previous_symbols', [])
     gene_obj['entrez_id'] = gene_info.get('entrez_id')
-    gene_obj['omim_ids'] = gene_info.get('omim_ids', [])
+    gene_obj['omim_ids'] = gene_info.get('omim_id')
     try:
         gene_obj['pli_score'] = float(gene_info.get('pli_score'))
     except TypeError as err:
