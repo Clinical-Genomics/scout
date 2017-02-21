@@ -61,10 +61,6 @@ class HgncGene(Document):
                 yield model
 
     @property
-    def position(self):
-        return "{this.chromosome}:{this.start}-{this.end}".format(this=self)
-
-    @property
     def hgnc_link(self):
         """Link to gene in HGNC"""
         url_template = ("http://www.genenames.org/cgi-bin/gene_symbol_report"

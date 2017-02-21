@@ -55,7 +55,7 @@
   <ul class="list-group">
     <li class="list-group-item">
       Aliases
-      <span class="pull-right">{{ gene.aliases|join(', ') if gene.aliases else '-' }}</span>
+      <span class="pull-right">{{ gene.aliases|join(', ') }}</span>
     </li>
     <li class="list-group-item">
       Chromosome
@@ -67,7 +67,7 @@
     </li>
 
     <li class="list-group-item">
-      Incomplete penetrance (OMIM)
+      Incomplete penetrance (HPO)
       <span class="pull-right">
         {{ 'yes' if gene.incomplete_penetrance else 'no' }}
       </span>

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from flask import abort, Blueprint, request, jsonify, redirect, url_for
 from flask_login import login_required
-from mongoengine import Q
 
 from scout.extensions import store
 from scout.utils.helpers import templated
-from scout.models import HgncGene
+from . import controller
 
 genes_bp = Blueprint('genes', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/genes/static')
@@ -41,6 +40,8 @@ def gene(hgnc_id=None, hgnc_symbol=None):
 
     if gene_obj is None:
         return abort(404)
+
+    controller.gene(gene_obj)
     return dict(gene=gene_obj)
 
 
@@ -50,11 +51,7 @@ def api_genes():
     """Return JSON data about genes."""
     query = request.args.get('query')
     # filter genes by matching query to gene information
-    gene_query = HgncGene.objects.filter(
-        Q(hgnc_symbol__icontains=query) or
-        Q(aliases__icontains=query) or
-        Q(description__icontains=query)
-    )
-    json_terms = [{'name': '{} | {}'.format(gene.hgnc_id, gene.hgnc_symbol),
-                   'id': gene.hgnc_id} for gene in gene_query]
+    gene_query = store.hgnc_genes(query, search=True)
+    json_terms = [{'name': '{} | {}'.format(gene['hgnc_id'], gene['hgnc_symbol']),
+                   'id': gene['hgnc_id']} for gene in gene_query]
     return jsonify(json_terms)
