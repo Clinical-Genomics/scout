@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import abort, Blueprint, request, jsonify, redirect, url_for
+from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
 from mongoengine import Q
 
@@ -85,18 +85,24 @@ def panel(panel_id):
                 'action': 'delete',
             })
             gene_panel.save()
+
         elif 'newGene' in request.form:
             hgnc_id = request.form['newGene']
             if '|' in hgnc_id:
                 hgnc_id = hgnc_id.split(' | ', 1)[0]
             hgnc_id = int(hgnc_id)
-            hgnc_gene = store.hgnc_gene(hgnc_id)
-            gene_panel.pending_genes.append({
-                'hgnc_id': hgnc_id,
-                'symbol': hgnc_gene.hgnc_symbol,
-                'action': 'add',
-            })
-            gene_panel.save()
+            panel_genes = {gene.hgnc_id: gene for gene in gene_panel.genes}
+            if hgnc_id not in panel_genes:
+                hgnc_gene = store.hgnc_gene(hgnc_id)
+                gene_panel.pending_genes.append({
+                    'hgnc_id': hgnc_id,
+                    'symbol': hgnc_gene.hgnc_symbol,
+                    'action': 'add',
+                })
+                gene_panel.save()
+            else:
+                symbol = panel_genes[hgnc_id].symbol
+                flash("gene already in gene panel: {}".format(symbol), 'warning')
 
     inst_mod = store.institute(gene_panel.institute)
     return dict(institute=inst_mod, panel=gene_panel)

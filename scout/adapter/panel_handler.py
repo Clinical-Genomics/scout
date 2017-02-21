@@ -34,7 +34,7 @@ class PanelHandler(object):
     def gene_panels(self, institute_id=None):
         """Fetch gene panels."""
         if institute_id:
-            return GenePanel.objects(institute=institute_id)
+            return GenePanel.objects(institute=institute_id).order_by('-date')
         else:
             return GenePanel.objects
 
