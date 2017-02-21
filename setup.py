@@ -26,7 +26,7 @@ def parse_reqs(req_path='./requirements.txt'):
 
 setup(
     name='scout-browser',
-    version='2.1.2',
+    version='2.2.0',
     url='https://github.com/Clinical-Genomics/scout',
     description='Clinical DNA variant visualizer and browser.',
     author='Robin Andeer',
