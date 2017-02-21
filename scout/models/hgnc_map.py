@@ -1,9 +1,55 @@
 from __future__ import unicode_literals
 
+from bson.objectid import ObjectId
+
 from mongoengine import (Document, StringField, ListField, EmbeddedDocument,
                          IntField, FloatField, EmbeddedDocumentField,
                          BooleanField)
 
+hgnc_transcript = {
+                'ensembl_transcript_id': str, # required
+                'refseq_id': str,
+                'start': int, # required
+                'end': int, # required
+                'is_primary': bool,
+    }
+
+
+hgnc_gene = {
+                '_id': ObjectId(),
+                # This is the hgnc id, required:
+                'hgnc_id': int, 
+                # The primary symbol, required 
+                'hgnc_symbol': str,
+                'ensembl_id': str, # required
+                'build': str, # '37' or '38', defaults to '37', required
+                
+                'chromosome': str, # required
+                'start': int, # required
+                'end': int, # required
+                
+                'description': str, # Gene description
+                'aliases': list(str), # Gene symbol aliases, includes hgnc_symbol
+                'entrez_id': int,
+                'omim_id': int,
+                'pli_score': float,
+                'primary_transcripts': list(str), # List of refseq transcripts
+                'ucsc_id': str,
+                'uniprot_ids': list(str),
+                'vega_id': str,
+                'transcripts': list(hgnc_transcript),
+                
+                # Inheritance information
+                'incomplete_penetrance': bool, # Acquired from HPO
+                'ar': bool, # defaults to None
+                'ad': bool, # defaults to None
+                'mt': bool, # defaults to None
+                'xr': bool, # defaults to None
+                'xd': bool, # defaults to None
+                'x': bool , # defaults to None
+                'y': bool , # defaults to None
+
+    }
 
 class HgncTranscript(EmbeddedDocument):
     ensembl_transcript_id = StringField(required=True)
