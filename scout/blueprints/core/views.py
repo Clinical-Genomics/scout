@@ -579,7 +579,7 @@ def email_sanger(institute_id, case_id, variant_id):
                url=variant_url,
                variant_id=variant_model.display_name,
                hgnc_symbol=hgnc_symbol,
-               panels=', '.format(variant_model.panels),
+               panels=', '.join(variant_model.panels),
                gtcalls=''.join(gtcalls),
                tx_changes=''.join(tx_changes),
                name=current_user.name.encode('utf-8'))
