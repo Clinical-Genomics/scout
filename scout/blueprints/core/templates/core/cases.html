@@ -10,6 +10,11 @@
       {{ institute.display_name }}
     </a>
   </li>
+  <li>
+    <a href="{{ url_for('genes.panels', institute_id=institute_id) }}">
+      Gene Panels
+    </a>
+  </li>
 {% endblock %}
 
 {% block content_main %}

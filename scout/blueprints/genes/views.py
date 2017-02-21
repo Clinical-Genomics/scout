@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from flask import abort, Blueprint, request, jsonify, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from mongoengine import Q
 
 from scout.extensions import store
-from scout.utils.helpers import templated
+from scout.utils.helpers import templated, validate_user
 from scout.models import HgncGene
 
 genes_bp = Blueprint('genes', __name__, template_folder='templates',
@@ -58,3 +58,45 @@ def api_genes():
     json_terms = [{'name': '{} | {}'.format(gene.hgnc_id, gene.hgnc_symbol),
                    'id': gene.hgnc_id} for gene in gene_query]
     return jsonify(json_terms)
+
+
+@genes_bp.route('/genes/<institute_id>/panels')
+@templated('genes/panels.html')
+@login_required
+def panels(institute_id):
+    """Show all gene panels for an institute."""
+    inst_mod = validate_user(current_user, institute_id)
+    inst_panels = store.gene_panels(institute_id)
+    return dict(panels=inst_panels, institute=inst_mod)
+
+
+@genes_bp.route('/genes/panels/<panel_id>', methods=['GET', 'POST'])
+@templated('genes/panel.html')
+@login_required
+def panel(panel_id):
+    """Edit a gene panel."""
+    gene_panel = store.gene_panel(panel_id).first()
+
+    if request.method == 'POST':
+        if 'gene' in request.form:
+            hgnc_id = request.form['gene']
+            gene_panel.pending_genes.append({
+                'hgnc_id': hgnc_id,
+                'action': 'delete',
+            })
+            gene_panel.save()
+        elif 'newGene' in request.form:
+            hgnc_id = request.form['newGene']
+            if '|' in hgnc_id:
+                hgnc_id = hgnc_id.split(' | ', 1)[0]
+            hgnc_id = int(hgnc_id)
+            hgnc_gene = store.hgnc_gene(hgnc_id)
+            gene_panel.pending_genes.append({
+                'hgnc_id': hgnc_id,
+                'symbol': hgnc_gene.hgnc_symbol,
+                'action': 'add',
+            })
+            gene_panel.save()
+
+    inst_mod = store.institute(gene_panel.institute)
+    return dict(institute=inst_mod, panel=gene_panel)

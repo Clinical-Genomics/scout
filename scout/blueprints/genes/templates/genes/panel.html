@@ -1,0 +1,89 @@
+{% extends "core/layout.html" %}
+
+{% block title %}
+  {{ super() }} - Gene Panels - {{ panel.display_name }}
+{% endblock %}
+
+{% block top_nav %}
+  <li>
+    <a href="{{ url_for('core.cases', institute_id=institute.internal_id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('genes.panels', institute_id=institute.internal_id) }}">
+      Gene Panel
+    </a>
+  </li>
+  <li class="active">
+    <a href="{{ url_for('genes.panel', panel_id=panel.panel_name) }}">
+      {{ panel.display_name }}
+    </a>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">{{ panel }}</div>
+        <ul class="list-group">
+          {% for gene in panel.genes %}
+            <li class="list-group-item">
+              {{ gene.symbol }}
+
+              <form class="pull-right" action="{{ url_for('genes.panel', panel_id=panel.panel_name) }}" method="POST">
+                <button name="hgnc_id" value="{{ gene.hgnc_id }}" type="submit" class="btn btn-danger btn-xs">Delete</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">Updates</div>
+        <div class="panel-body">
+          <form action="{{ url_for('genes.panel', panel_id=panel.panel_name) }}" method="POST">
+            <div class="row">
+              <div class="col-xs-8">
+                <input name="newGene" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+              </div>
+              <div class="col-xs-4">
+                <button class="btn btn-default form-control">Add</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <ul class="list-group">
+          {% for gene in panel.pending_genes %}
+            <li class="list-group-item">{{ gene.symbol }}</li>
+          {% else %}
+            <li class="list-group-item">No pending genes</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+  <script>
+    $(function () {
+      function getTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead").typeahead({
+        source: getTerms,
+        minLength: 2,
+      });
+    })
+  </script>
+{% endblock %}

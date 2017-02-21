@@ -30,10 +30,17 @@ class PanelHandler(object):
                                  panel_name, panel_version))
         panel_obj.save()
         logger.debug("Panel saved")
-    
+
+    def gene_panels(self, institute_id=None):
+        """Fetch gene panels."""
+        if institute_id:
+            return GenePanel.objects(institute=institute_id)
+        else:
+            return GenePanel.objects
+
     def gene_panel(self, panel_id=None, version=None):
         """Fetch a gene panel.
-        
+
         If no panel is sent return all panels
 
         Args:
@@ -64,7 +71,7 @@ class PanelHandler(object):
 
     def gene_to_panels(self):
         """Fetch all gene panels and group them by gene
-    
+
             Args:
                 adapter(MongoAdapter)
             Returns:
@@ -81,26 +88,24 @@ class PanelHandler(object):
                 else:
                     gene_dict[hgnc_id] = set([panel.panel_name])
         logger.info("Gene to panels")
-    
+
         return gene_dict
-    
+
     def update_panel(self, panel_obj, version=None):
         """Update a gene panel
-        
+
         Updates a gene panel and its version.
         Add, remove or edit genes.
-        
+
         Args:
             panel_obj(dict): The gene panel that should be updated
-        
         """
         version = version or panel_obj['version']
-        
+
         # If the user choosed a lower version set it to old version
         if version < panel_obj['version']:
             version = panel_obj['version']
         logger.info("Updating gene panel %s", panel_obj['panel_name'])
-        
 
         if version == panel_obj['version']:
             if version.is_integer:
@@ -110,7 +115,7 @@ class PanelHandler(object):
         else:
             new_version = version
         logger.info("Updating version to %s", new_version)
-        
+
         existing_genes = panel_obj['genes']
         genes_to_add = [] # List of gene objs
         genes_to_remove = [] # List of gene objs
@@ -124,9 +129,10 @@ class PanelHandler(object):
             elif gene_obj['action'] == 'delete':
                 ids_to_remove.append(gene_obj['hgnc_id'])
                 genes_to_remove.append(gene_obj)
-        
-        new_panel_genes = [gene_obj for gene_obj in existing_genes if gene_obj['hgnc_id'] not in ids_to_remove]
-        
+
+        new_panel_genes = [gene_obj for gene_obj in existing_genes if
+                           gene_obj['hgnc_id'] not in ids_to_remove]
+
         new_panel = GenePanel(
             panel_name = panel_obj['panel_name'],
             institute = panel_obj['institute'],
@@ -136,11 +142,5 @@ class PanelHandler(object):
             genes = new_panel_genes,
             pending_genes = panel_obj['pending_genes'],
         )
-        
+
         self.add_gene_panel(new_panel)
-        
-                
-            
-        
-        
-        
