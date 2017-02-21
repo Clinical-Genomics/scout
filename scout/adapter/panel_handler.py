@@ -102,13 +102,13 @@ class PanelHandler(object):
         """
         version = version or panel_obj['version']
 
-        # If the user choosed a lower version set it to old version
+        # If the user chose a lower version set it to old version
         if version < panel_obj['version']:
             version = panel_obj['version']
         logger.info("Updating gene panel %s", panel_obj['panel_name'])
 
         if version == panel_obj['version']:
-            if version.is_integer:
+            if version.is_integer():
                 new_version = version + 1
             else:
                 new_version = version or float(math.ceil(version))
