@@ -29,15 +29,15 @@ hgnc_gene = {
                 'end': int, # required
                 
                 'description': str, # Gene description
-                'aliases': list(str), # Gene symbol aliases, includes hgnc_symbol
+                'aliases': list(), # Gene symbol aliases, includes hgnc_symbol, str
                 'entrez_id': int,
                 'omim_id': int,
                 'pli_score': float,
-                'primary_transcripts': list(str), # List of refseq transcripts
+                'primary_transcripts': list(), # List of refseq transcripts (str)
                 'ucsc_id': str,
-                'uniprot_ids': list(str),
+                'uniprot_ids': list(), # List of str
                 'vega_id': str,
-                'transcripts': list(hgnc_transcript),
+                'transcripts': list(), # List of hgnc_transcript
                 
                 # Inheritance information
                 'incomplete_penetrance': bool, # Acquired from HPO

@@ -1,4 +1,5 @@
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +39,16 @@ class GeneHandler(object):
 
             Args:
                 hgnc_symbol(str)
+                build(str): The build in which to search
+                search(bool): if partial searching should be used
 
             Returns:
                 result()
         """
         logger.debug("Fetching genes with symbol %s" % hgnc_symbol)
+        if search:
+            regx = re.compile(hgnc_symbol, re.IGNORECASE)
+            return self.hgnc_collection.find({'aliases': {'$in': [regx]}, 'build': build})
         return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build': build})
 
     def all_genes(self, build='37'):
