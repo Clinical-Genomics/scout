@@ -30,6 +30,7 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 
 """
 import logging
+from datetime import datetime
 
 from pymongo import MongoClient
 
@@ -63,21 +64,47 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         """Setup connection to database."""
         self.db = database
         self.hgnc_collection = database.hgnc_gene
+        self.user_collection = database.user
+        self.institute_collection = database.institute
         # This will be used during the transfer to pymongo
         self.mongoengine_adapter = MongoEngineAdapter()
 
     def getoradd_user(self, email, name, location=None, institutes=None):
         """Get or create a new user."""
-        return self.mongoengine_adapter.getoradd_user(
-            email=email,
-            name=name,
-            location=location,
-            institutes=institutes
-        )
+        
+        user_obj = self.user(email=email)
+        
+        if user_obj is None:
+            logger.info('create user: %s', email)
+            self.user_collection.insert_one({
+                '_id': email,
+                'email': email,
+                'created_at': datetime.now(),
+                'location': location,
+                'name': name,
+                'institutes': institutes,
+            })
+            user_obj = self.user(email=email)
+
+        return user_obj
 
     def user(self, email=None):
         """Fetch a user from the database."""
-        return self.mongoengine_adapter.user(email=email)
+        logger.info("Fetching user %s", email)
+        user_obj = self.user_collection.find_one({'_id': email})
+        
+        if user_obj:
+            institutes = []
+            for institute_id in user_obj['institutes']:
+                institute_obj = self.institute(institute_id=institute_id)
+                if not institute_obj:
+                    logger.warning("Institute %s not in database", institute_id)
+                    ##TODO Raise exception here?
+                else:
+                    institutes.append(institute_obj)
+            user_obj['institutes'] = institutes
+        
+        return user_obj
 
     def update_access(self, user_obj):
         self.mongoengine_adapter.update_access(user_obj=user_obj)

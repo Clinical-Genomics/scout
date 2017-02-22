@@ -11,6 +11,19 @@ from mongoengine import (DateTimeField, Document, EmailField, IntField,
                          ListField, StringField, FloatField)
 
 
+institute = {
+    '_id': str, # same as internal_id
+    'internal_id': str, # like 'cust000', required
+    'display_name': str, # like 'Clinical Genomics', required
+    'sanger_recipients': list, # list of email adressess
+    
+    'created_at': datetime, 
+    'updated_at': datetime,
+
+    'coverage_cutoff': int, # Defaults to  10
+    'frequency_cutoff': float, # Defaults to 0.01
+}
+
 class Institute(Document):
 
     """Represents an institute linked to multiple collaborating users."""
