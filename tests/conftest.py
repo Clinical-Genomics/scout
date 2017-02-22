@@ -34,21 +34,27 @@ root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
+# Variant and load files:
 vcf_research_file = "tests/fixtures/643594.research.vcf"
 sv_research_path = "tests/fixtures/1.SV.vcf"
 vcf_clinical_file = "tests/fixtures/643594.clinical.vcf"
 sv_clinical_path = "tests/fixtures/643594.clinical.SV.vcf"
 ped_path = "tests/fixtures/643594.ped"
 scout_yaml_config = 'tests/fixtures/643594.config.yaml'
+
+# Panel file
 panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
 madeline_file = "tests/fixtures/madeline.xml"
 
+# Resource files
 hgnc_path = "tests/fixtures/resources/hgnc_reduced_set.txt"
 ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_reduced.txt"
 exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
 hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt"
 hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
 hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
+mim2gene_path = "tests/fixtures/resources/mim2gene_reduced.txt"
+genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
 
 
 ##################### Gene fixtures #####################
@@ -56,14 +62,15 @@ hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
 
 @pytest.fixture
 def genes(request, transcripts_handle, hgnc_handle, exac_handle,
-          hpo_genes_handle):
+          mim2gene_handle, genemap_handle):
     """Get a dictionary with the linked genes"""
     print('')
     gene_dict = link_genes(
         ensembl_lines=transcripts_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
-        hpo_lines=hpo_genes_handle
+        mim2gene_lines=mim2gene_handle,
+        genemap_lines=genemap_handle,
     )
 
     return gene_dict
@@ -521,6 +528,18 @@ def hpo_disease_file(request):
     print('')
     return hpo_disease_path
 
+@pytest.fixture
+def mim2gene_file(request):
+    """Get the path to the mim2genes file"""
+    print('')
+    return mim2gene_path
+
+@pytest.fixture
+def genemap_file(request):
+    """Get the path to the mim2genes file"""
+    print('')
+    return genemap_path
+
 @pytest.fixture(scope='function')
 def variant_clinical_file(request):
     """Get the path to a variant file"""
@@ -606,6 +625,19 @@ def hpo_genes_handle(request, hpo_genes_file):
     """Get a file handle to a hpo gene file"""
     print('')
     return get_file_handle(hpo_genes_file)
+
+@pytest.fixture
+def mim2gene_handle(request, mim2gene_file):
+    """Get a file handle to a mim2genes file"""
+    print('')
+    return get_file_handle(mim2gene_path)
+
+@pytest.fixture
+def genemap_handle(request, genemap_file):
+    """Get a file handle to a mim2genes file"""
+    print('')
+    return get_file_handle(genemap_file)
+
 
 @pytest.fixture
 def hpo_genes(request, hpo_genes_handle):
