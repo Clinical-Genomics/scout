@@ -10,6 +10,11 @@
       {{ institute.display_name }}
     </a>
   </li>
+  <li>
+    <a href="{{ url_for('genes.panels', institute_id=institute_id) }}">
+      Gene Panels
+    </a>
+  </li>
 {% endblock %}
 
 {% block content_main %}
@@ -118,7 +123,7 @@
       {% if case.is_research %}
         <a href="{{ url_for('core.variants', institute_id=case.owner, case_id=case.display_name, variant_type='research') }}">Research variants</a>
       {% else %}
-        <a href="{{ url_for('core.variants', institute_id=case.owner, case_id=case.display_name, variant_type='clinical', gene_panels=case.default_panel_ids) }}">Clinical variants</a>
+        <a href="{{ url_for('core.variants', institute_id=case.owner, case_id=case.display_name, variant_type='clinical', gene_panel='default') }}">Clinical variants</a>
       {% endif %}
     </td>
     <td>
