@@ -17,6 +17,8 @@ class Gene(EmbeddedDocument):
     reduced_penetrance = BooleanField(default=False)
     mosaicism = BooleanField(default=False)
     database_entry_version = StringField()
+    inheritance_models = ListField(StringField())
+    curator = StringField()
 
     ar = BooleanField()
     ad = BooleanField()
@@ -27,7 +29,7 @@ class Gene(EmbeddedDocument):
     y = BooleanField()
 
     action = StringField(choices=ACTIONS)
-    
+
     def __unicode__(self):
         return "{this.hgnc_id}: {this.symbol}".format(this=self)
 
