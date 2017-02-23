@@ -38,6 +38,13 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
             family_id, samples = parse_ped(f)
             config_data['family'] = family_id
 
+    if 'gene_panels' in config_data:
+        log.debug("handle whitespace in gene panel names")
+        config_data['gene_panels'] = [panel.strip() for panel in
+                                      config_data['gene_panels']]
+        config_data['default_gene_panels'] = [panel.strip() for panel in
+                                              config_data['default_gene_panels']]
+
     log.info("Use family %s" % config_data['family'])
     # check if the analysis is from a newer analysis
     adapter = context.obj['adapter']
