@@ -66,6 +66,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.hgnc_collection = database.hgnc_gene
         self.user_collection = database.user
         self.institute_collection = database.institute
+        self.event_collection = database.event
         # This will be used during the transfer to pymongo
         self.mongoengine_adapter = MongoEngineAdapter()
 
@@ -87,6 +88,18 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
             user_obj = self.user(email=email)
 
         return user_obj
+
+    def add_user(self, user_obj):
+        """Add a user object to the database
+        
+            Args:
+                user_obj(dict): A dictionary with user information
+        """
+        logger.info("Adding user to the database")
+        user_obj['_id'] = user_obj['email']
+        user_obj['created_at'] = datetime.now()
+        self.user_collection.insert_one(user_obj)
+        logger.debug("User inserted")
 
     def user(self, email=None):
         """Fetch a user from the database."""

@@ -175,7 +175,7 @@ def parsed_user(request, institute_obj):
         'email': 'john@doe.com',
         'name': 'John Doe',
         'location': None,
-        'institutes': [institute_obj],
+        'institutes': [institute_obj['internal_id']],
         'roles': ['admin']
     }
     return user_info
@@ -184,12 +184,7 @@ def parsed_user(request, institute_obj):
 @pytest.fixture(scope='function')
 def user_obj(request, parsed_user):
     """Return a User object"""
-    user = User(
-      email=parsed_user['email'],
-      name=parsed_user['name'],
-      institutes=parsed_user['institutes']
-    )
-    return user
+    return parsed_user
 
 
 #############################################################
@@ -263,15 +258,10 @@ def panel_database(request, hpo_database, panel_info):
     return adapter
 
 @pytest.fixture(scope='function')
-def institute_database(request, adapter, institute_obj, parsed_user):
+def institute_database(request, adapter, institute_obj, user_obj):
     "Returns an adapter to a database populated with institute"
     adapter.add_institute(institute_obj)
-    adapter.getoradd_user(
-        email=parsed_user['email'],
-        name=parsed_user['name'],
-        location=parsed_user['location'],
-        institutes=parsed_user['institutes']
-    )
+    adapter.add_user(user_obj)
 
     return adapter
 

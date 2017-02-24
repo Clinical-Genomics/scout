@@ -1,7 +1,10 @@
 import logging
 
-logger = logging.getLogger(__name__)
+from datetime import datetime
 
+from scout.models.event import VERBS_MAP
+
+logger = logging.getLogger(__name__)
 
 class EventHandler(object):
     """Class to handle events for the mongo adapter"""
@@ -12,41 +15,61 @@ class EventHandler(object):
             Arguments:
                 event_id (str): The database key for the event
         """
-        self.mongoengine_adapter.delete_event(
-            event_id = event_id
-        )
+        logger.info("Deleting event{0}".format(event_id))
+        self.event_collection.delete_one({'_id': event_id})
+        logger.debug("Event {0} deleted".format(event_id))
+        
 
     def create_event(self, institute, case, user, link, category, verb,
-                     subject, level='specific', variant_id="", content=""):
+                     subject, level='specific', variant=None, content=None,
+                     panel=None):
         """Create an Event with the parameters given.
 
         Arguments:
-            institute (Institute): A Institute object
-            case (Case): A Case object
-            user (User): A User object
+            institute (dict): A institute
+            case (dict): A case
+            user (dict): A User
             link (str): The url to be used in the event
-            category (str): Case or Variant
+            category (str): case or variant
             verb (str): What type of event
             subject (str): What is operated on
             level (str): 'specific' or 'global'. Default is 'specific'
-            variant (Variant): A variant object
+            variant (dict): A variant
+            content (str): The content of the comment
             content (str): The content of the comment
         """
-        self.mongoengine_adapter.create_event(
-            institute=institute,
-            case=case,
-            author=user.to_dbref(),
+        variant = variant or {}
+        user_obj = self.user(email=user['_id'])
+        if not user_obj:
+            logger.warning("User %s not found", user['_id'])
+            ##TODO raise exception here?
+            author_name = None
+        else:
+            author_name = user_obj['name']
+            
+        event = dict(
+            institute=institute['_id'],
+            case=case['case_id'], # Until we update Case to pymongo
+            author=user['_id'],
+            author_name=author_name,
             link=link,
             category=category,
-            verb=verb,
+            verb=VERBS_MAP.get(verb),
             subject=subject,
             level=level,
-            variant_id=variant_id,
-            content=content
+            variant_id=variant.get('_id'),
+            content=content,
+            panel=panel,
+            created_at = datetime.now(),
+            updated_at = datetime.now(),
         )
 
+        logger.debug("Saving Event")
+        self.event_collection.insert_one(event)
+        logger.debug("Event Saved")
+
     def events(self, institute, case=None, variant_id=None, level=None,
-                comments=False):
+                comments=False, panel=None):
         """Fetch events from the database.
 
           Args:
@@ -55,17 +78,34 @@ class EventHandler(object):
               variant_id (str, optional): global variant id
               level (str, optional): restrict comments to 'specific' or 'global'
               comments (bool, optional): restrict events to include only comments
+              panel (str): A panel name
 
           Returns:
               list: filtered query returning matching events
         """
-        return self.mongoengine_adapter.events(
-                institute=institute,
-                case=case,
-                variant_id=variant_id,
-                level=level,
-                comments=comments,
-                )
+
+        query = {'institute': institute['_id']}
+
+        if variant_id:
+            query['category'] = 'variant'
+            query['variant_id'] = variant_id
+            if level:
+                query['level'] = level
+                if level != 'global':
+                    query['case'] = case['_id']
+        elif panel:
+            query['panel'] = panel
+        # If no variant_id or panel we know that it is a case level comment
+        else:
+            query['category'] = 'case'
+            
+            if case:
+                query['case'] = case['_id']
+            
+        if comments:
+            query['verb'] = 'comment'
+        
+        return self.event_collection.find(query)
 
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
@@ -79,12 +119,23 @@ class EventHandler(object):
             user (User): A User object
             link (str): The url to be used in the event
         """
-        self.mongoengine_adapter.assign(
-                institute=institute,
-                case=case,
-                user=user,
-                link=link,
-                )
+        logger.info("Creating event for assigning {0} to {1}"
+                    .format(user['name'].encode('utf-8'), case['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='assign',
+            subject=case['display_name']
+        )
+        logger.info("Updating {0} to be assigned with {1}"
+                    .format(case['display_name'], user['name']))
+
+        case['assignee'] = user['_id']
+        case.save()
 
     def unassign(self, institute, case, user, link):
         """Unassign a user from a case.
@@ -99,12 +150,26 @@ class EventHandler(object):
             user (User): A User object (Should this be a user id?)
             link (str): The url to be used in the event
         """
-        self.mongoengine_adapter.unassign(
-                institute=institute,
-                case=case,
-                user=user,
-                link=link,
-                )
+        logger.info("Creating event for unassigning {0} from {1}".format(
+                    user['display_name'], case['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='unassign',
+            subject=case.display_name
+        )
+
+        logger.info("Updating {0} to be unassigned with {1}".format(
+                    case['display_name'], user['display_name']))
+
+        case['assignee'] = None
+        case.save()
+        logger.debug("Case updated")
+        
 
     def update_status(self, institute, case, user, status, link):
         """Update the status of a case.

@@ -115,7 +115,7 @@ class EventHandler(object):
             link (str): The url to be used in the event
         """
         logger.info("Creating event for assigning {0} to {1}"
-                    .format(user.name.encode('utf-8'), case.display_name))
+                    .format(user['name'].encode('utf-8'), case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -127,7 +127,7 @@ class EventHandler(object):
             subject=case.display_name
         )
         logger.info("Updating {0} to be assigned with {1}"
-                    .format(case.display_name, user.name.encode('utf-8')))
+                    .format(case['display_name'], user['name'].encode('utf-8')))
 
         case.assignee = user.to_dbref()
         case.save()
@@ -147,7 +147,7 @@ class EventHandler(object):
             link (str): The url to be used in the event
         """
         logger.info("Creating event for unassigning {0} from {1}".format(
-                    user.display_name, case.display_name))
+                    user['display_name'], case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -160,7 +160,7 @@ class EventHandler(object):
         )
 
         logger.info("Updating {0} to be unassigned with {1}".format(
-                    case.display_name, user.display_name))
+                    case['display_name'], user['display_name']))
 
         case.assignee = None
         case.save()
@@ -181,7 +181,7 @@ class EventHandler(object):
         """
 
         logger.info("Creating event for updating status of {0} to {1}".format(
-                    case.display_name, status))
+                    case['display_name'], status))
 
         self.create_event(
             institute=institute,
@@ -193,7 +193,7 @@ class EventHandler(object):
             subject=case.display_name
         )
 
-        logger.info("Updating {0} to status {1}".format(case.display_name, status))
+        logger.info("Updating {0} to status {1}".format(case['display_name'], status))
         case.status = status
         case.save()
         logger.debug("Case updated")
@@ -212,7 +212,7 @@ class EventHandler(object):
             content (str): The content for what should be added to the synopsis
         """
         logger.info("Creating event for updating the synopsis for case"\
-                    " {0}".format(case.display_name))
+                    " {0}".format(case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -226,7 +226,7 @@ class EventHandler(object):
         )
 
         logger.info("Updating the synopsis for case {0}".format(
-                    case.display_name))
+                    case['display_name']))
         case.synopsis = content
         case.save()
         logger.debug("Case updated")
@@ -241,7 +241,7 @@ class EventHandler(object):
             link (str): The url to be used in the event
         """
         logger.info("Creating event for archiving case {0}".format(
-                    case.display_name))
+                    case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -254,7 +254,7 @@ class EventHandler(object):
         )
 
         logger.info("Change status for case {0} to 'archived'".format(
-                    case.display_name))
+                    case['display_name']))
 
         case.status = 'archived'
         case.save()
@@ -270,7 +270,7 @@ class EventHandler(object):
                 link (str): The url to be used in the event
         """
         logger.info("Creating event for opening research for case"
-                    " {0}".format(case.display_name))
+                    " {0}".format(case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -313,8 +313,8 @@ class EventHandler(object):
             ## TODO Should ve raise a more proper exception here?
             raise e
 
-        existing_terms = set(term.phenotype_id for term in
-                             case.phenotype_terms)
+        existing_terms = set(term['phenotype_id'] for term in
+                             case['phenotype_terms'])
 
         for hpo_result in hpo_results:
             logger.debug("Fetching info for hpo term {0}".format(hpo_term))
@@ -334,7 +334,7 @@ class EventHandler(object):
                 case.phenotype_terms.append(phenotype_term)
 
                 logger.info("Creating event for adding phenotype term for case"
-                            " {0}".format(case.display_name))
+                            " {0}".format(case['display_name']))
 
                 self.create_event(
                     institute=institute,
@@ -348,10 +348,10 @@ class EventHandler(object):
                 )
             if is_group:
                 existing_groups = set(term.phenotype_id for term in
-                                      case.phenotype_groups)
+                                      case['phenotype_groups'])
                 if phenotype_term.phenotype_id not in existing_groups:
                     logger.info("Append the phenotype group {0} to case {1}"
-                                .format(phenotype_id, case.display_name))
+                                .format(phenotype_id, case['display_name']))
                     case.phenotype_groups.append(phenotype_term)
 
         case.save()
@@ -368,7 +368,7 @@ class EventHandler(object):
             link (str): The url to be used in the event
             phenotype_id (str): A phenotype id
         """
-        logger.info("Removing HPO term from case {0}".format(case.display_name))
+        logger.info("Removing HPO term from case {0}".format(case['display_name']))
 
         if is_group:
             terms = case.phenotype_groups
@@ -379,7 +379,7 @@ class EventHandler(object):
                 terms.remove(phenotype)
                 logger.info("Creating event for removing phenotype term {0}"\
                             " from case {1}".format(
-                                phenotype_id, case.display_name))
+                                phenotype_id, case['display_name']))
 
                 self.create_event(
                     institute=institute,
@@ -417,7 +417,7 @@ class EventHandler(object):
         """
         if variant:
             logger.info("Creating event for a {0} comment on variant {1}".format(
-                        comment_level, variant.display_name))
+                        comment_level, variant['display_name']))
 
             self.create_event(
                 institute=institute,
@@ -427,14 +427,14 @@ class EventHandler(object):
                 category='variant',
                 verb='comment',
                 level=comment_level,
-                variant_id=variant.variant_id,
-                subject=variant.display_name,
+                variant_id=variant['variant_id'],
+                subject=variant['display_name'],
                 content=content
             )
 
         else:
             logger.info("Creating event for a comment on case {0}".format(
-                        case.display_name))
+                        case['display_name']))
 
             self.create_event(
                 institute=institute,
@@ -443,7 +443,7 @@ class EventHandler(object):
                 link=link,
                 category='case',
                 verb='comment',
-                subject=case.display_name,
+                subject=case['display_name'],
                 content=content
             )
 
@@ -459,7 +459,7 @@ class EventHandler(object):
 
         """
         logger.info("Creating event for pinning variant {0}".format(
-                    variant.display_name))
+                    variant['display_name']))
 
         # add variant to list of pinned references in the case model
         case.suspects.append(variant)
@@ -471,8 +471,8 @@ class EventHandler(object):
             user=user,
             link=link,
             verb='pin',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
         self.create_event(category='variant', **kwargs)
         self.create_event(category='case', **kwargs)
@@ -489,7 +489,7 @@ class EventHandler(object):
         """
 
         logger.info("Creating event for unpinning variant {0}".format(
-                    variant.display_name))
+                    variant['display_name']))
 
         logger.info("Remove variant from list of references in the case"\
                     " model")
@@ -503,8 +503,8 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='unpin',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
     def order_sanger(self, institute, case, user, link, variant):
@@ -519,7 +519,7 @@ class EventHandler(object):
         """
 
         logger.info("Creating event for ordering sanger for variant"\
-                    " {0}".format(variant.display_name))
+                    " {0}".format(variant['display_name']))
 
         variant.sanger_ordered = True
         variant.save()
@@ -531,12 +531,12 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='sanger',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
         logger.info("Creating event for ordering sanger for case"\
-                    " {0}".format(case.display_name))
+                    " {0}".format(case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -545,8 +545,8 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='sanger',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
     def validate(self, institute, case, user, link, variant, validate_type):
@@ -561,8 +561,8 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='validate',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
     def mark_causative(self, institute, case, user, link, variant):
@@ -577,20 +577,20 @@ class EventHandler(object):
         """
         display_name = variant.display_name
         logger.info("Mark variant {0} as causative in the case {1}".format(
-                    display_name, case.display_name))
+                    display_name, case['display_name']))
 
         logger.info("Adding variant to causatives in case {0}".format(
-                    case.display_name))
+                    case['display_name']))
         case.causatives.append(variant)
 
         logger.info("Marking case {0} as solved".format(
-                    case.display_name))
+                    case['display_name']))
         case.status = 'solved'
         # persist changes
         case.save()
 
         logger.info("Creating case event for marking {0}"\
-                    " causative".format(variant.display_name))
+                    " causative".format(variant['display_name']))
 
         self.create_event(
             institute=institute,
@@ -599,12 +599,12 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='mark_causative',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
         logger.info("Creating variant event for marking {0}"\
-                    " causative".format(case.display_name))
+                    " causative".format(case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -613,8 +613,8 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='mark_causative',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
     def unmark_causative(self, institute, case, user, link, variant):
@@ -630,7 +630,7 @@ class EventHandler(object):
         """
         display_name = variant.display_name
         logger.info("Remove variant {0} as causative in case {1}".format(
-                    display_name, case.display_name))
+                    display_name, case['display_name']))
 
         case.causatives.remove(variant)
 
@@ -652,8 +652,8 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='unmark_causative',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
         self.create_event(
@@ -663,8 +663,8 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='unmark_causative',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
         )
 
     def update_manual_rank(self, institute, case, user, link, variant,
@@ -684,7 +684,7 @@ class EventHandler(object):
 
         """
         logger.info("Creating event for updating the manual rank for "\
-                    "variant {0}".format(variant.display_name))
+                    "variant {0}".format(variant['display_name']))
 
         self.create_event(
             institute=institute,
@@ -693,11 +693,11 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='manual_rank',
-            variant_id=variant.variant_id,
-            subject=variant.display_name,
+            variant_id=variant['variant_id'],
+            subject=variant['display_name'],
           )
         logger.info("Setting manual rank to {0} for variant {1}".format(
-              manual_rank, variant.display_name))
+              manual_rank, variant['display_name']))
         variant.manual_rank = manual_rank
         variant.save()
         logger.debug("Variant updated")
@@ -706,7 +706,7 @@ class EventHandler(object):
                      unmark=False):
         """Mark a case as checked from an analysis point of view."""
         logger.info("Updating checked status of {}"
-                    .format(case_model.display_name))
+                    .format(case_model['display_name']))
 
         status = 'not checked' if unmark else 'checked'
         self.create_event(
@@ -720,7 +720,7 @@ class EventHandler(object):
         )
 
         logger.info("Updating {0}'s checked status {1}"
-                    .format(case_model.display_name, status))
+                    .format(case_model['display_name'], status))
         case_model.analysis_checked = False if unmark else True
         case_model.save()
         logger.debug("Case updated")
@@ -737,7 +737,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='rerun',
-            subject=case_model.display_name
+            subject=case_model['display_name']
         )
 
         case_model.rerun_requested = True
@@ -761,7 +761,7 @@ class EventHandler(object):
     def share(self, institute_model, case_model, collaborator_id,
               user_model, link):
         """Share a case with a new institute."""
-        if collaborator_id in case_model.collaborators:
+        if collaborator_id in case_model['collaborators']:
             raise ValueError('new customer is already a collaborator')
 
         self.create_event(
@@ -780,7 +780,7 @@ class EventHandler(object):
     def unshare(self, institute_model, case_model, collaborator_id,
                 user_model, link):
         """Revoke access for a collaborator for a case."""
-        if collaborator_id not in case_model.collaborators:
+        if collaborator_id not in case_model['collaborators']:
             raise ValueError("collaborator doesn't have access to case")
 
         self.create_event(
@@ -800,9 +800,9 @@ class EventHandler(object):
                  omim_id, remove=False):
         """Diagnose a case using OMIM ids."""
         if level == 'phenotype':
-            diagnosis_list = case_model.diagnosis_phenotypes
+            diagnosis_list = case_model['diagnosis_phenotypes']
         elif level == 'gene':
-            diagnosis_list = case_model.diagnosis_genes
+            diagnosis_list = case_model['diagnosis_genes']
         else:
             raise TypeError('wrong level')
 
@@ -819,7 +819,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='update_diagnosis',
-            subject=case_model.display_name,
+            subject=case_model['display_name'],
             content=omim_id
         )
 

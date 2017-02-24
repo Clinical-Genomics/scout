@@ -25,18 +25,9 @@ class InstituteHandler(object):
 
         institute_obj['_id'] = internal_id
 
-        # Set time for insertion
-        now = datetime.now()
-        institute_obj['created_at'] = now 
-        institute_obj['updated_at'] = now
-
         logger.info("Adding institute with internal_id: {0} and "
                     "display_name: {1}".format(internal_id,
                                                display_name))
-        
-        # Set defaults
-        institute_obj['coverage_cutoff'] = institute_obj.get('coverage_cutoff') or 10
-        institute_obj['frequency_cutoff'] = institute_obj.get('frequency_cutoff') or 0.01
 
         insert_info = self.institute_collection.insert_one(institute_obj)
         ##TODO check if insert info was ok
