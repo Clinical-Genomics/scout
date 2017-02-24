@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from . import load_case, load_variants, delete_variants
+from . import (load_case, load_variants, delete_variants)
 from scout.parse.case import parse_case
 from scout.build import build_case
 from scout.exceptions.config import ConfigError
@@ -102,41 +102,47 @@ def load_scout(adapter, config, ped=None, update=False):
             update(bool): If existing case should be updated
 
     """
-    log.info("Check that the panels exists")
-    if not check_panels(adapter, config.get('gene_panels', []),
-                        config.get('default_gene_panels')):
-        raise ConfigError("Some panel(s) does not exist in the database")
-
-    log.debug('parse case data from config and ped')
-    case_data = parse_case(config, ped)
-    log.debug('build case object from parsed case data')
-
-    case_obj = build_case(case_data)
-
-    gene_panels = config.get('gene_panels')
-    default_panels = config.get('default_gene_panels')
-
-    log.info("Delete variants for case %s", case_obj.case_id)
-    delete_variants(adapter=adapter, case_obj=case_obj)
-
-    log.info("Load clinical SNV variants for case %s", case_obj.case_id)
-    load_variants(adapter=adapter, variant_file=config['vcf_snv'],
-                  case_obj=case_obj, variant_type='clinical', category='snv',
-                  rank_threshold=case_data['rank_score_threshold'])
-
-    if config.get('vcf_sv'):
-        log.info("Load SV variants for case %s", case_obj.case_id)
-        load_variants(adapter=adapter, variant_file=config['vcf_sv'],
-                      case_obj=case_obj, variant_type='clinical',
-                      category='sv',
+    try:
+        log.info("Check that the panels exists")
+        if not check_panels(adapter, config.get('gene_panels', []),
+                            config.get('default_gene_panels')):
+            raise ConfigError("Some panel(s) does not exist in the database")
+        
+        log.debug('parse case data from config and ped')
+        case_data = parse_case(config, ped)
+        log.debug('build case object from parsed case data')
+        
+        case_obj = build_case(case_data)
+        
+        gene_panels = config.get('gene_panels')
+        default_panels = config.get('default_gene_panels')
+        
+        log.info("Delete variants for case %s", case_obj.case_id)
+        delete_variants(adapter=adapter, case_obj=case_obj)
+        
+        log.info("Load clinical SNV variants for case %s", case_obj.case_id)
+        load_variants(adapter=adapter, variant_file=config['vcf_snv'],
+                      case_obj=case_obj, variant_type='clinical', category='snv',
                       rank_threshold=case_data['rank_score_threshold'])
-
-    log.debug('load case object into database')
-    load_case(
-        adapter=adapter,
-        case_obj=case_obj,
-        update=update,
-        gene_panels=gene_panels,
-        default_panels=default_panels
-    )
+        
+        if config.get('vcf_sv'):
+            log.info("Load SV variants for case %s", case_obj.case_id)
+            load_variants(adapter=adapter, variant_file=config['vcf_sv'],
+                          case_obj=case_obj, variant_type='clinical',
+                          category='sv',
+                          rank_threshold=case_data['rank_score_threshold'])
+        
+        log.debug('load case object into database')
+        load_case(
+            adapter=adapter,
+            case_obj=case_obj,
+            update=update,
+            gene_panels=gene_panels,
+            default_panels=default_panels
+        )
+    except Exception as error:
+        logger.warning("Deleting inserted variants")
+        delete_variants(adapter, case_obj)
+        raise error
+        
 
