@@ -27,7 +27,7 @@ def check_panels(adapter, panels, default_panels=None):
             log.warning("Default panels have to be defined in panels")
             panels_exist = False
     for panel in panels:
-        if not adapter.gene_panel(panel).first():
+        if not adapter.gene_panel(panel):
             log.warning("Panel {} does not exist in database".format(panel))
             panels_exist = False
     return panels_exist
@@ -130,7 +130,7 @@ def load_scout(adapter, config, ped=None, update=False):
                       case_obj=case_obj, variant_type='clinical',
                       category='sv',
                       rank_threshold=case_data['rank_score_threshold'])
-    
+
     log.debug('load case object into database')
     load_case(
         adapter=adapter,
@@ -139,4 +139,4 @@ def load_scout(adapter, config, ped=None, update=False):
         gene_panels=gene_panels,
         default_panels=default_panels
     )
-    
+
