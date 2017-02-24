@@ -155,6 +155,7 @@ def parse_case(config, ped=None):
         },
         'default_panels': config.get('default_gene_panels'),
         'gene_panels': config.get('gene_panels'),
+        'assignee': config.get('assignee'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db

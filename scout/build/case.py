@@ -74,12 +74,18 @@ def build_case(case_data):
     case_obj['display_name'] = case_data['display_name']
     case_obj['owner'] = case_data['owner']
     
-    case_obj['collaborators'] = case_data.get('collaborators')
+    case_obj['collaborators'] = case_data.get('collaborators', [case_data['owner']])
+    
+    case_obj['assignee'] = case_data.get('assignee')
 
     # Individuals
     ind_objs = []
-    for individual in case_data.get('individuals', []):
-        ind_objs.append(build_individual(individual))
+    try:
+        for individual in case_data.get('individuals', []):
+            ind_objs.append(build_individual(individual))
+    except Exception as error:
+        ## TODO add some action here
+        raise error
     # sort the samples to put the affected individual first
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind.phenotype)
     case_obj['individuals'] = sorted_inds
@@ -117,6 +123,8 @@ def build_case(case_data):
     case_obj['has_svvariants'] = False
     if (case_obj.vcf_files.get('vcf_sv') or case_obj.vcf_files.get('vcf_sv_research')):
         case_obj['has_svvariants'] = True
+    
+    case_obj['is_migrated'] = False
         
 
     return case_obj
