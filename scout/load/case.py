@@ -33,7 +33,7 @@ def load_case(adapter, case_obj, update=False, gene_panels=None,
     panel_objs = []
     default_panels_objs = []
     for panel in gene_panels:
-        panel_obj = adapter.gene_panel(panel_id=panel).first()
+        panel_obj = adapter.gene_panel(panel_id=panel)
         panel_objs.append(panel_obj)
         if panel in default_panels:
             default_panels_objs.append(panel_obj)
