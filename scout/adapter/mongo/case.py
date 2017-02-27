@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -22,16 +23,32 @@ class CaseHandler(object):
         Yields:
             Cases ordered by date
         """
-        return self.mongoengine_adapter.cases(
-            collaborator=collaborator,
-            query=query,
-            skip_assigned=skip_assigned,
-            has_causatives=has_causatives,
-            reruns=reruns,
-            finished=finished,
-            research_requested=research_requested,
-            is_research=is_research
-        )
+        logger.debug("Fetch all cases")
+        query = query or {}
+        
+        if collaborator:
+            logger.debug("Use collaborator {0}".format(collaborator))
+            query['collaborators'] = collaborator
+        
+        if skip_assigned:
+            query['assignee'] = {'$exists': False}
+
+        if has_causatives:
+            query['causatives'] = {'$exists': True}
+
+        if reruns:
+            query['rerun_requested'] = True
+
+        if finished:
+            query['status'] = ['solved', 'archived']
+
+        if research_requested:
+            query['research_requested'] = True
+
+        if is_research:
+            query['is_research'] = True
+
+        return self.case_collection.find(query).sort('updated_at', -1)
 
     def update_dynamic_gene_list(self, case, gene_list):
         """Update the dynamic gene list for a case
@@ -45,7 +62,7 @@ class CaseHandler(object):
             gene_list=gene_list
         )
 
-    def case(self, institute_id, case_id):
+    def case(self, case_id):
         """Fetches a single case from database
 
         Args:
@@ -55,10 +72,7 @@ class CaseHandler(object):
         Yields:
             A single Case
         """
-        return self.mongoengine_adapter.case(
-            institute_id = institute_id,
-            case_id = case_id
-        )
+        return self.case_collection.find_one({'_id':case_id})
 
     def case_ind(self, ind_id):
         """Fetch a case based on an individual id."""
@@ -84,7 +98,11 @@ class CaseHandler(object):
             Args:
                 case_obj(Case)
         """
-        return self.mongoengine_adapter.add_case(case_obj=case_obj)
+        logger.info("Adding case %s to database" % case_obj['case_id'])
+        if self.case(case_obj['case_id']):
+            raise IntegrityError("Case %s already exists in database" % case_obj['case_id'])
+
+        return self.case_collection.insert_one(case_obj)
 
     def update_case(self, case):
         """Update a case in the database

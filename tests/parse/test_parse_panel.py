@@ -12,7 +12,7 @@ def test_parse_minimal_gene():
     
     assert gene['hgnc_id'] == 10
 
-def test_parse_minimal_gene():
+def test_parse_gene():
     ## GIVEN gene line and header
     header = [
         "hgnc_id", 
@@ -123,7 +123,7 @@ def test_get_full_list_panel(panel_info):
 
     panel = parse_gene_panel(panel_info)
 
-    assert panel['id'] == panel_info['name']
+    assert panel['panel_name'] == panel_info['panel_name']
     assert len(panel['genes']) == nr_genes
-    assert panel['date'] == datetime.date.today()
+    assert panel['date'] == panel_info['date']
     assert panel['institute'] == panel_info['institute']

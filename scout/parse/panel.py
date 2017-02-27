@@ -129,8 +129,8 @@ def parse_gene_panel(panel_info):
     gene_panel['date'] = panel_info.get('date')
     gene_panel['institute'] = panel_info.get('institute')
     gene_panel['version'] = float(panel_info.get('version', '1.0'))
-    gene_panel['id'] = panel_info.get('name')
-    gene_panel['display_name'] = panel_info.get('full_name', gene_panel['id'])
+    gene_panel['panel_name'] = panel_info.get('panel_name')
+    gene_panel['display_name'] = panel_info.get('full_name', gene_panel['panel_name'])
 
     panel_handle = get_file_handle(gene_panel['path'])
     gene_panel['genes'] = parse_genes(gene_lines=panel_handle)

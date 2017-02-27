@@ -10,8 +10,9 @@ import yaml
 
 # Adapter stuff
 from pymongo import MongoClient as RealClient
+from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
-from mongoengine import connect
+# from mongoengine import connect
 
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse.case import parse_case
@@ -58,6 +59,44 @@ genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
 
 
 ##################### Gene fixtures #####################
+
+@pytest.fixture
+def test_transcript(request):
+    transcript = {
+        'ensembl_transcript_id': 'enst1', # required
+        'refseq_id': 'NM1',
+        'start': 10, # required
+        'end': 100, # required
+        'is_primary': True,
+    }
+    return transcript
+
+@pytest.fixture
+def test_gene(request, test_transcript):
+    gene = {
+        # This is the hgnc id, required:
+        'hgnc_id': 1, 
+        # The primary symbol, required 
+        'hgnc_symbol': 'test',
+        'ensembl_id': 'ensembl1', # required
+        'build': '37', # '37' or '38', defaults to '37', required
+
+        'chromosome': 1, # required
+        'start': 10, # required
+        'end': 100, # required
+
+        'description': 'A gene', # Gene description
+        'aliases': ['test'], # Gene symbol aliases, includes hgnc_symbol, str
+        'entrez_id': 1,
+        'omim_id': 1,
+        'pli_score': 1.0,
+        'primary_transcripts': ['NM1'], # List of refseq transcripts (str)
+        'ucsc_id': '1',
+        'uniprot_ids': ['1'], # List of str
+        'vega_id': '1',
+        'transcripts': [test_transcript], # List of hgnc_transcript
+    }
+    return gene
 
 
 @pytest.fixture
@@ -133,9 +172,9 @@ def parsed_case(request, scout_config):
     return case
 
 @pytest.fixture(scope='function')
-def case_obj(request, parsed_case):
+def case_obj(request, parsed_case, institute_database):
     logger.info("Create a case obj")
-    case = build_case(parsed_case)
+    case = build_case(parsed_case, institute_database)
     return case
 
 
@@ -193,18 +232,21 @@ def user_obj(request, parsed_user):
 @pytest.fixture(scope='function')
 def client(request):
     """Get a client to the mongo database"""
-    logger.info("Get a mongo client")
-    mongo_client = RealClient()
+    # logger.info("Get a mongo client")
+    # mongo_client = RealClient()
+
+    logger.info("Get a mongomock client")
+    mock_client = MongoClient()
 
     def teardown():
         print('\n')
         logger.info("Deleting database")
-        mongo_client.drop_database(DATABASE)
+        mock_client.drop_database(DATABASE)
         logger.info("Database deleted")
 
     request.addfinalizer(teardown)
 
-    return mongo_client
+    return mock_client
 
 
 @pytest.fixture(scope='function')
@@ -216,17 +258,17 @@ def adapter(request, client):
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
-    logger.info("Establish a mongoengine connection")
-    connect(DATABASE)
+    # logger.info("Establish a mongoengine connection")
+    # connect(DATABASE)
 
     logger.info("Connected to database")
 
     return mongo_adapter
 
 @pytest.fixture(scope='function')
-def gene_database(request, adapter, genes):
+def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute and case"
-
+    adapter = institute_database
     load_hgnc_genes(adapter, genes)
 
     return adapter
@@ -246,9 +288,9 @@ def hpo_database(request, gene_database, hpo_terms_handle, hpo_disease_handle):
 
 
 @pytest.fixture(scope='function')
-def panel_database(request, hpo_database, panel_info):
+def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
-    adapter = hpo_database
+    adapter = gene_database
 
     load_panel(
         adapter=adapter,
@@ -256,6 +298,7 @@ def panel_database(request, hpo_database, panel_info):
     )
 
     return adapter
+
 
 @pytest.fixture(scope='function')
 def institute_database(request, adapter, institute_obj, user_obj):
@@ -314,12 +357,12 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
 def panel_info(request):
     "Return one panel info as specified in tests/fixtures/config1.ini"
     panel = {
-            'date': datetime.date.today(),
+            'date': datetime.datetime.now(),
             'file': panel_1_path,
             'type': 'clinical',
             'institute': 'cust000',
             'version': '1.0',
-            'name': 'panel1',
+            'panel_name': 'panel1',
             'full_name': 'Test panel'
         }
     return panel

@@ -4,6 +4,20 @@ from mongoengine import (Document, EmbeddedDocument, StringField, ListField,
 
 from scout.models import HgncGene
 
+hpo_term = dict(
+   hpo_id = str, # Required
+   description = str,
+   genes = list, # List with integers that are hgnc_ids 
+)
+
+disease_term = dict(
+    #This is usually the mimnr for the disease
+    disease_id = int, # required
+    source = str, # required
+    genes = list, # List with integers that are hgnc_ids 
+    
+)
+
 class HpoTerm(Document):
     hpo_id = StringField(primary_key=True)
     description = StringField()

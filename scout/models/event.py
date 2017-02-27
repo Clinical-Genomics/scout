@@ -74,7 +74,7 @@ event = dict(
     case = str, # case_id, required
     link = str, # url link, required
     # All events has to have a category
-    category = str, # choices = ('case', 'variant'), required
+    category = str, # choices = ('case', 'variant', 'panel'), required
 
     # All events will have an author
     author = str, # user email, required
