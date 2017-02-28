@@ -47,12 +47,12 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
         context.abort()
 
     adapter = context.obj['adapter']
-    existing_panel = adapter.gene_panel(panel_id).first()
+    existing_panel = adapter.gene_panel(panel_id)
     if existing_panel:
         log.debug("found existing panel")
         name = name or existing_panel.display_name or panel_id
         institute = institute or existing_panel.institute
-    
+
     info = {
         'file': path,
         'institute': institute,
