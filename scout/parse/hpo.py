@@ -61,6 +61,20 @@ def parse_hpo_phenotypes(hpo_lines):
     """Parse hpo phenotypes
     
         Group the genes that a phenotype is associated to in 'genes'
+    
+    Args:
+        hpo_lines(iterable(str)): A file handle to the hpo phenotypes file
+    
+    Returns:
+        hpo_terms(dict): A dictionary with hpo_ids as keys and terms as values
+    
+        {
+            <hpo_id>: {
+                'hpo_id':str,
+                'description': str,
+                'hgnc_symbols': list(str), # [<hgnc_symbol>, ...]
+                }
+        }
     """
     hpo_terms = {}
     logger.info("Parsing hpo phenotypes...")
