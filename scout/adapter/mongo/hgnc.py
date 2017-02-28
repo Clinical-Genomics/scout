@@ -13,12 +13,13 @@ class GeneHandler(object):
             gene_obj(dict)
 
         """
-        logger.debug("Loading gene %s into database" % gene_obj['hgnc_symbol'])
+        logger.debug("Loading gene %s, build %s into database" % 
+                     (gene_obj['hgnc_symbol'], gene_obj['build']))
         res = self.hgnc_collection.insert_one(gene_obj)
         logger.debug("Gene saved")
         return res
 
-    def hgnc_gene(self, hgnc_id, build='37'):
+    def hgnc_gene(self, hgnc_identifyer, build='37'):
         """Fetch a hgnc gene
 
             Args:
@@ -27,8 +28,19 @@ class GeneHandler(object):
             Returns:
                 gene_obj(HgncGene)
         """
-        logger.debug("Fetching gene %s" % hgnc_id)
-        gene_obj = self.hgnc_collection.find_one({'hgnc_id':hgnc_id, 'build': build})
+        query = {}
+        try:
+            # If the identifier is a integer we search for hgnc_id
+            hgnc_identifyer = int(hgnc_identifyer)
+            query['hgnc_id'] = hgnc_identifyer
+        except ValueError:
+            # Else we seach for a hgnc_symbol
+            query['hgnc_symbol'] = hgnc_identifyer
+
+        query['build'] = build
+        logger.debug("Fetching gene %s" % hgnc_identifyer)
+        
+        gene_obj = self.hgnc_collection.find_one(query)
 
         return gene_obj
 

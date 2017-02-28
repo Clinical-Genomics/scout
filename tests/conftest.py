@@ -32,7 +32,7 @@ from scout.load.hpo import load_hpo
 DATABASE = 'testdb'
 
 root_logger = logging.getLogger()
-init_log(root_logger, loglevel='INFO')
+init_log(root_logger, loglevel='DEBUG')
 logger = logging.getLogger(__name__)
 
 # Variant and load files:

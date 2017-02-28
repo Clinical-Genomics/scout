@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from mongoengine import (Document, EmbeddedDocument, StringField, ListField,
-                         ReferenceField, IntField)
-
 from scout.models import HgncGene
 
+from mongoengine import *
+
+# Hpo terms represents data from the hpo web
 hpo_term = dict(
     _id = str, # Same as hpo_id
    hpo_id = str, # Required
@@ -11,6 +11,8 @@ hpo_term = dict(
    genes = list, # List with integers that are hgnc_ids 
 )
 
+# Disease terms represent diseases collected from omim, orphanet and decipher.
+# Collected from hpo web
 disease_term = dict(
     #This is usually the mimnr for the disease
     disease_id = int, # required
@@ -18,6 +20,11 @@ disease_term = dict(
     genes = list, # List with integers that are hgnc_ids 
     
 )
+
+###############################################################
+##################### Old Models ##############################
+###############################################################
+
 
 class HpoTerm(Document):
     hpo_id = StringField(primary_key=True)
