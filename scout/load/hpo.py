@@ -40,12 +40,6 @@ def load_hpo_terms(adapter, hpo_lines, gene_objs):
         hpo_info = hpo_terms[hpo_id]
         hpo_obj = build_hpo_term(hpo_info)
         
-        hgnc_ids = []
-        for hgnc_symbol in hpo_info['hgnc_symbols']:
-            if hgnc_symbol in gene_objs:
-                gene_obj = gene_objs[hgnc_symbol]
-                hgnc_ids.append(gene_obj['hgnc_id'])
-        hpo_obj.genes = hgnc_ids
         adapter.load_hpo_term(hpo_obj)
     
     logger.info("Loading done. Nr of terms loaded {0}".format(nr_terms))

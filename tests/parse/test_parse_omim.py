@@ -1,0 +1,1 @@
+from scout.parse.omim import parse_omim_line

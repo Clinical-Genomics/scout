@@ -54,6 +54,11 @@ def parse_genemap2(lines):
         (3) the molecular basis of the disorder is known; 
         (4) the disorder is a chromosome deletion or duplication syndrome. 
     
+    Args:
+        lines(iterable(str))
+    
+    Yields:
+        parsed_entry(dict)
     """
     log.info("Parsing the omim genemap2")
     header = []
@@ -186,15 +191,67 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
         hgnc_symbol = entry['hgnc_symbol']
         if mim_number in genes:
             genes[mim_number]['inheritance'] = inheritance
-    
-    
-    
+
     for mim_nr in genes:
         gene_info = genes[mim_nr]
         hgnc_genes[gene_info['hgnc_symbol']] = gene_info
     
     return hgnc_genes
+    
+def get_mim_phenotypes(genemap_lines, mim2gene_lines, mimtitles_lines):
+    """Get a dictionary with phenotypes
+    
+    Use the mim numbers for phenitypes as keys and phenotype information as 
+    values.
+    
+    Args:
+        genemap_lines(iterable(str))
+        mim2gene_lines(iterable(str))
+        mimtitles_lines(iterable(str))
+    
+    Returns:
+        phenotypes_found(dict): A dictionary with mim_numbers as keys and 
+        dictionaries with phenotype information as values.
+    
+        {
+            'description': str, # Description of the phenotype
+             'hgnc_symbols': set(), # Associated hgnc symbols
+             'inheritance': set(),  # Associated phenotypes
+             'mim_number': int, # mim number of phenotype
+        }
+    """
+    # Set with all omim numbers that are phenotypes
+    # Parsed from mim2gene.txt
+    phenotype_mims = set()
+    
+    phenotypes_found = {}
+    
+    for entry in parse_mim2gene(mim2gene_lines):
+        if 'phenotype' in entry['entry_type']:
+            phenotype_mims.add(entry['mim_number'])
 
+    for entry in parse_mim_titles(mimtitles_lines):
+        mim_number = entry['mim_number']
+        if mim_number in phenotype_mims:
+            phenotype_entry = {
+                'mim_number': mim_number,
+                'description': entry['preferred_title'],
+                'hgnc_symbols': set(),
+                'inheritance': set()
+            }
+            phenotypes_found[mim_number] = phenotype_entry
+
+    for entry in parse_genemap2(genemap_lines):
+        hgnc_symbol = entry['hgnc_symbol']
+        for phenotype in entry['phenotypes']:
+            mim_nr = phenotype['mim_number']
+            if mim_nr in phenotypes_found:
+                phenotype_entry = phenotypes_found[mim_nr]
+                phenotype_entry['inheritance'] = phenotype_entry['inheritance'].union(phenotype['inheritance'])
+                phenotype_entry['hgnc_symbols'].add(hgnc_symbol)
+
+    return phenotypes_found
+    
 
 @click.command()
 @click.option('--morbid', type=click.Path(exists=True))
@@ -202,19 +259,34 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
 @click.option('--mim2gene', type=click.Path(exists=True))
 @click.option('--mim_titles', type=click.Path(exists=True))
 @click.pass_context
-def omim(context, morbid, genemap, mim2gene, mim_titles):
+def cli(context, morbid, genemap, mim2gene, mim_titles):
     """Parse the omim files"""
-    if not (omim and genemap and mim2gene, mim_titles):
+    if not (morbid and genemap and mim2gene, mim_titles):
         print("Please provide all files")
         context.abort()
-    morbid_handle = open(morbid, 'r')
-    genemap_handle = open(genemap, 'r')
-    mim2gene_handle = open(mim2gene, 'r')
-    mimtitles_handle = open(mim_titles, 'r')
+
+    from scout.utils.handle import get_file_handle
     
-    hgnc_genes = get_mim_genes(genemap_handle, mim2gene_handle)
-    for hgnc_symbol in hgnc_genes:
-        pp(hgnc_genes[hgnc_symbol])
+    print("Morbid file: %s" % morbid)
+    print("Genemap file: %s" % genemap)
+    print("mim2gene file: %s" % mim2gene)
+    print("MimTitles file: %s" % mim_titles)
+
+    morbid_handle = get_file_handle(morbid)
+    genemap_handle = get_file_handle(genemap)
+    mim2gene_handle = get_file_handle(mim2gene)
+    mimtitles_handle = get_file_handle(mim_titles)
+    
+    # hgnc_genes = get_mim_genes(genemap_handle, mim2gene_handle)
+    # for hgnc_symbol in hgnc_genes:
+    #     pp(hgnc_genes[hgnc_symbol])
+    # phenotypes = get_mim_phenotypes(genemap_handle, mim2gene_handle, mimtitles_handle)
+    # for mim_nr in phenotypes:
+    #     pp(phenotypes[mim_nr])
+    
+    genes = get_mim_genes(genemap_handle, mim2gene_handle)
+    for hgnc_symbol in genes:
+        pp(genes[hgnc_symbol])
     
     # genes = {}
     # phenotypes = {}
@@ -283,4 +355,4 @@ def omim(context, morbid, genemap, mim2gene, mim_titles):
 
 
 if __name__ == '__main__':
-    omim()
+    cli()
