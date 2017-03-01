@@ -38,18 +38,7 @@ def institutes():
         institute = institute_objs[0]
         return redirect(url_for('.cases', institute_id=institute.internal_id))
     else:
-        return dict(institutes=institute_objs, Case=Case)
-
-
-@core.route('/institutes/<institute_id>/settings', methods=['POST'])
-@login_required
-def institute_settings(institute_id):
-    """Update institute settings."""
-    inst_mod = validate_user(current_user, institute_id)
-    inst_mod.coverage_cutoff = int(request.form['coverage_cutoff'])
-    inst_mod.frequency_cutoff = float(request.form['frequency_cutoff'])
-    inst_mod.save()
-    return redirect(request.referrer)
+        return dict(institutes=controller.institutes(store, institute_objs))
 
 
 @core.route('/<institute_id>')

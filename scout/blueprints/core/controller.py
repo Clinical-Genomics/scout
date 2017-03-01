@@ -2,6 +2,13 @@
 from scout.constants import CASE_STATUSES
 
 
+def institutes(store, institute_query):
+    """Preprocess institute objects."""
+    for institute in institute_query:
+        case_count = store.cases(collaborator=institute.internal_id).count()
+        yield (institute, case_count)
+
+
 def cases(case_query):
     """Preprocess case objects."""
     case_groups = {status: [] for status in CASE_STATUSES}
