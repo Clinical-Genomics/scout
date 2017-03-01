@@ -17,6 +17,7 @@ disease_term = dict(
     _id = str, # Same as disease_id
     disease_id = str, # required, like OMIM:600233
     disase_nr = int, # The disease nr
+    description = str, # required
     source = str, # required
     genes = list, # List with integers that are hgnc_ids 
 )

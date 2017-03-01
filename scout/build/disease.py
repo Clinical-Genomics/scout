@@ -16,6 +16,7 @@ def build_disease_term(disease_info, adapter):
             _id = str, # Same as disease_id
             disease_id = str, # required, like OMIM:600233
             disase_nr = int, # The disease nr, required
+            description = str, # required
             source = str, # required
             inheritance = list, # list of strings
             genes = list, # List with integers that are hgnc_ids 
