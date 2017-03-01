@@ -14,11 +14,11 @@ hpo_term = dict(
 # Disease terms represent diseases collected from omim, orphanet and decipher.
 # Collected from OMIM
 disease_term = dict(
+    _id = str, # Same as disease_id
     disease_id = str, # required, like OMIM:600233
     disase_nr = int, # The disease nr
     source = str, # required
     genes = list, # List with integers that are hgnc_ids 
-    
 )
 
 ###############################################################

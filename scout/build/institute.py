@@ -4,8 +4,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
-
 def build_institute(internal_id, display_name, sanger_recipients=None, 
                     coverage_cutoff=None, frequency_cutoff=None):
     """Build a institute object
@@ -38,16 +36,18 @@ def build_institute(internal_id, display_name, sanger_recipients=None,
     now = datetime.now()
     
     institute_obj = dict(
+        _id = internal_id,
         internal_id = internal_id,
         display_name = display_name,
-        sanger_recipients = sanger_recipients,
-        
         created_at = now,
         updated_at = now,
-        
-        coverage_cutoff = coverage_cutoff or 10,
-        frequency_cutoff = frequency_cutoff or 0.01
     )
+
+    if sanger_recipients:
+        institute_obj['sanger_recipients'] = sanger_recipients
+
+    institute_obj['coverage_cutoff'] = coverage_cutoff or 10
+    institute_obj['frequency_cutoff'] = frequency_cutoff or 0.01
     
     return institute_obj
     

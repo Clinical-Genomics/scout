@@ -23,8 +23,6 @@ class InstituteHandler(object):
             raise IntegrityError("Institute {0} already exists in database"
                                  .format(display_name))
 
-        institute_obj['_id'] = internal_id
-
         logger.info("Adding institute with internal_id: {0} and "
                     "display_name: {1}".format(internal_id,
                                                display_name))

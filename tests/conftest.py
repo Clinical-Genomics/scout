@@ -229,6 +229,12 @@ def user_obj(request, parsed_user):
 #############################################################
 ##################### Adapter fixtures #####################
 #############################################################
+
+@pytest.fixture(scope='function')
+def database_name(request):
+    """Get the name of the test database"""
+    return DATABASE
+
 @pytest.fixture(scope='function')
 def client(request):
     """Get a client to the mongo database"""
