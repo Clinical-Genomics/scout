@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import os.path
 
 from bson.json_util import dumps
@@ -11,7 +10,6 @@ from housekeeper.store import api
 import query_phenomizer
 
 from scout.models import Case, Institute, Variant, HgncGene
-from scout.models.case import STATUS as CASE_STATUSES
 from scout.constants import SEVERE_SO_TERMS
 from scout.extensions import mail, store, loqusdb, housekeeper
 from scout.utils.helpers import templated, validate_user
@@ -19,6 +17,7 @@ from scout.utils.helpers import templated, validate_user
 from .forms import init_filters_form, process_filters_form, GeneListUpload
 from .utils import genecov_links
 from .constants import PHENOTYPE_GROUPS
+from . import controller
 
 core = Blueprint('core', __name__, template_folder='templates',
                  static_folder='static', static_url_path='/core/static')
@@ -64,18 +63,12 @@ def cases(institute_id):
     query = request.args.get('query')
     skip_assigned = request.args.get('skip_assigned')
     institute = validate_user(current_user, institute_id)
-    case_models = store.cases(collaborator=institute_id, query=query,
-                              skip_assigned=skip_assigned)
-    prio_cases = case_models.filter(status=CASE_STATUSES[0])
-    case_groups = []
-    for case_status in CASE_STATUSES[1:]:
-        case_groups.append((case_status, case_models.filter(status=case_status)))
-
-    missed_cutoff = datetime.datetime(2016, 2, 19)
-    return dict(institute=institute, institute_id=institute_id,
-                cases=case_groups, found_cases=len(case_models), query=query,
+    all_cases = store.cases(collaborator=institute_id, name_query=query,
+                            skip_assigned=skip_assigned)
+    data = controller.cases(all_cases)
+    return dict(institute=institute, institute_id=institute_id, query=query,
                 skip_assigned=skip_assigned, severe_so_terms=SEVERE_SO_TERMS,
-                missed_cutoff=missed_cutoff, prio_cases=prio_cases)
+                **data)
 
 
 @core.route('/<institute_id>/<case_id>')

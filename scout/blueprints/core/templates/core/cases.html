@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  {% if prio_cases.first() %}
+  {% if prio_cases %}
     <div class="table-responsive">
       {{ cases_table([('priority', prio_cases)]) }}
     </div>
@@ -122,16 +122,19 @@
       {% endif %}
     </td>
     <td>
-      {% if case.analysis_type == 'wgs' %}
-        {% set label_class = 'primary' %}
-      {% elif case.analysis_type == 'wes' %}
-        {% set label_class = 'warning' %}
-      {% else %}
-        {% set label_class = 'default' %}
-      {% endif %}
-      <span class="label label-{{ label_class }}">
-        {{ case.analysis_type|upper }}
-      </span>
+      {% for analysis_type in case.analysis_types %}
+        {% if analysis_type == 'wgs' %}
+          {% set label_class = 'primary' %}
+        {% elif analysis_type == 'wes' %}
+          {% set label_class = 'warning' %}
+        {% else %}
+          {% set label_class = 'default' %}
+        {% endif %}
+
+        <span class="label label-{{ label_class }}">
+          {{ analysis_type|upper }}
+        </span>
+      {% endfor %}
     </td>
   </tr>
 {% endmacro %}

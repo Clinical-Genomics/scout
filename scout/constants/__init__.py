@@ -141,3 +141,5 @@ CLINSIG_MAP = {
     7: 'histocompatibility',
     255: 'other'
 }
+
+CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived")
