@@ -11,7 +11,8 @@ class CaseHandler(object):
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
-              research_requested=False, is_research=False):
+              research_requested=False, is_research=False, status=False,
+              name_query=None):
         """Fetches all cases from the backend.
 
         Args:
@@ -25,11 +26,11 @@ class CaseHandler(object):
         """
         logger.debug("Fetch all cases")
         query = query or {}
-        
+
         if collaborator:
             logger.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
-        
+
         if skip_assigned:
             query['assignee'] = {'$exists': False}
 
@@ -39,7 +40,9 @@ class CaseHandler(object):
         if reruns:
             query['rerun_requested'] = True
 
-        if finished:
+        if status:
+            query['status'] = status
+        elif finished:
             query['status'] = ['solved', 'archived']
 
         if research_requested:
@@ -47,6 +50,9 @@ class CaseHandler(object):
 
         if is_research:
             query['is_research'] = True
+
+        if name_query:
+            query['display_name'] = {'$regex': name_query}
 
         return self.case_collection.find(query).sort('updated_at', -1)
 
