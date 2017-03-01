@@ -63,15 +63,12 @@ def parse_genemap2(lines):
     log.info("Parsing the omim genemap2")
     header = []
     for i,line in enumerate(lines):
-        print(line)
-        print('')
         line = line.rstrip()
         if line.startswith('#'):
             if i < 10:
                 if line.startswith('# Chromosome'):
                     header = line[2:].split('\t')
         else:
-            print(line)
             parsed_entry = parse_omim_line(line, header)
             parsed_entry['mim_number'] = int(parsed_entry['Mim Number'])
             hgnc_symbol = parsed_entry.get("Approved Symbol")

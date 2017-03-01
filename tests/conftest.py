@@ -32,7 +32,7 @@ from scout.load.hpo import load_hpo
 DATABASE = 'testdb'
 
 root_logger = logging.getLogger()
-init_log(root_logger, loglevel='DEBUG')
+init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
 # Variant and load files:
@@ -101,7 +101,7 @@ def test_gene(request, test_transcript):
 
 @pytest.fixture
 def genes(request, transcripts_handle, hgnc_handle, exac_handle,
-          mim2gene_handle, genemap_handle):
+          mim2gene_handle, genemap_handle, hpo_genes_handle):
     """Get a dictionary with the linked genes"""
     print('')
     gene_dict = link_genes(
@@ -110,6 +110,7 @@ def genes(request, transcripts_handle, hgnc_handle, exac_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
         genemap_lines=genemap_handle,
+        hpo_lines=hpo_genes_handle
     )
 
     return gene_dict

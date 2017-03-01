@@ -3,7 +3,7 @@ import logging
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.ensembl import parse_ensembl_transcripts
 from scout.parse.exac import parse_exac_genes
-from scout.parse.hpo import parse_hpo_genes
+from scout.parse.hpo import get_incomplete_penetrance_genes
 from scout.parse.omim import get_mim_genes
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,8 @@ def add_transcript(gene, parsed_transcript):
             gene['transcripts'][enstid] = parsed_transcript
 
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, genemap_lines):
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, 
+               genemap_lines, hpo_lines):
     """Gather information from different sources and return a gene dict
 
         Extract information collected from a number of sources and combine them
@@ -156,5 +157,9 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, genemap_li
                 gene['x'] = True
             if 'Y' in inheritance:
                 gene['y'] = True
-
+    
+    for hgnc_symbol in get_incomplete_penetrance_genes(hpo_lines):
+        if hgnc_symbol in genes:
+            genes[hgnc_symbol]['incomplete_penetrance'] = True
+    
     return genes

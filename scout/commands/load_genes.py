@@ -24,7 +24,8 @@ from pprint import pprint as pp
 
 from scout.load import load_hgnc_genes
 from scout.resources import (hgnc_path, exac_path, transcripts37_path, 
-                             transcripts38_path, mim2gene_path, genemap2_path)
+                             transcripts38_path, mim2gene_path, genemap2_path,
+                             hpogenes_path)
 
 
 from scout.utils.link import link_genes
@@ -81,14 +82,15 @@ def genes(ctx, update, build):
     
     mim2gene_handle = get_file_handle(mim2gene_path)
     genemap_handle = get_file_handle(genemap2_path)
+    hpo_handle = get_file_handle(hpogenes_path)
     
     genes = link_genes(
         ensembl_lines=ensembl_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
-        genemap_lines=genemap_handle
-        
+        genemap_lines=genemap_handle,
+        hpo_lines=hpo_handle
     )
     
     load_hgnc_genes(
