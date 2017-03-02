@@ -56,6 +56,7 @@ hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype
 hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
 mim2gene_path = "tests/fixtures/resources/mim2gene_reduced.txt"
 genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
+mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 
 ##################### Gene fixtures #####################
@@ -575,6 +576,12 @@ def mim2gene_file(request):
     return mim2gene_path
 
 @pytest.fixture
+def mimtitles_file(request):
+    """Get the path to the mim2genes file"""
+    print('')
+    return mimtitles_path
+
+@pytest.fixture
 def genemap_file(request):
     """Get the path to the mim2genes file"""
     print('')
@@ -671,6 +678,12 @@ def mim2gene_handle(request, mim2gene_file):
     """Get a file handle to a mim2genes file"""
     print('')
     return get_file_handle(mim2gene_path)
+
+@pytest.fixture
+def mimtitles_handle(request, mimtitles_file):
+    """Get a file handle to a mim2genes file"""
+    print('')
+    return get_file_handle(mimtitles_file)
 
 @pytest.fixture
 def genemap_handle(request, genemap_file):

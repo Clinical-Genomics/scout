@@ -2,7 +2,8 @@ import logging
 
 from datetime import datetime
 
-from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases)
+from scout.parse.hpo import parse_hpo_phenotypes
+from scout.parse.omim import get_mim_phenotypes
 from scout.build.hpo import build_hpo_term
 from scout.build.disease import build_disease_term
 
@@ -20,9 +21,9 @@ def load_hpo(adapter, hpo_lines, disease_lines):
         disease_lines(iterable(str))
     """
 
-    load_hpo_terms(adapter, hpo_lines, gene_objs)
+    load_hpo_terms(adapter, hpo_lines)
     
-    load_disease_terms(adapter, disease_lines, gene_objs)
+    load_disease_terms(adapter, disease_lines)
 
 def load_hpo_terms(adapter, hpo_lines):
     """Load the hpo terms into the database
@@ -48,16 +49,17 @@ def load_hpo_terms(adapter, hpo_lines):
     logger.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
-def load_disease_terms(adapter, hpo_disease_lines):
+def load_disease_terms(adapter, genemap_lines):
     """Load the hpo phenotype terms into the database
 
     Args:
         adapter(MongoAdapter)
-        hpo_lines(iterable(str))
+        genemap_lines(iterable(str))
     """
 
-    disease_terms = parse_hpo_diseases(hpo_disease_lines)
+    disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
+    print(len(disease_terms))
     start_time = datetime.now()
 
     logger.info("Loading the hpo disease...")
