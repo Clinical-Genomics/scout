@@ -16,8 +16,8 @@ institute = {
     'internal_id': str, # like 'cust000', required
     'display_name': str, # like 'Clinical Genomics', required
     'sanger_recipients': list, # list of email adressess
-    
-    'created_at': datetime, 
+
+    'created_at': datetime,
     'updated_at': datetime,
 
     'coverage_cutoff': int, # Defaults to  10

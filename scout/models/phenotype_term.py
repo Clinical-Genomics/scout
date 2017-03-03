@@ -22,6 +22,14 @@ disease_term = dict(
     genes = list, # List with integers that are hgnc_ids 
 )
 
+# phenotype_term is a special object to hold information on case level
+# This one might be deprecated when we skip mongoengine
+phenotype_term = dict(
+    phenotype_id = str, # Can be omim_id hpo_id
+    feature = str, 
+    disease_models = list, # list of strings
+)
+
 ###############################################################
 ##################### Old Models ##############################
 ###############################################################

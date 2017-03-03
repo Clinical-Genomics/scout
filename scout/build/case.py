@@ -68,8 +68,7 @@ def build_case(case_data, adapter):
 
         # default_panels specifies which panels that should be shown when
         # the case is opened
-        default_panels = list, # list of dictionaries with panel information
-        gene_panels = list, # list of _ids to gene panels
+        panels = list, # list of dictionaries with panel information
 
         dynamic_gene_list = list, # List of genes
 
@@ -155,23 +154,30 @@ def build_case(case_data, adapter):
         case_obj['analysis_date'] = analysis_date
         case_obj['analysis_dates'] = [analysis_date]
     
-    if case_data.get('gene_panels'):
-        gene_panels = case_data['gene_panels']
+    # We store some metadata and references about gene panels in 'panels'
+    case_panels = case_data.get('gene_panels', [])
+    default_panels = case_data.get('default_panels', [])
+    panels = []
         
-        for panel in gene_panels:
-            if not adapter.gene_panel(panel):
-                raise IntegrityError("Panel %s does not exist in database" % panel)
-        case_obj['gene_panels'] = gene_panels
+    for panel_name in case_panels:
+        panel_obj = adapter.gene_panel(panel_name)
+        if not panel_obj:
+            raise IntegrityError("Panel %s does not exist in database" % panel)
+        panel = {
+            'panel_id': panel_obj['_id'],
+            'display_name': panel_obj['display_name'],
+            'version': panel_obj['version'],
+            'updated_at': panel_obj['date'],
+            'nr_genes': len(panel_obj['genes'])
+        }
+        if panel_name in default_panels:
+            panel['is_default'] = True
+        else:
+            panel['is_default'] = False
+        panels.append(panel)
     
-    if case_data.get('default_panels'):
-        default_panels = case_data['default_panels']
-        for panel in default_panels:
-            if not adapter.gene_panel(panel):
-                raise IntegrityError("Panel %s does not exist in database" % panel)
-            ##TODO check if panel exists in database 
-        
-        case_obj['default_panels'] = default_panels
-    
+    case_obj['panels'] = panels
+
     case_obj['dynamic_gene_list'] = {}
     
     # Meta data

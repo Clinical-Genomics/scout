@@ -183,9 +183,10 @@ def parsed_case(request, scout_config):
     return case
 
 @pytest.fixture(scope='function')
-def case_obj(request, parsed_case, institute_database):
+def case_obj(request, parsed_case, panel_database):
+    adapter = panel_database
     logger.info("Create a case obj")
-    case = build_case(parsed_case, institute_database)
+    case = build_case(parsed_case, adapter)
     return case
 
 
@@ -283,6 +284,14 @@ def adapter(request, client):
     return mongo_adapter
 
 @pytest.fixture(scope='function')
+def institute_database(request, adapter, institute_obj, user_obj):
+    "Returns an adapter to a database populated with institute"
+    adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
+
+    return adapter
+
+@pytest.fixture(scope='function')
 def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = institute_database
@@ -314,20 +323,11 @@ def hpo_database(request, gene_database, hpo_terms_handle, hpo_disease_handle):
 def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
-
+    logger.info("Creating a panel adapter")
     load_panel(
         adapter=adapter,
         panel_info=panel_info
     )
-
-    return adapter
-
-
-@pytest.fixture(scope='function')
-def institute_database(request, adapter, institute_obj, user_obj):
-    "Returns an adapter to a database populated with institute"
-    adapter.add_institute(institute_obj)
-    adapter.add_user(user_obj)
 
     return adapter
 

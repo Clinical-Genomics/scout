@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import datetime
 
 from scout.exceptions import IntegrityError
 
@@ -68,23 +69,45 @@ class CaseHandler(object):
             gene_list=gene_list
         )
 
-    def case(self, case_id):
+    def case(self, case_id=None, institute_id=None, display_name=None):
         """Fetches a single case from database
+        
+        Use either the _id or combination of institute_id and display_name
 
         Args:
-            institute_id(str)
-            case_id(str)
+            case_id(str): _id for a caes
+            institute_id(str):
+            display_name(str)
 
         Yields:
             A single Case
         """
-        return self.case_collection.find_one({'_id':case_id})
+        query = {}
+        if case_id:
+            query['_id'] = case_id
+            logger.info("Fetching case %s", case_id)
+        else:
+            if not (institute_id and display_name):
+                raise ValueError("Have to provide both institute_id and display_name")
+            logger.info("Fetching case %s institute %s", (display_name, institute_id))
+            query['owner'] = institute_id
+            query['display_name'] = display_name
+        
+        return self.case_collection.find_one(query)
 
     def case_ind(self, ind_id):
-        """Fetch a case based on an individual id."""
-        return self.mongoengine_adapter.case_ind(ind_id=ind_id)
+        """Fetch cases based on an individual id.
+        
+        Args:
+            ind_id(str)
+        
+        Returns:
+            cases(pymongo.cursor): The cases with a matching ind_id
+        """
 
-    def delete_case(self, institute_id, case_id):
+        return self.case_collection.find({'individuals.disply_name': ind_id})
+
+    def delete_case(self, case_id=None, institute_id=None, display_name=None):
         """Delete a single case from database
 
         Args:
@@ -92,10 +115,18 @@ class CaseHandler(object):
             case_id(str)
 
         """
-        return self.mongoengine_adapter.delete_case(
-            institute_id = institute_id,
-            case_id = case_id
-        )
+        query = {}
+        if case_id:
+            query['_id'] = case_id
+            logger.info("Deleting case %s", case_id)
+        else:
+            if not (institute_id and display_name):
+                raise ValueError("Have to provide both institute_id and display_name")
+            logger.info("Deleting case %s institute %s", (display_name, institute_id))
+            query['owner'] = institute_id
+            query['display_name'] = display_name
+
+        self.case_collection.delete_one(query)
 
     def add_case(self, case_obj):
         """Add a case to the database
@@ -110,11 +141,36 @@ class CaseHandler(object):
 
         return self.case_collection.insert_one(case_obj)
 
-    def update_case(self, case):
+    def update_case(self, case_obj):
         """Update a case in the database
 
             Args:
-                case(Case): The new case information
+                case_obj(dict): The new case information
         """
-        return self.mongoengine_adapter.update_case(case=case)
+        logger.info("Updating case {0}".format(case_obj['_id']))
+        
+        self.case_collection.update_one({'_id': case_obj['_id']},
+            {
+                '$addToSet': {
+                    'collaborators': {'$each': case_obj['collaborators']},
+                    'analysis_dates': {'$each': case_obj['analysis_dates']},
+                },
+                '$set': {
+                    'individuals': case_obj['individuals'],
+                    'updated_at': datetime.datetime.now(),
+                    'rerun_requested': False,
+                    'panels': case_obj.get('panels', []),
+                    'genome_build': case_obj.get('genome_build', '37'),
+                    'genome_version': case_obj.get('genome_version'),
+                    'rank_model_version': case_obj.get('rank_model_version'),
+                    'madeline_info': case_obj.get('madeline_info'),
+                    'vcf_files': case_obj.get('vcf_files'),
+                    'has_svvariants': case_obj.get('has_svvariants'),
+                    'assignee': case_obj.get('assignee'), # Should this really be updated?
+                }
+            }
+        )
+
+        logger.info("Case updated")
+        ##TODO Add event for updating case?
 

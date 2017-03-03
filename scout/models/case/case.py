@@ -59,8 +59,7 @@ case = dict(
 
     # default_panels specifies which panels that should be shown when
     # the case is opened
-    default_panels = list, # list of dictionaries with panel information
-    gene_panels = list, # list of _ids to gene panels
+    panels = list, # list of dictionaries with panel information
 
     dynamic_gene_list = list, # List of genes
 

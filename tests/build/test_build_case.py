@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 import pytest
-
+from pprint import pprint as pp
 from scout.exceptions import (PedigreeError, ConfigError, IntegrityError)
 
 from scout.build import build_case
 
-def test_build_case(parsed_case, institute_database):
+def test_build_case(parsed_case, panel_database):
+    adapter = panel_database
+    
     #GIVEN a parsed case
     #WHEN bulding a case model
-    parsed_case['gene_panels'] = None
-    parsed_case['default_panels'] = None
-    case_obj = build_case(parsed_case, institute_database)
-
+    case_obj = build_case(parsed_case, adapter)
     #THEN make sure it is built in the proper way
     assert case_obj['_id'] == parsed_case['case_id']
     assert case_obj['case_id'] == parsed_case['case_id']

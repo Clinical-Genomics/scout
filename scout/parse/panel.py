@@ -121,7 +121,7 @@ def parse_gene_panel(panel_info):
         Returns:
             gene_panel(dict)
     """
-
+    logger.info("Parsing gene panel %s" % panel_info.get('panel_name'))
     gene_panel = {}
 
     gene_panel['path'] = panel_info.get('file')

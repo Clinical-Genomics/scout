@@ -23,8 +23,6 @@ from pymongo.errors import ConnectionFailure
     except ConnectionFailure:
         print("Server not available")
 
-
-
 Created by Måns Magnusson on 2017-02-15.
 Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 
@@ -104,6 +102,10 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         user_obj['created_at'] = datetime.now()
         self.user_collection.insert_one(user_obj)
         logger.debug("User inserted")
+
+    def users(self):
+        """Return all users from the database"""
+        return self.user_collection.find()
 
     def user(self, email=None):
         """Fetch a user from the database."""

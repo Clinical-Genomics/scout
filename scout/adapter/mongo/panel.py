@@ -51,6 +51,7 @@ class PanelHandler(object):
             if res.count() > 0:
                 return res[0]
             else:
+                logger.info("No gene panel found")
                 return None
 
     def gene_panels(self, panel_id=None):
