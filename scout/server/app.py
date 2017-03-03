@@ -5,11 +5,14 @@ from . import extensions
 from .blueprints import public, genes
 
 
-def create_app(config_file):
+def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
-    app.config.from_pyfile(config_file)
+    if config_file:
+        app.config.from_pyfile(config_file)
+    if config:
+        app.config.update(config)
 
     configure_extensions(app)
     register_blueprints(app)

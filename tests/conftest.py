@@ -76,8 +76,8 @@ def test_transcript(request):
 def test_gene(request, test_transcript):
     gene = {
         # This is the hgnc id, required:
-        'hgnc_id': 1, 
-        # The primary symbol, required 
+        'hgnc_id': 1,
+        # The primary symbol, required
         'hgnc_symbol': 'test',
         'ensembl_id': 'ensembl1', # required
         'build': '37', # '37' or '38', defaults to '37', required
@@ -248,7 +248,7 @@ def database_name(request):
     return DATABASE
 
 @pytest.fixture(scope='function')
-def client(request):
+def pymongo_client(request):
     """Get a client to the mongo database"""
 
     logger.info("Get a mongomock client")
@@ -268,10 +268,10 @@ def client(request):
 
 
 @pytest.fixture(scope='function')
-def adapter(request, client):
+def adapter(request, pymongo_client):
     """Get an adapter connected to mongom database"""
     logger.info("Connecting to database...")
-    mongo_client = client
+    mongo_client = pymongo_client
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
