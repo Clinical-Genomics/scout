@@ -7,6 +7,7 @@ pytest
 coverage
 coveralls
 flake8
+pytest-flask
 
 # packaging
 wheel>=0.23
