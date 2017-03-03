@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+  Scout
+{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+
+{% block navbar %}
+  <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-menu-hamburger"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="{{ url_for('public.index') }}">Home</a></li>
+              <li><a href="{{ url_for('genes.genes') }}">Genes</a></li>
+              <li>
+                <a href="http://clinical-genomics.github.io/scout/user-guide/pages/" target='_blank'>User guide</a>
+              </li>
+              <li>
+                <a href="https://github.com/Clinical-Genomics/scout/issues" target='_blank'>Open issues</a>
+              </li>
+            </ul>
+          </li>
+          {% block top_nav %}{% endblock %}
+        </ul>
+
+        {# <ul class="nav navbar-nav navbar-right">
+          {% block top_nav_right %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="{{ url_for('login.logout') }}">Logout</a>
+                </li>
+                {% if current_user.has_role('admin') %}
+                  <li>
+                    <a href="{{ url_for('admin.index') }}">Admin</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </li>
+          {% endblock %}
+        </ul> #}
+      </div>
+    </div>
+  </nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid main">
+    <div class="row">
+      <div class="col-xs-12">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category or 'default' }} alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    {% block content_main %}{% endblock %}
+  </div>
+{% endblock %}
