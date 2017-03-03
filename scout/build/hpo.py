@@ -2,7 +2,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def build_hpo_term(hpo_info, adapter):
+def build_hpo_term(hpo_info, hgnc_genes={}):
     """Build a hpo_term object
     
     Check that the information is correct and add the correct hgnc ids to the 
@@ -10,7 +10,7 @@ def build_hpo_term(hpo_info, adapter):
     
         Args:
             hpo_info(dict)
-            adapter(scout.adapter.MongoAdapter)
+            hgnc_genes(dict): {<hgnc_symbol>: <hgnc_id>}
     
         Returns:
             hpo_obj(dict)
@@ -40,9 +40,8 @@ def build_hpo_term(hpo_info, adapter):
     hgnc_ids = []
     for hgnc_symbol in hpo_info.get('hgnc_symbols', []):
         ## TODO need to consider genome build here?
-        hgnc_gene = adapter.hgnc_gene(hgnc_symbol)
-        if hgnc_gene:
-            hgnc_ids.append(hgnc_gene['hgnc_id'])
+        if hgnc_symbol in hgnc_genes:
+            hgnc_ids.append(hgnc_genes[hgnc_symbol]['hgnc_id'])
         else:
             log.warning("Gene %s could not be found in database", hgnc_symbol)
     hpo_obj['genes'] = hgnc_ids

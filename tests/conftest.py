@@ -7,9 +7,9 @@ from scout.utils.handle import get_file_handle
 
 from vcf_parser import VCFParser
 import yaml
+import pymongo
 
 # Adapter stuff
-from pymongo import MongoClient as RealClient
 from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 # from mongoengine import connect
@@ -101,10 +101,17 @@ def test_gene(request, test_transcript):
 
 
 @pytest.fixture
-def genes(request, transcripts_handle, hgnc_handle, exac_handle,
-          mim2gene_handle, genemap_handle, hpo_genes_handle):
+def genes(request, transcripts_file, hgnc_file, exac_file,
+          mim2gene_file, genemap_file, hpo_genes_file):
     """Get a dictionary with the linked genes"""
     print('')
+    transcripts_handle = get_file_handle(transcripts_file)
+    hgnc_handle = get_file_handle(hgnc_file)
+    exac_handle = get_file_handle(exac_file)
+    mim2gene_handle = get_file_handle(mim2gene_file)
+    genemap_handle = get_file_handle(genemap_file)
+    hpo_genes_handle =  get_file_handle(hpo_genes_file)
+    
     gene_dict = link_genes(
         ensembl_lines=transcripts_handle,
         hgnc_lines=hgnc_handle,
@@ -127,9 +134,10 @@ def hpo_terms_handle(request, hpo_terms_file):
     return hpo_lines
 
 @pytest.fixture
-def hpo_terms(request, hpo_terms_handle):
+def hpo_terms(request, hpo_terms_file):
     """Get a dictionary with the hpo terms"""
     print('')
+    hpo_terms_handle = get_file_handle(hpo_terms_file)
     return parse_hpo_phenotypes(hpo_terms_handle)
 
 @pytest.fixture
@@ -139,9 +147,10 @@ def hpo_disease_handle(request, hpo_disease_file):
     return get_file_handle(hpo_disease_file)
 
 @pytest.fixture
-def hpo_diseases(request, hpo_disease_handle):
+def hpo_diseases(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
+    hpo_disease_handle = get_file_handle(hpo_disease_file)
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
 
@@ -240,10 +249,9 @@ def database_name(request):
 @pytest.fixture(scope='function')
 def client(request):
     """Get a client to the mongo database"""
-    # logger.info("Get a mongo client")
-    # mongo_client = RealClient()
 
     logger.info("Get a mongomock client")
+    start_time = datetime.datetime.now()
     mock_client = MongoClient()
 
     def teardown():
@@ -251,6 +259,7 @@ def client(request):
         logger.info("Deleting database")
         mock_client.drop_database(DATABASE)
         logger.info("Database deleted")
+        logger.info("Time to run test:{}".format(datetime.datetime.now()-start_time))
 
     request.addfinalizer(teardown)
 
@@ -278,6 +287,12 @@ def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = institute_database
     load_hgnc_genes(adapter, genes)
+    
+    logger.info("Creating index on hgnc collection")
+    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
+                                          ('hgnc_symbol', pymongo.ASCENDING)])
+    logger.info("Index done")
+    
 
     return adapter
 

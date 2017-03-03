@@ -8,16 +8,15 @@ def test_build_disease_term(adapter):
         'hgnc_symbols': set(['B3GALT6']),
         'inheritance': set(['AR']),
     }
-    adapter.load_hgnc_gene(
-        {
-            'hgnc_id': 17978,
-            'hgnc_symbol': 'B3GALT6',
-            'build': '37'
-        }
-    )
+    genes = {'B3GALT6': {
+                'hgnc_id': 17978,
+                'hgnc_symbol': 'B3GALT6',
+                'build': '37'
+                }
+            }
     
     ## WHEN building the disease term
-    disease_obj = build_disease_term(disease_info, adapter)
+    disease_obj = build_disease_term(disease_info, genes)
     
     ## THEN assert the term is on the correct format
     

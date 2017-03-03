@@ -2,7 +2,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def build_disease_term(disease_info, adapter):
+def build_disease_term(disease_info, hgnc_genes={}):
     """Build a disease phenotype object
     
     Args:
@@ -45,9 +45,8 @@ def build_disease_term(disease_info, adapter):
     hgnc_ids = []
     for hgnc_symbol in disease_info.get('hgnc_symbols', []):
         ## TODO need to consider genome build here?
-        hgnc_gene = adapter.hgnc_gene(hgnc_symbol)
-        if hgnc_gene:
-            hgnc_ids.append(hgnc_gene['hgnc_id'])
+        if hgnc_symbol in hgnc_genes:
+            hgnc_ids.append(hgnc_genes[hgnc_symbol]['hgnc_id'])
         else:
             log.warning("Gene %s could not be found in database", hgnc_symbol)
     disease_obj['genes'] = hgnc_ids

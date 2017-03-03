@@ -1,6 +1,6 @@
 from scout.build.hpo import build_hpo_term
 
-def test_build_hpo_term(adapter):
+def test_build_hpo_term_non_existing_genes(adapter):
     ## GIVEN a hpo term
     hpo_info = {
         'hpo_id':"HP:0000878",
@@ -8,7 +8,7 @@ def test_build_hpo_term(adapter):
         'hgnc_symbols': ['B3GALT6', 'RBBP8']
     }
     ## WHEN building the hpo term
-    hpo_obj = build_hpo_term(hpo_info, adapter)
+    hpo_obj = build_hpo_term(hpo_info, {})
     ## THEN assert that the term has the correct information
     assert hpo_obj['_id'] == hpo_obj['hpo_id'] == hpo_info['hpo_id']    
     assert hpo_obj['description'] == hpo_info['description']
@@ -22,25 +22,21 @@ def test_build_hpo_term_with_genes(adapter):
         'description': "11 pairs of ribs",
         'hgnc_symbols': ['B3GALT6', 'RBBP8']
     }
-    adapter.load_hgnc_gene(
-        {
+    genes = {}
+    genes['B3GALT6'] = {
             'hgnc_id': 17978,
             'hgnc_symbol': 'B3GALT6',
             'build': '37'
         }
-    )
-    adapter.load_hgnc_gene(
-        {
+    
+    genes['RBBP8'] = {
             'hgnc_id': 9891,
             'hgnc_symbol': 'RBBP8',
             'build': '37'
         }
-    )
-    
-    assert adapter.all_genes().count() == 2
     
     ## WHEN building the hpo term
-    hpo_obj = build_hpo_term(hpo_info, adapter)
+    hpo_obj = build_hpo_term(hpo_info, genes)
     ## THEN assert that the term has the correct information
     assert hpo_obj['_id'] == hpo_obj['hpo_id'] == hpo_info['hpo_id']    
     ## The adapter has no genes loaded so we expect this to be 0
@@ -54,18 +50,16 @@ def test_build_hpo_term_non_existing_gene(adapter):
         'description': "11 pairs of ribs",
         'hgnc_symbols': ['B3GALT6', 'RBBP8']
     }
-    adapter.load_hgnc_gene(
-        {
+    genes = {}
+    genes['B3GALT6'] = {
             'hgnc_id': 17978,
             'hgnc_symbol': 'B3GALT6',
             'build': '37'
         }
-    )
     
-    assert adapter.all_genes().count() == 1
     
     ## WHEN building the hpo term
-    hpo_obj = build_hpo_term(hpo_info, adapter)
+    hpo_obj = build_hpo_term(hpo_info, genes)
     ## THEN assert that the term has the correct information
     assert hpo_obj['_id'] == hpo_obj['hpo_id'] == hpo_info['hpo_id']    
     ## The adapter has no genes loaded so we expect this to be 0
