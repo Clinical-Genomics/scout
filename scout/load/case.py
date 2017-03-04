@@ -2,12 +2,12 @@
 import logging
 
 from scout.exceptions import IntegrityError
+from scout.build.case import build_case
 
 logger = logging.getLogger(__name__)
 
 
-def load_case(adapter, case_obj, update=False, gene_panels=None,
-              default_panels=None):
+def load_case(adapter, case_info, update=False):
     """Load a case into the database
 
     If the case already exists the function will exit.
@@ -16,33 +16,18 @@ def load_case(adapter, case_obj, update=False, gene_panels=None,
 
     Args:
         adapter (MongoAdapter): connection to the database
-        case_obj (Case): case object to persist to the database
+        case_info (dict): case object to persist to the database
         update(bool): If existing case should be updated
-        gene_panels(list(str)): Name of the gene panels
-        default_panels(list(str)): Name of the default panels
-    """
-    gene_panels = gene_panels or []
-    default_panels = default_panels or []
-    logger.info('Loading case {} into database'.format(case_obj.display_name))
-    owner = case_obj.owner
-    institute_obj = adapter.institute(institute_id=owner)
-    if not institute_obj:
-        message = "Institute {} does not exist in database".format(owner)
-        raise ValueError(message)
 
-    panel_objs = []
-    default_panels_objs = []
-    for panel in gene_panels:
-        panel_obj = adapter.gene_panel(panel_id=panel).first()
-        panel_objs.append(panel_obj)
-        if panel in default_panels:
-            default_panels_objs.append(panel_obj)
-    case_obj.gene_panels = panel_objs
-    case_obj.default_panels = default_panels_objs
+    Returns:
+        case_obj(dict): A dictionary with the builded case
+    """
+    logger.info('Loading case {} into database'.format(case_info['display_name']))
+    case_obj = build_case(case_info, adapter)
 
     # Check if case exists in database
-    existing_case = adapter.case(institute_id=owner,
-                                 case_id=case_obj.display_name)
+    existing_case = adapter.case(case_obj['_id'])
+    
     if existing_case:
         if update:
             adapter.update_case(case_obj)
@@ -51,3 +36,4 @@ def load_case(adapter, case_obj, update=False, gene_panels=None,
                                  case_obj.case_id))
     else:
         adapter.add_case(case_obj)
+    return case_obj

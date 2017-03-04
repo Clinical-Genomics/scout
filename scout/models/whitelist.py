@@ -11,6 +11,12 @@ from mongoengine import (Document, DateTimeField, EmailField, ListField,
                          ReferenceField)
 
 
+whitelist = dict(
+    email = str, # required, unique
+    created_at = datetime, 
+    institutes = list, # list of institute_ids
+)
+
 class Whitelist(Document):
   email = EmailField(required=True, unique=True)
   created_at = DateTimeField(default=datetime.now)

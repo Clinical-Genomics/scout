@@ -13,6 +13,17 @@ from mongoengine import (DateTimeField, Document, EmailField, ListField,
 from .institute import Institute
 
 
+user = dict(
+    email = str, # required, unique
+    name = str, # required=True
+    created_at = datetime, 
+    accessed_at = datetime,
+    location = str, 
+    institutes = list, # List of institute_ids
+    roles = list, # List of roles
+    
+)
+
 class LoginUserMixin(object):
     def has_role(self, query_role):
         """Check if user has been assigned a specific role."""

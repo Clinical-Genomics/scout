@@ -4,8 +4,6 @@ import click
 
 from scout.commands.case import cases
 
-from scout.models.user import User
-
 logger = logging.getLogger(__name__)
 
 @click.command('panels', short_help='Display gene panels')
@@ -15,7 +13,7 @@ def panels(context):
     logger.info("Running scout view panels")
     adapter = context.obj['adapter']
     
-    panel_objs = adapter.gene_panel()
+    panel_objs = adapter.gene_panels()
     if panel_objs.count() == 0:
         logger.info("No panels found")
     else:
@@ -36,8 +34,20 @@ def users(context):
     adapter = context.obj['adapter']
     
     ## TODO add a User interface to the adapter
-    for user_obj in User.objects():
+    for user_obj in adapter.users():
         click.echo(user_obj['name'])
+
+@click.command('whitelist', short_help='Display whitelist')
+@click.pass_context
+def whitelist(context):
+    """Show all objects in the whitelist collection"""
+    logger.info("Running scout view users")
+    adapter = context.obj['adapter']
+    
+    ## TODO add a User interface to the adapter
+    for whitelist_obj in adapter.whitelist_collection.find():
+        click.echo(whitelist_obj['_id'])
+
 
 @click.command('institutes', short_help='Display institutes')
 @click.pass_context
@@ -111,3 +121,4 @@ view.add_command(institutes)
 view.add_command(genes)
 view.add_command(diseases)
 view.add_command(hpo)
+view.add_command(whitelist)

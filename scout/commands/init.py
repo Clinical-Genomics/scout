@@ -15,8 +15,9 @@ import logging
 
 import click
 
-from scout.resources import (hgnc_path, exac_path,
-                             hpogenes_path, hpoterms_path, hpodisease_path)
+from scout.resources import (hgnc_path, exac_path, mim2gene_path,
+                             genemap2_path, hpogenes_path, hpoterms_path, 
+                             hpodisease_path)
 
 from scout.resources import transcripts37_path as transcripts_path
 
@@ -45,9 +46,9 @@ def init(ctx, institute_name, user_name, user_mail):
     adapter = ctx.obj['adapter']
 
     logger.info("Deleting previous database")
-    collections = ['institute', 'user', 'whitelist']
-    for collection in collections:
-        adapter.db.drop_collection(collection)
+    for collection_name in adapter.db.collection_names():
+        logger.info("Deleting collection %s", collection_name)
+        adapter.db.drop_collection(collection_name)
     logger.info("Database deleted")
 
     institute_obj = build_institute(
@@ -58,14 +59,16 @@ def init(ctx, institute_name, user_name, user_mail):
 
     adapter.add_institute(institute_obj)
 
-    institute = adapter.institute(institute_id=institute_name)
+    adapter.add_whitelist(
+        email=user_mail,
+        institutes=[institute_name]
+    )
 
-    Whitelist(email=user_mail).save()
-    user = User(email=user_mail,
+    user_obj = dict(email=user_mail,
                 name=user_name,
                 roles=['admin'],
-                institutes=[institute])
-    user.save()
+                institutes=[institute_name])
+    adapter.add_user(user_obj)
 
     # Load the genes and transcripts
     logger.info("Loading hgnc file from {0}".format(hgnc_path))
@@ -73,7 +76,7 @@ def init(ctx, institute_name, user_name, user_mail):
 
     logger.info("Loading ensembl transcript file from {0}".format(
                 transcripts_path))
-    ensembl_handle = get_file_handle(transcripts_path)
+    transcripts_handle = get_file_handle(transcripts_path)
 
     logger.info("Loading exac gene file from {0}".format(
                 exac_path))
@@ -81,15 +84,27 @@ def init(ctx, institute_name, user_name, user_mail):
 
     logger.info("Loading HPO gene file from {0}".format(
                 hpogenes_path))
-    hpo_handle = get_file_handle(hpogenes_path)
+    hpo_genes_handle = get_file_handle(hpogenes_path)
+    
+    logger.info("Loading mim2gene file from {0}".format(
+                hpogenes_path))
+    mim2gene_handle = get_file_handle(mim2gene_path)
+
+    logger.info("Loading genemap file from {0}".format(
+                genemap2_path))
+    genemap_handle = get_file_handle(genemap2_path)
 
     genes = link_genes(
-        ensembl_lines=ensembl_handle,
+        ensembl_lines=transcripts_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
-        hpo_lines=hpo_handle
+        mim2gene_lines=mim2gene_handle,
+        genemap_lines=genemap_handle, 
+        hpo_lines=hpo_genes_handle,
     )
     load_hgnc_genes(adapter, genes)
+    
+    ctx.abort()
 
     logger.info("Loading hpo terms from file {0}".format(hpoterms_path))
     logger.info("Loading hpo disease terms from file {0}".format(hpodisease_path))
