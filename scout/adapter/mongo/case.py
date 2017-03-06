@@ -2,6 +2,8 @@
 import logging
 import datetime
 
+import pymongo
+
 from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
@@ -143,19 +145,39 @@ class CaseHandler(object):
 
     def update_case(self, case_obj):
         """Update a case in the database
+        
+        The following will be updated:
+            - collaborators: If new collaborators these will be added to the old ones
+            - analysis_date: Is updated to the new date
+            - analysis_dates: The new analysis date will be added to analysisi dates
+            - individuals: There could be new individuals
+            - updated_at: When the case was updated in the database
+            - rerun_requested: Is set to False since that is probably what happened
+            - panels: The new gene panels are added
+            - genome_build: If there is a new genome build
+            - genome_version: - || -
+            - rank_model_version: If there is a new rank model
+            - madeline_info: If there is a new pedigree
+            - vcf_files: paths to the new files
+            - has_svvariants: If there are new svvariants
 
             Args:
                 case_obj(dict): The new case information
+            
+            Returns:
+                updated_case(dict): The updated case information
         """
         logger.info("Updating case {0}".format(case_obj['_id']))
         
-        self.case_collection.update_one({'_id': case_obj['_id']},
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case_obj['_id']},
             {
                 '$addToSet': {
                     'collaborators': {'$each': case_obj['collaborators']},
-                    'analysis_dates': {'$each': case_obj['analysis_dates']},
+                    'analysis_dates': case_obj['analysis_date'],
                 },
                 '$set': {
+                    'analysis_date': case_obj['analysis_date'],
                     'individuals': case_obj['individuals'],
                     'updated_at': datetime.datetime.now(),
                     'rerun_requested': False,
@@ -166,11 +188,12 @@ class CaseHandler(object):
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
-                    'assignee': case_obj.get('assignee'), # Should this really be updated?
                 }
-            }
+            },
+            return_document = pymongo.ReturnDocument.AFTER
         )
 
         logger.info("Case updated")
+        return updated_case
         ##TODO Add event for updating case?
 

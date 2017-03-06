@@ -103,19 +103,17 @@ def init(ctx, institute_name, user_name, user_mail):
         hpo_lines=hpo_genes_handle,
     )
     load_hgnc_genes(adapter, genes)
-    
-    ctx.abort()
 
     logger.info("Loading hpo terms from file {0}".format(hpoterms_path))
     logger.info("Loading hpo disease terms from file {0}".format(hpodisease_path))
 
     hpo_terms_handle = get_file_handle(hpoterms_path)
-    hpo_disease_handle = get_file_handle(hpodisease_path)
-
+    disease_handle = get_file_handle(genemap2_path)
+    
     load_hpo(
         adapter=adapter,
         hpo_lines=hpo_terms_handle,
-        disease_lines=hpo_disease_handle,
+        disease_lines=disease_handle
     )
 
     logger.info("Scout instance setup successful")
