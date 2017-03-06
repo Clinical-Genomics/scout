@@ -22,7 +22,6 @@ from scout.resources import (hgnc_path, exac_path, mim2gene_path,
 from scout.resources import transcripts37_path as transcripts_path
 
 from scout.build import build_institute
-from scout.models import (User, Whitelist)
 
 from scout.load import (load_hgnc_genes, load_hpo)
 

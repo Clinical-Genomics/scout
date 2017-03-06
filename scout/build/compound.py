@@ -1,19 +1,27 @@
-from scout.models import Compound
 
 def build_compound(compound):
-    """Build a mongoengine Compound object
+    """Build a compound
     
-        Args:
-            compound(dict)
+    Args:
+        compound(dict)
     
-        Returns:
-            compound_obj(Compound)
+    Returns:
+        compound_obj(dict)
+    
+    dict(
+        # This must be the document_id for this variant
+        variant = str, # required=True
+        # This is the variant id
+        display_name = str, # required
+        combined_score = float, # required
+    )
+    
     """
     
-    compound_obj = Compound(
+    compound_obj = dict(
         variant = compound['variant'],
         display_name = compound['display_name'],
-        combined_score = compound['score']
+        combined_score = float(compound['score'])
     )
     
     return compound_obj

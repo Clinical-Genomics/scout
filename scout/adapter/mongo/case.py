@@ -91,7 +91,7 @@ class CaseHandler(object):
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Fetching case %s institute %s", (display_name, institute_id))
+            logger.info("Fetching case %s institute %s" % (display_name, institute_id))
             query['owner'] = institute_id
             query['display_name'] = display_name
         
