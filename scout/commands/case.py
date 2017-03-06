@@ -49,7 +49,10 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
         else:
             config_data['owner'] = owner
 
-    existing_case = adapter.case(config_data['owner'], config_data['family'])
+    existing_case = adapter.case(
+                        institute_id=config_data['owner'], 
+                        display_name=config_data['family']
+                    )
 
     if existing_case:
         new_analysisdate = config_data.get('analysis_date')
@@ -57,6 +60,8 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
             log.info("updated analysis - updating existing case")
             # update by default!
             update = True
+    else:
+        log.info("Case does not exist in database")
 
     config_data['vcf_snv'] = vcf if vcf else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
@@ -70,6 +75,9 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
     if not config_data.get('owner'):
         log.warn("Please provide an owner for the case (use '--owner')")
         context.abort()
+
+    print(config_data)
+    context.abort()
 
     try:
         load_scout(adapter, config_data, ped=ped, update=update)

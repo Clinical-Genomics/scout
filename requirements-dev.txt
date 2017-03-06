@@ -7,6 +7,9 @@ pytest
 coverage
 coveralls
 flake8
+pytest-flask
+pytest-cov
+mongomock
 
 # packaging
 wheel>=0.23

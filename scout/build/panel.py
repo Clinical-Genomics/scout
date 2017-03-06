@@ -1,76 +1,137 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.models.panel import (GenePanel, Gene)
+from datetime import datetime as datetime
+
+from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
-def build_gene(gene_info):
-    """Build a gene panel gene object"""
-
-    gene_obj = Gene(hgnc_id=gene_info['hgnc_id'])
+def build_gene(gene_info, adapter):
+    """Build a panel_gene object
     
-    if gene_info.get('hgnc_symbol'):
-        gene_obj.symbol = gene_info['hgnc_symbol']
+    Args:
+        gene_info(dict)
+    
+    Returns:
+        gene_obj(dict)
+    
+        panel_gene = dict(
+            hgnc_id = int, # required
+            symbol = str, 
+
+            disease_associated_transcripts = list, # list of strings that represent refseq transcripts
+            reduced_penetrance = bool, 
+            mosaicism = bool, 
+            database_entry_version = str,
+
+            ar = bool,
+            ad = bool,
+            mt = bool,
+            xr = bool,
+            xd = bool,
+            x = bool,
+            y = bool,
+
+        )
+
+    """
+    try:
+        # A gene has to have a hgnc id
+        hgnc_id = gene_info['hgnc_id']
+        gene_obj = dict(hgnc_id=hgnc_id)
+    except KeyError as err:
+        raise KeyError("Gene has to have hgnc_id")
+    
+    hgnc_gene = adapter.hgnc_gene(hgnc_id)
+    if hgnc_gene is None:
+        raise IntegrityError
+    
+    gene_obj['symbol'] = hgnc_gene['hgnc_symbol']
 
     if gene_info.get('transcripts'):
-        gene_obj.disease_associated_transcripts = gene_info['transcripts']
+        gene_obj['disease_associated_transcripts'] = gene_info['transcripts']
     
     if gene_info.get('reduced_penetrance'):
-        gene_obj.reduced_penetrance = True
+        gene_obj['reduced_penetrance'] = True
     
     if gene_info.get('mosaicism'):
-        gene_obj.mosaicism = True
+        gene_obj['mosaicism'] = True
     
     if gene_info.get('database_entry_version'):
-        gene_obj.database_entry_version = gene_info['database_entry_version']
+        gene_obj['database_entry_version'] = gene_info['database_entry_version']
     
     if gene_info.get('inheritance_models'):
         for model in gene_info['inheritance_models']:
             if model == 'AR':
-                gene_obj.ar = True
+                gene_obj['ar'] = True
             if model == 'AD':
-                gene_obj.ad = True
+                gene_obj['ad'] = True
             if model == 'MT':
-                gene_obj.mt = True
+                gene_obj['mt'] = True
             if model == 'XR':
-                gene_obj.xr = True
+                gene_obj['xr'] = True
             if model == 'XD':
-                gene_obj.xd = True
+                gene_obj['xd'] = True
             if model == 'X':
-                gene_obj.x = True
+                gene_obj['x'] = True
             if model == 'Y':
-                gene_obj.y = True
+                gene_obj['y'] = True
 
     return gene_obj
 
 
-def build_panel(panel_info):
-    """Build a mongoengine GenePanel
+def build_panel(panel_info, adapter):
+    """Build a gene_panel object
 
         Args:
             panel_info(dict): A dictionary with panel information
+            adapter (scout.adapter.MongoAdapter)
 
         Returns:
-            panel_obj(GenePanel)
+            panel_obj(dict)
 
-    """
-    logger.info("Building panel with id: {0}".format(panel_info['id']))
-
-    panel_obj = GenePanel(
-        institute=panel_info['institute'],
-        panel_name=panel_info['id'],
-        version=panel_info['version'],
-        date=panel_info['date'],
+    gene_panel = dict(
+        panel_name = str, # required
+        institute = str, # institute_id, required
+        version = float, # required
+        date = datetime, # required
+        display_name = str, # default is panel_name
+        genes = list, # list of panel genes, sorted on panel_gene['symbol']
     )
 
-    panel_obj.display_name = panel_info['display_name']
+    """
+    try:
+        panel_obj = dict(panel_name = panel_info['panel_name'])
+        logger.info("Building panel with name: {0}".format(panel_info['panel_name']))
+    except KeyError as err:
+        raise KeyError("Panel has to have a name")
+
+    try:
+        institute_id = panel_info['institute']
+    except KeyError as err:
+        raise KeyError("Panel has to have a institute")
+
+    if adapter.institute(institute_id) is None:
+        raise IntegrityError("Institute %s could not be found" % institute_id)
+    
+    panel_obj['institute'] = panel_info['institute']
+    
+    panel_obj['version'] = float(panel_info['version'])
+    
+    try:
+        panel_obj['date'] = panel_info['date']
+    except KeyError as err:
+        raise KeyError("Panel has to have a date")
+
+
+    panel_obj['display_name'] = panel_info.get('display_name', panel_info['panel_name'])
     
     gene_objs = []
-    for gene_info in panel_info['genes']:
-        gene_obj = build_gene(gene_info)
+    for gene_info in panel_info.get('genes', []):
+        gene_obj = build_gene(gene_info, adapter)
         gene_objs.append(gene_obj)
 
-    panel_obj.genes = gene_objs
+    panel_obj['genes'] = gene_objs
 
     return panel_obj

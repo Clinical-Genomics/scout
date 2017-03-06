@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content_main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Search for genes</div>
+    <div class="panel-body">
+      <form action="{{ url_for('genes.genes') }}">
+        <div class="row">
+          <div class="col-xs-8">
+            <input name="query" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-default form-control">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+  <script>
+    $(function () {
+      function getTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead").typeahead({
+        source: getTerms,
+        minLength: 2,
+      });
+    })
+  </script>
+{% endblock %}

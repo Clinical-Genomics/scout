@@ -1,8 +1,41 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from mongoengine import (Document, ListField, StringField, FloatField,
                          DateTimeField, BooleanField, EmbeddedDocument,
                          EmbeddedDocumentField, MapField, ReferenceField,
                          IntField, SortedListField)
+
+
+panel_gene = dict(
+    hgnc_id = int, # required
+    symbol = str, 
+
+    disease_associated_transcripts = list, # list of strings that represent refseq transcripts
+    reduced_penetrance = bool, 
+    mosaicism = bool, 
+    database_entry_version = str,
+
+    ar = bool,
+    ad = bool,
+    mt = bool,
+    xr = bool,
+    xd = bool,
+    x = bool,
+    y = bool,
+
+)
+
+
+## gene panel should be indexed on genes.hgnc_id
+gene_panel = dict(
+    panel_name = str, # required
+    institute = str, # institute_id
+    version = float, # required
+    date = datetime, # required
+    display_name = str, # default is panel_name
+    genes = list, # list of panel genes, sorted on panel_gene['symbol']
+)
 
 class Gene(EmbeddedDocument):
 

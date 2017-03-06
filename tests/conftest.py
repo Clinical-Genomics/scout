@@ -7,11 +7,12 @@ from scout.utils.handle import get_file_handle
 
 from vcf_parser import VCFParser
 import yaml
+import pymongo
 
 # Adapter stuff
-from pymongo import MongoClient as RealClient
+from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
-from mongoengine import connect
+# from mongoengine import connect
 
 from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse.case import parse_case
@@ -55,22 +56,69 @@ hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype
 hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
 mim2gene_path = "tests/fixtures/resources/mim2gene_reduced.txt"
 genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
+mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 
 ##################### Gene fixtures #####################
 
+@pytest.fixture
+def test_transcript(request):
+    transcript = {
+        'ensembl_transcript_id': 'enst1', # required
+        'refseq_id': 'NM1',
+        'start': 10, # required
+        'end': 100, # required
+        'is_primary': True,
+    }
+    return transcript
 
 @pytest.fixture
-def genes(request, transcripts_handle, hgnc_handle, exac_handle,
-          mim2gene_handle, genemap_handle):
+def test_gene(request, test_transcript):
+    gene = {
+        # This is the hgnc id, required:
+        'hgnc_id': 1,
+        # The primary symbol, required
+        'hgnc_symbol': 'test',
+        'ensembl_id': 'ensembl1', # required
+        'build': '37', # '37' or '38', defaults to '37', required
+
+        'chromosome': 1, # required
+        'start': 10, # required
+        'end': 100, # required
+
+        'description': 'A gene', # Gene description
+        'aliases': ['test'], # Gene symbol aliases, includes hgnc_symbol, str
+        'entrez_id': 1,
+        'omim_id': 1,
+        'pli_score': 1.0,
+        'primary_transcripts': ['NM1'], # List of refseq transcripts (str)
+        'ucsc_id': '1',
+        'uniprot_ids': ['1'], # List of str
+        'vega_id': '1',
+        'transcripts': [test_transcript], # List of hgnc_transcript
+    }
+    return gene
+
+
+@pytest.fixture
+def genes(request, transcripts_file, hgnc_file, exac_file,
+          mim2gene_file, genemap_file, hpo_genes_file):
     """Get a dictionary with the linked genes"""
     print('')
+    transcripts_handle = get_file_handle(transcripts_file)
+    hgnc_handle = get_file_handle(hgnc_file)
+    exac_handle = get_file_handle(exac_file)
+    mim2gene_handle = get_file_handle(mim2gene_file)
+    genemap_handle = get_file_handle(genemap_file)
+    hpo_genes_handle =  get_file_handle(hpo_genes_file)
+    
     gene_dict = link_genes(
         ensembl_lines=transcripts_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
         genemap_lines=genemap_handle,
+        hpo_lines=hpo_genes_handle
     )
 
     return gene_dict
@@ -86,9 +134,10 @@ def hpo_terms_handle(request, hpo_terms_file):
     return hpo_lines
 
 @pytest.fixture
-def hpo_terms(request, hpo_terms_handle):
+def hpo_terms(request, hpo_terms_file):
     """Get a dictionary with the hpo terms"""
     print('')
+    hpo_terms_handle = get_file_handle(hpo_terms_file)
     return parse_hpo_phenotypes(hpo_terms_handle)
 
 @pytest.fixture
@@ -98,9 +147,10 @@ def hpo_disease_handle(request, hpo_disease_file):
     return get_file_handle(hpo_disease_file)
 
 @pytest.fixture
-def hpo_diseases(request, hpo_disease_handle):
+def hpo_diseases(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
+    hpo_disease_handle = get_file_handle(hpo_disease_file)
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
 
@@ -133,9 +183,10 @@ def parsed_case(request, scout_config):
     return case
 
 @pytest.fixture(scope='function')
-def case_obj(request, parsed_case):
+def case_obj(request, parsed_case, panel_database):
+    adapter = panel_database
     logger.info("Create a case obj")
-    case = build_case(parsed_case)
+    case = build_case(parsed_case, adapter)
     return case
 
 
@@ -175,7 +226,7 @@ def parsed_user(request, institute_obj):
         'email': 'john@doe.com',
         'name': 'John Doe',
         'location': None,
-        'institutes': [institute_obj],
+        'institutes': [institute_obj['internal_id']],
         'roles': ['admin']
     }
     return user_info
@@ -184,55 +235,73 @@ def parsed_user(request, institute_obj):
 @pytest.fixture(scope='function')
 def user_obj(request, parsed_user):
     """Return a User object"""
-    user = User(
-      email=parsed_user['email'],
-      name=parsed_user['name'],
-      institutes=parsed_user['institutes']
-    )
-    return user
+    return parsed_user
 
 
 #############################################################
 ##################### Adapter fixtures #####################
 #############################################################
+
 @pytest.fixture(scope='function')
-def client(request):
+def database_name(request):
+    """Get the name of the test database"""
+    return DATABASE
+
+@pytest.fixture(scope='function')
+def pymongo_client(request):
     """Get a client to the mongo database"""
-    logger.info("Get a mongo client")
-    mongo_client = RealClient()
+
+    logger.info("Get a mongomock client")
+    start_time = datetime.datetime.now()
+    mock_client = MongoClient()
 
     def teardown():
         print('\n')
         logger.info("Deleting database")
-        mongo_client.drop_database(DATABASE)
+        mock_client.drop_database(DATABASE)
         logger.info("Database deleted")
+        logger.info("Time to run test:{}".format(datetime.datetime.now()-start_time))
 
     request.addfinalizer(teardown)
 
-    return mongo_client
+    return mock_client
 
 
 @pytest.fixture(scope='function')
-def adapter(request, client):
+def adapter(request, pymongo_client):
     """Get an adapter connected to mongom database"""
     logger.info("Connecting to database...")
-    mongo_client = client
+    mongo_client = pymongo_client
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
-    logger.info("Establish a mongoengine connection")
-    connect(DATABASE)
+    # logger.info("Establish a mongoengine connection")
+    # connect(DATABASE)
 
     logger.info("Connected to database")
 
     return mongo_adapter
 
 @pytest.fixture(scope='function')
-def gene_database(request, adapter, genes):
-    "Returns an adapter to a database populated with user, institute and case"
+def institute_database(request, adapter, institute_obj, user_obj):
+    "Returns an adapter to a database populated with institute"
+    adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
 
+    return adapter
+
+@pytest.fixture(scope='function')
+def gene_database(request, institute_database, genes):
+    "Returns an adapter to a database populated with user, institute and case"
+    adapter = institute_database
     load_hgnc_genes(adapter, genes)
+    
+    logger.info("Creating index on hgnc collection")
+    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
+                                          ('hgnc_symbol', pymongo.ASCENDING)])
+    logger.info("Index done")
+    
 
     return adapter
 
@@ -251,26 +320,13 @@ def hpo_database(request, gene_database, hpo_terms_handle, hpo_disease_handle):
 
 
 @pytest.fixture(scope='function')
-def panel_database(request, hpo_database, panel_info):
+def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
-    adapter = hpo_database
-
+    adapter = gene_database
+    logger.info("Creating a panel adapter")
     load_panel(
         adapter=adapter,
         panel_info=panel_info
-    )
-
-    return adapter
-
-@pytest.fixture(scope='function')
-def institute_database(request, adapter, institute_obj, parsed_user):
-    "Returns an adapter to a database populated with institute"
-    adapter.add_institute(institute_obj)
-    adapter.getoradd_user(
-        email=parsed_user['email'],
-        name=parsed_user['name'],
-        location=parsed_user['location'],
-        institutes=parsed_user['institutes']
     )
 
     return adapter
@@ -324,12 +380,12 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
 def panel_info(request):
     "Return one panel info as specified in tests/fixtures/config1.ini"
     panel = {
-            'date': datetime.date.today(),
+            'date': datetime.datetime.now(),
             'file': panel_1_path,
             'type': 'clinical',
             'institute': 'cust000',
             'version': '1.0',
-            'name': 'panel1',
+            'panel_name': 'panel1',
             'full_name': 'Test panel'
         }
     return panel
@@ -535,6 +591,12 @@ def mim2gene_file(request):
     return mim2gene_path
 
 @pytest.fixture
+def mimtitles_file(request):
+    """Get the path to the mim2genes file"""
+    print('')
+    return mimtitles_path
+
+@pytest.fixture
 def genemap_file(request):
     """Get the path to the mim2genes file"""
     print('')
@@ -631,6 +693,12 @@ def mim2gene_handle(request, mim2gene_file):
     """Get a file handle to a mim2genes file"""
     print('')
     return get_file_handle(mim2gene_path)
+
+@pytest.fixture
+def mimtitles_handle(request, mimtitles_file):
+    """Get a file handle to a mim2genes file"""
+    print('')
+    return get_file_handle(mimtitles_file)
 
 @pytest.fixture
 def genemap_handle(request, genemap_file):

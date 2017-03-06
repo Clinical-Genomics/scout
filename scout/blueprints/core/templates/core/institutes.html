@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content_main %}
-  {% for institute in institutes %}
+  {% for institute, case_count in institutes %}
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="row">
@@ -24,9 +24,7 @@
             </h3>
           </div>
           <div class="col-xs-4">
-            <span class="badge pull-right">
-              {{ institute.cases(Case).count() }} cases
-            </span>
+            <span class="badge pull-right">{{ case_count }} cases</span>
           </div>
         </div>
       </div>

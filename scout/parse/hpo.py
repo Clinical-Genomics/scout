@@ -61,6 +61,20 @@ def parse_hpo_phenotypes(hpo_lines):
     """Parse hpo phenotypes
     
         Group the genes that a phenotype is associated to in 'genes'
+    
+    Args:
+        hpo_lines(iterable(str)): A file handle to the hpo phenotypes file
+    
+    Returns:
+        hpo_terms(dict): A dictionary with hpo_ids as keys and terms as values
+    
+        {
+            <hpo_id>: {
+                'hpo_id':str,
+                'description': str,
+                'hgnc_symbols': list(str), # [<hgnc_symbol>, ...]
+                }
+        }
     """
     hpo_terms = {}
     logger.info("Parsing hpo phenotypes...")
@@ -159,12 +173,30 @@ def parse_hpo_genes(hpo_lines):
     return genes
     
 
+def get_incomplete_penetrance_genes(hpo_lines):
+    """Get a set with all genes that have incomplete penetrance according to HPO
+    
+    Args:
+        hpo_lines(iterable(str))
+    
+    Returns:
+        incomplete_penetrance_genes(set): A set with the hgnc symbols of all 
+                                          genes with incomplete penetrance
+        
+    """
+    genes = parse_hpo_genes(hpo_lines)
+    incomplete_penetrance_genes = set()
+    for hgnc_symbol in genes:
+        if genes[hgnc_symbol].get('incomplete_penetrance'):
+            incomplete_penetrance_genes.add(hgnc_symbol)
+    return incomplete_penetrance_genes
+
 if __name__ == "__main__":
     import sys
-    import gzip
     from pprint import pprint as pp
+    from scout.utils.handle import get_file_handle
     
-    file_handle = gzip.open(sys.argv[1])
+    file_handle = get_file_handle(sys.argv[1])
     
     # phenotypes = parse_hpo_phenotypes(file_handle)
     # for hpo_id in phenotypes:
@@ -175,8 +207,11 @@ if __name__ == "__main__":
     # for mim_id in diseases:
     #     disease = diseases[mim_id]
     #     pp(disease)
-    
-    genes = parse_hpo_genes(file_handle)
-    for hgnc_symbol in genes:
-        gene = genes[hgnc_symbol]
-        pp(gene)
+
+    incomplete_genes = get_incomplete_penetrance_genes(file_handle)
+    for gene in incomplete_genes:
+        print(gene)
+    # genes = parse_hpo_genes(file_handle)
+    # for hgnc_symbol in genes:
+    #     gene = genes[hgnc_symbol]
+    #     pp(gene)

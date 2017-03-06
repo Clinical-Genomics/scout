@@ -1,0 +1,118 @@
+{% extends "genes/layout.html" %}
+
+{% block title %}
+  {{ super() }} - Genes - {{ gene.hgnc_symbol }}
+{% endblock %}
+
+{% block top_nav %}
+  <li>
+    <a href="{{ url_for('genes.genes') }}">Genes</a>
+  </li>
+  <li class="active">
+    <a href="{{ url_for('genes.gene', hgnc_symbol=gene.hgnc_id) }}">
+      {{ gene.hgnc_symbol }}
+    </a>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  {{ super() }}
+
+  {# ROW 0 #}
+  <div class="row">
+    <div class="col-md-12">
+      <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
+    </div>
+  </div>
+
+  {# ROW 1 #}
+  <div class="row">
+    <div class="col-md-12">{{ header(gene) }}</div>
+  </div>
+
+  {# ROW 2 #}
+  <div class="row">
+    <div class="col-md-6">{{ overview(gene) }}</div>
+    <div class="col-md-6">{{ inheritance(gene) }}</div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">{{ transcripts(gene) }}</div>
+  </div>
+{% endblock %}
+
+{% macro header(gene) %}
+  <h1>
+    <a href="{{ gene.hgnc_link }}" title="HGNC link" target="_blank">
+      {{ gene.hgnc_symbol }}
+    </a>
+    <small>{{ gene.ensembl_id }}</small>
+  </h1>
+  <p class="lead">{{ gene.description }}</p>
+{% endmacro %}
+
+{% macro overview(gene) %}
+  <ul class="list-group">
+    <li class="list-group-item">
+      Aliases
+      <span class="pull-right">{{ gene.aliases|join(', ') }}</span>
+    </li>
+    <li class="list-group-item">
+      Chromosome
+      <span class="pull-right">{{ gene.chromosome }}</span>
+    </li>
+    <li class="list-group-item">
+      Position
+      <span class="pull-right">{{ gene.position }}</span>
+    </li>
+
+    <li class="list-group-item">
+      Incomplete penetrance (HPO)
+      <span class="pull-right">
+        {{ 'yes' if gene.incomplete_penetrance else 'no' }}
+      </span>
+    </li>
+  </ul>
+{% endmacro %}
+
+{% macro transcripts(gene) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Transcripts</div>
+    <ul class="list-group">
+      {% for transcript in gene.transcripts %}
+        {% if transcript.refseq_id in gene.primary_transcripts %}
+          {% set extra_class = 'list-group-item-info' %}
+        {% else %}
+          {% set extra_class = None %}
+        {% endif %}
+        <li class="list-group-item {{ extra_class if extra_class }}">
+          {{ transcript.refseq_id or transcript.ensembl_transcript_id }} {% if extra_class %}<small>(primary)</small>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}
+
+{% macro inheritance(gene) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Inheritance</div>
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          {% for type_id, _ in gene.inheritance %}
+            <th>{{ type_id }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for _, model in gene.inheritance %}
+            <td class="{{ 'bg-warning' if model }}">
+              {{ 'yes' if model else 'no' }}
+            </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}

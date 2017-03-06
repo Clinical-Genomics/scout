@@ -23,13 +23,12 @@ from pymongo.errors import ConnectionFailure
     except ConnectionFailure:
         print("Server not available")
 
-
-
 Created by Måns Magnusson on 2017-02-15.
 Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 
 """
 import logging
+from datetime import datetime
 
 from pymongo import MongoClient
 
@@ -43,11 +42,13 @@ from .hpo import HpoHandler
 from .panel import PanelHandler
 from .query import QueryHandler
 from .variant import VariantHandler
+from .user import UserHandler
 
 logger = logging.getLogger(__name__)
 
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
-                    HpoHandler, PanelHandler, QueryHandler, VariantHandler):
+                   HpoHandler, PanelHandler, QueryHandler, VariantHandler,
+                   UserHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -63,21 +64,13 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         """Setup connection to database."""
         self.db = database
         self.hgnc_collection = database.hgnc_gene
+        self.user_collection = database.user
+        self.whitelist_collection = database.whitelist
+        self.institute_collection = database.institute
+        self.event_collection = database.event
+        self.case_collection = database.case
+        self.panel_collection = database.panel
+        self.hpo_term_collection = database.hpo_term
+        self.disease_term_collection = database.disease_term
         # This will be used during the transfer to pymongo
         self.mongoengine_adapter = MongoEngineAdapter()
-
-    def getoradd_user(self, email, name, location=None, institutes=None):
-        """Get or create a new user."""
-        return self.mongoengine_adapter.getoradd_user(
-            email=email,
-            name=name,
-            location=location,
-            institutes=institutes
-        )
-
-    def user(self, email=None):
-        """Fetch a user from the database."""
-        return self.mongoengine_adapter.user(email=email)
-
-    def update_access(self, user_obj):
-        self.mongoengine_adapter.update_access(user_obj=user_obj)

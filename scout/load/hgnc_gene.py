@@ -24,7 +24,7 @@ def load_hgnc_genes(adapter, genes, build='37'):
         if 'ensembl_gene_id' not in gene:
             non_existing += 1
         else:
-            gene_obj = build_hgnc_gene(gene, build='37')
+            gene_obj = build_hgnc_gene(gene, build=build)
             adapter.load_hgnc_gene(gene_obj)
 
     logger.info("Loading done. {0} genes loaded".format(nr_genes))

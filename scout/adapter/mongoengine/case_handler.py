@@ -140,15 +140,15 @@ class CaseHandler(object):
             Args:
                 case(Case): The new case information
         """
-        logger.info("Updating case {0}".format(case.case_id))
+        logger.info("Updating case {0}".format(case['case_id']))
 
         existing_case = self.case(
-            institute_id=case.owner,
-            case_id=case.display_name
+            institute_id=case['owner'],
+            case_id=case['display_name']
         )
 
         logger.debug("Updating collaborators")
-        existing_case['collaborators'] = list(set(case['collaborators'] + existing_case.collaborators))
+        existing_case['collaborators'] = list(set(case['collaborators'] + existing_case['collaborators']))
 
         logger.debug("Updating individuals")
         existing_case['individuals'] = case['individuals']
@@ -163,24 +163,30 @@ class CaseHandler(object):
                                           case['analysis_dates'])
 
         logger.debug("Updating rerun requested to False")
-        existing_case.rerun_requested = False
+        existing_case['rerun_requested'] = False
 
-        existing_case.default_panels = case.default_panels
-        existing_case.gene_panels = case.gene_panels
+        existing_case['default_panels'] = case['default_panels']
+        existing_case['gene_panels'] = case['gene_panels']
 
-        existing_case.genome_build = case.genome_build
-        existing_case.genome_version = case.genome_version
+        existing_case['genome_build'] = case['genome_build']
+        existing_case['genome_version'] = case['genome_version']
 
-        existing_case.rank_model_version = case.rank_model_version
+        existing_case['rank_model_version'] = case['rank_model_version']
 
-        existing_case.madeline_info = case.madeline_info
+        existing_case['madeline_info'] = case['madeline_info']
 
-        existing_case.vcf_files = case.vcf_files
+        existing_case['vcf_files'] = case['vcf_files']
 
-        existing_case.has_svvariants = case.has_svvariants
-
+        existing_case['has_svvariants'] = case['has_svvariants']
+        
+        existing_case['assignee'] = case['assignee']
+        
+        print(existing_case.to_json())
+        print(existing_case['assignee'])
+        
         existing_case.save()
-
+        
+        logger.info("Case updated")
         ##TODO Add event for updating case?
 
         return existing_case

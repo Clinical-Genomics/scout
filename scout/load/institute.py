@@ -1,7 +1,7 @@
 import logging
 from scout.build import build_institute
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 def load_institute(adapter, internal_id, display_name, sanger_recipients=None):
     """Load a institute into the database
@@ -18,8 +18,7 @@ def load_institute(adapter, internal_id, display_name, sanger_recipients=None):
         display_name = display_name,
         sanger_recipients = sanger_recipients
     )
-    logger.info("Loading institute {0} with display name {1}"\
-                " into databse".format(internal_id, display_name))
-    
-    
+    log.info("Loading institute {0} with display name {1}"\
+             " into databse".format(internal_id, display_name))
+
     adapter.add_institute(institute_obj)
