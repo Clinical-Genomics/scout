@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from flask import abort, Blueprint, request, jsonify, redirect, url_for
+from flask import Blueprint
+from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated
@@ -12,9 +13,8 @@ cases_bp = Blueprint('cases', __name__, template_folder='templates')
 @templated('cases/index.html')
 def index():
     """Display a list of all user institutes."""
-    user_institutes = store.institutes()
-    institutes = controllers.institutes(store, user_institutes)
-    return dict(institutes=institutes)
+    user_institutes = controllers.user_institutes(store, current_user)
+    return dict(institutes=user_institutes)
 
 
 @cases_bp.route('/<institute_id>')

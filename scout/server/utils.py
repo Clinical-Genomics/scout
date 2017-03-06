@@ -23,3 +23,8 @@ def templated(template=None):
             return render_template(template_name, **context)
         return decorated_function
     return decorator
+
+
+def public_endpoint(function):
+    function.is_public = True
+    return function

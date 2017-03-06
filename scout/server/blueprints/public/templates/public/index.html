@@ -18,16 +18,22 @@
         </a>
       </p>
     {% else %}
-      <form action="{{ url_for('login.login') }}">
-        <div class="row">
-          <div class="col-xs-8">
-            <input type="text" placeholder="email" class="form-control" name="email">
+      {% if config.GOOGLE %}
+        <a class="btn btn-primary" href="{{ url_for('login.login') }}">
+          Login with Google
+        </a>
+      {% else %}
+        <form action="{{ url_for('login.login') }}">
+          <div class="row">
+            <div class="col-xs-8">
+              <input type="text" placeholder="email" class="form-control" name="email">
+            </div>
+            <div class="col-xs-4">
+              <button type="submit" class="btn btn-primary form-control">Login</button>
+            </div>
           </div>
-          <div class="col-xs-4">
-            <button type="submit" class="btn btn-primary form-control">Login</button>
-          </div>
-        </div>
-      </form>
+        </form>
+      {% endif %}
     {% endif %}
   </header>
   <main>
