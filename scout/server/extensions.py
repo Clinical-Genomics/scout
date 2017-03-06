@@ -10,3 +10,6 @@ from scout.adapter import MongoAdapter
 from flask_pymongo import PyMongo
 mongo = PyMongo()
 store = MongoAdapter()
+
+from flask_login import LoginManager
+login_manager = LoginManager()

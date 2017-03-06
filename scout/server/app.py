@@ -2,7 +2,7 @@
 from flask import Flask
 
 from . import extensions
-from .blueprints import public, genes
+from .blueprints import public, genes, cases, login
 
 
 def create_app(config_file=None, config=None):
@@ -25,9 +25,12 @@ def configure_extensions(app):
     extensions.bootstrap.init_app(app)
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
+    extensions.login_manager.init_app(app)
 
 
 def register_blueprints(app):
     """Register Flask blueprints."""
     app.register_blueprint(public.public_bp)
     app.register_blueprint(genes.genes_bp)
+    app.register_blueprint(cases.cases_bp)
+    app.register_blueprint(login.login_bp)

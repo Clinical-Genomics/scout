@@ -16,7 +16,7 @@ import logging
 import click
 
 from scout.resources import (hgnc_path, exac_path, mim2gene_path,
-                             genemap2_path, hpogenes_path, hpoterms_path, 
+                             genemap2_path, hpogenes_path, hpoterms_path,
                              hpodisease_path)
 
 from scout.resources import transcripts37_path as transcripts_path
@@ -84,7 +84,7 @@ def init(ctx, institute_name, user_name, user_mail):
     logger.info("Loading HPO gene file from {0}".format(
                 hpogenes_path))
     hpo_genes_handle = get_file_handle(hpogenes_path)
-    
+
     logger.info("Loading mim2gene file from {0}".format(
                 hpogenes_path))
     mim2gene_handle = get_file_handle(mim2gene_path)
@@ -98,7 +98,7 @@ def init(ctx, institute_name, user_name, user_mail):
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
-        genemap_lines=genemap_handle, 
+        genemap_lines=genemap_handle,
         hpo_lines=hpo_genes_handle,
     )
     load_hgnc_genes(adapter, genes)
@@ -108,7 +108,7 @@ def init(ctx, institute_name, user_name, user_mail):
 
     hpo_terms_handle = get_file_handle(hpoterms_path)
     disease_handle = get_file_handle(genemap2_path)
-    
+
     load_hpo(
         adapter=adapter,
         hpo_lines=hpo_terms_handle,
