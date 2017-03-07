@@ -12,7 +12,7 @@
     {% endif %}
     <li>{{ rerun(case) }}</li>
     {% if case.delivery_report %}
-      <li>{{ delivery_report(case) }}</li>
+      <li>{{ delivery_report(institute, case) }}</li>
     {% endif %}
     <li>{{ coverage_report(institute, case) }}</li>
     <li>{{ rank_model(case) }}</li>
