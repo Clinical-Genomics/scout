@@ -725,3 +725,16 @@ def postpone(institute_id, case_id):
     flash("updated archive date to: {}".format(new_date), 'info')
     housekeeper.manager.commit()
     return redirect(request.referrer)
+
+
+@core.route('/<institute_id>/<case_id>/delivery-report')
+def delivery_report(institute_id, case_id):
+    """Display delivery report."""
+    inst_mod, case_model = validate_user(current_user, institute_id, case_id)
+    if case_model.delivery_report is None:
+        return abort(404)
+
+    out_name = ("{}.{}.delivery.html"
+                .format(case_model.display_name, case_model.analysis_date.date()))
+    with open(case_model.delivery_report, 'rb') as static_file:
+        return send_file(static_file, attachment_filename=out_name)

@@ -75,6 +75,7 @@ class Case(Document):
     has_svvariants = BooleanField(default=False)
 
     is_migrated = BooleanField(default=False)
+    delivery_report = StringField()
 
     @property
     def analysis_type(self):

@@ -11,6 +11,9 @@
       <li>{{ research(case) }}</li>
     {% endif %}
     <li>{{ rerun(case) }}</li>
+    {% if case.delivery_report %}
+      <li>{{ delivery_report(case) }}</li>
+    {% endif %}
     <li>{{ coverage_report(institute, case) }}</li>
     <li>{{ rank_model(case) }}</li>
     <li>{{ share_case(institute, case, collaborators) }}</li>
@@ -167,6 +170,17 @@
       </div>
     </div>
   </form>
+{% endmacro %}
+
+{% macro delivery_report(institute, case) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      Delivery report
+    </h5>
+    <a href="{{ url_for('core.delivery_report', institute_id=institute.internal_id,
+                        case_id=case.display_name) }}" class="btn btn-default form-control">View report</a>
+  </div>
 {% endmacro %}
 
 {% macro coverage_report(institute, case) %}
