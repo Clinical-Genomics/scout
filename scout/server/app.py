@@ -20,11 +20,16 @@ def create_app(config_file=None, config=None):
 
     @app.before_request
     def check_user():
-        if (request.endpoint and
-            'static' not in request.endpoint and
-            not current_user.is_authenticated and
-            not getattr(app.view_functions[request.endpoint], 'is_public', False)):
-            return redirect(url_for('login.login', next=url_for(request.endpoint)))
+        if request.endpoint:
+            # check if the endpoint requires authentication
+            static_endpoint = 'static' in request.endpoint
+            public_endpoint = getattr(app.view_functions[request.endpoint],
+                                      'is_public', False)
+            relevant_endpoint = not (static_endpoint or public_endpoint)
+            # if endpoint requires auth, check if user is authenticated
+            if relevant_endpoint and not current_user.is_authenticated:
+                login_url = url_for('login.login', next=url_for(request.endpoint))
+                return redirect(login_url)
 
     return app
 
