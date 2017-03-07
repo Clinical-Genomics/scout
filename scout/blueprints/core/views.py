@@ -4,7 +4,8 @@ import os.path
 
 from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, flash, redirect, request,
-                   url_for, make_response, Response, render_template)
+                   url_for, make_response, Response, render_template,
+                   send_from_directory)
 from flask_login import login_required, current_user
 from flask_mail import Message
 from housekeeper.store import api
@@ -734,7 +735,6 @@ def delivery_report(institute_id, case_id):
     if case_model.delivery_report is None:
         return abort(404)
 
-    out_name = ("{}.{}.delivery.html"
-                .format(case_model.display_name, case_model.analysis_date.date()))
-    with open(case_model.delivery_report, 'rb') as static_file:
-        return send_file(static_file, attachment_filename=out_name)
+    out_dir = os.path.dirname(case_model.delivery_report)
+    filename = os.path.basename(case_model.delivery_report)
+    return send_from_directory(out_dir, filename)
