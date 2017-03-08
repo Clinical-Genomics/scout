@@ -69,10 +69,10 @@ class GenePanel(Document):
                 .format(this=self, date=date_obj))
 
     def __unicode__(self):
-        return self.name_and_version()
+        return self.name_and_version
 
     def __str__(self):
-        return self.name_and_version()
+        return self.name_and_version
 
     def __repr__(self):
         return ("GeneList(name={0}, version={1}, date={2}, display_name={3})"
