@@ -1,5 +1,4 @@
 import logging
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -79,8 +78,13 @@ class GeneHandler(object):
         """
         logger.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
-            regx = re.compile(hgnc_symbol, re.IGNORECASE)
-            return self.hgnc_collection.find({'aliases': {'$in': [regx]}, 'build': build})
+            return self.hgnc_collection.find(
+                        {
+                            'aliases': {'$regex': hgnc_symbol, '$options':'i'}, 
+                            'build': build
+                        }
+                    )
+        
         return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build': build})
 
     def all_genes(self, build='37'):
@@ -112,11 +116,11 @@ class GeneHandler(object):
         logger.info("Dropping the hgnc_gene collection")
         self.hgnc_collection.drop()
 
-    def hgncid_to_gene(self):
+    def hgncid_to_gene(self, build='37'):
         """Return a dictionary with hgnc_id as key and gene_obj as value"""
         hgnc_dict = {}
         logger.info("Building hgncid_to_gene")
-        for gene_obj in self.hgnc_collection.find():
+        for gene_obj in self.hgnc_collection.find({'build':build}):
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict

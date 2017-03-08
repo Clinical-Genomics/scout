@@ -6,7 +6,7 @@ from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 
 log = logging.getLogger(__name__)
 
-def build_gene(gene):
+def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
     """Build a gene object
         
         Has to build the transcripts for the genes to
@@ -20,6 +20,8 @@ def build_gene(gene):
     gene = dict(
         # The hgnc gene id
         hgnc_id = int, # required
+        hgnc_symbol = str, 
+        ensembl_gene_id = str, 
         # A list of Transcript objects
         transcripts = list, # list of <transcript>
         # This is the worst functional impact of all transcripts
@@ -33,10 +35,37 @@ def build_gene(gene):
     )
     
     """
+    gene_to_panels = gene_to_panels or {}
+    hgncid_to_gene = hgncid_to_gene or {}
     gene_obj = dict()
-
-    gene_obj['hgnc_id'] = int(gene['hgnc_id'])
-
+    
+    hgnc_id = int(gene['hgnc_id'])
+    gene_obj['hgnc_id'] = hgnc_id
+    
+    hgnc_gene = hgncid_to_gene.get(hgnc_id)
+    
+    inheritance = set()
+    if hgnc_gene:
+        gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+        gene_obj['ensembl_id'] = hgnc_gene['ensembl_id']
+        gene_obj['description'] = hgnc_gene['description']
+        
+        if gene_obj.get('ar'):
+            inheritance.add('AR')
+        if gene_obj.get('ad'):
+            inheritance.add('AD')
+        if gene_obj.get('xd'):
+            inheritance.add('XD')
+            inheritance.add('X')
+        if gene_obj.get('xr'):
+            inheritance.add('XR')
+            inheritance.add('X')
+        if gene_obj.get('y'):
+            inheritance.add('Y')
+        hgnc_transcripts = hgnc_gene['transcripts']
+    
+    gene_obj['inheritance'] = list(inheritance)
+    
     transcripts = []
     for transcript in gene['transcripts']:
         transcript_obj = build_transcript(transcript)

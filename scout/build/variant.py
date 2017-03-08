@@ -11,9 +11,21 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
         Args:
             variant(dict)
             institute_id(str)
-            hgnc_genes(dict[hgnc_gene])
-            gene_to_panels(dict): A dictionary with <hgnc_id>: [<panel_1>, ..]
-            hgncid_to_gene(dict): A dictionary with <hgnc_id>: hgnc_symbol
+            gene_to_panels(dict): A dictionary with 
+                {<hgnc_id>: {
+                    'panel_names': [<panel_name>, ..], 
+                    'disease_associated_transcripts': [<transcript_id>, ..]
+                    }
+                    .
+                    .
+                }
+            
+            hgncid_to_gene(dict): A dictionary with 
+                {<hgnc_id>: <hgnc_gene info>
+                    .
+                    .
+                }
+                
 
         Returns:
             variant_obj(dict)
@@ -163,7 +175,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     # Add the genes with transcripts
     genes = []
     for index, gene in enumerate(variant.get('genes', [])):
-        gene_obj = build_gene(gene)
+        gene_obj = build_gene(gene, gene_to_panels, hgncid_to_gene)
         genes.append(gene_obj)
         if index > 30:
             # avoid uploading too much data (specifically for SV variants)
@@ -172,7 +184,8 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
             break
 
     variant_obj['genes'] = genes
-
+    
+    # To make gene searches more effective
     variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
 
     # Add the hgnc symbols from the database genes

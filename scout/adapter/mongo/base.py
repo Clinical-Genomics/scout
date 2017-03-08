@@ -72,5 +72,6 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.panel_collection = database.panel
         self.hpo_term_collection = database.hpo_term
         self.disease_term_collection = database.disease_term
+        self.variant_collection = database.variant
         # This will be used during the transfer to pymongo
         self.mongoengine_adapter = MongoEngineAdapter()

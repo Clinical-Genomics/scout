@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import pymongo
 
 logger = logging.getLogger(__name__)
 
@@ -10,10 +11,100 @@ class VariantHandler(object):
 
     def add_gene_info(self, variant_obj, gene_panels=None):
         """Add extra information about genes from gene panels"""
-        return self.mongoengine_adapter.add_gene_info(
-            variant_obj = variant_obj,
-            gene_panels = gene_panels
-        )
+        gene_panels = gene_panels or []
+        hgnc_symbols = set()
+
+        # We need to check if there are any additional information in the gene panels
+        extra_info = {}
+        for panel_obj in gene_panels:
+            for gene_info in panel_obj['genes']:
+                hgnc_id = gene_info['hgnc_id']
+                if hgnc_id in extra_info:
+                    extra_info[hgnc_id].append(gene_info)
+                else:
+                    extra_info[hgnc_id] = [gene_info]
+
+        # Loop over the genes in the variant object to add information
+        # from hgnc_genes and panel genes
+        for variant_gene in variant_obj['genes']:
+            hgnc_id = variant_gene[hgnc_id]
+            # Get the hgnc_gene
+            hgnc_gene = self.hgnc_gene(hgnc_id)
+            
+            # Create a dictionary with transcripts information
+            transcripts_dict = {}
+            if hgnc_gene:
+                for transcript in hgnc_gene.get('transcripts',[]):
+                    tx_id = transcript['ensembl_transcript_id']
+                    transcripts_dict[tx_id] = transcript
+                
+                hgnc_gene['transcripts_dict'] = transcripts_dict
+                
+                if hgnc_gene.get('incomplete_penetrance'):
+                    variant_gene['omim_penetrance'] = True
+                
+                
+            panel_info = extra_info.get(hgnc_id, [])
+            
+            # Manually annotated disease associated transcripts
+            disease_associated = set()
+            manual_penetrance = False
+            mosaicism = False
+            manual_inheritance = set()
+            
+            for gene_info in panel_info:
+                if gene_info.get('disease_associated_transcripts'):
+                    for tx in gene_info['disease_associated_transcripts']:
+                        disease_associated.add[tx]
+                if gene_info.get('reduced_penetrance'):
+                    manual_penetrance = True
+                
+                if gene_info.get('mosaicism'):
+                    mosaicism = True
+                
+                if gene_obj.get('ar'):
+                    manual_inheritance.add('AR')
+                if gene_obj.get('ad'):
+                    manual_inheritance.add('AD')
+                if gene_obj.get('mt'):
+                    manual_inheritance.add('MT')
+                if gene_obj.get('xr'):
+                    manual_inheritance.add('XR')
+                if gene_obj.get('xd'):
+                    manual_inheritance.add('XD')
+                if gene_obj.get('y'):
+                    manual_inheritance.add('Y')
+            
+            variant_gene['disease_associated_transcripts'] = list(disease_associated)
+            variant_gene['manual_penetrance'] = manual_penetrance
+            variant_gene['mosaicism'] = mosaicism
+            variant_gene['manual_inheritance'] = list(manual_inheritance)
+            
+            # Now add the information from hgnc and panels
+            # to the transcripts on the variant
+            for transcript in variant_gene.get('transcripts', []):
+                tx_id = transcript['transcript_id']
+                if tx_id in transcripts_dict:
+                    hgnc_transcript = transcripts_dict[tx_id]
+                    # If the transcript has a ref seq identifier we add that
+                    # to the variants transcript
+                    if 'refseq_id' in hgnc_transcript:
+                        refseq_id = hgnc_transcript['refseq_id']
+                        transcript['ref_seq'] = refseq_id
+                        
+                        if refseq_id in disease_associated:
+                            transcript['is_disease_associated'] = True
+
+                    if hgnc_transcript.get('is_primary'):
+                        transcript['is_primary'] = True
+                
+                
+            variant_gene['common'] = hgnc_gene
+
+            # Add the associated disease terms
+            variant_gene['disease_terms'] = self.disease_terms(hgnc_id)
+
+        return variant_obj
 
     def variants(self, case_id, query=None, variant_ids=None,
                  category='snv', nr_of_variants=10, skip=0,
@@ -34,16 +125,33 @@ class VariantHandler(object):
         Yields:
             result(Iterable[Variant])
         """
-        return self.mongoengine_adapter.variants(
-            case_id=case_id,
-            query=query,
-            variant_ids=variant_ids,
-            category=category,
-            nr_of_variants=nr_of_variants,
-            skip=skip,
-            sort_key=sort_key
-        )
+        logger.info("Fetching variants from {0}".format(case_id))
+        
+        if variant_ids:
+            nr_of_variants = len(variant_ids)
+        
+        elif nr_of_variants == -1:
+            nr_of_variants = 0 # This will return all variants
+        
+        else:
+            nr_of_variants = skip + nr_of_variants
 
+        mongo_query = self.build_query(case_id, query=query,
+                                       variant_ids=variant_ids,
+                                       category=category)
+
+        sorting = []
+        if sort_key == 'variant_rank':
+            sorting = [('variant_rank', pymongo.ASCENDING)]
+        if sort_key == 'rank_score':
+            sorting = [('rank_score', pymongo.DESCENDING)]
+        
+        result = self.variant_collection.find(
+                        mongo_query, 
+                        skip=skip, 
+                        limit=nr_of_variants).sort(sorting)
+        
+        return result
 
     def variant(self, document_id, gene_panels=None):
         """Returns the specified variant.
@@ -55,8 +163,10 @@ class VariantHandler(object):
            Returns:
                variant_object(Variant): A odm variant object
         """
-        return self.mongoengine_adapter.variant(document_id=document_id,
-                                                gene_panels=gene_panels)
+        result = self.variant_collection.find_one({'_id': document_id})
+        variant_obj = self.add_gene_info(result, gene_panels)
+
+        return variant_obj
 
     def get_causatives(self, institute_id):
         """Return all causative variants for an institute
@@ -67,9 +177,9 @@ class VariantHandler(object):
             Yields:
                 causatives(iterable(Variant))
         """
-        return self.mongoengine_adapter.get_causatives(
-                    institute_id=institute_id
-                )
+        for case in self.cases(collaborator=institute_id, has_causatives=True):
+            for variant in case.get('causatives',[]):
+                yield variant
 
     def check_causatives(self, case_obj):
         """Check if there are any variants that are previously marked causative
@@ -84,9 +194,16 @@ class VariantHandler(object):
             Returns:
                 causatives(iterable(Variant))
         """
-        return self.mongoengine_adapter.check_causatives(
-                    case_obj=case_obj
-                )
+        #owner is a string
+        causatives = self.get_causatives(case_obj['owner'])
+        variant_ids = [variant['variant_id'] for variant in causatives]
+        if len(variant_ids) == 0:
+            return []
+        
+        return self.variant_collection.find({
+            'case_id': case_obj['case_id'],
+            'variant_id': {'$in': variant_ids}
+        })
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
@@ -95,43 +212,95 @@ class VariantHandler(object):
                 case_obj(Case)
                 variant_type(str)
         """
-        self.mongoengine_adapter.add_variant_rank(
-                case_obj=case_obj,
-                variant_type=variant_type,
-                category=category
+        variants = self.variant_collection.find(
+            {
+                'case_id': case_obj['case_id'],
+                'category': category,
+                'variant_type': variant_type,
+            },
+            {'_id':1}
+        ).sort('rank_score', pymongo.DESCENDING)
+        
+        logger.info("Updating variant_rank for all variants")
+        for index, variant in enumerate(variants):
+            self.variant_collection.find_one_and_update(
+                {'_id': variant['_id']},
+                {'$set': {'variant_rank': index+1}}
             )
+        logger.info("Updating variant_rank done")
+        
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""
-        return self.mongoengine_adapter.other_causatives(
-                case_obj=case_obj,
-                variant_obj=variant_obj,
-            )
+        # variant id without "*_[variant_type]"
+        variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
+        
+        causatives = self.get_causatives(variant_obj['institute'])
+        for causative in causatives:
+            not_same_case = causative['case_id'] != case_obj['_id']
+            same_variant = causative['display_name'].startswith(variant_id)
+            if (not_same_case and same_variant):
+                yield causative
 
     def next_variant(self, document_id):
         """Returns the next variant from the rank order.
 
           Arguments:
-              document_id : A md5 key that represents the variant
+              document_id(str) : A md5 key that represents the variant
 
           Returns:
-              variant_object: A odm variant object
+              variant_object(dict):
         """
-        return self.mongoengine_adapter.next_variant(
-                document_id=document_id,
-            )
+        current_variant = self.variant_collection.find_one(
+            {'_id': document_id}
+        )
+        logger.info("Fetching next variant for %s",
+                    current_variant['display_name'])
+
+        rank = current_variant['variant_rank'] or 0
+        case_id = current_variant['case_id']
+        variant_type = current_variant['variant_type']
+        category = current_variant['category']
+        
+        return self.variant_collection.find_one(
+            {
+              'case_id': case_id,
+              'variant_type': variant_type,
+              'category': category,
+              'variant_rank': rank + 1  
+            }
+        )
 
     def previous_variant(self, document_id):
         """Returns the previus variant from the rank order
 
             Arguments:
-                document_id : A md5 key that represents the variant
+                document_id(str) : A md5 key that represents the variant
 
             Returns:
-                variant_object: A odm variant object
+                variant_object(dict):
         """
-        return self.mongoengine_adapter.next_variant(
-                document_id=document_id,
+        current_variant = self.variant_collection.find_one(
+            {'_id': document_id}
+        )
+        logger.info("Fetching next variant for %s",
+                    current_variant['display_name'])
+
+        rank = current_variant['variant_rank'] or 0
+        case_id = current_variant['case_id']
+        variant_type = current_variant['variant_type']
+        category = current_variant['category']
+        
+        if variant_rank < 2:
+            return None
+        else:
+            return self.variant_collection.find_one(
+                {
+                  'case_id': case_id,
+                  'variant_type': variant_type,
+                  'category': category,
+                  'variant_rank': rank - 1  
+                }
             )
 
     def delete_variants(self, case_id, variant_type):
@@ -143,22 +312,53 @@ class VariantHandler(object):
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
         """
-        self.mongoengine_adapter.delete_variants(
-                case_id=case_id,
-                variant_type=variant_type
-            )
+        logger.info("Deleting old {0} variants for case {1}".format(
+                    variant_type, case_id))
+        
+        result = self.variant_collection.delete_many(
+            {
+                'case_id': case_id,
+                'variant_type': variant_type
+            }
+        )
+        
+        logger.info("{0} variants deleted".format(result.deleted_count))
+        logger.debug("Variants deleted")
 
     def load_variant(self, variant_obj):
-        """Load a variant object"""
-        self.mongoengine_adapter.load_variant(
-                variant_obj=variant_obj,
-            )
+        """Load a variant object
+        
+        Args:
+            variant_obj(dict)
+        
+        Returns:
+            inserted_id
+        """
+        result = self.variant_collection.insert_one(variant_obj)
+        return result.inserted_id
+
+    def load_variants(self, variants):
+        """Load many variants
+        
+        Args:
+            variants(iterable(dict))
+        
+        """
+        result = self.variant_collection.insert_many(variants)
 
     def overlapping(self, variant_obj):
         """Return ovelapping variants
 
             if variant_obj is sv it will return the overlapping snvs and oposite
         """
-        return self.mongoengine_adapter.overlapping(
-                variant_obj=variant_obj,
-                )
+        category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
+        query = {
+            'case_id': variant_obj['case_id'],
+            'variant_type': variant_obj['variant_type'],
+            'hgnc_symbols': variant_obj['hgnc_symbols'],
+            'category': category,
+        }
+        variants = self.variant_collection.find(query)
+        
+        return variants
+        

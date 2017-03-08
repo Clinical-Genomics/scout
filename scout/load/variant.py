@@ -7,7 +7,7 @@ from vcf_parser import VCFParser
 from scout.parse.variant import parse_variant
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
-from scout.parse.rank_score import parse_rank_score
+from scout.parse.variant.rank_score import parse_rank_score
 
 logger = logging.getLogger(__name__)
 
