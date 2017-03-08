@@ -45,8 +45,5 @@ def gene(hgnc_id=None, hgnc_symbol=None):
 def api_genes():
     """Return JSON data about genes."""
     query = request.args.get('query')
-    # filter genes by matching query to gene information
-    gene_query = store.hgnc_genes(query, search=True)
-    json_terms = [{'name': '{} | {}'.format(gene['hgnc_id'], gene['hgnc_symbol']),
-                   'id': gene['hgnc_id']} for gene in gene_query]
-    return jsonify(json_terms)
+    json_out = controllers.genes_to_json(store, query)
+    return jsonify(json_out)

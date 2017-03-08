@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-def institutes(store, institute_query):
+def user_institutes(store, user_obj):
     """Preprocess institute objects."""
-    for institute in institute_query:
+    institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
+    for institute in institutes:
         case_count = store.cases(collaborator=institute['internal_id']).count()
         yield (institute, case_count)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from flask import Flask
+from flask import Flask, redirect, request, url_for
+from flask_login import current_user
 
 from . import extensions
 from .blueprints import public, genes, cases, login
@@ -16,6 +17,20 @@ def create_app(config_file=None, config=None):
 
     configure_extensions(app)
     register_blueprints(app)
+
+    @app.before_request
+    def check_user():
+        if request.endpoint:
+            # check if the endpoint requires authentication
+            static_endpoint = 'static' in request.endpoint
+            public_endpoint = getattr(app.view_functions[request.endpoint],
+                                      'is_public', False)
+            relevant_endpoint = not (static_endpoint or public_endpoint)
+            # if endpoint requires auth, check if user is authenticated
+            if relevant_endpoint and not current_user.is_authenticated:
+                login_url = url_for('login.login', next=url_for(request.endpoint))
+                return redirect(login_url)
+
     return app
 
 
@@ -26,6 +41,7 @@ def configure_extensions(app):
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
+    extensions.oauth.init_app(app)
 
 
 def register_blueprints(app):

@@ -36,7 +36,7 @@ variant = dict(
     category = str, # choices=('sv', 'snv')
     sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
     mate_id = str, # For SVs this identifies the other end
-    
+
     case_id = str, # case_id is a string like owner_caseid
     chromosome = str, # required
     position = int, # required
@@ -51,17 +51,17 @@ variant = dict(
 
     institute = str, # institute_id, required
 
-    sanger_ordered = bool, 
+    sanger_ordered = bool,
     validation = str, # Sanger validation, choices=('True positive', 'False positive')
 
-    quality = float, 
+    quality = float,
     filters = list, # list of strings
     samples = list, # list of dictionaries that are <gt_calls>
     genetic_models = list, # list of strings choices=GENETIC_MODELS
     compounds = list, # sorted list of <compound> ordering='combined_score'
 
     genes = list, # list with <gene>
-    dbsnp_id = str, 
+    dbsnp_id = str,
 
     # Gene ids:
     hgnc_ids = list, # list of hgnc ids (int)
@@ -76,7 +76,7 @@ variant = dict(
     max_thousand_genomes_frequency = float,
     max_exac_frequency = float,
     local_frequency = float,
-    local_obs_old = int, 
+    local_obs_old = int,
     local_obs_hom_old = int,
     local_obs_total_old = int, # default=638
     # Predicted deleteriousness:
@@ -96,7 +96,7 @@ variant = dict(
     gerp_conservation = list, # list of str, choices=CONSERVATION
     phylop_conservation = list, # list of str, choices=CONSERVATION
     # Database options:
-    gene_lists = list, 
+    gene_lists = list,
     manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
 
     acmg_evaluation = str, # choices=ACMG_TERMS
@@ -111,8 +111,8 @@ compound = dict(
 )
 
 clinsig = dict(
-    value = int, 
-    accession = str, 
+    value = int,
+    accession = str,
     revstat = str
 )
 
