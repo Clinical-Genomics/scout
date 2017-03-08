@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import coloredlogs
 from flask import Flask, redirect, request, url_for
 from flask_login import current_user
 
@@ -15,6 +16,7 @@ def create_app(config_file=None, config=None):
     if config:
         app.config.update(config)
 
+    coloredlogs.install(level='DEBUG' if app.debug else 'INFO')
     configure_extensions(app)
     register_blueprints(app)
 

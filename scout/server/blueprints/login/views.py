@@ -6,7 +6,7 @@ from flask import (abort, current_app, Blueprint, flash, redirect, request,
 from flask_login import login_user, logout_user
 from flask_oauthlib.client import OAuthException
 
-from scout.server.extensions import google, login_manager, oauth, store
+from scout.server.extensions import google, login_manager, store
 from scout.server.utils import public_endpoint
 from .models import LoginUser
 
@@ -36,10 +36,13 @@ def get_google_token():
 @public_endpoint
 def login():
     """Login a user if they have access."""
+    # store potential next param URL in the session
+    if 'next' in request.args:
+        session['next_url'] = request.args['next']
+
     if current_app.config.get('GOOGLE'):
         callback_url = url_for('.authorized', _external=True)
-        next_url = request.args.get('next')
-        return google.authorize(callback=callback_url, next=next_url)
+        return google.authorize(callback=callback_url)
 
     user_email = request.args.get('email')
     user_obj = store.user(user_email)
@@ -97,7 +100,8 @@ def perform_login(user_dict):
     user_inst = LoginUser(user_dict)
     if login_user(user_inst, remember=True):
         flash("you logged in as: {}".format(user_inst.email), 'success')
-        return redirect(request.args.get('next') or url_for('cases.index'))
+        next_url = session.pop('next_url', None)
+        return redirect(request.args.get('next') or next_url or url_for('cases.index'))
     else:
         flash('sorry, you could not log in', 'warning')
         return redirect(url_for('public.index'))

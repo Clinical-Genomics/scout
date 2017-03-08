@@ -5,6 +5,8 @@ Flask-DebugToolbar
 Flask-PyMongo
 Flask-Bootstrap
 path.py
+Flask-OAuthlib
+coloredlogs
 
 # unclear
 mongoengine
