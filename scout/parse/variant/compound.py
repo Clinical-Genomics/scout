@@ -9,7 +9,7 @@ def parse_compounds(variant, case, variant_type):
 
         Arguments:
             variant(dict): A Variant dictionary
-            case(Case)
+            case(dict)
             variant_type(str): 'research' or 'clinical'
 
         Returns:
@@ -19,8 +19,9 @@ def parse_compounds(variant, case, variant_type):
     case_id = case['case_id']
     case_name = case['display_name']
     compounds = []
+    variant_compounds = variant.get('compound_variants', {})
 
-    for compound in variant['compound_variants'].get(case_name, []):
+    for compound in variant_compounds.get(case_name, []):
         compound_obj = {}
 
         compound_name = compound['variant_id']

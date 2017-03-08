@@ -34,22 +34,29 @@ def parse_genotype(variant, ind):
     
     gt_call['individual_id'] = ind_id
     gt_call['display_name'] = ind['display_name']
-
-    # Fill the onbject with the relevant information:
-    gt_call['genotype_call'] = variant['genotypes'][ind_id].genotype
-
-    gt_call['read_depth'] = variant['genotypes'][ind_id].depth_of_coverage
-
-    try:
-        gt_call['ref_depth'] = int(variant['genotypes'][ind_id].ref_depth)
-    except (ValueError, TypeError):
-        gt_call['ref_depth'] = -1
+    gt_call['genotype_call'] = None
+    gt_call['read_depth'] = None
+    gt_call['ref_depth'] = -1
+    gt_call['alt_depth'] = -1
+    gt_call['genotype_quality'] = None
     
-    try:
-        gt_call['alt_depth'] = int(variant['genotypes'][ind_id].alt_depth)
-    except (ValueError, TypeError):
-        gt_call['alt_depth'] = -1
-
-    gt_call['genotype_quality'] = variant['genotypes'][ind_id].genotype_quality
+    genotypes = variant.get('genotypes', {})
+    # Fill the onbject with the relevant information:
+    if ind_id in genotypes:
+        gt_call['genotype_call'] = genotypes[ind_id].genotype
+        
+        gt_call['read_depth'] = genotypes[ind_id].depth_of_coverage
+        
+        try:
+            gt_call['ref_depth'] = int(genotypes[ind_id].ref_depth)
+        except (ValueError, TypeError):
+            gt_call['ref_depth'] = -1
+        
+        try:
+            gt_call['alt_depth'] = int(genotypes[ind_id].alt_depth)
+        except (ValueError, TypeError):
+            gt_call['alt_depth'] = -1
+        
+        gt_call['genotype_quality'] = genotypes[ind_id].genotype_quality
 
     return gt_call

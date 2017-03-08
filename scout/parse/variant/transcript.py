@@ -2,23 +2,24 @@
 from scout.constants import SO_TERMS
 
 def parse_transcripts(variant):
-    """Create a list of mongo engine transcript objects
+    """Parse transcript information from VCF variants
 
         Args:
-            variant(dict)
+            variant(dict): A parsed variant
 
-        Returns:
-            transcripts(list(Transcript))
+        Yields:
+            transcript(dict) A dictionary with transcript information
     """
     transcripts = []
+    vep_info = variant.get('vep_info',{})
 
-    for allele in variant['vep_info']:
-        for vep_entry in variant['vep_info'][allele]:
+    for allele in vep_info:
+        for vep_entry in vep_info[allele]:
             transcript = {}
             # There can be several functional annotations for one variant
             functional_annotations = vep_entry.get('Consequence', '').split('&')
             transcript['functional_annotations'] = functional_annotations
-            # Get the transcript id
+            # Get the transcript id (ensembl gene id)
             transcript_id = vep_entry.get('Feature', '').split(':')[0]
             transcript['transcript_id'] = transcript_id
 
@@ -90,8 +91,8 @@ def parse_transcripts(variant):
             transcript['functional_annotations'] = functional
             transcript['region_annotations'] = regional
 
+            # Check if the transcript is marked cannonical by vep
             transcript['is_canonical'] = (vep_entry.get('CANONICAL') == 'YES')
 
-            transcripts.append(transcript)
+            yield transcript
 
-    return transcripts

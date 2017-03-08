@@ -1,16 +1,16 @@
 import logging
 
 from scout.utils.md5 import generate_md5_key
-from scout.parse.genotype import parse_genotypes
-from scout.parse.compound import parse_compounds
-from scout.parse.clnsig import parse_clnsig
-from scout.parse.gene import parse_genes
-from scout.parse.frequency import parse_frequencies
-from scout.parse.conservation import parse_conservations
-from scout.parse.ids import parse_ids
-from scout.parse.callers import parse_callers
-from scout.parse.rank_score import parse_rank_score
-from scout.parse.coordinates import parse_coordinates
+from .genotype import parse_genotypes
+from .compound import parse_compounds
+from .clnsig import parse_clnsig
+from .gene import parse_genes
+from .frequency import parse_frequencies
+from .conservation import parse_conservations
+from .ids import parse_ids
+from .callers import parse_callers
+from .rank_score import parse_rank_score
+from .coordinates import parse_coordinates
 
 from scout.exceptions import VcfError
 
@@ -31,10 +31,13 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     """
     rank_results_header = rank_results_header or []
     variant = {}
+    if not 'info_dict' in variant_dict:
+        variant_dict['info_dict'] = {}
     # Create the ID for the variant
     case_id = case['case_id']
     case_name = case['display_name']
 
+    # Builds a dictionary with the different ids that are used
     variant['ids'] = parse_ids(variant_dict, case, variant_type)
     variant['case_id'] = case_id
     # type can be 'clinical' or 'research'

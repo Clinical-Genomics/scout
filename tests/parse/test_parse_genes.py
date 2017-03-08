@@ -1,4 +1,4 @@
-from scout.parse.gene import parse_genes
+from scout.parse.variant.gene import parse_genes
 
 
 

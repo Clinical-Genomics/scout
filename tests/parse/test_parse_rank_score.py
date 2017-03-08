@@ -1,4 +1,4 @@
-from scout.parse.rank_score import parse_rank_score
+from scout.parse.variant.rank_score import parse_rank_score
 
 def test_parse_rank_score(one_variant, parsed_case):
     """docstring for test_parse_rank_score"""

@@ -1,4 +1,4 @@
-from scout.parse.clnsig import parse_clnsig
+from scout.parse.variant.clnsig import parse_clnsig
 
 def test_parse_clnsig():
     variant = {

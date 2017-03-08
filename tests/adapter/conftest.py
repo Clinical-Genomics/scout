@@ -45,7 +45,6 @@ def real_pymongo_adapter(request, real_client):
     database = real_client[DATABASE]
     adapter = PymongoAdapter(database)
 
-    connect(DATABASE)
     logger.info("Connecting the mongoengine adapter")
     # adapter.mongoengine_adapter.connect_to_database('testdb')
 
