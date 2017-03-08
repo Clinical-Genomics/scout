@@ -64,10 +64,14 @@ class GenePanel(Document):
     @property
     def name_and_version(self):
         """Return the name of the panel and version."""
-        return "{this.display_name} ({this.version})".format(this=self)
+        return ("{this.display_name} ({this.version}, {this.date.date()})"
+                .format(this=self))
 
     def __unicode__(self):
-        return "{this.panel_name} ({this.version})".format(this=self)
+        return self.name_and_version()
+
+    def __str__(self):
+        return self.name_and_version()
 
     def __repr__(self):
         return ("GeneList(name={0}, version={1}, date={2}, display_name={3})"
