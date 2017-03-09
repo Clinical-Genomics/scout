@@ -489,7 +489,7 @@ def variant_obj(request, parsed_variant, populated_database):
     print('')
     institute_id = 'cust000'
     institute_obj = populated_database.institute(institute_id=institute_id)
-    variant = build_variant(parsed_variant, institute_obj)
+    variant = build_variant(parsed_variant, institute_id=institute_obj['internal_id'])
     return variant
 
 @pytest.fixture(scope='function')

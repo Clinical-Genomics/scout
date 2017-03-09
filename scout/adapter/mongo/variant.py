@@ -2,8 +2,10 @@
 import logging
 import pymongo
 
-logger = logging.getLogger(__name__)
+from pymongo.errors import DuplicateKeyError
+from scout.exceptions import IntegrityError
 
+logger = logging.getLogger(__name__)
 
 class VariantHandler(object):
 
@@ -334,7 +336,11 @@ class VariantHandler(object):
         Returns:
             inserted_id
         """
-        result = self.variant_collection.insert_one(variant_obj)
+        logger.debug("Loading variant %s", variant_obj['_id'])
+        try:
+            result = self.variant_collection.insert_one(variant_obj)
+        except DuplicateKeyError as err:
+            raise IntegrityError("Variant %s already exists in database", variant_obj['_id'])
         return result.inserted_id
 
     def load_variants(self, variants):
@@ -344,6 +350,7 @@ class VariantHandler(object):
             variants(iterable(dict))
         
         """
+        logger.debug("Loading many variants")
         result = self.variant_collection.insert_many(variants)
 
     def overlapping(self, variant_obj):

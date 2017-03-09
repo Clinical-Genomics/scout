@@ -162,4 +162,5 @@ def load_variant(adapter, variant_obj):
             variant_obj(scout.models.Variant)
 
     """
-    adapter.load_variant(variant_obj)
+    variant_id = adapter.load_variant(variant_obj)
+    return variant_id
