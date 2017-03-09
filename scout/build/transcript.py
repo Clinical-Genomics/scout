@@ -11,12 +11,14 @@ def build_transcript(transcript):
         Returns:
             transcript_obj(dict)
     """
-    hgnc_transcripts = hgnc_transcripts or None
     
+    # TRanscripts has to have an id
     transcript_id = transcript['transcript_id']
     transcript_obj = dict(
         transcript_id = transcript_id
     )
+    
+    # Transcripts has to belong to a gene
     transcript_obj['hgnc_id'] = transcript['hgnc_id']
 
     if transcript.get('protein_id'):

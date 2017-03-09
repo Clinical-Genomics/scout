@@ -121,6 +121,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     hgncid_to_gene = hgncid_to_gene or {}
 
     variant_obj = dict(
+        _id = variant['ids']['document_id'],
         document_id=variant['ids']['document_id'],
         variant_id=variant['ids']['variant_id'],
         display_name=variant['ids']['display_name'],

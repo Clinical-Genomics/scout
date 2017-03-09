@@ -345,13 +345,6 @@ def populated_database(request, panel_database, institute_obj, parsed_user, case
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
 
-    adapter.add_institute(institute_obj)
-    adapter.getoradd_user(
-        email=parsed_user['email'],
-        name=parsed_user['name'],
-        location=parsed_user['location'],
-        institutes=parsed_user['institutes']
-    )
     adapter.add_case(case_obj)
 
     return adapter

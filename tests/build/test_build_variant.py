@@ -28,9 +28,9 @@ def test_build_minimal(case_obj):
         'ID': '.'
     }
     parsed_variant = parse_variant(variant, case_obj)
-    pp(parsed_variant)
     assert 'ids' in parsed_variant
     variant_obj = build_variant(parsed_variant, INSTITUTE_ID)
+    assert variant_obj['_id'] == parsed_variant['ids']['document_id']
 
 def test_build_with_gene_info(parsed_variant):
     ## GIVEN information about a variant

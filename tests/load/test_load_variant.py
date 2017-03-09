@@ -11,8 +11,9 @@ from scout.exceptions.database import IntegrityError
 
 def test_load_variant(populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
+    adapter = populated_database
     # GIVEN a database without any variants
-    assert Variant.objects().count() == 0
+    assert adapter.variants().count() == 0
 
     # WHEN loading a variant into the database
     load_variant(
@@ -21,7 +22,7 @@ def test_load_variant(populated_database, variant_obj):
     )
     # THEN assert the variant is loaded
 
-    assert Variant.objects.get(variant_id = variant_obj.variant_id)
+    assert adapter.variant_collection.find_one({'variant_id': variant_obj['_id']})
 
 def test_load_variant_twice(populated_database, variant_obj):
     """Test to load a variant into a mongo database"""

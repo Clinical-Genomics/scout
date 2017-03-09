@@ -50,17 +50,17 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
         gene_obj['ensembl_id'] = hgnc_gene['ensembl_id']
         gene_obj['description'] = hgnc_gene['description']
         
-        if gene_obj.get('ar'):
+        if hgnc_gene.get('ar'):
             inheritance.add('AR')
-        if gene_obj.get('ad'):
+        if hgnc_gene.get('ad'):
             inheritance.add('AD')
-        if gene_obj.get('xd'):
+        if hgnc_gene.get('xd'):
             inheritance.add('XD')
             inheritance.add('X')
-        if gene_obj.get('xr'):
+        if hgnc_gene.get('xr'):
             inheritance.add('XR')
             inheritance.add('X')
-        if gene_obj.get('y'):
+        if hgnc_gene.get('y'):
             inheritance.add('Y')
         hgnc_transcripts = hgnc_gene['transcripts']
     
@@ -72,28 +72,32 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
         transcripts.append(transcript_obj)
     gene_obj['transcripts'] = transcripts
 
-    functional_annotation = gene['most_severe_consequence']
-    if not functional_annotation in SO_TERM_KEYS:
-        log.warning("Invalid functional annotation %s", functional_annotation)
-    else:
-        gene_obj['functional_annotation'] = functional_annotation
+    functional_annotation = gene.get('most_severe_consequence')
+    if functional_annotation:
+        if not functional_annotation in SO_TERM_KEYS:
+            log.warning("Invalid functional annotation %s", functional_annotation)
+        else:
+            gene_obj['functional_annotation'] = functional_annotation
     
-    region_annotation = gene['region_annotation']
-    if not region_annotation in FEATURE_TYPES:
-        log.warning("Invalid region annotation %s", region_annotation)
-    else:
-        gene_obj['region_annotation'] = region_annotation
+    region_annotation = gene.get('region_annotation')
+    if region_annotation:
+        if not region_annotation in FEATURE_TYPES:
+            log.warning("Invalid region annotation %s", region_annotation)
+        else:
+            gene_obj['region_annotation'] = region_annotation
  
-    sift_prediction = gene['most_severe_sift']
-    if not sift_prediction in CONSEQUENCE:
-        log.warning("Invalid sift prediction %s", sift_prediction)
-    else:
-        gene_obj['sift_prediction'] = sift_prediction
+    sift_prediction = gene.get('most_severe_sift')
+    if sift_prediction:
+        if not sift_prediction in CONSEQUENCE:
+            log.warning("Invalid sift prediction %s", sift_prediction)
+        else:
+            gene_obj['sift_prediction'] = sift_prediction
 
-    polyphen_prediction = gene['most_severe_polyphen']
-    if not polyphen_prediction in CONSEQUENCE:
-        log.warning("Invalid polyphen prediction %s", polyphen_prediction)
-    else:
-        gene_obj['polyphen_prediction'] = polyphen_prediction
+    polyphen_prediction = gene.get('most_severe_polyphen')
+    if polyphen_prediction:
+        if not polyphen_prediction in CONSEQUENCE:
+            log.warning("Invalid polyphen prediction %s", polyphen_prediction)
+        else:
+            gene_obj['polyphen_prediction'] = polyphen_prediction
  
     return gene_obj

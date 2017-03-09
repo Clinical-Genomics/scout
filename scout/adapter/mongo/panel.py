@@ -78,7 +78,7 @@ class PanelHandler(object):
             Args:
                 adapter(MongoAdapter)
             Returns:
-                gene_dict(dict): A dictionary with gene as keys and a list of
+                gene_dict(dict): A dictionary with gene as keys and a set of
                                  panel names as value
         """
         logger.info("Building gene to panels")
