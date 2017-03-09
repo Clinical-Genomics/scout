@@ -1,4 +1,5 @@
 from scout.utils.link import link_genes
+from pprint import pprint as pp
 
 def test_link_genes(transcripts_handle, hgnc_handle, exac_handle, 
                     mim2gene_handle, genemap_handle, hpo_genes_handle):
@@ -12,6 +13,4 @@ def test_link_genes(transcripts_handle, hgnc_handle, exac_handle,
         hpo_lines=hpo_genes_handle,
     )
     for hgnc_symbol in genes:
-        print(genes[hgnc_symbol])
         assert genes[hgnc_symbol]['hgnc_symbol']
-    assert False

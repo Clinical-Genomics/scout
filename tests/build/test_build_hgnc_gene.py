@@ -11,6 +11,10 @@ def test_build_hgnc_genes(genes):
 
         # THEN check that the gene models have a hgnc id
         assert gene_obj['hgnc_id']
+        for transcript in gene_obj['transcripts']:
+            assert transcript['ensembl_transcript_id']
+            if 'refseq_id' in transcript:
+                assert isinstance(transcript['refseq_id'], list)
 
 def test_build_hgnc_gene():
     gene_info = {

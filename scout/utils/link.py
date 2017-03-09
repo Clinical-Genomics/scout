@@ -18,24 +18,41 @@ def add_gene_coordinates(gene, transcript):
 
 
 def add_transcript(gene, parsed_transcript):
-    """Add a transcript to a gene if it is not already there"""
+    """Add a transcript to a gene if it is not already there
+    
+    If the transcript already exists(determined by the ensembl transcript id)
+    and it has a new refseq symbol we add that to the transcript
+    
+    Args:
+        gene(dict): Hgnc gene information
+        parsed_transcript(dict): Ensembl transcript information
+    """
+    transcript = {}
     if parsed_transcript:
-        refseq_identifyer = parsed_transcript['refseq']
+        # This is the refseq identifier found in ensembl
         enstid = parsed_transcript['enst_id']
-        parsed_transcript['is_primary'] = False
+        refseq_identifyer = parsed_transcript['refseq']
+        is_primary = False
+        if refseq_identifyer:
+            if refseq_identifyer in gene['ref_seq']:
+                is_primary = True
         # If the transcript is already added
         if enstid in gene['transcripts']:
+            transcript_obj = gene['transcripts'][enstid]
             # We check if the current transcript is one of the identifiers
             if refseq_identifyer:
-                # print(refseq_identifyer, gene['ref_seq'])
-                if refseq_identifyer in gene['ref_seq']:
-                    parsed_transcript['is_primary'] = True
-                    gene['transcripts'][enstid] = parsed_transcript
+            # Check if the refseq identifier is in the list of primary 
+            # transcripts
+                if not refseq_identifyer in transcript_obj['refseq']:
+                    transcript_obj['refseq'].append(refseq_identifyer)
+                    if is_primary:
+                        transcript_obj['is_primary'] = True
         else:
+            parsed_transcript['is_primary'] = is_primary
             if refseq_identifyer:
-                # print(refseq_identifyer, gene['ref_seq'])
-                if refseq_identifyer in gene['ref_seq']:
-                    parsed_transcript['is_primary'] = True
+                parsed_transcript['refseq'] = [refseq_identifyer]
+            else:
+                parsed_transcript['refseq'] = []
 
             gene['transcripts'][enstid] = parsed_transcript
 
@@ -71,7 +88,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
         gene['description'] = hgnc_gene['description']
         gene['omim_id'] = hgnc_gene['omim_id']
         gene['entrez_id'] = hgnc_gene['entrez_id']
-        # These are the primary transcripts
+        # These are the primary transcript(s)
         gene['ref_seq'] = hgnc_gene['ref_seq']
         gene['uniprot_ids'] = hgnc_gene['uniprot_ids']
         gene['ucsc_id'] = hgnc_gene['ucsc_id']
