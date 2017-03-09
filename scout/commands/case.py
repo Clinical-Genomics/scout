@@ -76,9 +76,6 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
         log.warn("Please provide an owner for the case (use '--owner')")
         context.abort()
 
-    print(config_data)
-    context.abort()
-
     try:
         load_scout(adapter, config_data, ped=ped, update=update)
     except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -119,5 +116,8 @@ def cases(context, institute, reruns, finished, causatives, research_requested,
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
                            is_research=is_research)
+    if models.count() == 0:
+        click.echo("No cases could be found")
+    
     for model in models:
         click.echo(model.case_id)

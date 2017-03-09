@@ -101,11 +101,12 @@ def build_panel(panel_info, adapter):
     )
 
     """
-    try:
-        panel_obj = dict(panel_name = panel_info['panel_name'])
-        logger.info("Building panel with name: {0}".format(panel_info['panel_name']))
-    except KeyError as err:
+    panel_name = panel_info.get('panel_name')
+    if not panel_name:
         raise KeyError("Panel has to have a name")
+    
+    panel_obj = dict(panel_name = panel_name)
+    logger.info("Building panel with name: {0}".format(panel_name))
 
     try:
         institute_id = panel_info['institute']

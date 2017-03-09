@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from . import load_case, load_variants, delete_variants
+from . import (load_case, load_variants, delete_variants)
 from scout.parse.case import parse_case
 from scout.build import build_case
 from scout.exceptions.config import ConfigError
@@ -27,7 +27,7 @@ def check_panels(adapter, panels, default_panels=None):
             log.warning("Default panels have to be defined in panels")
             panels_exist = False
     for panel in panels:
-        if not adapter.gene_panel(panel).first():
+        if not adapter.gene_panel(panel):
             log.warning("Panel {} does not exist in database".format(panel))
             panels_exist = False
     return panels_exist
@@ -58,7 +58,7 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
         raise ValueError("Case {} does not exist in database".format(case_id))
 
     log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
-             " {2}, end {3}".format(case_obj.case_id, chrom, start, end))
+             " {2}, end {3}".format(case_obj['case_id'], chrom, start, end))
 
     load_variants(adapter=adapter, variant_file=case_obj.vcf_files['vcf_snv'],
                   case_obj=case_obj, variant_type='clinical', category='snv',
@@ -67,7 +67,7 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
     vcf_sv_file = case_obj.vcf_files.get('vcf_sv')
     if vcf_sv_file:
         log.info("Load clinical SV variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj.case_id, chrom, start,
+                 "start {2}, end {3}".format(case_obj['case_id'], chrom, start,
                                              end))
         load_variants(adapter=adapter, variant_file=vcf_sv_file,
                       case_obj=case_obj, variant_type='clinical',
@@ -75,7 +75,7 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
 
     if case_obj.is_research:
         log.info("Load research SNV variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj.case_id, chrom, start,
+                 "start {2}, end {3}".format(case_obj['case_id'], chrom, start,
                                              end))
         vcf_snv_research = case_obj.vcf_files['vcf_snv_research']
         load_variants(adapter=adapter, variant_file=vcf_snv_research,
@@ -85,7 +85,7 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
         vcf_sv_research = case_obj.vcf_files['vcf_sv_research']
         if vcf_sv_research:
             log.info("Load research SV variants for case: {0} region: chr {1},"
-                     " start {2}, end {3}".format(case_obj.case_id, chrom,
+                     " start {2}, end {3}".format(case_obj['case_id'], chrom,
                                                   start, end))
             load_variants(adapter=adapter, case_obj=case_obj,
                           variant_type='research', variant_file=vcf_sv_research,
@@ -111,21 +111,21 @@ def load_scout(adapter, config, ped=None, update=False):
     case_data = parse_case(config, ped)
     log.debug('build case object from parsed case data')
 
-    case_obj = build_case(case_data)
+    case_obj = build_case(case_data, adapter)
 
     gene_panels = config.get('gene_panels')
     default_panels = config.get('default_gene_panels')
 
-    log.info("Delete variants for case %s", case_obj.case_id)
+    log.info("Delete variants for case %s", case_obj['case_id'])
     delete_variants(adapter=adapter, case_obj=case_obj)
 
-    log.info("Load clinical SNV variants for case %s", case_obj.case_id)
+    log.info("Load clinical SNV variants for case %s", case_obj['case_id'])
     load_variants(adapter=adapter, variant_file=config['vcf_snv'],
                   case_obj=case_obj, variant_type='clinical', category='snv',
                   rank_threshold=case_data['rank_score_threshold'])
 
     if config.get('vcf_sv'):
-        log.info("Load SV variants for case %s", case_obj.case_id)
+        log.info("Load SV variants for case %s", case_obj['case_id'])
         load_variants(adapter=adapter, variant_file=config['vcf_sv'],
                       case_obj=case_obj, variant_type='clinical',
                       category='sv',
@@ -136,7 +136,5 @@ def load_scout(adapter, config, ped=None, update=False):
         adapter=adapter,
         case_obj=case_obj,
         update=update,
-        gene_panels=gene_panels,
-        default_panels=default_panels
     )
     

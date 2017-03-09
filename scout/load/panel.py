@@ -14,6 +14,7 @@ def load_panel(adapter, panel_info):
         panel_info(dict)
     """
     panel_data = parse_gene_panel(panel_info)
+    
     panel_obj = build_panel(panel_data, adapter)
 
     # Check if the panel exists in database

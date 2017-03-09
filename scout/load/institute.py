@@ -19,6 +19,6 @@ def load_institute(adapter, internal_id, display_name, sanger_recipients=None):
         sanger_recipients = sanger_recipients
     )
     log.info("Loading institute {0} with display name {1}"\
-             " into databse".format(internal_id, display_name))
+             " into database".format(internal_id, display_name))
 
     adapter.add_institute(institute_obj)

@@ -7,7 +7,7 @@ from scout.build.case import build_case
 logger = logging.getLogger(__name__)
 
 
-def load_case(adapter, case_info, update=False):
+def load_case(adapter, case_obj, update=False):
     """Load a case into the database
 
     If the case already exists the function will exit.
@@ -16,14 +16,13 @@ def load_case(adapter, case_info, update=False):
 
     Args:
         adapter (MongoAdapter): connection to the database
-        case_info (dict): case object to persist to the database
+        case_obj (dict): case object to persist to the database
         update(bool): If existing case should be updated
 
     Returns:
         case_obj(dict): A dictionary with the builded case
     """
-    logger.info('Loading case {} into database'.format(case_info['display_name']))
-    case_obj = build_case(case_info, adapter)
+    logger.info('Loading case {} into database'.format(case_obj['display_name']))
 
     # Check if case exists in database
     existing_case = adapter.case(case_obj['_id'])

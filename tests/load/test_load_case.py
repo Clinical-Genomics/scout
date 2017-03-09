@@ -1,6 +1,6 @@
 from scout.load.case import load_case
 
-def test_load_case(parsed_case, panel_database):
+def test_load_case(case_obj, panel_database):
     adapter = panel_database
 
     # GIVEN a database with institute, user, genes, panel but no cases
@@ -10,7 +10,7 @@ def test_load_case(parsed_case, panel_database):
     # WHEN loading a case
     case_obj = load_case(
         adapter=adapter,
-        case_info=parsed_case,
+        case_obj=case_obj,
         update=False,
     )
     # THEN assert that the case have been loaded with correct info

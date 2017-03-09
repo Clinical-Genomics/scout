@@ -84,12 +84,16 @@ def diseases(context):
     logger.info("Running scout view diseases")
     adapter = context.obj['adapter']
     
-    click.echo("Disease")
-    for disease_obj in adapter.disease_terms():
-        click.echo("{0}:{1}".format(
-            disease_obj['source'],
-            disease_obj['disease_id'],
-        ))
+    disease_objs = adapter.disease_terms()
+    
+    nr_diseases = disease_objs.count()
+    if nr_diseases == 0:
+       click.echo("No diseases found")
+    else: 
+        click.echo("Disease")
+        for disease_obj in adapter.disease_terms():
+            click.echo("{0}".format(disease_obj['_id']))
+        logger.info("{0} diseases found".format(nr_diseases))
 
 @click.command('hpo', short_help='Display all hpo terms')
 @click.pass_context
