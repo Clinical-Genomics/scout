@@ -2,12 +2,12 @@ import pytest
 from pymongo.errors import ConnectionFailure
 from scout.adapter.client import get_connection
 
-def test_pymongo_adapter(pymongo_adapter):
+def test_pymongo_adapter(adapter, database_name):
     """Test the pymongo adapter"""
     ##GIVEN a pymongoadapter
     ##WHEN connecting to a database
     ##THEN assert the correct database is accessed
-    assert pymongo_adapter.db.name == 'testdb'
+    assert adapter.db.name == database_name
 
 def test_get_connection():
     ##GIVEN a connection to a mongodatabase

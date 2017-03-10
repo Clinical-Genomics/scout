@@ -1,5 +1,5 @@
 
-def test_get_insert_user(pymongo_adapter):
+def test_get_insert_user(adapter):
     user_info = {
         'email': 'clark.kent@mail.com',
         'location': 'here',
@@ -10,23 +10,18 @@ def test_get_insert_user(pymongo_adapter):
 
     ## GIVEN a empty adapter
     
-    assert pymongo_adapter.user(email=user_info['email']) is None
+    assert adapter.user(email=user_info['email']) is None
 
     ## WHEN insaerting a user
-    user_obj = pymongo_adapter.getoradd_user(
-        email=user_info['email'],
-        name=user_info['name'],
-        location=user_info['location'],
-        institutes=user_info['institutes'],
-    )
+    user_obj = adapter.add_user(user_info)
 
     ## THEN assert that the user is in the database
     
     assert user_obj['_id'] == user_info['email']
 
 
-def test_get_nonexisting_user(pymongo_adapter):
+def test_get_nonexisting_user(adapter):
     """docstring for test_get_nonexisting_user"""
-    user_obj = pymongo_adapter.user(email='john.doe@mail.com')
+    user_obj = adapter.user(email='john.doe@mail.com')
     assert user_obj == None
     

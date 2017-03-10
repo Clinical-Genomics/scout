@@ -29,6 +29,7 @@ class UserHandler(object):
         user_obj['created_at'] = datetime.datetime.now()
         self.user_collection.insert_one(user_obj)
         logger.debug("User inserted")
+        return user_obj
 
     def users(self):
         """Return all users from the database"""

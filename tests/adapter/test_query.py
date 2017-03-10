@@ -121,15 +121,16 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     
     case_id = parsed_case['case_id']
 
-    assert populated_database.variants(case_id, category='snv')[1] == 0
+    assert populated_database.variants(case_id, category='snv').count() == 0
     
-    assert populated_database.variants(case_id, category='sv')[1] == 0
+    assert populated_database.variants(case_id, category='sv').count() == 0
 
     ## WHEN inserting a couple of variants
     
     institute_id = parsed_case['owner']
     institute_obj = populated_database.institute(institute_id)
-    snv_one = Variant(
+    snv_one = dict(
+        _id='first',
         document_id='first',
         variant_id='first',
         display_name='first',
@@ -147,11 +148,13 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
-        hgnc_symbols=['ADK']
+        hgnc_symbols=['ADK'],
+        hgnc_ids=[1]
     )
     populated_database.load_variant(snv_one)
 
-    snv_two = Variant(
+    snv_two = dict(
+        _id='second',
         document_id='second',
         variant_id='second',
         display_name='second',
@@ -169,12 +172,14 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         rank_score=9,
         variant_rank=2,
         institute=institute_obj,
-        hgnc_symbols=['ADK']
+        hgnc_symbols=['ADK'],
+        hgnc_ids=[1]
     )
     
     populated_database.load_variant(snv_two)
 
-    sv_one = Variant(
+    sv_one = dict(
+        _id='first_sv',
         document_id='first_sv',
         variant_id='first_sv',
         display_name='first_sv',
@@ -192,48 +197,49 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
-        hgnc_symbols=['ADK']
+        hgnc_symbols=['ADK'],
+        hgnc_ids=[1]
     )
     populated_database.load_variant(sv_one)
     
     ## THEN make sure that the variants where inserted
-    result, count = populated_database.variants(case_id, category='snv')
+    result = populated_database.variants(case_id, category='snv')
     # Thow snvs where loaded
-    assert count == 2
+    assert result.count() == 2
 
     #One SV was added
-    result, count = populated_database.variants(case_id, category='sv')
-    assert count == 1
+    result = populated_database.variants(case_id, category='sv')
+    assert result.count() == 1
         
     #Try to match only snv_one
     query = {'chrom': '1', 'start': 10, 'end':10}
-    result, count = populated_database.variants(case_id, category='snv', query=query)
-    assert count == 1
+    result = populated_database.variants(case_id, category='snv', query=query)
+    assert result.count() == 1
 
     #Try to match only both snvs
     query = {'chrom': '1', 'start': 5, 'end':20}
-    result, count = populated_database.variants(case_id, category='snv', query=query)
-    assert count == 2
+    result = populated_database.variants(case_id, category='snv', query=query)
+    assert result.count() == 2
 
     #Try interval larger than sv
     query = {'chrom': '1', 'start': 5, 'end':20}
-    result, count = populated_database.variants(case_id, category='sv', query=query)
-    assert count == 1
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 1
 
     #Try interval lower overlap sv
     query = {'chrom': '1', 'start': 5, 'end':8}
-    result, count = populated_database.variants(case_id, category='sv', query=query)
-    assert count == 1
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 1
 
     #Try interval outside sv
     query = {'chrom': '1', 'start': 5, 'end':7}
-    result, count = populated_database.variants(case_id, category='sv', query=query)
-    assert count == 0
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 0
 
     #Try minimal interval sv
     query = {'chrom': '1', 'start': 10, 'end':10}
-    result, count = populated_database.variants(case_id, category='sv', query=query)
-    assert count == 1
+    result = populated_database.variants(case_id, category='sv', query=query)
+    assert result.count() == 1
 
     # test function
     result = populated_database.overlapping(snv_one)

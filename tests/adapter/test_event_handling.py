@@ -3,8 +3,6 @@ import logging
 
 from scout.models.event import VERBS_MAP
 
-from scout.models import Case
-
 logger = logging.getLogger(__name__)
 
 def test_create_event(adapter, institute_obj, case_obj, user_obj):    

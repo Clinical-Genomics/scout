@@ -273,6 +273,41 @@ def pymongo_client(request):
 
     return mock_client
 
+@pytest.fixture(scope='function')
+def real_pymongo_client(request):
+    """Get a client to the mongo database"""
+
+    logger.info("Get a mongomock client")
+    start_time = datetime.datetime.now()
+    mongo_client = pymongo.MongoClient()
+
+    def teardown():
+        print('\n')
+        logger.info("Deleting database")
+        mongo_client.drop_database(DATABASE)
+        logger.info("Database deleted")
+        logger.info("Time to run test:{}".format(datetime.datetime.now()-start_time))
+
+    request.addfinalizer(teardown)
+
+    return mongo_client
+
+@pytest.fixture(scope='function')
+def real_adapter(request, real_pymongo_client):
+    """Get an adapter connected to mongo database"""
+    logger.info("Connecting to database...")
+    mongo_client = real_pymongo_client
+
+    database = mongo_client[DATABASE]
+    mongo_adapter = PymongoAdapter(database)
+
+    # logger.info("Establish a mongoengine connection")
+    # connect(DATABASE)
+
+    logger.info("Connected to database")
+
+    return mongo_adapter
+
 
 @pytest.fixture(scope='function')
 def adapter(request, pymongo_client):
@@ -369,6 +404,18 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
     # # Load sv variants
     # for variant in sv_variant_objs:
     #     adapter.load_variant(variant)
+
+    return adapter
+
+@pytest.fixture(scope='function')
+def sv_database(request, populated_database, variant_objs, sv_variant_objs):
+    """Returns an adapter to a database populated with user, institute, case
+       and variants"""
+    adapter = populated_database
+
+    # Load sv variants
+    for variant in sv_variant_objs:
+        adapter.load_variant(variant)
 
     return adapter
 

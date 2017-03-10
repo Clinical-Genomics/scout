@@ -105,8 +105,8 @@ def test_get_genes_alias(adapter):
     for result in res:
         assert result['hgnc_id'] == 1
 
-def test_get_genes_regex(real_pymongo_adapter):
-    adapter = real_pymongo_adapter
+def test_get_genes_regex(real_adapter):
+    adapter = real_adapter
     ##GIVEN a empty adapter
     assert adapter.all_genes().count() == 0
     
