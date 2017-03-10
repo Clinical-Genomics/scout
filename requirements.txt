@@ -6,6 +6,8 @@ Flask-PyMongo
 Flask-Bootstrap
 path.py
 Flask-OAuthlib
+Flask-Markdown
+Flask-WTF
 coloredlogs
 
 # unclear

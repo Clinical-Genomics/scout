@@ -28,3 +28,10 @@ def templated(template=None):
 def public_endpoint(function):
     function.is_public = True
     return function
+
+
+def institute_and_case(store, institute_id, case_name):
+    """Fetch insitiute and case objects."""
+    institute_obj = store.institute(institute_id)
+    case_obj = store.case(institute_id=institute_id, display_name=case_name)
+    return institute_obj, case_obj

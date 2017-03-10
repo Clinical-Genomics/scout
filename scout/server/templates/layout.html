@@ -1,4 +1,5 @@
 {% extends "bootstrap/base.html" %}
+{% from "utils.html" import flash_messages %}
 
 {% block title %}
   Scout
@@ -61,21 +62,7 @@
 
 {% block content %}
   <div class="container-fluid main">
-    <div class="row">
-      <div class="col-xs-12">
-        {% with messages = get_flashed_messages(with_categories=True) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category or 'default' }} alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-      </div>
-    </div>
-
+    {{ flash_messages() }}
     {% block content_main %}{% endblock %}
   </div>
 {% endblock %}

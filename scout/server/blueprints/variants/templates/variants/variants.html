@@ -1,5 +1,30 @@
-{% extends "core/layout.html" %}
-{% from "core/utils.html" import compounds_table %}
+{% extends "layout.html" %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "utils.html" import flash_messages %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant_type|capitalize }} variants
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">{{ variant_type|capitalize }} variants</span>
+  </li>
+{% endblock %}
 
 {% block top_nav_right %}
   <li><p class="navbar-text">Panels: {{ current_gene_lists|join(',') or 'All' }}</p></li>
@@ -7,10 +32,8 @@
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">HPO panels <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li>
-        <a href="{{ url_for('core.variants',
-                            institute_id=institute_id,
-                            case_id=case_id,
-                            variant_type=variant_type,
+        <a href="{{ url_for('variants.variants', institute_id=institute._id,
+                            case_name=case.display_name, variant_type=variant_type,
                             gene_panels=['hpo']) }}">
           HPO gene list
         </a>
@@ -18,7 +41,7 @@
     </ul>
   </li>
   <li>
-    <a href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, gene_panels=case.default_panel_ids) }}">Reset filters</a>
+    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.default_panel_ids) }}">Reset filters</a>
   </li>
   {{ super() }}
 {% endblock %}
@@ -39,21 +62,7 @@
         </div>
       </div>
     </div>
-    {# MESSAGES #}
-    <div class="row">
-      <div class="col-xs-12">
-        {% with messages = get_flashed_messages(with_categories=True) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category or 'default' }} alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-      </div>
-    </div>
+    {{ flash_messages() }}
   </div>
   <div class="table-responsive">
     <table class="table table-bordered table-hover">
@@ -99,16 +108,16 @@
       </tbody>
     </table>
 
-    {{ footer() }}
+    {# {{ footer() }} #}
   </div>
 {% endblock %}
 
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
-     href="{{ url_for('core.variant',
-                      institute_id=institute_id,
-                      case_id=case_id,
-                      variant_id=variant.document_id) }}">
+     href="{{ url_for('variants.variant',
+                      institute_id=institute._id,
+                      case_name=case.display_name,
+                      variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
   {% if variant.manual_rank %}
@@ -164,7 +173,7 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute_id, case_id, variant.compounds[:5]) }}">Compounds</a>
+    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute._id, case.display_name, variant.compounds[:5]) }}">Compounds</a>
   {% endif %}
 {% endmacro %}
 
@@ -173,7 +182,7 @@
     <div class="form-group text-center">
       {% if variants_count > current_batch %}
         {# We might have some more variants not loaded #}
-        <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute_id, case_id=case_id, variant_type=variant_type, skip=current_batch, **query_dict) }}">
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, skip=current_batch, **query_dict) }}">
           Next page
         </a>
       {% else %}
@@ -185,14 +194,13 @@
 
 {% macro filters_form() %}
   <form method="GET">
-    {{ form.csrf_token }}
     <div class="form-group">
       <div class="row">
         <div class="col-xs-3">
           {{ form.gene_panels.label(class="control-label") }}
           {{ form.gene_panels(class="form-control") }}
         </div>
-        {# <div class="col-xs-3">
+        <div class="col-xs-3">
           {{ form.region_annotations.label(class="control-label") }}
           {{ form.region_annotations(class="form-control") }}
         </div>
@@ -203,10 +211,10 @@
         <div class="col-xs-3">
           {{ form.genetic_models.label(class="control-label") }}
           {{ form.genetic_models(class="form-control") }}
-        </div> #}
+        </div>
       </div>
     </div>
-    {# <div class="form-group">
+    <div class="form-group">
       <div class="row">
         <div class="col-xs-3">
           {{ form.hgnc_symbols.label(class="control-label") }}
@@ -218,32 +226,24 @@
         </div>
         <div class="col-xs-3">
           {{ form.cadd_inclusive.label(class="control-label") }}
-          <div>
-            {% for option in ('yes', 'no') %}
-              <label class="radio-inline">
-                <input type="radio" name="cadd_inclusive" value="{{ option }}"
-                 {% if option == form.cadd_inclusive.data %}checked{% endif %}>
-                {{ option|capitalize }}
-              </label>
-            {% endfor %}
-          </div>
+          <div>{{ form.cadd_inclusive() }}</div>
         </div>
         <div class="col-xs-3">
           {{ form.clinsig.label(class="control-label") }}
           {{ form.clinsig(class="form-control") }}
         </div>
       </div>
-    </div> #}
+    </div>
     <div class="form-group">
       <div class="row">
-        {# <div class="col-xs-3">
+        <div class="col-xs-3">
           {{ form.thousand_genomes_frequency.label(class="control-label") }}
           {{ form.thousand_genomes_frequency(class="form-control") }}
         </div>
         <div class="col-xs-3">
           {{ form.exac_frequency.label(class="control-label") }}
           {{ form.exac_frequency(class="form-control") }}
-        </div> #}
+        </div>
         <div class="col-xs-6">
           <label class="control-label">Submit</label>
           <div class="row">
@@ -251,14 +251,12 @@
               <button class="btn btn-primary form-control">Filter variants</button>
             </div>
             <div class="col-xs-6">
-              <a href="{{ url_for('core.variants', institute_id=institute_id,
-                          case_id=case_id,
-                          variant_type=variant_type,
+              <a href="{{ url_for('variants.variants', institute_id=institute._id,
+                          case_name=case.display_name, variant_type=variant_type,
                           functional_annotations=severe_so_terms,
                           region_annotations=['exonic', 'splicing'],
                           thousand_genomes_frequency=institute.frequency_cutoff,
-                          gene_panels=current_gene_lists,
-                          hgnc_symbols=form.hgnc_symbols.data) }}"
+                          gene_panels=form.data.get('gene_panels')) }}"
                  class="btn btn-default form-control">
                 Clinical filter
               </a>
