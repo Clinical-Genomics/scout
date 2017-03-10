@@ -7,10 +7,7 @@ from scout.models import Case
 
 logger = logging.getLogger(__name__)
 
-def test_create_event(adapter, institute_obj, case_obj, user_obj):
-    institute_obj['_id'] = institute_obj['internal_id']
-    user_obj['_id'] = user_obj['email']
-    
+def test_create_event(adapter, institute_obj, case_obj, user_obj):    
     ## GIVEN a database without any events
     
     assert adapter.event_collection.find().count() == 0
@@ -205,7 +202,6 @@ def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
         link=link,
         hpo_term=hpo_term
     )
-    print(updated_case)
     # THEN the case should have a hpo term
     for term in updated_case['phenotype_terms']:
         assert term['phenotype_id'] == hpo_term
@@ -213,6 +209,35 @@ def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
     # THEN a event should have been created
     event = adapter.event_collection.find_one({'link': link})
     assert event['link'] == link
+
+def test_add_phenotype_group(hpo_database, institute_obj, case_obj, user_obj):
+    adapter = hpo_database
+    logger.info("Add OMIM term for a case")
+    adapter.add_case(case_obj)
+
+    hpo_term = 'HP:0000878'
+    
+    #Existing mim phenotype
+    # GIVEN a populated database with no events
+    assert adapter.hpo_term_collection.find().count() > 0
+    assert adapter.hpo_term_collection.find({'_id':hpo_term})
+    assert adapter.event_collection.find().count() == 0
+
+    # WHEN adding a existing phenotype term
+    updated_case = adapter.add_phenotype(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='hpolink',
+        hpo_term=hpo_term,
+        is_group=True,
+    )
+    # THEN the case should have phenotypes
+    assert len(updated_case['phenotype_terms']) > 0
+    assert len(updated_case['phenotype_groups']) > 0
+
+    # THEN there should be phenotype events
+    assert adapter.event_collection.find().count() > 0
 
 def test_add_wrong_hpo(populated_database, institute_obj, case_obj, user_obj):
     logger.info("Add a HPO term for a case")
@@ -263,128 +288,89 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
     # THEN there should not exist any events
     assert adapter.event_collection.find().count() == 0
 
-# def test_add_mim(populated_database, institute_obj, case_obj, user_obj):
-#     adapter = populated_database
-#     logger.info("Add OMIM term for a case")
-#     #Existing mim phenotype
-#     mim_term = 'OMIM:613855'
-#     assert adapter.hpo_term_collection.find().count() > 0
-#     # GIVEN a populated database
-#     assert adapter.event_collection.find().count() == 0
-#
-#     # WHEN adding a existing phenotype term
-#     updated_case = adapter.add_phenotype(
-#         institute=institute_obj,
-#         case=case_obj,
-#         user=user_obj,
-#         link='mimlink',
-#         omim_term=mim_term
-#     )
-#     # THEN the case should have phenotypes
-#     assert len(updated_case['phenotype_terms']) > 0
-#
-#     # THEN there should be phenotypes
-#     assert adapter.event_collection.find().count() == 1
-# #
-# # def test_remove_hpo(case_database, institute_obj, case_obj, user_obj):
-# #     adapter = case_database
-# #     logger.info("Add a HPO term for a case")
-# #
-# #     gene_obj = dict(
-# #         hgnc_id = 1,
-# #         hgnc_symbol = 'test',
-# #         ensembl_id = 'anothertest',
-# #         chromosome = '1',
-# #         start = 10,
-# #         end = 20,
-# #     )
-# #     adapter.load_hgnc_gene(gene_obj)
-# #
-# #     hpo_obj = HpoTerm(
-# #         hpo_id = 'HP:0000878',
-# #         description = 'A term',
-# #         genes = [1]
-# #     )
-# #
-# #     adapter.load_hpo_term(hpo_obj)
-# #
-# #     hpo_term = hpo_obj.hpo_id
-# #
-# #     institute = adapter.institute(
-# #         institute_id=institute_obj.internal_id
-# #     )
-# #     case = adapter.case(
-# #         institute_id=institute_obj.internal_id,
-# #         case_id=case_obj.display_name
-# #     )
-# #     user = adapter.user(
-# #         email = user_obj.email
-# #     )
-# #     adapter.add_phenotype(
-# #         institute=institute,
-# #         case=case,
-# #         user=user,
-# #         link='addhpolink',
-# #         hpo_term=hpo_term
-# #     )
-# #
-# #     #Assert that the term was added to the case
-# #     updated_case = Case.objects.get(case_id=case_obj.case_id)
-# #     for term in updated_case.phenotype_terms:
-# #         assert term.phenotype_id == hpo_term
-# #
-# #     #Check that the event exists
-# #     event = Event.objects.get(verb='add_phenotype')
-# #     assert event.link == 'addhpolink'
-# #
-# #     # WHEN removing the phenotype term
-# #     adapter.remove_phenotype(
-# #         institute=institute,
-# #         case=updated_case,
-# #         user=user,
-# #         link='removehpolink',
-# #         phenotype_id=hpo_term
-# #     )
-# #     # THEN the case should not have phenotype terms
-# #     updated_case = Case.objects.get(case_id=case_obj.case_id)
-# #     assert len(updated_case.phenotype_terms) == 0
-# #
-# #     # THEN an event should have been created
-# #     event = Event.objects.get(verb='remove_phenotype')
-# #     assert event.link == 'removehpolink'
-# #     event.delete()
-# #
-# # # def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
-# # #     logger.info("Add specific comment for a variant")
-# # #     content = "hello"
-# # #     # GIVEN a populated database with variants
-# # #     institute = variant_database.institute(
-# # #         institute_id=institute_obj.internal_id
-# # #     )
-# # #     case = variant_database.case(
-# # #         institute_id=institute_obj.internal_id,
-# # #         case_id=case_obj.display_name
-# # #     )
-# # #     user = variant_database.user(
-# # #         email = user_obj.email
-# # #     )
-# # #     variant =  Variant.objects.first()
-# # #     variant_id = variant.id
-# # #
-# # #     # WHEN commenting on a variant
-# # #     variant_database.comment(
-# # #         institute=institute,
-# # #         case=case,
-# # #         user=user,
-# # #         link='commentlink',
-# # #         variant=variant,
-# # #         content=content,
-# # #         comment_level='specific'
-# # #     )
-# # #     # THEN the variant should have comments
-# # #     updated_variant = variant_database.variant(variant_id)
-# # #     assert updated_variant.has_comments(case=case) == True
-# # #
-# # #     # THEN a event should have been created
-# # #     event = Event.objects.get(verb='comment')
-# # #     assert event.link == 'commentlink'
+def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
+    adapter = hpo_database
+    logger.info("Add OMIM term for a case")
+    adapter.add_case(case_obj)
+    
+    #Existing mim phenotype
+    mim_term = 'OMIM:613855'
+    assert adapter.hpo_term_collection.find().count() > 0
+    # GIVEN a populated database
+    assert adapter.event_collection.find().count() == 0
+
+    # WHEN adding a existing phenotype term
+    updated_case = adapter.add_phenotype(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='mimlink',
+        omim_term=mim_term
+    )
+    # THEN the case should have phenotypes
+    assert len(updated_case['phenotype_terms']) > 0
+
+    # THEN there should be phenotype events
+    assert adapter.event_collection.find().count() > 0
+
+def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
+    adapter = hpo_database
+    logger.info("Add a HPO term for a case")
+    adapter.add_case(case_obj)
+
+    # GIVEN a populated database
+    assert adapter.event_collection.find().count() == 0
+
+    hpo_term = 'HP:0000878'
+
+    updated_case = adapter.add_phenotype(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='addhpolink',
+        hpo_term=hpo_term
+    )
+
+    #Assert that the term was added to the case
+    assert len(updated_case['phenotype_terms']) == 1
+
+    #Check that the event exists
+    assert adapter.event_collection.find().count() == 1
+    
+    # WHEN removing the phenotype term
+    updated_case = adapter.remove_phenotype(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='removehpolink',
+        phenotype_id=hpo_term
+    )
+    # THEN the case should not have phenotype terms
+    assert len(updated_case['phenotype_terms']) == 0
+
+    # THEN an event should have been created
+    assert adapter.event_collection.find().count() == 2
+
+def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
+    adapter = variant_database
+    logger.info("Add specific comment for a variant")
+    content = "hello"
+    # GIVEN a populated database with variants
+    assert adapter.variant_collection.find().count() > 0
+    assert adapter.event_collection.find().count() == 0
+    
+    variant = adapter.variant_collection.find_one()
+    
+    # WHEN commenting on a variant
+    updated_variant = variant_database.comment(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='commentlink',
+        variant=variant,
+        content=content,
+        comment_level='specific'
+    )
+    # THEN the variant should have comments
+    event = adapter.event_collection.find_one()
+    assert event['content'] == content

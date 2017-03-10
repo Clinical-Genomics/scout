@@ -313,14 +313,14 @@ def gene_database(request, institute_database, genes):
     return adapter
 
 @pytest.fixture(scope='function')
-def hpo_database(request, gene_database, hpo_terms_handle, hpo_disease_handle):
+def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
 
     load_hpo(
-        adapter=adapter,
+        adapter=gene_database,
         hpo_lines=hpo_terms_handle,
-        disease_lines=hpo_disease_handle,
+        disease_lines=genemap_handle
     )
 
     return adapter
@@ -366,9 +366,9 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
     for variant in variant_objs:
         adapter.load_variant(variant)
 
-    # Load sv variants
-    for variant in sv_variant_objs:
-        adapter.load_variant(variant)
+    # # Load sv variants
+    # for variant in sv_variant_objs:
+    #     adapter.load_variant(variant)
 
     return adapter
 

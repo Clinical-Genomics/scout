@@ -99,8 +99,7 @@ class VariantHandler(object):
 
                     if hgnc_transcript.get('is_primary'):
                         transcript['is_primary'] = True
-                
-                
+
             variant_gene['common'] = hgnc_gene
 
             # Add the associated disease terms

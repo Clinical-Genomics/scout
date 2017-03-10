@@ -381,7 +381,6 @@ class EventHandler(object):
         for hpo_result in hpo_results:
             logger.debug("Fetching info for hpo term {0}".format(hpo_term))
             hpo_obj = self.hpo_term(hpo_result['hpo_term'])
-            print(hpo_result['hpo_term'])
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
             
@@ -408,29 +407,27 @@ class EventHandler(object):
                     subject=case['display_name'],
                     content=phenotype_id
                 )
-
-            if is_group:
-                updated_case = self.case_collection.find_one_and_update(
-                    {'_id': case['_id']},
-                    {
-                        '$push': {
-                            'phenotype_terms': {'$each': phenotype_terms},
-                            'phenotype_groups': {'$each': phenotype_terms},
-                        },
+        if is_group:
+            updated_case = self.case_collection.find_one_and_update(
+                {'_id': case['_id']},
+                {
+                    '$push': {
+                        'phenotype_terms': {'$each': phenotype_terms},
+                        'phenotype_groups': {'$each': phenotype_terms},
                     },
-                    return_document = pymongo.ReturnDocument.AFTER
-                )
-            else:
-                
-                updated_case = self.case_collection.find_one_and_update(
-                    {'_id': case['_id']},
-                    {
-                        '$push': {
-                            'phenotype_terms': {'$each': phenotype_terms},
-                        },
+                },
+                return_document = pymongo.ReturnDocument.AFTER
+            )
+        else:
+            updated_case = self.case_collection.find_one_and_update(
+                {'_id': case['_id']},
+                {
+                    '$push': {
+                        'phenotype_terms': {'$each': phenotype_terms},
                     },
-                    return_document = pymongo.ReturnDocument.AFTER
-                )
+                },
+                return_document = pymongo.ReturnDocument.AFTER
+            )
 
         logger.debug("Case updated")
         return updated_case
@@ -451,10 +448,10 @@ class EventHandler(object):
             updated_case(dict)
         """
         logger.info("Removing HPO term from case {0}".format(case['display_name']))
-
+        
         if is_group:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id': case_obj['_id']},
+                {'_id': case['_id']},
                 {
                     '$pull': {
                         'phenotype_terms': {'phenotype_id': phenotype_id},
@@ -466,7 +463,7 @@ class EventHandler(object):
             
         else:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id': case_obj['_id']},
+                {'_id': case['_id']},
                 {
                     '$pull': {
                         'phenotype_terms': {'phenotype_id': phenotype_id},
@@ -524,7 +521,7 @@ class EventHandler(object):
                 category='variant',
                 verb='comment',
                 level=comment_level,
-                variant_id=variant['variant_id'],
+                variant=variant,
                 subject=variant['display_name'],
                 content=content
             )
