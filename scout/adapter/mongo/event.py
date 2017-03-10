@@ -164,7 +164,7 @@ class EventHandler(object):
             updated_case (dict): The updated case
         """
         logger.info("Creating event for unassigning {0} from {1}".format(
-                    user['display_name'], case['display_name']))
+                    user['name'], case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -177,7 +177,7 @@ class EventHandler(object):
         )
 
         logger.info("Updating {0} to be unassigned with {1}".format(
-                    case['display_name'], user['display_name']))
+                    case['display_name'], user['name']))
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id':case['_id']}, 
@@ -374,12 +374,14 @@ class EventHandler(object):
             raise e
 
         existing_terms = set(term['phenotype_id'] for term in
-                             case['phenotype_terms'])
+                             case.get('phenotype_terms',[]))
         
+        updated_case = case
         phenotype_terms = []
         for hpo_result in hpo_results:
             logger.debug("Fetching info for hpo term {0}".format(hpo_term))
             hpo_obj = self.hpo_term(hpo_result['hpo_term'])
+            print(hpo_result['hpo_term'])
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
             
@@ -406,9 +408,10 @@ class EventHandler(object):
                     subject=case['display_name'],
                     content=phenotype_id
                 )
+
             if is_group:
                 updated_case = self.case_collection.find_one_and_update(
-                    {'_id': case_obj['_id']},
+                    {'_id': case['_id']},
                     {
                         '$push': {
                             'phenotype_terms': {'$each': phenotype_terms},
@@ -418,8 +421,9 @@ class EventHandler(object):
                     return_document = pymongo.ReturnDocument.AFTER
                 )
             else:
+                
                 updated_case = self.case_collection.find_one_and_update(
-                    {'_id': case_obj['_id']},
+                    {'_id': case['_id']},
                     {
                         '$push': {
                             'phenotype_terms': {'$each': phenotype_terms},
@@ -429,6 +433,7 @@ class EventHandler(object):
                 )
 
         logger.debug("Case updated")
+        return updated_case
                       
 
     def remove_phenotype(self, institute, case, user, link, phenotype_id,
