@@ -14,7 +14,6 @@ class VariantHandler(object):
     def add_gene_info(self, variant_obj, gene_panels=None):
         """Add extra information about genes from gene panels"""
         gene_panels = gene_panels or []
-        hgnc_symbols = set()
 
         # We need to check if there are any additional information in the gene panels
         extra_info = {}
@@ -64,17 +63,17 @@ class VariantHandler(object):
                 if gene_info.get('mosaicism'):
                     mosaicism = True
                 
-                if gene_obj.get('ar'):
+                if gene_info.get('ar'):
                     manual_inheritance.add('AR')
-                if gene_obj.get('ad'):
+                if gene_info.get('ad'):
                     manual_inheritance.add('AD')
-                if gene_obj.get('mt'):
+                if gene_info.get('mt'):
                     manual_inheritance.add('MT')
-                if gene_obj.get('xr'):
+                if gene_info.get('xr'):
                     manual_inheritance.add('XR')
-                if gene_obj.get('xd'):
+                if gene_info.get('xd'):
                     manual_inheritance.add('XD')
-                if gene_obj.get('y'):
+                if gene_info.get('y'):
                     manual_inheritance.add('Y')
             
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
