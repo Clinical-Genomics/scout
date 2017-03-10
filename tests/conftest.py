@@ -63,7 +63,7 @@ mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 @pytest.fixture
 def app():
-    app = create_app(config=dict(DEBUG_TB_ENABLED=False))
+    app = create_app(config=dict(DEBUG_TB_ENABLED=False, MONGO_PORT = 27017, MONGO_DBNAME = 'variantDatabase'))
     return app
 
 ##################### Gene fixtures #####################
