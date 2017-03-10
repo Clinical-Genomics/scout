@@ -45,6 +45,7 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
     hgnc_gene = hgncid_to_gene.get(hgnc_id)
     
     inheritance = set()
+    hgnc_transcripts = []
     if hgnc_gene:
         gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
         gene_obj['ensembl_id'] = hgnc_gene['ensembl_id']

@@ -91,11 +91,12 @@ class VariantHandler(object):
                     # If the transcript has a ref seq identifier we add that
                     # to the variants transcript
                     if 'refseq_id' in hgnc_transcript:
-                        refseq_id = hgnc_transcript['refseq_id']
-                        transcript['ref_seq'] = refseq_id
+                        refseq_ids = hgnc_transcript['refseq_id']
+                        transcript['ref_seq'] = refseq_ids
                         
-                        if refseq_id in disease_associated:
-                            transcript['is_disease_associated'] = True
+                        for refseq_id in refseq_ids:
+                            if refseq_id in disease_associated:
+                                transcript['is_disease_associated'] = True
 
                     if hgnc_transcript.get('is_primary'):
                         transcript['is_primary'] = True
