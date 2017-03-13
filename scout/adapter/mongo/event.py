@@ -10,6 +10,7 @@ from scout.constants import CASE_STATUSES
 
 logger = logging.getLogger(__name__)
 
+
 class EventHandler(object):
     """Class to handle events for the mongo adapter"""
 
@@ -22,7 +23,6 @@ class EventHandler(object):
         logger.info("Deleting event{0}".format(event_id))
         self.event_collection.delete_one({'_id': event_id})
         logger.debug("Event {0} deleted".format(event_id))
-        
 
     def create_event(self, institute, case, user, link, category, verb,
                      subject, level='specific', variant=None, content=None,
@@ -49,7 +49,7 @@ class EventHandler(object):
             author_name = None
         else:
             author_name = user_obj['name']
-            
+
         event = dict(
             institute=institute['_id'],
             case=case['case_id'],
@@ -101,14 +101,14 @@ class EventHandler(object):
         # If no variant_id or panel we know that it is a case level comment
         else:
             query['category'] = 'case'
-            
+
             if case:
                 query['case'] = case['_id']
-            
+
         if comments:
-            query['verb'] = 'comment'
-        
-        return self.event_collection.find(query)
+            query['verb'] = 'commented on'
+
+        return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
 
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
@@ -121,7 +121,7 @@ class EventHandler(object):
             case (dict): A case
             user (dict): A User object
             link (str): The url to be used in the event
-        
+
         Returns:
             updated_case(dict)
         """
@@ -141,9 +141,9 @@ class EventHandler(object):
                     .format(case['display_name'], user['name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
-            {'$set': {'assignee':user['_id']}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'_id': case['_id']},
+            {'$set': {'assignee': user['_id']}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         return updated_case
 
@@ -159,7 +159,7 @@ class EventHandler(object):
             case (dict): A Case object
             user (dict): A User object (Should this be a user id?)
             link (dict): The url to be used in the event
-        
+
         Returns:
             updated_case (dict): The updated case
         """
@@ -180,20 +180,19 @@ class EventHandler(object):
                     case['display_name'], user['name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
-            {'$set': {'assignee':None}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'_id': case['_id']},
+            {'$set': {'assignee': None}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
-        
 
     def update_status(self, institute, case, user, status, link):
         """Update the status of a case.
 
         This function will create an Event to log that a user have updated the
         status of a case. Also the status of the case will be updated.
-        Status could be anyone of: 
+        Status could be anyone of:
             ("prioritized", "inactive", "active", "solved", "archived")
 
         Arguments:
@@ -202,15 +201,15 @@ class EventHandler(object):
             user (dict): A User object
             status (str): The new status of the case
             link (str): The url to be used in the event
-        
+
         Returns:
             updated_case
         """
-        
+
         if not status in CASE_STATUSES:
             logger.warning("Status {0} is invalid".format(status))
             return None
-        
+
         logger.info("Creating event for updating status of {0} to {1}".format(
                     case['display_name'], status))
 
@@ -226,7 +225,7 @@ class EventHandler(object):
 
         logger.info("Updating {0} to status {1}".format(case['display_name'], status))
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$set': {'status':status}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -245,7 +244,7 @@ class EventHandler(object):
             user (dict): A User object
             link (str): The url to be used in the event
             content (str): The content for what should be added to the synopsis
-        
+
         Returns:
             updated_case
         """
@@ -266,7 +265,7 @@ class EventHandler(object):
         logger.info("Updating the synopsis for case {0}".format(
                     case['display_name']))
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$set': {'synopsis':content}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -281,7 +280,7 @@ class EventHandler(object):
             case (dict): Case object
             user (dict): A User object
             link (str): The url to be used in the event
-        
+
         Returns:
             updated_case (dict)
         """
@@ -302,7 +301,7 @@ class EventHandler(object):
                     case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$set': {'status':'archived'}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -317,7 +316,7 @@ class EventHandler(object):
             case (dict): Case object
             user (dict): A User object
             link (str): The url to be used in the event
-        
+
         Returns:
             updated_case(dict)
         """
@@ -338,7 +337,7 @@ class EventHandler(object):
                     case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$set': {'research_requested':True}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -363,7 +362,7 @@ class EventHandler(object):
         """
         try:
             if hpo_term:
-                hpo_results = [{'hpo_term':hpo_term}]
+                hpo_results = [{'hpo_term': hpo_term}]
             elif omim_term:
                 logger.debug("Fetching info for mim term {0}".format(omim_term))
                 hpo_results = phizz.query_disease([omim_term])
@@ -374,8 +373,8 @@ class EventHandler(object):
             raise e
 
         existing_terms = set(term['phenotype_id'] for term in
-                             case.get('phenotype_terms',[]))
-        
+                             case.get('phenotype_terms', []))
+
         updated_case = case
         phenotype_terms = []
         for hpo_result in hpo_results:
@@ -383,15 +382,11 @@ class EventHandler(object):
             hpo_obj = self.hpo_term(hpo_result['hpo_term'])
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
-            
+
             phenotype_id = hpo_obj['hpo_id']
             description = hpo_obj['description']
-
             if phenotype_id not in existing_terms:
-                phenotype_term = dict(
-                                    phenotype_id=phenotype_id,
-                                    feature=description
-                                )
+                phenotype_term = dict(phenotype_id=phenotype_id, feature=description)
                 phenotype_terms.append(phenotype_term)
 
                 logger.info("Creating event for adding phenotype term for case"
@@ -407,31 +402,31 @@ class EventHandler(object):
                     subject=case['display_name'],
                     content=phenotype_id
                 )
-        if is_group:
-            updated_case = self.case_collection.find_one_and_update(
-                {'_id': case['_id']},
-                {
-                    '$push': {
-                        'phenotype_terms': {'$each': phenotype_terms},
-                        'phenotype_groups': {'$each': phenotype_terms},
+
+            if is_group:
+                updated_case = self.case_collection.find_one_and_update(
+                    {'_id': case['_id']},
+                    {
+                        '$push': {
+                            'phenotype_terms': {'$each': phenotype_terms},
+                            'phenotype_groups': {'$each': phenotype_terms},
+                        },
                     },
-                },
-                return_document = pymongo.ReturnDocument.AFTER
-            )
-        else:
-            updated_case = self.case_collection.find_one_and_update(
-                {'_id': case['_id']},
-                {
-                    '$push': {
-                        'phenotype_terms': {'$each': phenotype_terms},
+                    return_document=pymongo.ReturnDocument.AFTER
+                )
+            else:
+                updated_case = self.case_collection.find_one_and_update(
+                    {'_id': case['_id']},
+                    {
+                        '$push': {
+                            'phenotype_terms': {'$each': phenotype_terms},
+                        },
                     },
-                },
-                return_document = pymongo.ReturnDocument.AFTER
-            )
+                    return_document=pymongo.ReturnDocument.AFTER
+                )
 
         logger.debug("Case updated")
         return updated_case
-                      
 
     def remove_phenotype(self, institute, case, user, link, phenotype_id,
                          is_group=False):
@@ -443,12 +438,12 @@ class EventHandler(object):
             user (dict): A User object
             link (dict): The url to be used in the event
             phenotype_id (str): A phenotype id
-        
+
         Returns:
             updated_case(dict)
         """
         logger.info("Removing HPO term from case {0}".format(case['display_name']))
-        
+
         if is_group:
             updated_case = self.case_collection.find_one_and_update(
                 {'_id': case['_id']},
@@ -460,7 +455,7 @@ class EventHandler(object):
                 },
                 return_document = pymongo.ReturnDocument.AFTER
             )
-            
+
         else:
             updated_case = self.case_collection.find_one_and_update(
                 {'_id': case['_id']},
@@ -471,10 +466,9 @@ class EventHandler(object):
                 },
                 return_document = pymongo.ReturnDocument.AFTER
             )
-            
+
         logger.info("Creating event for removing phenotype term {0}"\
-                    " from case {1}".format(
-                    phenotype_id, case['display_name']))
+                    " from case {1}".format(phenotype_id, case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -550,7 +544,7 @@ class EventHandler(object):
             user (dict): A User object
             link (str): The url to be used in the event
             variant (dict): A variant object
-        
+
         Returns:
             updated_case
         """
@@ -559,7 +553,7 @@ class EventHandler(object):
 
         # add variant to list of pinned references in the case model
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$push': {'suspects': variant['_id']}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -575,7 +569,7 @@ class EventHandler(object):
         )
         self.create_event(category='variant', **kwargs)
         self.create_event(category='case', **kwargs)
-        
+
         return updated_case
 
     def unpin_variant(self, institute, case, user, link, variant):
@@ -587,7 +581,7 @@ class EventHandler(object):
             user (dict): A User object
             link (str): The url to be used in the event
             variant (dict): A variant object
-        
+
         Returns:
             updated_case(dict)
         """
@@ -596,9 +590,9 @@ class EventHandler(object):
 
         logger.info("Remove variant from list of references in the case"\
                     " model")
-        
+
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$pull': {'suspects': variant['_id']}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -613,7 +607,7 @@ class EventHandler(object):
             variant_id=variant['variant_id'],
             subject=variant['display_name'],
         )
-        
+
         return updated_case
 
     def order_sanger(self, institute, case, user, link, variant):
@@ -625,15 +619,15 @@ class EventHandler(object):
             user (dict): A User object
             link (str): The url to be used in the event
             variant (dict): A variant object
-        
+
         Returns:
             updated_case(dict)
         """
         logger.info("Creating event for ordering sanger for variant"\
                     " {0}".format(variant['display_name']))
-        
+
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {'$set': {'sanger_ordered': True}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -666,7 +660,7 @@ class EventHandler(object):
 
     def validate(self, institute, case, user, link, variant, validate_type):
         """Mark validation status for a variant.
-        
+
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
@@ -675,16 +669,16 @@ class EventHandler(object):
             variant (dict): A variant object
             validate_type(str): The outcome of validation.
                                 choices=('True positive', 'False positive')
-        
+
         Returns:
             updated_variant(dict)
         """
         if not validate_type in ['True positive', 'False positive']:
             logger.warning("Invalid validation string: %s", validate_type)
             return
-        
+
         updated_variant = self.variant_collection.find_one_and_update(
-            {'_id':variant['_id']}, 
+            {'_id':variant['_id']},
             {'$set': {'validation': validate_type}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -723,9 +717,9 @@ class EventHandler(object):
 
         logger.info("Marking case {0} as solved".format(
                     case['display_name']))
-        
+
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {
                 '$push': {'causatives': variant['_id']},
                 '$set': {'status': 'solved'}
@@ -771,7 +765,7 @@ class EventHandler(object):
             user (dict): A User object
             link (str): The url to be used in the event
             variant (dict): A variant object
-        
+
         Returns:
             updated_case(dict)
 
@@ -781,7 +775,7 @@ class EventHandler(object):
                     display_name, case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {
                 '$pull': {'causatives': variant['_id']},
             },
@@ -792,7 +786,7 @@ class EventHandler(object):
         if len(case.get('causatives', [])) == 0:
             logger.info("Marking case as 'active'")
             updated_case = self.case_collection.find_one_and_update(
-                {'_id':case['_id']}, 
+                {'_id':case['_id']},
                 {
                     '$set': {'status': 'active'}
                 },
@@ -823,7 +817,7 @@ class EventHandler(object):
             variant_id=variant['variant_id'],
             subject=variant['display_name'],
         )
-        
+
         return updated_case
 
     def update_manual_rank(self, institute, case, user, link, variant,
@@ -840,7 +834,7 @@ class EventHandler(object):
             link (str): The url to be used in the event
             variant (dict): A variant object
             manual_rank (int): The new manual rank
-        
+
         Return:
             updated_variant
 
@@ -860,13 +854,13 @@ class EventHandler(object):
           )
         logger.info("Setting manual rank to {0} for variant {1}".format(
               manual_rank, variant['display_name']))
-        
+
         updated_variant = self.variant_collection.find_one_and_update(
-            {'_id':variant['_id']}, 
+            {'_id':variant['_id']},
             {'$set': {'manual_rank': manual_rank}},
             return_document = pymongo.ReturnDocument.AFTER
         )
-        
+
         logger.debug("Variant updated")
         return updated_variant
 
@@ -874,18 +868,18 @@ class EventHandler(object):
     def mark_checked(self, institute, case, user, link,
                      unmark=False):
         """Mark a case as checked from an analysis point of view.
-        
+
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
             link (str): The url to be used in the event
             unmark (bool): If case should ve unmarked
-        
+
         Return:
             updated_case
         """
-        
+
         logger.info("Updating checked status of {}"
                     .format(case['display_name']))
 
@@ -904,7 +898,7 @@ class EventHandler(object):
                     .format(case['display_name'], status))
         analysis_checked = False if unmark else True
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {
                 '$set': {'analysis_checked': analysis_checked}
             },
@@ -915,13 +909,13 @@ class EventHandler(object):
 
     def request_rerun(self, institute, case, user, link):
         """Request a case to be re-analyzed.
-        
+
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
             link (str): The url to be used in the event
-        
+
         Return:
             updated_case
         """
@@ -939,7 +933,7 @@ class EventHandler(object):
         )
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {
                 '$set': {'rerun_requested': True}
             },
@@ -967,14 +961,14 @@ class EventHandler(object):
 
     def share(self, institute, case, collaborator_id, user, link):
         """Share a case with a new institute.
-        
+
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
             collaborator_id (str): A instute id
             user (dict): A User object
             link (str): The url to be used in the event
-        
+
         Return:
             updated_case
         """
@@ -992,7 +986,7 @@ class EventHandler(object):
         )
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {
                 '$push': {'collaborators': collaborator_id}
             },
@@ -1003,17 +997,17 @@ class EventHandler(object):
 
     def unshare(self, institute, case, collaborator_id, user, link):
         """Revoke access for a collaborator for a case.
-        
+
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
             collaborator_id (str): A instute id
             user (dict): A User object
             link (str): The url to be used in the event
-        
+
         Return:
             updated_case
-        
+
         """
         if collaborator_id not in case['collaborators']:
             raise ValueError("collaborator doesn't have access to case")
@@ -1029,7 +1023,7 @@ class EventHandler(object):
         )
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']}, 
+            {'_id':case['_id']},
             {
                 '$pull': {'collaborators': collaborator_id}
             },
@@ -1042,17 +1036,17 @@ class EventHandler(object):
     def diagnose(self, institute, case, user, link, level,
                  omim_id, remove=False):
         """Diagnose a case using OMIM ids.
-                 
+
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
             link (str): The url to be used in the event
             level (str): choices=('phenotype','gene')
-        
+
         Return:
             updated_case
-                 
+
         """
         if level == 'phenotype':
             diagnosis_list = case.get('diagnosis_phenotypes', [])
@@ -1065,16 +1059,16 @@ class EventHandler(object):
 
         if remove and omim_number in diagnosis_list:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id':case['_id']}, 
+                {'_id':case['_id']},
                 {
                     '$pull': {'diagnosis_list': omim_number}
                 },
                 return_document = pymongo.ReturnDocument.AFTER
             )
-            
+
         elif omim_number not in diagnosis_list:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id':case['_id']}, 
+                {'_id':case['_id']},
                 {
                     '$push': {'diagnosis_list': omim_number}
                 },

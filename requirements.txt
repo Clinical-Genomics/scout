@@ -9,6 +9,7 @@ Flask-OAuthlib
 Flask-Markdown
 Flask-WTF
 coloredlogs
+query_phenomizer
 
 # unclear
 mongoengine

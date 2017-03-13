@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-{% from "utils.html" import flash_messages %}
+{% from "cases/actionbar.html" import action_bar, research_modal, rerun_modal %}
+{% from "utils.html" import flash_messages, comments_panel, activity_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -25,7 +26,9 @@
     {{ flash_messages() }}
 
     <div class="row">
-      <div class="col-sm-3 col-md-2 sidebar {{ status_class }}"></div>
+      <div class="col-sm-3 col-md-2 sidebar {{ status_class }}">
+        {{ action_bar(institute, case, collaborators) }}
+      </div>
       <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         <div class="row">
           <div class="col-xs-12 col-md-6">{{ variants_buttons() }}</div>
@@ -41,6 +44,16 @@
         <div class="row">
           <div class="col-xs-12 col-md-4">{{ candidates_list() }}</div>
           <div class="col-xs-12 col-md-4">{{ diagnosis_panel() }}</div>
+          <div class="col-md-4">{{ comments_panel(institute, case, current_user, comments) }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">{{ phenotype_groups_panel() }}</div>
+          <div class="col-md-6">{{ phenotypes_panel() }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">{{ activity_panel(events) }}</div>
         </div>
       </div>
     </div>
@@ -73,7 +86,7 @@
       {% for variant in causatives %}
         <li class="list-group-item">
           <a href="{{ url_for('variants.variant', institute_id=institute._id,
-                              case_id=case.display_name, variant_id=variant.id) }}">
+                              case_name=case.display_name, variant_id=variant.id) }}">
             {{ variant.hgnc_symbols|join(', ') }}
           </a>
         </li>
@@ -295,6 +308,138 @@
           Add
         </button>
       </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro phenotype_groups_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Phenotype groups</div>
+    <ul class="list-group">
+      {% for hpo_term in case.phenotype_groups %}
+        {{ hpo_group_item(hpo_term) }}
+      {% else %}
+        <li class="list-group-item">No HPO groups added yet.</li>
+      {% endfor %}
+    </ul>
+    <div class="panel-body">
+      <form method="POST"
+            action="{{ url_for('cases.phenotypes', institute_id=institute._id,
+                               case_name=case.display_name, is_group='yes') }}">
+        <div class="row">
+          <div class="col-xs-7">
+            <select class="form-control" name="hpo_term">
+              <option>Add HPO group...</option>
+              {% for hpo_id, group in hpo_groups.items() %}
+                <option value="{{ hpo_id }}">
+                  {{ group.name }} ({{ group.abbr }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-5">
+            <button class="btn btn-default form-control" type="submit">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    {% set url = 'http://compbio.charite.de/hpoweb/showterm?id=HP:0000018' %}
+    <div class="panel-heading panel-heading-secondary">
+      Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)
+    </div>
+    <div class="panel-body">
+      <form method="POST"
+            action="{{ url_for('cases.phenotypes', institute_id=institute._id,
+                               case_name=case.display_name) }}">
+        <div class="row">
+          <div class="col-xs-7">
+            <input name="hpo_term" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+          </div>
+          <div class="col-xs-5">
+            <button class="btn btn-default form-control">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro hpo_group_item(hpo_term) %}
+  <li class="list-group-item">
+    <div class="flex">
+      <div class="flex-fill">
+        {{ hpo_term.feature }}
+        <span class="label label-info">
+          <a href="{{ hpo_term.hpo_link }}" target="_blank">
+            {{ hpo_term.phenotype_id }}
+          </a>
+        </span>
+      </div>
+      {{ remove_form(url_for('cases.phenotypes', institute_id=institute._id,
+                             case_name=case.display_name, phenotype_id=hpo_term.phenotype_id, is_group='yes')) }}
+    </div>
+  </li>
+{% endmacro %}
+
+{% macro phenotypes_panel() %}
+  <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+    <div class="panel panel-default">
+      <div class="panel-heading">Added phenotypes</div>
+      <ul class="list-group">
+        {% for hpo_term in case.phenotype_terms %}
+          {{ hpo_item(hpo_term) }}
+        {% else %}
+          <li class="list-group-item">No phenotypes added yet</li>
+        {% endfor %}
+      </ul>
+      <div class="panel-footer">
+        <div class="row">
+          <div class="col-xs-3">
+            <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+          </div>
+          <div class="col-xs-5">
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" name="action" value="GENERATE">HPO panel</button>
+              </span>
+              <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro hpo_item(hpo_term) %}
+  <li class="list-group-item">
+    <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
+           {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
+    {{ hpo_term.feature }}
+    <span class="label label-info">
+      <a href="{{ hpo_term.hpo_link }}" target="_blank">
+        {{ hpo_term.phenotype_id }}
+      </a>
+    </span>
+  </li>
+{% endmacro %}
+
+{% macro remove_form(url, hidden_input=None, button_name=none) %}
+  <form action="{{ url }}" method="POST">
+    {% if hidden_input %}
+      <input type="hidden"
+             name="{{ hidden_input[0] }}"
+             value="{{ hidden_input[1] }}">
+    {% endif %}
+    <div class="pull-right">
+      <button class="btn btn-link btn-sm"
+              name="{{ button_name if button_name }}"
+              type="submit">
+        <span class="glyphicon glyphicon-remove"></span>
+      </button>
     </div>
   </form>
 {% endmacro %}
