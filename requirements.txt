@@ -4,7 +4,7 @@ Flask>=0.10
 Flask-DebugToolbar
 Flask-PyMongo
 Flask-Bootstrap
-path
+path.py
 
 # unclear
 mongoengine
