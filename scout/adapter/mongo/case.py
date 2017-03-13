@@ -63,13 +63,22 @@ class CaseHandler(object):
         """Update the dynamic gene list for a case
 
         Arguments:
-            case (Case): The case that should be updated
+            case (dict): The case that should be updated
             gene_list (list): The list of genes that should be added
+        
+        Returns:
+            updated_case(dict)
         """
-        self.mongoengine_adapter.update_dynamic_gene_list(
-            case=case,
-            gene_list=gene_list
+        logger.info("Updating the dynamic gene list for case {0}".format(
+                    case['display_name']))
+        
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case['_id']},
+            {'$set': {'dynamic_gene_list': gene_list}},
+            return_document = pymongo.ReturnDocument.AFTER
         )
+        logger.debug("Case updated")
+        return updated_case
 
     def case(self, case_id=None, institute_id=None, display_name=None):
         """Fetches a single case from database

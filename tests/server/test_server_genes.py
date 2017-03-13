@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import url_for
+# from flask import url_for
 
 
 # def test_genes(client):

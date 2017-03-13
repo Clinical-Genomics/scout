@@ -30,10 +30,6 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 import logging
 from datetime import datetime
 
-from pymongo import MongoClient
-
-from scout.adapter.mongoengine import MongoEngineAdapter
-
 from .hgnc import GeneHandler
 from .case import CaseHandler
 from .institute import InstituteHandler
@@ -73,5 +69,3 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.hpo_term_collection = database.hpo_term
         self.disease_term_collection = database.disease_term
         self.variant_collection = database.variant
-        # This will be used during the transfer to pymongo
-        self.mongoengine_adapter = MongoEngineAdapter()

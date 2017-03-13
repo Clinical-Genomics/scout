@@ -12,11 +12,8 @@ import pymongo
 # Adapter stuff
 from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
-from scout.server.app import create_app
+# from scout.server.app import create_app
 
-# from mongoengine import connect
-
-from scout.models import Variant, Case, Event, PhenotypeTerm, Institute, User
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
@@ -61,10 +58,10 @@ genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
 mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 
-@pytest.fixture
-def app():
-    app = create_app(config=dict(DEBUG_TB_ENABLED=False, MONGO_PORT = 27017, MONGO_DBNAME = 'variantDatabase'))
-    return app
+# @pytest.fixture
+# def app():
+#     app = create_app(config=dict(DEBUG_TB_ENABLED=False, MONGO_PORT = 27017, MONGO_DBNAME = 'variantDatabase'))
+#     return app
 
 ##################### Gene fixtures #####################
 

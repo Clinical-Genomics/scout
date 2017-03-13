@@ -5,7 +5,6 @@ import yaml
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
 from scout.adapter.client import get_connection
-from mongoengine import connect
 from pymongo.errors import (ConnectionFailure)
 
 # General, logging
@@ -85,16 +84,6 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
                 )
     except ConnectionFailure:
         ctx.abort()
-
-    # Establish a connection for mongoengine
-    # This will be removed when we onky use pymongo
-    connect(
-        mongo_configs['mongodb'],
-        host=mongo_configs['host'],
-        port=mongo_configs['port'],
-        username=mongo_configs['username'],
-        password=mongo_configs['password']
-    )
 
     database = client[mongo_configs['mongodb']]
     logger.debug("Setting up a mongo adapter")
