@@ -2,12 +2,15 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def build_disease_term(disease_info, hgnc_genes={}):
+def build_disease_term(disease_info, alias_genes={}):
     """Build a disease phenotype object
     
     Args:
         disease_info(dict): Dictionary with phenotype information
-        adapter(scout.adapter.MongoAdapter)
+        alias_genes(dict): {
+                    <alias_symbol>: {
+                                        'true': hgnc_id or None,
+                                        'ids': [<hgnc_id>, ...]}}
     
     Returns:
         disease_obj(dict): Formated for mongodb
@@ -42,14 +45,20 @@ def build_disease_term(disease_info, hgnc_genes={}):
     if inheritance_models:
         disease_obj['inheritance'] = list(inheritance_models)
 
-    hgnc_ids = []
+    hgnc_ids = set()
     for hgnc_symbol in disease_info.get('hgnc_symbols', []):
         ## TODO need to consider genome build here?
-        if hgnc_symbol in hgnc_genes:
-            hgnc_ids.append(hgnc_genes[hgnc_symbol]['hgnc_id'])
+        if hgnc_symbol in alias_genes:
+            # If the symbol identifies a unique gene we add that
+            if alias_genes[hgnc_symbol]['true']:
+                hgnc_ids.add(alias_genes[hgnc_symbol]['true'])
+            else:
+                for hgnc_id in alias_genes[hgnc_symbol]['ids']:
+                    hgnc_ids.add(hgnc_id)
         else:
-            log.warning("Gene %s could not be found in database", hgnc_symbol)
-    disease_obj['genes'] = hgnc_ids
+            log.warning("Gene symbol %s could not be found in database", hgnc_symbol)
+
+    disease_obj['genes'] = list(hgnc_ids)
     
     return disease_obj
     

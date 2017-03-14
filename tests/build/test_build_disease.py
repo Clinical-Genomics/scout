@@ -8,15 +8,14 @@ def test_build_disease_term(adapter):
         'hgnc_symbols': set(['B3GALT6']),
         'inheritance': set(['AR']),
     }
-    genes = {'B3GALT6': {
-                'hgnc_id': 17978,
-                'hgnc_symbol': 'B3GALT6',
-                'build': '37'
-                }
-            }
+    alias_genes = {}
+    alias_genes['B3GALT6'] = {
+            'true': 17978,
+            'ids': [17978],
+        }
     
     ## WHEN building the disease term
-    disease_obj = build_disease_term(disease_info, genes)
+    disease_obj = build_disease_term(disease_info, alias_genes)
     
     ## THEN assert the term is on the correct format
     

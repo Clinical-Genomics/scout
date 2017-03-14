@@ -20,11 +20,11 @@ def load_hpo(adapter, hpo_lines, disease_lines):
         hpo_lines(iterable(str))
         disease_lines(iterable(str))
     """
-    genes = adapter.hgncsymbol_to_gene()
+    alias_genes = adapter.genes_by_alias()
     
-    load_hpo_terms(adapter, hpo_lines, genes)
+    load_hpo_terms(adapter, hpo_lines, alias_genes)
     
-    load_disease_terms(adapter, disease_lines, genes)
+    load_disease_terms(adapter, disease_lines, alias_genes)
 
 def load_hpo_terms(adapter, hpo_lines, genes):
     """Load the hpo terms into the database
