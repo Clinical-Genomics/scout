@@ -177,11 +177,11 @@ class VariantHandler(object):
                 institute_id(str)
 
             Yields:
-                causatives(iterable(Variant))
+                str: variant document id
         """
         for case in self.cases(collaborator=institute_id, has_causatives=True):
-            for variant in case.get('causatives',[]):
-                yield variant
+            for variant_id in case.get('causatives',[]):
+                yield variant_id
 
     def check_causatives(self, case_obj):
         """Check if there are any variants that are previously marked causative
@@ -197,13 +197,12 @@ class VariantHandler(object):
                 causatives(iterable(Variant))
         """
         #owner is a string
-        causatives = self.get_causatives(case_obj['owner'])
-        variant_ids = [variant['variant_id'] for variant in causatives]
+        variant_ids = list(self.get_causatives(case_obj['owner']))
         if len(variant_ids) == 0:
             return []
 
         return self.variant_collection.find({
-            'case_id': case_obj['case_id'],
+            'case_id': case_obj['_id'],
             'variant_id': {'$in': variant_ids}
         })
 

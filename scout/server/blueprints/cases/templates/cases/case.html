@@ -53,6 +53,11 @@
         </div>
 
         <div class="row">
+          <div class="col-md-6">{{ genepanels_table() }}</div>
+          <div class="col-md-6">{{ hpo_genelist_panel() }}</div>
+        </div>
+
+        <div class="row">
           <div class="col-md-12">{{ activity_panel(events) }}</div>
         </div>
       </div>
@@ -442,6 +447,70 @@
       </button>
     </div>
   </form>
+{% endmacro %}
+
+{% macro hpo_genelist_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
+    </div>
+    <ul class="list-group fixed-panel">
+      {% for hpo_gene in case.dynamic_gene_list %}
+        <li class="list-group-item" title="{{ hpo_gene.description }}">
+          {{ hpo_gene.gene_id }}
+        </li>
+      {% else %}
+        <li class="list-group-item">No gene list generated</li>
+      {% endfor %}
+    </ul>
+    <div class="panel-footer">
+       <a class="btn btn-default form-control"
+          href="{{ url_for('variants.variants',
+                           institute_id=institute.id,
+                           case_name=case.display_name,
+                           variant_type='clinical',
+                           gene_panels=['hpo']) }}">
+           Clinical HPO variants
+         </a>
+     </div>
+  </div>
+{% endmacro %}
+
+{% macro genepanels_table() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Gene panels</div>
+    <div class="table-responsive fixed-panel">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Panel</th>
+            <th>Version</th>
+            <th>Genes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for panel in case.panels %}
+            <tr {% if panel.is_default %} class="bg-info" {% endif %}>
+              <td>
+                <a href="{{ url_for('cases.panel', institute_id=institute._id, case_name=case.display_name, panel_id=panel.panel_id) }}">
+                  {{ panel.display_name }}
+                </a>
+                {% if panel.is_default %}
+                  <span class="label label-default pull-right">default</span>
+                {% endif %}
+              </td>
+              <td>{{ panel.version }} ({{ panel.updated_at.date() }})</td>
+              <td>{{ panel.nr_genes }} genes</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">No panels linked to case</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 {% endmacro %}
 
 {% block scripts %}

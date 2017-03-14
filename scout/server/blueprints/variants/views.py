@@ -17,7 +17,7 @@ def variants(institute_id, case_name, variant_type):
 
     form = FiltersForm(request.args)
     panel_choices = [(panel['panel_id'], panel['display_name'])
-                     for panel in case_obj['panels']]
+                     for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
