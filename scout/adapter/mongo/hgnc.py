@@ -133,6 +133,34 @@ class GeneHandler(object):
             hgnc_dict[gene_obj['hgnc_symbol']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict
+    
+    def genes_by_alias(self, build='37'):
+        """Return a dictionary with hgnc symbols as keys and a list of hgnc ids
+         as value.
+        
+        If a gene symbol is listed as primary the list of ids will only consist
+        of that entry
+        """
+        alias_genes = {}
+        for gene in self.hgnc_collection.find({'build':build}):
+            hgnc_id = gene['hgnc_id']
+            hgnc_symbol = gene['hgnc_symbol']
+            for alias in gene['aliases']:
+                true_id = None
+                if alias == hgnc_symbol:
+                    true_id = hgnc_id
+                if alias in alias_genes:
+                    alias_genes[alias]['ids'].add(hgnc_id)
+                    if true_id:
+                        alias_genes[alias]['true'] = hgnc_id
+                else:
+                    alias_genes[alias] = {
+                        'true': true_id,
+                        'ids': set([hgnc_id])
+                    }
+        
+        return alias_genes
+        
 
     def to_hgnc(self, hgnc_alias, build='37'):
         """Check if a hgnc symbol is an alias

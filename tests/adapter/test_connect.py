@@ -16,6 +16,12 @@ def test_get_connection():
     ##THEN assert that the port is default
     assert client.PORT == 27017
 
-def test_pytest(variant_clinical_file):
-    assert variant_clinical_file
+# def test_get_connection_uri(pymongo_client):
+#     ##GIVEN a connection to a mongodatabase
+#     uri = 'mongomock://'
+#     client = get_connection(uri=uri)
+#     ##WHEN getting a mongo client
+#     ##THEN assert that the port is default
+#     assert client.PORT == 27017
+
 

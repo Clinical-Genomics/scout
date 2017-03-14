@@ -27,31 +27,46 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 @click.group()
 @click.option('-l', '--logfile',
-              type=click.Path(exists=False),
-              help="Path to log file. If none logging is printed to stderr."
+    type=click.Path(exists=False),
+    help="Path to log file. If none logging is printed to stderr.",
 )
 @click.option('--loglevel',
-              default='INFO',
-              type=click.Choice(LOG_LEVELS),
-              help="Set the level of log output.",
-              show_default=True,
+    default='INFO',
+    type=click.Choice(LOG_LEVELS),
+    help="Set the level of log output.",
+    show_default=True,
 )
-@click.option('-db', '--mongodb')
+@click.option('-db', '--mongodb',
+    default='scout',
+    show_default=True,
+    help='Name of mongo database',
+)
 @click.option('-u', '--username')
 @click.option('-p', '--password')
-@click.option('-port', '--port', type=int,
-              help="Specify port to look for the mongo database")
+@click.option('-port', '--port', 
+    default=27017,
+    show_default=True,
+    help="Specify on what port to listen for the mongod",
+)
 @click.option('-h', '--host',
-              help="Specify the host where to look for the mongo database.")
+    default='localhost',
+    show_default=True,
+    help="Specify the host for the mongo database.",
+)
 @click.option('-c', '--config',
-              type=click.Path(exists=True),
-              help="Specify the path to a config file with database info."
+    type=click.Path(exists=True),
+    help="Specify the path to a config file with database info.",
+)
+@click.option('--conn_host',
+    type=str,
+    show_default=True,
+    help="Mostly used for testing."
 )
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
-        config):
-    """Manage Scout interactions."""
+        conn_host, config):
+    """scout: manage interactions with a scout instance."""
     init_log(logger, logfile, loglevel)
     logger.info("Running scout version %s", __version__)
 
@@ -62,25 +77,30 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
         with open(config, 'r') as in_handle:
             configs = yaml.load(in_handle)
 
-    mongo_configs['mongodb'] = (mongodb or configs.get('mongodb') or
-                                'variantDatabase')
-    logger.debug("Setting database name to {0}".format(mongo_configs['mongodb']))
+    mongo_configs['mongodb'] = (mongodb or configs.get('mongodb'))
+    logger.debug("Setting database name to %s", mongo_configs['mongodb'])
 
-    mongo_configs['host'] = (host or configs.get('host') or 'localhost')
+    mongo_configs['host'] = (host or configs.get('host'))
     logger.debug("Setting host to {0}".format(mongo_configs['host']))
 
-    mongo_configs['port'] = (port or configs.get('port') or 27017)
+    mongo_configs['port'] = (port or configs.get('port'))
     logger.debug("Setting port to {0}".format(mongo_configs['port']))
 
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
-
+    # mongo uri looks like:
+    # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+    uri = None
+    if conn_host:
+        uri = "{0}{1}:{2}@{3}:{4}".format(
+                conn_host, username, password, host, port)
     try:
         client = get_connection(
                     host=mongo_configs['host'],
                     port=mongo_configs['port'],
                     username=mongo_configs['username'],
                     password=mongo_configs['password'],
+                    uri=uri
                 )
     except ConnectionFailure:
         ctx.abort()
