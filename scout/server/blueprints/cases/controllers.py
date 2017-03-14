@@ -17,12 +17,14 @@ def user_institutes(store, user_obj):
         yield (institute, case_count)
 
 
-def cases(case_query):
+def cases(store, case_query):
     """Preprocess case objects."""
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query:
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
+        if case_obj.get('assignee'):
+            case_obj['assignee'] = store.user(case_obj['assignee'])
         case_groups[case_obj['status']].append(case_obj)
 
     data = {

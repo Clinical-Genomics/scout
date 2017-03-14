@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for)
+                   request, url_for, Response)
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -27,7 +28,7 @@ def cases(institute_id):
     institute_obj = store.institute(institute_id)
     all_cases = store.cases(institute_id, name_query=query,
                             skip_assigned=skip_assigned)
-    data = controllers.cases(all_cases)
+    data = controllers.cases(store, all_cases)
     return dict(institute=institute_obj, **data)
 
 
@@ -198,3 +199,15 @@ def assign(institute_id, case_name):
     else:
         store.assign(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/api/v1/hpo-terms')
+def hpoterms():
+    """Search for HPO terms."""
+    query = request.args.get('query')
+    if query is None:
+        return abort(500)
+    terms = store.hpo_terms(query=query).limit(8)
+    json_terms = [{'name': '{} | {}'.format(term['hpo_id'], term['description']),
+                   'id': term['hpo_id']} for term in terms]
+    return Response(dumps(json_terms), mimetype='application/json; charset=utf-8')
