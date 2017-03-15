@@ -4,6 +4,7 @@ from flask import Blueprint, request
 from scout.constants import SEVERE_SO_TERMS
 from scout.server.extensions import store
 from scout.server.utils import templated, institute_and_case
+from . import controllers
 from .forms import FiltersForm
 
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
@@ -20,8 +21,11 @@ def variants(institute_id, case_name, variant_type):
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
 
+    variants_query = store.variants(case_obj['_id'])
+    variants = controllers.variants(store, variants_query)
+
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
-                form=form, severe_so_terms=SEVERE_SO_TERMS)
+                form=form, severe_so_terms=SEVERE_SO_TERMS, variants=variants)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>')
