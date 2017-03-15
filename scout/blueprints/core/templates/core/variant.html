@@ -512,33 +512,31 @@
         Variant
         <span class="pull-right">
           {% for model in variant.genetic_models|sort %}
-            <span class="label label-default">{{ model }}</span>
+            {{ model }}
           {% else %}
-            <span class="label label-warning">No models followed</span>
+            No models followed
           {% endfor %}
         </span>
       </li>
-      {% if variant.expected_inheritance %}
-        <li class="list-group-item">
-          Expected
-          <span class="pull-right">
-            {% for model in variant.expected_inheritance|sort %}
-              <span class="label label-default">{{ model }}</span>
-            {% endfor %}
-          </span>
-        </li>
-      {% endif %}
-      {% if variant.omim_inheritance_models %}
-        <li class="list-group-item">
-          OMIM
-          <span class="pull-right">
-            {% for model in variant.omim_inheritance_models|sort %}
-              <span class="label label-default">{{ model }}</span>
-            {% endfor %}
-          </span>
-        </li>
-      {% endif %}
     </ul>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Gene</th>
+          <th>OMIM</th>
+          <th>Manual</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene, omim, manual in variant.inheritance_model_genes %}
+          <tr>
+            <td>{{ gene }}</td>
+            <td>{{ omim|join(', ') }}</td>
+            <td>{{ manual|join(', ') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
     <div class="panel-heading">Incomplete penetrance</div>
     <table class="table table-bordered">
       <thead>

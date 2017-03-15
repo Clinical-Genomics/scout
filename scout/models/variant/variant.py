@@ -196,6 +196,18 @@ class Variant(Document):
                     panel_penetrance = False
                 yield name, common_penetrance, panel_penetrance
 
+    @property
+    def inheritance_model_genes(self):
+        for gene in self.genes:
+            if gene.common:
+                name = gene.common.hgnc_symbol
+                omim_models = list(gene.common.inheritance_models)
+                if getattr(gene, 'panel_info', None):
+                    panel_models = gene.panel_info.inheritance_models
+                else:
+                    panel_models = []
+                yield name, omim_models, panel_models
+
     def has_comments(self, case):
         """
         Return True is there are any comments for this variant in the database
@@ -233,13 +245,11 @@ class Variant(Document):
     @property
     def omim_inheritance_models(self):
         """Return a list of OMIM inheritance models (phenotype based)."""
-        models = ((phenotype.disease_models for phenotype in
-                   gene.omim_phenotypes) for gene in self.genes)
-
-        # untangle multiple nested list of list of lists...
-        return set(
-            itertools.chain.from_iterable(itertools.chain.from_iterable(models))
-        )
+        models = set()
+        for gene in self.genes:
+            if gene.common:
+                models.update(gene.common.inheritance_models)
+        return models
 
     @property
     def region_annotations(self):
@@ -288,6 +298,8 @@ class Variant(Document):
         for model in self.genetic_models:
             for omim_model in omim_models:
                 if (model == omim_model) or (omim_model in model):
+
+
                     return True
 
         return False
