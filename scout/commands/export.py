@@ -22,28 +22,25 @@ from scout.export.panel import export_panels
 logger = logging.getLogger(__name__)
 
 
-
-
 @click.command('panel', short_help='Export gene panels')
-@click.argument('panel',
-                nargs=-1,
-                metavar='<panel_name>'
-)
+@click.argument('panel', nargs=-1, metavar='<panel_name>')
 @click.pass_context
 def panel(context, panel):
     """Export gene panels to .bed like format.
-    
+
         Specify any number of panels on the command line
     """
     logger.info("Running scout export panel")
     adapter = context.obj['adapter']
-    
+
     if not panel:
         logger.warning("Please provide at least one gene panel")
         context.abort()
 
     logger.info("Exporting panels: {}".format(', '.join(panel)))
-    export_panels(adapter, panel)
+    for line in export_panels(adapter, panel):
+        click.echo(line)
+
 
 @click.command('genes', short_help='Export genes')
 @click.pass_context
@@ -51,7 +48,7 @@ def genes(context):
     """Export all genes to .bed like format"""
     logger.info("Running scout export genes")
     adapter = context.obj['adapter']
-    
+
     header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
 
     for line in header:
@@ -60,13 +57,14 @@ def genes(context):
     for gene in export_genes(adapter):
         print(gene)
 
+
 @click.command('transcripts', short_help='Export transcripts')
 @click.pass_context
 def transcripts(context):
     """Export all transcripts to .bed like format"""
     logger.info("Running scout export transcripts")
     adapter = context.obj['adapter']
-    
+
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
 
     for line in header:
@@ -75,6 +73,7 @@ def transcripts(context):
     for transcript in export_transcripts(adapter):
         print(transcript)
 
+
 @click.command('variants', short_help='Export variants')
 @click.option('-c', '--collaborator')
 @click.pass_context
@@ -82,7 +81,7 @@ def variants(context, collaborator):
     """Export causatives for a collaborator in .vcf format"""
     logger.info("Running scout export variants")
     adapter = context.obj['adapter']
-    
+
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
 
     if not collaborator:
@@ -100,14 +99,15 @@ def variants(context, collaborator):
     for variant in export_causatives(adapter, collaborator):
         print(variant)
 
+
 @click.command('hpo_genes', short_help='Export hpo gene list')
-@click.argument('hpo_term',nargs=-1)
+@click.argument('hpo_term', nargs=-1)
 @click.pass_context
 def hpo_genes(context, hpo_term):
     """Export a list of genes base on hpo terms"""
     logger.info("Running scout export hpo_genes")
     adapter = context.obj['adapter']
-    
+
     header = ["#Gene_id\tCount"]
 
     if not hpo_term:
@@ -121,7 +121,6 @@ def hpo_genes(context, hpo_term):
         print("{0}\t{1}".format(term[0], term[1]))
 
 
-
 @click.group()
 @click.pass_context
 def export(ctx):
@@ -130,9 +129,9 @@ def export(ctx):
     """
     logger.info("Running scout export")
 
+
 export.add_command(panel)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)
 export.add_command(hpo_genes)
-
