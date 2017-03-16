@@ -66,4 +66,19 @@ def test_get_panel_multiple_versions(panel_database, panel_obj):
     res = adapter.gene_panel(panel_id=panel_obj['panel_name'])
     ## THEN assert that the last version is fetched
     assert res['version'] == 2.0
+
+def test_add_pending(panel_database):
+    adapter = panel_database
+    panel_obj = adapter.panel_collection.find_one()
+    ## GIVEN an adapter with a gene panel
+    res = adapter.gene_panels()
+    assert res.count() == 1
+    ## WHEN adding a pending action
+    res = adapter.add_pending(
+        panel_obj=panel_obj,
+        hgnc_id=1,
+        action='add'
+    )
+    ## THEN assert that the last version is fetched
+    assert len(res['pending']) == 1
     

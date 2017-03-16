@@ -1,5 +1,7 @@
 import logging
 
+import pymongo
+
 from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
@@ -93,4 +95,41 @@ class PanelHandler(object):
         logger.info("Gene to panels done")
 
         return gene_dict
+    
+    def add_pending(self, panel_obj, hgnc_id, action, info=None):
+        """Add a pending action to a gene panel
+        
+        Store the pending actions in panel.pending
+        
+        Args:
+            panel_obj(dict): The panel that is about to be updated
+            hgnc_id(int): 
+            action(str): choices=['add','delete','update']
+        
+        Returns:
+            updated_panel(dict):
+        
+        """
+        valid_actions = ['add', 'delete', 'update']
+        if not action in valid_actions:
+            raise ValueError("Invalid action {0}".format(action))
+        
+        info = info or {}
+        pending_action = {
+            'hgnc_id': hgnc_id,
+            'action': action,
+            'info': info
+        }
+        
+        updated_panel = self.panel_collection.find_one_and_update(
+            {'_id': panel_obj['_id']},
+            {
+                '$push': {
+                    'pending': pending_action
+                }
+            },
+            return_document = pymongo.ReturnDocument.AFTER
+        )
+        
+        return updated_panel
         
