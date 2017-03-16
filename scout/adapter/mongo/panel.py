@@ -96,6 +96,27 @@ class PanelHandler(object):
 
         return gene_dict
     
+    def update_panel(self, panel_obj):
+        """Replace a existing gene panel with a new one
+        
+        Keeps the object id
+        
+        Args:
+            panel_obj(dict)
+        
+        Returns:
+            updated_panel(dict)
+        """
+        logger.info("Updating panel %s", panel_obj['panel_name'])
+        updated_panel = self.panel_collection.find_one_and_replace(
+            {'_id': panel_obj['_id']},
+            panel_obj,
+            return_document = pymongo.ReturnDocument.AFTER
+        )
+        
+        return updated_panel
+        
+    
     def add_pending(self, panel_obj, hgnc_id, action, info=None):
         """Add a pending action to a gene panel
         

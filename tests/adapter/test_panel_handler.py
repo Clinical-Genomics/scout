@@ -81,4 +81,34 @@ def test_add_pending(panel_database):
     )
     ## THEN assert that the last version is fetched
     assert len(res['pending']) == 1
+
+def test_add_pending_wrong_action(panel_database):
+    adapter = panel_database
+    panel_obj = adapter.panel_collection.find_one()
+    ## GIVEN an adapter with a gene panel
+    res = adapter.gene_panels()
+    assert res.count() == 1
+    ## WHEN adding a pending action with invalid action
+    with pytest.raises(ValueError):
+    ## THEN assert that an error is raised
+        res = adapter.add_pending(
+            panel_obj=panel_obj,
+            hgnc_id=1,
+            action='hello'
+        )
+
+def test_update_panel_panel_name(panel_database):
+    adapter = panel_database
+    panel_obj = adapter.panel_collection.find_one()
+    old_name = panel_obj['panel_name']
+    new_name = 'new name'
+    ## GIVEN an adapter with a gene panel
+    res = adapter.gene_panels()
+    assert res.count() == 1
+    ## WHEN updating the panel name
+    panel_obj['panel_name'] = new_name
     
+    res = adapter.update_panel(panel_obj)
+    
+    ## THEN assert that the last version is fetched
+    assert res['panel_name'] == new_name
