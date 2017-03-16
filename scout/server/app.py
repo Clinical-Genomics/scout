@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import coloredlogs
 from flask import Flask, redirect, request, url_for
 from flask_login import current_user
+from flaskext.markdown import Markdown
 
 from . import extensions
-from .blueprints import public, genes, cases, login
+from .blueprints import public, genes, cases, login, variants
 
 
 def create_app(config_file=None, config=None):
@@ -15,8 +17,10 @@ def create_app(config_file=None, config=None):
     if config:
         app.config.update(config)
 
+    coloredlogs.install(level='DEBUG' if app.debug else 'INFO')
     configure_extensions(app)
     register_blueprints(app)
+    register_filters(app)
 
     @app.before_request
     def check_user():
@@ -42,6 +46,7 @@ def configure_extensions(app):
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
     extensions.oauth.init_app(app)
+    Markdown(app)
 
 
 def register_blueprints(app):
@@ -50,3 +55,33 @@ def register_blueprints(app):
     app.register_blueprint(genes.genes_bp)
     app.register_blueprint(cases.cases_bp)
     app.register_blueprint(login.login_bp)
+    app.register_blueprint(variants.variants_bp)
+
+
+def register_filters(app):
+
+    @app.template_filter()
+    def human_decimal(number, ndigits=4):
+        """Return a standard representation of a decimal number.
+
+        Args:
+            number (float): number to humanize
+            ndigits (int, optional): max number of digits to round to
+
+        Return:
+            str: humanized string of the decimal number
+        """
+        min_number = 10**-ndigits
+
+        if number is None:
+            # NaN
+            return '-'
+        elif number == 0:
+            # avoid confusion over what is rounded and what is actually 0
+            return 0
+        elif number < min_number:
+            # make human readable and sane
+            return "< {}".format(min_number)
+        else:
+            # round all other numbers
+            return round(number, ndigits)

@@ -2,40 +2,8 @@
 {% from "core/case/action-bar.html" import action_bar, research_modal, rerun_modal %}
 {% from "core/utils.html" import comments_panel, activity_panel %}
 
-{% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
-{% endblock %}
-
-{% block top_nav %}
-  <li>
-    <a href="{{ url_for('core.cases', institute_id=institute_id) }}">
-      {{ institute.display_name }}
-    </a>
-  </li>
-  <li class="active">
-    <a href="{{ url_for('core.case', institute_id=institute_id, case_id=case_id) }}">
-      {{ case.display_name }}
-    </a>
-  </li>
-{% endblock %}
-
 {% block content %}
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-xs-12">
-        {% with messages = get_flashed_messages(with_categories=True) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category or 'default' }} alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-      </div>
-    </div>
-
     <div class="row">
       {% if case.status == 'solved' %}
         {% set bg_class = 'bg-success' %}
@@ -47,12 +15,6 @@
       </div>
 
       <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-        {# {% if archive.status in ('before', 'close') %}
-          <div class="row">
-            <div class="col-xs-12">{{ postpone_btn() }}</div>
-          </div>
-        {% endif %} #}
-
         {{ variant_buttons() }}
         {{ matching_list() }}
 
@@ -96,205 +58,6 @@
       Will archive on: {{ archive.date }} -- postpone 30 days?
     </button>
   </form>
-{% endmacro %}
-
-{% macro variant_buttons() %}
-  <div class="form-group">
-    <div class="btn-group btn-group-justified">
-      <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute.id, case_id=case.display_name, variant_type='clinical', gene_panels=case.default_panel_ids) }}">Clinical variants</a>
-
-      <a class="btn btn-default" href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='clinical') }}">Clinical SV variants</a>
-
-      {% if case.is_research %}
-        <a class="btn btn-default" href="{{ url_for('core.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}">Research variants</a>
-
-        <a class="btn btn-default" href="{{ url_for('sv.variants', institute_id=institute.internal_id, case_id=case.display_name, variant_type='research') }}">Research SV variants</a>
-      {% endif %}
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro matching_list() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Matching causatives from other cases</div>
-    <ul class="list-group">
-      {% for variant in causatives %}
-        <li class="list-group-item">
-          <a href="{{ url_for('core.variant',
-                                    institute_id=institute.id,
-                                    case_id=case.display_name,
-                                    variant_id=variant.id) }}">
-            {{ variant.hgnc_symbols|join(', ') }}
-          </a>
-        </li>
-      {% else %}
-        <li class="list-group-item">No matching causative variants.</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endmacro %}
-
-{% macro individuals_table() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Individuals</div>
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Sample</th>
-            <th>Sex</th>
-            <th>Phenotype</th>
-            <th>Sequencing</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'affected' %}class="bg-danger"{% endif %}>
-              <td>{{ ind.display_name }}</td>
-              <td>{{ ind.sex_human }}</td>
-              <td>{{ ind.phenotype_human }}</td>
-              <td>{{ ind.analysis_type|upper }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro pedigree_panel() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Pedigree</div>
-    <div class="panel-body">
-      {% if case.individuals|length == 1 %}
-        <!-- Don't expect a pedigree visualization -->
-        <p>Single sample case: {{ case.individuals.0.display_name }}</p>
-      {% else %}
-        {{ case.madeline_info|safe }}
-      {% endif %}
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro synopsis_panel() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Synopsis</div>
-    <div class="panel-body">
-      {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
-    </div>
-    <div class="panel-footer">
-      <button class="btn btn-default form-control" data-toggle="modal" data-target="#edit-synopsis">Edit</button>
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro modal_synopsis() %}
-  <form action="{{ url_for('api.case_synopsis', institute_id=institute.internal_id, case_id=case.display_name) }}" method="POST">
-    <div class="modal fade" id="edit-synopsis">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Edit synopsis</h4>
-          </div>
-          <div class="modal-body">
-            <textarea name="synopsis" class="form-control" cols="30" rows="10">{{ case.synopsis }}</textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro candidates_list() %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Marked as causative</div>
-    <ul class="list-group">
-      {% for variant in case.causatives %}
-        <li class="list-group-item">
-          <div class="row">
-            <div class="col-xs-8">
-              <span class="glyphicon glyphicon-ok-circle"></span>
-              <a href="{{ url_for('core.variant',
-                                  institute_id=institute.id,
-                                  case_id=case.display_name,
-                                  variant_id=variant.id) }}">
-                {{ variant.hgnc_symbols|join(', ') }}
-              </a>
-              {% if variant.sanger_ordered %}
-                <span class="label label-success">Sanger ordered</span>
-              {% endif %}
-            </div>
-            <div class="col-xs-4">
-              {{ remove_form(url_for('core.unmark_causative',
-                                     institute_id=institute.internal_id,
-                                     case_id=case.display_name,
-                                     variant_id=variant.id)) }}
-            </div>
-          </div>
-        </li>
-      {% else %}
-        <div class="panel-body">No variants marked causative</div>
-      {% endfor %}
-    </ul>
-    <div class="panel-heading panel-heading-secondary">Stong candidates</div>
-    <table class="table table-hover">
-      <colgroup>
-        <col class="col-xs-5">
-        <col class="col-xs-2">
-        <col class="col-xs-4">
-        <col class="col-xs-1">
-      </colgroup>
-      <tbody>
-        {% for variant in case.suspects %}
-          <tr>
-            <td>
-              <span class="glyphicon glyphicon-bookmark"></span>
-              <a href="{{ url_for('core.variant',
-                                  institute_id=variant.institute.id,
-                                  case_id=case.display_name,
-                                  variant_id=variant.id) }}">
-                {{ variant.hgnc_symbols|join(', ') }}
-              </a>
-            </td>
-            <td>
-              {% if variant.sanger_ordered %}
-                <span class="label label-default">Sanger ordered</span>
-              {% elif variant.manual_rank %}
-                <span class="label label-default">{{ variant.manual_rank }}</span>
-              {% endif %}
-            </td>
-            <td>
-              <form action="{{ url_for('core.mark_validation',
-                                         institute_id=variant.institute.id,
-                                         case_id=case.display_name,
-                                         variant_id=variant.id) }}"
-                    method="POST" accept-charset="utf-8">
-                <select class="form-control input-sm" onchange="this.form.submit()" name="type">
-                  <option>Validate Sanger...</option>
-                  {% for type in ('True positive', 'False positive') %}
-                    <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
-                  {% endfor %}
-                </select>
-              </form>
-            </td>
-            <td>
-              {{ remove_form(url_for('core.unpin_variant',
-                                     institute_id=institute.internal_id,
-                                     case_id=case.display_name,
-                                     variant_id=variant.id)) }}
-            </td>
-          </tr>
-        {% else %}
-          <div class="panel-body">No variants suspected yet</div>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
 {% endmacro %}
 
 {% macro remove_form(url, hidden_input=None, button_name=none) %}
@@ -355,21 +118,6 @@
       {% endfor %}
     </ul>
   </div>
-{% endmacro %}
-
-{% macro diagnosis_form(type) %}
-  <form action="{{ url_for('core.case_diagnosis', institute_id=institute.id, case_id=case.display_name) }}" method="POST">
-    <div class="row">
-      <div class="col-xs-8">
-        <input class="form-control" name="omim_id" placeholder="OMIM:XXX" pattern="OMIM:[0-9]+">
-      </div>
-      <div class="col-xs-4">
-        <button class="btn btn-default form-control" type="submit" name="{{ type }}">
-          Add
-        </button>
-      </div>
-    </div>
-  </form>
 {% endmacro %}
 
 {% macro phenotype_groups_panel() %}

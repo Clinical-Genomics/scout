@@ -33,38 +33,37 @@ class VariantHandler(object):
             hgnc_id = variant_gene[hgnc_id]
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
-            
+
             # Create a dictionary with transcripts information
             transcripts_dict = {}
             if hgnc_gene:
                 for transcript in hgnc_gene.get('transcripts',[]):
                     tx_id = transcript['ensembl_transcript_id']
                     transcripts_dict[tx_id] = transcript
-                
+
                 hgnc_gene['transcripts_dict'] = transcripts_dict
-                
+
                 if hgnc_gene.get('incomplete_penetrance'):
                     variant_gene['omim_penetrance'] = True
-                
-                
+
+
             panel_info = extra_info.get(hgnc_id, [])
-            
+
             # Manually annotated disease associated transcripts
             disease_associated = set()
             manual_penetrance = False
             mosaicism = False
             manual_inheritance = set()
-            
+
             for gene_info in panel_info:
                 if gene_info.get('disease_associated_transcripts'):
                     for tx in gene_info['disease_associated_transcripts']:
                         disease_associated.add[tx]
                 if gene_info.get('reduced_penetrance'):
                     manual_penetrance = True
-                
+
                 if gene_info.get('mosaicism'):
                     mosaicism = True
-                
                 if gene_info.get('ar'):
                     manual_inheritance.add('AR')
                 if gene_info.get('ad'):
@@ -77,12 +76,12 @@ class VariantHandler(object):
                     manual_inheritance.add('XD')
                 if gene_info.get('y'):
                     manual_inheritance.add('Y')
-            
+
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
             variant_gene['mosaicism'] = mosaicism
             variant_gene['manual_inheritance'] = list(manual_inheritance)
-            
+
             # Now add the information from hgnc and panels
             # to the transcripts on the variant
             for transcript in variant_gene.get('transcripts', []):
@@ -94,7 +93,7 @@ class VariantHandler(object):
                     if 'refseq_id' in hgnc_transcript:
                         refseq_ids = hgnc_transcript['refseq_id']
                         transcript['ref_seq'] = refseq_ids
-                        
+
                         for refseq_id in refseq_ids:
                             if refseq_id in disease_associated:
                                 transcript['is_disease_associated'] = True
@@ -129,13 +128,13 @@ class VariantHandler(object):
             result(Iterable[Variant])
         """
         logger.info("Fetching variants from {0}".format(case_id))
-        
+
         if variant_ids:
             nr_of_variants = len(variant_ids)
-        
+
         elif nr_of_variants == -1:
             nr_of_variants = 0 # This will return all variants
-        
+
         else:
             nr_of_variants = skip + nr_of_variants
 
@@ -148,12 +147,12 @@ class VariantHandler(object):
             sorting = [('variant_rank', pymongo.ASCENDING)]
         if sort_key == 'rank_score':
             sorting = [('rank_score', pymongo.DESCENDING)]
-        
+
         result = self.variant_collection.find(
-                        mongo_query, 
-                        skip=skip, 
+                        mongo_query,
+                        skip=skip,
                         limit=nr_of_variants).sort(sorting)
-        
+
         return result
 
     def variant(self, document_id, gene_panels=None):
@@ -202,7 +201,7 @@ class VariantHandler(object):
         variant_ids = [variant['variant_id'] for variant in causatives]
         if len(variant_ids) == 0:
             return []
-        
+
         return self.variant_collection.find({
             'case_id': case_obj['case_id'],
             'variant_id': {'$in': variant_ids}
@@ -287,7 +286,7 @@ class VariantHandler(object):
             },
             {'_id':1}
         ).sort('rank_score', pymongo.DESCENDING)
-        
+
         logger.info("Updating variant_rank for all variants")
         for index, variant in enumerate(variants):
             self.variant_collection.find_one_and_update(
@@ -295,13 +294,13 @@ class VariantHandler(object):
                 {'$set': {'variant_rank': index+1}}
             )
         logger.info("Updating variant_rank done")
-        
+
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""
         # variant id without "*_[variant_type]"
         variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
-        
+
         causatives = self.get_causatives(variant_obj['institute'])
         for causative in causatives:
             not_same_case = causative['case_id'] != case_obj['_id']
@@ -328,13 +327,13 @@ class VariantHandler(object):
         case_id = current_variant['case_id']
         variant_type = current_variant['variant_type']
         category = current_variant['category']
-        
+
         return self.variant_collection.find_one(
             {
               'case_id': case_id,
               'variant_type': variant_type,
               'category': category,
-              'variant_rank': rank + 1  
+              'variant_rank': rank + 1
             }
         )
 
@@ -357,7 +356,7 @@ class VariantHandler(object):
         case_id = current_variant['case_id']
         variant_type = current_variant['variant_type']
         category = current_variant['category']
-        
+
         if variant_rank < 2:
             return None
         else:
@@ -366,7 +365,7 @@ class VariantHandler(object):
                   'case_id': case_id,
                   'variant_type': variant_type,
                   'category': category,
-                  'variant_rank': rank - 1  
+                  'variant_rank': rank - 1
                 }
             )
 
@@ -381,23 +380,23 @@ class VariantHandler(object):
         """
         logger.info("Deleting old {0} variants for case {1}".format(
                     variant_type, case_id))
-        
+
         result = self.variant_collection.delete_many(
             {
                 'case_id': case_id,
                 'variant_type': variant_type
             }
         )
-        
+
         logger.info("{0} variants deleted".format(result.deleted_count))
         logger.debug("Variants deleted")
 
     def load_variant(self, variant_obj):
         """Load a variant object
-        
+
         Args:
             variant_obj(dict)
-        
+
         Returns:
             inserted_id
         """
@@ -410,10 +409,10 @@ class VariantHandler(object):
 
     def load_variants(self, variants):
         """Load many variants
-        
+
         Args:
             variants(iterable(dict))
-        
+
         """
         logger.debug("Loading many variants")
         result = self.variant_collection.insert_many(variants)
@@ -431,6 +430,6 @@ class VariantHandler(object):
             'category': category,
         }
         variants = self.variant_collection.find(query)
-        
+
         return variants
-        
+

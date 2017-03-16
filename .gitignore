@@ -41,6 +41,7 @@ dev/
 .coverage*
 htmlcov/
 provision/roles/
+.env
 
 # Complexity
 output/*.html
