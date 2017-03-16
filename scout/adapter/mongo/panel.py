@@ -156,7 +156,7 @@ class PanelHandler(object):
             'hgnc_id': hgnc_id,
             'action': action,
             'info': info,
-            'symbol': hgnc_gene['hgnc_symbol']
+            'symbol': hgnc_gene['hgnc_symbol'],
         }
 
         updated_panel = self.panel_collection.find_one_and_update(

@@ -120,16 +120,37 @@
       </form>
     </div>
     <ul class="list-group">
-      {% for gene in panel.pending_genes %}
+      {% for gene in panel.pending %}
         <li class="list-group-item">
-          {{ gene.symbol }}
-          <span class="badge">{{ gene.action }}</span>
+          <div class="form-group">
+            {{ gene.symbol }}
+            <span class="badge pull-right">{{ gene.action }}</span>
+          </div>
+
+          {% if gene.info %}
+            <table class="table table-bordered">
+              <tbody>
+                {% for key, value in gene.info.items() %}
+                  <tr>
+                    <th>{{ key }}</th>
+                    <td>
+                      {% if value is iterable and value is not string %}
+                        {{ value|join(', ') }}
+                      {% else %}
+                        {{ value }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
         </li>
       {% else %}
         <li class="list-group-item">No pending genes</li>
       {% endfor %}
     </ul>
-    {% if panel.pending_genes %}
+    {% if panel.pending %}
       <div class="panel-footer">
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
           <button class="btn btn-primary form-control">Update panel</button>
