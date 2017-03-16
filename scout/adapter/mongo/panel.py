@@ -4,6 +4,8 @@ import pymongo
 
 from scout.exceptions import IntegrityError
 
+from pprint import pprint as pp
+
 logger = logging.getLogger(__name__)
 
 class PanelHandler(object):
@@ -152,5 +154,56 @@ class PanelHandler(object):
             return_document = pymongo.ReturnDocument.AFTER
         )
         
+        return updated_panel
+        
+    def apply_pending(self, panel_obj):
+        """Apply the pending changes to an existing gene panel"""
+        updates = {}
+        updated_panel = None
+        for update in panel_obj.get('pending', []):
+            hgnc_id = update['hgnc_id']
+            action = update['action']
+            info = update.get('info',{})
+                
+            if action == 'add':
+                hgnc_gene = self.hgnc_gene(hgnc_id)
+                if not hgnc_gene:
+                    break
+                gene_obj = {
+                    'hgnc_id': hgnc_id,
+                    'symbol': hgnc_gene['hgnc_symbol']
+                }
+                if info.get('disease_associated_transcripts'):
+                    gene_obj['disease_associated_transcripts'] = info['disease_associated_transcripts']
+                if info.get('inheritance_models'):
+                    gene_obj['inheritance_models'] = info['inheritance_models']
+                if info.get('reduced_penetrance'):
+                    gene_obj['reduced_penetrance'] = info['reduced_penetrance']
+                if info.get('mosaicism'):
+                    gene_obj['mosaicism'] = info['mosaicism']
+                if info.get('database_entry_version'):
+                    gene_obj['database_entry_version'] = info['database_entry_version']
+                
+                if '$push' in updates:
+                    updates['$push']['genes']['$each'].append[gene_obj]
+                    
+                else:
+                    updates['$push'] = {'genes': {'$each': [gene_obj]}}
+            
+            elif action == 'delete':
+                if '$pull' in updates:
+                    updates['$pull']['genes']['hgnc_id']['$in'].append(hgnc_id)
+                else:
+                    updates['$pull'] = {'genes': {'hgnc_id': {'$in': [hgnc_id]}}}
+        
+        print('updates')
+        pp(updates)
+        if updates:
+            updated_panel = self.panel_collection.find_one_and_update(
+                {'_id':panel_obj['_id']},
+                updates,
+                return_document = pymongo.ReturnDocument.AFTER
+            )
+
         return updated_panel
         

@@ -30,6 +30,8 @@ from scout.load import (load_hgnc_genes, load_panel)
 from scout.load.hpo import load_hpo
 
 DATABASE = 'testdb'
+REAL_DATABASE = 'realtestdb'
+
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
@@ -291,7 +293,7 @@ def real_pymongo_client(request):
     def teardown():
         print('\n')
         logger.info("Deleting database")
-        mongo_client.drop_database(DATABASE)
+        mongo_client.drop_database(REAL_DATABASE)
         logger.info("Database deleted")
         logger.info("Time to run test:{}".format(datetime.datetime.now()-start_time))
 
@@ -305,7 +307,7 @@ def real_adapter(request, real_pymongo_client):
     logger.info("Connecting to database...")
     mongo_client = real_pymongo_client
 
-    database = mongo_client[DATABASE]
+    database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
     # logger.info("Establish a mongoengine connection")
@@ -341,6 +343,16 @@ def institute_database(request, adapter, institute_obj, user_obj):
     return adapter
 
 @pytest.fixture(scope='function')
+def real_institute_database(request, real_adapter, institute_obj, user_obj):
+    "Returns an adapter to a database populated with institute"
+    adapter = real_adapter
+    adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
+
+    return adapter
+
+
+@pytest.fixture(scope='function')
 def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = institute_database
@@ -353,6 +365,21 @@ def gene_database(request, institute_database, genes):
     
 
     return adapter
+
+@pytest.fixture(scope='function')
+def real_gene_database(request, real_institute_database, genes):
+    "Returns an adapter to a database populated with user, institute and case"
+    adapter = real_institute_database
+    load_hgnc_genes(adapter, genes)
+    
+    logger.info("Creating index on hgnc collection")
+    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
+                                          ('hgnc_symbol', pymongo.ASCENDING)])
+    logger.info("Index done")
+    
+
+    return adapter
+
 
 @pytest.fixture(scope='function')
 def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle):
@@ -379,6 +406,19 @@ def panel_database(request, gene_database, panel_info):
     )
 
     return adapter
+
+@pytest.fixture(scope='function')
+def real_panel_database(request, real_gene_database, panel_info):
+    "Returns an adapter to a database populated with user, institute and case"
+    adapter = real_gene_database
+    logger.info("Creating a panel adapter")
+    load_panel(
+        adapter=adapter,
+        panel_info=panel_info
+    )
+
+    return adapter
+
 
 @pytest.fixture(scope='function')
 def case_database(request, institute_database, case_obj):

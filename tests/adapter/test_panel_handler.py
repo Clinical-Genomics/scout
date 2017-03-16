@@ -112,3 +112,72 @@ def test_update_panel_panel_name(panel_database):
     
     ## THEN assert that the last version is fetched
     assert res['panel_name'] == new_name
+
+def test_apply_pending_delete_gene(panel_database):
+    adapter = panel_database
+    panel_obj = adapter.panel_collection.find_one()
+    
+    gene = panel_obj['genes'][0]
+    hgnc_id = gene['hgnc_id']
+    
+    action = {
+        'hgnc_id': hgnc_id,
+        'action': 'delete',
+    }
+
+    panel_obj['pending'] = [action]
+    
+    res = adapter.apply_pending(panel_obj)
+    
+    for gene in res['genes']:
+        assert gene['hgnc_id'] != hgnc_id
+
+def test_apply_pending_delete_two_genes(real_panel_database):
+    adapter = real_panel_database
+    panel_obj = adapter.panel_collection.find_one()
+
+    gene = panel_obj['genes'][0]
+    gene2 = panel_obj['genes'][1]
+    
+    hgnc_ids = [gene['hgnc_id'], gene2['hgnc_id']]
+
+    action = {
+        'hgnc_id': gene['hgnc_id'],
+        'action': 'delete',
+    }
+
+    action2 = {
+        'hgnc_id': gene2['hgnc_id'],
+        'action': 'delete',
+    }
+
+    panel_obj['pending'] = [action, action2]
+
+    res = adapter.apply_pending(panel_obj)
+    
+    for gene in res['genes']:
+        assert gene['hgnc_id'] not in hgnc_ids
+
+def test_apply_pending_add_gene(real_panel_database):
+    adapter = real_panel_database
+    panel_obj = adapter.panel_collection.find_one()
+    
+    gene = panel_obj['genes'][0]
+    hgnc_id = gene['hgnc_id']
+    
+    panel_obj['genes'] = []
+    adapter.update_panel(panel_obj)
+    
+    panel_obj = adapter.panel_collection.find_one()
+    assert len(panel_obj['genes']) == 0
+    
+    action = {
+        'hgnc_id': hgnc_id,
+        'action': 'add',
+    }
+
+    panel_obj['pending'] = [action]
+
+    updated_panel = adapter.apply_pending(panel_obj)
+
+    assert len(updated_panel['genes']) == 1
