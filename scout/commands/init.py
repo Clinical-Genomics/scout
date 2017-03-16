@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 @click.command('init', short_help='Initialize a scout instance')
-@click.option('-i', '--institute-name', default='test')
+@click.option('-i', '--institute-name', default='cust000')
 @click.option('-u', '--user-name', default='Clark Kent')
 @click.option('-m', '--user-mail', default='clark.kent@mail.com')
 @click.pass_context
@@ -44,6 +44,7 @@ def init(ctx, institute_name, user_name, user_mail):
 
     adapter = ctx.obj['adapter']
 
+    logger.info("Setting up database %s", ctx.obj['mongodb'])
     logger.info("Deleting previous database")
     for collection_name in adapter.db.collection_names():
         logger.info("Deleting collection %s", collection_name)
@@ -63,7 +64,9 @@ def init(ctx, institute_name, user_name, user_mail):
         institutes=[institute_name]
     )
 
-    user_obj = dict(email=user_mail,
+    user_obj = dict(
+                _id=user_mail,
+                email=user_mail,
                 name=user_name,
                 roles=['admin'],
                 institutes=[institute_name])

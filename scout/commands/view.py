@@ -18,15 +18,15 @@ def panels(context):
     panel_objs = adapter.gene_panels()
     if panel_objs.count() == 0:
         logger.info("No panels found")
-    else:
-        click.echo("panel_name\tversion\tnr_genes")
+        context.abort()
+    click.echo("#panel_name\tversion\tnr_genes")
         
-        for panel_obj in panel_objs:
-            click.echo("{0}\t{1}\t{2}".format(
-                panel_obj['panel_name'], 
-                str(panel_obj['version']),
-                len(panel_obj['genes'])
-            ))
+    for panel_obj in panel_objs:
+        click.echo("{0}\t{1}\t{2}".format(
+            panel_obj['panel_name'], 
+            str(panel_obj['version']),
+            len(panel_obj['genes'])
+        ))
 
 @click.command('users', short_help='Display users')
 @click.pass_context
@@ -35,9 +35,20 @@ def users(context):
     logger.info("Running scout view users")
     adapter = context.obj['adapter']
     
-    ## TODO add a User interface to the adapter
-    for user_obj in adapter.users():
-        click.echo(user_obj['name'])
+    user_objs = adapter.users()
+    if user_objs.count() == 0:
+        logger.info("No users found")
+        context.abort()
+    
+    click.echo("#name\temail\troles\tinstitutes")
+    for user_obj in user_objs:
+        click.echo("{0}\t{1}\t{2}\t{3}\t".format(
+            user_obj['name'],
+            user_obj.get('mail', user_obj['_id']),
+            ', '.join(user_obj.get('roles',[])),
+            ', '.join(user_obj.get('institutes',[])),
+            )
+        )
 
 @click.command('whitelist', short_help='Display whitelist')
 @click.pass_context
@@ -58,8 +69,17 @@ def institutes(context):
     logger.info("Running scout view institutes")
     adapter = context.obj['adapter']
     
-    for institute_obj in adapter.institutes():
-        click.echo(institute_obj['internal_id'])
+    institute_objs = adapter.institutes()
+    if institute_objs.count() == 0:
+        click.echo("No institutes found")
+        context.abort()
+    
+    click.echo("#institute_id\tdisplay_name")
+    for institute_obj in institute_objs:
+        click.echo("{0}\t{1}".format(
+            institute_obj['_id'],
+            institute_obj['display_name']
+        ))
 
 @click.command('aliases', short_help='Display genes by aliases')
 @click.option('-b', '--build', default='37', type=click.Choice(['37','38']))

@@ -5,7 +5,7 @@ import yaml
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
 from scout.adapter.client import get_connection
-from pymongo.errors import (ConnectionFailure)
+from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 
 # General, logging
 from scout import (__version__, logger)
@@ -57,15 +57,10 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
     type=click.Path(exists=True),
     help="Specify the path to a config file with database info.",
 )
-@click.option('--conn_host',
-    type=str,
-    show_default=True,
-    help="Mostly used for testing."
-)
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
-        conn_host, config):
+        config):
     """scout: manage interactions with a scout instance."""
     init_log(logger, logfile, loglevel)
     logger.info("Running scout version %s", __version__)
@@ -90,23 +85,26 @@ def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
     mongo_configs['password'] = password or configs.get('password')
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
-    uri = None
-    if conn_host:
-        uri = "{0}{1}:{2}@{3}:{4}".format(
-                conn_host, username, password, host, port)
     try:
         client = get_connection(
                     host=mongo_configs['host'],
                     port=mongo_configs['port'],
                     username=mongo_configs['username'],
                     password=mongo_configs['password'],
-                    uri=uri
                 )
     except ConnectionFailure:
         ctx.abort()
 
+    logger.info('Use database %s', mongo_configs['mongodb'])
     database = client[mongo_configs['mongodb']]
-    logger.debug("Setting up a mongo adapter")
+    logger.info("Test if mongod is running")
+    try:
+        database.test.find_one()
+    except ServerSelectionTimeoutError as err:
+        logger.warning("Connection could not be established")
+        ctx.abort()
+
+    logger.info("Setting up a mongo adapter")
     mongo_adapter = MongoAdapter(database)
     mongo_configs['adapter'] = mongo_adapter
     ctx.obj = mongo_configs

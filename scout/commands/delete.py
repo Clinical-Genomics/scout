@@ -65,34 +65,37 @@ def genes(context, build):
 
 @click.command('case', short_help='Delete a case')
 @click.option('-i', '--institute', help='institute id of related cases')
-@click.option('-c', '--case_id')
+@click.option('-c', '--case-id')
+@click.option('-d', '--display-name')
 @click.pass_context
-def case(context, institute, case_id):
+def case(context, institute, case_id, display_name):
     """Delete a case and it's variants from the database"""
     adapter = context.obj['adapter']
 
-    if not case_id:
-        click.echo("Please specify the id of the case that should be "
-                       "deleted with flag '-c/--case_id'.")
+    if not (case_id or display_name):
+        click.echo("Please specify what case to delete")
         context.abort()
 
-    if not institute:
-        click.echo("Please specify the owner of the case that should be "
-                       "deleted with flag '-i/--institute'.")
-        context.abort()
+    if display_name:
+        if not institute:
+            click.echo("Please specify the owner of the case that should be "
+                           "deleted with flag '-i/--institute'.")
+            context.abort()
+        case_id = "{0}-{1}".format(institute, display_name)
 
-    log.info("Running deleting case {0}".format(case_id))
+    logger.info("Running deleting case {0}".format(case_id))
 
     case = adapter.delete_case(
+        case_id=case_id,
         institute_id=institute,
-        case_id=case_id
+        display_name=display_name
     )
-
-    if case:
-        adapter.delete_variants(case_id=case.case_id, variant_type='clinical')
-        adapter.delete_variants(case_id=case.case_id, variant_type='research')
+    
+    if case.deleted_count == 1:
+        adapter.delete_variants(case_id=case_id, variant_type='clinical')
+        adapter.delete_variants(case_id=case_id, variant_type='research')
     else:
-        log.warning("Case does not exist in database")
+        logger.warning("Case does not exist in database")
         context.abort()
 
 # @click.command('diseases', short_help='Display all diseases')

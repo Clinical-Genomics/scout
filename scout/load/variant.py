@@ -148,7 +148,8 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     logger.info("Time to insert variants:{0}".format(
                 datetime.now() - start_insertion))
 
-    adapter.add_variant_rank(case_obj, variant_type, category=category)
+    # This function will add a variant rank and add information on compound objects
+    adapter.update_variants(case_obj, variant_type, category=category)
 
 
 def load_variant(adapter, variant_obj):

@@ -5,6 +5,8 @@ import pymongo
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError
 
+from pprint import pprint as pp
+
 logger = logging.getLogger(__name__)
 
 class VariantHandler(object):
@@ -205,6 +207,70 @@ class VariantHandler(object):
             'case_id': case_obj['case_id'],
             'variant_id': {'$in': variant_ids}
         })
+
+    def update_variants(self, case_obj, variant_type='clinical', category='snv'):
+        """Adds extra information on variants.
+        
+        Add a variant rank based on the rank score
+        Add extra information on compounds
+
+            Args:
+                case_obj(Case)
+                variant_type(str)
+        """
+        # Get all variants sorted by rank score
+        variants = self.variant_collection.find(
+            {
+                'case_id': case_obj['case_id'],
+                'category': category,
+                'variant_type': variant_type,
+            }
+        ).sort('rank_score', pymongo.DESCENDING)
+        
+        logger.info("Updating variant_rank for all variants")
+        
+        # Update the information on all compounds
+        for index, variant in enumerate(variants):
+            # This is a list with the updated compound documents
+            compound_objs = []
+            for compound in variant.get('compounds',[]):
+                not_loaded = True
+                gene_objs = []
+                # Check if the compound variant exists
+                variant_obj = self.variant_collection.find_one(
+                                        {'_id':compound['variant']}
+                                    )
+                # If the variant exosts we try to collect as much info as possible
+                if variant_obj:
+                    not_loaded = False
+                    compound['rank_score'] = variant_obj['rank_score']
+                    for gene in variant_obj['genes']:
+                        gene_obj = {
+                            'hgnc_id': gene['hgnc_id'],
+                            'hgnc_symbol': gene.get('hgnc_symbol'),
+                            'region_annotation': gene.get('region_annotation'),
+                            'functional_annotation': gene.get('functional_annotation'),
+                        }
+                        gene_objs.append(gene_obj)
+
+                compound['not_loaded'] = not_loaded
+                compound['genes'] = gene_objs
+                compound_objs.append(compound)
+                
+            
+            updated_variant = self.variant_collection.find_one_and_update(
+                {'_id': variant['_id']},
+                {
+                    '$set': {
+                        'variant_rank': index+1,
+                        'compounds': compound_objs,
+                    }
+                },
+                return_document=pymongo.ReturnDocument.AFTER
+            )
+        
+        logger.info("Updating variant_rank done")
+
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.

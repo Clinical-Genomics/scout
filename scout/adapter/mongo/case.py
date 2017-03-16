@@ -125,6 +125,8 @@ class CaseHandler(object):
             institute_id(str)
             case_id(str)
 
+        Returns:
+            case_obj(dict): The case that was deleted
         """
         query = {}
         if case_id:
@@ -137,7 +139,8 @@ class CaseHandler(object):
             query['owner'] = institute_id
             query['display_name'] = display_name
 
-        self.case_collection.delete_one(query)
+        result = self.case_collection.delete_one(query)
+        return result
 
     def add_case(self, case_obj):
         """Add a case to the database

@@ -52,7 +52,7 @@ def build_hpo_term(hpo_info, alias_genes={}):
                 for hgnc_id in alias_genes[hgnc_symbol]['ids']:
                     hgnc_ids.add(hgnc_id)
         else:
-            log.warning("Gene symbol %s could not be found in database", hgnc_symbol)
+            log.debug("Gene symbol %s could not be found in database", hgnc_symbol)
     
     hpo_obj['genes'] = list(hgnc_ids)
     

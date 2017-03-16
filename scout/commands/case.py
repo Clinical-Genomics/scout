@@ -53,13 +53,16 @@ def case(context, vcf, vcf_sv, owner, ped, update, config):
                         institute_id=config_data['owner'], 
                         display_name=config_data['family']
                     )
-
+    
     if existing_case:
         new_analysisdate = config_data.get('analysis_date')
-        if new_analysisdate and new_analysisdate > existing_case.analysis_date:
+        if new_analysisdate and new_analysisdate > existing_case['analysis_date']:
             log.info("updated analysis - updating existing case")
             # update by default!
             update = True
+        else:
+            log.warning("Case already exists in database")
+            context.abort()
     else:
         log.info("Case does not exist in database")
 
@@ -120,4 +123,4 @@ def cases(context, institute, reruns, finished, causatives, research_requested,
         click.echo("No cases could be found")
     
     for model in models:
-        click.echo(model.case_id)
+        click.echo(model['_id'])

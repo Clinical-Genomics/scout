@@ -32,7 +32,7 @@ def load_case(adapter, case_obj, update=False):
             adapter.update_case(case_obj)
         else:
             raise IntegrityError("Case {0} already exists in database".format(
-                                 case_obj.case_id))
+                                 case_obj['case_id']))
     else:
         adapter.add_case(case_obj)
     return case_obj

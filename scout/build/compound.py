@@ -14,6 +14,16 @@ def build_compound(compound):
         # This is the variant id
         display_name = str, # required
         combined_score = float, # required
+        rank_score = float,
+        not_loaded = bool
+        genes = [
+            {
+                hgnc_id: int, 
+                hgnc_symbol: str, 
+                region_annotation: str, 
+                functional_annotation:str
+            }, ...
+        ]
     )
     
     """

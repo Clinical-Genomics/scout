@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
+from mock import Mock
 import logging
 import datetime
 
@@ -245,6 +246,15 @@ def user_obj(request, parsed_user):
 #############################################################
 ##################### Adapter fixtures #####################
 #############################################################
+
+# We need to mokeypatch 'connect' function so the tests use a mongomock database
+# @pytest.fixture(autouse=True)
+# def no_connect(monkeypatch):
+#     # from scout.adapter.client import get_connection
+#     mongo = Mock(return_value=MongoClient())
+#     print('hej')
+#
+#     monkeypatch.setattr('scout.adapter.client.get_connection', mongo)
 
 @pytest.fixture(scope='function')
 def database_name(request):
