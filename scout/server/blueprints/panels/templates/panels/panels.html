@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ current_user.name }} - Gene Panels
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">Gene Panels</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  <div class="panel-group">
+    {% for institute, panels in panel_groups %}
+      <div class="panel panel-default">
+        <div class="panel-heading">{{ institute.display_name }} - Panels</div>
+        <ul class="list-group">
+          {% for panel in panels %}
+            <li class="list-group-item">
+              <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
+                {{ panel.display_name }} ({{ panel.version }}, {{ panel.date.date() }})
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

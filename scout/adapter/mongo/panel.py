@@ -71,7 +71,7 @@ class PanelHandler(object):
                 logger.info("No gene panel found")
                 return None
 
-    def gene_panels(self, panel_id=None):
+    def gene_panels(self, panel_id=None, institute_id=None):
         """Return all gene panels
 
         If panel_id return all versions of that panel
@@ -85,6 +85,8 @@ class PanelHandler(object):
         query = {}
         if panel_id:
             query['panel_name'] = panel_id
+        if institute_id:
+            query['institute'] = institute_id
 
         return self.panel_collection.find(query)
 

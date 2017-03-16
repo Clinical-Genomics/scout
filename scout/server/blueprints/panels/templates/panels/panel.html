@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ panel.institute.display_name }} - {{ panel.display_name }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('panels.panels') }}">Gene Panels</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=panel.institute._id) }}">
+      {{ panel.institute.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">{{ panel.display_name }} {{ panel.version }}</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  {{ overview_panel() }}
+  {{ pending_panel() }}
+  {{ genes_panel() }}
+{% endblock %}
+
+{% macro overview_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Overview</div>
+    <ul class="list-group">
+      <li class="list-group-item">
+        Full name
+        <span class="pull-right">{{ panel.display_name }}</span>
+      </li>
+      <li class="list-group-item">
+        Panel ID
+        <span class="pull-right">{{ panel.panel_name }}</span>
+      </li>
+      <li class="list-group-item">
+        Version
+        <span class="pull-right">{{ panel.version }}</span>
+      </li>
+      <li class="list-group-item">
+        Number of genes
+        <span class="pull-right">{{ panel.genes|length }}</span>
+      </li>
+      <li class="list-group-item">
+        Date
+        <span class="pull-right">{{ panel.date.date() }}</span>
+      </li>
+    </ul>
+  </div>
+{% endmacro %}
+
+{% macro genes_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Included genes</div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Gene</th>
+            <th>Transcripts</th>
+            <th>Reduced penetrance</th>
+            <th>Mosaicism</th>
+            <th>Entry version</th>
+            <th>Inheritance models</th>
+            <th>Comment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in panel.genes|sort(attribute='symbol') %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.symbol }}
+                </a>
+              </td>
+              <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
+              <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
+              <td>{{ 'Yes' if gene.mosaicism }}</td>
+              <td>{{ gene.database_entry_version }}</td>
+              <td>{{ gene.inheritance_models|join(', ') }}</td>
+              <td>{{ gene.comment }}</td>
+              <td>
+                <a class="btn btn-default btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
+                <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+                  <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
+                  <button name="action" value="delete" class="btn btn-danger btn-xs">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro pending_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Pending changes</div>
+    <div class="panel-body">
+      <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+        <div class="row">
+          <div class="col-xs-8">
+            <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
+          </div>
+          <div class="col-xs-4">
+            <button name="action" value="add" class="btn btn-default form-control">
+              Add gene
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <ul class="list-group">
+      {% for gene in panel.pending_genes %}
+        <li class="list-group-item">
+          {{ gene.symbol }}
+          <span class="badge">{{ gene.action }}</span>
+        </li>
+      {% else %}
+        <li class="list-group-item">No pending genes</li>
+      {% endfor %}
+    </ul>
+    {% if panel.pending_genes %}
+      <div class="panel-footer">
+        <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
+          <button class="btn btn-primary form-control">Update panel</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+  <script>
+    $(function () {
+      function getTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+      $(".typeahead").typeahead({
+        source: getTerms,
+        minLength: 2,
+      });
+    })
+  </script>
+{% endblock %}
