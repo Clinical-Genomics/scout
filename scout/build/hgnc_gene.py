@@ -44,6 +44,14 @@ def build_hgnc_transcript(transcript_info, primary_transcripts):
 
     return transcript_obj
 
+def build_phenotype(phenotype_info):
+    phenotype_obj = {}
+    phenotype_obj['mim_number'] = phenotype_info['mim_number']
+    phenotype_obj['description'] = phenotype_info['description']
+    phenotype_obj['inheritance_models'] = list(phenotype_info.get('inheritance', set()))
+    
+    return phenotype_obj
+
 def build_hgnc_gene(gene_info, build='37'):
     """Build a hgnc_gene object
 
@@ -148,6 +156,10 @@ def build_hgnc_gene(gene_info, build='37'):
     gene_obj['incomplete_penetrance'] = gene_info.get('incomplete_penetrance', False)
     gene_obj['inheritance_models'] = gene_info.get('inheritance_models', [])
     
-    gene_obj['phenotypes'] = gene_info.get('phenotypes', [])
+    phenotype_objs = []
+    for phenotype_info in gene_info.get('phenotypes', []):
+        phenotype_objs.append(build_phenotype(phenotype_info))
+    
+    gene_obj['phenotypes'] = phenotype_objs
 
     return gene_obj

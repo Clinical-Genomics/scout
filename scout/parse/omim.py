@@ -122,7 +122,7 @@ def parse_genemap2(lines):
                         parsed_phenotypes.append(
                                             {
                                                 'mim_number':phenotype_mim, 
-                                                'inheritance': list(inheritance),
+                                                'inheritance': inheritance,
                                                 'description': description
                                             }
                                         )
