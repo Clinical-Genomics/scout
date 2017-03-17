@@ -76,9 +76,6 @@
           <th title="CADD score">CADD</th>
           <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
           <th class="col-xs-3" title="Functional annotation">Func. annotation</th>
-          {% if variant_type == 'clinical' %}
-            <th class="col-xs-1" title="Disease gene model"><small>Exp. inherit.</small></th>
-          {% endif %}
           <th class="col-xs-3" title="Inheritance models">Inheritance model</th>
         </tr>
       </thead>
@@ -93,9 +90,6 @@
             <td class="text-right">{{ cell_cadd(variant) }}</td>
             <td>{{ variant.region_annotations|join(', ') }}</td>
             <td>{{ variant.functional_annotations|join(', ') }}</td>
-            {% if variant_type == 'clinical' %}
-              <td>{{ variant.expected_inheritance|join(', ') }}</td>
-            {% endif %}
             <td>{{ cell_models(variant) }}</td>
           </tr>
         {% else %}
@@ -108,7 +102,7 @@
       </tbody>
     </table>
 
-    {# {{ footer() }} #}
+    {{ footer() }}
   </div>
 {% endblock %}
 
@@ -176,9 +170,8 @@
 {% macro footer() %}
   <div class="container-fluid">
     <div class="form-group text-center">
-      {% if variants_count > current_batch %}
-        {# We might have some more variants not loaded #}
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, skip=current_batch, **query_dict) }}">
+      {% if more_variants %}
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, page=(page + 1), **form.data) }}">
           Next page
         </a>
       {% else %}

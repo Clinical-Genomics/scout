@@ -113,9 +113,6 @@ def load_scout(adapter, config, ped=None, update=False):
 
     case_obj = build_case(case_data, adapter)
 
-    gene_panels = config.get('gene_panels')
-    default_panels = config.get('default_gene_panels')
-
     log.info("Delete variants for case %s", case_obj['case_id'])
     delete_variants(adapter=adapter, case_obj=case_obj)
 
@@ -130,11 +127,10 @@ def load_scout(adapter, config, ped=None, update=False):
                       case_obj=case_obj, variant_type='clinical',
                       category='sv',
                       rank_threshold=case_data['rank_score_threshold'])
-    
+
     log.debug('load case object into database')
     load_case(
         adapter=adapter,
         case_obj=case_obj,
         update=update,
     )
-    
