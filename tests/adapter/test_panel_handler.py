@@ -70,13 +70,14 @@ def test_get_panel_multiple_versions(panel_database, panel_obj):
 def test_add_pending(panel_database):
     adapter = panel_database
     panel_obj = adapter.panel_collection.find_one()
+    hgnc_id = adapter.hgnc_collection.find_one()['hgnc_id']
     ## GIVEN an adapter with a gene panel
     res = adapter.gene_panels()
     assert res.count() == 1
     ## WHEN adding a pending action
     res = adapter.add_pending(
         panel_obj=panel_obj,
-        hgnc_id=1,
+        hgnc_id=hgnc_id,
         action='add'
     )
     ## THEN assert that the last version is fetched
@@ -114,21 +115,31 @@ def test_update_panel_panel_name(panel_database):
     assert res['panel_name'] == new_name
 
 def test_apply_pending_delete_gene(panel_database):
+    ## GIVEN an adapter with a gene panel
     adapter = panel_database
     panel_obj = adapter.panel_collection.find_one()
     
     gene = panel_obj['genes'][0]
     hgnc_id = gene['hgnc_id']
+    hgnc_symbol = gene['symbol']
     
     action = {
         'hgnc_id': hgnc_id,
         'action': 'delete',
+        'symbol': hgnc_symbol,
+        'info': {}
     }
-
+    ## WHEN adding a action to the panel
     panel_obj['pending'] = [action]
+    old_version = panel_obj['version']
     
     res = adapter.apply_pending(panel_obj)
+    ## THEN assert that a new panel was created
+    print(panel_obj['version'])
+
+    assert res['version'] != old_version
     
+    ## THEN assert that the new panel does not have the deleted gene
     for gene in res['genes']:
         assert gene['hgnc_id'] != hgnc_id
 
@@ -144,11 +155,15 @@ def test_apply_pending_delete_two_genes(real_panel_database):
     action = {
         'hgnc_id': gene['hgnc_id'],
         'action': 'delete',
+        'symbol': gene['symbol'],
+        'info': {}
     }
 
     action2 = {
         'hgnc_id': gene2['hgnc_id'],
         'action': 'delete',
+        'symbol': gene2['symbol'],
+        'info': {}
     }
 
     panel_obj['pending'] = [action, action2]
@@ -164,6 +179,7 @@ def test_apply_pending_add_gene(real_panel_database):
     
     gene = panel_obj['genes'][0]
     hgnc_id = gene['hgnc_id']
+    hgnc_symbol = gene['symbol']
     
     panel_obj['genes'] = []
     adapter.update_panel(panel_obj)
@@ -174,6 +190,8 @@ def test_apply_pending_add_gene(real_panel_database):
     action = {
         'hgnc_id': hgnc_id,
         'action': 'add',
+        'symbol': hgnc_symbol,
+        'info': {}
     }
 
     panel_obj['pending'] = [action]
@@ -181,3 +199,40 @@ def test_apply_pending_add_gene(real_panel_database):
     updated_panel = adapter.apply_pending(panel_obj)
 
     assert len(updated_panel['genes']) == 1
+
+def test_apply_pending_add_two_genes(real_panel_database):
+    adapter = real_panel_database
+    panel_obj = adapter.panel_collection.find_one()
+    
+    gene = panel_obj['genes'][0]
+    gene2 = panel_obj['genes'][1]
+    hgnc_ids = [gene['hgnc_id'], gene['hgnc_id']]
+    hgnc_symbols = [gene['symbol'], gene['symbol']]
+    
+    panel_obj['genes'] = []
+    adapter.update_panel(panel_obj)
+    
+    panel_obj = adapter.panel_collection.find_one()
+    assert len(panel_obj['genes']) == 0
+    
+    action1 = {
+        'hgnc_id': hgnc_ids[0],
+        'action': 'add',
+        'symbol': hgnc_symbols[0],
+        'info': {}
+    }
+
+    action2 = {
+        'hgnc_id': hgnc_ids[1],
+        'action': 'add',
+        'symbol': hgnc_symbols[1],
+        'info': {}
+    }
+
+    panel_obj['pending'] = [action1, action2]
+
+    updated_panel = adapter.apply_pending(panel_obj)
+
+    assert len(updated_panel['genes']) == 2
+    for gene in updated_panel['genes']:
+        assert gene['hgnc_id'] in hgnc_ids

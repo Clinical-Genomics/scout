@@ -127,23 +127,26 @@ class PanelHandler(object):
         Args:
             panel_obj(dict): The panel that is about to be updated
             hgnc_id(int): 
-            action(str): choices=['add','delete','update']
+            action(str): choices=['add','delete','edit']
         
         Returns:
             updated_panel(dict):
         
         """
-        valid_actions = ['add', 'delete', 'update']
+        valid_actions = ['add', 'delete', 'edit']
         if not action in valid_actions:
             raise ValueError("Invalid action {0}".format(action))
+        
+        hgnc_gene = self.hgnc_gene(hgnc_id)
         
         info = info or {}
         pending_action = {
             'hgnc_id': hgnc_id,
             'action': action,
-            'info': info
+            'info': info,
+            'symbol': hgnc_gene['hgnc_symbol']
         }
-        
+
         updated_panel = self.panel_collection.find_one_and_update(
             {'_id': panel_obj['_id']},
             {
@@ -157,21 +160,29 @@ class PanelHandler(object):
         return updated_panel
         
     def apply_pending(self, panel_obj):
-        """Apply the pending changes to an existing gene panel"""
+        """Apply the pending changes to an existing gene panel
+        
+        Args:
+            panel_obj(dict)
+        
+        Returns:
+            new_panel(dict): Panel with changes
+        """
         updates = {}
-        updated_panel = None
+        new_panel = panel_obj
+        new_panel.pop('_id')
+        
+        new_genes = []
+        
         for update in panel_obj.get('pending', []):
             hgnc_id = update['hgnc_id']
-            action = update['action']
-            info = update.get('info',{})
-                
-            if action == 'add':
-                hgnc_gene = self.hgnc_gene(hgnc_id)
-                if not hgnc_gene:
-                    break
+            
+            # If action is add we create a new gene object
+            if update['action'] == 'add':
+                info = update.get('info',{})
                 gene_obj = {
                     'hgnc_id': hgnc_id,
-                    'symbol': hgnc_gene['hgnc_symbol']
+                    'symbol': update['symbol']
                 }
                 if info.get('disease_associated_transcripts'):
                     gene_obj['disease_associated_transcripts'] = info['disease_associated_transcripts']
@@ -183,27 +194,42 @@ class PanelHandler(object):
                     gene_obj['mosaicism'] = info['mosaicism']
                 if info.get('database_entry_version'):
                     gene_obj['database_entry_version'] = info['database_entry_version']
-                
-                if '$push' in updates:
-                    updates['$push']['genes']['$each'].append[gene_obj]
-                    
-                else:
-                    updates['$push'] = {'genes': {'$each': [gene_obj]}}
+                new_genes.append(gene_obj)
             
-            elif action == 'delete':
-                if '$pull' in updates:
-                    updates['$pull']['genes']['hgnc_id']['$in'].append(hgnc_id)
-                else:
-                    updates['$pull'] = {'genes': {'hgnc_id': {'$in': [hgnc_id]}}}
-        
-        print('updates')
-        pp(updates)
-        if updates:
-            updated_panel = self.panel_collection.find_one_and_update(
-                {'_id':panel_obj['_id']},
-                updates,
-                return_document = pymongo.ReturnDocument.AFTER
-            )
+            else:
+                updates[hgnc_id] = update
+            
 
-        return updated_panel
+        for gene in panel_obj['genes']:
+            hgnc_id = gene['hgnc_id']
+            
+            if hgnc_id in updates:
+                update_info = updates[hgnc_id]
+                action = update['action']
+                hgnc_symbol = update['symbol']
+                info = update['info']
+                
+                # If action is delete we do not add the gene to new genes
+                if action == 'delete':
+                    pass
+                elif action == 'edit':
+                    if info.get('disease_associated_transcripts'):
+                        gene['disease_associated_transcripts'] = info['disease_associated_transcripts']
+                    if info.get('inheritance_models'):
+                        gene['inheritance_models'] = info['inheritance_models']
+                    if info.get('reduced_penetrance'):
+                        gene['reduced_penetrance'] = info['reduced_penetrance']
+                    if info.get('mosaicism'):
+                        gene['mosaicism'] = info['mosaicism']
+                    if info.get('database_entry_version'):
+                        gene['database_entry_version'] = info['database_entry_version']
+                    new_genes.append(gene)
+
+        print(new_genes)
+        new_panel['genes'] = new_genes
+        new_panel['version'] = panel_obj['version'] + 1
+        
+        self.panel_collection.insert_one(new_panel)
+
+        return new_panel
         
