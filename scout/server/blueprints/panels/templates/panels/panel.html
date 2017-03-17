@@ -90,11 +90,13 @@
               <td>{{ gene.inheritance_models|join(', ') }}</td>
               <td>{{ gene.comment }}</td>
               <td>
-                <a class="btn btn-default btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
-                <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-                  <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
-                  <button name="action" value="delete" class="btn btn-danger btn-xs">Delete</button>
-                </form>
+                {% if not panel.is_archived %}
+                  <a class="btn btn-default btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
+                  <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+                    <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
+                    <button name="action" value="delete" class="btn btn-danger btn-xs">Delete</button>
+                  </form>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}
@@ -107,20 +109,22 @@
 {% macro pending_panel() %}
   <div class="panel panel-default">
     <div class="panel-heading">Pending changes</div>
-    <div class="panel-body">
-      <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-        <div class="row">
-          <div class="col-xs-8">
-            <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
+    {% if not panel.is_archived %}
+      <div class="panel-body">
+        <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+          <div class="row">
+            <div class="col-xs-8">
+              <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
+            </div>
+            <div class="col-xs-4">
+              <button name="action" value="add" class="btn btn-default form-control">
+                Add gene
+              </button>
+            </div>
           </div>
-          <div class="col-xs-4">
-            <button name="action" value="add" class="btn btn-default form-control">
-              Add gene
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    {% endif %}
     {% for gene in panel.pending %}
       {% if gene.info %}
         <table class="table table-bordered">
@@ -156,7 +160,7 @@
         <li class="list-group-item">No pending genes</li>
       </ul>
     {% endfor %}
-    {% if panel.pending %}
+    {% if panel.pending and not panel.is_archived %}
       <div class="panel-footer">
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
           <button class="btn btn-primary form-control">Update panel</button>

@@ -242,4 +242,8 @@ class PanelHandler(object):
         new_panel['version'] = panel_obj['version'] + 1
 
         self.panel_collection.insert_one(new_panel)
+
+        # archive the old panel
+        panel_obj['is_archived'] = True
+        self.update_panel(panel_obj)
         return new_panel
