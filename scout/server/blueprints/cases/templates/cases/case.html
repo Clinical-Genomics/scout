@@ -492,7 +492,7 @@
           {% for panel in case.panels %}
             <tr {% if panel.is_default %} class="bg-info" {% endif %}>
               <td>
-                <a href="{{ url_for('cases.panel', institute_id=institute._id, case_name=case.display_name, panel_id=panel.panel_id) }}">
+                <a href="{{ url_for('panels.panel', panel_id=panel.panel_id) }}">
                   {{ panel.display_name }}
                 </a>
                 {% if panel.is_default %}

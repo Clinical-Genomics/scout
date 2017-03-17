@@ -23,8 +23,10 @@
 {% endblock %}
 
 {% block content_main %}
-  {{ overview_panel() }}
-  {{ pending_panel() }}
+  <div class="row">
+    <div class="col-md-6">{{ overview_panel() }}</div>
+    <div class="col-md-6">{{ pending_panel() }}</div>
+  </div>
   {{ genes_panel() }}
 {% endblock %}
 
@@ -119,37 +121,41 @@
         </div>
       </form>
     </div>
-    <ul class="list-group">
-      {% for gene in panel.pending %}
-        <li class="list-group-item">
-          <div class="form-group">
+    {% for gene in panel.pending %}
+      {% if gene.info %}
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th>Gene</th>
+              <td>{{ gene.symbol }}</td>
+            </tr>
+            {% for key, value in gene.info.items() %}
+              <tr>
+                <th>{{ key }}</th>
+                <td>
+                  {% if value is iterable and value is not string %}
+                    {{ value|join(', ') }}
+                  {% else %}
+                    {{ value }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <ul class="list-group">
+          <li class="list-group-item">
             {{ gene.symbol }}
             <span class="badge pull-right">{{ gene.action }}</span>
-          </div>
-
-          {% if gene.info %}
-            <table class="table table-bordered">
-              <tbody>
-                {% for key, value in gene.info.items() %}
-                  <tr>
-                    <th>{{ key }}</th>
-                    <td>
-                      {% if value is iterable and value is not string %}
-                        {{ value|join(', ') }}
-                      {% else %}
-                        {{ value }}
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endif %}
-        </li>
-      {% else %}
+          </li>
+        </ul>
+      {% endif %}
+    {% else %}
+      <ul class="list-group">
         <li class="list-group-item">No pending genes</li>
-      {% endfor %}
-    </ul>
+      </ul>
+    {% endfor %}
     {% if panel.pending %}
       <div class="panel-footer">
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">

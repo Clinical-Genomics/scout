@@ -211,14 +211,3 @@ def hpoterms():
     json_terms = [{'name': '{} | {}'.format(term['hpo_id'], term['description']),
                    'id': term['hpo_id']} for term in terms]
     return Response(dumps(json_terms), mimetype='application/json; charset=utf-8')
-
-
-@cases_bp.route('/<institute_id>/<case_name>/panels/<panel_id>')
-@templated('cases/panel.html')
-def panel(institute_id, case_name, panel_id):
-    """Show the list of genes associated with a gene panel."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    panel_obj = store.panel(panel_id)
-    # # coverage link for gene
-    # covlink_kwargs = genecov_links(case_model.individuals)
-    return dict(institute=institute_obj, case=case_obj, panel=panel_obj)
