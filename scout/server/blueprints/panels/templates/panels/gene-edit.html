@@ -21,6 +21,7 @@
               </div>
               <div class="col-md-4">
                 {{ form.reduced_penetrance.label(class="control-label") }}
+                (OMIM: {{ 'Yes' if gene.incomplete_penetrance else 'unknown' }})
                 <div>{{ form.reduced_penetrance() }}</div>
               </div>
               <div class="col-md-4">
@@ -33,6 +34,7 @@
             <div class="row">
               <div class="col-md-4">
                 {{ form.inheritance_models.label(class="control-label") }}
+                (OMIM: {{ gene.inheritance_models|join(', ') if gene.inheritance_models else 'unknown' }})
                 {{ form.inheritance_models(class="form-control") }}
               </div>
               <div class="col-md-4">

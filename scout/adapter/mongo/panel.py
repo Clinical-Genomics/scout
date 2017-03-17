@@ -181,8 +181,9 @@ class PanelHandler(object):
             new_panel(dict): Panel with changes
         """
         updates = {}
-        new_panel = panel_obj
+        new_panel = dict(panel_obj)
         new_panel.pop('_id')
+        new_panel['pending'] = []
 
         new_genes = []
 
@@ -234,6 +235,8 @@ class PanelHandler(object):
                     if info.get('database_entry_version'):
                         gene['database_entry_version'] = info['database_entry_version']
                     new_genes.append(gene)
+            else:
+                new_genes.append(gene)
 
         new_panel['genes'] = new_genes
         new_panel['version'] = panel_obj['version'] + 1
