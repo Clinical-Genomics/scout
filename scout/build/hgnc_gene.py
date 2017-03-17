@@ -54,38 +54,36 @@ def build_hgnc_gene(gene_info, build='37'):
             gene_obj(dict)
     
             {
-                hgnc_id: Int # This is the hgnc id, required
+                '_id': ObjectId(),
+                # This is the hgnc id, required:
+                'hgnc_id': int, 
+                # The primary symbol, required 
+                'hgnc_symbol': str,
+                'ensembl_id': str, # required
+                'build': str, # '37' or '38', defaults to '37', required
                 
-                hgnc_symbol: str # The primary symbol, required 
-                ensembl_id: str, required
-                build: str, '37' or '38', defaults to '37'
+                'chromosome': str, # required
+                'start': int, # required
+                'end': int, # required
                 
-                chromosome: str, required
-                start: int, required
-                end: int, required
-                
-                description: str
-                aliases: list(str)
-                entrez_id: int
-                omim_id: int
-                pli_score: float
-                primary_transcripts: list(str)
-                ucsc_id: str
-                uniprot_ids: list(str)
-                vega_id: str
-                transcripts: list((dict))
+                'description': str, # Gene description
+                'aliases': list(), # Gene symbol aliases, includes hgnc_symbol, str
+                'entrez_id': int,
+                'omim_id': int,
+                'pli_score': float,
+                'primary_transcripts': list(), # List of refseq transcripts (str)
+                'ucsc_id': str,
+                'uniprot_ids': list(), # List of str
+                'vega_id': str,
+                'transcripts': list(), # List of hgnc_transcript
                 
                 # Inheritance information
-                incomplete_penetrance: bool
-                ar: bool, defaults to False
-                ad: bool, defaults to False
-                mt: bool, defaults to False
-                xr: bool, defaults to False
-                xd: bool, defaults to False
-                x: bool , defaults to False
-                y: bool , defaults to False
-        
-    }
+                'inheritance_models': list(), # List of model names
+                'incomplete_penetrance': bool, # Acquired from HPO
+                
+                # Phenotype information
+                'phenotypes': list(), # List of dictionaries with phenotype information
+            }
     """
     try:
         gene_obj = {'hgnc_id':int(gene_info['hgnc_id'])}
@@ -127,7 +125,7 @@ def build_hgnc_gene(gene_info, build='37'):
     gene_obj['description'] = gene_info.get('description')
     gene_obj['aliases'] = gene_info.get('previous_symbols', [])
     gene_obj['entrez_id'] = gene_info.get('entrez_id')
-    gene_obj['omim_ids'] = gene_info.get('omim_id')
+    gene_obj['omim_id'] = gene_info.get('omim_id')
     try:
         gene_obj['pli_score'] = float(gene_info.get('pli_score'))
     except TypeError as err:
@@ -148,11 +146,8 @@ def build_hgnc_gene(gene_info, build='37'):
     gene_obj['transcripts'] = transcript_objs
 
     gene_obj['incomplete_penetrance'] = gene_info.get('incomplete_penetrance', False)
-    gene_obj['ad'] = gene_info.get('ad', False)
-    gene_obj['ar'] = gene_info.get('ar', False)
-    gene_obj['xd'] = gene_info.get('xd', False)
-    gene_obj['xr'] = gene_info.get('xr', False)
-    gene_obj['x'] = gene_info.get('x', False)
-    gene_obj['y'] = gene_info.get('y', False)
+    gene_obj['inheritance_models'] = gene_info.get('inheritance_models', [])
+    
+    gene_obj['phenotypes'] = gene_info.get('phenotypes', [])
 
     return gene_obj

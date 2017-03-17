@@ -158,22 +158,9 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
             gene = genes[hgnc_symbol]
             # Update the omim id to the one found in omim
             gene['omim_id'] = omim_info['mim_number']
-            # if hpo_info.get('incomplete_penetrance'):
-            #    gene['incomplete_penetrance'] = True
-            if 'AR' in inheritance:
-                gene['ar'] = True
-            if 'AD' in inheritance:
-                gene['ad'] = True
-            if 'MT' in inheritance:
-                gene['mt'] = True
-            if 'XD' in inheritance:
-                gene['xd'] = True
-                gene['x'] = True
-            if 'XR' in inheritance:
-                gene['xr'] = True
-                gene['x'] = True
-            if 'Y' in inheritance:
-                gene['y'] = True
+            
+            gene['inheritance_models'] = list(inheritance)
+            gene['phenotypes'] = omim_info.get('phenotypes', [])
     
     for hgnc_symbol in get_incomplete_penetrance_genes(hpo_lines):
         if hgnc_symbol in genes:

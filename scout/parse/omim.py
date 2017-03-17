@@ -88,15 +88,18 @@ def parse_genemap2(lines):
                 # Each related phenotype is separated by ';'
                 for phenotype_info in parsed_entry['Phenotypes'].split(';'):
                     phenotype_info = phenotype_info.lstrip()
+                    # print(phenotype_info)
                     # Skip phenotype entries that are to uncertain
-                    if not phenotype_info.startswith(('?', '[', '{')):
+                    if not phenotype_info.startswith('['):
                         # We will try to save the description
                         description = ""
-                        for text in phenotype_info.split(','):
+                        splitted_info = phenotype_info.split(',')
+                        for i,text in enumerate(splitted_info):
                             # Everything before ([1,2,3])
+                            # We check if we are in the part where the mim number exists
                             match = entry_pattern.search(text)
                             if not match:
-                                description += text
+                                description += text.strip('?\{\}')
                             else:
                                 # If we find the end of the entry
                                 mimnr_match = mimnr_pattern.search(phenotype_info)
@@ -106,18 +109,23 @@ def parse_genemap2(lines):
                                 else:
                                     phenotype_mim = parsed_entry['mim_number']
                                     description += text[:-4]
-                                inheritance = set()
-                                for term in mim_inheritance_terms:
-                                    if term in phenotype_info:
-                                        inheritance.add(TERMS_MAPPER[term])
-                                        gene_inheritance.add(TERMS_MAPPER[term])
-                                parsed_phenotypes.append(
-                                    {
-                                        'mim_number':phenotype_mim, 
-                                        'inheritance': inheritance,
-                                        'description': description
-                                    })
                                 break
+                        # Find the inheritance
+                        inheritance = set()
+                        inheritance_text = ','.join(splitted_info[i:])
+                        for term in mim_inheritance_terms:
+                            if term in inheritance_text:
+                                
+                                inheritance.add(TERMS_MAPPER[term])
+                                gene_inheritance.add(TERMS_MAPPER[term])
+                        
+                        parsed_phenotypes.append(
+                                            {
+                                                'mim_number':phenotype_mim, 
+                                                'inheritance': list(inheritance),
+                                                'description': description
+                                            }
+                                        )
             
             parsed_entry['phenotypes'] = parsed_phenotypes
             parsed_entry['inheritance'] = gene_inheritance
@@ -242,6 +250,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
                 no_hgnc += 1
             else:
                 genes[mim_nr] = entry
+    log.info("Numnber of genes without hgnc symbol %s", str(no_hgnc))
     
     for entry in parse_genemap2(genemap_lines):
         mim_number = entry['mim_number']
@@ -250,6 +259,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
         hgnc_symbol = entry['hgnc_symbol']
         if mim_number in genes:
             genes[mim_number]['inheritance'] = inheritance
+            genes[mim_number]['phenotypes'] = phenotype_info
 
     for mim_nr in genes:
         gene_info = genes[mim_nr]
@@ -332,7 +342,12 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
         mim2gene_handle = get_file_handle(mim2gene)
     if mim_titles:
         mimtitles_handle = get_file_handle(mim_titles)
-
+        
+    mim_genes = get_mim_genes(genemap_handle, mim2gene_handle)
+    for entry in mim_genes:
+        pp(mim_genes[entry])
+    
+    context.abort()
     if phenotypes:
         if not genemap:
             click.echo("Please provide the genemap file")
@@ -354,7 +369,8 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
     
     genes = get_mim_genes(genemap_handle, mim2gene_handle)
     for hgnc_symbol in genes:
-        pp(genes[hgnc_symbol])
+        if hgnc_symbol == 'OPA1':
+            print(genes[hgnc_symbol])
 
 if __name__ == '__main__':
     cli()

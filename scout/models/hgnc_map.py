@@ -40,15 +40,11 @@ hgnc_gene = {
                 'transcripts': list(), # List of hgnc_transcript
                 
                 # Inheritance information
+                'inheritance_models': list(), # List of model names
                 'incomplete_penetrance': bool, # Acquired from HPO
-                'ar': bool, # defaults to None
-                'ad': bool, # defaults to None
-                'mt': bool, # defaults to None
-                'xr': bool, # defaults to None
-                'xd': bool, # defaults to None
-                'x': bool , # defaults to None
-                'y': bool , # defaults to None
-
+                
+                # Phenotype information
+                'phenotypes': list(), # List of dictionaries with phenotype information
     }
 
 class HgncTranscript(EmbeddedDocument):

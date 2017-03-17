@@ -93,6 +93,7 @@ def genes(ctx, update, build):
         hpo_lines=hpo_handle
     )
     
+    
     load_hgnc_genes(
         adapter=adapter,
         genes=genes,
