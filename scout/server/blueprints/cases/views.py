@@ -8,7 +8,8 @@ from scout.server.extensions import store
 from scout.server.utils import templated, institute_and_case
 from . import controllers
 
-cases_bp = Blueprint('cases', __name__, template_folder='templates')
+cases_bp = Blueprint('cases', __name__, template_folder='templates',
+                     static_folder='static', static_url_path='/cases/static')
 
 
 @cases_bp.route('/institutes')
