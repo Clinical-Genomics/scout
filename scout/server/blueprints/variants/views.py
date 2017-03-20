@@ -10,10 +10,11 @@ from .forms import FiltersForm
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_type>')
+@variants_bp.route('/<institute_id>/<case_name>/variants')
 @templated('variants/variants.html')
-def variants(institute_id, case_name, variant_type):
+def variants(institute_id, case_name):
     """Display a list of SNV variants."""
+    variant_type = request.args['variant_type']
     page = int(request.args.get('page', 1))
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
@@ -33,7 +34,9 @@ def variants(institute_id, case_name, variant_type):
 @templated('variants/variant.html')
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
-    return dict()
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return dict(institute=institute_obj, case=case_obj, variant=variant_obj)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/sv/variants')
