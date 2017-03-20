@@ -5,7 +5,7 @@ from flask_login import current_user
 from flaskext.markdown import Markdown
 
 from . import extensions
-from .blueprints import public, genes, cases, login, variants, panels
+from .blueprints import public, genes, cases, login, variants, panels, pileup
 
 
 def create_app(config_file=None, config=None):
@@ -57,6 +57,7 @@ def register_blueprints(app):
     app.register_blueprint(login.login_bp)
     app.register_blueprint(variants.variants_bp)
     app.register_blueprint(panels.panels_bp)
+    app.register_blueprint(pileup.pileup_bp)
 
 
 def register_filters(app):

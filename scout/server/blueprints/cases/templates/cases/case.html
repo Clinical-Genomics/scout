@@ -88,7 +88,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Matching causatives from other cases</div>
     <ul class="list-group">
-      {% for variant in causatives %}
+      {% for variant in other_causatives %}
         <li class="list-group-item">
           <a href="{{ url_for('variants.variant', institute_id=institute._id,
                               case_name=case.display_name, variant_id=variant.id) }}">
@@ -182,7 +182,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Causative variants</div>
     <ul class="list-group">
-      {% for variant in case.causatives %}
+      {% for variant in causatives %}
         <li class="list-group-item">
           <div class="row">
             <div class="col-xs-8">
@@ -198,10 +198,11 @@
               {% endif %}
             </div>
             <div class="col-xs-4">
-              {{ remove_form(url_for('cases.unmark_causative',
+              {{ remove_form(url_for('cases.mark_causative',
                                      institute_id=institute._id,
                                      case_name=case.display_name,
-                                     variant_id=variant._id)) }}
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
             </div>
           </div>
         </li>
@@ -218,7 +219,7 @@
         <col class="col-xs-1">
       </colgroup>
       <tbody>
-        {% for variant in case.suspects %}
+        {% for variant in suspects %}
           <tr>
             <td>
               <span class="glyphicon glyphicon-bookmark"></span>
@@ -251,10 +252,11 @@
               </form>
             </td>
             <td>
-              {{ remove_form(url_for('cases.unpin_variant',
+              {{ remove_form(url_for('cases.pin_variant',
                                      institute_id=institute._id,
                                      case_name=case.display_name,
-                                     variant_id=variant._id)) }}
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
             </td>
           </tr>
         {% else %}
@@ -432,7 +434,7 @@
   </li>
 {% endmacro %}
 
-{% macro remove_form(url, hidden_input=None, button_name=none) %}
+{% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
   <form action="{{ url }}" method="POST">
     {% if hidden_input %}
       <input type="hidden"

@@ -5,9 +5,8 @@ import pymongo
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError
 
-from pprint import pprint as pp
-
 logger = logging.getLogger(__name__)
+
 
 class VariantHandler(object):
 
@@ -30,7 +29,7 @@ class VariantHandler(object):
         # Loop over the genes in the variant object to add information
         # from hgnc_genes and panel genes
         for variant_gene in variant_obj['genes']:
-            hgnc_id = variant_gene[hgnc_id]
+            hgnc_id = variant_gene['hgnc_id']
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
 
@@ -46,7 +45,6 @@ class VariantHandler(object):
                 if hgnc_gene.get('incomplete_penetrance'):
                     variant_gene['omim_penetrance'] = True
 
-
             panel_info = extra_info.get(hgnc_id, [])
 
             # Manually annotated disease associated transcripts
@@ -58,7 +56,7 @@ class VariantHandler(object):
             for gene_info in panel_info:
                 if gene_info.get('disease_associated_transcripts'):
                     for tx in gene_info['disease_associated_transcripts']:
-                        disease_associated.add[tx]
+                        disease_associated.add(tx)
                 if gene_info.get('reduced_penetrance'):
                     manual_penetrance = True
 
@@ -180,7 +178,7 @@ class VariantHandler(object):
                 str: variant document id
         """
         for case in self.cases(collaborator=institute_id, has_causatives=True):
-            for variant_id in case.get('causatives',[]):
+            for variant_id in case.get('causatives', []):
                 yield variant_id
 
     def check_causatives(self, case_obj):
@@ -208,7 +206,7 @@ class VariantHandler(object):
 
     def update_variants(self, case_obj, variant_type='clinical', category='snv'):
         """Adds extra information on variants.
-        
+
         Add a variant rank based on the rank score
         Add extra information on compounds
 
@@ -224,9 +222,9 @@ class VariantHandler(object):
                 'variant_type': variant_type,
             }
         ).sort('rank_score', pymongo.DESCENDING)
-        
+
         logger.info("Updating variant_rank for all variants")
-        
+
         # Update the information on all compounds
         for index, variant in enumerate(variants):
             # This is a list with the updated compound documents
@@ -254,8 +252,8 @@ class VariantHandler(object):
                 compound['not_loaded'] = not_loaded
                 compound['genes'] = gene_objs
                 compound_objs.append(compound)
-                
-            
+
+
             updated_variant = self.variant_collection.find_one_and_update(
                 {'_id': variant['_id']},
                 {
@@ -266,7 +264,7 @@ class VariantHandler(object):
                 },
                 return_document=pymongo.ReturnDocument.AFTER
             )
-        
+
         logger.info("Updating variant_rank done")
 
 
@@ -294,18 +292,18 @@ class VariantHandler(object):
             )
         logger.info("Updating variant_rank done")
 
-
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""
         # variant id without "*_[variant_type]"
         variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
 
-        causatives = self.get_causatives(variant_obj['institute'])
-        for causative in causatives:
-            not_same_case = causative['case_id'] != case_obj['_id']
-            same_variant = causative['display_name'].startswith(variant_id)
+        causative_ids = self.get_causatives(variant_obj['institute'])
+        for causative_id in causative_ids:
+            other_variant = self.variant(causative_id)
+            not_same_case = other_variant['case_id'] != case_obj['_id']
+            same_variant = other_variant['display_name'].startswith(variant_id)
             if (not_same_case and same_variant):
-                yield causative
+                yield other_variant
 
     def next_variant(self, document_id):
         """Returns the next variant from the rank order.

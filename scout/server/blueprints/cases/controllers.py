@@ -44,12 +44,19 @@ def case(store, institute_obj, case_obj):
     if case_obj.get('assignee'):
         case_obj['assignee'] = store.user(case_obj['assignee'])
 
+    suspects = [store.variant(variant_id) for variant_id in
+                case_obj.get('suspects', [])]
+    causatives = [store.variant(variant_id) for variant_id in
+                  case_obj.get('causatives', [])]
+
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
-        'causatives': store.check_causatives(case_obj),
+        'other_causatives': store.check_causatives(case_obj),
         'comments': store.events(institute_obj, case=case_obj, comments=True),
         'hpo_groups': PHENOTYPE_GROUPS,
         'events': store.events(institute_obj, case=case_obj),
+        'suspects': suspects,
+        'causatives': causatives,
     }
     return data
 

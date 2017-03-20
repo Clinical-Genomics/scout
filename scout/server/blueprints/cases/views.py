@@ -212,3 +212,49 @@ def hpoterms():
     json_terms = [{'name': '{} | {}'.format(term['hpo_id'], term['description']),
                    'id': term['hpo_id']} for term in terms]
     return Response(dumps(json_terms), mimetype='application/json; charset=utf-8')
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/pin', methods=['POST'])
+def pin_variant(institute_id, case_name, variant_id):
+    """Pin and unpin variants to/from the list of suspects."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    if request.form['action'] == 'ADD':
+        store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
+    elif request.form['action'] == 'DELETE':
+        store.unpin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
+    return redirect(request.referrer or link)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/validate', methods=['POST'])
+def mark_validation(institute_id, case_name, variant_id):
+    """Mark a variant as sanger validated."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    validate_type = request.form['type'] or None
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
+    return redirect(request.referrer or link)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/causative', methods=['POST'])
+def mark_causative(institute_id, case_name, variant_id):
+    """Mark a variant as confirmed causative."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    if request.form['action'] == 'ADD':
+        store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+    elif request.form['action'] == 'DELETE':
+        store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+
+    # send the user back to the case that was marked as solved
+    case_url = url_for('.case', institute_id=institute_id, case_name=case_name)
+    return redirect(case_url)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, request
+from flask import Blueprint, request, redirect
+from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
 from scout.server.extensions import store
@@ -35,8 +36,8 @@ def variants(institute_id, case_name):
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
-    return dict(institute=institute_obj, case=case_obj, variant=variant_obj)
+    data = controllers.variant(store, institute_obj, case_obj, variant_id)
+    return dict(institute=institute_obj, case=case_obj, **data)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/sv/variants')
@@ -51,3 +52,17 @@ def sv_variants(institute_id, case_name):
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     return dict()
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/priority',
+                   methods=['POST'])
+def manual_rank(institute_id, case_name, variant_id):
+    """Update the manual variant rank for a variant."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    new_manual_rank = int(request.form['manual_rank'])
+    link = request.referrer
+    store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
+                             new_manual_rank)
+    return redirect(request.referrer)
