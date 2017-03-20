@@ -49,6 +49,7 @@ def build_phenotype(phenotype_info):
     phenotype_obj['mim_number'] = phenotype_info['mim_number']
     phenotype_obj['description'] = phenotype_info['description']
     phenotype_obj['inheritance_models'] = list(phenotype_info.get('inheritance', set()))
+    phenotype_obj['status'] = phenotype_info['status']
     
     return phenotype_obj
 

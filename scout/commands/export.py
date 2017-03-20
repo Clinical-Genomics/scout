@@ -22,6 +22,49 @@ from scout.export.panel import export_panels
 logger = logging.getLogger(__name__)
 
 
+@click.command('omim', short_help='Export a omim gene panel')
+@click.option('-v', '--version',
+            type=float,
+            help="Choose what version number should be used"
+)
+@click.option('-b', '--build',
+            default='37',
+            type=click.Choice(['37','38']),
+            help="Choose what genome build to use"
+)
+@click.pass_context
+def omim(context, version, build):
+    """Export the omim gene panel to a .bed like format.
+    """
+    version = version or 1.0
+    logger.info("Running scout export omim")
+    adapter = context.obj['adapter']
+    
+    # print the headers
+    click.echo("##panel_id=OMIM")
+    click.echo("##institute=cust002")
+    click.echo("##version={0}".format(version))
+    click.echo("##date={0}".format("2017-03-20"))
+    click.echo("##display_name=OMIM")
+    click.echo("##contact=Daniel Nilsson")
+    click.echo("#hgnc_id\thgnc_symbol")
+    
+    nr_omim = 0
+    for i, gene in enumerate(adapter.all_genes(build=str(build))):
+        # A omim gene is recognized by having phenotypes
+        if gene.get('phenotypes'):
+            nr_omim += 1
+            keep = False
+            for phenotype in gene['phenotypes']:
+                if phenotype['status'] != 'susceptibility':
+                    keep = True
+            
+            if keep:
+                click.echo("{0}\t{1}".format(gene['hgnc_id'], gene['hgnc_symbol']))
+    
+    logger.info("Nr of genes in total: %s" % i)
+    logger.info("Nr of omim genes: %s" % nr_omim)
+    logger.info("Nr of genes outside mim panel: %s" % (i - nr_omim))
 
 
 @click.command('panel', short_help='Export gene panels')
@@ -135,4 +178,5 @@ export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)
 export.add_command(hpo_genes)
+export.add_command(omim)
 

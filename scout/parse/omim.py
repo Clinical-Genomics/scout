@@ -91,8 +91,14 @@ def parse_genemap2(lines):
                     # print(phenotype_info)
                     # Skip phenotype entries that are to uncertain
                     if not phenotype_info.startswith('['):
+                        phenotype_status = 'established'
                         # We will try to save the description
                         description = ""
+                        if phenotype_info.startswith('{'):
+                            phenotype_status = 'susceptibility'
+                        if phenotype_info.startswith('?'):
+                            phenotype_status = 'provisional'
+                        
                         splitted_info = phenotype_info.split(',')
                         for i,text in enumerate(splitted_info):
                             # Everything before ([1,2,3])
@@ -123,7 +129,8 @@ def parse_genemap2(lines):
                                             {
                                                 'mim_number':phenotype_mim, 
                                                 'inheritance': inheritance,
-                                                'description': description
+                                                'description': description,
+                                                'status': phenotype_status,
                                             }
                                         )
             
@@ -171,7 +178,7 @@ def parse_mim2gene(lines):
             parsed_entry['mim_number'] = int(parsed_entry['mim_number'])
             
             if 'hgnc_symbol' in parsed_entry:
-                parsed_entry['hgnc_symbol'] = parsed_entry['hgnc_symbol'].upper()
+                parsed_entry['hgnc_symbol'] = parsed_entry['hgnc_symbol']
             
             if parsed_entry.get('entrez_gene_id'):
                 parsed_entry['entrez_gene_id'] = int(parsed_entry['entrez_gene_id'])
@@ -334,6 +341,7 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
     print("mim2gene file: %s" % mim2gene)
     print("MimTitles file: %s" % mim_titles)
     
+    
     if morbid:
         morbid_handle = get_file_handle(morbid)
     if genemap:
@@ -342,10 +350,11 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
         mim2gene_handle = get_file_handle(mim2gene)
     if mim_titles:
         mimtitles_handle = get_file_handle(mim_titles)
-        
+
     mim_genes = get_mim_genes(genemap_handle, mim2gene_handle)
-    for entry in mim_genes:
-        pp(mim_genes[entry])
+    for entry in mim_genes: 
+        if entry == 'C10orf11':
+            pp(mim_genes[entry])
     
     context.abort()
     if phenotypes:
