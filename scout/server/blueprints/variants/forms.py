@@ -6,7 +6,7 @@ from wtforms.widgets import TextInput
 
 from scout.constants import CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS
 
-CLINSIG_OPTIONS = [('', '')] + list(CLINSIG_MAP.items())
+CLINSIG_OPTIONS  = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 
@@ -37,7 +37,7 @@ class FiltersForm(FlaskForm):
 
     cadd_score = DecimalField('CADD', places=2)
     cadd_inclusive = BooleanField()
-    clinsig = SelectField('CLINSIG', choices=CLINSIG_OPTIONS)
+    clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
 
     thousand_genomes_frequency = DecimalField('1000 Genomes', places=2)
     exac_frequency = DecimalField('ExAC', places=2)
