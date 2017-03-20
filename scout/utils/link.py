@@ -33,6 +33,8 @@ def add_transcript(gene, parsed_transcript):
         enstid = parsed_transcript['enst_id']
         refseq_identifyer = parsed_transcript['refseq']
         is_primary = False
+        # If there is a refseq identifier check if it is the same as
+        # specified as primary by HGNC
         if refseq_identifyer:
             if refseq_identifyer in gene['ref_seq']:
                 is_primary = True
@@ -53,6 +55,9 @@ def add_transcript(gene, parsed_transcript):
                 parsed_transcript['refseq'] = [refseq_identifyer]
             else:
                 parsed_transcript['refseq'] = []
+
+            if gene['hgnc_symbol'] == "C10orf11":
+                print(parsed_transcript)
 
             gene['transcripts'][enstid] = parsed_transcript
 

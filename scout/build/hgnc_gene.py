@@ -20,13 +20,9 @@ def build_hgnc_transcript(transcript_info, primary_transcripts):
         transcript_obj = {'ensembl_transcript_id':transcript_info['enst_id']}
     except KeyError:
         raise KeyError("Transcript has to have ensembl id")
-    transcript_obj['is_primary'] = False
+    transcript_obj['is_primary'] = transcript_info.get('is_primary', False)
     
-    refseq_id = transcript_info.get('refseq')
-    if refseq_id:
-        transcript_obj['refseq_id'] = refseq_id
-        if refseq_id in primary_transcripts:
-            transcript_obj['is_primary'] = True
+    transcript_obj['refseq_ids'] = transcript_info['refseq']
     
     try:
         transcript_obj['start'] = int(transcript_info['start'])
