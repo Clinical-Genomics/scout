@@ -95,7 +95,17 @@ def variant(store, institute_obj, case_obj, variant_id):
         'events': events,
         'overlapping_svs': store.overlapping(variant_obj),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'observations': observations,
     }
+
+
+def observations(loqusdb, variant_obj):
+    """Query observations for a variant."""
+    composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
+                    "{this[alternative]}".format(this=variant_obj))
+    obs_data = loqusdb.get_variant({'_id': composite_id})
+    obs_data['total'] = loqusdb.case_count()
+    return obs_data
 
 
 def parse_gene(gene_obj):

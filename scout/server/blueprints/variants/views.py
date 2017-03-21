@@ -3,7 +3,7 @@ from flask import Blueprint, request, redirect, abort, flash, current_app
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
-from scout.server.extensions import store, mail
+from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case
 from . import controllers
 from .forms import FiltersForm
@@ -37,6 +37,8 @@ def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.variant(store, institute_obj, case_obj, variant_id)
+    if current_app.config.get('LOQUSDB_SETTINGS'):
+        data['observations'] = controllers.observations(loqusdb, data['variant'])
     return dict(institute=institute_obj, case=case_obj, **data)
 
 

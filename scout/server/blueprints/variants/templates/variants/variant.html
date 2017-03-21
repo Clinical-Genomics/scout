@@ -438,40 +438,42 @@
         </span>
       </li>
     </ul>
-    {# <div class="panel-heading">
-      <a href="http://www.clinicalgenomics.se/scout/user-guide/using-scout/" target="_blank">Local observations</a>
-    </div>
-    <ul class="list-group">
-      <li class="list-group-item">
-        <div class="row">
-          <div class="col-xs-4">
-            {{ local_freq.observations|default('N/A') }} <small>obs.</small>
+    {% if config.LOQUSDB_SETTINGS %}
+      <div class="panel-heading">
+        <a href="http://www.clinicalgenomics.se/scout/user-guide/using-scout/" target="_blank">Local observations</a>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-xs-4">
+              {{ observations.observations|default('N/A') }} <small>obs.</small>
+            </div>
+            <div class="col-xs-4">
+              {{ observations.homozygote|default('N/A') }} <small>homo.</small>
+            </div>
+            <div class="col-xs-4">
+              {{ observations.total }} <small>tot.</small>
+            </div>
           </div>
-          <div class="col-xs-4">
-            {{ local_freq.homozygote|default('N/A') }} <small>homo.</small>
+        </li>
+      </ul>
+      <div class="panel-heading">Local observations (archived)</div>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-xs-4">
+              {{ variant.local_obs_old or 'N/A' }} <small>obs.</small>
+            </div>
+            <div class="col-xs-4">
+              {{ variant.local_obs_hom_old or 'N/A' }} <small>homo.</small>
+            </div>
+            <div class="col-xs-4">
+              {{ variant.local_obs_total_old }} <small>tot.</small>
+            </div>
           </div>
-          <div class="col-xs-4">
-            {{ local_total }} <small>tot.</small>
-          </div>
-        </div>
-      </li>
-    </ul>
-    <div class="panel-heading">Local observations (archived)</div>
-    <ul class="list-group">
-      <li class="list-group-item">
-        <div class="row">
-          <div class="col-xs-4">
-            {{ variant.local_obs_old or 'N/A' }} <small>obs.</small>
-          </div>
-          <div class="col-xs-4">
-            {{ variant.local_obs_hom_old or 'N/A' }} <small>homo.</small>
-          </div>
-          <div class="col-xs-4">
-            {{ variant.local_obs_total_old }} <small>tot.</small>
-          </div>
-        </div>
-      </li>
-    </ul> #}
+        </li>
+      </ul>
+    {% endif %}
   </div>
 {% endmacro %}
 

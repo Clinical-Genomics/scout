@@ -64,6 +64,10 @@ def configure_extensions(app):
         chanjo_api.init_app(app)
         configure_template_filters(app)
 
+    if app.config.get('LOQUSDB_SETTINGS'):
+        # setup LoqusDB
+        extensions.loqusdb.init_app(app)
+
 
 def register_blueprints(app):
     """Register Flask blueprints."""
