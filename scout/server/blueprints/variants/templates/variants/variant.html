@@ -24,7 +24,10 @@
 {% endblock %}
 
 {% block top_nav_right %}
-  <li>{{ sanger_button() }}</li>
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    <li>{{ sanger_button() }}</li>
+  {% endif %}
   <li>{{ pin_button() }}</li>
   <li>{{ causative_button() }}</li>
   {{ super() }}
@@ -85,7 +88,10 @@
     <div class="col-xs-12">{{ activity_panel(events|reverse) }}</div>
   </div>
 
-  {{ modal_sanger() }}
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    {{ modal_sanger() }}
+  {% endif %}
 {% endblock %}
 
 {% macro sanger_button() %}
