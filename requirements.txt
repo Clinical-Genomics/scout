@@ -8,6 +8,7 @@ path.py
 Flask-OAuthlib
 Flask-Markdown
 Flask-WTF
+Flask-Mail
 coloredlogs
 query_phenomizer
 

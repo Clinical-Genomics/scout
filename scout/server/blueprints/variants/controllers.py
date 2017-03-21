@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
+from flask import url_for
+from flask_mail import Message
+
 from scout.constants import CLINSIG_MAP
 
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
+
+
+class MissingSangerRecipientError(Exception):
+    pass
 
 
 def variants(store, variants_query, page=1, per_page=50):
@@ -101,10 +108,10 @@ def parse_gene(gene_obj):
     gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
                                "section.pl?identifier={}".format(ensembl_id))
     for tx_obj in gene_obj['transcripts']:
-        parse_transcript(tx_obj)
+        parse_transcript(gene_obj, tx_obj)
 
 
-def parse_transcript(tx_obj):
+def parse_transcript(gene_obj, tx_obj):
     """Parse variant gene transcript (VEP)."""
     ensembl_tx_id = tx_obj['transcript_id']
     tx_obj['ensembl_link'] = ("http://grch37.ensembl.org/Homo_sapiens/"
@@ -127,6 +134,23 @@ def parse_transcript(tx_obj):
 
     tx_obj['smart_domain_link'] = ("http://smart.embl.de/smart/search.cgi?keywords={}"
                                    .format(tx_obj.get('smart_domain')))
+
+    if tx_obj.get('ref_seq'):
+        gene_name = gene_obj['common']['hgnc_symbol']
+        tx_obj['change_str'] = transcript_str(tx_obj, gene_name)
+
+
+def transcript_str(transcript_obj, gene_name=None):
+    """Generate amino acid change as a string."""
+    change_str = "{}:exon{}:{}:{}".format(
+        ','.join(transcript_obj['ref_seq']),
+        transcript_obj.get('exon', '').rpartition('/')[0],
+        transcript_obj['coding_sequence_name'],
+        transcript_obj['protein_sequence_name'],
+    )
+    if gene_name:
+        change_str = "{}:".format(gene_name) + change_str
+    return change_str
 
 
 def end_position(variant_obj):
@@ -214,3 +238,60 @@ def callers(variant_obj):
              ('Freebayes', variant_obj['freebayes'])]
     existing_calls = [(name, caller) for name, caller in calls if caller]
     return existing_calls
+
+
+def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
+    """Send Sanger email."""
+    variant_link = url_for('variants.variant', institute_id=institute_obj['_id'],
+                           case_name=case_obj['display_name'],
+                           variant_id=variant_obj['_id'])
+    if variant_obj['_id'] not in case_obj['suspects']:
+        store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+
+    recipients = institute_obj['sanger_recipients']
+    if len(recipients) == 0:
+        raise MissingSangerRecipientError()
+
+    hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
+    gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
+                                        sample_obj['genotype_call'])
+               for sample_obj in variant_obj['samples']]
+    tx_changes = []
+    for gene_obj in variant_obj['genes']:
+        for transcript_obj in gene_obj['transcripts']:
+            parse_transcript(gene_obj, transcript_obj)
+            if transcript_obj.get('change_str'):
+                tx_changes.append("<li>{}</li>".format(transcript_obj['change_str']))
+
+    html = """
+      <ul">
+        <li>
+          <strong>Case {case_name}</strong>: <a href="{url}">{variant_id}</a>
+        </li>
+        <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
+        <li><strong>Gene panels</strong>: {panels}</li>
+        <li><strong>GT call</strong></li>
+        {gtcalls}
+        <li><strong>Amino acid changes</strong></li>
+        {tx_changes}
+        <li><strong>Ordered by</strong>: {name}</li>
+      </ul>
+    """.format(case_name=case_obj['display_name'],
+               url=variant_link,
+               variant_id=variant_obj['display_name'],
+               hgnc_symbol=hgnc_symbol,
+               panels=', '.format(variant_obj['panels']),
+               gtcalls=''.join(gtcalls),
+               tx_changes=''.join(tx_changes),
+               name=user_obj['name'].encode('utf-8'))
+
+    kwargs = dict(subject="SCOUT: Sanger sequencing of {}".format(hgnc_symbol),
+                  html=html, sender=sender, recipients=recipients,
+                  # cc the sender of the email for confirmation
+                  cc=[user_obj['email']])
+
+    # compose and send the email message
+    message = Message(**kwargs)
+    mail.send(message)
+
+    store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)

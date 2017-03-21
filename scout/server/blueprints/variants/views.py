@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, request, redirect
+from flask import Blueprint, request, redirect, abort, flash, current_app
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
-from scout.server.extensions import store
+from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case
 from . import controllers
 from .forms import FiltersForm
@@ -65,4 +65,19 @@ def manual_rank(institute_id, case_name, variant_id):
     link = request.referrer
     store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
                              new_manual_rank)
+    return redirect(request.referrer)
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/sanger', methods=['POST'])
+def sanger(institute_id, case_name, variant_id):
+    """Send Sanger email for confirming a variant."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    try:
+        controllers.sanger(store, mail, institute_obj, case_obj, user_obj,
+                           variant_obj, current_app.config['MAIL_USERNAME'])
+    except controllers.MissingSangerRecipientError:
+        flash('No sanger recipients added to institute.', 'info')
+        return abort(403)
     return redirect(request.referrer)

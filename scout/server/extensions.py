@@ -19,3 +19,6 @@ oauth = OAuth()
 # you must configure 3 values from Google APIs console
 # https://code.google.com/apis/console
 google = oauth.remote_app('google', app_key='GOOGLE')
+
+from flask_mail import Mail
+mail = Mail()
