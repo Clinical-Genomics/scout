@@ -2,6 +2,10 @@
 {% from "utils.html" import comments_panel, activity_panel %}
 {% from "variants/utils.html" import compounds_table %}
 
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
+{% endblock %}
+
 {% block top_nav %}
   <li>
     <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
