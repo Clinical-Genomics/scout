@@ -19,3 +19,6 @@ phizz
 vcf_parser
 PyYaml
 ped_parser
+
+# extras
+# chanjo-report

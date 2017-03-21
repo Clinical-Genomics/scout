@@ -11,7 +11,9 @@
       <li>{{ research(case) }}</li>
     {% endif %}
     <li>{{ rerun(case) }}</li>
-    {# <li>{{ coverage_report(institute, case) }}</li> #}
+    {% if config.SQLALCHEMY_DATABASE_URI %}
+      <li>{{ coverage_report(institute, case) }}</li>
+    {% endif %}
     <li>{{ rank_model(case) }}</li>
     <li>{{ share_case(institute, case, collaborators) }}</li>
   </ul>
@@ -169,14 +171,14 @@
       <span class="glyphicon glyphicon-ok-sign"></span>
       Coverage report
     </h5>
-    <form method="POST" action="{{ url_for('report.report', group_id=case.case_id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
-      <input type="hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
+    <form method="POST" action="{{ url_for('report.report', group_id=case._id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+      <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
       <div class="form-group">
         <button type="submit" class="btn btn-default form-control">View report</button>
       </div>
     </form>
-    <p>Based on: {{ case.default_panel_ids|join(', ') }}</p>
+    <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
   </div>
 {% endmacro %}
 

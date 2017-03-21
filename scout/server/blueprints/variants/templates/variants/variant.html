@@ -352,6 +352,15 @@
           <td>
             <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">View alignment</a>
           </td>
+          {% if config.SQLALCHEMY_DATABASE_URI %}
+            {% for gene in variant.genes %}
+              <td>
+                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                  {{ gene.common.hgnc_symbol }}
+                </a>
+              </td>
+            {% endfor %}
+          {% endif %}
         </tr>
       </tbody>
     </table>

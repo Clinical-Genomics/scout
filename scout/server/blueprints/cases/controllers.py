@@ -49,6 +49,18 @@ def case(store, institute_obj, case_obj):
     causatives = [store.variant(variant_id) for variant_id in
                   case_obj.get('causatives', [])]
 
+    distinct_genes = set()
+    case_obj['panel_names'] = []
+    for panel_obj in case_obj['panels']:
+        if panel_obj['is_default']:
+            real_panel = store.panel(panel_obj['panel_id'])
+            distinct_genes.update([gene['hgnc_id'] for gene in real_panel['genes']])
+
+            full_name = "{} ({})".format(real_panel['display_name'],
+                                         real_panel['version'])
+            case_obj['panel_names'].append(full_name)
+    case_obj['default_genes'] = list(distinct_genes)
+
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj),

@@ -35,6 +35,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=parse_reqs(),
+    extras_require=dict(
+        coverage=['chanjo-report'],
+    ),
     entry_points=dict(
         console_scripts=[
             'scout = scout.commands:cli',

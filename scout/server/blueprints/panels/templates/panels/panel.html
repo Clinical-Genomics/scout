@@ -54,6 +54,25 @@
         Date
         <span class="pull-right">{{ panel.date.date() }}</span>
       </li>
+      {% if config.SQLALCHEMY_DATABASE_URI and case %}
+        <li class="list-group-item">
+          Coverage report
+          <a class="pull-right" href="#" onclick="document.getElementById('report-form').submit();">
+            {{ case.display_name }}
+          </a>
+          <form id="report-form" action="{{ url_for('report.report', group_id=case._id, panel_name=panel.name_and_version, level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+            <input type="hidden" name="gene_ids" value="{{ panel.genes|map(attribute='hgnc_id')|join(',') }}">
+          </form>
+        </li>
+        <li class="list-group-item">
+          Coverage overview
+          <span class="pull-right">
+            <a href="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.individuals|map(attribute='individual_id')|list, gene_id=panel.genes|map(attribute='hgnc_id')|join(',')) }}" target="_blank">
+              {{ case.display_name }}
+            </a>
+          </span>
+        </li>
+      {% endif %}
     </ul>
   </div>
 {% endmacro %}

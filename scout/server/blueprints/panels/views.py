@@ -51,6 +51,10 @@ def panel(panel_id):
             store.add_pending(panel_obj, hgnc_id, action='delete')
 
     data = controllers.panel(store, panel_id)
+    if request.args.get('case_id'):
+        data['case'] = store.case(request.args['case_id'])
+    if request.args.get('institute_id'):
+        data['institute'] = store.institute(request.args['institute_id'])
     return data
 
 
