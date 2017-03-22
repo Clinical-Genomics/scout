@@ -18,3 +18,4 @@ wheel>=0.23
 invoke
 bumpversion
 fabric
+grip
