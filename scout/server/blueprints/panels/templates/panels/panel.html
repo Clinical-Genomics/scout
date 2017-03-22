@@ -10,12 +10,12 @@
     <a href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li>
-    <a href="{{ url_for('panels.panels') }}">Gene Panels</a>
-  </li>
-  <li>
     <a href="{{ url_for('cases.cases', institute_id=panel.institute._id) }}">
       {{ panel.institute.display_name }}
     </a>
+  </li>
+  <li>
+    <a href="{{ url_for('panels.panels') }}">Gene Panels</a>
   </li>
   <li class="active">
     <span class="navbar-text">{{ panel.display_name }} {{ panel.version }}</span>
