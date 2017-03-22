@@ -32,7 +32,8 @@ def create_app(config_file=None, config=None):
     register_blueprints(app)
     register_filters(app)
 
-    if not (app.debug or app.testing) and app.config['MAIL_USERNAME']:
+    #not (app.debug or app.testing) and
+    if app.config.get('MAIL_USERNAME'):
         # setup email logging of errors
         configure_email_logging(app)
 
@@ -114,7 +115,7 @@ def register_filters(app):
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
     import logging
-    from .log import TlsSMTPHandler
+    from scout.log import TlsSMTPHandler
 
     mail_handler = TlsSMTPHandler(
         mailhost=app.config['MAIL_SERVER'],

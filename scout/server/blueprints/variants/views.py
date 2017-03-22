@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from flask import Blueprint, request, redirect, abort, flash, current_app
 from flask_login import current_user
 
@@ -8,6 +10,7 @@ from scout.server.utils import templated, institute_and_case
 from . import controllers
 from .forms import FiltersForm
 
+log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
 
 
