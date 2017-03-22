@@ -10,16 +10,16 @@ log = logging.getLogger(__name__)
 
 def build_phenotype(phenotype_id, adapter):
     """Build a small phenotype object
-        
+
         Build a dictionary with phenotype_id and description
-    
+
     Args:
         phenotype_id (str): The phenotype id
         adapter (scout.adapter.MongoAdapter)
-    
+
     Returns:
         phenotype_obj (dict):
-        
+
         dict(
             phenotype_id = str,
             feature = str, # description of phenotype
@@ -41,12 +41,12 @@ def build_case(case_data, adapter):
 
     Returns:
         case_obj (dict): A case object
-    
+
     dict(
         case_id = str, # required=True, unique
         display_name = str, # If not display name use case_id
         owner = str, # required
-    
+
         # These are the names of all the collaborators that are allowed to view the
         # case, including the owner
         collaborators = list, # List of institute_ids
@@ -72,7 +72,7 @@ def build_case(case_data, adapter):
 
         dynamic_gene_list = list, # List of genes
 
-        genome_build = str, # This should be 37 or 38 
+        genome_build = str, # This should be 37 or 38
         genome_version = float, # What version of the build
 
         rank_model_version = float,
@@ -80,7 +80,7 @@ def build_case(case_data, adapter):
 
         phenotype_terms = list, # List of dictionaries with phenotype information
         phenotype_groups = list, # List of dictionaries with phenotype information
-    
+
         madeline_info = str, # madeline info is a full xml file
 
         vcf_files = dict, # A dictionary with vcf files
@@ -91,7 +91,7 @@ def build_case(case_data, adapter):
         has_svvariants = bool, # default=False
 
         is_migrated = bool # default=False
-    
+
     )
     """
     try:
@@ -100,9 +100,9 @@ def build_case(case_data, adapter):
         case_obj['case_id'] = case_data['case_id']
     except KeyError as err:
         raise PedigreeError("Case has to have a case id")
-    
+
     case_obj['display_name'] = case_data.get('display_name', case_obj['case_id'])
-    
+
     # Check if institute exists in database
     try:
         institute_id = case_data['owner']
@@ -112,12 +112,12 @@ def build_case(case_data, adapter):
     if not institute_obj:
         raise IntegrityError("Institute %s not found in database" % institute_id)
     case_obj['owner'] = case_data['owner']
-    
+
     # Owner allways has to be part of collaborators
     collaborators = set(case_data.get('collaborators', []))
     collaborators.add(case_data['owner'])
     case_obj['collaborators'] = list(collaborators)
-    
+
     if case_data.get('assignee'):
         case_obj['assignee'] = case_data['assignee']
 
@@ -136,7 +136,7 @@ def build_case(case_data, adapter):
     now = datetime.now()
     case_obj['created_at'] = now
     case_obj['updated_at'] = now
-    
+
     if case_data.get('suspects'):
         case_obj['suspects'] = case_data['suspects']
     if case_data.get('causatives'):
@@ -153,18 +153,19 @@ def build_case(case_data, adapter):
     if analysis_date:
         case_obj['analysis_date'] = analysis_date
         case_obj['analysis_dates'] = [analysis_date]
-    
+
     # We store some metadata and references about gene panels in 'panels'
     case_panels = case_data.get('gene_panels', [])
     default_panels = case_data.get('default_panels', [])
     panels = []
-        
+
     for panel_name in case_panels:
         panel_obj = adapter.gene_panel(panel_name)
         if not panel_obj:
-            raise IntegrityError("Panel %s does not exist in database" % panel)
+            raise IntegrityError("Panel %s does not exist in database" % panel_name)
         panel = {
             'panel_id': panel_obj['_id'],
+            'panel_name': panel_obj['panel_name'],
             'display_name': panel_obj['display_name'],
             'version': panel_obj['version'],
             'updated_at': panel_obj['date'],
@@ -175,20 +176,20 @@ def build_case(case_data, adapter):
         else:
             panel['is_default'] = False
         panels.append(panel)
-    
+
     case_obj['panels'] = panels
 
     case_obj['dynamic_gene_list'] = {}
-    
+
     # Meta data
     genome_build = case_data.get('genome_build', '37')
     if not genome_build in ['37', '38']:
         pass
         ##TODO raise exception if invalid genome build was used
-        
+
     case_obj['genome_build'] = genome_build
     case_obj['genome_version'] = case_data.get('genome_version')
-    
+
     if case_data.get('rank_model_version'):
         case_obj['rank_model_version'] = float(case_data['rank_model_version'])
 
@@ -203,7 +204,7 @@ def build_case(case_data, adapter):
             phenotypes.append[phenotype_obj]
     if phenotypes:
         case_obj['phenotype_terms'] = phenotypes
-    
+
     # phenotype groups
     phenotype_groups = []
     for phenotype in case_data.get('phenotype_groups', []):
@@ -221,7 +222,7 @@ def build_case(case_data, adapter):
     case_obj['has_svvariants'] = False
     if (case_obj['vcf_files'].get('vcf_sv') or case_obj['vcf_files'].get('vcf_sv_research')):
         case_obj['has_svvariants'] = True
-    
+
     case_obj['is_migrated'] = False
 
     return case_obj

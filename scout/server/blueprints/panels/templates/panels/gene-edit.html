@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ panel.institute.display_name }} - {{ panel.display_name }}
+{% endblock %}
+
+{% block content_main %}
+  <div class="container">
+    <form action="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}" method="POST">
+      {{ form.csrf_token }}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Edit {{ gene.hgnc_symbol }} for {{ panel.display_name }}
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-4">
+                {{ form.disease_associated_transcripts.label(class="control-label") }}
+                {{ form.disease_associated_transcripts(class="form-control") }}
+              </div>
+              <div class="col-md-4">
+                {{ form.reduced_penetrance.label(class="control-label") }}
+                (OMIM: {{ 'Yes' if gene.incomplete_penetrance else 'unknown' }})
+                <div>{{ form.reduced_penetrance() }}</div>
+              </div>
+              <div class="col-md-4">
+                {{ form.mosaicism.label(class="control-label") }}
+                <div>{{ form.mosaicism() }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-4">
+                {{ form.inheritance_models.label(class="control-label") }}
+                (OMIM: {{ gene.inheritance_models|join(', ') if gene.inheritance_models else 'unknown' }})
+                {{ form.inheritance_models(class="form-control") }}
+              </div>
+              <div class="col-md-4">
+                {{ form.comment.label(class="control-label") }}
+                {{ form.comment(class="form-control") }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              <a class="btn btn-default" href="{{ url_for('panels.panel', panel_id=panel._id) }}">Cancel</a>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+  <script>
+    $(function () {
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
+    })
+  </script>
+{% endblock %}

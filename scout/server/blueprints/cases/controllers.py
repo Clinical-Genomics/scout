@@ -11,18 +11,23 @@ PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
 
 def user_institutes(store, user_obj):
     """Preprocess institute objects."""
-    institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
+    if user_obj.is_admin:
+        institutes = store.institutes()
+    else:
+        institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
     for institute in institutes:
-        case_count = store.cases(collaborator=institute['internal_id']).count()
+        case_count = store.cases(collaborator=institute['_id']).count()
         yield (institute, case_count)
 
 
-def cases(case_query):
+def cases(store, case_query):
     """Preprocess case objects."""
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query:
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
+        if case_obj.get('assignee'):
+            case_obj['assignee'] = store.user(case_obj['assignee'])
         case_groups[case_obj['status']].append(case_obj)
 
     data = {
@@ -42,12 +47,31 @@ def case(store, institute_obj, case_obj):
     if case_obj.get('assignee'):
         case_obj['assignee'] = store.user(case_obj['assignee'])
 
+    suspects = [store.variant(variant_id) for variant_id in
+                case_obj.get('suspects', [])]
+    causatives = [store.variant(variant_id) for variant_id in
+                  case_obj.get('causatives', [])]
+
+    distinct_genes = set()
+    case_obj['panel_names'] = []
+    for panel_obj in case_obj['panels']:
+        if panel_obj['is_default']:
+            real_panel = store.panel(panel_obj['panel_id'])
+            distinct_genes.update([gene['hgnc_id'] for gene in real_panel['genes']])
+
+            full_name = "{} ({})".format(real_panel['display_name'],
+                                         real_panel['version'])
+            case_obj['panel_names'].append(full_name)
+    case_obj['default_genes'] = list(distinct_genes)
+
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
-        'causatives': store.check_causatives(case_obj),
+        'other_causatives': store.check_causatives(case_obj),
         'comments': store.events(institute_obj, case=case_obj, comments=True),
         'hpo_groups': PHENOTYPE_GROUPS,
         'events': store.events(institute_obj, case=case_obj),
+        'suspects': suspects,
+        'causatives': causatives,
     }
     return data
 

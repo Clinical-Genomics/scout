@@ -4,8 +4,17 @@ from flask import Flask, redirect, request, url_for
 from flask_login import current_user
 from flaskext.markdown import Markdown
 
+try:
+    from chanjo_report.server.app import configure_template_filters
+    from chanjo_report.server.blueprints import report_bp
+    from chanjo_report.server.extensions import api as chanjo_api
+except ImportError:
+    report_bp = None
+    configure_template_filters = None
+    print('chanjo report not installed!')
+
 from . import extensions
-from .blueprints import public, genes, cases, login, variants
+from .blueprints import public, genes, cases, login, variants, panels, pileup
 
 
 def create_app(config_file=None, config=None):
@@ -46,7 +55,18 @@ def configure_extensions(app):
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
     extensions.oauth.init_app(app)
+    extensions.mail.init_app(app)
     Markdown(app)
+
+    if app.config.get('SQLALCHEMY_DATABASE_URI'):
+        # setup chanjo report
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True if app.debug else False
+        chanjo_api.init_app(app)
+        configure_template_filters(app)
+
+    if app.config.get('LOQUSDB_SETTINGS'):
+        # setup LoqusDB
+        extensions.loqusdb.init_app(app)
 
 
 def register_blueprints(app):
@@ -56,6 +76,12 @@ def register_blueprints(app):
     app.register_blueprint(cases.cases_bp)
     app.register_blueprint(login.login_bp)
     app.register_blueprint(variants.variants_bp)
+    app.register_blueprint(panels.panels_bp)
+    app.register_blueprint(pileup.pileup_bp)
+
+    if app.config.get('SQLALCHEMY_DATABASE_URI'):
+        # register chanjo report blueprint
+        app.register_blueprint(report_bp, url_prefix='/reports')
 
 
 def register_filters(app):

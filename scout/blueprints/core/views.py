@@ -54,7 +54,7 @@ def cases(institute_id):
     institute = validate_user(current_user, institute_id)
     all_cases = store.cases(collaborator=institute_id, name_query=query,
                             skip_assigned=skip_assigned)
-    data = controller.cases(all_cases)
+    data = controller.cases(store, all_cases)
     return dict(institute=institute, institute_id=institute_id, query=query,
                 skip_assigned=skip_assigned, severe_so_terms=SEVERE_SO_TERMS,
                 **data)

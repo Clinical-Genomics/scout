@@ -88,7 +88,7 @@
       </a>
       {% if case.assignee %}
         <span class="badge pull-right">
-          {{ case.assignee.first_name }}
+          {{ case.assignee.name }}
         </span>
       {% endif %}
     </td>
@@ -108,7 +108,7 @@
       {% if case.is_research %}
         <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research variants</a>
       {% else %}
-        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical', gene_panels=case.default_panel_ids) }}">Clinical variants</a>
+        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical variants</a>
       {% endif %}
     </td>
     <td>

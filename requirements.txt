@@ -8,8 +8,10 @@ path.py
 Flask-OAuthlib
 Flask-Markdown
 Flask-WTF
+Flask-Mail
 coloredlogs
 query_phenomizer
+loqusdb>=0.5
 
 # unclear
 mongoengine
@@ -18,3 +20,6 @@ phizz
 vcf_parser
 PyYaml
 ped_parser
+
+# extras
+# chanjo-report

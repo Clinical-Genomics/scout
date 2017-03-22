@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block top_nav_right %}
-  <li><p class="navbar-text">Panels: {{ current_gene_lists|join(',') or 'All' }}</p></li>
+  <li><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
   <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">HPO panels <span class="caret"></span></a>
     <ul class="dropdown-menu">
@@ -41,7 +41,7 @@
     </ul>
   </li>
   <li>
-    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.default_panel_ids) }}">Reset filters</a>
+    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
   </li>
   {{ super() }}
 {% endblock %}
@@ -76,9 +76,6 @@
           <th title="CADD score">CADD</th>
           <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
           <th class="col-xs-3" title="Functional annotation">Func. annotation</th>
-          {% if variant_type == 'clinical' %}
-            <th class="col-xs-1" title="Disease gene model"><small>Exp. inherit.</small></th>
-          {% endif %}
           <th class="col-xs-3" title="Inheritance models">Inheritance model</th>
         </tr>
       </thead>
@@ -93,9 +90,6 @@
             <td class="text-right">{{ cell_cadd(variant) }}</td>
             <td>{{ variant.region_annotations|join(', ') }}</td>
             <td>{{ variant.functional_annotations|join(', ') }}</td>
-            {% if variant_type == 'clinical' %}
-              <td>{{ variant.expected_inheritance|join(', ') }}</td>
-            {% endif %}
             <td>{{ cell_models(variant) }}</td>
           </tr>
         {% else %}
@@ -108,7 +102,7 @@
       </tbody>
     </table>
 
-    {# {{ footer() }} #}
+    {{ footer() }}
   </div>
 {% endblock %}
 
@@ -122,7 +116,7 @@
   </a>
   {% if variant.manual_rank %}
     <span class="badge pull-right">{{ variant.manual_rank }}</span>
-  {% elif variant.has_comments(case) %}
+  {% elif variant.has_comments %}
     <!-- At least show if there are any comments written -->
     <span class="badge pull-right">*</span>
   {% endif %}
@@ -130,13 +124,9 @@
 
 {% macro cell_gene(variant) %}
   {% for gene in variant.genes %}
-    {% if gene.hgnc_symbol %}
-      <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-        {{ gene.hgnc_symbol }}
-      </a>
-    {% else %}
-      <span class="text-muted">HGNC:{{ gene.hgnc_id }}</span>
-    {% endif %}
+    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+      {{ gene.hgnc_symbol }}
+    </a>
   {% endfor %}
 {% endmacro %}
 
@@ -158,7 +148,7 @@
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       <strong>Sift</strong>
-      {{ (variant.sift_predictions or ['-'])|join(',') }} <br>
+      {{ variant.sift_predictions|join(',') }} <br>
       <strong>PolyPhen</strong>
       {{ (variant.polyphen_predictions or ['-'])|join(',') }}
     </div>
@@ -173,16 +163,15 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute._id, case.display_name, variant.compounds[:5]) }}">Compounds</a>
+    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute._id, case.display_name, variant.compounds) }}">Compounds</a>
   {% endif %}
 {% endmacro %}
 
 {% macro footer() %}
   <div class="container-fluid">
     <div class="form-group text-center">
-      {% if variants_count > current_batch %}
-        {# We might have some more variants not loaded #}
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, skip=current_batch, **query_dict) }}">
+      {% if more_variants %}
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, page=(page + 1), **form.data) }}">
           Next page
         </a>
       {% else %}

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
+from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for)
+                   request, url_for, Response)
 from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, institute_and_case
 from . import controllers
 
-cases_bp = Blueprint('cases', __name__, template_folder='templates')
+cases_bp = Blueprint('cases', __name__, template_folder='templates',
+                     static_folder='static', static_url_path='/cases/static')
 
 
 @cases_bp.route('/institutes')
@@ -27,7 +29,7 @@ def cases(institute_id):
     institute_obj = store.institute(institute_id)
     all_cases = store.cases(institute_id, name_query=query,
                             skip_assigned=skip_assigned)
-    data = controllers.cases(all_cases)
+    data = controllers.cases(store, all_cases)
     return dict(institute=institute_obj, **data)
 
 
@@ -198,3 +200,61 @@ def assign(institute_id, case_name):
     else:
         store.assign(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/api/v1/hpo-terms')
+def hpoterms():
+    """Search for HPO terms."""
+    query = request.args.get('query')
+    if query is None:
+        return abort(500)
+    terms = store.hpo_terms(query=query).limit(8)
+    json_terms = [{'name': '{} | {}'.format(term['hpo_id'], term['description']),
+                   'id': term['hpo_id']} for term in terms]
+    return Response(dumps(json_terms), mimetype='application/json; charset=utf-8')
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/pin', methods=['POST'])
+def pin_variant(institute_id, case_name, variant_id):
+    """Pin and unpin variants to/from the list of suspects."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    if request.form['action'] == 'ADD':
+        store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
+    elif request.form['action'] == 'DELETE':
+        store.unpin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
+    return redirect(request.referrer or link)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/validate', methods=['POST'])
+def mark_validation(institute_id, case_name, variant_id):
+    """Mark a variant as sanger validated."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    validate_type = request.form['type'] or None
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
+    return redirect(request.referrer or link)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/causative', methods=['POST'])
+def mark_causative(institute_id, case_name, variant_id):
+    """Mark a variant as confirmed causative."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    if request.form['action'] == 'ADD':
+        store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+    elif request.form['action'] == 'DELETE':
+        store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+
+    # send the user back to the case that was marked as solved
+    case_url = url_for('.case', institute_id=institute_id, case_name=case_name)
+    return redirect(case_url)
