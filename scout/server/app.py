@@ -32,8 +32,7 @@ def create_app(config_file=None, config=None):
     register_blueprints(app)
     register_filters(app)
 
-    #not (app.debug or app.testing) and
-    if app.config.get('MAIL_USERNAME'):
+    if not (app.debug or app.testing) and app.config.get('MAIL_USERNAME'):
         # setup email logging of errors
         configure_email_logging(app)
 
