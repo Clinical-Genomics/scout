@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 
-from flask import render_template, request
+from flask import render_template, request, abort
 
 
 def templated(template=None):
@@ -34,4 +34,6 @@ def institute_and_case(store, institute_id, case_name):
     """Fetch insitiute and case objects."""
     institute_obj = store.institute(institute_id)
     case_obj = store.case(institute_id=institute_id, display_name=case_name)
+    if case_obj is None:
+        return abort(404)
     return institute_obj, case_obj

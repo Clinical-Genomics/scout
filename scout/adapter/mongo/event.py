@@ -1,7 +1,7 @@
 import logging
-
 from datetime import datetime
 
+from bson import ObjectId
 import pymongo
 import phizz
 
@@ -21,6 +21,8 @@ class EventHandler(object):
                 event_id (str): The database key for the event
         """
         logger.info("Deleting event{0}".format(event_id))
+        if not isinstance(event_id, ObjectId):
+            event_id = ObjectId(event_id)
         self.event_collection.delete_one({'_id': event_id})
         logger.debug("Event {0} deleted".format(event_id))
 

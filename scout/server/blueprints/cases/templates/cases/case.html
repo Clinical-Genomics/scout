@@ -404,9 +404,11 @@
           <div class="col-xs-3">
             <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
-          <div class="col-xs-4">
-            <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
-          </div>
+          {% if config.PHENOMIZER_USERNAME %}
+            <div class="col-xs-4">
+              <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+            </div>
+          {% endif %}
           <div class="col-xs-5">
             <div class="input-group">
               <span class="input-group-btn">
@@ -444,6 +446,7 @@
     <div class="pull-right">
       <button class="btn btn-link btn-sm"
               name="{{ button_name if button_name }}"
+              value="{{ button_value if button_value }}"
               type="submit">
         <span class="glyphicon glyphicon-remove"></span>
       </button>
@@ -465,16 +468,18 @@
         <li class="list-group-item">No gene list generated</li>
       {% endfor %}
     </ul>
-    <div class="panel-footer">
-       <a class="btn btn-default form-control"
-          href="{{ url_for('variants.variants',
-                           institute_id=institute.id,
-                           case_name=case.display_name,
-                           variant_type='clinical',
-                           gene_panels=['hpo']) }}">
-           Clinical HPO variants
-         </a>
-     </div>
+    {% if case.dynamic_gene_list %}
+      <div class="panel-footer">
+         <a class="btn btn-default form-control"
+            href="{{ url_for('variants.variants',
+                             institute_id=institute.id,
+                             case_name=case.display_name,
+                             variant_type='clinical',
+                             gene_panels=['hpo']) }}">
+             Clinical HPO variants
+           </a>
+       </div>
+    {% endif %}
   </div>
 {% endmacro %}
 

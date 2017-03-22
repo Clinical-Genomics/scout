@@ -145,7 +145,7 @@ def configure_coverage(app):
     @babel.localeselector
     def get_locale():
         """Determine locale to use for translations."""
-        accept_languages = current_app.config.get('ACCEPT_LANGUAGES')
+        accept_languages = current_app.config.get('ACCEPT_LANGUAGES', ['en'])
 
         # first check request args
         session_language = request.args.get('lang')

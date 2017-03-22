@@ -46,9 +46,9 @@ def case(institute_id, case_name):
 def case_synopsis(institute_id, case_name):
     """Update (PUT) synopsis of a specific case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
     new_synopsis = request.form.get('synopsis')
-    controllers.update_synopsis(store, institute_obj, case_obj, current_user,
-                                new_synopsis)
+    controllers.update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis)
     return redirect(request.referrer)
 
 
