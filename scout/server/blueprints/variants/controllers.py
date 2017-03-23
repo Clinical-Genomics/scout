@@ -3,6 +3,7 @@ from flask import url_for
 from flask_mail import Message
 
 from scout.constants import CLINSIG_MAP
+from scout.server.utils import institute_and_case
 
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
 
@@ -15,13 +16,51 @@ def variants(store, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + 50) else False
+    more_variants = True if variant_count > (skip_count + per_page) else False
 
     return {
         'variants': (parse_variant(variant_obj) for variant_obj in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
+
+
+def sv_variants(store, institute_id, case_name, page, per_page=50):
+    """Pre-process list of SV variants."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variants_query = store.variants(case_obj['_id'], category='sv')
+    skip_count = (per_page * max(page - 1, 0))
+    more_variants = True if variants_query.count() > (skip_count + per_page) else False
+
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variants=(parse_variant(variant) for variant in variants_query),
+        more_variants=more_variants,
+    )
+
+
+def sv_variant(store, institute_id, case_name, variant_id):
+    """Pre-process a SV variant entry for detail page."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+
+    # frequencies
+    variant_obj['frequencies'] = [
+        ('1000G', variant_obj.get('thousand_genomes_frequency')),
+        ('1000G (left)', variant_obj.get('thousand_genomes_frequency_left')),
+        ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
+    ]
+
+    overlapping_snvs = (parse_variant(variant) for variant in
+                        store.overlapping(variant_obj))
+
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        overlapping_snvs=overlapping_snvs,
+    )
 
 
 def parse_variant(variant_obj):

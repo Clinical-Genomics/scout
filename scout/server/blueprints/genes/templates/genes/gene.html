@@ -9,9 +9,7 @@
     <a href="{{ url_for('genes.genes') }}">Genes</a>
   </li>
   <li class="active">
-    <a href="{{ url_for('genes.gene', hgnc_symbol=gene.hgnc_id) }}">
-      {{ gene.hgnc_symbol }}
-    </a>
+    <p class="navbar-text">{{ gene.hgnc_symbol }}</p>
   </li>
 {% endblock %}
 
@@ -80,13 +78,8 @@
     <div class="panel-heading">Transcripts</div>
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
-        {% if transcript.refseq_id in gene.primary_transcripts %}
-          {% set extra_class = 'list-group-item-info' %}
-        {% else %}
-          {% set extra_class = None %}
-        {% endif %}
-        <li class="list-group-item {{ extra_class if extra_class }}">
-          {{ transcript.refseq_id or transcript.ensembl_transcript_id }} {% if extra_class %}<small>(primary)</small>{% endif %}
+        <li class="list-group-item {{ list-group-item-info if transcript.is_primary }}">
+          {{ transcript.refseq_id|join(', ') or transcript.ensembl_transcript_id }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
         </li>
       {% endfor %}
     </ul>

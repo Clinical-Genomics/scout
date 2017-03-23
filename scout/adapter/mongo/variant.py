@@ -267,7 +267,6 @@ class VariantHandler(object):
 
         logger.info("Updating variant_rank done")
 
-
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
 
@@ -426,7 +425,7 @@ class VariantHandler(object):
             'hgnc_symbols': variant_obj['hgnc_symbols'],
             'category': category,
         }
-        variants = self.variant_collection.find(query)
+        sort_key = [('rank_score', pymongo.DESCENDING)]
+        variants = self.variant_collection.find(query).sort(sort_key)
 
         return variants
-

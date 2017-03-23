@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+{% from "utils.html" import flash_messages %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">SV variants</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  {{ flash_messages() }}
+
+  <div class="table-responsive">
+    <table id="variantsTable" class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Rank #</th>
+          <th>Score</th>
+          <th>Type</th>
+          <th>Start loc</th>
+          <th>Stop loc</th>
+          <th>Length</th>
+          <th>Region</th>
+          <th>Function</th>
+          <th>Frequency</th>
+          <th>Gene(s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in variants %}
+          {{ variant_row(variant) }}
+        {% else %}
+          <tr>
+              <td colspan="10">No matching variants</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="container-fluid">
+    {{ pagination() }}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+
+  <script>
+    $(function () {
+      $("#variantsTable").stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+    })
+  </script>
+{% endblock %}
+
+{% macro variant_row(variant) %}
+  <tr>
+    <td>
+      <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
+                          case_name=case.display_name, variant_id=variant._id) }}">
+        {{ variant.variant_rank }}
+      </a>
+    </td>
+    <td>{{ variant.rank_score|int }}</td>
+    <td>{{ variant.sub_category|upper }}</td>
+    <td>{{ variant.position }}</td>
+    <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
+    <td>{{ 'inf' if variant.length == 100000000000 else variant.length }}</td>
+    <td>{{ variant.region_annotations[:3]|join(', ') }}</td>
+    <td>{{ variant.functional_annotations[:3]|join(', ') }}</td>
+    <td>{{ variant.thousand_genomes_frequency|human_decimal }}</td>
+    <td>
+      {% if variant.hgnc_symbols|length >= 5 %}
+        {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
+      {% else %}
+        {{ variant.hgnc_symbols|join(', ') }}
+      {% endif %}
+
+      {% if variant.hgnc_symbols %}
+        <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% macro pagination() %}
+  <nav>
+    <ul class="pager">
+      {% if more_variants %}
+        <li class="next">
+          <a href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1)) }}">
+            Next &rarr;
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endmacro %}

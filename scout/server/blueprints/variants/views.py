@@ -49,14 +49,17 @@ def variant(institute_id, case_name, variant_id):
 @templated('variants/sv-variants.html')
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
-    return dict()
+    page = int(request.args.get('page', 1))
+    data = controllers.sv_variants(store, institute_id, case_name, page)
+    return data
 
 
 @variants_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')
 @templated('variants/sv-variant.html')
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
-    return dict()
+    data = controllers.sv_variant(store, institute_id, case_name, variant_id)
+    return data
 
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/priority',
