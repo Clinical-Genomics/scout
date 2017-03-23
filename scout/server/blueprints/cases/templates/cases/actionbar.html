@@ -208,7 +208,7 @@
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}
-  {% if case.owner == institute.id %}
+  {% if case.owner == institute._id %}
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-cog"></span>

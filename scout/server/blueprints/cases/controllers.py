@@ -63,6 +63,15 @@ def case(store, institute_obj, case_obj):
             case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
 
+    # other collaborators than the owner of the case
+    case_obj['o_collaborators'] = [collab_id for collab_id in
+                                   case_obj['collaborators'] if collab_id != ['owner']]
+
+    irrelevant_ids = ('cust000', institute_obj['_id'])
+    collab_ids = [collab['_id'] for collab in store.institutes() if
+                  (collab['_id'] not in irrelevant_ids) and
+                  (collab['_id'] not in case_obj['collaborators'])]
+
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj),
@@ -71,6 +80,7 @@ def case(store, institute_obj, case_obj):
         'events': store.events(institute_obj, case=case_obj),
         'suspects': suspects,
         'causatives': causatives,
+        'collaborators': collab_ids,
     }
     return data
 
