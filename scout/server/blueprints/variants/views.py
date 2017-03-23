@@ -26,7 +26,8 @@ def variants(institute_id, case_name):
     panel_choices = [(panel['panel_name'], panel['display_name'])
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
-
+    query = form.data
+    query['variant_type'] = variant_type
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = controllers.variants(store, variants_query, page)
 
@@ -50,7 +51,8 @@ def variant(institute_id, case_name, variant_id):
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
     page = int(request.args.get('page', 1))
-    data = controllers.sv_variants(store, institute_id, case_name, page)
+    variant_type = request.args.get('variant_type', 'clinical')
+    data = controllers.sv_variants(store, institute_id, case_name, page, variant_type)
     return data
 
 

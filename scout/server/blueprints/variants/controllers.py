@@ -25,10 +25,11 @@ def variants(store, variants_query, page=1, per_page=50):
     }
 
 
-def sv_variants(store, institute_id, case_name, page, per_page=50):
+def sv_variants(store, institute_id, case_name, page, variant_type, per_page=50):
     """Pre-process list of SV variants."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_query = store.variants(case_obj['_id'], category='sv')
+    query = dict(variant_type=variant_type)
+    variants_query = store.variants(case_obj['_id'], category='sv', query=query)
     skip_count = (per_page * max(page - 1, 0))
     more_variants = True if variants_query.count() > (skip_count + per_page) else False
 
@@ -37,6 +38,7 @@ def sv_variants(store, institute_id, case_name, page, per_page=50):
         case=case_obj,
         variants=(parse_variant(variant) for variant in variants_query),
         more_variants=more_variants,
+        query=query,
     )
 
 
@@ -195,7 +197,7 @@ def transcript_str(transcript_obj, gene_name=None):
         ','.join(transcript_obj['ref_seq']),
         transcript_obj.get('exon', '').rpartition('/')[0],
         transcript_obj['coding_sequence_name'],
-        transcript_obj['protein_sequence_name'],
+        transcript_obj.get('protein_sequence_name', 'NA'),
     )
     if gene_name:
         change_str = "{}:".format(gene_name) + change_str
