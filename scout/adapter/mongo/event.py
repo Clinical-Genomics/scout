@@ -116,7 +116,7 @@ class EventHandler(object):
         """Assign a user to a case.
 
         This function will create an Event to log that a person has been assigned
-        to a case. Also the "assignee" on the case will be updated.
+        to a case. Also the user will be added to case "assignees".
 
         Arguments:
             institute (dict): A institute
@@ -144,7 +144,7 @@ class EventHandler(object):
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$set': {'assignee': user['_id']}},
+            {'$addToSet': {'assignees': user['_id']}},
             return_document=pymongo.ReturnDocument.AFTER
         )
         return updated_case
@@ -153,8 +153,8 @@ class EventHandler(object):
         """Unassign a user from a case.
 
         This function will create an Event to log that a person has been
-        unassigned from a case. Also the "assignee" on the case will be
-        updated.
+        unassigned from a case. Also the user will be removed from case
+        "assignees".
 
         Arguments:
             institute (dict): A Institute object
@@ -183,7 +183,7 @@ class EventHandler(object):
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$set': {'assignee': None}},
+            {'$pull': {'assignees': user['_id']}},
             return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")

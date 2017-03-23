@@ -86,11 +86,9 @@
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
-      {% if case.assignee %}
-        <span class="badge pull-right">
-          {{ case.assignee.name }}
-        </span>
-      {% endif %}
+      {% for user in case.assignees %}
+        <span class="badge pull-right">{{ user.name }}</span>
+      {% endfor %}
     </td>
     <td>
       <span class="label label-info">{{ case.status }}</span>

@@ -119,7 +119,7 @@ def build_case(case_data, adapter):
     case_obj['collaborators'] = list(collaborators)
 
     if case_data.get('assignee'):
-        case_obj['assignee'] = case_data['assignee']
+        case_obj['assignees'] = [case_data['assignee']]
 
     # Individuals
     ind_objs = []

@@ -178,14 +178,14 @@ class CaseHandler(object):
         existing_case['vcf_files'] = case['vcf_files']
 
         existing_case['has_svvariants'] = case['has_svvariants']
-        
+
         existing_case['assignee'] = case['assignee']
-        
+
         print(existing_case.to_json())
         print(existing_case['assignee'])
-        
+
         existing_case.save()
-        
+
         logger.info("Case updated")
         ##TODO Add event for updating case?
 

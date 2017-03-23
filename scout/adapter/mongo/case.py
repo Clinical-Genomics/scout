@@ -35,7 +35,7 @@ class CaseHandler(object):
             query['collaborators'] = collaborator
 
         if skip_assigned:
-            query['assignee'] = {'$exists': False}
+            query['assignees'] = {'$exists': False}
 
         if has_causatives:
             query['causatives'] = {'$exists': True}
@@ -65,13 +65,13 @@ class CaseHandler(object):
         Arguments:
             case (dict): The case that should be updated
             gene_list (list): The list of genes that should be added
-        
+
         Returns:
             updated_case(dict)
         """
         logger.info("Updating the dynamic gene list for case {0}".format(
                     case['display_name']))
-        
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
             {'$set': {'dynamic_gene_list': gene_list}},
@@ -82,7 +82,7 @@ class CaseHandler(object):
 
     def case(self, case_id=None, institute_id=None, display_name=None):
         """Fetches a single case from database
-        
+
         Use either the _id or combination of institute_id and display_name
 
         Args:
@@ -103,15 +103,15 @@ class CaseHandler(object):
             logger.info("Fetching case %s institute %s" % (display_name, institute_id))
             query['owner'] = institute_id
             query['display_name'] = display_name
-        
+
         return self.case_collection.find_one(query)
 
     def case_ind(self, ind_id):
         """Fetch cases based on an individual id.
-        
+
         Args:
             ind_id(str)
-        
+
         Returns:
             cases(pymongo.cursor): The cases with a matching ind_id
         """
@@ -157,7 +157,7 @@ class CaseHandler(object):
 
     def update_case(self, case_obj):
         """Update a case in the database
-        
+
         The following will be updated:
             - collaborators: If new collaborators these will be added to the old ones
             - analysis_date: Is updated to the new date
@@ -175,12 +175,12 @@ class CaseHandler(object):
 
             Args:
                 case_obj(dict): The new case information
-            
+
             Returns:
                 updated_case(dict): The updated case information
         """
         logger.info("Updating case {0}".format(case_obj['_id']))
-        
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {

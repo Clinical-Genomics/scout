@@ -41,7 +41,7 @@ case = dict(
     # These are the names of all the collaborators that are allowed to view the
     # case, including the owner
     collaborators = list, # List of institute_ids
-    assignee = str, # _id of a user
+    assignees = list, # list of str _id of a user (email)
     individuals = list, # list of dictionaries with individuals
     created_at = datetime,
     updated_at = datetime,

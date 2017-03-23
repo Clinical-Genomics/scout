@@ -70,23 +70,22 @@
       <span class="glyphicon glyphicon-user"></span>
       Assignee
     </h5>
-    {% if case.assignee %}
+    {% for user in case.assignees %}
       <form method="POST"
             action="{{ url_for('cases.assign', institute_id=institute._id,
-                               case_name=case.display_name) }}">
+                               case_name=case.display_name, user_id=user._id) }}">
         <button name="action" value="DELETE" class="btn btn-default form-control">
           <span class="glyphicon glyphicon-remove"></span>
-          {{ case.assignee.name }}
+          {{ user.name }}
         </button>
       </form>
-    {% else %}
-      <form method="POST"
-            action="{{ url_for('cases.assign', institute_id=institute._id,
-                               case_name=case.display_name) }}"
-            title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-        <button class="btn btn-default form-control">Assign yourself</button>
-      </form>
-    {% endif %}
+    {% endfor %}
+    <form method="POST"
+          action="{{ url_for('cases.assign', institute_id=institute._id,
+                             case_name=case.display_name) }}"
+          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+      <button class="btn btn-default form-control">Assign yourself</button>
+    </form>
   </div>
 {% endmacro %}
 

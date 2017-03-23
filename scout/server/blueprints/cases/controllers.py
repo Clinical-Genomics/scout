@@ -26,8 +26,8 @@ def cases(store, case_query):
     for case_obj in case_query:
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
-        if case_obj.get('assignee'):
-            case_obj['assignee'] = store.user(case_obj['assignee'])
+        case_obj['assignees'] = [store.user(user_email) for user_email in
+                                 case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
 
     data = {
@@ -44,9 +44,8 @@ def case(store, institute_obj, case_obj):
         individual['sex_human'] = SEX_MAP.get(individual['sex'], 'unknown')
         individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
 
-    if case_obj.get('assignee'):
-        case_obj['assignee'] = store.user(case_obj['assignee'])
-
+    case_obj['assignees'] = [store.user(user_email) for user_email in
+                             case_obj.get('assignees', [])]
     suspects = [store.variant(variant_id) for variant_id in
                 case_obj.get('suspects', [])]
     causatives = [store.variant(variant_id) for variant_id in
