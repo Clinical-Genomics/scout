@@ -354,7 +354,11 @@
       <tbody>
         <tr>
           <td>
-            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_file) }}" target="_blank">View alignment</a>
+            {% if case.bam_files %}
+              <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), vcf=case.vcf_files.vcf_snv) }}" target="_blank">View alignment</a>
+            {% else %}
+              <span class="text-muted">BAM file missing</span>
+            {% endif %}
           </td>
           {% if config.SQLALCHEMY_DATABASE_URI %}
             {% for gene in variant.genes %}
@@ -406,10 +410,10 @@
     </table>
     <div class="panel-heading">Disease associated transcripts</div>
     <div class="panel-body">
-      {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts|selectattr('is_disease_associated') %}
-          {{ gene.common.hgnc_symbol }}:{{ transcript.ref_seq|join(', ') }}
-        {% endfor %}
+      {% for transcript_str in variant.disease_associated_transcripts %}
+        {{ transcript_str }}
+      {% else %}
+        <span class="text-muted">No transcripts</span>
       {% endfor %}
     </div>
   </div>

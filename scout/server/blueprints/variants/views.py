@@ -40,6 +40,7 @@ def variants(institute_id, case_name):
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    controllers.variant_case(case_obj)
     data = controllers.variant(store, institute_obj, case_obj, variant_id)
     if current_app.config.get('LOQUSDB_SETTINGS'):
         data['observations'] = controllers.observations(loqusdb, data['variant'])

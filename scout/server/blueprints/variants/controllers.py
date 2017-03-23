@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os.path
+
 from flask import url_for
 from flask_mail import Message
 
@@ -93,6 +95,25 @@ def get_predictions(genes):
     return data
 
 
+def variant_case(case_obj):
+    """Pre-process case for the variant view."""
+    case_obj['bam_files'] = [individual['bam_file'] for individual in
+                             case_obj['individuals'] if individual.get('bam_file')]
+    case_obj['bai_files'] = [find_bai_file(bam_file) for bam_file in
+                             case_obj['bam_files']]
+    case_obj['sample_names'] = [individual['display_name'] for individual in
+                                case_obj['individuals'] if individual['bam_file']]
+
+
+def find_bai_file(bam_file):
+    """Find out BAI file by extension given the BAM file."""
+    bai_file = bam_file.replace('.bam', '.bai')
+    if not os.path.exists(bai_file):
+        # try the other convention
+        bai_file = "{}.bai".format(bam_file)
+    return bai_file
+
+
 def variant(store, institute_obj, case_obj, variant_id):
     """Pre-process a single variant."""
     default_panels = [store.panel(panel['panel_id']) for panel in
@@ -128,6 +149,15 @@ def variant(store, institute_obj, case_obj, variant_id):
     for sample_obj in variant_obj['samples']:
         individual = individuals[sample_obj['sample_id']]
         sample_obj['is_affected'] = True if individual['phenotype'] == 2 else False
+
+    variant_obj['disease_associated_transcripts'] = []
+    for gene_obj in variant_obj['genes']:
+        for transcript_obj in gene_obj['transcripts']:
+            if transcript_obj.get('is_disease_associated'):
+                hgnc_symbol = gene_obj['common']['hgnc_symbol']
+                refseq_ids = ', '.join(transcript_obj['ref_seq'])
+                transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
+                variant_obj['disease_associated_transcripts'].append(transcript_str)
 
     return {
         'variant': variant_obj,
