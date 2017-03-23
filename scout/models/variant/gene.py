@@ -8,6 +8,7 @@ from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 gene = dict(
     # The hgnc gene id
     hgnc_id = int, # required
+    hgnc_symbol = str,
     # A list of Transcript objects
     transcripts = list, # list of <transcript>
     # This is the worst functional impact of all transcripts

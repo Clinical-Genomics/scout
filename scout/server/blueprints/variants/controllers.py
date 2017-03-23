@@ -6,6 +6,7 @@ from flask_mail import Message
 
 from scout.constants import CLINSIG_MAP
 from scout.server.utils import institute_and_case
+from scout.server.extensions import store
 
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
 
@@ -71,6 +72,11 @@ def parse_variant(variant_obj):
     """Parse information about variants."""
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
+        for gene_obj in variant_genes:
+            if gene_obj.get('hgnc_symbol') is None:
+                hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
+                if hgnc_gene:
+                    gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
         gene_data = get_predictions(variant_genes)
         variant_obj.update(gene_data)
     return variant_obj
@@ -84,13 +90,14 @@ def get_predictions(genes):
         'region_annotations': [],
         'functional_annotations': [],
     }
-    for gene in genes:
+    for gene_obj in genes:
         for pred_key in data.keys():
             gene_key = pred_key[:-1]
             if len(genes) == 1:
-                value = gene.get(gene_key, '-')
+                value = gene_obj.get(gene_key, '-')
             else:
-                value = ':'.join([gene['hgnc_symbol'], gene.get(gene_key, '-')])
+                gene_id = gene_obj.get('hgnc_symbol', str(gene_obj['hgnc_id']))
+                value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
     return data
 

@@ -125,7 +125,7 @@
 {% macro cell_gene(variant) %}
   {% for gene in variant.genes %}
     <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-      {{ gene.hgnc_symbol }}
+      {{ gene.hgnc_symbol or gene.hgnc_id }}
     </a>
   {% endfor %}
 {% endmacro %}
@@ -133,14 +133,14 @@
 {% macro cell_1000g(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
-      <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal }} <br>
+      <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }} <br>
       <strong>ExAC</strong>
-      {{ variant.exac_frequency|human_decimal }} <br>
+      {{ variant.exac_frequency|human_decimal if variant.exac_frequency }} <br>
       <strong>ExAC (max)</strong>
-      {{ variant.max_exac_frequency|human_decimal }}
+      {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
     </div>
   ">
-    {{ variant.thousand_genomes_frequency|human_decimal }}
+    {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
   </div>
 {% endmacro %}
 
@@ -183,6 +183,7 @@
 
 {% macro filters_form() %}
   <form method="GET">
+    <input type="hidden" name="variant_type" value="{{ variant_type }}">
     <div class="form-group">
       <div class="row">
         <div class="col-xs-3">

@@ -487,7 +487,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Gene panels</div>
     <div class="table-responsive fixed-panel">
-      <table class="table">
+      <table id="panel-table" class="table">
         <thead>
           <tr>
             <th>Panel</th>
@@ -524,6 +524,7 @@
   {{ super() }}
 
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
   <script>
     $(function () {
@@ -536,6 +537,10 @@
       $(".typeahead").typeahead({
         source: getTerms,
         minLength: 3,
+      });
+
+      $('table').stickyTableHeaders({
+        scrollableArea: $(".fixed-panel")[0]
       });
     })
   </script>
