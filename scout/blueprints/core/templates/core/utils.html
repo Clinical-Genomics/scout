@@ -16,7 +16,7 @@
                                        event_id=comment.id) }}">
                 <small>
                   <br>
-                  <strong>{{ comment.author.name }}</strong>
+                  <strong>{{ comment.user_name }}</strong>
                   on {{ comment.created_at.date() }}
                   {% if comment.level == 'global' %}
                     <span class="label label-info">GLOBAL</span>
@@ -25,7 +25,7 @@
                     <span class="label label-warning">OLD</span>
                   {% endif %}
                 </small>
-                {% if comment.author.id == current_user.id %}
+                {% if comment.user_id == current_user.email %}
                   <div class="pull-right">
                     <button class="btn btn-link btn-sm no-padding" type="submit">
                       <span class="glyphicon glyphicon-remove"></span>

@@ -48,18 +48,18 @@ class EventHandler(object):
         if not user_obj:
             logger.warning("User %s not found", user['_id'])
             ##TODO raise exception here?
-            author_name = None
+            user_name = None
         else:
-            author_name = user_obj['name']
+            user_name = user_obj['name']
 
         event = dict(
             institute=institute['_id'],
             case=case['case_id'],
-            author=user['_id'],
-            author_name=author_name,
+            user_id=user['_id'],
+            user_name=user_name,
             link=link,
             category=category,
-            verb=VERBS_MAP.get(verb),
+            verb=verb,
             subject=subject,
             level=level,
             variant_id=variant.get('variant_id'),
@@ -108,7 +108,7 @@ class EventHandler(object):
                 query['case'] = case['_id']
 
         if comments:
-            query['verb'] = 'commented on'
+            query['verb'] = 'comment'
 
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
 

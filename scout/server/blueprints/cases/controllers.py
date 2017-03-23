@@ -3,6 +3,7 @@ from flask import url_for
 import query_phenomizer
 
 from scout.constants import CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.models.event import VERBS_MAP
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 SEX_MAP = {'1': 'male', '2': 'female'}
@@ -72,12 +73,16 @@ def case(store, institute_obj, case_obj):
                   (collab['_id'] not in irrelevant_ids) and
                   (collab['_id'] not in case_obj['collaborators'])]
 
+    events = list(store.events(institute_obj, case=case_obj))
+    for event in events:
+        event['verb'] = VERBS_MAP[event['verb']]
+
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj),
         'comments': store.events(institute_obj, case=case_obj, comments=True),
         'hpo_groups': PHENOTYPE_GROUPS,
-        'events': store.events(institute_obj, case=case_obj),
+        'events': events,
         'suspects': suspects,
         'causatives': causatives,
         'collaborators': collab_ids,

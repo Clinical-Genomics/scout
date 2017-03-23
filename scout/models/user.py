@@ -16,12 +16,11 @@ from .institute import Institute
 user = dict(
     email = str, # required, unique
     name = str, # required=True
-    created_at = datetime, 
+    created_at = datetime,
     accessed_at = datetime,
-    location = str, 
+    location = str,
     institutes = list, # List of institute_ids
     roles = list, # List of roles
-    
 )
 
 class LoginUserMixin(object):
