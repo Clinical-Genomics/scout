@@ -500,14 +500,14 @@
             <tr {% if panel.is_default %} class="bg-info" {% endif %}>
               <td>
                 <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
-                  {{ panel.display_name }}
+                  {{ panel.display_name|truncate(30, True) }}
                 </a>
                 {% if panel.is_default %}
-                  <span class="label label-default pull-right">default</span>
+                  <span class="label label-default pull-right">Default</span>
                 {% endif %}
               </td>
-              <td>{{ panel.version }} ({{ panel.updated_at.date() }})</td>
-              <td>{{ panel.nr_genes }} genes</td>
+              <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
+              <td>{{ panel.nr_genes }}</td>
             </tr>
           {% else %}
             <tr>
