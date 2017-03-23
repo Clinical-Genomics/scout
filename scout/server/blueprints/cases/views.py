@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import os.path
+
 from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, Response)
+                   request, url_for, Response, send_from_directory)
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -261,3 +263,15 @@ def mark_causative(institute_id, case_name, variant_id):
     # send the user back to the case that was marked as solved
     case_url = url_for('.case', institute_id=institute_id, case_name=case_name)
     return redirect(case_url)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/delivery-report')
+def delivery_report(institute_id, case_name):
+    """Display delivery report."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if case_obj.get('delivery_report') is None:
+        return abort(404)
+
+    out_dir = os.path.dirname(case_obj['delivery_report'])
+    filename = os.path.basename(case_obj['delivery_report'])
+    return send_from_directory(out_dir, filename)

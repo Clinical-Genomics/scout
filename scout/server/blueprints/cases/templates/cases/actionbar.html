@@ -11,6 +11,9 @@
       <li>{{ research(case) }}</li>
     {% endif %}
     <li>{{ rerun(case) }}</li>
+    {% if case.delivery_report %}
+      <li>{{ delivery_report(institute, case) }}</li>
+    {% endif %}
     {% if config.SQLALCHEMY_DATABASE_URI %}
       <li>{{ coverage_report(institute, case) }}</li>
     {% endif %}
@@ -68,17 +71,19 @@
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-user"></span>
-      Assignee
+      Assignees
     </h5>
     {% for user in case.assignees %}
-      <form method="POST"
-            action="{{ url_for('cases.assign', institute_id=institute._id,
-                               case_name=case.display_name, user_id=user._id) }}">
-        <button name="action" value="DELETE" class="btn btn-default form-control">
-          <span class="glyphicon glyphicon-remove"></span>
-          {{ user.name }}
-        </button>
-      </form>
+      <div class="form-group">
+        <form method="POST"
+              action="{{ url_for('cases.assign', institute_id=institute._id,
+                                 case_name=case.display_name, user_id=user._id) }}">
+          <button name="action" value="DELETE" class="btn btn-default form-control">
+            <span class="glyphicon glyphicon-remove"></span>
+            {{ user.name }}
+          </button>
+        </form>
+      </div>
     {% endfor %}
     <form method="POST"
           action="{{ url_for('cases.assign', institute_id=institute._id,
@@ -162,6 +167,17 @@
       </div>
     </div>
   </form>
+{% endmacro %}
+
+{% macro delivery_report(institute, case) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      Delivery report
+    </h5>
+    <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                        case_name=case.display_name) }}" class="btn btn-default form-control">View report</a>
+  </div>
 {% endmacro %}
 
 {% macro coverage_report(institute, case) %}
