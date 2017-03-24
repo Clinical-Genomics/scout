@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 
-from flask import render_template, request, abort
+from flask import render_template, request, abort, flash
+from flask_login import current_user
 
 
 def templated(template=None):
@@ -30,10 +31,25 @@ def public_endpoint(function):
     return function
 
 
-def institute_and_case(store, institute_id, case_name):
+def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
     institute_obj = store.institute(institute_id)
-    case_obj = store.case(institute_id=institute_id, display_name=case_name)
-    if case_obj is None:
+    if institute_obj is None:
+        flash("Can't find case: {}".format(institute_id))
         return abort(404)
-    return institute_obj, case_obj
+
+    # validate that user has access to the institute
+    if current_user.is_admin or institute_id in current_user.institutes:
+        # you have access!
+        if case_name:
+            case_obj = store.case(institute_id=institute_id, display_name=case_name)
+            if case_obj is None:
+                flash("Can't find case: {} - {}".format(institute_id, case_name))
+                return abort(404)
+            return institute_obj, case_obj
+        else:
+            return institute_obj
+
+    else:
+        flash("You don't have acccess to: {}".format(institute_obj['display_name']))
+        return abort(403)

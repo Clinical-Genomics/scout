@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
 
-from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, Response, send_from_directory, jsonify)
 from flask_login import current_user
@@ -26,9 +25,9 @@ def index():
 @templated('cases/cases.html')
 def cases(institute_id):
     """Display a list of cases for an institute."""
+    institute_obj = institute_and_case(institute_id)
     query = request.args.get('query')
     skip_assigned = request.args.get('skip_assigned')
-    institute_obj = store.institute(institute_id)
     all_cases = store.cases(institute_id, name_query=query,
                             skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases)

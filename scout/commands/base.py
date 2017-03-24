@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import logging
+
 import click
+import coloredlogs
 import yaml
 
 # Adapter stuff
@@ -8,8 +11,7 @@ from scout.adapter.client import get_connection
 from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 
 # General, logging
-from scout import (__version__, logger)
-from scout.log import init_log
+from scout import __version__
 
 # Commands
 from scout.commands.load_database import load
@@ -23,6 +25,8 @@ from scout.commands.view import view as view_command
 from scout.commands.delete import delete
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+logger = logging.getLogger(__name__)
+
 
 @click.group()
 @click.option('-l', '--logfile',
@@ -42,7 +46,7 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 )
 @click.option('-u', '--username')
 @click.option('-p', '--password')
-@click.option('-port', '--port', 
+@click.option('-port', '--port',
     default=27017,
     show_default=True,
     help="Specify on what port to listen for the mongod",
@@ -61,7 +65,7 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
         config):
     """scout: manage interactions with a scout instance."""
-    init_log(logger, logfile, loglevel)
+    coloredlogs.install(log_level=loglevel)
     logger.info("Running scout version %s", __version__)
 
     mongo_configs = {}
