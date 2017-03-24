@@ -127,8 +127,8 @@ def phenotypes_actions(institute_id, case_name):
             # avoid empty lists
             if raw_symbols:
                 hgnc_symbols.update(raw_symbols.split('|'))
-        gene_dicts = [{'gene_id': hgnc_symbol} for hgnc_symbol in hgnc_symbols]
-        store.update_dynamic_gene_list(case_obj, gene_dicts)
+        hgnc_ids = store.symbols_to_ids(hgnc_symbols)
+        store.update_dynamic_gene_list(case_obj, hgnc_ids)
 
     elif action == 'GENERATE':
         if len(hpo_ids) == 0:
@@ -136,11 +136,8 @@ def phenotypes_actions(institute_id, case_name):
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get('min_match') or len(hpo_ids))
-        gene_ids = [result[0] for result in results if result[1] >= hpo_count]
-        hgnc_genes = (HgncGene.objects(hgnc_id__in=gene_ids)
-                              .only('hgnc_symbol').select_related())
-        hgnc_symbols = [{'gene_id': gene.hgnc_symbol} for gene in hgnc_genes]
-        store.update_dynamic_gene_list(case_obj, hgnc_symbols)
+        hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
+        store.update_dynamic_gene_list(case_obj, hgnc_ids)
 
     return redirect(case_url)
 

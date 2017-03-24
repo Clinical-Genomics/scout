@@ -249,7 +249,7 @@
     <ul class="list-group fixed-panel">
       {% for hpo_gene in case.dynamic_gene_list %}
         <li class="list-group-item" title="{{ hpo_gene.description }}">
-          {{ hpo_gene.gene_id }}
+          {{ hpo_gene.hgnc_symbol }}
         </li>
       {% else %}
         <li class="list-group-item">No gene list generated</li>
