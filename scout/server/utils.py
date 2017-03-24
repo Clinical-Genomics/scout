@@ -35,7 +35,7 @@ def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
     institute_obj = store.institute(institute_id)
     if institute_obj is None:
-        flash("Can't find case: {}".format(institute_id))
+        flash("Can't find institute: {}".format(institute_id), 'warning')
         return abort(404)
 
     # validate that user has access to the institute
@@ -44,12 +44,14 @@ def institute_and_case(store, institute_id, case_name=None):
         if case_name:
             case_obj = store.case(institute_id=institute_id, display_name=case_name)
             if case_obj is None:
-                flash("Can't find case: {} - {}".format(institute_id, case_name))
+                flash("Can't find case: {} - {}".format(institute_id, case_name),
+                      'warning')
                 return abort(404)
             return institute_obj, case_obj
         else:
             return institute_obj
 
     else:
-        flash("You don't have acccess to: {}".format(institute_obj['display_name']))
+        flash("You don't have acccess to: {}".format(institute_obj['display_name']),
+              'danger')
         return abort(403)

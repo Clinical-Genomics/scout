@@ -23,13 +23,13 @@
 
 {% block content %}
   <div class="container-fluid">
-    {{ flash_messages() }}
-
     <div class="row">
       <div class="col-sm-3 col-md-2 sidebar {{ status_class }}">
         {{ action_bar(institute, case, collaborators) }}
       </div>
       <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        {{ flash_messages() }}
+
         <div class="row">
           <div class="col-xs-12 col-md-6">{{ variants_buttons() }}</div>
           <div class="col-xs-12 col-md-6">{{ related_causatives_list() }}</div>
