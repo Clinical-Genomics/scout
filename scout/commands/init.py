@@ -12,7 +12,7 @@ Copyright (c) 2016 ScoutTeam__. All rights reserved.
 """
 
 import logging
-
+import pymongo
 import click
 
 from scout.resources import (hgnc_path, exac_path, mim2gene_path,
@@ -117,5 +117,10 @@ def init(ctx, institute_name, user_name, user_mail):
         hpo_lines=hpo_terms_handle,
         disease_lines=disease_handle
     )
+    
+    logger.info("Creating indexes")
+    
+    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
+                                          ('chromosome', pymongo.ASCENDING)])
 
     logger.info("Scout instance setup successful")

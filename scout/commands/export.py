@@ -11,6 +11,8 @@ Copyright (c) 2016 ScoutTeam__. All rights reserved.
 """
 
 import logging
+import json
+import datetime
 
 import click
 
@@ -32,39 +34,62 @@ logger = logging.getLogger(__name__)
             type=click.Choice(['37','38']),
             help="Choose what genome build to use"
 )
+@click.option('--to-json',
+            is_flag=True,
+            help="Output to json"
+)
+@click.option('-o', '--outfile',
+            type=click.File('w'),
+            help="Specify path to a file where result should be stored"
+)
 @click.pass_context
-def omim(context, version, build):
+def omim(context, version, build, to_json, outfile):
     """Export the omim gene panel to a .bed like format.
     """
     version = version or 1.0
     logger.info("Running scout export omim")
     adapter = context.obj['adapter']
     
-    # print the headers
-    click.echo("##panel_id=OMIM")
-    click.echo("##institute=cust002")
-    click.echo("##version={0}".format(version))
-    click.echo("##date={0}".format("2017-03-20"))
-    click.echo("##display_name=OMIM")
-    click.echo("##contact=Daniel Nilsson")
-    click.echo("#hgnc_id\thgnc_symbol")
+    if not to_json:
+        # print the headers
+        click.echo("##panel_id=OMIM-aut")
+        click.echo("##institute=cust002")
+        click.echo("##version={0}".format(version))
+        click.echo("##date={0}".format(datetime.date.today()))
+        click.echo("##display_name=OMIM")
+        click.echo("##contact=daniel.nilsson@clinicalgenomics.se")
+        click.echo("#hgnc_id\thgnc_symbol")
     
     nr_omim = 0
-    for i, gene in enumerate(adapter.all_genes(build=str(build))):
+    all_genes = adapter.all_genes(build=str(build))
+    nr_genes = all_genes.count()
+    
+    json_genes = []
+    for gene in all_genes:
+        keep = False
         # A omim gene is recognized by having phenotypes
         if gene.get('phenotypes'):
-            nr_omim += 1
-            keep = False
+            gene.pop('_id')
             for phenotype in gene['phenotypes']:
-                if phenotype['status'] != 'susceptibility':
+                if phenotype['status'] in ['established', 'provisional']:
                     keep = True
-            
-            if keep:
+        if keep:
+            nr_omim += 1
+            if to_json:
+                json_genes.append(gene)
+            else:
                 click.echo("{0}\t{1}".format(gene['hgnc_id'], gene['hgnc_symbol']))
     
-    logger.info("Nr of genes in total: %s" % i)
+    if to_json:
+        if outfile:
+            json.dump(json_genes, outfile, sort_keys=True, indent=4)
+        else:
+            print(json.dumps(json_genes, sort_keys=True, indent=4))
+        
+    
+    logger.info("Nr of genes in total: %s" % nr_genes)
     logger.info("Nr of omim genes: %s" % nr_omim)
-    logger.info("Nr of genes outside mim panel: %s" % (i - nr_omim))
+    logger.info("Nr of genes outside mim panel: %s" % (nr_genes - nr_omim))
 
 
 @click.command('panel', short_help='Export gene panels')

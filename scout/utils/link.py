@@ -56,9 +56,6 @@ def add_transcript(gene, parsed_transcript):
             else:
                 parsed_transcript['refseq'] = []
 
-            if gene['hgnc_symbol'] == "C10orf11":
-                print(parsed_transcript)
-
             gene['transcripts'][enstid] = parsed_transcript
 
 
