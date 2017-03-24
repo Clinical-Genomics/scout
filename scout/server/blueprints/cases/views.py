@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, Response, send_from_directory)
 from flask_login import current_user
 
-from scout.server.extensions import store
+from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case
 from . import controllers
 
@@ -290,4 +290,14 @@ def share(institute_id, case_name):
     else:
         store.share(institute_obj, case_obj, collaborator_id, current_user, link)
 
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/rerun', methods=['POST'])
+def rerun(institute_id, case_name):
+    """Request a case to be rerun."""
+    sender = current_app.config['MAIL_USERNAME']
+    recipient = current_app.config['TICKET_SYSTEM_EMAIL']
+    controllers.rerun(store, mail, current_user, institute_id, case_name, sender,
+                      recipient)
     return redirect(request.referrer)

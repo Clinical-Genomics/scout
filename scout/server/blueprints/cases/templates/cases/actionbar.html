@@ -134,10 +134,7 @@
 
 {% macro rerun(case) %}
   <div class="nav-sidebar-item">
-    <h5>
-      <span class="glyphicon glyphicon-retweet"></span>
-      Reruns
-    </h5>
+    <h5><span class="glyphicon glyphicon-retweet"></span> Reruns</h5>
     {% if case.rerun_requested %}
       <i>Rerun pending</i>
     {% else %}
@@ -149,7 +146,7 @@
 {% macro rerun_modal(institute, case) %}
   <form action="{{ url_for('cases.rerun', institute_id=institute._id,
                            case_name=case.display_name) }}" method="POST">
-    <div class="modal fade" id="rerun-modal">
+    <div id="rerun-modal" class="modal fade">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -157,7 +154,7 @@
             <h4 class="modal-title">Request research list</h4>
           </div>
           <div class="modal-body">
-            <p>Please confirm that you want to have the case rerun and the current variants replaced with updated information.</p>
+            <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
