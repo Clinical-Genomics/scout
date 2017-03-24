@@ -35,7 +35,7 @@ class LoginUserMixin(object):
 
 class User(Document, LoginUserMixin):
     """Represent a Scout user that can belong to multiple instututes."""
-    email = EmailField(required=True, unique=True)
+    email = EmailField(required=True)
     name = StringField(max_length=40, required=True)
     created_at = DateTimeField(default=datetime.now)
     accessed_at = DateTimeField()
