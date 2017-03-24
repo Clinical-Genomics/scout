@@ -15,6 +15,7 @@ from __future__ import (absolute_import, print_function)
 from datetime import datetime
 import logging
 
+from bson import ObjectId
 from mongoengine import (connect, DoesNotExist)
 from mongoengine.connection import (get_connection, _get_db)
 
@@ -104,7 +105,7 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
     def getoradd_user(self, email, name, location=None, institutes=None):
         """Get or create a new user."""
         try:
-            user_obj = User.objects.get(email=email)
+            user_obj = self.user(email=email)
         except DoesNotExist:
             logger.info('create user: %s', email)
             user_obj = User(email=email, created_at=datetime.utcnow(),
@@ -117,7 +118,10 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
     def user(self, email=None):
         """Fetch a user from the database."""
         if email:
-            user_obj = User.objects.get(email=email)
+            for user_obj in User.objects(email=email):
+                if isinstance(user_obj['_id'], ObjectId):
+                    break
+                user_obj = None
         else:
             user_obj = User.objects()
         return user_obj
