@@ -119,7 +119,7 @@ class MongoAdapter(EventHandler, VariantHandler, CaseHandler, QueryHandler,
         """Fetch a user from the database."""
         if email:
             for user_obj in User.objects(email=email):
-                if isinstance(user_obj['_id'], ObjectId):
+                if isinstance(user_obj.id, ObjectId):
                     break
                 user_obj = None
         else:
