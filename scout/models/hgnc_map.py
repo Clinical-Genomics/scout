@@ -29,6 +29,7 @@ class HgncGene(Document):
     hgnc_symbol = StringField(required=True, unique=True)
     ensembl_id = StringField(required=True)
 
+    build = StringField()
     chromosome = StringField(required=True)
     start = IntField(required=True)
     end = IntField(required=True)
