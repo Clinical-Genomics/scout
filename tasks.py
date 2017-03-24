@@ -2,10 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
-import logging
+
 import sys
 
-from invoke import run, task
+from invoke import task
 from invoke.util import log
 from codecs import open
 
@@ -13,9 +13,9 @@ import yaml
 from scout.adapter.client import get_connection
 
 from scout.adapter.mongo import MongoAdapter
-from scout.models import (User, Whitelist, Institute)
+from scout.models import User, Whitelist, Institute
 from scout.build import build_institute
-from scout.load import (load_scout, load_hgnc_genes, load_hpo, load_institute)
+from scout.load import load_scout, load_hgnc_genes, load_hpo
 from scout.load.panel import load_panel
 from scout import logger as base_logger
 from scout.log import init_log
@@ -47,24 +47,23 @@ mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 init_log(base_logger, loglevel='INFO')
 
-log = logging.getLogger(__name__)
 
 @task
 def setup_test(context, email, name="Paul Anderson"):
     """Setup a small test database"""
-    
+
     log.info("Running setup test database")
-    
+
     try:
         client = get_connection()
     except ConnectionFailure:
         ctx.abort()
-    
+
     db_name = 'test-database'
     log.info("Use database %s", db_name)
     database = client[db_name]
     adapter = MongoAdapter(database)
-    
+
     log.info("Deleting previous database")
     for collection_name in adapter.db.collection_names():
         log.info("Deleting collection %s", collection_name)
@@ -76,15 +75,15 @@ def setup_test(context, email, name="Paul Anderson"):
         'display_name': 'test-institute',
         'sanger_recipients': [email]
     }
-    
+
     institute_obj = build_institute(
         internal_id=institute_info['internal_id'],
         display_name=institute_info['display_name'],
         sanger_recipients=institute_info['display_name']
     )
-    
+
     adapter.add_institute(institute_obj)
-    
+
     adapter.add_whitelist(
         email=email,
         institutes=[institute_info['internal_id']]
@@ -95,25 +94,25 @@ def setup_test(context, email, name="Paul Anderson"):
                 institutes=[institute_info['internal_id']]
     )
     adapter.add_user(user_obj)
-    
+
     log.info("Loading hgnc_genes from %s", hgnc_path)
     hgnc_handle = get_file_handle(hgnc_path)
-    
+
     log.info("Loading transcripts from %s", ensembl_transcript_path)
     ensembl_handle = get_file_handle(ensembl_transcript_path)
-    
+
     log.info("Loading exac info from %s", exac_genes_path)
     exac_handle = get_file_handle(exac_genes_path)
-    
+
     log.info("Loading hpo gene info from %s", hpo_genes_path)
     hpo_genes_handle = get_file_handle(hpo_genes_path)
-    
+
     log.info("Loading terms from %s", hpo_terms_path)
     hpo_terms_handle = get_file_handle(hpo_terms_path)
-    
+
     log.info("Loading disease info form %s", genemap_path)
     genemap_handle = get_file_handle(genemap_path)
-    
+
     mim2gene_handle = get_file_handle(mim2gene_path)
 
     genes = link_genes(
@@ -121,7 +120,7 @@ def setup_test(context, email, name="Paul Anderson"):
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
-        genemap_lines=genemap_handle, 
+        genemap_lines=genemap_handle,
         hpo_lines=hpo_genes_handle,
     )
     load_hgnc_genes(adapter, genes)
@@ -168,12 +167,6 @@ def teardown(context):
     adapter.drop_database()
 
 
-@task
-def test(context):
-    """test - run the test runner."""
-    run('python -m pytest tests/', pty=True)
-
-
 @task(name='add-user')
 def add_user(context, email, name='Paul Anderson'):
     """Setup a new user for the database with a default institute."""
@@ -190,52 +183,3 @@ def add_user(context, email, name='Paul Anderson'):
         institutes=[institute]
     )
     user.save()
-
-
-@task
-def clean(context):
-    """clean - remove build artifacts."""
-    run('rm -rf build/')
-    run('rm -rf dist/')
-    run('rm -rf scout.egg-info')
-    run('find . -name __pycache__ -delete')
-    run('find . -name *.pyc -delete')
-    run('find . -name *.pyo -delete')
-    run('find . -name *~ -delete')
-
-    log.info('cleaned up')
-
-
-@task
-def lint(context):
-    """lint - check style with flake8."""
-    run('flake8 scout tests')
-
-
-@task
-def coverage(context):
-    """coverage - check code coverage quickly with the default Python."""
-    run('coverage run --source scout setup.py test')
-    run('coverage report -m')
-    run('coverage html')
-    run('open htmlcov/index.html')
-
-    log.info('collected test coverage stats')
-
-
-@task(clean)
-def publish(context, test=False):
-    """publish - package and upload a release to the cheeseshop."""
-    if test:
-        run('python setup.py register -r test sdist upload -r test')
-    else:
-        run('python setup.py register bdist_wheel upload')
-        run('python setup.py register sdist upload')
-
-    log.info('published new release')
-
-
-@task()
-def d(context, host='0.0.0.0'):
-    """Debug."""
-    run("python manage.py runserver --host=%s --debug --reload" % host)

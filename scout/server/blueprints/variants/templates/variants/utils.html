@@ -13,8 +13,8 @@
       {% for compound in compounds %}
         <tr>
           <td>
-            {% if compound.variant_obj %}
-              <a href='{{url_for("core.variant",
+            {% if compound.is_loaded %}
+              <a href='{{url_for("variants.variant",
                                  institute_id=institute_id,
                                  case_name=case_name,
                                  variant_id=compound.variant)}}'>
@@ -25,9 +25,9 @@
             {% endif %}
           </td>
           <td class='text-right'>{{ compound.combined_score }}</td>
-          <td class='text-right'>{{ compound.variant_obj.rank_score }}</td>
-          <td>{{ compound.variant_obj.region_annotations|join(', ') }}</td>
-          <td>{{ compound.variant_obj.functional_annotations|join(', ') }}</td>
+          <td class='text-right'>{{ compound.rank_score }}</td>
+          <td>{{ compound.region_annotations|join(', ') }}</td>
+          <td>{{ compound.functional_annotations|join(', ') }}</td>
         </tr>
       {% endfor %}
     </tbody>

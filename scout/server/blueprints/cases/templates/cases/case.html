@@ -53,26 +53,33 @@
         </div>
 
         <div class="row">
+          <div class="col-md-6">{{ genepanels_table() }}</div>
+          <div class="col-md-6">{{ hpo_genelist_panel() }}</div>
+        </div>
+
+        <div class="row">
           <div class="col-md-12">{{ activity_panel(events) }}</div>
         </div>
       </div>
     </div>
 
     {{ modal_synopsis() }}
+    {{ rerun_modal(institute, case) }}
+    {{ research_modal(institute, case) }}
   </div>
 {% endblock %}
 
 {% macro variants_buttons() %}
   <div class="form-group">
     <div class="btn-group btn-group-justified">
-      <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.default_panel_ids) }}">Clinical variants</a>
+      <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV variants</a>
       <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical SV variants</a>
     </div>
   </div>
   {% if case.is_research %}
     <div class="form-group">
       <div class="btn-group btn-group-justified">
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research variants</a>
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV variants</a>
         <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SV variants</a>
       </div>
     </div>
@@ -83,7 +90,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Matching causatives from other cases</div>
     <ul class="list-group">
-      {% for variant in causatives %}
+      {% for variant in other_causatives %}
         <li class="list-group-item">
           <a href="{{ url_for('variants.variant', institute_id=institute._id,
                               case_name=case.display_name, variant_id=variant.id) }}">
@@ -177,7 +184,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Causative variants</div>
     <ul class="list-group">
-      {% for variant in case.causatives %}
+      {% for variant in causatives %}
         <li class="list-group-item">
           <div class="row">
             <div class="col-xs-8">
@@ -193,10 +200,11 @@
               {% endif %}
             </div>
             <div class="col-xs-4">
-              {{ remove_form(url_for('cases.unmark_causative',
+              {{ remove_form(url_for('cases.mark_causative',
                                      institute_id=institute._id,
                                      case_name=case.display_name,
-                                     variant_id=variant._id)) }}
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
             </div>
           </div>
         </li>
@@ -213,7 +221,7 @@
         <col class="col-xs-1">
       </colgroup>
       <tbody>
-        {% for variant in case.suspects %}
+        {% for variant in suspects %}
           <tr>
             <td>
               <span class="glyphicon glyphicon-bookmark"></span>
@@ -246,10 +254,11 @@
               </form>
             </td>
             <td>
-              {{ remove_form(url_for('cases.unpin_variant',
+              {{ remove_form(url_for('cases.pin_variant',
                                      institute_id=institute._id,
                                      case_name=case.display_name,
-                                     variant_id=variant._id)) }}
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
             </td>
           </tr>
         {% else %}
@@ -397,9 +406,11 @@
           <div class="col-xs-3">
             <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
-          <div class="col-xs-4">
-            <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
-          </div>
+          {% if config.PHENOMIZER_USERNAME %}
+            <div class="col-xs-4">
+              <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+            </div>
+          {% endif %}
           <div class="col-xs-5">
             <div class="input-group">
               <span class="input-group-btn">
@@ -427,7 +438,7 @@
   </li>
 {% endmacro %}
 
-{% macro remove_form(url, hidden_input=None, button_name=none) %}
+{% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
   <form action="{{ url }}" method="POST">
     {% if hidden_input %}
       <input type="hidden"
@@ -437,9 +448,102 @@
     <div class="pull-right">
       <button class="btn btn-link btn-sm"
               name="{{ button_name if button_name }}"
+              value="{{ button_value if button_value }}"
               type="submit">
         <span class="glyphicon glyphicon-remove"></span>
       </button>
     </div>
   </form>
 {% endmacro %}
+
+{% macro hpo_genelist_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
+    </div>
+    <ul class="list-group fixed-panel">
+      {% for hpo_gene in case.dynamic_gene_list %}
+        <li class="list-group-item" title="{{ hpo_gene.description }}">
+          {{ hpo_gene.gene_id }}
+        </li>
+      {% else %}
+        <li class="list-group-item">No gene list generated</li>
+      {% endfor %}
+    </ul>
+    {% if case.dynamic_gene_list %}
+      <div class="panel-footer">
+         <a class="btn btn-default form-control"
+            href="{{ url_for('variants.variants',
+                             institute_id=institute.id,
+                             case_name=case.display_name,
+                             variant_type='clinical',
+                             gene_panels=['hpo']) }}">
+             Clinical HPO variants
+           </a>
+       </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro genepanels_table() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Gene panels</div>
+    <div class="table-responsive fixed-panel">
+      <table id="panel-table" class="table">
+        <thead>
+          <tr>
+            <th>Panel</th>
+            <th>Version</th>
+            <th>Genes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for panel in case.panels %}
+            <tr {% if panel.is_default %} class="bg-info" {% endif %}>
+              <td>
+                <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
+                  {{ panel.display_name|truncate(30, True) }}
+                </a>
+                {% if panel.is_default %}
+                  <span class="label label-default pull-right">Default</span>
+                {% endif %}
+              </td>
+              <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
+              <td>{{ panel.nr_genes }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">No panels linked to case</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script>
+    $(function () {
+      function getTerms(query, process) {
+        $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead").typeahead({
+        source: getTerms,
+        minLength: 3,
+      });
+
+      $('table').stickyTableHeaders({
+        scrollableArea: $(".fixed-panel")[0]
+      });
+    })
+  </script>
+{% endblock %}

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
+from flask_mail import Message
 import query_phenomizer
 
 from scout.constants import CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.models.event import VERBS_MAP
+from scout.server.utils import institute_and_case
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 SEX_MAP = {'1': 'male', '2': 'female'}
@@ -11,18 +14,23 @@ PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
 
 def user_institutes(store, user_obj):
     """Preprocess institute objects."""
-    institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
+    if user_obj.is_admin:
+        institutes = store.institutes()
+    else:
+        institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
     for institute in institutes:
-        case_count = store.cases(collaborator=institute['internal_id']).count()
+        case_count = store.cases(collaborator=institute['_id']).count()
         yield (institute, case_count)
 
 
-def cases(case_query):
+def cases(store, case_query):
     """Preprocess case objects."""
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query:
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
+        case_obj['assignees'] = [store.user(user_email) for user_email in
+                                 case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
 
     data = {
@@ -39,15 +47,45 @@ def case(store, institute_obj, case_obj):
         individual['sex_human'] = SEX_MAP.get(individual['sex'], 'unknown')
         individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
 
-    if case_obj.get('assignee'):
-        case_obj['assignee'] = store.user(case_obj['assignee'])
+    case_obj['assignees'] = [store.user(user_email) for user_email in
+                             case_obj.get('assignees', [])]
+    suspects = [store.variant(variant_id) for variant_id in
+                case_obj.get('suspects', [])]
+    causatives = [store.variant(variant_id) for variant_id in
+                  case_obj.get('causatives', [])]
+
+    distinct_genes = set()
+    case_obj['panel_names'] = []
+    for panel_info in case_obj.get('panels', []):
+        if panel_info.get('is_default'):
+            panel_obj = store.panel(panel_info['panel_id'])
+            distinct_genes.update([gene['hgnc_id'] for gene in panel_obj['genes']])
+            full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
+            case_obj['panel_names'].append(full_name)
+    case_obj['default_genes'] = list(distinct_genes)
+
+    # other collaborators than the owner of the case
+    case_obj['o_collaborators'] = [collab_id for collab_id in
+                                   case_obj['collaborators'] if collab_id != ['owner']]
+
+    irrelevant_ids = ('cust000', institute_obj['_id'])
+    collab_ids = [collab['_id'] for collab in store.institutes() if
+                  (collab['_id'] not in irrelevant_ids) and
+                  (collab['_id'] not in case_obj['collaborators'])]
+
+    events = list(store.events(institute_obj, case=case_obj))
+    for event in events:
+        event['verb'] = VERBS_MAP[event['verb']]
 
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
-        'causatives': store.check_causatives(case_obj),
+        'other_causatives': store.check_causatives(case_obj),
         'comments': store.events(institute_obj, case=case_obj, comments=True),
         'hpo_groups': PHENOTYPE_GROUPS,
-        'events': store.events(institute_obj, case=case_obj),
+        'events': events,
+        'suspects': suspects,
+        'causatives': causatives,
+        'collaborators': collab_ids,
     }
     return data
 
@@ -88,3 +126,27 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
         return diseases
     except SystemExit:
         return None
+
+
+def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
+    """Request a rerun by email."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
+    store.request_rerun(institute_obj, case_obj, user_obj, link)
+
+    # this should send a JSON document to the SuSy API in the future
+    html = """
+        <p>{institute}: {case} ({case_id})</p>
+        <p>Re-run requested by: {name}</p>
+    """.format(institute=institute_obj['display_name'],
+               case=case_obj['display_name'], case_id=case_obj['_id'],
+               name=user_obj['name'].encode())
+
+    # compose and send the email message
+    msg = Message(subject=("SCOUT: request RERUN for {}"
+                           .format(case_obj['display_name'])),
+                  html=html, sender=sender, recipients=[recipient],
+                  # cc the sender of the email for confirmation
+                  cc=[user_obj['email']])
+    mail.send(msg)

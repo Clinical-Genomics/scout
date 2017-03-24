@@ -12,7 +12,7 @@ class GeneHandler(object):
             gene_obj(dict)
 
         """
-        logger.debug("Loading gene %s, build %s into database" % 
+        logger.debug("Loading gene %s, build %s into database" %
                      (gene_obj['hgnc_symbol'], gene_obj['build']))
         res = self.hgnc_collection.insert_one(gene_obj)
         logger.debug("Gene saved")
@@ -38,18 +38,16 @@ class GeneHandler(object):
 
         query['build'] = build
         logger.debug("Fetching gene %s" % hgnc_identifyer)
-        
         gene_obj = self.hgnc_collection.find_one(query)
-
         return gene_obj
 
     def hgnc_id(self, hgnc_symbol, build='37'):
         """Query the genes with a hgnc symbol and return the hgnc id
-        
+
         Args:
             hgnc_symbol(str)
             build(str)
-        
+
         Returns:
             hgnc_id(int)
         """
@@ -57,7 +55,7 @@ class GeneHandler(object):
         query = {'hgnc_symbol':hgnc_symbol, 'build':build}
         projection = {'hgnc_id':1, '_id':0}
         res = self.hgnc_collection.find(query, projection)
-        
+
         if res.count() > 0:
             return res[0]['hgnc_id']
         else:
@@ -80,11 +78,11 @@ class GeneHandler(object):
         if search:
             return self.hgnc_collection.find(
                         {
-                            'aliases': {'$regex': hgnc_symbol, '$options':'i'}, 
+                            'aliases': {'$regex': hgnc_symbol, '$options':'i'},
                             'build': build
                         }
                     )
-        
+
         return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build': build})
 
     def all_genes(self, build='37'):
@@ -98,7 +96,7 @@ class GeneHandler(object):
 
     def nr_genes(self, build=None):
         """Return the number of hgnc genes in collection
-        
+
         If build is used, return the number of genes of a certain build
 
             Returns:
@@ -108,7 +106,7 @@ class GeneHandler(object):
             logger.info("Fetching all genes from build %s",  build)
         else:
             logger.info("Fetching all genes")
-            
+
         return self.hgnc_collection.find({'build':build}).count()
 
     def drop_genes(self):
@@ -133,11 +131,11 @@ class GeneHandler(object):
             hgnc_dict[gene_obj['hgnc_symbol']] = gene_obj
         logger.info("All genes fetched")
         return hgnc_dict
-    
+
     def genes_by_alias(self, build='37'):
         """Return a dictionary with hgnc symbols as keys and a list of hgnc ids
          as value.
-        
+
         If a gene symbol is listed as primary the list of ids will only consist
         of that entry
         """
@@ -158,9 +156,9 @@ class GeneHandler(object):
                         'true': true_id,
                         'ids': set([hgnc_id])
                     }
-        
+
         return alias_genes
-        
+
 
     def to_hgnc(self, hgnc_alias, build='37'):
         """Check if a hgnc symbol is an alias

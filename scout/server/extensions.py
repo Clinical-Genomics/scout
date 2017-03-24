@@ -19,3 +19,21 @@ oauth = OAuth()
 # you must configure 3 values from Google APIs console
 # https://code.google.com/apis/console
 google = oauth.remote_app('google', app_key='GOOGLE')
+
+from flask_mail import Mail
+mail = Mail()
+
+
+from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
+
+
+class LoqusDB(LoqusDBMongoAdapter):
+    def init_app(self, app):
+        """Initialize from Flask."""
+        self.connect(**app.config['LOQUSDB_SETTINGS'])
+
+    def case_count(self):
+        return self.db.case.find({}).count()
+
+
+loqusdb = LoqusDB()

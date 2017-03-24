@@ -1,7 +1,7 @@
 import logging
-
 from datetime import datetime
 
+from bson import ObjectId
 import pymongo
 import phizz
 
@@ -21,6 +21,8 @@ class EventHandler(object):
                 event_id (str): The database key for the event
         """
         logger.info("Deleting event{0}".format(event_id))
+        if not isinstance(event_id, ObjectId):
+            event_id = ObjectId(event_id)
         self.event_collection.delete_one({'_id': event_id})
         logger.debug("Event {0} deleted".format(event_id))
 
@@ -46,25 +48,25 @@ class EventHandler(object):
         if not user_obj:
             logger.warning("User %s not found", user['_id'])
             ##TODO raise exception here?
-            author_name = None
+            user_name = None
         else:
-            author_name = user_obj['name']
+            user_name = user_obj['name']
 
         event = dict(
             institute=institute['_id'],
             case=case['case_id'],
-            author=user['_id'],
-            author_name=author_name,
+            user_id=user['_id'],
+            user_name=user_name,
             link=link,
             category=category,
-            verb=VERBS_MAP.get(verb),
+            verb=verb,
             subject=subject,
             level=level,
-            variant_id=variant.get('_id'),
+            variant_id=variant.get('variant_id'),
             content=content,
             panel=panel,
-            created_at = datetime.now(),
-            updated_at = datetime.now(),
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
         )
 
         logger.debug("Saving Event")
@@ -106,7 +108,7 @@ class EventHandler(object):
                 query['case'] = case['_id']
 
         if comments:
-            query['verb'] = 'commented on'
+            query['verb'] = 'comment'
 
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
 
@@ -114,7 +116,7 @@ class EventHandler(object):
         """Assign a user to a case.
 
         This function will create an Event to log that a person has been assigned
-        to a case. Also the "assignee" on the case will be updated.
+        to a case. Also the user will be added to case "assignees".
 
         Arguments:
             institute (dict): A institute
@@ -142,7 +144,7 @@ class EventHandler(object):
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$set': {'assignee': user['_id']}},
+            {'$addToSet': {'assignees': user['_id']}},
             return_document=pymongo.ReturnDocument.AFTER
         )
         return updated_case
@@ -151,8 +153,8 @@ class EventHandler(object):
         """Unassign a user from a case.
 
         This function will create an Event to log that a person has been
-        unassigned from a case. Also the "assignee" on the case will be
-        updated.
+        unassigned from a case. Also the user will be removed from case
+        "assignees".
 
         Arguments:
             institute (dict): A Institute object
@@ -181,7 +183,7 @@ class EventHandler(object):
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$set': {'assignee': None}},
+            {'$pull': {'assignees': user['_id']}},
             return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
@@ -206,7 +208,7 @@ class EventHandler(object):
             updated_case
         """
 
-        if not status in CASE_STATUSES:
+        if status not in CASE_STATUSES:
             logger.warning("Status {0} is invalid".format(status))
             return None
 
@@ -564,7 +566,7 @@ class EventHandler(object):
             user=user,
             link=link,
             verb='pin',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
         self.create_event(category='variant', **kwargs)
@@ -604,7 +606,7 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='unpin',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
 
@@ -639,7 +641,7 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='sanger',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
 
@@ -653,7 +655,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='sanger',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
         return updated_case
@@ -690,7 +692,7 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='validate',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
         return updated_variant
@@ -719,7 +721,7 @@ class EventHandler(object):
                     case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$push': {'causatives': variant['_id']},
                 '$set': {'status': 'solved'}
@@ -737,7 +739,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='mark_causative',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
 
@@ -751,7 +753,7 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='mark_causative',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
         return updated_case
@@ -803,7 +805,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='unmark_causative',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
 
@@ -814,7 +816,7 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='unmark_causative',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
         )
 
@@ -849,7 +851,7 @@ class EventHandler(object):
             link=link,
             category='variant',
             verb='manual_rank',
-            variant_id=variant['variant_id'],
+            variant=variant,
             subject=variant['display_name'],
           )
         logger.info("Setting manual rank to {0} for variant {1}".format(
@@ -919,7 +921,7 @@ class EventHandler(object):
         Return:
             updated_case
         """
-        if case_model.get('rerun_requested'):
+        if case.get('rerun_requested'):
             raise ValueError('rerun already pending')
 
         self.create_event(
@@ -941,23 +943,6 @@ class EventHandler(object):
         )
         logger.debug("Case updated")
         return updated_case
-
-
-
-    # def update_case(self, institute_model, case_model, link):
-    #     """Request a case to be re-analyzed."""
-    #
-    #     self.create_event(
-    #         institute=institute_model,
-    #         case=case_model,
-    #         link=link,
-    #         category='case',
-    #         verb='rerun',
-    #         subject=case_model.display_name
-    #     )
-    #
-    #     case_model.rerun_requested = True
-    #     case_model.save()
 
     def share(self, institute, case, collaborator_id, user, link):
         """Share a case with a new institute.
@@ -1082,9 +1067,8 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='update_diagnosis',
-            subject=case_model['display_name'],
+            subject=case['display_name'],
             content=omim_id
         )
 
         return updated_case
-

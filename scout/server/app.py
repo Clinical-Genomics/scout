@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 import coloredlogs
-from flask import Flask, redirect, request, url_for
+from flask import current_app, Flask, redirect, request, url_for
+from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
 
+try:
+    from chanjo_report.server.app import configure_template_filters
+    from chanjo_report.server.blueprints import report_bp
+    from chanjo_report.server.extensions import api as chanjo_api
+except ImportError:
+    report_bp = None
+    configure_template_filters = None
+    print('chanjo report not installed!')
+
 from . import extensions
-from .blueprints import public, genes, cases, login, variants
+from .blueprints import public, genes, cases, login, variants, panels, pileup
 
 
 def create_app(config_file=None, config=None):
@@ -21,6 +31,10 @@ def create_app(config_file=None, config=None):
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
+
+    if not (app.debug or app.testing) and app.config.get('MAIL_USERNAME'):
+        # setup email logging of errors
+        configure_email_logging(app)
 
     @app.before_request
     def check_user():
@@ -46,7 +60,15 @@ def configure_extensions(app):
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
     extensions.oauth.init_app(app)
+    extensions.mail.init_app(app)
     Markdown(app)
+
+    if app.config.get('SQLALCHEMY_DATABASE_URI'):
+        configure_coverage(app)
+
+    if app.config.get('LOQUSDB_SETTINGS'):
+        # setup LoqusDB
+        extensions.loqusdb.init_app(app)
 
 
 def register_blueprints(app):
@@ -56,6 +78,8 @@ def register_blueprints(app):
     app.register_blueprint(cases.cases_bp)
     app.register_blueprint(login.login_bp)
     app.register_blueprint(variants.variants_bp)
+    app.register_blueprint(panels.panels_bp)
+    app.register_blueprint(pileup.pileup_bp)
 
 
 def register_filters(app):
@@ -85,3 +109,55 @@ def register_filters(app):
         else:
             # round all other numbers
             return round(number, ndigits)
+
+
+def configure_email_logging(app):
+    """Setup logging of error/exceptions to email."""
+    import logging
+    from scout.log import TlsSMTPHandler
+
+    mail_handler = TlsSMTPHandler(
+        mailhost=app.config['MAIL_SERVER'],
+        fromaddr=app.config['MAIL_USERNAME'],
+        toaddrs=app.config['ADMINS'],
+        subject="O_ops... {} failed!".format(app.name),
+        credentials=(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+    )
+    mail_handler.setLevel(logging.ERROR)
+    mail_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
+        '[in %(pathname)s:%(lineno)d]')
+    )
+    app.logger.addHandler(mail_handler)
+
+
+def configure_coverage(app):
+    """Setup coverage related extensions."""
+    # setup chanjo report
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True if app.debug else False
+    chanjo_api.init_app(app)
+    configure_template_filters(app)
+    # register chanjo report blueprint
+    app.register_blueprint(report_bp, url_prefix='/reports')
+
+    babel = Babel(app)
+
+    @babel.localeselector
+    def get_locale():
+        """Determine locale to use for translations."""
+        accept_languages = current_app.config.get('ACCEPT_LANGUAGES', ['en'])
+
+        # first check request args
+        session_language = request.args.get('lang')
+        if session_language in accept_languages:
+            return session_language
+
+        # language can be forced in config
+        user_language = current_app.config.get('REPORT_LANGUAGE')
+        if user_language:
+            return user_language
+
+        # try to guess the language from the user accept header that
+        # the browser transmits.  We support de/fr/en in this example.
+        # The best match wins.
+        return request.accept_languages.best_match(accept_languages)

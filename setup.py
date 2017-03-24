@@ -26,7 +26,7 @@ def parse_reqs(req_path='./requirements.txt'):
 
 setup(
     name='scout-browser',
-    version='2.1.2',
+    version='2.3.0',
     url='https://github.com/Clinical-Genomics/scout',
     description='Clinical DNA variant visualizer and browser.',
     author='Robin Andeer',
@@ -35,6 +35,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=parse_reqs(),
+    extras_require=dict(
+        coverage=['chanjo-report'],
+    ),
     entry_points=dict(
         console_scripts=[
             'scout = scout.commands:cli',

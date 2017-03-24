@@ -9,11 +9,11 @@ from mongoengine import (Document, ListField, StringField, FloatField,
 
 panel_gene = dict(
     hgnc_id = int, # required
-    symbol = str, 
+    symbol = str,
 
     disease_associated_transcripts = list, # list of strings that represent refseq transcripts
-    reduced_penetrance = bool, 
-    mosaicism = bool, 
+    reduced_penetrance = bool,
+    mosaicism = bool,
     database_entry_version = str,
 
     ar = bool,
@@ -23,7 +23,6 @@ panel_gene = dict(
     xd = bool,
     x = bool,
     y = bool,
-
 )
 
 

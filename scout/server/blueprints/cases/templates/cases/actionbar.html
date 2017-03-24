@@ -11,7 +11,12 @@
       <li>{{ research(case) }}</li>
     {% endif %}
     <li>{{ rerun(case) }}</li>
-    {# <li>{{ coverage_report(institute, case) }}</li> #}
+    {% if case.delivery_report %}
+      <li>{{ delivery_report(institute, case) }}</li>
+    {% endif %}
+    {% if config.SQLALCHEMY_DATABASE_URI %}
+      <li>{{ coverage_report(institute, case) }}</li>
+    {% endif %}
     <li>{{ rank_model(case) }}</li>
     <li>{{ share_case(institute, case, collaborators) }}</li>
   </ul>
@@ -66,25 +71,26 @@
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-user"></span>
-      Assignee
+      Assignees
     </h5>
-    {% if case.assignee %}
-      <form method="POST"
-            action="{{ url_for('cases.assign', institute_id=institute._id,
-                               case_name=case.display_name) }}">
-        <button name="action" value="DELETE" class="btn btn-default form-control">
-          <span class="glyphicon glyphicon-remove"></span>
-          {{ case.assignee.name }}
-        </button>
-      </form>
-    {% else %}
-      <form method="POST"
-            action="{{ url_for('cases.assign', institute_id=institute._id,
-                               case_name=case.display_name) }}"
-            title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-        <button class="btn btn-default form-control">Assign yourself</button>
-      </form>
-    {% endif %}
+    {% for user in case.assignees %}
+      <div class="form-group">
+        <form method="POST"
+              action="{{ url_for('cases.assign', institute_id=institute._id,
+                                 case_name=case.display_name, user_id=user._id) }}">
+          <button name="action" value="DELETE" class="btn btn-default form-control">
+            <span class="glyphicon glyphicon-remove"></span>
+            {{ user.name }}
+          </button>
+        </form>
+      </div>
+    {% endfor %}
+    <form method="POST"
+          action="{{ url_for('cases.assign', institute_id=institute._id,
+                             case_name=case.display_name) }}"
+          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+      <button class="btn btn-default form-control">Assign yourself</button>
+    </form>
   </div>
 {% endmacro %}
 
@@ -113,8 +119,8 @@
             <h4 class="modal-title">Request research list</h4>
           </div>
           <div class="modal-body">
-            <p>Please confirm that you want to have the list of research variants opened.</p>
-            <p>You also confirm that you have the relevant consent signed.</p>
+            <p>Please confirm that you want to <strong>upload research variants for {{ case.display_name }}</strong>.</p>
+            <p>You also confirm that you have the <strong>relevant consent</strong>.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -128,10 +134,7 @@
 
 {% macro rerun(case) %}
   <div class="nav-sidebar-item">
-    <h5>
-      <span class="glyphicon glyphicon-retweet"></span>
-      Reruns
-    </h5>
+    <h5><span class="glyphicon glyphicon-retweet"></span> Reruns</h5>
     {% if case.rerun_requested %}
       <i>Rerun pending</i>
     {% else %}
@@ -143,7 +146,7 @@
 {% macro rerun_modal(institute, case) %}
   <form action="{{ url_for('cases.rerun', institute_id=institute._id,
                            case_name=case.display_name) }}" method="POST">
-    <div class="modal fade" id="rerun-modal">
+    <div id="rerun-modal" class="modal fade">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -151,7 +154,7 @@
             <h4 class="modal-title">Request research list</h4>
           </div>
           <div class="modal-body">
-            <p>Please confirm that you want to have the case rerun and the current variants replaced with updated information.</p>
+            <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -163,20 +166,31 @@
   </form>
 {% endmacro %}
 
+{% macro delivery_report(institute, case) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      Delivery report
+    </h5>
+    <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                        case_name=case.display_name) }}" class="btn btn-default form-control">View report</a>
+  </div>
+{% endmacro %}
+
 {% macro coverage_report(institute, case) %}
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-ok-sign"></span>
       Coverage report
     </h5>
-    <form method="POST" action="{{ url_for('report.report', group_id=case.case_id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
-      <input type="hidden" name="gene_ids" value="{{ case.default_genes()|join(',') }}"></input>
+    <form method="POST" action="{{ url_for('report.report', group_id=case._id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+      <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
       <div class="form-group">
         <button type="submit" class="btn btn-default form-control">View report</button>
       </div>
     </form>
-    <p>Based on: {{ case.default_panel_ids|join(', ') }}</p>
+    <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
   </div>
 {% endmacro %}
 
@@ -191,7 +205,7 @@
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}
-  {% if case.owner == institute.id %}
+  {% if case.owner == institute._id %}
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-cog"></span>

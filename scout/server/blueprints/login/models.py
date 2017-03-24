@@ -11,3 +11,8 @@ class LoginUser(UserMixin):
 
     def get_id(self):
         return self.email
+
+    @property
+    def is_admin(self):
+        """Check if the user is admin."""
+        return 'admin' in self.roles

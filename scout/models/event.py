@@ -77,7 +77,8 @@ event = dict(
     category = str, # choices = ('case', 'variant', 'panel'), required
 
     # All events will have an author
-    author = str, # user email, required
+    user_id = str, # user email, required
+    user_name = str, # user name
     # Subject is the string that will be displayed after 'display_info'
     subject = str, # case 23 or 1_2343_A_C, required
 
@@ -86,7 +87,7 @@ event = dict(
 
     # An event can belong to a variant. This is the id that looks like 1_34253_A_C.
     variant_id = str, # A variant id
-    panel_name = str, # A gene panel 
+    panel_name = str, # A gene panel
     # This is the content of a comment
     content = str,
 

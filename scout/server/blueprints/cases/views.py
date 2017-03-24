@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
+import os.path
+
+from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for)
+                   request, url_for, Response, send_from_directory, jsonify)
 from flask_login import current_user
 
-from scout.server.extensions import store
+from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case
 from . import controllers
 
-cases_bp = Blueprint('cases', __name__, template_folder='templates')
+cases_bp = Blueprint('cases', __name__, template_folder='templates',
+                     static_folder='static', static_url_path='/cases/static')
 
 
 @cases_bp.route('/institutes')
@@ -27,8 +31,8 @@ def cases(institute_id):
     institute_obj = store.institute(institute_id)
     all_cases = store.cases(institute_id, name_query=query,
                             skip_assigned=skip_assigned)
-    data = controllers.cases(all_cases)
-    return dict(institute=institute_obj, **data)
+    data = controllers.cases(store, all_cases)
+    return dict(institute=institute_obj, skip_assigned=skip_assigned, **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>')
@@ -44,9 +48,9 @@ def case(institute_id, case_name):
 def case_synopsis(institute_id, case_name):
     """Update (PUT) synopsis of a specific case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
     new_synopsis = request.form.get('synopsis')
-    controllers.update_synopsis(store, institute_obj, case_obj, current_user,
-                                new_synopsis)
+    controllers.update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis)
     return redirect(request.referrer)
 
 
@@ -187,14 +191,123 @@ def status(institute_id, case_name):
 
 
 @cases_bp.route('/<institute_id>/<case_name>/assign', methods=['POST'])
-def assign(institute_id, case_name):
+@cases_bp.route('/<institute_id>/<case_name>/<user_id>/assign', methods=['POST'])
+def assign(institute_id, case_name, user_id=None):
     """Assign and unassign a user from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
-    user_obj = store.user(current_user.email)
+    if user_id:
+        user_obj = store.user(user_id)
+    else:
+        user_obj = store.user(current_user.email)
     if request.form.get('action') == 'DELETE':
-        # unassign
         store.unassign(institute_obj, case_obj, user_obj, link)
     else:
         store.assign(institute_obj, case_obj, user_obj, link)
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/api/v1/hpo-terms')
+def hpoterms():
+    """Search for HPO terms."""
+    query = request.args.get('query')
+    if query is None:
+        return abort(500)
+    terms = store.hpo_terms(query=query).limit(8)
+    json_terms = [{'name': '{} | {}'.format(term['hpo_id'], term['description']),
+                   'id': term['hpo_id']} for term in terms]
+    return jsonify(json_terms)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/pin', methods=['POST'])
+def pin_variant(institute_id, case_name, variant_id):
+    """Pin and unpin variants to/from the list of suspects."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    if request.form['action'] == 'ADD':
+        store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
+    elif request.form['action'] == 'DELETE':
+        store.unpin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
+    return redirect(request.referrer or link)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/validate', methods=['POST'])
+def mark_validation(institute_id, case_name, variant_id):
+    """Mark a variant as sanger validated."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    validate_type = request.form['type'] or None
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
+    return redirect(request.referrer or link)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/causative', methods=['POST'])
+def mark_causative(institute_id, case_name, variant_id):
+    """Mark a variant as confirmed causative."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+                   variant_id=variant_id)
+    if request.form['action'] == 'ADD':
+        store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+    elif request.form['action'] == 'DELETE':
+        store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+
+    # send the user back to the case that was marked as solved
+    case_url = url_for('.case', institute_id=institute_id, case_name=case_name)
+    return redirect(case_url)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/delivery-report')
+def delivery_report(institute_id, case_name):
+    """Display delivery report."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if case_obj.get('delivery_report') is None:
+        return abort(404)
+
+    out_dir = os.path.dirname(case_obj['delivery_report'])
+    filename = os.path.basename(case_obj['delivery_report'])
+    return send_from_directory(out_dir, filename)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/share', methods=['POST'])
+def share(institute_id, case_name):
+    """Share a case with a different institute."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    collaborator_id = request.form['collaborator']
+    revoke_access = 'revoke' in request.form
+    link = url_for('.case', institute_id=institute_id, case_name=case_name)
+
+    if revoke_access:
+        store.unshare(institute_obj, case_obj, collaborator_id, current_user, link)
+    else:
+        store.share(institute_obj, case_obj, collaborator_id, current_user, link)
+
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/rerun', methods=['POST'])
+def rerun(institute_id, case_name):
+    """Request a case to be rerun."""
+    sender = current_app.config['MAIL_USERNAME']
+    recipient = current_app.config['TICKET_SYSTEM_EMAIL']
+    controllers.rerun(store, mail, current_user, institute_id, case_name, sender,
+                      recipient)
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/research', methods=['POST'])
+def research(institute_id, case_name):
+    """Open the research list for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('.case', institute_id=institute_id, case_name=case_name)
+    store.open_research(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
