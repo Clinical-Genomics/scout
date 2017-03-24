@@ -394,6 +394,19 @@ def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle):
 
     return adapter
 
+@pytest.fixture(scope='function')
+def real_hpo_database(request, real_gene_database, hpo_terms_handle, genemap_handle):
+    "Returns an adapter to a database populated with hpo terms"
+    adapter = real_gene_database
+
+    load_hpo(
+        adapter=gene_database,
+        hpo_lines=hpo_terms_handle,
+        disease_lines=genemap_handle
+    )
+
+    return adapter
+
 
 @pytest.fixture(scope='function')
 def panel_database(request, gene_database, panel_info):

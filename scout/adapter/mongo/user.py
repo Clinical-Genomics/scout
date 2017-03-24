@@ -6,7 +6,6 @@ import pymongo
 
 logger = logging.getLogger(__name__)
 
-
 class UserHandler(object):
 
     def update_user(self, user_obj):

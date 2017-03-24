@@ -40,10 +40,28 @@ class HpoHandler(object):
         return self.hpo_term_collection.find_one({'_id':hpo_id})
 
     def hpo_terms(self, query=None):
-        """Return all HPO terms"""
-        query = query or None
+        """Return all HPO terms
         
-        return self.hpo_term_collection.find()
+        If a query is sent hpo_terms will try to match with regex on term or 
+        description.
+        
+        Args:
+            query(str): Part of a hpoterm or description
+        
+        Returns:
+            result(pymongo.Cursor): A cursor with hpo terms
+        """
+        if query:
+            query_dict = {'$or': 
+                [
+                    {'_id': {'$regex': query, '$options':'i'}},
+                    {'description': {'$regex': query, '$options':'i'}},
+                ]
+            }
+        else:
+            query_dict = {}
+
+        return self.hpo_term_collection.find(query_dict)
 
     def disease_term(self, disease_identifier):
         """Return a disease term

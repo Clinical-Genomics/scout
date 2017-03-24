@@ -91,6 +91,90 @@ def test_fetch_all_hpo_terms(adapter):
     ## THEN assert the term was fetched
     assert res.count() == 1
 
+def test_fetch_all_hpo_terms_query(real_adapter):
+    adapter = real_adapter
+    ## GIVEN a adapter with one hpo term
+    assert adapter.hpo_terms().count() == 0
+    
+    hpo_term = dict(
+        _id = 'HP1', # Same as hpo_id
+       hpo_id = 'HP1', # Required
+       description = 'First term',
+       genes = [1], # List with integers that are hgnc_ids
+    )
+    adapter.load_hpo_term(hpo_term)
+
+    hpo_term2 = dict(
+        _id = 'HP2', # Same as hpo_id
+       hpo_id = 'HP2', # Required
+       description = 'Second term',
+       genes = [1], # List with integers that are hgnc_ids
+    )
+    adapter.load_hpo_term(hpo_term2)
+
+    ## WHEN fetching the hpo terms with partial query
+    res = adapter.hpo_terms(query = '1')
+    
+    ## THEN assert only one term was matched
+    assert res.count() == 1
+
+def test_fetch_all_hpo_terms_query_description(real_adapter):
+    adapter = real_adapter
+    ## GIVEN a adapter with one hpo term
+    assert adapter.hpo_terms().count() == 0
+    
+    hpo_term = dict(
+        _id = 'HP1', # Same as hpo_id
+       hpo_id = 'HP1', # Required
+       description = 'First term',
+       genes = [1], # List with integers that are hgnc_ids
+    )
+    adapter.load_hpo_term(hpo_term)
+
+    hpo_term2 = dict(
+        _id = 'HP2', # Same as hpo_id
+       hpo_id = 'HP2', # Required
+       description = 'Second term',
+       genes = [1], # List with integers that are hgnc_ids
+    )
+    adapter.load_hpo_term(hpo_term2)
+
+    ## WHEN fetching the hpo terms with partial query
+    res = adapter.hpo_terms(query = 'second')
+    
+    ## THEN assert only one term was matched
+    assert res.count() == 1
+    for term in res:
+        assert term['_id'] == 'HP2'
+
+def test_fetch_all_hpo_terms_query_description_term(real_adapter):
+    adapter = real_adapter
+    ## GIVEN a adapter with one hpo term
+    assert adapter.hpo_terms().count() == 0
+    
+    hpo_term = dict(
+        _id = 'HP1', # Same as hpo_id
+       hpo_id = 'HP1', # Required
+       description = 'First term',
+       genes = [1], # List with integers that are hgnc_ids
+    )
+    adapter.load_hpo_term(hpo_term)
+
+    hpo_term2 = dict(
+        _id = 'HP2', # Same as hpo_id
+       hpo_id = 'HP2', # Required
+       description = 'Second term',
+       genes = [1], # List with integers that are hgnc_ids
+    )
+    adapter.load_hpo_term(hpo_term2)
+
+    ## WHEN fetching the hpo terms with partial query
+    res = adapter.hpo_terms(query = 'term')
+    
+    ## THEN assert only one term was matched
+    assert res.count() == 2
+
+
 #########################################################
 ################### Disease tests #######################
 #########################################################
