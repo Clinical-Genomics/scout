@@ -1,7 +1,6 @@
 import pytest
 
 from scout.load.variant import (load_variant, load_variants)
-from scout.models.variant.variant import Variant
 
 from scout.exceptions.database import IntegrityError
 

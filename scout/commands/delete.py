@@ -4,8 +4,6 @@ import click
 
 from scout.commands.case import cases
 
-from scout.models.user import User
-
 logger = logging.getLogger(__name__)
 
 # @click.command('panels', short_help='Display gene panels')

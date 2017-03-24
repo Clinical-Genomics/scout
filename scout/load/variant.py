@@ -16,7 +16,7 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
     """Delete all variants for a case of a certain variant type
 
         Args:
-            case_obj(Case)
+            case_obj(dict)
             variant_type(str)
     """
     adapter.delete_variants(
@@ -51,7 +51,7 @@ def get_rank_results_header(variants):
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                   category='snv', rank_threshold=5, chrom=None, start=None,
                   end=None):
-    """Load all variantt in variants
+    """Load all variant in variants
 
         Args:
             adapter(MongoAdapter)
@@ -155,7 +155,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
 def load_variant(adapter, variant_obj):
     """Load a variant into the database
 
-        Parse the variant, create a mongoengine object and load it into
+        Parse the variant, create a variant object and load it into
         the database.
 
         Args:

@@ -28,7 +28,7 @@ def test_create_event(adapter, institute_obj, case_obj, user_obj):
     adapter.event_collection.find().count() == 1
     res = adapter.event_collection.find_one()
     
-    assert res['verb'] == VERBS_MAP[verb]
+    assert res['verb'] == verb
 
 def test_assign(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
@@ -59,7 +59,7 @@ def test_assign(case_database, institute_obj, case_obj, user_obj):
         link=link
     )
     # THEN the case should have the user assigned
-    assert updated_case['assignee'] == user['_id']
+    assert updated_case['assignees'] == [user['_id']]
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 1
     
@@ -79,7 +79,7 @@ def test_unassign(case_database, institute_obj, case_obj, user_obj):
     )
     #The user should be added as assignee to the case
     # GIVEN a assigned case
-    assert updated_case['assignee'] == user_obj['_id']
+    assert updated_case['assignees'] == [user_obj['_id']]
 
     # WHEN unassigning a user from a case
     updated_case = adapter.unassign(
@@ -93,9 +93,9 @@ def test_unassign(case_database, institute_obj, case_obj, user_obj):
     assert adapter.event_collection.find().count() == 2
     
     # THEN the case should not be assigned
-    assert updated_case.get('assignee') == None
+    assert updated_case.get('assignees') == []
     # THEN a unassign event should be created
-    event = adapter.event_collection.find_one({'verb': 'was unassigned from'})
+    event = adapter.event_collection.find_one({'verb': 'unassign'})
     assert event['link'] == 'unassignlink'
 
 

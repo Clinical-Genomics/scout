@@ -18,7 +18,6 @@ from scout.utils.handle import get_file_handle
 
 from scout.resources import (hpoterms_path, hpodisease_path)
 
-from scout.models.phenotype_term import (HpoTerm, DiseaseTerm)
 
 logger = logging.getLogger(__name__)
 

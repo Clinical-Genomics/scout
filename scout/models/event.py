@@ -38,8 +38,6 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 
-from mongoengine import (DateTimeField, Document, ReferenceField, StringField)
-
 VERBS_MAP = {
   "assign": "was assigned to",
   "unassign": "was unassigned from",
@@ -96,48 +94,3 @@ event = dict(
     updated_at = datetime, # default=datetime.now
 )
 
-
-class Event(Document):
-
-  """Embedded model for defining a general user generated event."""
-
-  meta = {'strict': False}
-
-  # an event will allways belong to a institute and a case
-  institute = ReferenceField('Institute', required=True)
-  case = ReferenceField('Case', required=True)
-  # All events will have url links
-  link = StringField()
-  # All events has to have a category
-  category = StringField(choices=('case', 'variant'), required=True)
-
-  # All events will have an author
-  author = ReferenceField('User', required=True)
-  # Subject is the string that will be displayed after 'display_info'
-  subject = StringField(required=True) # case 23 or 1_2343_A_C
-
-  verb = StringField(choices=VERBS)
-  level = StringField(choices=('global', 'specific', 'internal'), default='specific')
-
-  # An event can belong to a variant. This is the id that looks like 1_34253_A_C.
-  variant_id = StringField()
-  # This is the content of a comment
-  content = StringField()
-
-  # timestamps
-  created_at = DateTimeField(default=datetime.now)
-  updated_at = DateTimeField(default=datetime.now)
-
-  @property
-  def display_info(self):
-    """
-    Return the string that should be displayed based on the keyword
-    """
-    return VERBS_MAP.get(self.verb, "")
-
-  @property
-  def is_edited(self):
-    """
-    Find out if the event has been edited.
-    """
-    return self.created_at == self.updated_at

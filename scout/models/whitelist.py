@@ -7,17 +7,8 @@ Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
-from mongoengine import (Document, DateTimeField, EmailField, ListField,
-                         ReferenceField)
-
-
 whitelist = dict(
     email = str, # required, unique
     created_at = datetime, 
     institutes = list, # list of institute_ids
 )
-
-class Whitelist(Document):
-  email = EmailField(required=True, unique=True)
-  created_at = DateTimeField(default=datetime.now)
-  institutes = ListField(ReferenceField('Institute'))

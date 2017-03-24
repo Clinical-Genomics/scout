@@ -310,9 +310,6 @@ def real_adapter(request, real_pymongo_client):
     database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
-    # logger.info("Establish a mongoengine connection")
-    # connect(DATABASE)
-
     logger.info("Connected to database")
 
     return mongo_adapter
@@ -326,9 +323,6 @@ def adapter(request, pymongo_client):
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
-
-    # logger.info("Establish a mongoengine connection")
-    # connect(DATABASE)
 
     logger.info("Connected to database")
 

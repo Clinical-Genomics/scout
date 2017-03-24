@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 
 def build_individual(ind):
-    """Build a mongoengine Individual object
+    """Build a Individual object
 
         Args:
             ind (dict): A dictionary with individual information

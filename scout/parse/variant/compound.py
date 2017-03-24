@@ -5,7 +5,7 @@ from scout.utils.md5 import generate_md5_key
 logger = logging.getLogger(__name__)
 
 def parse_compounds(variant, case, variant_type):
-    """Get a list with mongoengine compounds for this variant.
+    """Get a list with compounds objects for this variant.
 
         Arguments:
             variant(dict): A Variant dictionary

@@ -1,4 +1,3 @@
-from scout.models import Variant
 
 def test_build_query(adapter):
     case_id = 'cust000'

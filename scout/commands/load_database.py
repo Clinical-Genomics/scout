@@ -13,7 +13,6 @@ import logging
 
 import click
 
-from scout.models import User, Whitelist
 from scout.commands.case import case as case_command
 from scout.commands.load_institute import institute as institute_command
 from scout.commands.load_hpo import hpo as hpo_command
@@ -68,12 +67,11 @@ def user(context, institute_name, user_name, user_mail):
         log.info("Institute {0} does not exist".format(institute_name))
         context.abort()
 
-    Whitelist(email=user_mail).save()
-    user = User(email=user_mail,
+    user_info = dict(email=user_mail,
                 name=user_name,
                 roles=['admin'],
                 institutes=[institute])
-    user.save()
+    user.add_user(user_info)
 
 
 @click.group()
