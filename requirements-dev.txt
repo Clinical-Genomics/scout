@@ -19,3 +19,4 @@ invoke
 bumpversion
 fabric
 grip
+livereload
