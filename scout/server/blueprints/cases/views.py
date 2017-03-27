@@ -30,7 +30,7 @@ def cases(institute_id):
     skip_assigned = request.args.get('skip_assigned')
     all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases)
-    return dict(institute=institute_obj, skip_assigned=skip_assigned, **data)
+    return dict(institute=institute_obj, skip_assigned=skip_assigned, query=query, **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>')
