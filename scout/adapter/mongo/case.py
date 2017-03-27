@@ -55,7 +55,15 @@ class CaseHandler(object):
             query['is_research'] = True
 
         if name_query:
-            query['display_name'] = {'$regex': name_query}
+            users = self.user_collection.find({'name': {'$regex': name_query, '$options':'i'}})
+            if users.count() > 0:
+                query['assignees'] = {'$in': [user['email'] for user in users]}
+            
+            else:
+                query['$or'] = [
+                    {'display_name': {'$regex': name_query}},
+                    {'individuals.display_name': {'$regex': name_query}},
+                ]
 
         return self.case_collection.find(query).sort('updated_at', -1)
 

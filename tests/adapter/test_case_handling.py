@@ -48,6 +48,85 @@ def test_get_case(panel_database, case_obj):
     ## THEN we should get the correct case
     assert result['owner'] == case_obj['owner']
 
+def test_get_cases(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+    ## WHEN retreiving an existing case from the database
+    result = adapter.cases()
+    ## THEN we should get the correct case
+    assert result.count() == 1
+
+def test_get_cases_no_assignees(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+    ## WHEN retreiving an existing case from the database
+    result = adapter.cases(name_query='john')
+    ## THEN we should get the correct case
+    assert result.count() == 0
+
+def test_get_cases_display_name(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+    ## WHEN retreiving cases by partial display name
+    result = adapter.cases(name_query='643')
+    ## THEN we should get the correct case
+    assert result.count() == 1
+
+def test_get_cases_existing_individual(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+    ## WHEN retreiving cases by partial individual name
+    result = adapter.cases(name_query='NA1288')
+    ## THEN we should get the correct case
+    assert result.count() == 1
+
+def test_get_cases_assignees(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    
+    user_obj = adapter.user_collection.find_one()
+    case_obj['assignees'] = [user_obj['email']]
+    adapter.case_collection.insert_one(case_obj)
+    
+    ## WHEN retreiving cases by partial individual name
+    result = adapter.cases(name_query='john')
+    ## THEN we should get the correct case
+    assert result.count() == 1
+
+def test_get_cases_non_existing_assignee(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    
+    user_obj = adapter.user_collection.find_one()
+    case_obj['assignees'] = [user_obj['email']]
+    adapter.case_collection.insert_one(case_obj)
+    
+    ## WHEN retreiving cases by partial individual name
+    result = adapter.cases(name_query='damien')
+    ## THEN we should get the correct case
+    assert result.count() == 0
+
+
+def test_get_cases_non_existing_individual(real_panel_database, case_obj):
+    adapter = real_panel_database
+    ## GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+    ## WHEN retreiving cases by partial display name
+    result = adapter.cases(name_query='hello')
+    ## THEN we should get the correct case
+    assert result.count() == 0
+
 def test_get_non_existing_case(panel_database, case_obj):
     adapter = panel_database
     # GIVEN an empty database (no cases)
