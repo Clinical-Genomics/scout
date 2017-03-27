@@ -41,6 +41,9 @@ dev/
 .coverage*
 htmlcov/
 provision/roles/
+*.ipynb_checkpoints/
+*.ipynb
+.vscode/
 
 # Complexity
 output/*.html

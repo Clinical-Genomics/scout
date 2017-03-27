@@ -38,14 +38,10 @@ class CaseHandler(object):
             case_query = Case.objects
 
         if query:
-            # filter if any user names match query
-            matching_users = User.objects(name__icontains=query)
-
             # filter cases by matching display name of case or individuals
             case_query = case_query.filter(
                 Q(display_name__icontains=query) |
-                Q(individuals__display_name__icontains=query) |
-                Q(assignee__in=matching_users)
+                Q(individuals__display_name__icontains=query)
             )
 
         if skip_assigned:

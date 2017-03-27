@@ -10,7 +10,6 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
     """
     try:
       import smtplib
-      import string  # For 'tls', add this line
 
       try:
         from email.utils import formatdate
@@ -27,7 +26,7 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
       msg = self.format(record)
       msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nDate: %s\r\n\r\n%s" % (
               self.fromaddr,
-              string.join(self.toaddrs, ","),
+              ','.join(self.toaddrs),
               self.getSubject(record),
               formatdate(), msg
             )
