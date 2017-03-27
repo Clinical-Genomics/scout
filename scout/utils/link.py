@@ -19,10 +19,10 @@ def add_gene_coordinates(gene, transcript):
 
 def add_transcript(gene, parsed_transcript):
     """Add a transcript to a gene if it is not already there
-    
+
     If the transcript already exists(determined by the ensembl transcript id)
     and it has a new refseq symbol we add that to the transcript
-    
+
     Args:
         gene(dict): Hgnc gene information
         parsed_transcript(dict): Ensembl transcript information
@@ -43,7 +43,7 @@ def add_transcript(gene, parsed_transcript):
             transcript_obj = gene['transcripts'][enstid]
             # We check if the current transcript is one of the identifiers
             if refseq_identifyer:
-            # Check if the refseq identifier is in the list of primary 
+            # Check if the refseq identifier is in the list of primary
             # transcripts
                 if not refseq_identifyer in transcript_obj['refseq']:
                     transcript_obj['refseq'].append(refseq_identifyer)
@@ -59,7 +59,7 @@ def add_transcript(gene, parsed_transcript):
             gene['transcripts'][enstid] = parsed_transcript
 
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines, 
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
                genemap_lines, hpo_lines):
     """Gather information from different sources and return a gene dict
 
@@ -160,12 +160,12 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
             gene = genes[hgnc_symbol]
             # Update the omim id to the one found in omim
             gene['omim_id'] = omim_info['mim_number']
-            
+
             gene['inheritance_models'] = list(inheritance)
             gene['phenotypes'] = omim_info.get('phenotypes', [])
-    
+
     for hgnc_symbol in get_incomplete_penetrance_genes(hpo_lines):
         if hgnc_symbol in genes:
             genes[hgnc_symbol]['incomplete_penetrance'] = True
-    
+
     return genes

@@ -4,10 +4,9 @@ import os
 
 from werkzeug.contrib.fixers import ProxyFix
 
-from scout.app import AppFactory
+from scout.server.app import create_app
 
-factory = AppFactory()
-app = factory(config=os.environ['SCOUT_CONFIG'])
+app = create_app(config_file=os.environ['SCOUT_CONFIG'])
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 

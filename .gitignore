@@ -42,6 +42,8 @@ dev/
 htmlcov/
 provision/roles/
 .env
+*.ipynb
+.vscode/
 
 # Complexity
 output/*.html

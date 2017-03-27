@@ -69,6 +69,9 @@ This is an example of the config file:
 ```python
 # scoutconfig.py
 
+# list of email addresses to send errors to in production
+ADMINS = ['???']
+
 MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
 MONGO_DBNAME = 'scoutTest'
@@ -97,6 +100,12 @@ PHENOMIZER_PASSWORD = '???'
 
 # enable Chanjo coverage integration
 SQLALCHEMY_DATABASE_URI = '???'
+REPORT_LANGUAGE = 'en'  # or 'sv'
+
+# other interesting settings
+SQLALCHEMY_TRACK_MODIFICATIONS = False  # this is essential in production
+TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
+SECRET_KEY = 'secret key'               # override in production!
 ```
 
 Starting the server in now really easy, for the demo and local development we will use the built-in Flask server:

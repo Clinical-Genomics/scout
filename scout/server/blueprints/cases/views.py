@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
 
-from bson.json_util import dumps
 from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, Response, send_from_directory, jsonify)
 from flask_login import current_user
@@ -26,9 +25,9 @@ def index():
 @templated('cases/cases.html')
 def cases(institute_id):
     """Display a list of cases for an institute."""
+    institute_obj = institute_and_case(store, institute_id)
     query = request.args.get('query')
     skip_assigned = request.args.get('skip_assigned')
-    institute_obj = store.institute(institute_id)
     all_cases = store.cases(institute_id, name_query=query,
                             skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases)
@@ -127,8 +126,7 @@ def phenotypes_actions(institute_id, case_name):
             # avoid empty lists
             if raw_symbols:
                 hgnc_symbols.update(raw_symbols.split('|'))
-        hgnc_ids = store.symbols_to_ids(hgnc_symbols)
-        store.update_dynamic_gene_list(case_obj, hgnc_ids)
+        store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
 
     elif action == 'GENERATE':
         if len(hpo_ids) == 0:
@@ -137,7 +135,7 @@ def phenotypes_actions(institute_id, case_name):
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get('min_match') or len(hpo_ids))
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
-        store.update_dynamic_gene_list(case_obj, hgnc_ids)
+        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids)
 
     return redirect(case_url)
 
