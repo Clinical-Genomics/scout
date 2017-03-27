@@ -69,9 +69,9 @@ class CaseHandler(object):
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None, build='37'):
         """Update the dynamic gene list for a case
-        
+
         Adds a list of dictionaries to case['dynamic_gene_list'] that looks like
-        
+
         {
             hgnc_symbol: str,
             hgnc_id: int,
@@ -97,8 +97,8 @@ class CaseHandler(object):
             res = []
             for symbol in hgnc_symbols:
                 for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
-                    res.append(res)
-        
+                    res.append(gene_obj)
+
         for gene_obj in res:
             dynamic_gene_list.append(
                 {
