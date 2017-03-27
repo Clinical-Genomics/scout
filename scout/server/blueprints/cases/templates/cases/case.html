@@ -36,9 +36,12 @@
         </div>
 
         <div class="row">
-          <div class="col-xs-12 col-md-4">{{ individuals_table() }}</div>
-          <div class="col-xs-12 col-md-4">{{ pedigree_panel() }}</div>
-          <div class="col-xs-12 col-md-4">{{ synopsis_panel() }}</div>
+          {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+          <div class="col-xs-12 {{ 'col-md-4' if has_pedigree else 'col-md-6'}}">{{ individuals_table() }}</div>
+          {% if has_pedigree %}
+            <div class="col-xs-12 col-md-4">{{ pedigree_panel() }}</div>
+          {% endif %}
+          <div class="col-xs-12 {{ 'col-md-4' if has_pedigree else 'col-md-6'}}">{{ synopsis_panel() }}</div>
         </div>
 
         <div class="row">
@@ -136,12 +139,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Pedigree</div>
     <div class="panel-body">
-      {% if case.individuals|length == 1 %}
-        <!-- Don't expect a pedigree visualization -->
-        <p>Single sample case: {{ case.individuals.0.display_name }}</p>
-      {% else %}
-        {{ case.madeline_info|safe }}
-      {% endif %}
+      {{ case.madeline_info|safe }}
     </div>
   </div>
 {% endmacro %}
