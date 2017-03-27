@@ -145,6 +145,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['clinsig_human'] = clinsig_human(variant_obj)
     variant_obj['thousandg_link'] = thousandg_link(variant_obj)
     variant_obj['exac_link'] = exac_link(variant_obj)
+    variant_obj['ucsc_link'] = ucsc_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['incomplete_penetrance'] = incomplete_penetrance(variant_obj)
@@ -198,6 +199,16 @@ def parse_gene(gene_obj):
     gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
     gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
                                "section.pl?identifier={}".format(ensembl_id))
+    gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gquery/?term={}"
+                               .format(gene_obj['common']['entrez_id']))
+
+    reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
+                     "&species=Entries+without+species&cluster=true".format(ensembl_id))
+    gene_obj['reactome_link'] = reactome_link
+    expression_link = ("https://www.ebi.ac.uk/gxa/genes/{}?bs=%7B%22homo+sapiens%22%3A%7B%22"
+                       "CELL_LINE%22%3Atrue%2C%22ORGANISM_PART%22%3Atrue%7D%7D&ds=%7B%22"
+                       "species%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D".format(ensembl_id))
+    gene_obj['expression_atlas_link'] = expression_link
     for tx_obj in gene_obj['transcripts']:
         parse_transcript(gene_obj, tx_obj)
 
@@ -206,7 +217,7 @@ def parse_transcript(gene_obj, tx_obj):
     """Parse variant gene transcript (VEP)."""
     ensembl_tx_id = tx_obj['transcript_id']
     tx_obj['ensembl_link'] = ("http://grch37.ensembl.org/Homo_sapiens/"
-                                      "Gene/Summary?t={}".format(ensembl_tx_id))
+                              "Gene/Summary?t={}".format(ensembl_tx_id))
 
     tx_obj['refseq_links'] = [{
         'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
@@ -289,6 +300,14 @@ def exac_link(variant_obj):
     url_template = ("http://exac.broadinstitute.org/variant/"
                     "{this[chromosome]}-{this[position]}-{this[reference]}"
                     "-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def ucsc_link(variant_obj):
+    """Compose link to UCSC."""
+    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+                    "position=chr{this[chromosome]}:{this[position]}"
+                    "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
     return url_template.format(this=variant_obj)
 
 

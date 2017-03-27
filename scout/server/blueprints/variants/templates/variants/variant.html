@@ -332,7 +332,7 @@
     </table>
     <ul class="list-group">
       <li class="list-group-item">
-        CLINSIG
+        CLSIG
         <span class="pull-right">
           {% for clinsig, human_str in variant.clnsig_human %}
             <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clinsig.accession }}" target="_blank">
@@ -931,10 +931,10 @@
           <a href="{{ gene.hpa_link }}" class="btn btn-default" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-default" target="_blank">STRING</a>
           <a href="{{ variant.ucsc_link }}" class="btn btn-default" target="_blank">UCSC</a>
-          <a href="{{ gene.common.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
+          <a href="{{ gene.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
           <a href="http://tools.genes.toronto.edu/" class="btn btn-default" target="_blank">SPANR</a>
-          <a href="{{ gene.common.reactome_link }}" class="btn btn-default" target="_blank">Reactome</a>
-          <a href="{{ gene.common.expression_atlas_link }}" class="btn btn-default" target="_blank">Expr. Atlas</a>
+          <a href="{{ gene.reactome_link }}" class="btn btn-default" target="_blank">Reactome</a>
+          <a href="{{ gene.expression_atlas_link }}" class="btn btn-default" target="_blank">Expr. Atlas</a>
         </div>
       </div>
       <div class="panel-body">
