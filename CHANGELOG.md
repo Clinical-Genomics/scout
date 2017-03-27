@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0]
+### Fixed
+- hide pedigree panel unless it exists
+
 ## [1.5.1] - 2016-07-27
 ### Fixed
 - look for both ".bam.bai" and ".bai" extensions

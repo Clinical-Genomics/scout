@@ -39,9 +39,11 @@ def sv_variants(store, institute_id, case_name, page, variant_type, per_page=50)
     return dict(
         institute=institute_obj,
         case=case_obj,
-        variants=(parse_variant(variant) for variant in variants_query),
+        variants=(parse_variant(variant) for variant in
+                  variants_query.skip(skip_count).limit(per_page)),
         more_variants=more_variants,
         query=query,
+        page=page,
     )
 
 

@@ -161,7 +161,7 @@
             <tr>
               <td>
                 <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">
-                  {{ gene.hgnc_symbol }}
+                  {{ gene.common.hgnc_symbol }}
                 </a>
               </td>
               <td>
@@ -173,9 +173,9 @@
               <td>{{ gene.functional_annotation }}</td>
               <td>{{ gene.common.description|replace('_', ' ') }}</td>
               <td>
-                {% if gene.omim_id %}
-                  <a href="http://omim.org/entry/{{ gene.omim_id }}">
-                    {{ gene.omim_id }}
+                {% if gene.common.omim_id %}
+                  <a href="http://omim.org/entry/{{ gene.omim.omim_id }}">
+                    {{ gene.omim.omim_id }}
                   </a>
                 {% endif %}
               </td>
