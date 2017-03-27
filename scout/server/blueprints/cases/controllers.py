@@ -66,7 +66,8 @@ def case(store, institute_obj, case_obj):
 
     # other collaborators than the owner of the case
     case_obj['o_collaborators'] = [collab_id for collab_id in
-                                   case_obj['collaborators'] if collab_id != ['owner']]
+                                   case_obj['collaborators'] if
+                                   collab_id != case_obj['owner']]
 
     irrelevant_ids = ('cust000', institute_obj['_id'])
     collab_ids = [collab['_id'] for collab in store.institutes() if
