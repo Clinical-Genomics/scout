@@ -37,7 +37,7 @@ class UserHandler(object):
     def user(self, email=None):
         """Fetch a user from the database."""
         logger.info("Fetching user %s", email)
-        user_obj = self.user_collection.find_one({'email': email})
+        user_obj = self.user_collection.find_one({'_id': email})
 
         # if user_obj:
         #     institutes = []
