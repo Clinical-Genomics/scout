@@ -59,22 +59,53 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort('updated_at', -1)
 
-    def update_dynamic_gene_list(self, case, gene_list):
+    def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None, build='37'):
         """Update the dynamic gene list for a case
+        
+        Adds a list of dictionaries to case['dynamic_gene_list'] that looks like
+        
+        {
+            hgnc_symbol: str,
+            hgnc_id: int,
+            description: str
+        }
 
         Arguments:
             case (dict): The case that should be updated
-            gene_list (list): The list of genes that should be added
+            hgnc_symbols (iterable): A list of hgnc_symbols
+            hgnc_symbols (iterable): A list of hgnc_symbols
 
         Returns:
             updated_case(dict)
         """
+        dynamic_gene_list = []
+        if hgnc_ids:
+            logger.info("Fetching genes by hgnc id")
+            res = self.hgnc_collection.find(
+                {'hgnc_id': { '$in': hgnc_ids }, 'build':build }
+            )
+        elif hgnc_symbols:
+            logger.info("Fetching genes by hgnc symbols")
+            res = []
+            for symbol in hgnc_symbols:
+                for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
+                    res.append(res)
+        
+        for gene_obj in res:
+            dynamic_gene_list.append(
+                {
+                    'hgnc_symbol': gene_obj['hgnc_symbol'],
+                    'hgnc_id': gene_obj['hgnc_id'],
+                    'description': gene_obj['description'],
+                }
+            )
+
         logger.info("Updating the dynamic gene list for case {0}".format(
                     case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$set': {'dynamic_gene_list': gene_list}},
+            {'$set': {'dynamic_gene_list': dynamic_gene_list}},
             return_document = pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
