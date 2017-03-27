@@ -43,19 +43,11 @@ class EventHandler(object):
             content (str): The content of the comment
         """
         variant = variant or {}
-        user_obj = self.user(email=user['_id'])
-        if not user_obj:
-            logger.warning("User %s not found", user['_id'])
-            ##TODO raise exception here?
-            user_name = None
-        else:
-            user_name = user_obj['name']
-
         event = dict(
             institute=institute['_id'],
             case=case['_id'],
             user_id=user['_id'],
-            user_name=user_name,
+            user_name=user['name'],
             link=link,
             category=category,
             verb=verb,
