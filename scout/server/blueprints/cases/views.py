@@ -2,7 +2,7 @@
 import os.path
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, Response, send_from_directory, jsonify)
+                   request, url_for, send_from_directory, jsonify)
 from flask_login import current_user
 
 from scout.server.extensions import store, mail
