@@ -153,7 +153,7 @@
       {{ (variant.polyphen_predictions or ['-'])|join(',') }}
     </div>
   ">
-    {{ variant.cadd_score or '-' }}
+    {{ variant.cadd_score }}
   </div>
 {% endmacro %}
 
@@ -267,7 +267,7 @@
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({
-        container: 'body'
+        container: 'body',
       });
 
       $('table').stickyTableHeaders({

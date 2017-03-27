@@ -173,7 +173,8 @@ def variant(store, institute_obj, case_obj, variant_id):
         'causatives': other_causatives,
         'comments': comments,
         'events': events,
-        'overlapping_svs': store.overlapping(variant_obj),
+        'overlapping_svs': (parse_variant(variant_obj) for variant_obj in
+                            store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'observations': observations,
     }
@@ -307,7 +308,7 @@ def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
     all_models = set()
     for gene in variant_obj['genes']:
-        for model in gene['common']['inheritance_models']:
+        for model in gene['common'].get('inheritance_models', []):
             all_models.add(model)
     return list(all_models)
 
