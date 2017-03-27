@@ -376,7 +376,7 @@ class EventHandler(object):
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
 
-            phenotype_id = hpo_obj['hpo_id']
+            phenotype_id = hpo_obj['_id']
             description = hpo_obj['description']
             if phenotype_id not in existing_terms:
                 phenotype_term = dict(phenotype_id=phenotype_id, feature=description)

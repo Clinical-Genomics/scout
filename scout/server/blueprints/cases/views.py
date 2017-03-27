@@ -81,7 +81,7 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                                phenotype_id, is_group=is_group)
     else:
         try:
-            # add a new phenotype item/group to the casa
+            # add a new phenotype item/group to the case
             phenotype_term = request.form['hpo_term']
             if phenotype_term.startswith('HP:') or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(' | ', 1)[0]
