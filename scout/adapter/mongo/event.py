@@ -5,7 +5,6 @@ from bson import ObjectId
 import pymongo
 import phizz
 
-from scout.models.event import VERBS_MAP
 from scout.constants import CASE_STATUSES
 
 logger = logging.getLogger(__name__)
@@ -54,7 +53,7 @@ class EventHandler(object):
 
         event = dict(
             institute=institute['_id'],
-            case=case['case_id'],
+            case=case['_id'],
             user_id=user['_id'],
             user_name=user_name,
             link=link,
