@@ -76,6 +76,11 @@
           {{ case_row(case) }}
         {% endfor %}
       {% endfor %}
+      {% if found_cases == 0 %}
+        <tr>
+          <td colspan="5">No cases found.</td>
+        </tr>
+      {% endif %}
     </tbody>
   </table>
 {% endmacro %}

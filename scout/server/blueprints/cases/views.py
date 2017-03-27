@@ -28,8 +28,7 @@ def cases(institute_id):
     institute_obj = institute_and_case(store, institute_id)
     query = request.args.get('query')
     skip_assigned = request.args.get('skip_assigned')
-    all_cases = store.cases(institute_id, name_query=query,
-                            skip_assigned=skip_assigned)
+    all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases)
     return dict(institute=institute_obj, skip_assigned=skip_assigned, **data)
 
