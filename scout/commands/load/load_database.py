@@ -13,17 +13,17 @@ import logging
 
 import click
 
-from scout.commands.case import case as case_command
-from scout.commands.load_institute import institute as institute_command
-from scout.commands.load_hpo import hpo as hpo_command
-from scout.commands.load_genes import genes as genes_command
-from scout.commands.load_panel import panel as panel_command
-from scout.commands.load_research import research as research_command
+from .case import case as case_command
+
+from .institute import institute as institute_command
+from .hpo import hpo as hpo_command
+from .genes import genes as genes_command
+from .panel import panel as panel_command
+from .research import research as research_command
 
 from scout.load.all import load_region
 
 log = logging.getLogger(__name__)
-
 
 @click.command('region', short_help='Load variants from region')
 @click.option('--hgnc-id', type=int,

@@ -4,7 +4,7 @@ import click
 
 from pprint import pprint as pp
 
-from scout.commands.case import cases
+from .case import cases
 
 logger = logging.getLogger(__name__)
 

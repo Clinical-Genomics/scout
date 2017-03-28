@@ -2,20 +2,18 @@ import logging
 
 import click
 
-from scout.commands.case import cases
-
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 # @click.command('panels', short_help='Display gene panels')
 # @click.pass_context
 # def panels(context):
 #     """Show all gene panels in the database"""
-#     logger.info("Running scout view panels")
+#     log.info("Running scout view panels")
 #     adapter = context.obj['adapter']
 #
 #     panel_objs = adapter.gene_panel()
 #     if panel_objs.count() == 0:
-#         logger.info("No panels found")
+#         log.info("No panels found")
 #     else:
 #         click.echo("panel_name\tversion\tnr_genes")
 #
@@ -30,7 +28,7 @@ logger = logging.getLogger(__name__)
 # @click.pass_context
 # def users(context):
 #     """Show all users in the database"""
-#     logger.info("Running scout view users")
+#     log.info("Running scout view users")
 #     adapter = context.obj['adapter']
 #
 #     ## TODO add a User interface to the adapter
@@ -41,7 +39,7 @@ logger = logging.getLogger(__name__)
 # @click.pass_context
 # def institutes(context):
 #     """Show all institutes in the database"""
-#     logger.info("Running scout view institutes")
+#     log.info("Running scout view institutes")
 #     adapter = context.obj['adapter']
 #
 #     for institute_obj in adapter.institutes():
@@ -52,13 +50,13 @@ logger = logging.getLogger(__name__)
 @click.pass_context
 def genes(context, build):
     """Delete all genes in the database"""
-    logger.info("Running scout delete genes")
+    log.info("Running scout delete genes")
     adapter = context.obj['adapter']
     
     if build:
-        logger.info("Dropping genes collection for build: %s", build)
+        log.info("Dropping genes collection for build: %s", build)
     else:
-        logger.info("Dropping genes collection")
+        log.info("Dropping genes collection")
         adapter.drop_genes()
 
 @click.command('case', short_help='Delete a case')
@@ -81,7 +79,7 @@ def case(context, institute, case_id, display_name):
             context.abort()
         case_id = "{0}-{1}".format(institute, display_name)
 
-    logger.info("Running deleting case {0}".format(case_id))
+    log.info("Running deleting case {0}".format(case_id))
 
     case = adapter.delete_case(
         case_id=case_id,
@@ -93,14 +91,14 @@ def case(context, institute, case_id, display_name):
         adapter.delete_variants(case_id=case_id, variant_type='clinical')
         adapter.delete_variants(case_id=case_id, variant_type='research')
     else:
-        logger.warning("Case does not exist in database")
+        log.warning("Case does not exist in database")
         context.abort()
 
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context
 # def diseases(context):
 #     """Show all diseases in the database"""
-#     logger.info("Running scout view diseases")
+#     log.info("Running scout view diseases")
 #     adapter = context.obj['adapter']
 #
 #     click.echo("Disease")
@@ -114,7 +112,7 @@ def case(context, institute, case_id, display_name):
 # @click.pass_context
 # def hpo(context):
 #     """Show all hpo terms in the database"""
-#     logger.info("Running scout view hpo")
+#     log.info("Running scout view hpo")
 #     adapter = context.obj['adapter']
 #
 #     click.echo("hpo_id\tdescription")

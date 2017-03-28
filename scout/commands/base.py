@@ -14,18 +14,18 @@ from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 from scout import __version__
 
 # Commands
-from scout.commands.load_database import load
+from scout.commands.load import load as load_command
 from scout.commands.export import export
 from scout.commands.wipe_database import wipe
 from scout.commands.transfer import transfer
-from scout.commands.init import init as init_command
+from scout.commands.setup import setup as setup_command
 from scout.commands.convert import convert
-from scout.commands.query_genes import hgnc_query
+from scout.commands.query import query as query_command
 from scout.commands.view import view as view_command
 from scout.commands.delete import delete
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 @click.group()
@@ -62,63 +62,65 @@ logger = logging.getLogger(__name__)
 )
 @click.version_option(__version__)
 @click.pass_context
-def cli(ctx, mongodb, username, password, host, port, logfile, loglevel,
+def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         config):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(log_level=loglevel)
-    logger.info("Running scout version %s", __version__)
+    log.info("Running scout version %s", __version__)
 
     mongo_configs = {}
     configs = {}
     if config:
-        logger.debug("Use config file {0}".format(config))
+        log.debug("Use config file {0}".format(config))
         with open(config, 'r') as in_handle:
             configs = yaml.load(in_handle)
 
     mongo_configs['mongodb'] = (mongodb or configs.get('mongodb'))
-    logger.debug("Setting database name to %s", mongo_configs['mongodb'])
+    log.debug("Setting database name to %s", mongo_configs['mongodb'])
 
     mongo_configs['host'] = (host or configs.get('host'))
-    logger.debug("Setting host to {0}".format(mongo_configs['host']))
+    log.debug("Setting host to {0}".format(mongo_configs['host']))
 
     mongo_configs['port'] = (port or configs.get('port'))
-    logger.debug("Setting port to {0}".format(mongo_configs['port']))
+    log.debug("Setting port to {0}".format(mongo_configs['port']))
 
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
+    mongo_configs['adapter'] = None
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
-    try:
-        client = get_connection(
-                    host=mongo_configs['host'],
-                    port=mongo_configs['port'],
-                    username=mongo_configs['username'],
-                    password=mongo_configs['password'],
-                )
-    except ConnectionFailure:
-        ctx.abort()
+    if not context.invoked_subcommand == 'setup':
+        try:
+            client = get_connection(
+                        host=mongo_configs['host'],
+                        port=mongo_configs['port'],
+                        username=mongo_configs['username'],
+                        password=mongo_configs['password'],
+                    )
+        except ConnectionFailure:
+            context.abort()
+        
+        database = client[mongo_configs['mongodb']]
+        log.info("Test if mongod is running")
+        try:
+            database.test.find_one()
+        except ServerSelectionTimeoutError as err:
+            log.warning("Connection could not be established")
+            context.abort()
 
-    logger.info('Use database %s', mongo_configs['mongodb'])
-    database = client[mongo_configs['mongodb']]
-    logger.info("Test if mongod is running")
-    try:
-        database.test.find_one()
-    except ServerSelectionTimeoutError as err:
-        logger.warning("Connection could not be established")
-        ctx.abort()
-
-    logger.info("Setting up a mongo adapter")
-    mongo_adapter = MongoAdapter(database)
-    mongo_configs['adapter'] = mongo_adapter
-    ctx.obj = mongo_configs
+        log.info("Setting up a mongo adapter")
+        mongo_adapter = MongoAdapter(database)
+        mongo_configs['adapter'] = mongo_adapter
+    
+    context.obj = mongo_configs
 
 
-cli.add_command(load)
+cli.add_command(load_command)
 cli.add_command(transfer)
 cli.add_command(wipe)
-cli.add_command(init_command)
+cli.add_command(setup_command)
 cli.add_command(export)
 cli.add_command(convert)
-cli.add_command(hgnc_query)
+cli.add_command(query_command)
 cli.add_command(view_command)
 cli.add_command(delete)

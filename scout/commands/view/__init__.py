@@ -1,0 +1,1 @@
+from .view_command import view
