@@ -1,0 +1,32 @@
+{% extends "genes/layout.html" %}
+
+{% block title %}
+  {{ super() }} - Genes
+{% endblock %}
+
+{% block top_nav %}
+  <li class="active">
+    <p class="navbar-text">Genes</p>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  {{ super() }}
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Genes</div>
+        <ul class="list-group">
+          {% for gene in genes %}
+            <li class="list-group-item">
+              <a href="{{ url_for('genes.gene', hgnc_symbol=gene.hgnc_id) }}">
+                {{ gene.hgnc_symbol }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

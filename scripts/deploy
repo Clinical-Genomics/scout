@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-fab -f ./scripts/fabfile.py -H aws-scout update

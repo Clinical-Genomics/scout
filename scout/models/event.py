@@ -38,8 +38,6 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 
-from mongoengine import (DateTimeField, Document, ReferenceField, StringField)
-
 VERBS_MAP = {
   "assign": "was assigned to",
   "unassign": "was unassigned from",
@@ -68,48 +66,31 @@ VERBS_MAP = {
 
 VERBS = list(VERBS_MAP.keys())
 
+event = dict(
+    # an event will allways belong to a institute and a case
+    institute = str, # Institute _id, required
+    case = str, # case_id, required
+    link = str, # url link, required
+    # All events has to have a category
+    category = str, # choices = ('case', 'variant', 'panel'), required
 
-class Event(Document):
+    # All events will have an author
+    user_id = str, # user email, required
+    user_name = str, # user name
+    # Subject is the string that will be displayed after 'display_info'
+    subject = str, # case 23 or 1_2343_A_C, required
 
-  """Embedded model for defining a general user generated event."""
+    verb = str, # choices=VERBS
+    level = str, # choices=('global', 'specific', 'internal'), default='specific'
 
-  meta = {'strict': False}
+    # An event can belong to a variant. This is the id that looks like 1_34253_A_C.
+    variant_id = str, # A variant id
+    panel_name = str, # A gene panel
+    # This is the content of a comment
+    content = str,
 
-  # an event will allways belong to a institute and a case
-  institute = ReferenceField('Institute', required=True)
-  case = ReferenceField('Case', required=True)
-  # All events will have url links
-  link = StringField()
-  # All events has to have a category
-  category = StringField(choices=('case', 'variant'), required=True)
+    # timestamps
+    created_at = datetime, # default=datetime.now
+    updated_at = datetime, # default=datetime.now
+)
 
-  # All events will have an author
-  author = ReferenceField('User', required=True)
-  # Subject is the string that will be displayed after 'display_info'
-  subject = StringField(required=True) # case 23 or 1_2343_A_C
-
-  verb = StringField(choices=VERBS)
-  level = StringField(choices=('global', 'specific', 'internal'), default='specific')
-
-  # An event can belong to a variant. This is the id that looks like 1_34253_A_C.
-  variant_id = StringField()
-  # This is the content of a comment
-  content = StringField()
-
-  # timestamps
-  created_at = DateTimeField(default=datetime.now)
-  updated_at = DateTimeField(default=datetime.now)
-
-  @property
-  def display_info(self):
-    """
-    Return the string that should be displayed based on the keyword
-    """
-    return VERBS_MAP.get(self.verb, "")
-
-  @property
-  def is_edited(self):
-    """
-    Find out if the event has been edited.
-    """
-    return self.created_at == self.updated_at

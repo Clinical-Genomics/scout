@@ -39,9 +39,9 @@ def parse_hgnc_line(line, header):
 
         omim_id = raw_info.get('omim_id')
         if omim_id:
-            hgnc_gene['omim_ids'] = omim_id.strip('"').split('|')
+            hgnc_gene['omim_id'] = int(omim_id.strip('"').split('|')[0])
         else:
-            hgnc_gene['omim_ids'] = []
+            hgnc_gene['omim_id'] = None
 
         entrez_id = hgnc_gene['entrez_id'] = raw_info.get('entrez_id')
         if entrez_id:

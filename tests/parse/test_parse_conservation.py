@@ -1,4 +1,4 @@
-from scout.parse.conservation import (parse_conservation, parse_conservations)
+from scout.parse.variant.conservation import (parse_conservation, parse_conservations)
 
 def test_parse_conservation():
     variant = {

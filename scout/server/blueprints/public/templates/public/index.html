@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block content_main %}
+  <header class="jumbotron">
+    <h1>Scout</h1>
+    <p>Analyze VCFs quicker and easier</p>
+    <p>
+      Scout allows you to browse VCFs in a web browser, identify
+      compound pairs, and solve cases as a team.
+    </p>
+
+    <p><small>Version <strong>{{ version }}</strong></small></p>
+
+    {% if current_user.is_authenticated %}
+      <p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('cases.index') }}">
+          Welcome <strong>{{ current_user.name }}!</strong>
+        </a>
+      </p>
+    {% else %}
+      {% if config.GOOGLE %}
+        <a class="btn btn-primary" href="{{ url_for('login.login') }}">
+          Login with Google
+        </a>
+      {% else %}
+        <form action="{{ url_for('login.login') }}">
+          <div class="row">
+            <div class="col-xs-8">
+              <input type="text" placeholder="email" class="form-control" name="email">
+            </div>
+            <div class="col-xs-4">
+              <button type="submit" class="btn btn-primary form-control">Login</button>
+            </div>
+          </div>
+        </form>
+      {% endif %}
+    {% endif %}
+  </header>
+  <main>
+    <div class="row">
+      <div class="col-xs-12 col-sm-4">
+        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-scilifelab.png') }}">
+      </div>
+      <div class="col-xs-12 col-sm-4">
+        <img class="img-responsive center-block" width="125" src="{{ url_for('public.static', filename='swedac.png') }}">
+      </div>
+      <div class="col-xs-12 col-sm-4">
+        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-karolinska.png') }}">
+      </div>
+    </div>
+  </main>
+{% endblock %}

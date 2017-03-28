@@ -1,4 +1,4 @@
-from scout.parse.genotype import (parse_genotypes, parse_genotype)
+from scout.parse.variant.genotype import (parse_genotypes, parse_genotype)
 
 def test_parse_genotype(variants):
     for variant in variants:

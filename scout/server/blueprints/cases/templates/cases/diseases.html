@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - Select diseases
+{% endblock %}
+
+{% block content_main %}
+  <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <button name="action" value="GENES" type="submit" class="btn btn-primary form-control">Select</button>
+      </div>
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>P value</th>
+            <th>Disease</th>
+            <th>Description</th>
+            <th>Genes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for disease in diseases %}
+            <tr>
+              <td>
+                <div class="checkbox"><label>
+                  <input name="genes" type="checkbox" value="{{ disease.gene_symbols|join('|') }}"></label>
+                </div>
+              </td>
+              <td>{{ disease.p_value }}</td>
+              <td>
+                <a href="http://omim.org/entry/{{ disease.disease_nr }}" target="_blank">
+                  {{ disease.disease_source }}:{{ disease.disease_nr }}
+                </a>
+              </td>
+              <td>{{ disease.description }}</td>
+              <td>{{ disease.gene_symbols|join(', ') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="panel-footer">
+        <button name="action" value="GENES" type="submit" class="btn btn-primary form-control">Select</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}

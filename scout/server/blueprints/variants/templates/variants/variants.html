@@ -1,0 +1,282 @@
+{% extends "layout.html" %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "utils.html" import flash_messages %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant_type|capitalize }} variants
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">{{ variant_type|capitalize }} SNV variants</span>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  <li><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">HPO panels <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li>
+        <a href="{{ url_for('variants.variants', institute_id=institute._id,
+                            case_name=case.display_name, variant_type=variant_type,
+                            gene_panels=['hpo']) }}">
+          HPO gene list
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
+  </li>
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid main">
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+              Filters
+            </a>
+          </h4>
+        </div>
+        <div id="collapseFilters" class="panel-collapse collapse">
+          <div class="panel-body">{{ filters_form() }}</div>
+        </div>
+      </div>
+    </div>
+    {{ flash_messages() }}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th class="col-xs-1" title="Rank position">Rank</th>
+          <th title="Rank score">Score</th>
+          <th title="Chromosome">Chr.</th>
+          <th title="HGNC symbols" class="col-xs-2">Gene</th>
+          <th title="1000 Genomes">1000G</th>
+          <th title="CADD score">CADD</th>
+          <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
+          <th class="col-xs-3" title="Functional annotation">Func. annotation</th>
+          <th class="col-xs-3" title="Inheritance models">Inheritance model</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in variants %}
+          <tr>
+            <td>{{ cell_rank(variant) }}</td>
+            <td class="text-right">{{ variant.rank_score|int }}</td>
+            <td>{{ variant.chromosome }}</td>
+            <td>{{ cell_gene(variant) }}</td>
+            <td class="text-right">{{ cell_1000g(variant) }}</td>
+            <td class="text-right">{{ cell_cadd(variant) }}</td>
+            <td>{{ variant.region_annotations|join(', ') }}</td>
+            <td>{{ variant.functional_annotations|join(', ') }}</td>
+            <td>{{ cell_models(variant) }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="{{ 10 if variant_type == 'clinical' else 9 }}">
+              No matching variants
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {{ footer() }}
+  </div>
+{% endblock %}
+
+{% macro cell_rank(variant) %}
+  <a class="variants-row-item flex-small layout"
+     href="{{ url_for('variants.variant',
+                      institute_id=institute._id,
+                      case_name=case.display_name,
+                      variant_id=variant._id) }}">
+    {{ variant.variant_rank }}
+  </a>
+  {% if variant.manual_rank %}
+    <span class="badge pull-right">{{ variant.manual_rank }}</span>
+  {% elif variant.has_comments %}
+    <!-- At least show if there are any comments written -->
+    <span class="badge pull-right">*</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro cell_gene(variant) %}
+  {% for gene in variant.genes %}
+    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+      {{ gene.hgnc_symbol or gene.hgnc_id }}
+    </a>
+  {% endfor %}
+{% endmacro %}
+
+{% macro cell_1000g(variant) %}
+  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class='text-left'>
+      <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }} <br>
+      <strong>ExAC</strong>
+      {{ variant.exac_frequency|human_decimal if variant.exac_frequency }} <br>
+      <strong>ExAC (max)</strong>
+      {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
+    </div>
+  ">
+    {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
+  </div>
+{% endmacro %}
+
+{% macro cell_cadd(variant) %}
+  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class='text-left'>
+      <strong>Sift</strong>
+      {{ variant.sift_predictions|join(',') }} <br>
+      <strong>PolyPhen</strong>
+      {{ (variant.polyphen_predictions or ['-'])|join(',') }}
+    </div>
+  ">
+    {{ variant.cadd_score }}
+  </div>
+{% endmacro %}
+
+{% macro cell_models(variant) %}
+  {% for model in (variant.genetic_models or []) %}
+    <div class="label label-default">{{ model }}</div>
+  {% endfor %}
+
+  {% if variant.compounds %}
+    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute._id, case.display_name, variant.compounds) }}">Compounds</a>
+  {% endif %}
+{% endmacro %}
+
+{% macro footer() %}
+  <div class="container-fluid">
+    <div class="form-group text-center">
+      {% if more_variants %}
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, page=(page + 1), **form.data) }}">
+          Next page
+        </a>
+      {% else %}
+        <i class="text-muted">No more variants to display</i>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro filters_form() %}
+  <form method="GET">
+    <input type="hidden" name="variant_type" value="{{ variant_type }}">
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.region_annotations.label(class="control-label") }}
+          {{ form.region_annotations(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.functional_annotations.label(class="control-label") }}
+          {{ form.functional_annotations(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.genetic_models.label(class="control-label") }}
+          {{ form.genetic_models(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.hgnc_symbols.label(class="control-label") }}
+          {{ form.hgnc_symbols(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.cadd_score.label(class="control-label") }}
+          {{ form.cadd_score(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.cadd_inclusive.label(class="control-label") }}
+          <div>{{ form.cadd_inclusive() }}</div>
+        </div>
+        <div class="col-xs-3">
+          {{ form.clinsig.label(class="control-label") }}
+          {{ form.clinsig(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.thousand_genomes_frequency.label(class="control-label") }}
+          {{ form.thousand_genomes_frequency(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.exac_frequency.label(class="control-label") }}
+          {{ form.exac_frequency(class="form-control") }}
+        </div>
+        <div class="col-xs-6">
+          <label class="control-label">Submit</label>
+          <div class="row">
+            <div class="col-xs-6">
+              <button class="btn btn-primary form-control">Filter variants</button>
+            </div>
+            <div class="col-xs-6">
+              <a href="{{ url_for('variants.variants', institute_id=institute._id,
+                          case_name=case.display_name, variant_type=variant_type,
+                          functional_annotations=severe_so_terms,
+                          region_annotations=['exonic', 'splicing'],
+                          thousand_genomes_frequency=institute.frequency_cutoff,
+                          gene_panels=form.data.get('gene_panels')) }}"
+                 class="btn btn-default form-control">
+                Clinical filter
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        container: 'body',
+      });
+
+      $('table').stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
+    })
+  </script>
+{% endblock %}

@@ -28,7 +28,7 @@ addons:
             - mongodb-org-server
 
 install:
-    - pip install -r requirements.txt .
+    - pip install -r requirements.txt -r requirements-dev.txt -e .
     # - mongo --version
 
 notifications:

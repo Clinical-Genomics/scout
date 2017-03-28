@@ -1,15 +1,25 @@
-from scout.models import GTCall
 
 def build_genotype(gt_call):
-    """Build a mongoengine GTCall
+    """Build a genotype call
     
-        Args:
-            gt_call(dict)
-        
-        Returns:
-            gt_obj(GTCall): A mongoengine genotype call
+    Args:
+        gt_call(dict)
+    
+    Returns:
+        gt_obj(dict)
+    
+    gt_call = dict(
+        sample_id = str,
+        display_name = str,
+        genotype_call = str,
+        allele_depths = list, # int
+        read_depth = int,
+        genotype_quality = int,
+    )
+    
+    
     """
-    gt_obj = GTCall(
+    gt_obj = dict(
         sample_id = gt_call['individual_id'],
         display_name = gt_call['display_name'],
         genotype_call = gt_call['genotype_call'],

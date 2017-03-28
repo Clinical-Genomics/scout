@@ -1,17 +1,16 @@
-from scout.models import PhenotypeTerm
 
-def build_phenotype(phenotype):
-    """Build a mongoengine PhenotypeTerm object
+def build_phenotype(phenotype_info):
+    """Build a phenotype term object
     
         Args:
             phenotype(dict)
     
         Returns:
-            phenotype_obj(PheotypeTerm)
+            phenotype_obj(dict)
     """
-    phenotype_obj = PhenotypeTerm(
-        phenotype_id = phenotype['phenotype_id'],
-        disease_models = phenotype['disease_models']
+    phenotype_obj = dict(
+        phenotype_id = phenotype_info['phenotype_id'],
+        disease_models = phenotype_info['disease_models']
     )
     
     return phenotype_obj

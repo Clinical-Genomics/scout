@@ -1,0 +1,1 @@
+from .query_command import query

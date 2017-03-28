@@ -1,4 +1,4 @@
-from scout.parse.callers import parse_callers
+from scout.parse.variant.callers import parse_callers
 
 def test_parse_callers():
     # GIVEN information that gatk and freebayes have passed

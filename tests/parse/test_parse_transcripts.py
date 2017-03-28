@@ -1,6 +1,7 @@
-from scout.parse.transcript import parse_transcripts
+from scout.parse.variant.transcript import parse_transcripts
 
 def test_parse_transcripts():
+    ## GIVEN some transcript information and a vep header
     csq_entry = "C|missense_variant|MODERATE|POC1A|ENSG00000164087|"\
     "Transcript|ENST00000296484|protein_coding|4/11||ENST00000296484.2"\
     ":c.322A>G|ENSP00000296484.2:p.Ser108Gly|362|322|108|S/G|Agt/Ggt"\
@@ -44,9 +45,30 @@ def test_parse_transcripts():
         'vep_info': csq_info,
         }
     
-    
+    ## WHEN parsing the transcript
     transcripts = parse_transcripts(variant)
     for transcript in transcripts:
+    ## THEN assert that some information was correct
         if transcript['transcript_id'] == 'ENST00000296484':
             assert transcript['sift_prediction'] == 'deleterious'
             assert transcript['functional_annotations'] == ['missense_variant']
+
+def test_parse_functional_annotation():
+    csq_header = "Allele|Consequence"
+    csq_entry = "C|missense_variant"
+    
+    transcript_info = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+                            for entry in csq_entry.split(',')]
+    
+    csq_info = {'C':transcript_info}
+    
+    
+    variant = {
+        'ALT': 'C',
+        'vep_info': csq_info,
+        }
+    
+    transcripts = parse_transcripts(variant)
+    
+    for transcript in transcripts:
+        assert transcript['functional_annotations'] == ['missense_variant']

@@ -1,4 +1,4 @@
-from scout.parse.frequency import parse_frequency, parse_frequencies
+from scout.parse.variant.frequency import parse_frequency, parse_frequencies
 
 def test_parse_frequency():
     # GIVEN a variant dict with a frequency in info_dict
