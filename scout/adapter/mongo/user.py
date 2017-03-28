@@ -4,12 +4,20 @@ import datetime
 
 import pymongo
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 class UserHandler(object):
 
     def update_user(self, user_obj):
-        """Update an existing user."""
+        """Update an existing user.
+        
+        
+            Args:
+                user_obj(dict)
+        
+            Returns:
+                updated_user(dict)
+        """
         updated_user = self.user_collection.find_one_and_update(
             {'_id': user_obj['_id']},
             {'$set': user_obj},
@@ -17,53 +25,56 @@ class UserHandler(object):
         )
         return updated_user
 
-    def add_user(self, user_obj):
+    def add_user(self, user_info):
         """Add a user object to the database
 
             Args:
-                user_obj(dict): A dictionary with user information
+                user_info(dict): A dictionary with user information
+        
+            Returns:
+                user_info(dict): a copy of what was inserted
         """
-        logger.info("Adding user to the database")
-        user_obj['_id'] = user_obj['email']
-        user_obj['created_at'] = datetime.datetime.now()
-        self.user_collection.insert_one(user_obj)
-        logger.debug("User inserted")
-        return user_obj
+        log.info("Adding user to the database")
+        if not '_id' in user_info:
+            user_info['_id'] = user_obj['email']
+    
+        user_info['created_at'] = datetime.datetime.now()
 
-    def users(self):
-        """Return all users from the database"""
-        return self.user_collection.find()
+        self.user_collection.insert_one(user_info)
+        log.debug("User inserted")
 
-    def user(self, email=None):
-        """Fetch a user from the database."""
-        logger.info("Fetching user %s", email)
+        return user_info
+
+    def users(self, institute=None):
+        """Return all users from the database
+        
+            Args:
+                institute(str): A institute_id
+        
+            Returns:
+                res(pymongo.Cursor): A cursor with users
+        """
+        query = {}
+        if institute:
+            log.info("Fetching all users from institute %s", institute)
+            query = {'institutes': {'$in': [institute]}}
+        else:
+            log.info("Fetching all users")
+            
+        res = self.user_collection.find(query)
+        return res
+
+    def user(self, email):
+        """Fetch a user from the database.
+        
+            Args:
+                email(str)
+        
+            Returns:
+                user_obj(dict)
+        """
+        log.info("Fetching user %s", email)
         user_obj = self.user_collection.find_one({'_id': email})
 
-        # if user_obj:
-        #     institutes = []
-        #     for institute_id in user_obj['institutes']:
-        #         institute_obj = self.institute(institute_id=institute_id)
-        #         if not institute_obj:
-        #             logger.warning("Institute %s not in database", institute_id)
-        #             ##TODO Raise exception here?
-        #         else:
-        #             institutes.append(institute_obj)
-        #     user_obj['institutes'] = institutes
-
         return user_obj
 
-    def add_whitelist(self, email, institutes):
-        """Add a whitelist object
-
-        Args:
-            email(str)
-            institutes(list)
-        """
-        logger.info("Adding whitelist %s to database", email)
-        whitelist_obj = dict(
-            _id= email,
-            email=email,
-            created_at=datetime.datetime.now(),
-            institutes=institutes
-        )
-        self.whitelist_collection.insert_one(whitelist_obj)

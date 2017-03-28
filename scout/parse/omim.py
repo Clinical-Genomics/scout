@@ -271,9 +271,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     for mim_nr in genes:
         gene_info = genes[mim_nr]
         hgnc_symbol = gene_info['hgnc_symbol']
-        if hgnc_symbol == "SLC2A1":
-            print("SLC2A1")
-            print(gene_info)
+        
         if hgnc_symbol in hgnc_genes:
             existing_info = hgnc_genes[hgnc_symbol]
             if not existing_info['phenotypes']:

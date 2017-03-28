@@ -19,7 +19,9 @@ from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 from scout.resources import (hgnc_path, exac_path, mim2gene_path,
                              genemap2_path, hpogenes_path, hpoterms_path,
                              hpodisease_path)
-from scout.resources import transcripts37_path as transcripts_path
+
+from scout.resources import transcripts37_path as transcripts37_path
+from scout.resources import transcripts38_path as transcripts38_path
 
 # Import the functions to setup scout
 from scout.build import build_institute
@@ -32,88 +34,93 @@ from scout.utils.link import link_genes
 log = logging.getLogger(__name__)
 
 @click.command('database', short_help='Setup a basic scout instance')
+@click.option('-i', '--institute-name', type=str)
+@click.option('-u', '--user-name', type=str)
+@click.option('-m', '--user-mail', type=str)
 @click.pass_context
-def database(context):
+def database(context, institute_name, user_name, user_mail):
     """Setup a scout database"""
     log.info("Running scout setup database")
-    pp(context.__dict__)
+    
+    institute_name = institute_name or context.obj['institute_name']
+    user_name = user_name or context.obj['user_name']
+    user_mail = user_mail or context.obj['user_mail']
     
     adapter = context.obj['adapter']
 
     log.info("Setting up database %s", context.obj['mongodb'])
-    context.abort()
     log.info("Deleting previous database")
     for collection_name in adapter.db.collection_names():
         log.info("Deleting collection %s", collection_name)
         adapter.db.drop_collection(collection_name)
     log.info("Database deleted")
 
+    # Build a institute with id institute_name
     institute_obj = build_institute(
         internal_id=institute_name,
         display_name=institute_name,
         sanger_recipients=[user_mail]
     )
-
+    
+    # Add the institute to database
     adapter.add_institute(institute_obj)
 
+    # Build a user obj
     user_obj = dict(
                 _id=user_mail,
                 email=user_mail,
                 name=user_name,
                 roles=['admin'],
-                institutes=[institute_name])
+                institutes=[institute_name]
+            )
+
     adapter.add_user(user_obj)
 
     # Load the genes and transcripts
-    log.info("Loading hgnc file from {0}".format(hgnc_path))
-    hgnc_handle = get_file_handle(hgnc_path)
+    hgnc_handle = context.obj['hgnc']
+    transcripts37_handle = context.obj['transcripts37']
+    transcripts38_handle = context.obj['transcripts38']
+    exac_handle = context.obj['exac']
+    hpo_genes_handle = context.obj['hpogenes']
+    mim2gene_handle = context.obj['mim2gene']
+    genemap_handle = context.obj['genemap2']
 
-    log.info("Loading ensembl transcript file from {0}".format(
-                transcripts_path))
-    transcripts_handle = get_file_handle(transcripts_path)
-
-    log.info("Loading exac gene file from {0}".format(
-                exac_path))
-    exac_handle = get_file_handle(exac_path)
-
-    log.info("Loading HPO gene file from {0}".format(
-                hpogenes_path))
-    hpo_genes_handle = get_file_handle(hpogenes_path)
-
-    log.info("Loading mim2gene file from {0}".format(
-                hpogenes_path))
-    mim2gene_handle = get_file_handle(mim2gene_path)
-
-    log.info("Loading genemap file from {0}".format(
-                genemap2_path))
-    genemap_handle = get_file_handle(genemap2_path)
-
-    genes = link_genes(
-        ensembl_lines=transcripts_handle,
+    genes37 = link_genes(
+        ensembl_lines=transcripts37_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
         genemap_lines=genemap_handle,
         hpo_lines=hpo_genes_handle,
     )
-    load_hgnc_genes(adapter, genes)
 
-    log.info("Loading hpo terms from file {0}".format(hpoterms_path))
-    log.info("Loading hpo disease terms from file {0}".format(hpodisease_path))
+    load_hgnc_genes(adapter, genes37, build='37')
 
-    hpo_terms_handle = get_file_handle(hpoterms_path)
-    disease_handle = get_file_handle(genemap2_path)
+    genes38 = link_genes(
+        ensembl_lines=transcripts38_handle,
+        hgnc_lines=context.obj['hgnc38'],
+        exac_lines=context.obj['exac38'],
+        mim2gene_lines=context.obj['mim2gene38'],
+        genemap_lines=context.obj['genemap2_38'],
+        hpo_lines=context.obj['hpogenes_38'],
+    )
+
+    load_hgnc_genes(adapter, genes38, build='38')
+
+    hpo_terms_handle = context.obj['hpo_terms']
+    disease_handle = context.obj['disease_terms']
 
     load_hpo(
         adapter=adapter,
         hpo_lines=hpo_terms_handle,
         disease_lines=disease_handle
     )
-    
+
     log.info("Creating indexes")
     
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('chromosome', pymongo.ASCENDING)])
+    log.info("hgnc gene index created")
 
     log.info("Scout instance setup successful")
 
@@ -135,11 +142,40 @@ def setup(context):
     Setup scout instances.
     """
     
+    context.obj['institute_name'] = 'cust000'
+    context.obj['user_name'] = 'Clark Kent'
+    context.obj['user_mail'] = 'clark.kent@mail.com'
+    
     if context.invoked_subcommand == 'demo':
         # Update context.obj settings here
         log.info("Change database name to scout-demo")
         context.obj['mongodb'] = 'scout-demo'
     
+    else:
+        log.info("Loading hgnc genes from %s", hgnc_path)
+        context.obj['hgnc'] = get_file_handle(hgnc_path)
+        context.obj['hgnc38'] = get_file_handle(hgnc_path)
+        log.info("Loading exac genes from %s", exac_path)
+        context.obj['exac'] = get_file_handle(exac_path)
+        context.obj['exac38'] = get_file_handle(exac_path)
+        log.info("Loading mim2gene info from %s", mim2gene_path)
+        context.obj['mim2gene'] = get_file_handle(mim2gene_path)
+        context.obj['mim2gene38'] = get_file_handle(mim2gene_path)
+        log.info("Loading genemap info from %s", genemap2_path)
+        context.obj['genemap2'] = get_file_handle(genemap2_path)
+        context.obj['genemap2_38'] = get_file_handle(genemap2_path)
+        log.info("Loading hpo gene info from %s", hpogenes_path)
+        context.obj['hpogenes'] = get_file_handle(hpogenes_path)
+        context.obj['hpogenes_38'] = get_file_handle(hpogenes_path)
+        log.info("Loading hpo terms from %s", hpoterms_path)
+        context.obj['hpo_terms'] = get_file_handle(hpoterms_path)
+        log.info("Loading hpo disease info from %s", genemap2_path)
+        context.obj['disease_terms'] = get_file_handle(genemap2_path)
+        log.info("Loading transcripts build 37 info from %s", transcripts37_path)
+        context.obj['transcripts37'] = get_file_handle(transcripts37_path)
+        log.info("Loading transcripts build 38 info from %s", transcripts38_path)
+        context.obj['transcripts38'] = get_file_handle(transcripts38_path)
+
     try:
         client = get_connection(
                     host=context.obj['host'],
@@ -150,6 +186,7 @@ def setup(context):
     except ConnectionFailure:
         context.abort()
     
+    log.info("connecting to database %s", context.obj['mongodb'])
     database = client[context.obj['mongodb']]
     log.info("Test if mongod is running")
     try:
