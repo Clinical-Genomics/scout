@@ -36,7 +36,7 @@ class UserHandler(object):
         """
         log.info("Adding user to the database")
         if not '_id' in user_info:
-            user_info['_id'] = user_obj['email']
+            user_info['_id'] = user_info['email']
     
         user_info['created_at'] = datetime.datetime.now()
 
