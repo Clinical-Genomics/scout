@@ -13,7 +13,6 @@ import pymongo
 # Adapter stuff
 from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
-# from scout.server.app import create_app
 
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
@@ -59,12 +58,6 @@ hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
 mim2gene_path = "tests/fixtures/resources/mim2gene_reduced.txt"
 genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
 mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
-
-
-# @pytest.fixture
-# def app():
-#     app = create_app(config=dict(DEBUG_TB_ENABLED=False, MONGO_PORT = 27017, MONGO_DBNAME = 'variantDatabase'))
-#     return app
 
 ##################### Gene fixtures #####################
 
@@ -118,7 +111,7 @@ def genes(request, transcripts_file, hgnc_file, exac_file,
     mim2gene_handle = get_file_handle(mim2gene_file)
     genemap_handle = get_file_handle(genemap_file)
     hpo_genes_handle =  get_file_handle(hpo_genes_file)
-    
+
     gene_dict = link_genes(
         ensembl_lines=transcripts_handle,
         hgnc_lines=hgnc_handle,
@@ -351,12 +344,12 @@ def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = institute_database
     load_hgnc_genes(adapter, genes)
-    
+
     logger.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
     logger.info("Index done")
-    
+
 
     return adapter
 
@@ -365,12 +358,12 @@ def real_gene_database(request, real_institute_database, genes):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = real_institute_database
     load_hgnc_genes(adapter, genes)
-    
+
     logger.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
     logger.info("Index done")
-    
+
 
     return adapter
 
@@ -445,12 +438,35 @@ def populated_database(request, panel_database, institute_obj, parsed_user, case
 
     return adapter
 
+@pytest.fixture(scope='function')
+def real_populated_database(request, real_panel_database, institute_obj, parsed_user, case_obj):
+    "Returns an adapter to a database populated with user, institute case, genes, panels"
+    adapter = real_panel_database
+
+    adapter.add_case(case_obj)
+
+    return adapter
 
 @pytest.fixture(scope='function')
 def variant_database(request, populated_database, variant_objs, sv_variant_objs):
     """Returns an adapter to a database populated with user, institute, case
        and variants"""
     adapter = populated_database
+    # Load variants
+    for variant in variant_objs:
+        adapter.load_variant(variant)
+
+    # # Load sv variants
+    # for variant in sv_variant_objs:
+    #     adapter.load_variant(variant)
+
+    return adapter
+
+@pytest.fixture(scope='function')
+def real_variant_database(request, real_populated_database, variant_objs, sv_variant_objs):
+    """Returns an adapter to a database populated with user, institute, case
+       and variants"""
+    adapter = real_populated_database
     # Load variants
     for variant in variant_objs:
         adapter.load_variant(variant)
@@ -605,8 +621,8 @@ def parsed_variant():
     """Return variant information for a parsed variant with minimal information"""
     variant = {'alternative': 'C',
             'callers': {
-                'freebayes': None, 
-                'gatk': None, 
+                'freebayes': None,
+                'gatk': None,
                 'samtools': None
             },
             'case_id': 'cust000-643594',
