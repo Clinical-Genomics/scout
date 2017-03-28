@@ -106,8 +106,6 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
 
     # Parse and add the ensembl gene info
     for transcript in parse_ensembl_transcripts(ensembl_lines):
-        logger.debug("Found transcript with ensembl id %s" %
-                     transcript['ensembl_transcript_id'])
 
         hgnc_symbol = transcript['hgnc_symbol']
 
