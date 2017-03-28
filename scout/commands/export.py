@@ -43,10 +43,11 @@ def panel(context, panel):
 
 
 @click.command('genes', short_help='Export genes')
+@click.option('--build', type=click.Choice(['37','38']), default='37')
 @click.pass_context
-def genes(context):
+def genes(context, build):
     """Export all genes to .bed like format"""
-    logger.info("Running scout export genes")
+    logger.info("Running scout export genes from build %s" % build)
     adapter = context.obj['adapter']
 
     header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
@@ -54,7 +55,7 @@ def genes(context):
     for line in header:
         print(line)
 
-    for gene in export_genes(adapter):
+    for gene in export_genes(adapter, build):
         print(gene)
 
 

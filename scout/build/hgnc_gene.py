@@ -1,4 +1,4 @@
-from scout.models import (HgncTranscript, HgncGene)
+from scout.models.hgnc_map import (HgncTranscript, HgncGene, HgncGene38)
 
 def build_hgnc_transcript(transcript):
     """Build a HgncTranscript object
@@ -18,7 +18,7 @@ def build_hgnc_transcript(transcript):
 
     return transcript_obj
 
-def build_hgnc_gene(gene):
+def build_hgnc_gene(gene, build='37'):
     """Build a HgncGene
 
         Args:
@@ -27,13 +27,16 @@ def build_hgnc_gene(gene):
         Returns:
             gene_obj(HgncGene)
     """
-    gene_obj = HgncGene(
-        hgnc_symbol = gene['hgnc_symbol'],
-        ensembl_id = gene['ensembl_gene_id'],
-        chromosome = gene['chromosome'],
-        start = gene['start'],
-        end = gene['end'],
-    )
+    if build == '37':
+        gene_obj = HgncGene(hgnc_symbol = gene['hgnc_symbol'])
+    else:
+        gene_obj = HgncGene38(hgnc_symbol = gene['hgnc_symbol'])
+    
+    gene_obj['ensembl_id'] = gene['ensembl_gene_id']
+    gene_obj['chromosome'] = gene['chromosome']
+    gene_obj['start'] = gene['start']
+    gene_obj['end'] = gene['end']
+    
 
     gene_obj.hgnc_id = gene.get('hgnc_id')
     gene_obj.description = gene.get('description')
