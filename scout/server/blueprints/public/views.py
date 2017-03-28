@@ -11,9 +11,5 @@ public_bp = Blueprint('public', __name__, template_folder='templates',
 @public_bp.route('/')
 @public_endpoint
 def index():
-    """Show the static landing page.
-
-    Doesn't require a user to login. But if they are logged in, they
-    should be passed along to their personalized start page (TODO).
-    """
+    """Show the static landing page."""
     return render_template('public/index.html', version=__version__)
