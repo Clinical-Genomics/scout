@@ -31,7 +31,6 @@ def export_panels(adapter, panels):
         hgnc_geneobjs.append(hgnc_geneobj)
         chromosomes_found.add(hgnc_geneobj.chromosome)
 
-
     for chrom in CHROMOSOMES:
         if chrom in chromosomes_found:
             headers.append(contig_string.format(chrom))
@@ -39,13 +38,9 @@ def export_panels(adapter, panels):
     headers.append("#chromosome\tgene_start\tgene_stop\thgnc_id\thgnc_symbol")
 
     for header in headers:
-        print(header)
+        yield header
 
     for hgnc_gene in hgnc_geneobjs:
-        print(bed_string.format(
-            hgnc_gene.chromosome,
-            hgnc_gene.start,
-            hgnc_gene.end,
-            hgnc_gene.id,
-            hgnc_gene.hgnc_symbol,
-        ))
+        gene_line = bed_string.format(hgnc_gene.chromosome, hgnc_gene.start, hgnc_gene.end,
+                                      hgnc_gene.id, hgnc_gene.hgnc_symbol)
+        yield gene_line

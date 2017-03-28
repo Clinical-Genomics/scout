@@ -94,30 +94,18 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
             'end': end
         }
 
-    for nr_variants, variant in enumerate(variants):
-        rank_score = parse_rank_score(variant, case_obj['display_name'])
-        variant_obj = None
-        add_variant = False
+    try:
+        for nr_variants, variant in enumerate(variants):
+            rank_score = parse_rank_score(variant, case_obj['display_name'])
+            variant_obj = None
+            add_variant = False
 
-        if chrom or (rank_score > rank_threshold):
-            parsed_variant = parse_variant(
-                variant_dict=variant,
-                case=case_obj,
-                variant_type=variant_type,
-                rank_results_header=rank_results_header
-            )
-            add_variant = True
-            # If there are coordinates the variant should be loaded
-            if coordinates:
-                if not check_coordinates(parsed_variant, coordinates):
-                    add_variant = False
-
-            if add_variant:
-                variant_obj = build_variant(
-                    variant=parsed_variant,
-                    institute=institute_obj,
-                    gene_to_panels=gene_to_panels,
-                    hgncid_to_gene=hgncid_to_gene,
+            if chrom or (rank_score > rank_threshold):
+                parsed_variant = parse_variant(
+                    variant_dict=variant,
+                    case=case_obj,
+                    variant_type=variant_type,
+                    rank_results_header=rank_results_header
                 )
                 add_variant = True
                 # If there are coordinates the variant should be loaded
@@ -139,15 +127,15 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                     except IntegrityError as error:
                         pass
 
-            if (nr_variants != 0 and nr_variants % 5000 == 0):
-                logger.info("%s variants parsed" % str(nr_variants))
-                logger.info("Time to parse variants: {} ".format(
-                            datetime.now() - start_five_thousand))
-                start_five_thousand = datetime.now()
+                if (nr_variants != 0 and nr_variants % 5000 == 0):
+                    logger.info("%s variants parsed" % str(nr_variants))
+                    logger.info("Time to parse variants: {} ".format(
+                                datetime.now() - start_five_thousand))
+                    start_five_thousand = datetime.now()
 
-            if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
-                logger.info("%s variants inserted" % nr_inserted)
-                inserted += 1
+                if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
+                    logger.info("%s variants inserted" % nr_inserted)
+                    inserted += 1
 
     except Exception as error:
         logger.warning("Deleting inserted variants")
