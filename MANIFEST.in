@@ -7,7 +7,7 @@ include  LICENSE
 # python source files, test/*.py will be automatically included
 recursive-include  *.py
 # templates
-recursive-include /templates *
+recursive-include /scout *.html
 # static files
 recursive-include /static *
 recursive-include /resources/ensembl_transcripts_37.txt.gz
