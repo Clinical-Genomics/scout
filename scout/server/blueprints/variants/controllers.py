@@ -6,7 +6,6 @@ from flask_mail import Message
 
 from scout.constants import CLINSIG_MAP
 from scout.server.utils import institute_and_case
-from scout.server.extensions import store
 
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
 
@@ -22,7 +21,7 @@ def variants(store, variants_query, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(variant_obj) for variant_obj in
+        'variants': (parse_variant(store, variant_obj) for variant_obj in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -39,7 +38,7 @@ def sv_variants(store, institute_id, case_name, page, variant_type, per_page=50)
     return dict(
         institute=institute_obj,
         case=case_obj,
-        variants=(parse_variant(variant) for variant in
+        variants=(parse_variant(store, variant) for variant in
                   variants_query.skip(skip_count).limit(per_page)),
         more_variants=more_variants,
         query=query,
@@ -59,7 +58,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
     ]
 
-    overlapping_snvs = (parse_variant(variant) for variant in
+    overlapping_snvs = (parse_variant(store, variant) for variant in
                         store.overlapping(variant_obj))
 
     return dict(
@@ -70,7 +69,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
     )
 
 
-def parse_variant(variant_obj):
+def parse_variant(store, variant_obj):
     """Parse information about variants."""
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
@@ -139,7 +138,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         other_variant['case_display_name'] = case_display_name
         other_causatives.append(other_variant)
 
-    variant_obj = parse_variant(variant_obj)
+    variant_obj = parse_variant(store, variant_obj)
     variant_obj['end_position'] = end_position(variant_obj)
     variant_obj['frequency'] = frequency(variant_obj)
     variant_obj['clinsig_human'] = clinsig_human(variant_obj)
@@ -174,7 +173,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         'causatives': other_causatives,
         'comments': comments,
         'events': events,
-        'overlapping_svs': (parse_variant(variant_obj) for variant_obj in
+        'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
                             store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'observations': observations,
