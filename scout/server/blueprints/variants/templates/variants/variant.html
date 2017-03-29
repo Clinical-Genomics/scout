@@ -438,7 +438,7 @@
           {% if variant.max_thousand_genomes_frequency %}
             {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
           {% endif %}
-          {{ variant.thousand_genomes_frequency|human_decimal }}
+          {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
         </span>
       </li>
       <li class="list-group-item">

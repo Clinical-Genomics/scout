@@ -67,10 +67,7 @@ def user(context, institute_name, user_name, user_mail):
         log.info("Institute {0} does not exist".format(institute_name))
         context.abort()
 
-    user_info = dict(email=user_mail,
-                name=user_name,
-                roles=['admin'],
-                institutes=[institute])
+    user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute])
     user.add_user(user_info)
 
 
@@ -79,6 +76,23 @@ def user(context, institute_name, user_name, user_mail):
 def load(context):
     """Load the Scout database."""
     pass
+
+
+@load.command()
+@click.argument('case_id')
+@click.argument('report_path', type=click.Path(exists=True))
+@click.pass_context
+def report(context, case_id, report_path):
+    """Add delivery report to an existing case."""
+    adapter = context.obj['adapter']
+    customer, family = case_id.split('-', 1)
+    existing_case = adapter.case(customer, family)
+    if existing_case is None:
+        click.echo("ERROR: no case found!")
+        context.abort()
+    existing_case.delivery_report = report_path
+    existing_case.save()
+    click.echo("saved report to case!")
 
 
 load.add_command(case_command)
