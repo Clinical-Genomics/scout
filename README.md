@@ -45,19 +45,38 @@ docker run --name mongo -p 27017:27017 mongo
 
 ## Usage
 
+### Demo
+
 Once installed, you can setup Scout by running a few commands using the included command line interface. Given you have a MongoDB server listening on the default port (27017), this is how you would setup a fully working Scout demo:
 
 ```bash
-scout --mongodb scoutTest init --institute-name "My Hospital" --user-name "Paul T. Anderson" --user-mail paul.anderson@gmail.com
+scout setup demo
 ```
+
+This will setup an instance of scout with a database called `scout-demo`. Now run
+
+```bash
+scout --demo serve
+```
+And play around with the interface. A user has been created with email clark.kent@mail.com so use that adress to get access
+
+### Initialize scout
+
+To initialize a working instance with all genes, diseases etc run
+
+```bash
+scout setup database
+```
+
+for more info, run `scout --help`
 
 > If you intent to use authentication, make sure you are using a Google email!
 
 The previous command setup the database with a curated collection of gene definitions with links to OMIM along with HPO phenotype terms. Now we will load some example data. Scout expects the analysis to be accomplished using various gene panels so let's load one and then our first analysis case:
 
 ```bash
-scout --mongodb scoutTest load panel tests/fixtures/gene_lists/panel_1.txt
-scout --mongodb scoutTest load case tests/fixtures/643594.config.yaml
+scout load panel tests/fixtures/gene_lists/panel_1.txt
+scout load case tests/fixtures/643594.config.yaml
 ```
 
 ## Server setup
