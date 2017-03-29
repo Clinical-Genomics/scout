@@ -116,7 +116,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 if add_variant:
                     variant_obj = build_variant(
                         variant=parsed_variant,
-                        institute=institute_obj,
+                        institute_id=institute_obj['_id'],
                         gene_to_panels=gene_to_panels,
                         hgncid_to_gene=hgncid_to_gene,
                     )
