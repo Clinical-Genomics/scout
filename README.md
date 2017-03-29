@@ -1,8 +1,8 @@
 <p align="center">
-  <a href="http://www.clinicalgenomics.se/scout">
-    <img height="165" src="artwork/logo-display.png">
-  </a>
-  <h3 align="center">Analyze VCFs and collaborate on solving rare diseases quicker</h3>
+	<a href="http://www.clinicalgenomics.se/scout">
+		<img height="165" src="artwork/logo-display.png">
+	</a>
+	<h3 align="center">Analyze VCFs and collaborate on solving rare diseases quicker</h3>
 </p>
 
 [![Build Status][travis-img]][travis-url]
@@ -80,18 +80,18 @@ MONGO_PASSWORD = 'testPass'
 
 # enable user authentication using Google OAuth
 GOOGLE = dict(
-    consumer_key='???',
-    consumer_secret='???',
+		consumer_key='???',
+		consumer_secret='???',
 
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    request_token_url=None,
-    request_token_params={
-        'scope': ("https://www.googleapis.com/auth/userinfo.profile "
-                  "https://www.googleapis.com/auth/userinfo.email"),
-    },
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    access_token_method='POST'
+		base_url='https://www.googleapis.com/oauth2/v1/',
+		authorize_url='https://accounts.google.com/o/oauth2/auth',
+		request_token_url=None,
+		request_token_params={
+				'scope': ("https://www.googleapis.com/auth/userinfo.profile "
+									"https://www.googleapis.com/auth/userinfo.email"),
+		},
+		access_token_url='https://accounts.google.com/o/oauth2/token',
+		access_token_method='POST'
 )
 
 # enable Phenomizer gene predictions from phenotype terms
@@ -108,17 +108,17 @@ TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
 SECRET_KEY = 'secret key'               # override in production!
 ```
 
-Starting the server in now really easy, for the demo and local development we will use the built-in Flask server:
+Starting the server in now really easy, for the demo and local development we will use the CLI:
 
 ```bash
-FLASK_APP=scout.server.auto SCOUT_CONFIG=./config.py flask run
+scout serve --config ./config.py
 ```
 
 ![Scout Interface demo](artwork/scout-variant-demo.png)
 
 ### Hosting a production server
 
-We running the server in production you will likely want to use a proper Python server solution such as Gunicorn. This is also how we can multiprocess the server and use encrypted HTTPS connections.
+When running the server in production you will likely want to use a proper Python server solution such as Gunicorn. This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
 SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app

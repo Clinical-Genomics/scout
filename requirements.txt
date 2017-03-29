@@ -13,6 +13,7 @@ coloredlogs
 query_phenomizer
 loqusdb>=0.5
 Flask-Babel
+livereload
 
 # unclear
 Flask-Login

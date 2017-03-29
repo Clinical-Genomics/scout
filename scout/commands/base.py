@@ -23,6 +23,7 @@ from scout.commands.convert import convert
 from scout.commands.query import query as query_command
 from scout.commands.view import view as view_command
 from scout.commands.delete import delete
+from scout.commands.serve import serve
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 log = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
                     )
         except ConnectionFailure:
             context.abort()
-        
+
         database = client[mongo_configs['mongodb']]
         log.info("Test if mongod is running")
         try:
@@ -111,7 +112,7 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         log.info("Setting up a mongo adapter")
         mongo_adapter = MongoAdapter(database)
         mongo_configs['adapter'] = mongo_adapter
-    
+
     context.obj = mongo_configs
 
 
@@ -124,3 +125,4 @@ cli.add_command(convert)
 cli.add_command(query_command)
 cli.add_command(view_command)
 cli.add_command(delete)
+cli.add_command(serve)
