@@ -1,0 +1,48 @@
+---
+
+owner: cust000
+
+family: '643594'
+samples:
+  - analysis_type: wes
+    sample_id: ADM1059A2
+    capture_kit: Agilent_SureSelectCRE.V1
+    father: ADM1059A1
+    mother: ADM1059A3
+    sample_name: NA12882
+    phenotype: affected
+    sex: male
+    expected_coverage: 30
+  - analysis_type: wes
+    sample_id: ADM1059A1
+    capture_kit: Agilent_SureSelectCRE.V1
+    father: '0'
+    mother: '0'
+    sample_name: NA12877
+    phenotype: unaffected
+    sex: male
+    expected_coverage: 30
+  - analysis_type: wes
+    sample_id: ADM1059A3
+    capture_kit: Agilent_SureSelectCRE.V1
+    father: '0'
+    mother: '0'
+    sample_name: NA12878
+    phenotype: unaffected
+    sex: female
+    expected_coverage: 30
+
+vcf_snv: tests/fixtures/643594.clinical.vcf
+vcf_sv: tests/fixtures/643594.clinical.SV.vcf
+vcf_snv_research: tests/fixtures/643594.research.vcf
+vcf_sv_research: tests/fixtures/643594.research.SV.vcf
+
+madeline: tests/fixtures/madeline.xml
+default_gene_panels: [panel1]
+gene_panels: [panel1]
+
+# meta data
+rank_model_version: 1.12
+rank_score_threshold: -100
+analysis_date: 2016-10-12 14:00:46
+human_genome_build: 37
