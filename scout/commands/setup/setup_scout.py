@@ -3,6 +3,8 @@ Cli functions to setup scout
 """
 
 import logging
+import datetime
+import yaml
 
 from pprint import pprint as pp
 
@@ -23,10 +25,27 @@ from scout.resources import (hgnc_path, exac_path, mim2gene_path,
 from scout.resources import transcripts37_path as transcripts37_path
 from scout.resources import transcripts38_path as transcripts38_path
 
-# Import the functions to setup scout
-from scout.build import build_institute
+### Import demo files ###
+# Resources
+from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path, 
+            transcripts37_reduced_path, mim2gene_reduced_path,
+            genemap2_reduced_path, hpogenes_reduced_path,
+            hpoterms_reduced_path)
 
-from scout.load import (load_hgnc_genes, load_hpo)
+# Gene panel
+from scout.demo import (panel_path, clinical_snv_path, clinical_sv_path,
+                        research_snv_path, research_sv_path)
+
+# Case files
+from scout.demo import load_path
+
+# Import the functions to setup scout
+from scout.parse.panel import parse_gene_panel
+from scout.parse.case import parse_case
+
+from scout.build import (build_institute, build_case, build_panel, build_variant)
+
+from scout.load import (load_hgnc_genes, load_hpo, load_panel, load_scout)
 
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
@@ -131,9 +150,104 @@ def demo(context):
        case a gene panel and some variants.
     """
     log.info("Running scout setup demo")
-    pp(context.__dict__)
+    institute_name = context.obj['institute_name']
+    user_name = context.obj['user_name']
+    user_mail = context.obj['user_mail']
     
+    adapter = context.obj['adapter']
 
+    log.info("Setting up database %s", context.obj['mongodb'])
+    log.info("Deleting previous database")
+    for collection_name in adapter.db.collection_names():
+        log.info("Deleting collection %s", collection_name)
+        adapter.db.drop_collection(collection_name)
+    log.info("Database deleted")
+
+    # Build a institute with id institute_name
+    institute_obj = build_institute(
+        internal_id=institute_name,
+        display_name=institute_name,
+        sanger_recipients=[user_mail]
+    )
+    
+    # Add the institute to database
+    adapter.add_institute(institute_obj)
+
+    # Build a user obj
+    user_obj = dict(
+                _id=user_mail,
+                email=user_mail,
+                name=user_name,
+                roles=['admin'],
+                institutes=[institute_name]
+            )
+
+    adapter.add_user(user_obj)
+
+    # Load the genes and transcripts
+    hgnc_handle = context.obj['hgnc']
+    transcripts37_handle = context.obj['transcripts37']
+    # transcripts38_handle = context.obj['transcripts38']
+    exac_handle = context.obj['exac']
+    hpo_genes_handle = context.obj['hpogenes']
+    mim2gene_handle = context.obj['mim2gene']
+    genemap_handle = context.obj['genemap2']
+
+    genes37 = link_genes(
+        ensembl_lines=transcripts37_handle,
+        hgnc_lines=hgnc_handle,
+        exac_lines=exac_handle,
+        mim2gene_lines=mim2gene_handle,
+        genemap_lines=genemap_handle,
+        hpo_lines=hpo_genes_handle,
+    )
+
+    load_hgnc_genes(adapter, genes37, build='37')
+
+    hpo_terms_handle = context.obj['hpo_terms']
+    disease_handle = context.obj['disease_terms']
+
+    load_hpo(
+        adapter=adapter,
+        hpo_lines=hpo_terms_handle,
+        disease_lines=disease_handle
+    )
+    
+    panel_info = {
+            'date': datetime.datetime.now(),
+            'file': panel_path,
+            'type': 'clinical',
+            'institute': 'cust000',
+            'version': '1.0',
+            'panel_name': 'panel1',
+            'full_name': 'Test panel'
+        }
+    
+    parsed_panel = parse_gene_panel(panel_info)
+    panel_obj = build_panel(parsed_panel, adapter)
+    load_panel(
+        adapter=adapter,
+        panel_info=panel_info
+    )
+    
+    case_handle = get_file_handle(load_path)
+    case_data = yaml.load(case_handle)
+    
+    case_data['vcf_snv'] = clinical_snv_path
+    case_data['vcf_sv'] = clinical_sv_path
+    case_data['vcf_snv_research'] = research_snv_path
+    case_data['vcf_sv_research'] = research_sv_path
+
+    load_scout(adapter, case_data)
+
+    log.info("Creating indexes")
+    
+    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
+                                          ('chromosome', pymongo.ASCENDING)])
+    log.info("hgnc gene index created")
+
+    log.info("Scout demo instance setup successful")
+    
 
 @click.group()
 @click.pass_context
@@ -150,6 +264,30 @@ def setup(context):
         # Update context.obj settings here
         log.info("Change database name to scout-demo")
         context.obj['mongodb'] = 'scout-demo'
+        log.info("Loading hgnc genes from %s", hgnc_reduced_path)
+        context.obj['hgnc'] = get_file_handle(hgnc_reduced_path)
+        context.obj['hgnc38'] = get_file_handle(hgnc_reduced_path)
+        log.info("Loading exac genes from %s", exac_reduced_path)
+        context.obj['exac'] = get_file_handle(exac_reduced_path)
+        context.obj['exac38'] = get_file_handle(exac_reduced_path)
+        log.info("Loading mim2gene info from %s", mim2gene_reduced_path)
+        context.obj['mim2gene'] = get_file_handle(mim2gene_reduced_path)
+        context.obj['mim2gene38'] = get_file_handle(mim2gene_reduced_path)
+        log.info("Loading genemap info from %s", genemap2_reduced_path)
+        context.obj['genemap2'] = get_file_handle(genemap2_reduced_path)
+        context.obj['genemap2_38'] = get_file_handle(genemap2_reduced_path)
+        log.info("Loading hpo gene info from %s", hpogenes_reduced_path)
+        context.obj['hpogenes'] = get_file_handle(hpogenes_reduced_path)
+        context.obj['hpogenes_38'] = get_file_handle(hpogenes_reduced_path)
+        log.info("Loading hpo terms from %s", hpoterms_reduced_path)
+        context.obj['hpo_terms'] = get_file_handle(hpoterms_reduced_path)
+        log.info("Loading hpo disease info from %s", genemap2_reduced_path)
+        context.obj['disease_terms'] = get_file_handle(genemap2_reduced_path)
+        log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
+        context.obj['transcripts37'] = get_file_handle(transcripts37_reduced_path)
+        # log.info("Loading transcripts build 38 info from %s", transcripts38_path)
+        # context.obj['transcripts38'] = get_file_handle(transcripts38_path)
+        
     
     else:
         log.info("Loading hgnc genes from %s", hgnc_path)

@@ -61,10 +61,14 @@ log = logging.getLogger(__name__)
     type=click.Path(exists=True),
     help="Specify the path to a config file with database info.",
 )
+@click.option('--demo',
+    is_flag=True,
+    help="If the demo database should be used"
+)
 @click.version_option(__version__)
 @click.pass_context
 def cli(context, mongodb, username, password, host, port, logfile, loglevel,
-        config):
+        config, demo):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(log_level=loglevel)
     log.info("Running scout version %s", __version__)
@@ -77,7 +81,9 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
             configs = yaml.load(in_handle)
 
     mongo_configs['mongodb'] = (mongodb or configs.get('mongodb'))
-    log.debug("Setting database name to %s", mongo_configs['mongodb'])
+    if demo:
+        mongo_configs['mongodb'] = 'scout-demo'
+    log.info("Setting database name to %s", mongo_configs['mongodb'])
 
     mongo_configs['host'] = (host or configs.get('host'))
     log.debug("Setting host to {0}".format(mongo_configs['host']))
