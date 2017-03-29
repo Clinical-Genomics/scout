@@ -17,7 +17,15 @@ from scout.server.app import create_app
 @click.pass_context
 def serve(context, config, host, port, debug, livereload):
     """Start the web server."""
-    app = create_app(config_file=os.path.abspath(config))
+    pymongo_config = dict(
+        MONGO_HOST=context.obj['host'],
+        MONGO_PORT=context.obj['port'],
+        MONGO_DBNAME=context.obj['mongodb'],
+        MONGO_USERNAME=context.obj['username'],
+        MONGO_PASSWORD=context.obj['password'],
+    )
+    config = os.path.abspath(config) if config else None
+    app = create_app(config=pymongo_config, config_file=config)
     if livereload:
         server = Server(app.wsgi_app)
         server.serve(host=host, port=port, debug=debug)
