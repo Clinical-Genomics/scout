@@ -174,8 +174,8 @@
               <td>{{ gene.common.description|replace('_', ' ') }}</td>
               <td>
                 {% if gene.common.omim_id %}
-                  <a href="http://omim.org/entry/{{ gene.omim.omim_id }}">
-                    {{ gene.omim.omim_id }}
+                  <a href="http://omim.org/entry/{{ gene.common.omim_id }}">
+                    {{ gene.common.omim_id }}
                   </a>
                 {% endif %}
               </td>
