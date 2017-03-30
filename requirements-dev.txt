@@ -1,12 +1,7 @@
 # everything the developer needs in addition to the production requirements
 
 # testing
-ipython
-ipdb
 pytest
-coverage
-coveralls
-flake8
 pytest-flask
 pytest-cov
 mongomock
@@ -16,6 +11,3 @@ wheel>=0.23
 
 # utils
 invoke
-bumpversion
-fabric
-grip
