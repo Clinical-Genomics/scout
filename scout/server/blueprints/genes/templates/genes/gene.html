@@ -78,7 +78,7 @@
     <div class="panel-heading">Transcripts</div>
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
-        <li class="list-group-item {{ list-group-item-info if transcript.is_primary }}">
+        <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
           {{ transcript.refseq_id|join(', ') or transcript.ensembl_transcript_id }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
         </li>
       {% endfor %}
