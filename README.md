@@ -23,10 +23,10 @@ This README only gives a brief overview of Scout, for a more complete reference,
 You can install the latest release of Scout using `pip`:
 
 ```bash
-pip install scout
+pip install scout-browser
 
 # ... to include optional coverage tools you would use:
-pip install scout[coverage]
+pip install scout-browser[coverage]
 ```
 
 If you would like to install Scout for local development:
