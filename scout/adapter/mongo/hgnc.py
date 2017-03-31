@@ -159,7 +159,7 @@ class GeneHandler(object):
         return hgnc_dict
 
     def gene_by_alias(self, symbol, build='37'):
-        """Return a iteravle with hgnc_genes.
+        """Return a iterable with hgnc_genes.
 
         If the gene symbol is listed as primary the iterable will only have 
         one result. If not the iterable will include all hgnc genes that have

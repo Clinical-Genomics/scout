@@ -16,11 +16,13 @@ def parse_hgnc_line(line, header):
     hgnc_gene = {}
     line = line.rstrip().split('\t')
     raw_info = dict(zip(header, line))
+    # Skip all genes that have status withdrawn
     if 'Withdrawn' not in raw_info['status']:
         hgnc_symbol = raw_info['symbol']
         hgnc_gene['hgnc_symbol'] = hgnc_symbol
         hgnc_gene['hgnc_id'] = int(raw_info['hgnc_id'].split(':')[-1])
         hgnc_gene['description'] = raw_info['name']
+        
         # We want to have the current symbol as an alias
         aliases = set([hgnc_symbol, hgnc_symbol.upper()])
         # We then need to add both the previous symbols and
@@ -35,7 +37,10 @@ def parse_hgnc_line(line, header):
             for alias in alias_symbols.strip('"').split('|'):
                 aliases.add(alias)
 
-        hgnc_gene['previous'] = list(aliases)
+        hgnc_gene['previous_symbols'] = list(aliases)
+
+        # We need the ensembl_gene_id to link the genes with ensembl
+        hgnc_gene['ensembl_gene_id'] = raw_info.get('ensembl_gene_id')
 
         omim_id = raw_info.get('omim_id')
         if omim_id:

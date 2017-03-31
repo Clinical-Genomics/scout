@@ -8,9 +8,10 @@ def test_load_hgnc_genes(adapter, genes):
     load_hgnc_genes(adapter, genes)
     
     nr_genes = 0
-    for gene_symbol in genes:
-        nr_genes += 1
-        gene_info = genes[gene_symbol]
+    for hgnc_id in genes:
+        gene_info = genes[hgnc_id]
+        if gene_info.get('chromosome'):
+            nr_genes += 1
     
     # THEN assert all genes have been added to the database
     

@@ -14,9 +14,9 @@ def parse_exac_line(line, header):
     """
     exac_gene = {}
     line = line.rstrip().split('\t')
-    raw_info = dict(zip(header, line))
-    exac_gene['hgnc_symbol'] = raw_info['gene']
-    exac_gene['pli_score'] = float(raw_info['pLI'])
+    exac_gene = dict(zip(header, line))
+    exac_gene['hgnc_symbol'] = exac_gene['gene']
+    exac_gene['pli_score'] = float(exac_gene['pLI'])
     
     return exac_gene
 
