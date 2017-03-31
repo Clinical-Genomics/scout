@@ -23,6 +23,9 @@
                 {{ institute.display_name }}
               </a>
             </h3>
+            {% if current_user.is_admin %}
+              <span class="text-muted">({{ institute._id }})</span>
+            {% endif %}
           </div>
           <div class="col-xs-4">
             <span class="badge pull-right">{{ case_count }} cases</span>
