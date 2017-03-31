@@ -1008,8 +1008,7 @@ class EventHandler(object):
         logger.debug("Case updated")
         return updated_case
 
-    def diagnose(self, institute, case, user, link, level,
-                 omim_id, remove=False):
+    def diagnose(self, institute, case, user, link, level, omim_id, remove=False):
         """Diagnose a case using OMIM ids.
 
         Arguments:

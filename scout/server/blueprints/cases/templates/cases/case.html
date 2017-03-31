@@ -279,7 +279,7 @@
           </a>
           <span class="pull-right">
             {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                 case_name=case.display_name, remove='yes'),
+                                  case_name=case.display_name, remove='yes'),
                          hidden_input=('omim_id', omim_id), button_name='phenotype') }}
           </span>
         </li>
