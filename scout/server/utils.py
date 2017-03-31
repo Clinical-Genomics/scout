@@ -44,8 +44,6 @@ def institute_and_case(store, institute_id, case_name=None):
         if case_name:
             case_obj = store.case(institute_id=institute_id, display_name=case_name)
             if case_obj is None:
-                flash("Can't find case: {} - {}".format(institute_id, case_name),
-                      'warning')
                 return abort(404)
             return institute_obj, case_obj
         else:

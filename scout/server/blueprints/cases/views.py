@@ -275,14 +275,15 @@ def delivery_report(institute_id, case_name):
 def share(institute_id, case_name):
     """Share a case with a different institute."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
     collaborator_id = request.form['collaborator']
     revoke_access = 'revoke' in request.form
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
 
     if revoke_access:
-        store.unshare(institute_obj, case_obj, collaborator_id, current_user, link)
+        store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
     else:
-        store.share(institute_obj, case_obj, collaborator_id, current_user, link)
+        store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
 
     return redirect(request.referrer)
 
