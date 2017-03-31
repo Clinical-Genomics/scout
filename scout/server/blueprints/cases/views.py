@@ -60,7 +60,7 @@ def case_diagnosis(institute_id, case_name):
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
     level = 'phenotype' if 'phenotype' in request.form else 'gene'
     omim_id = request.form['omim_id']
-    remove = True if 'remove' in request.args else False
+    remove = True if request.form.get('remove') == 'yes' else False
     store.diagnose(institute_obj, case_obj, user_obj, link, level=level,
                    omim_id=omim_id, remove=remove)
     return redirect(request.referrer)
