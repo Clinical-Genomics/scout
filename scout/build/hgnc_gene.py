@@ -1,10 +1,9 @@
 
-def build_hgnc_transcript(transcript_info, primary_transcripts):
+def build_hgnc_transcript(transcript_info):
     """Build a hgnc_transcript object
 
         Args:
             transcript_info(dict): Transcript information
-            primary_transcripts(list(str)): The primary transcripts
 
         Returns:
             transcript_obj(HgncTranscript)
@@ -143,10 +142,9 @@ def build_hgnc_gene(gene_info, build='37'):
     gene_obj['vega_id'] = gene_info.get('vega_id')
 
     transcript_objs = []
-    for transcript_id in gene_info.get('transcripts',[]):
-        transcript_info = gene_info['transcripts'][transcript_id]
+    for transcript_info in gene_info.get('transcripts',[]):
         transcript_objs.append(
-            build_hgnc_transcript(transcript_info, primary_transcripts))
+            build_hgnc_transcript(transcript_info))
 
     gene_obj['transcripts'] = transcript_objs
 
