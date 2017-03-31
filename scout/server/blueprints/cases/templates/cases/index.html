@@ -22,10 +22,11 @@
               <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
                 {{ institute.display_name }}
               </a>
+
+              {% if current_user.is_admin %}
+                <span class="text-muted">({{ institute._id }})</span>
+              {% endif %}
             </h3>
-            {% if current_user.is_admin %}
-              <span class="text-muted">({{ institute._id }})</span>
-            {% endif %}
           </div>
           <div class="col-xs-4">
             <span class="badge pull-right">{{ case_count }} cases</span>
