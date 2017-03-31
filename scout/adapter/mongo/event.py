@@ -1008,7 +1008,6 @@ class EventHandler(object):
         logger.debug("Case updated")
         return updated_case
 
-
     def diagnose(self, institute, case, user, link, level,
                  omim_id, remove=False):
         """Diagnose a case using OMIM ids.
@@ -1033,9 +1032,10 @@ class EventHandler(object):
 
         omim_number = int(omim_id.split(':')[-1])
 
+        updated_case = None
         if remove and omim_number in diagnosis_list:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id':case['_id']},
+                {'_id': case['_id']},
                 {
                     '$pull': {'diagnosis_list': omim_number}
                 },
@@ -1051,15 +1051,16 @@ class EventHandler(object):
                 return_document = pymongo.ReturnDocument.AFTER
             )
 
-        self.create_event(
-            institute=institute,
-            case=case,
-            user=user,
-            link=link,
-            category='case',
-            verb='update_diagnosis',
-            subject=case['display_name'],
-            content=omim_id
-        )
+        if updated_case:
+            self.create_event(
+                institute=institute,
+                case=case,
+                user=user,
+                link=link,
+                category='case',
+                verb='update_diagnosis',
+                subject=case['display_name'],
+                content=omim_id
+            )
 
         return updated_case
