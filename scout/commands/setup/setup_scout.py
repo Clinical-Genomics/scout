@@ -27,7 +27,7 @@ from scout.resources import transcripts38_path as transcripts38_path
 
 ### Import demo files ###
 # Resources
-from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path, 
+from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path,
             transcripts37_reduced_path, mim2gene_reduced_path,
             genemap2_reduced_path, hpogenes_reduced_path,
             hpoterms_reduced_path)
@@ -60,11 +60,11 @@ log = logging.getLogger(__name__)
 def database(context, institute_name, user_name, user_mail):
     """Setup a scout database"""
     log.info("Running scout setup database")
-    
+
     institute_name = institute_name or context.obj['institute_name']
     user_name = user_name or context.obj['user_name']
     user_mail = user_mail or context.obj['user_mail']
-    
+
     adapter = context.obj['adapter']
 
     log.info("Setting up database %s", context.obj['mongodb'])
@@ -80,7 +80,7 @@ def database(context, institute_name, user_name, user_mail):
         display_name=institute_name,
         sanger_recipients=[user_mail]
     )
-    
+
     # Add the institute to database
     adapter.add_institute(institute_obj)
 
@@ -136,7 +136,7 @@ def database(context, institute_name, user_name, user_mail):
     )
 
     log.info("Creating indexes")
-    
+
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('chromosome', pymongo.ASCENDING)])
     log.info("hgnc gene index created")
@@ -146,14 +146,14 @@ def database(context, institute_name, user_name, user_mail):
 @click.command('demo', short_help='Setup a scout demo instance')
 @click.pass_context
 def demo(context):
-    """Setup a scout demo instance. This instance will be populated with a 
+    """Setup a scout demo instance. This instance will be populated with a
        case a gene panel and some variants.
     """
     log.info("Running scout setup demo")
     institute_name = context.obj['institute_name']
     user_name = context.obj['user_name']
     user_mail = context.obj['user_mail']
-    
+
     adapter = context.obj['adapter']
 
     log.info("Setting up database %s", context.obj['mongodb'])
@@ -169,7 +169,7 @@ def demo(context):
         display_name=institute_name,
         sanger_recipients=[user_mail]
     )
-    
+
     # Add the institute to database
     adapter.add_institute(institute_obj)
 
@@ -212,7 +212,7 @@ def demo(context):
         hpo_lines=hpo_terms_handle,
         disease_lines=disease_handle
     )
-    
+
     panel_info = {
             'date': datetime.datetime.now(),
             'file': panel_path,
@@ -222,17 +222,17 @@ def demo(context):
             'panel_name': 'panel1',
             'full_name': 'Test panel'
         }
-    
+
     parsed_panel = parse_gene_panel(panel_info)
     panel_obj = build_panel(parsed_panel, adapter)
     load_panel(
         adapter=adapter,
         panel_info=panel_info
     )
-    
+
     case_handle = get_file_handle(load_path)
     case_data = yaml.load(case_handle)
-    
+
     case_data['vcf_snv'] = clinical_snv_path
     case_data['vcf_sv'] = clinical_sv_path
     case_data['vcf_snv_research'] = research_snv_path
@@ -241,13 +241,13 @@ def demo(context):
     load_scout(adapter, case_data)
 
     log.info("Creating indexes")
-    
+
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('chromosome', pymongo.ASCENDING)])
     log.info("hgnc gene index created")
 
     log.info("Scout demo instance setup successful")
-    
+
 
 @click.group()
 @click.pass_context
@@ -255,11 +255,11 @@ def setup(context):
     """
     Setup scout instances.
     """
-    
+
     context.obj['institute_name'] = 'cust000'
     context.obj['user_name'] = 'Clark Kent'
     context.obj['user_mail'] = 'clark.kent@mail.com'
-    
+
     if context.invoked_subcommand == 'demo':
         # Update context.obj settings here
         log.info("Change database name to scout-demo")
@@ -287,8 +287,7 @@ def setup(context):
         context.obj['transcripts37'] = get_file_handle(transcripts37_reduced_path)
         # log.info("Loading transcripts build 38 info from %s", transcripts38_path)
         # context.obj['transcripts38'] = get_file_handle(transcripts38_path)
-        
-    
+
     else:
         log.info("Loading hgnc genes from %s", hgnc_path)
         context.obj['hgnc'] = get_file_handle(hgnc_path)
@@ -314,6 +313,9 @@ def setup(context):
         log.info("Loading transcripts build 38 info from %s", transcripts38_path)
         context.obj['transcripts38'] = get_file_handle(transcripts38_path)
 
+    log.info("Setting database name to %s", context.obj['mongodb'])
+    log.debug("Setting host to %s", context.obj['host'])
+    log.debug("Setting port to %s", context.obj['port'])
     try:
         client = get_connection(
                     host=context.obj['host'],
@@ -323,7 +325,7 @@ def setup(context):
                 )
     except ConnectionFailure:
         context.abort()
-    
+
     log.info("connecting to database %s", context.obj['mongodb'])
     database = client[context.obj['mongodb']]
     log.info("Test if mongod is running")
@@ -337,7 +339,7 @@ def setup(context):
     log.info("Setting up a mongo adapter")
     mongo_adapter = MongoAdapter(database)
     context.obj['adapter'] = mongo_adapter
-    
+
 
 setup.add_command(database)
 setup.add_command(demo)

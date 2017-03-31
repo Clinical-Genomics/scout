@@ -54,6 +54,10 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
 
     def init_app(self, app):
         """Setup via Flask."""
+        host = app.config.get('MONGO_HOST', 'localhost')
+        port = app.config.get('MONGO_PORT', 27017)
+        dbname = app.config['MONGO_DBNAME']
+        logger.info("connecting to database: %s:%s/%s", host, port, dbname)
         self.setup(app.extensions['pymongo']['MONGO'][1])
 
     def setup(self, database):

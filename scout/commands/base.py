@@ -83,20 +83,22 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
     mongo_configs['mongodb'] = (mongodb or configs.get('mongodb'))
     if demo:
         mongo_configs['mongodb'] = 'scout-demo'
-    log.info("Setting database name to %s", mongo_configs['mongodb'])
+
 
     mongo_configs['host'] = (host or configs.get('host'))
-    log.debug("Setting host to {0}".format(mongo_configs['host']))
+
 
     mongo_configs['port'] = (port or configs.get('port'))
-    log.debug("Setting port to {0}".format(mongo_configs['port']))
 
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
     mongo_configs['adapter'] = None
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
-    if not context.invoked_subcommand == 'setup':
+    if context.invoked_subcommand not in ('setup', 'serve'):
+        log.info("Setting database name to %s", mongo_configs['mongodb'])
+        log.debug("Setting host to {0}".format(mongo_configs['host']))
+        log.debug("Setting port to {0}".format(mongo_configs['port']))
         try:
             client = get_connection(
                         host=mongo_configs['host'],
