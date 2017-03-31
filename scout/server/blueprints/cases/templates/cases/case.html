@@ -272,14 +272,16 @@
     <div class="panel-heading">Diagnosis phenotypes</div>
     <div class="panel-body">{{ diagnosis_form('phenotype') }}</div>
     <ul class="list-group">
-      {% for omim_id in case.diagnosis_phenotypes %}
+      {% for omim_id in case.diagnosis_list %}
         <li class="list-group-item">
           <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
             {{ omim_id }}
           </a>
-          {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+          <span class="pull-right">
+            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                  case_name=case.display_name, remove='yes'),
                          hidden_input=('omim_id', omim_id), button_name='phenotype') }}
+          </span>
         </li>
       {% else %}
         <li class="list-group-item">No phenotypes added</li>
@@ -293,9 +295,11 @@
           <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
             {{ omim_id }}
           </a>
-          {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                 case_name=case.display_name, remove='yes'),
-                         hidden_input=('omim_id', omim_id), button_name='gene') }}
+          <span class="pull-right">
+            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+                                   case_name=case.display_name, remove='yes'),
+                           hidden_input=('omim_id', omim_id), button_name='gene') }}
+          </span>
         </li>
       {% else %}
         <li class="list-group-item">No genes added</li>
