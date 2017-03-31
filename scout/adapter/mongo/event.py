@@ -1024,31 +1024,28 @@ class EventHandler(object):
 
         """
         if level == 'phenotype':
-            diagnosis_list = case.get('diagnosis_phenotypes', [])
+            case_key = 'diagnosis_phenotypes'
         elif level == 'gene':
-            diagnosis_list = case.get('diagnosis_genes', [])
+            case_key = 'diagnosis_genes'
         else:
             raise TypeError('wrong level')
 
+        diagnosis_list = case.get(case_key, [])
         omim_number = int(omim_id.split(':')[-1])
 
         updated_case = None
         if remove and omim_number in diagnosis_list:
             updated_case = self.case_collection.find_one_and_update(
                 {'_id': case['_id']},
-                {
-                    '$pull': {'diagnosis_list': omim_number}
-                },
-                return_document = pymongo.ReturnDocument.AFTER
+                {'$pull': {case_key: omim_number}},
+                return_document=pymongo.ReturnDocument.AFTER
             )
 
         elif omim_number not in diagnosis_list:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id':case['_id']},
-                {
-                    '$push': {'diagnosis_list': omim_number}
-                },
-                return_document = pymongo.ReturnDocument.AFTER
+                {'_id': case['_id']},
+                {'$push': {case_key: omim_number}},
+                return_document=pymongo.ReturnDocument.AFTER
             )
 
         if updated_case:

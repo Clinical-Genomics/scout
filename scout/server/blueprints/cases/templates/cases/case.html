@@ -272,7 +272,7 @@
     <div class="panel-heading">Diagnosis phenotypes</div>
     <div class="panel-body">{{ diagnosis_form('phenotype') }}</div>
     <ul class="list-group">
-      {% for omim_id in case.diagnosis_list %}
+      {% for omim_id in case.diagnosis_phenotypes %}
         <li class="list-group-item">
           <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
             {{ omim_id }}
