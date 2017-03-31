@@ -31,11 +31,7 @@
   {# ROW 2 #}
   <div class="row">
     <div class="col-md-6">{{ overview(gene) }}</div>
-    <div class="col-md-6">{{ inheritance(gene) }}</div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">{{ transcripts(gene) }}</div>
+    <div class="col-md-6">{{ transcripts(gene) }}</div>
   </div>
 {% endblock %}
 
@@ -67,7 +63,14 @@
     <li class="list-group-item">
       Incomplete penetrance (HPO)
       <span class="pull-right">
-        {{ 'yes' if gene.incomplete_penetrance else 'no' }}
+        {{ 'yes' if gene.incomplete_penetrance else 'unknown' }}
+      </span>
+    </li>
+
+    <li class="list-group-item">
+      Inheritance models
+      <span class="pull-right">
+        {{ gene.inheritance_models|join(', ') or '-' }}
       </span>
     </li>
   </ul>
@@ -79,33 +82,9 @@
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-          {{ transcript.refseq_id|join(', ') or transcript.ensembl_transcript_id }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
+          {{ transcript.refseq_ids|join(', ') or transcript.ensembl_transcript_id }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
         </li>
       {% endfor %}
     </ul>
-  </div>
-{% endmacro %}
-
-{% macro inheritance(gene) %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Inheritance</div>
-    <table class="table table-bordered table-hover">
-      <thead>
-        <tr>
-          {% for type_id, _ in gene.inheritance %}
-            <th>{{ type_id }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          {% for _, model in gene.inheritance %}
-            <td class="{{ 'bg-warning' if model }}">
-              {{ 'yes' if model else 'no' }}
-            </td>
-          {% endfor %}
-        </tr>
-      </tbody>
-    </table>
   </div>
 {% endmacro %}
