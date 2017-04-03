@@ -49,10 +49,14 @@ def parse_hpo_disease(hpo_line):
     
     hpo_info['source'] = disease[0]
     hpo_info['disease_nr'] = int(disease[1])
+    hpo_info['hgnc_symbol'] = None
+    hpo_info['hpo_term'] = None
+    
     if len(hpo_line) >= 3:
         hpo_info['hgnc_symbol'] = hpo_line[2]
-    else:
-        hpo_info['hgnc_symbol'] = None
+
+        if len(hpo_line) >= 4:
+            hpo_info['hpo_term'] = hpo_line[3]
     
     
     return hpo_info
@@ -111,21 +115,30 @@ def parse_hpo_diseases(hpo_lines):
             if disease_info:
                 disease_nr = disease_info['disease_nr']
                 hgnc_symbol = disease_info['hgnc_symbol']
+                hpo_term = disease_info['hpo_term']
                 source = disease_info['source']
                 disease_id = "{0}:{1}".format(source, disease_nr)
                 
                 if disease_id in diseases:
                     if hgnc_symbol:
                         diseases[disease_id]['hgnc_symbols'].add(hgnc_symbol)
+                    if hpo_term:
+                        diseases[disease_id]['hpo_terms'].add(hpo_term)
+                        
                 else:
                     if hgnc_symbol:
                         hgnc_symbols = set([hgnc_symbol])
                     else:
                         hgnc_symbols = set()
+                    if hpo_term:
+                        hpo_terms = set([hpo_term])
+                    else:
+                        hpo_terms = set()
                     diseases[disease_id] = {
                         'disease_nr': disease_nr,
                         'source': source,
                         'hgnc_symbols': hgnc_symbols,
+                        'hpo_terms': hpo_terms,
                     }
 
     logger.info("Parsing done.")
@@ -203,14 +216,14 @@ if __name__ == "__main__":
     #     hpo_term = phenotypes[hpo_id]
     #     pp(hpo_term)
 
-    # diseases = parse_hpo_diseases(file_handle)
-    # for mim_id in diseases:
-    #     disease = diseases[mim_id]
-    #     pp(disease)
+    diseases = parse_hpo_diseases(file_handle)
+    for mim_id in diseases:
+        disease = diseases[mim_id]
+        pp(disease)
 
-    incomplete_genes = get_incomplete_penetrance_genes(file_handle)
-    for gene in incomplete_genes:
-        print(gene)
+    # incomplete_genes = get_incomplete_penetrance_genes(file_handle)
+    # for gene in incomplete_genes:
+    #     print(gene)
     # genes = parse_hpo_genes(file_handle)
     # for hgnc_symbol in genes:
     #     gene = genes[hgnc_symbol]

@@ -20,6 +20,7 @@ from .hpo import hpo as hpo_command
 from .genes import genes as genes_command
 from .panel import panel as panel_command
 from .research import research as research_command
+from .disease import diseases as disease_command
 
 from scout.load.all import load_region
 
@@ -103,3 +104,4 @@ load.add_command(hpo_command)
 load.add_command(panel_command)
 load.add_command(user)
 load.add_command(research_command)
+load.add_command(disease_command)
