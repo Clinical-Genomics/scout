@@ -152,6 +152,7 @@ def configure_coverage(app):
         # first check request args
         session_language = request.args.get('lang')
         if session_language in accept_languages:
+            current_app.logger.info("using session language: %s", session_language)
             return session_language
 
         # language can be forced in config
