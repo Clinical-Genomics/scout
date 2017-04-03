@@ -18,6 +18,7 @@ morbidmap_file = 'resources/morbidmap.txt.gz'
 # Hpo resources
 hpogenes_file = 'resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt.gz'
 hpoterms_file = 'resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt.gz'
+hpo_phenotype_to_terms = 'resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt.gz'
 hpodisease_file = 'resources/diseases_to_genes.txt.gz'
 
 ###### Paths ######
@@ -38,3 +39,4 @@ morbidmap_path = pkg_resources.resource_filename('scout', morbidmap_file)
 hpogenes_path = pkg_resources.resource_filename('scout', hpogenes_file)
 hpoterms_path = pkg_resources.resource_filename('scout', hpoterms_file)
 hpodisease_path = pkg_resources.resource_filename('scout', hpodisease_file)
+hpo_phenotype_to_terms_path = pkg_resources.resource_filename('scout', hpo_phenotype_to_terms)

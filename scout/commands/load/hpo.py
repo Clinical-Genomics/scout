@@ -12,12 +12,9 @@ import logging
 
 import click
 
-from scout.load import load_hpo
-
+from scout.load.hpo import load_hpo_terms
 from scout.utils.handle import get_file_handle
-
-from scout.resources import (hpoterms_path, hpodisease_path)
-
+from scout.resources import hpoterms_path
 
 logger = logging.getLogger(__name__)
 
@@ -27,36 +24,27 @@ logger = logging.getLogger(__name__)
                 help="Path to hpo file",
                 default=hpoterms_path
 )
-@click.option('--hpo-disease',
-                type=click.Path(exists=True),
-                help="Path to file with hpo diseases",
-                default=hpodisease_path
-)
 @click.pass_context
-def hpo(ctx, hpo_terms, hpo_disease):
+def hpo(ctx, hpo_terms):
     """
     Load the hpo terms to the mongo database.
     """
     adapter = ctx.obj['adapter']
     
     logger.info("Dropping HpoTerms")
-    HpoTerm.drop_collection()
+    adapter.hpo_term_collection.drop()
     logger.debug("HpoTerms dropped")
-
-    logger.info("Dropping DiseaseTerms")
-    DiseaseTerm.drop_collection()
-    logger.debug("DiseaseTerms dropped")
     
     logger.info("Loading hpo terms from file {0}".format(hpo_terms))
-    logger.info("Loading hpo disease terms from file {0}".format(hpo_disease))
     
     hpo_terms_handle = get_file_handle(hpo_terms)
-    hpo_disease_handle = get_file_handle(hpo_disease)
+
+    alias_genes = adapter.genes_by_alias()
     
-    load_hpo(
+    load_hpo_terms(
         adapter=adapter,
         hpo_lines=hpo_terms_handle, 
-        disease_lines=hpo_disease_handle, 
+        genes=alias_genes, 
     )
-    
+
     logger.info("Successfully loaded all hpo terms")

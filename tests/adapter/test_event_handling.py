@@ -292,7 +292,9 @@ def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
     adapter.add_case(case_obj)
     
     #Existing mim phenotype
-    mim_term = 'OMIM:613855'
+    mim_obj = adapter.disease_term_collection.find_one()
+    mim_term = mim_obj['_id']
+    
     assert adapter.hpo_term_collection.find().count() > 0
     # GIVEN a populated database
     assert adapter.event_collection.find().count() == 0

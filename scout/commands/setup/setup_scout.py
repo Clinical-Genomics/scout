@@ -20,7 +20,7 @@ from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 # Import the resources to setup scout
 from scout.resources import (hgnc_path, exac_path, mim2gene_path,
                              genemap2_path, hpogenes_path, hpoterms_path,
-                             hpodisease_path)
+                             hpodisease_path, hpo_phenotype_to_terms_path)
 
 from scout.resources import transcripts37_path as transcripts37_path
 from scout.resources import transcripts38_path as transcripts38_path
@@ -30,7 +30,7 @@ from scout.resources import transcripts38_path as transcripts38_path
 from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path,
             transcripts37_reduced_path, mim2gene_reduced_path,
             genemap2_reduced_path, hpogenes_reduced_path,
-            hpoterms_reduced_path)
+            hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path)
 
 # Gene panel
 from scout.demo import (panel_path, clinical_snv_path, clinical_sv_path,
@@ -101,6 +101,7 @@ def database(context, institute_name, user_name, user_mail):
     transcripts38_handle = context.obj['transcripts38']
     exac_handle = context.obj['exac']
     hpo_genes_handle = context.obj['hpogenes']
+    
     mim2gene_handle = context.obj['mim2gene']
     genemap_handle = context.obj['genemap2']
 
@@ -128,11 +129,13 @@ def database(context, institute_name, user_name, user_mail):
 
     hpo_terms_handle = context.obj['hpo_terms']
     disease_handle = context.obj['disease_terms']
+    hpo_disease_handle = context.obj['hpodiseases']
 
     load_hpo(
         adapter=adapter,
         hpo_lines=hpo_terms_handle,
-        disease_lines=disease_handle
+        disease_lines=disease_handle,
+        hpo_disease_lines=hpo_disease_handle
     )
 
     log.info("Creating indexes")
@@ -206,11 +209,13 @@ def demo(context):
 
     hpo_terms_handle = context.obj['hpo_terms']
     disease_handle = context.obj['disease_terms']
+    hpo_disease_handle = context.obj['hpodiseases']
 
     load_hpo(
         adapter=adapter,
         hpo_lines=hpo_terms_handle,
-        disease_lines=disease_handle
+        disease_lines=disease_handle,
+        hpo_disease_lines=hpo_disease_handle
     )
 
     panel_info = {
@@ -279,9 +284,11 @@ def setup(context):
         log.info("Loading hpo gene info from %s", hpogenes_reduced_path)
         context.obj['hpogenes'] = get_file_handle(hpogenes_reduced_path)
         context.obj['hpogenes_38'] = get_file_handle(hpogenes_reduced_path)
+        log.info("Loading hpo disease info from %s", hpo_phenotype_to_terms_reduced_path)
+        context.obj['hpodiseases'] = get_file_handle(hpo_phenotype_to_terms_reduced_path)
         log.info("Loading hpo terms from %s", hpoterms_reduced_path)
         context.obj['hpo_terms'] = get_file_handle(hpoterms_reduced_path)
-        log.info("Loading hpo disease info from %s", genemap2_reduced_path)
+        log.info("Loading omim disease info from %s", genemap2_reduced_path)
         context.obj['disease_terms'] = get_file_handle(genemap2_reduced_path)
         log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
         context.obj['transcripts37'] = get_file_handle(transcripts37_reduced_path)
@@ -304,9 +311,11 @@ def setup(context):
         log.info("Loading hpo gene info from %s", hpogenes_path)
         context.obj['hpogenes'] = get_file_handle(hpogenes_path)
         context.obj['hpogenes_38'] = get_file_handle(hpogenes_path)
+        log.info("Loading hpo disease info from %s", hpo_phenotype_to_terms_path)
+        context.obj['hpodiseases'] = get_file_handle(hpo_phenotype_to_terms_path)
         log.info("Loading hpo terms from %s", hpoterms_path)
         context.obj['hpo_terms'] = get_file_handle(hpoterms_path)
-        log.info("Loading hpo disease info from %s", genemap2_path)
+        log.info("Loading omim disease info from %s", genemap2_path)
         context.obj['disease_terms'] = get_file_handle(genemap2_path)
         log.info("Loading transcripts build 37 info from %s", transcripts37_path)
         context.obj['transcripts37'] = get_file_handle(transcripts37_path)

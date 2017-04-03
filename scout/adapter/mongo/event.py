@@ -3,7 +3,6 @@ from datetime import datetime
 
 from bson import ObjectId
 import pymongo
-import phizz
 
 from scout.constants import CASE_STATUSES
 
@@ -353,12 +352,16 @@ class EventHandler(object):
                 is_group (bool): is phenotype term a group?
 
         """
+        hpo_results = []
         try:
             if hpo_term:
-                hpo_results = [{'hpo_term': hpo_term}]
+                hpo_results = [hpo_term]
             elif omim_term:
                 logger.debug("Fetching info for mim term {0}".format(omim_term))
-                hpo_results = phizz.query_disease([omim_term])
+                disease_obj = self.disease_term(omim_term)
+                if disease_obj:
+                    for hpo_term in disease_obj.get('hpo_terms', []):
+                        hpo_results.append(hpo_term)
             else:
                 raise ValueError('Must supply either hpo or omim term')
         except ValueError as e:
@@ -367,12 +370,12 @@ class EventHandler(object):
 
         existing_terms = set(term['phenotype_id'] for term in
                              case.get('phenotype_terms', []))
-
+        
         updated_case = case
         phenotype_terms = []
-        for hpo_result in hpo_results:
+        for hpo_term in hpo_results:
             logger.debug("Fetching info for hpo term {0}".format(hpo_term))
-            hpo_obj = self.hpo_term(hpo_result['hpo_term'])
+            hpo_obj = self.hpo_term(hpo_term)
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
 
@@ -400,7 +403,7 @@ class EventHandler(object):
                 updated_case = self.case_collection.find_one_and_update(
                     {'_id': case['_id']},
                     {
-                        '$push': {
+                        '$addToSet': {
                             'phenotype_terms': {'$each': phenotype_terms},
                             'phenotype_groups': {'$each': phenotype_terms},
                         },
@@ -411,7 +414,7 @@ class EventHandler(object):
                 updated_case = self.case_collection.find_one_and_update(
                     {'_id': case['_id']},
                     {
-                        '$push': {
+                        '$addToSet': {
                             'phenotype_terms': {'$each': phenotype_terms},
                         },
                     },

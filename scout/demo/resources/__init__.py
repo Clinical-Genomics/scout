@@ -14,6 +14,8 @@ genemap2_file = 'demo/resources/genemap2_reduced.txt'
 # Hpo resources
 hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt'
 hpoterms_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt'
+hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt'
+
 
 ###### Paths ######
 
@@ -29,3 +31,4 @@ genemap2_reduced_path = pkg_resources.resource_filename('scout', genemap2_file)
 # Hpo paths
 hpogenes_reduced_path = pkg_resources.resource_filename('scout', hpogenes_file)
 hpoterms_reduced_path = pkg_resources.resource_filename('scout', hpoterms_file)
+hpo_phenotype_to_terms_reduced_path = pkg_resources.resource_filename('scout', hpo_phenotype_to_terms)

@@ -23,6 +23,7 @@ def build_disease_term(disease_info, alias_genes={}):
             source = str, # required
             inheritance = list, # list of strings
             genes = list, # List with integers that are hgnc_ids 
+            hpo_terms = list, # List with str that are hpo_terms 
         )
         
     """
@@ -59,6 +60,9 @@ def build_disease_term(disease_info, alias_genes={}):
             log.debug("Gene symbol %s could not be found in database", hgnc_symbol)
 
     disease_obj['genes'] = list(hgnc_ids)
+    
+    if 'hpo_terms' in disease_info:
+        disease_obj['hpo_terms'] = list(disease_info['hpo_terms'])
     
     return disease_obj
     
