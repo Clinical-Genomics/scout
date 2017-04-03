@@ -446,8 +446,8 @@
         <span class="pull-right">
           {% if variant.max_exac_frequency %}
             {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
+            {{ variant.exac_frequency|human_decimal }}
           {% endif %}
-          {{ variant.exac_frequency|human_decimal }}
         </span>
       </li>
     </ul>
@@ -539,16 +539,14 @@
           {% endfor %}
         </span>
       </li>
-      {% if variant.expected_inheritance %}
-        <li class="list-group-item">
-          Expected
-          <span class="pull-right">
-            {% for model in variant.expected_inheritance|sort %}
-              <span class="label label-default">{{ model }}</span>
-            {% endfor %}
-          </span>
-        </li>
-      {% endif %}
+      <li class="list-group-item">
+        Expected
+        <span class="pull-right">
+          {% for model in variant.expected_inheritance|sort %}
+            <span class="label label-default">{{ model }}</span>
+          {% endfor %}
+        </span>
+      </li>
     </ul>
     <div class="panel-heading">Incomplete penetrance</div>
     <table class="table table-bordered">
