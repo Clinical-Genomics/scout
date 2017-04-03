@@ -28,6 +28,10 @@ from scout.build import (build_institute, build_case, build_panel, build_variant
 from scout.load import (load_hgnc_genes, load_panel)
 from scout.load.hpo import load_hpo
 
+# These are the reduced data files
+from scout.demo.resources import *
+from scout.demo import *
+
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
@@ -45,18 +49,18 @@ ped_path = "tests/fixtures/643594.ped"
 scout_yaml_config = 'tests/fixtures/643594.config.yaml'
 
 # Panel file
-panel_1_path = "tests/fixtures/gene_lists/panel_1.txt"
+panel_1_path = panel_path
 madeline_file = "tests/fixtures/madeline.xml"
 
 # Resource files
-hgnc_path = "tests/fixtures/resources/hgnc_reduced_set.txt"
-ensembl_transcript_path = "tests/fixtures/resources/ensembl_transcripts_reduced.txt"
-exac_genes_path = "tests/fixtures/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
-hpo_genes_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt"
-hpo_terms_path = "tests/fixtures/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
-hpo_disease_path = "tests/fixtures/resources/diseases_to_genes.txt"
-mim2gene_path = "tests/fixtures/resources/mim2gene_reduced.txt"
-genemap_path = "tests/fixtures/resources/genemap2_reduced.txt"
+hgnc_path = hgnc_reduced_path
+ensembl_transcript_path = transcripts37_reduced_path
+exac_genes_path = exac_reduced_path
+hpo_genes_path = hpogenes_reduced_path
+hpo_terms_path = hpoterms_reduced_path
+hpo_disease_path = hpo_phenotype_to_terms_reduced_path
+mim2gene_path = mim2gene_reduced_path
+genemap_path = genemap2_reduced_path
 mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 ##################### Gene fixtures #####################
@@ -369,14 +373,15 @@ def real_gene_database(request, real_institute_database, genes):
 
 
 @pytest.fixture(scope='function')
-def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle):
+def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
 
     load_hpo(
         adapter=gene_database,
         hpo_lines=hpo_terms_handle,
-        disease_lines=genemap_handle
+        disease_lines=genemap_handle,
+        hpo_disease_lines=hpo_disease_handle,
     )
 
     return adapter
@@ -389,7 +394,8 @@ def real_hpo_database(request, real_gene_database, hpo_terms_handle, genemap_han
     load_hpo(
         adapter=gene_database,
         hpo_lines=hpo_terms_handle,
-        disease_lines=genemap_handle
+        disease_lines=genemap_handle,
+        hpo_disease_lines=hpo_disease_handle
     )
 
     return adapter
@@ -766,6 +772,7 @@ def hpo_disease_file(request):
     print('')
     return hpo_disease_path
 
+
 @pytest.fixture
 def mim2gene_file(request):
     """Get the path to the mim2genes file"""
@@ -869,6 +876,12 @@ def hpo_genes_handle(request, hpo_genes_file):
     """Get a file handle to a hpo gene file"""
     print('')
     return get_file_handle(hpo_genes_file)
+
+@pytest.fixture
+def hpo_disease_handle(request, hpo_disease_file):
+    """Get a file handle to a hpo disease file"""
+    print('')
+    return get_file_handle(hpo_disease_file)
 
 @pytest.fixture
 def mim2gene_handle(request, mim2gene_file):

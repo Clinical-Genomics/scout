@@ -1,6 +1,6 @@
 from scout.load.hpo import (load_hpo, load_disease_terms, load_hpo_terms)
 
-def test_load_disease_terms(gene_database, genemap_handle):
+def test_load_disease_terms(gene_database, genemap_handle, hpo_disease_handle):
     adapter = gene_database
     alias_genes = adapter.genes_by_alias()
     
@@ -11,7 +11,8 @@ def test_load_disease_terms(gene_database, genemap_handle):
     load_disease_terms(
         adapter=adapter,
         genemap_lines=genemap_handle,
-        genes=alias_genes
+        genes=alias_genes,
+        hpo_disease_lines=hpo_disease_handle,
     )
 
     # THEN make sure that the disease terms are in the database
@@ -37,7 +38,7 @@ def test_load_hpo_terms(gene_database, hpo_terms_handle):
     hpo_terms_objs = adapter.hpo_terms()
     assert hpo_terms_objs.count() > 0
 
-def test_load_hpo(gene_database, hpo_terms_handle, genemap_handle):
+def test_load_hpo(gene_database, hpo_terms_handle, genemap_handle, hpo_disease_handle):
     adapter = gene_database
     # GIVEN a populated database with genes
     assert gene_database.hpo_terms().count() == 0
@@ -46,7 +47,8 @@ def test_load_hpo(gene_database, hpo_terms_handle, genemap_handle):
     load_hpo(
         adapter=gene_database,
         hpo_lines=hpo_terms_handle,
-        disease_lines=genemap_handle
+        disease_lines=genemap_handle,
+        hpo_disease_lines=hpo_disease_handle,
     )
 
     # THEN make sure that the disease terms are in the database
