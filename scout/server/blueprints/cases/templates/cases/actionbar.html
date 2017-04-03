@@ -191,6 +191,7 @@
       </div>
     </form>
     <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
+    <p><a href="{{ url_for('report.pdf', group_id=case._id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', '), dl='yes') }}">Download PDF</a></p>
   </div>
 {% endmacro %}
 
