@@ -104,7 +104,7 @@
 {% endblock %}
 
 {% macro sanger_button() %}
-  {% if variant.ordered_sanger %}
+  {% if variant.sanger_ordered %}
     {% if variant.validation %}
       <p class="navbar-text">Sanger: {{ variant.validation }}</p>
     {% else %}

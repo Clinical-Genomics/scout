@@ -89,6 +89,5 @@ def sanger(institute_id, case_name, variant_id):
         controllers.sanger(store, mail, institute_obj, case_obj, user_obj,
                            variant_obj, current_app.config['MAIL_USERNAME'])
     except controllers.MissingSangerRecipientError:
-        flash('No sanger recipients added to institute.', 'info')
-        return abort(403)
+        flash('No sanger recipients added to institute.', 'danger')
     return redirect(request.referrer)
