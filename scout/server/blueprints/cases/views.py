@@ -209,8 +209,8 @@ def hpoterms():
     if query is None:
         return abort(500)
     terms = store.hpo_terms(query=query).limit(8)
-    json_terms = [{'name': '{} | {}'.format(term['hpo_id'], term['description']),
-                   'id': term['hpo_id']} for term in terms]
+    json_terms = [{'name': '{} | {}'.format(term['_id'], term['description']),
+                   'id': term['_id']} for term in terms]
     return jsonify(json_terms)
 
 
