@@ -20,7 +20,7 @@ This README only gives a brief overview of Scout, for a more complete reference,
 
 ## Installation
 
-You can install the latest release of Scout using `pip`:
+<!-- You can install the latest release of Scout using `pip`:
 
 ```bash
 pip install scout-browser
@@ -29,12 +29,12 @@ pip install scout-browser
 pip install scout-browser[coverage]
 ```
 
-If you would like to install Scout for local development:
+If you would like to install Scout for local development: -->
 
 ```bash
 git clone https://github.com/Clinical-Genomics/scout
 cd scout
-pip install --requirement requirements-dev.txt --editable .
+pip install --requirement requirements.txt --editable .
 ```
 
 You also need to have an instance of MongoDB running. I've found that it's easiest to do using the official Docker image:
