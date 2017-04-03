@@ -614,13 +614,13 @@ class EventHandler(object):
             variant (dict): A variant object
 
         Returns:
-            updated_case(dict)
+            updated_variant(dict)
         """
         logger.info("Creating event for ordering sanger for variant"\
                     " {0}".format(variant['display_name']))
 
-        updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id':variant['_id']},
             {'$set': {'sanger_ordered': True}},
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -649,7 +649,7 @@ class EventHandler(object):
             variant=variant,
             subject=variant['display_name'],
         )
-        return updated_case
+        return updated_variant
 
     def validate(self, institute, case, user, link, variant, validate_type):
         """Mark validation status for a variant.
