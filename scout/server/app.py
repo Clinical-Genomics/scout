@@ -21,9 +21,9 @@ from .blueprints import public, genes, cases, login, variants, panels, pileup
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
+    app.config.from_pyfile('config.py')
     if config:
         app.config.update(config)
-    app.config.from_pyfile('config.py')
     if config_file:
         app.config.from_pyfile(config_file)
 
