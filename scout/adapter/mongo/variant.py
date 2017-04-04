@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
+
 import pymongo
 
 from pymongo.errors import DuplicateKeyError
@@ -17,6 +19,8 @@ class VariantHandler(object):
         gene_panels = gene_panels or []
 
         # We need to check if there are any additional information in the gene panels
+        
+        # extra_info will hold information from gene panels
         extra_info = {}
         for panel_obj in gene_panels:
             for gene_info in panel_obj['genes']:
@@ -36,15 +40,18 @@ class VariantHandler(object):
             # Create a dictionary with transcripts information
             transcripts_dict = {}
             if hgnc_gene:
+                # Add transcript information from the hgnc gene
                 for transcript in hgnc_gene.get('transcripts',[]):
                     tx_id = transcript['ensembl_transcript_id']
                     transcripts_dict[tx_id] = transcript
 
+                # Add the transcripts to the gene object
                 hgnc_gene['transcripts_dict'] = transcripts_dict
 
                 if hgnc_gene.get('incomplete_penetrance'):
                     variant_gene['omim_penetrance'] = True
 
+            # Get the panel specific information for the gene
             panel_info = extra_info.get(hgnc_id, [])
 
             # Manually annotated disease associated transcripts
@@ -53,9 +60,14 @@ class VariantHandler(object):
             mosaicism = False
             manual_inheritance = set()
 
+            # We need to loop since there can be information from multiple 
+            # panels
             for gene_info in panel_info:
+                # Check if there are manually annotated disease transcripts
                 if gene_info.get('disease_associated_transcripts'):
                     for tx in gene_info['disease_associated_transcripts']:
+                        # We remove the version of transcript at this stage
+                        tx = re.sub(r'\.[0-9]', '', tx)
                         disease_associated.add(tx)
                 if gene_info.get('reduced_penetrance'):
                     manual_penetrance = True
@@ -82,6 +94,8 @@ class VariantHandler(object):
 
             # Now add the information from hgnc and panels
             # to the transcripts on the variant
+            
+            # First loop over the variants transcripts
             for transcript in variant_gene.get('transcripts', []):
                 tx_id = transcript['transcript_id']
                 if tx_id in transcripts_dict:
@@ -92,6 +106,7 @@ class VariantHandler(object):
                         refseq_ids = hgnc_transcript['refseq_id']
                         transcript['ref_seq'] = refseq_ids
 
+                        # Check if any of the refseq ids are disease associated
                         for refseq_id in refseq_ids:
                             if refseq_id in disease_associated:
                                 transcript['is_disease_associated'] = True
