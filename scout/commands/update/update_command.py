@@ -2,6 +2,8 @@ import logging
 
 import click
 
+from .case import case as case_command
+
 log = logging.getLogger(__name__)
 
 @click.command('user', short_help='Update a user')
@@ -68,3 +70,4 @@ def update(context):
     pass
 
 update.add_command(user)
+update.add_command(case_command)
