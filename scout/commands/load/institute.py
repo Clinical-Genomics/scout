@@ -8,7 +8,6 @@ from scout.load import load_institute
 
 @click.command('institute', short_help='Load a institute')
 @click.option('-i', '--internal_id',
-                type=str,
                 required=True
 )
 @click.option('-d', '--display_name',
