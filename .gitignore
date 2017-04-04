@@ -58,6 +58,7 @@ instance
 
 # Node.js
 node_modules/
+_book/
 
 # Textmate
 .tm_properties
