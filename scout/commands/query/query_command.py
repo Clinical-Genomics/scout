@@ -2,6 +2,8 @@ import logging
 
 import click
 
+log = logging.getLogger(__name__)
+
 @click.command('hgnc', short_help='Check if a gene exist')
 @click.option('--hgnc-symbol', '-s',
                 help="A valid hgnc symbol",
@@ -28,15 +30,15 @@ def hgnc(ctx, hgnc_symbol, hgnc_id, build):
     elif hgnc_symbol:
         result = adapter.hgnc_genes(hgnc_symbol)
     else:
-        logger.warning("Please provide a hgnc symbol or hgnc id")
+        log.warning("Please provide a hgnc symbol or hgnc id")
         ctx.abort()
     
     if results.count() == 0:
-        logger.info("No results found")
+        log.info("No results found")
     
     else:
         for result in results:
-            print(result)
+            click.echo(result)
 
 @click.group()
 @click.pass_context

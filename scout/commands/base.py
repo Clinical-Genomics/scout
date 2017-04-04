@@ -24,6 +24,7 @@ from scout.commands.query import query as query_command
 from scout.commands.view import view as view_command
 from scout.commands.delete import delete
 from scout.commands.serve import serve
+from scout.commands.update import update as update_command
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 log = logging.getLogger(__name__)
@@ -125,7 +126,7 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
 
 
 cli.add_command(load_command)
-cli.add_command(transfer)
+# cli.add_command(transfer)
 cli.add_command(wipe)
 cli.add_command(setup_command)
 cli.add_command(export)
@@ -134,3 +135,4 @@ cli.add_command(query_command)
 cli.add_command(view_command)
 cli.add_command(delete)
 cli.add_command(serve)
+cli.add_command(update_command)
