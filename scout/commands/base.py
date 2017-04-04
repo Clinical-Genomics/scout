@@ -17,7 +17,6 @@ from scout import __version__
 from scout.commands.load import load as load_command
 from scout.commands.export import export
 from scout.commands.wipe_database import wipe
-from scout.commands.transfer import transfer
 from scout.commands.setup import setup as setup_command
 from scout.commands.convert import convert
 from scout.commands.query import query as query_command
@@ -126,7 +125,6 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
 
 
 cli.add_command(load_command)
-# cli.add_command(transfer)
 cli.add_command(wipe)
 cli.add_command(setup_command)
 cli.add_command(export)
