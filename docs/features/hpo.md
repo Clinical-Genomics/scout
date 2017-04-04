@@ -4,13 +4,13 @@ For every case you have the opportunity to add related HPO phenotype terms to de
 
 ## HPO gene panel
 
-Every HPO term is linked to a set of genes. It it interesting to see which genes that overlap with your phenotype terms. To generate such a list, locate the "HPO panel" button. You can optionally select which terms to include by using the checkboxes next to the HPO terms.
+Every HPO term is linked to a set of genes. It it interesting to see which genes that overlap with your phenotype terms. To generate such a list, locate the "HPO panel" button. You can optionally select which terms to include by using the check boxes next to the HPO terms.
 
 By default only genes matching _every_ selected HPO term is returned. This setting can be customized by entering the minimum number of HPO terms a gene is required to overlap.
 
 > The panel is only stored until a user regenerates the panel!
 
-The generated panel will show up just below under "HPO gene panel". To filter the list of variants using the generated panel, locate the "HPO panels" dropdown in the top bar on the "variants" page.
+The generated panel will show up just below under "HPO gene panel".
 
 ## Phenomizer diseases
 
