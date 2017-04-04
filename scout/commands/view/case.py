@@ -37,5 +37,12 @@ def cases(context, institute, reruns, finished, causatives, research_requested,
     if models.count() == 0:
         click.echo("No cases could be found")
     
-    for model in models:
-        click.echo(model['_id'])
+    else:
+        click.echo("#case_id\tdisplay_name\towner\tcollaborators")
+        for model in models:
+            click.echo("{0}\t{1}\t{2}\t{3}".format(
+                model['_id'],
+                model['display_name'],
+                model['owner'],
+                ', '.join(model['collaborators']),
+            ))
