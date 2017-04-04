@@ -12,18 +12,6 @@ SEX_MAP = {'1': 'male', '2': 'female'}
 PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
 
 
-def user_institutes(store, user_obj):
-    """Preprocess institute objects."""
-    if user_obj.is_admin:
-        institutes = store.institutes()
-    else:
-        institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
-
-    for institute in institutes:
-        case_count = store.cases(collaborator=institute['_id']).count()
-        yield (institute, case_count)
-
-
 def cases(store, case_query):
     """Preprocess case objects."""
     case_groups = {status: [] for status in CASE_STATUSES}

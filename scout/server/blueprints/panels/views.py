@@ -5,7 +5,7 @@ from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
 
 from scout.server.extensions import store
-from scout.server.utils import templated
+from scout.server.utils import templated, user_institutes
 from .forms import PanelGeneForm
 from . import controllers
 
@@ -18,9 +18,8 @@ panels_bp = Blueprint('panels', __name__, template_folder='templates')
 def panels():
     """Show all panels for a case."""
     panel_groups = []
-    for institute_id in current_user.institutes:
-        institute_obj = store.institute(institute_id)
-        institute_panels = store.gene_panels(institute_id=institute_id)
+    for institute_obj in user_institutes(store, current_user):
+        institute_panels = store.gene_panels(institute_id=institute_obj['_id'])
         panel_groups.append((institute_obj, institute_panels))
     return dict(panel_groups=panel_groups)
 
