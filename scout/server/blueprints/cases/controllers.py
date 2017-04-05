@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import itertools
+
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer
@@ -52,6 +54,10 @@ def case(store, institute_obj, case_obj):
             full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
             case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
+
+    for hpo_term in itertools.chain(case_obj['phenotype_groups'], case_obj['phenotype_terms']):
+        hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
+                                .format(hpo_term['phenotype_id']))
 
     # other collaborators than the owner of the case
     case_obj['o_collaborators'] = [collab_id for collab_id in
