@@ -446,8 +446,8 @@
         <span class="pull-right">
           {% if variant.max_exac_frequency %}
             {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
-            {{ variant.exac_frequency|human_decimal }}
           {% endif %}
+          {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
         </span>
       </li>
     </ul>
