@@ -17,7 +17,7 @@
   </li>
   <li>
     <a href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
-      {{ variant.variant_type|capitalize }} SV variants
+      {{ variant.variant_type|capitalize }} structural variants
     </a>
   </li>
   <li class="active">
@@ -198,9 +198,6 @@
           </td>
           <td>
             <a class="btn btn-link form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-          </td>
-          <td>
-            <a class="btn btn-link form-control" href="https://www.solvebio.com/variant/GRCh37-chr{{ variant.chromosome }}-{{ variant.position }}-{{ variant.end }}-{{ variant.alternative }}" target="_blank">SolveBio</a>
           </td>
         </tr>
       </tbody>

@@ -19,7 +19,7 @@
   </li>
   <li>
     <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
-      {{ variant.variant_type|capitalize }} SNV variants
+      {{ variant.variant_type|capitalize }} variants
     </a>
   </li>
   <li class="active">

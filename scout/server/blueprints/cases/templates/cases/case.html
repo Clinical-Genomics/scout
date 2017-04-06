@@ -75,15 +75,15 @@
 {% macro variants_buttons() %}
   <div class="form-group">
     <div class="btn-group btn-group-justified">
-      <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV variants</a>
-      <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical SV variants</a>
+      <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical variants</a>
+      <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
     </div>
   </div>
   {% if case.is_research %}
     <div class="form-group">
       <div class="btn-group btn-group-justified">
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV variants</a>
-        <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SV variants</a>
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research variants</a>
+        <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
       </div>
     </div>
   {% endif %}
