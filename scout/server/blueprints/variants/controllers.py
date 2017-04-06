@@ -74,10 +74,14 @@ def parse_variant(store, variant_obj):
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
+            has_updated = False
             if gene_obj.get('hgnc_symbol') is None:
                 hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
                 if hgnc_gene:
+                    has_updated = True
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+        if has_updated:
+            variant_obj = store.update_variant(variant_obj)
         gene_data = get_predictions(variant_genes)
         variant_obj.update(gene_data)
     return variant_obj
@@ -198,16 +202,13 @@ def parse_gene(gene_obj):
     gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
     gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
                                "section.pl?identifier={}".format(ensembl_id))
-    gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gquery/?term={}"
+    gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
                                .format(gene_obj['common']['entrez_id']))
 
     reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
                      "&species=Entries+without+species&cluster=true".format(ensembl_id))
     gene_obj['reactome_link'] = reactome_link
-    expression_link = ("https://www.ebi.ac.uk/gxa/genes/{}?bs=%7B%22homo+sapiens%22%3A%7B%22"
-                       "CELL_LINE%22%3Atrue%2C%22ORGANISM_PART%22%3Atrue%7D%7D&ds=%7B%22"
-                       "species%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D".format(ensembl_id))
-    gene_obj['expression_atlas_link'] = expression_link
+    gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
     for tx_obj in gene_obj['transcripts']:
         parse_transcript(gene_obj, tx_obj)
 

@@ -19,7 +19,7 @@ class VariantHandler(object):
         gene_panels = gene_panels or []
 
         # We need to check if there are any additional information in the gene panels
-        
+
         # extra_info will hold information from gene panels
         extra_info = {}
         for panel_obj in gene_panels:
@@ -60,7 +60,7 @@ class VariantHandler(object):
             mosaicism = False
             manual_inheritance = set()
 
-            # We need to loop since there can be information from multiple 
+            # We need to loop since there can be information from multiple
             # panels
             for gene_info in panel_info:
                 # Check if there are manually annotated disease transcripts
@@ -94,7 +94,7 @@ class VariantHandler(object):
 
             # Now add the information from hgnc and panels
             # to the transcripts on the variant
-            
+
             # First loop over the variants transcripts
             for transcript in variant_gene.get('transcripts', []):
                 tx_id = transcript['transcript_id']
@@ -219,6 +219,22 @@ class VariantHandler(object):
             'variant_id': {'$in': variant_ids}
         })
 
+    def update_variant(self, variant_obj):
+        """Update one variant document in the database.
+
+        Args:
+            variant_obj(dict)
+
+        Returns:
+            new_variant(dict)
+        """
+        new_variant = self.variant_collection.find_one_and_replace(
+            {'_id': variant_obj['_id']},
+            variant_obj,
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        return new_variant
+
     def update_variants(self, case_obj, variant_type='clinical', category='snv'):
         """Adds extra information on variants.
 
@@ -244,13 +260,11 @@ class VariantHandler(object):
         for index, variant in enumerate(variants):
             # This is a list with the updated compound documents
             compound_objs = []
-            for compound in variant.get('compounds',[]):
+            for compound in variant.get('compounds', []):
                 not_loaded = True
                 gene_objs = []
                 # Check if the compound variant exists
-                variant_obj = self.variant_collection.find_one(
-                                        {'_id':compound['variant']}
-                                    )
+                variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
                 # If the variant exosts we try to collect as much info as possible
                 if variant_obj:
                     not_loaded = False
