@@ -259,42 +259,44 @@ class VariantHandler(object):
         # Update the information on all compounds
         for index, variant in enumerate(variants):
             # This is a list with the updated compound documents
-            compound_objs = []
-            for compound in variant.get('compounds', []):
-                not_loaded = True
-                gene_objs = []
-                # Check if the compound variant exists
-                variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
-                # If the variant exosts we try to collect as much info as possible
-                if variant_obj:
-                    not_loaded = False
-                    compound['rank_score'] = variant_obj['rank_score']
-                    for gene in variant_obj['genes']:
-                        gene_obj = {
-                            'hgnc_id': gene['hgnc_id'],
-                            'hgnc_symbol': gene.get('hgnc_symbol'),
-                            'region_annotation': gene.get('region_annotation'),
-                            'functional_annotation': gene.get('functional_annotation'),
-                        }
-                        gene_objs.append(gene_obj)
-
-                compound['not_loaded'] = not_loaded
-                compound['genes'] = gene_objs
-                compound_objs.append(compound)
-
-
-            updated_variant = self.variant_collection.find_one_and_update(
+            compound_objs = self.update_compounds(variant)
+            self.variant_collection.find_one_and_update(
                 {'_id': variant['_id']},
                 {
                     '$set': {
-                        'variant_rank': index+1,
+                        'variant_rank': index + 1,
                         'compounds': compound_objs,
                     }
-                },
-                return_document=pymongo.ReturnDocument.AFTER
+                }
             )
 
         logger.info("Updating variant_rank done")
+
+    def update_compounds(self, variant):
+        """Update compounds for a variant."""
+        compound_objs = []
+        for compound in variant.get('compounds', []):
+            not_loaded = True
+            gene_objs = []
+            # Check if the compound variant exists
+            variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
+            # If the variant exosts we try to collect as much info as possible
+            if variant_obj:
+                not_loaded = False
+                compound['rank_score'] = variant_obj['rank_score']
+                for gene in variant_obj['genes']:
+                    gene_obj = {
+                        'hgnc_id': gene['hgnc_id'],
+                        'hgnc_symbol': gene.get('hgnc_symbol'),
+                        'region_annotation': gene.get('region_annotation'),
+                        'functional_annotation': gene.get('functional_annotation'),
+                    }
+                    gene_objs.append(gene_obj)
+
+            compound['not_loaded'] = not_loaded
+            compound['genes'] = gene_objs
+            compound_objs.append(compound)
+        return compound_objs
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
@@ -332,67 +334,6 @@ class VariantHandler(object):
             same_variant = other_variant['display_name'].startswith(variant_id)
             if (not_same_case and same_variant):
                 yield other_variant
-
-    def next_variant(self, document_id):
-        """Returns the next variant from the rank order.
-
-          Arguments:
-              document_id(str) : A md5 key that represents the variant
-
-          Returns:
-              variant_object(dict):
-        """
-        current_variant = self.variant_collection.find_one(
-            {'_id': document_id}
-        )
-        logger.info("Fetching next variant for %s",
-                    current_variant['display_name'])
-
-        rank = current_variant['variant_rank'] or 0
-        case_id = current_variant['case_id']
-        variant_type = current_variant['variant_type']
-        category = current_variant['category']
-
-        return self.variant_collection.find_one(
-            {
-              'case_id': case_id,
-              'variant_type': variant_type,
-              'category': category,
-              'variant_rank': rank + 1
-            }
-        )
-
-    def previous_variant(self, document_id):
-        """Returns the previus variant from the rank order
-
-            Arguments:
-                document_id(str) : A md5 key that represents the variant
-
-            Returns:
-                variant_object(dict):
-        """
-        current_variant = self.variant_collection.find_one(
-            {'_id': document_id}
-        )
-        logger.info("Fetching next variant for %s",
-                    current_variant['display_name'])
-
-        rank = current_variant['variant_rank'] or 0
-        case_id = current_variant['case_id']
-        variant_type = current_variant['variant_type']
-        category = current_variant['category']
-
-        if variant_rank < 2:
-            return None
-        else:
-            return self.variant_collection.find_one(
-                {
-                  'case_id': case_id,
-                  'variant_type': variant_type,
-                  'category': category,
-                  'variant_rank': rank - 1
-                }
-            )
 
     def delete_variants(self, case_id, variant_type):
         """Delete variants of one type for a case

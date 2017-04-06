@@ -71,19 +71,32 @@ def sv_variant(store, institute_id, case_name, variant_id):
 
 def parse_variant(store, variant_obj):
     """Parse information about variants."""
+    update_variant = False
+    compounds = variant_obj.get('compounds', [])
+    if compounds:
+        # Check if we need to add compound information
+        if 'not_loaded' not in compounds[0]:
+            new_compounds = store.update_compounds(variant_obj)
+            variant_obj['compounds'] = new_compounds
+            update_variant = True
+
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
-            has_updated = False
             if gene_obj.get('hgnc_symbol') is None:
                 hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
                 if hgnc_gene:
-                    has_updated = True
+                    update_variant = True
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
-        if has_updated:
-            variant_obj = store.update_variant(variant_obj)
-        gene_data = get_predictions(variant_genes)
-        variant_obj.update(gene_data)
+
+    if update_variant:
+        variant_obj = store.update_variant(variant_obj)
+
+    if variant_genes:
+        variant_obj.update(get_predictions(variant_genes))
+    for compound_obj in compounds:
+        compound_obj.update(get_predictions(compound_obj['genes']))
+
     return variant_obj
 
 
@@ -101,7 +114,7 @@ def get_predictions(genes):
             if len(genes) == 1:
                 value = gene_obj.get(gene_key, '-')
             else:
-                gene_id = gene_obj.get('hgnc_symbol', str(gene_obj['hgnc_id']))
+                gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
                 value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
     return data

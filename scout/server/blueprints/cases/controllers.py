@@ -55,7 +55,8 @@ def case(store, institute_obj, case_obj):
             case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
 
-    for hpo_term in itertools.chain(case_obj['phenotype_groups'], case_obj['phenotype_terms']):
+    for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
+                                    case_obj.get('phenotype_terms', [])):
         hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
                                 .format(hpo_term['phenotype_id']))
 

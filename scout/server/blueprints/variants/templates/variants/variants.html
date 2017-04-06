@@ -108,9 +108,7 @@
 
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variants.variant',
-                      institute_id=institute._id,
-                      case_name=case.display_name,
+     href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
@@ -163,7 +161,7 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover focus" data-content="{{ compounds_table(institute._id, case.display_name, variant.compounds) }}">Compounds</a>
+    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" data-html="true" data-trigger="hover click" data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
   {% endif %}
 {% endmacro %}
 
