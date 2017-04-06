@@ -814,7 +814,7 @@
               </td>
               <td>
                 {% for refseq in transcript.refseq_links %}
-                  <a href="{{ refseq.link }}">{{ refseq.id }}</a>
+                  <a href="{{ refseq.link }}" target="_blank">{{ refseq.id }}</a>
                 {% endfor %}
               </td>
               <td>{{ transcript.biotype or '' }}</td>
