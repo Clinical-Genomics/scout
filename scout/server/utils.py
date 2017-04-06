@@ -53,3 +53,13 @@ def institute_and_case(store, institute_id, case_name=None):
         flash("You don't have acccess to: {}".format(institute_obj['display_name']),
               'danger')
         return abort(403)
+
+
+def user_institutes(store, login_user):
+    """Preprocess institute objects."""
+    if login_user.is_admin:
+        institutes = store.institutes()
+    else:
+        institutes = (store.institute(inst_id) for inst_id in login_user.institutes)
+
+    return institutes

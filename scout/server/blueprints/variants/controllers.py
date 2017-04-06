@@ -21,7 +21,7 @@ def variants(store, variants_query, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(store, variant_obj) for variant_obj in
+        'variants': (parse_variant(store, variant_obj, update=True) for variant_obj in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -38,7 +38,7 @@ def sv_variants(store, institute_id, case_name, page, variant_type, per_page=50)
     return dict(
         institute=institute_obj,
         case=case_obj,
-        variants=(parse_variant(store, variant) for variant in
+        variants=(parse_variant(store, variant, update=True) for variant in
                   variants_query.skip(skip_count).limit(per_page)),
         more_variants=more_variants,
         query=query,
@@ -69,17 +69,34 @@ def sv_variant(store, institute_id, case_name, variant_id):
     )
 
 
-def parse_variant(store, variant_obj):
+def parse_variant(store, variant_obj, update=False):
     """Parse information about variants."""
+    has_changed = False
+    compounds = variant_obj.get('compounds', [])
+    if compounds:
+        # Check if we need to add compound information
+        if 'not_loaded' not in compounds[0]:
+            new_compounds = store.update_compounds(variant_obj)
+            variant_obj['compounds'] = new_compounds
+            has_changed = True
+
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
             if gene_obj.get('hgnc_symbol') is None:
                 hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
                 if hgnc_gene:
+                    has_changed = True
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
-        gene_data = get_predictions(variant_genes)
-        variant_obj.update(gene_data)
+
+    if update and has_changed:
+        variant_obj = store.update_variant(variant_obj)
+
+    if variant_genes:
+        variant_obj.update(get_predictions(variant_genes))
+    for compound_obj in compounds:
+        compound_obj.update(get_predictions(compound_obj['genes']))
+
     return variant_obj
 
 
@@ -97,7 +114,7 @@ def get_predictions(genes):
             if len(genes) == 1:
                 value = gene_obj.get(gene_key, '-')
             else:
-                gene_id = gene_obj.get('hgnc_symbol', str(gene_obj['hgnc_id']))
+                gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
                 value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
     return data
@@ -198,16 +215,13 @@ def parse_gene(gene_obj):
     gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
     gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
                                "section.pl?identifier={}".format(ensembl_id))
-    gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gquery/?term={}"
+    gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
                                .format(gene_obj['common']['entrez_id']))
 
     reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
                      "&species=Entries+without+species&cluster=true".format(ensembl_id))
     gene_obj['reactome_link'] = reactome_link
-    expression_link = ("https://www.ebi.ac.uk/gxa/genes/{}?bs=%7B%22homo+sapiens%22%3A%7B%22"
-                       "CELL_LINE%22%3Atrue%2C%22ORGANISM_PART%22%3Atrue%7D%7D&ds=%7B%22"
-                       "species%22%3A%7B%22homo+sapiens%22%3Atrue%7D%7D".format(ensembl_id))
-    gene_obj['expression_atlas_link'] = expression_link
+    gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
     for tx_obj in gene_obj['transcripts']:
         parse_transcript(gene_obj, tx_obj)
 
@@ -246,7 +260,7 @@ def transcript_str(transcript_obj, gene_name=None):
     change_str = "{}:exon{}:{}:{}".format(
         ','.join(transcript_obj['ref_seq']),
         transcript_obj.get('exon', '').rpartition('/')[0],
-        transcript_obj['coding_sequence_name'],
+        transcript_obj.get('coding_sequence_name', 'NA'),
         transcript_obj.get('protein_sequence_name', 'NA'),
     )
     if gene_name:

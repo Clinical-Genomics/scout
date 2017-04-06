@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 SECRET_KEY = 'this is not secret...'
+REMEMBER_COOKIE_NAME = 'scout_remember_me'
 
 MONGO_DBNAME = 'scoutTest'
 

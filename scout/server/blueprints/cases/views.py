@@ -6,7 +6,7 @@ from flask import (abort, Blueprint, current_app, redirect, render_template,
 from flask_login import current_user
 
 from scout.server.extensions import store, mail
-from scout.server.utils import templated, institute_and_case
+from scout.server.utils import templated, institute_and_case, user_institutes
 from . import controllers
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
@@ -17,8 +17,10 @@ cases_bp = Blueprint('cases', __name__, template_folder='templates',
 @templated('cases/index.html')
 def index():
     """Display a list of all user institutes."""
-    user_institutes = controllers.user_institutes(store, current_user)
-    return dict(institutes=user_institutes)
+    institute_objs = user_institutes(store, current_user)
+    institutes_count = ((institute_obj, store.cases(collaborator=institute_obj['_id']).count())
+                        for institute_obj in institute_objs)
+    return dict(institutes=institutes_count)
 
 
 @cases_bp.route('/<institute_id>')

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import itertools
+
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer
@@ -10,18 +12,6 @@ from scout.server.utils import institute_and_case
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 SEX_MAP = {'1': 'male', '2': 'female'}
 PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
-
-
-def user_institutes(store, user_obj):
-    """Preprocess institute objects."""
-    if user_obj.is_admin:
-        institutes = store.institutes()
-    else:
-        institutes = (store.institute(inst_id) for inst_id in user_obj.institutes)
-
-    for institute in institutes:
-        case_count = store.cases(collaborator=institute['_id']).count()
-        yield (institute, case_count)
 
 
 def cases(store, case_query):
@@ -64,6 +54,11 @@ def case(store, institute_obj, case_obj):
             full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
             case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
+
+    for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
+                                    case_obj.get('phenotype_terms', [])):
+        hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
+                                .format(hpo_term['phenotype_id']))
 
     # other collaborators than the owner of the case
     case_obj['o_collaborators'] = [collab_id for collab_id in
