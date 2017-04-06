@@ -11,9 +11,9 @@
 - **Aggregation** - Combine results from multiple analyses and VCFs into a centralized database.
 - **Collaboration** - Write comments and share cases between users and institutes.
 
-<p align="center"><img height="400" width="800" src="img/v3.jpg"></p>
-
 ## What's new in 3.0?
+
+<p align="center"><img height="400" width="800" src="img/v3.jpg"></p>
 
 This updates includes a lot of optimizations to improve performance. We've made significant efforts to make sure the way we store information in the database will scale up with additional features in the future. Here are the highlights:
 
