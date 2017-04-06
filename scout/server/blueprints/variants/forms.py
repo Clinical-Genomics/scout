@@ -60,4 +60,3 @@ class SvFiltersForm(FlaskForm):
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
 
     thousand_genomes_frequency = DecimalField('1000 Genomes', places=2)
-    exac_frequency = DecimalField('ExAC', places=2)
