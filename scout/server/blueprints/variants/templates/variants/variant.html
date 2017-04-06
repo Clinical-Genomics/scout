@@ -50,10 +50,12 @@
     <div class="col-xs-12 col-md-4">{{ transcript_overview() }}</div>
   </div>
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-3">{{ frequency_list() }}</div>
-    <div class="col-xs-12 col-sm-6 col-md-3">{{ severity_list() }}</div>
-    <div class="col-xs-12 col-sm-6 col-md-3">{{ inheritance_panel() }}</div>
-    <div class="col-xs-12 col-sm-6 col-md-3">{{ omim_phenotypes() }}</div>
+    <div class="col-xs-12 col-sm-6">{{ inheritance_panel() }}</div>
+    <div class="col-xs-12 col-sm-6">{{ omim_phenotypes() }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6">{{ frequency_list() }}</div>
+    <div class="col-xs-12 col-sm-6">{{ severity_list() }}</div>
   </div>
   <div class="row">
     {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}

@@ -21,7 +21,7 @@ def variants(store, variants_query, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(store, variant_obj) for variant_obj in
+        'variants': (parse_variant(store, variant_obj, update=True) for variant_obj in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -38,7 +38,7 @@ def sv_variants(store, institute_id, case_name, page, variant_type, per_page=50)
     return dict(
         institute=institute_obj,
         case=case_obj,
-        variants=(parse_variant(store, variant) for variant in
+        variants=(parse_variant(store, variant, update=True) for variant in
                   variants_query.skip(skip_count).limit(per_page)),
         more_variants=more_variants,
         query=query,
@@ -69,16 +69,16 @@ def sv_variant(store, institute_id, case_name, variant_id):
     )
 
 
-def parse_variant(store, variant_obj):
+def parse_variant(store, variant_obj, update=False):
     """Parse information about variants."""
-    update_variant = False
+    has_changed = False
     compounds = variant_obj.get('compounds', [])
     if compounds:
         # Check if we need to add compound information
         if 'not_loaded' not in compounds[0]:
             new_compounds = store.update_compounds(variant_obj)
             variant_obj['compounds'] = new_compounds
-            update_variant = True
+            has_changed = True
 
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
@@ -86,10 +86,10 @@ def parse_variant(store, variant_obj):
             if gene_obj.get('hgnc_symbol') is None:
                 hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
                 if hgnc_gene:
-                    update_variant = True
+                    has_changed = True
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
 
-    if update_variant:
+    if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
 
     if variant_genes:
@@ -260,7 +260,7 @@ def transcript_str(transcript_obj, gene_name=None):
     change_str = "{}:exon{}:{}:{}".format(
         ','.join(transcript_obj['ref_seq']),
         transcript_obj.get('exon', '').rpartition('/')[0],
-        transcript_obj['coding_sequence_name'],
+        transcript_obj.get('coding_sequence_name', 'NA'),
         transcript_obj.get('protein_sequence_name', 'NA'),
     )
     if gene_name:
