@@ -94,6 +94,15 @@ FEATURE_TYPES = (
   'intergenic_variant'
 )
 
+SV_TYPES = (
+    'ins',
+    'del',
+    'dup',
+    'cnv',
+    'inv',
+    'bnd'
+)
+
 GENETIC_MODELS = (
   ('AR_hom', 'Autosomal Recessive Homozygote'),
   ('AR_hom_dn', 'Autosomal Recessive Homozygote De Novo'),

@@ -21,12 +21,48 @@
     </a>
   </li>
   <li class="active">
-    <span class="navbar-text">{{ query.variant_type|capitalize }} structural variants</span>
+    <span class="navbar-text">{{ variant_type|capitalize }}  Structural variants</span>
   </li>
 {% endblock %}
 
+{% block top_nav_right %}
+  <li><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">HPO panels <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li>
+        <a href="{{ url_for('variants.variants', institute_id=institute._id,
+                            case_name=case.display_name, variant_type=variant_type,
+                            gene_panels=['hpo']) }}">
+          HPO gene list
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
+  </li>
+  {{ super() }}
+{% endblock %}
+
 {% block content %}
-  {{ flash_messages() }}
+<div class="container-fluid main">
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+              SvFilters
+            </a>
+          </h4>
+        </div>
+        <div id="collapseFilters" class="panel-collapse collapse">
+          <div class="panel-body">{{ filters_form() }}</div>
+        </div>
+      </div>
+    </div>
+    {{ flash_messages() }}
+  </div>
 
   <div class="table-responsive">
     <table id="variantsTable" class="table table-bordered table-hover">
@@ -59,7 +95,101 @@
   <div class="container-fluid">
     {{ pagination() }}
   </div>
+</div>
 {% endblock %}
+
+{% macro filters_form() %}
+  <form method="GET">
+    <input type="hidden" name="variant_type" value="{{ variant_type }}">
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.region_annotations.label(class="control-label") }}
+          {{ form.region_annotations(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.functional_annotations.label(class="control-label") }}
+          {{ form.functional_annotations(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.genetic_models.label(class="control-label") }}
+          {{ form.genetic_models(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.hgnc_symbols.label(class="control-label") }}
+          {{ form.hgnc_symbols(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.size.label(class="control-label") }}
+          {{ form.size(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.size_inclusive.label(class="control-label") }}
+          <div>{{ form.size_inclusive() }}</div>
+        </div>
+        <div class="col-xs-3">
+          {{ form.clinsig.label(class="control-label") }}
+          {{ form.clinsig(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.thousand_genomes_frequency.label(class="control-label") }}
+          {{ form.thousand_genomes_frequency(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.exac_frequency.label(class="control-label") }}
+          {{ form.exac_frequency(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.svtype.label(class="control-label") }}
+          {{ form.svtype(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+	<div class="col-xs-3">
+	</div>
+	<div class="col-xs-3">
+	</div>
+        <div class="col-xs-6">
+          <label class="control-label">Submit</label>
+          <div class="row">
+            <div class="col-xs-6">
+              <button class="btn btn-primary form-control">Filter variants</button>
+            </div>
+            <div class="col-xs-6">
+              <a href="{{ url_for('variants.variants', institute_id=institute._id,
+                          case_name=case.display_name, variant_type=variant_type,
+                          functional_annotations=severe_so_terms,
+                          region_annotations=['exonic', 'splicing'],
+                          thousand_genomes_frequency=institute.frequency_cutoff,
+                          gene_panels=form.data.get('gene_panels')) }}"
+                 class="btn btn-default form-control">
+                Clinical filter
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
 
 {% block scripts %}
   {{ super() }}
