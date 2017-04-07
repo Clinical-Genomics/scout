@@ -192,8 +192,9 @@
     </form>
     <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
     <p>
-      <form method="POST" action="{{ url_for('report.pdf', group_id=case._id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', '), dl='yes') }}" target="_blank">
-        <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
+      <form method="POST" action="{{ url_for('report.pdf', group_id=case._id, level=institute.coverage_cutoff, dl='yes') }}">
+        <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
+        <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
 
         <div class="form-group">
           <button type="submit" class="btn btn-default form-control">Download PDF</button>
