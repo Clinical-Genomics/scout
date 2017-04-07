@@ -139,6 +139,28 @@ class QueryHandler(object):
             logger.debug("Adding region_annotations %s to query" %
                          ', '.join(region))
 
+        if query.get('size'):
+            size = query['size']
+            size_query = {'length': {'$gt': int(size)}}
+            logger.debug("Adding length: %s to query" % size)
+
+            if query.get('size_inclusive') == 'yes':
+                size_query = {
+                    '$or': [
+                        size_query,
+                        {'length': {'$exists': False}}
+                        
+                    ]}
+                logger.debug("Adding size inclusive to query.")
+
+            mongo_query['$and'].append(size_query)
+
+        if query.get('svtype'):
+            svtype = query['svtype']
+            mongo_query['sub_category'] = {'$in': svtype}
+            logger.debug("Adding SV_type %s to query" % 
+                         ', '.join(svtype))
+            
         if query.get('clinsig'):
             rank = query['clinsig']
             logger.debug("add CLINSIG filter for rank: %s", rank)
