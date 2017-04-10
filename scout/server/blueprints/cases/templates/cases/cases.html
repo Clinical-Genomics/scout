@@ -109,9 +109,9 @@
     </td>
     <td>
       {% if case.is_research %}
-        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research variants</a>
+        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
       {% else %}
-        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical variants</a>
+        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
       {% endif %}
     </td>
     <td>
