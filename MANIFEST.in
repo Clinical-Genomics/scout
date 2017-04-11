@@ -10,9 +10,7 @@ recursive-include scout/server/static *
 recursive-include scout/server/blueprints/**/templates *
 recursive-include scout/server/blueprints/**/static *
 # static files
-recursive-include /resources/ensembl_transcripts_37.txt.gz
-recursive-include /resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz
-recursive-include /resources/hgnc_complete_set.txt.gz
+recursive-include scout/resources/ *.gz
 
 # translations
 recursive-include scout/translations *
