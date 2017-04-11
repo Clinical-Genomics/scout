@@ -38,21 +38,27 @@ def institute_and_case(store, institute_id, case_name=None):
         flash("Can't find institute: {}".format(institute_id), 'warning')
         return abort(404)
 
-    # validate that user has access to the institute
-    if current_user.is_admin or institute_id in current_user.institutes:
-        # you have access!
+    if case_name:
         if case_name:
             case_obj = store.case(institute_id=institute_id, display_name=case_name)
             if case_obj is None:
                 return abort(404)
-            return institute_obj, case_obj
-        else:
-            return institute_obj
 
+    # validate that user has access to the institute
+    if not current_user.is_admin:
+        if institute_id not in current_user.institutes:
+            collaborator_ids = case_obj['collaborators']
+            if not any(inst_id in collaborator_ids for inst_id in current_user.institutes):
+                # you don't have access!!
+                flash("You don't have acccess to: {}".format(institute_obj['display_name']),
+                      'danger')
+                return abort(403)
+
+    # you have access!
+    if case_name:
+        return institute_obj, case_obj
     else:
-        flash("You don't have acccess to: {}".format(institute_obj['display_name']),
-              'danger')
-        return abort(403)
+        return institute_obj
 
 
 def user_institutes(store, login_user):
