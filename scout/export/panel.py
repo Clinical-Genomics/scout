@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 CHROMOSOMES = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
                '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', 'X',
                'Y', 'MT')
+log = logging.getLogger(__name__)
 
 
 def export_panels(adapter, panels):
@@ -28,6 +31,9 @@ def export_panels(adapter, panels):
 
     for hgnc_id in panel_geneids:
         hgnc_geneobj = adapter.hgnc_gene(hgnc_id)
+        if hgnc_geneobj is None:
+            log.warn("missing HGNC gene: %s", hgnc_id)
+            continue
         hgnc_geneobjs.append(hgnc_geneobj)
         chromosomes_found.add(hgnc_geneobj['chromosome'])
 
