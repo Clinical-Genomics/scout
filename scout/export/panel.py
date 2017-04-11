@@ -48,5 +48,6 @@ def export_panels(adapter, panels):
 
     for hgnc_gene in hgnc_geneobjs:
         gene_line = bed_string.format(hgnc_gene['chromosome'], hgnc_gene['start'],
-                                      hgnc_gene['end'], hgnc_gene['_id'], hgnc_gene['hgnc_symbol'])
+                                      hgnc_gene['end'], hgnc_gene['hgnc_id'],
+                                      hgnc_gene['hgnc_symbol'])
         yield gene_line
