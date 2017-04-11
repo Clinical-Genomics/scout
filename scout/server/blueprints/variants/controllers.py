@@ -195,7 +195,7 @@ def observations(loqusdb, variant_obj):
     """Query observations for a variant."""
     composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
                     "{this[alternative]}".format(this=variant_obj))
-    obs_data = loqusdb.get_variant({'_id': composite_id})
+    obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
     obs_data['total'] = loqusdb.case_count()
     return obs_data
 
