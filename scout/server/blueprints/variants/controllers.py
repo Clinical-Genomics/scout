@@ -175,7 +175,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         for transcript_obj in gene_obj['transcripts']:
             if transcript_obj.get('is_disease_associated'):
                 hgnc_symbol = gene_obj['common']['hgnc_symbol']
-                refseq_ids = ', '.join(transcript_obj['ref_seq'])
+                refseq_ids = ', '.join(transcript_obj['refseq_ids'])
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
 
@@ -244,7 +244,7 @@ def parse_transcript(gene_obj, tx_obj):
     tx_obj['smart_domain_link'] = ("http://smart.embl.de/smart/search.cgi?keywords={}"
                                    .format(tx_obj.get('smart_domain')))
 
-    if tx_obj.get('ref_seq'):
+    if tx_obj.get('refseq_ids'):
         gene_name = gene_obj['common']['hgnc_symbol']
         tx_obj['change_str'] = transcript_str(tx_obj, gene_name)
 
@@ -252,7 +252,7 @@ def parse_transcript(gene_obj, tx_obj):
 def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string."""
     change_str = "{}:exon{}:{}:{}".format(
-        ','.join(transcript_obj['ref_seq']),
+        ','.join(transcript_obj['refseq_ids']),
         transcript_obj.get('exon', '').rpartition('/')[0],
         transcript_obj.get('coding_sequence_name', 'NA'),
         transcript_obj.get('protein_sequence_name', 'NA'),
