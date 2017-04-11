@@ -251,8 +251,8 @@
           {% for gene in variant.genes %}
             <tr>
               <th>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol }}
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               </th>
               <td>{{ gene.region_annotation }}</td>
@@ -371,7 +371,7 @@
             {% for gene in variant.genes %}
               <td>
                 <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                  {{ gene.common.hgnc_symbol }}
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               </td>
             {% endfor %}
@@ -398,8 +398,8 @@
           {% for transcript in gene.transcripts|selectattr('refseq_ids') %}
             <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
               <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol }}
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
                 {% if transcript.is_canonical %}
                   <span class="badge pull-right" title="canonical">C</span>
@@ -598,7 +598,7 @@
           {% for gene in variant.genes %}
             {% for disease_term in gene.disease_terms %}
               <tr>
-                <td>{{ gene.common.hgnc_symbol }}</td>
+                <td>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</td>
                 <td>
                   <a href="http://omim.org/entry/{{ disease_term.disease_id }}" target="_blank">
                     {{ disease_term.description }}
@@ -763,16 +763,18 @@
         {% for gene in variant.genes %}
           <tr>
             <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
-                {{ gene.common.hgnc_symbol }}
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
               </a>
             </td>
             <td>
-              <a target="_blank" href="{{ gene.ensembl_link }}">
-                {{ gene.common.ensembl_id }}
-              </a>
+              {% if gene.common %}
+                <a target="_blank" href="{{ gene.ensembl_link }}">
+                  {{ gene.common.ensembl_id }}
+                </a>
+              {% endif %}
             </td>
-            <td>{{ gene.common.description }}</td>
+            <td>{{ gene.common.description if gene.common }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -802,7 +804,7 @@
           {% for transcript in gene.transcripts %}
             <tr class="{{ 'danger' if transcript.is_disease_associated }}">
               <td>
-                {{ gene.common.hgnc_symbol }}
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
               </td>
               <td>
                 <a target="_blank" href="{{ transcript.ensembl_link }}">
@@ -856,7 +858,7 @@
         {% for gene in variant.genes %}
           {% for transcript in gene.transcripts %}
             <tr>
-              <td>{{ gene.common.hgnc_symbol }}</td>
+              <td>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</td>
               <td>
                 <a target="_blank" href="{{ transcript.ensembl_link }}">
                   {{ transcript.transcript_id }}
@@ -924,7 +926,9 @@
 {% macro external_links() %}
   <div class="panel panel-default">
     {% for gene in variant.genes %}
-      <div class="panel-heading">External links: {{ gene.common.hgnc_symbol }}</div>
+      <div class="panel-heading">
+        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+      </div>
       <div class="panel-body table-responsive">
         <div class="btn-group btn-group-justified">
           <a href="{{ gene.ensembl_link }}" class="btn btn-default" target="_blank">Ensembl</a>
@@ -941,7 +945,7 @@
         <form action="http://marrvel.org/search" method="POST" target="_blank">
           <button type="submit" class="btn btn-default">MARRVEL</button>
           <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
-          <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol }}">
+          <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol if gene.common }}">
           <input type="hidden" name="OMIMdbCheck" value="on">
           <input type="hidden" name="ExACdbCheck" value="on">
           <input type="hidden" name="Geno2MPdbCheck" value="on">
