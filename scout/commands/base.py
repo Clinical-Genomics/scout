@@ -40,31 +40,16 @@ log = logging.getLogger(__name__)
     help="Set the level of log output.",
     show_default=True,
 )
-@click.option('-db', '--mongodb',
-    default='scout',
-    show_default=True,
-    help='Name of mongo database',
-)
+@click.option('-db', '--mongodb', help='Name of mongo database')
 @click.option('-u', '--username')
 @click.option('-p', '--password')
-@click.option('-port', '--port',
-    default=27017,
-    show_default=True,
-    help="Specify on what port to listen for the mongod",
-)
-@click.option('-h', '--host',
-    default='localhost',
-    show_default=True,
-    help="Specify the host for the mongo database.",
-)
+@click.option('-port', '--port', help="Specify on what port to listen for the mongod")
+@click.option('-h', '--host', help="Specify the host for the mongo database.")
 @click.option('-c', '--config',
     type=click.Path(exists=True),
     help="Specify the path to a config file with database info.",
 )
-@click.option('--demo',
-    is_flag=True,
-    help="If the demo database should be used"
-)
+@click.option('--demo', is_flag=True, help="If the demo database should be used")
 @click.version_option(__version__)
 @click.pass_context
 def cli(context, mongodb, username, password, host, port, logfile, loglevel,
@@ -80,16 +65,12 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         with open(config, 'r') as in_handle:
             configs = yaml.load(in_handle)
 
-    mongo_configs['mongodb'] = (mongodb or configs.get('mongodb'))
+    mongo_configs['mongodb'] = (mongodb or configs.get('mongodb') or 'scout')
     if demo:
         mongo_configs['mongodb'] = 'scout-demo'
 
-
-    mongo_configs['host'] = (host or configs.get('host'))
-
-
-    mongo_configs['port'] = (port or configs.get('port'))
-
+    mongo_configs['host'] = (host or configs.get('host') or 'localhost')
+    mongo_configs['port'] = (port or configs.get('port') or 27017)
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
     mongo_configs['adapter'] = None
