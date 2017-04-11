@@ -139,7 +139,7 @@
     <li class="list-group-item disabled"><strong>Amino acid changes</strong></li>
     {% for gene in variant.genes %}
       {% for transcript in gene.transcripts %}
-        {% if transcript.ref_seq %}
+        {% if transcript.refseq_ids %}
           <li class="list-group-item">{{ transcript.change_str }}</li>
         {% endif %}
       {% endfor %}
@@ -395,7 +395,7 @@
       </thead>
       <tbody>
         {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts|selectattr('ref_seq') %}
+          {% for transcript in gene.transcripts|selectattr('refseq_ids') %}
             <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
               <td>
                 <a href="{{ url_for('genes.gene', hgnc_id=gene.common.hgnc_id) }}">
@@ -405,7 +405,7 @@
                   <span class="badge pull-right" title="canonical">C</span>
                 {% endif %}
               </td>
-              <td>{{ transcript.ref_seq|join(', ') }}</td>
+              <td>{{ transcript.refseq_ids|join(', ') }}</td>
               <td>
                 {{ (transcript.protein_sequence_name or '') }}
                 <small class="text-muted pull-right">{{ (transcript.coding_sequence_name or '') }}</small>

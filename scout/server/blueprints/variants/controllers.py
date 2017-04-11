@@ -229,7 +229,7 @@ def parse_transcript(gene_obj, tx_obj):
     tx_obj['refseq_links'] = [{
         'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
         'id': refseq_id,
-    } for refseq_id in tx_obj.get('ref_seq', [])]
+    } for refseq_id in tx_obj.get('refseq_ids', [])]
 
     tx_obj['swiss_prot_link'] = ("http://www.uniprot.org/uniprot/{}"
                                  .format(tx_obj['swiss_prot']))

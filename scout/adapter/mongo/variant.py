@@ -102,9 +102,9 @@ class VariantHandler(object):
                     hgnc_transcript = transcripts_dict[tx_id]
                     # If the transcript has a ref seq identifier we add that
                     # to the variants transcript
-                    if 'refseq_id' in hgnc_transcript:
-                        refseq_ids = hgnc_transcript['refseq_id']
-                        transcript['ref_seq'] = refseq_ids
+                    if 'refseq_ids' in hgnc_transcript:
+                        refseq_ids = hgnc_transcript['refseq_ids']
+                        transcript['refseq_ids'] = refseq_ids
 
                         # Check if any of the refseq ids are disease associated
                         for refseq_id in refseq_ids:
