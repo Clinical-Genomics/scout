@@ -26,7 +26,7 @@ def cases(store, case_query):
 
     data = {
         'prio_cases': case_groups['prioritized'],
-        'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
+        'cases': [(status, case_groups[status]) for status in CASE_STATUSES[1:]],
         'found_cases': case_query.count(),
     }
     return data
