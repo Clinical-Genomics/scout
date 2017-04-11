@@ -42,6 +42,8 @@ def variant(institute_id, case_name, variant_id):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     controllers.variant_case(case_obj)
     data = controllers.variant(store, institute_obj, case_obj, variant_id)
+    if data is None:
+        return abort(404)
     if current_app.config.get('LOQUSDB_SETTINGS'):
         data['observations'] = controllers.observations(loqusdb, data['variant'])
     return dict(institute=institute_obj, case=case_obj, **data)

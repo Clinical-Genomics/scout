@@ -35,9 +35,10 @@ def sv_variants(store, variants_query, page, per_page=50):
 
     return {
         'variants': (parse_variant(store, variant) for variant in
-                  variants_query.skip(skip_count).limit(per_page)),
+                     variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
+
 
 def sv_variant(store, institute_id, case_name, variant_id):
     """Pre-process a SV variant entry for detail page."""
@@ -137,11 +138,11 @@ def variant(store, institute_obj, case_obj, variant_id):
     default_panels = [store.panel(panel['panel_id']) for panel in
                       case_obj['panels'] if panel.get('is_default')]
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
-    comments = store.events(institute_obj, case=case_obj,
-                            variant_id=variant_obj['variant_id'],
+    if variant_obj is None:
+        return None
+    comments = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'],
                             comments=True)
-    events = store.events(institute_obj, case=case_obj,
-                          variant_id=variant_obj['variant_id'])
+    events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
     other_causatives = []
     for other_variant in store.other_causatives(case_obj, variant_obj):
         case_display_name = other_variant['case_id'].split('-', 1)[-1]
