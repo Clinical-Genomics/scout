@@ -174,7 +174,8 @@ def variant(store, institute_obj, case_obj, variant_id):
     for gene_obj in variant_obj['genes']:
         for transcript_obj in gene_obj['transcripts']:
             if transcript_obj.get('is_disease_associated'):
-                hgnc_symbol = gene_obj['common']['hgnc_symbol']
+                hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
+                               gene_obj['hgnc_id'])
                 refseq_ids = ', '.join(transcript_obj['refseq_ids'])
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
@@ -202,20 +203,22 @@ def observations(loqusdb, variant_obj):
 
 def parse_gene(gene_obj):
     """Parse variant genes."""
-    ensembl_id = gene_obj['common']['ensembl_id']
-    ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
-                    "db=core;g={}".format(ensembl_id))
-    gene_obj['ensembl_link'] = ensembl_link
-    gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
-    gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
-                               "section.pl?identifier={}".format(ensembl_id))
-    gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
-                               .format(gene_obj['common']['entrez_id']))
+    if gene_obj['common']:
+        ensembl_id = gene_obj['common']['ensembl_id']
+        ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
+                        "db=core;g={}".format(ensembl_id))
+        gene_obj['ensembl_link'] = ensembl_link
+        gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
+        gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
+                                   "section.pl?identifier={}".format(ensembl_id))
+        gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
+                                   .format(gene_obj['common']['entrez_id']))
 
-    reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
-                     "&species=Entries+without+species&cluster=true".format(ensembl_id))
-    gene_obj['reactome_link'] = reactome_link
-    gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
+        reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
+                         "&species=Entries+without+species&cluster=true".format(ensembl_id))
+        gene_obj['reactome_link'] = reactome_link
+        gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
+
     for tx_obj in gene_obj['transcripts']:
         parse_transcript(gene_obj, tx_obj)
 
@@ -245,7 +248,8 @@ def parse_transcript(gene_obj, tx_obj):
                                    .format(tx_obj.get('smart_domain')))
 
     if tx_obj.get('refseq_ids'):
-        gene_name = gene_obj['common']['hgnc_symbol']
+        gene_name = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
+                     gene_obj['hgnc_id'])
         tx_obj['change_str'] = transcript_str(tx_obj, gene_name)
 
 
@@ -342,8 +346,10 @@ def expected_inheritance(variant_obj):
 def incomplete_penetrance(variant_obj):
     """Return gene marked as low penetrance."""
     for gene_obj in variant_obj['genes']:
+        hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
+                       gene_obj['hgnc_id'])
         yield {
-            'hgnc_symbol': gene_obj['common']['hgnc_symbol'],
+            'hgnc_symbol': hgnc_symbol,
             'omim': gene_obj.get('omim_penetrance'),
             'manual': gene_obj.get('manual_penetrance'),
         }
