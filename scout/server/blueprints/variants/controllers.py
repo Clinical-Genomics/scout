@@ -334,7 +334,7 @@ def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
     all_models = set()
     for gene in variant_obj['genes']:
-        for model in gene['common'].get('inheritance_models', []):
+        for model in gene.get('common', {}).get('inheritance_models', []):
             all_models.add(model)
     return list(all_models)
 
