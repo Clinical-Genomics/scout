@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_connection(host='localhost', port=27017, username=None, password=None,
-                   uri=None, app=None, timeout=20):
+                   uri=None, mongodb=None, timeout=20):
     """Get a client to the mongo database
 
         host(str): Host of database
@@ -29,26 +29,17 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
         username(str)
         password(str)
         uri(str)
-        app
         timeout(int): How long should the client try to connect
 
     """
-    if not uri:
-        if app:
-            config = getattr(app, 'config', {})
-
-            host = config.get('MONGODB_HOST', 'localhost')
-            port = config.get('MONGODB_PORT', 27017)
-            username = config.get('MONGODB_USERNAME', None)
-            password = config.get('MONGODB_PASSWORD', None)
-
+    if uri is None:
         if username and password:
-            uri = ("mongodb://{}:{}@{}:{}"
-                   .format(quote_plus(username), quote_plus(password), host, port))
+            uri = ("mongodb://{}:{}@{}:{}/{}"
+                   .format(quote_plus(username), quote_plus(password), host, port, mongodb))
         else:
             uri = "mongodb://%s:%s" % (host, port)
 
-    logger.info("Try to connect to mongodb://%s:%s" % (host, port))
+    logger.info("Try to connect to %s" % uri)
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
     except ServerSelectionTimeoutError as err:

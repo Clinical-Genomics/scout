@@ -73,16 +73,14 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
     mongo_configs['port'] = (port or configs.get('port') or 27017)
     mongo_configs['username'] = username or configs.get('username')
     mongo_configs['password'] = password or configs.get('password')
-    mongo_configs['adapter'] = None
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
     if context.invoked_subcommand not in ('setup', 'serve'):
         log.info("Setting database name to %s", mongo_configs['mongodb'])
         log.debug("Setting host to {0}".format(mongo_configs['host']))
         log.debug("Setting port to {0}".format(mongo_configs['port']))
-        uri = ("mongodb://{username}:{password}@{host}:{port}/{mongodb}".format(**mongo_configs))
         try:
-            client = get_connection(uri=uri)
+            client = get_connection(**mongo_configs)
         except ConnectionFailure:
             context.abort()
 
@@ -97,6 +95,8 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         log.info("Setting up a mongo adapter")
         mongo_adapter = MongoAdapter(database)
         mongo_configs['adapter'] = mongo_adapter
+    else:
+        mongo_configs['adapter'] = None
 
     context.obj = mongo_configs
 

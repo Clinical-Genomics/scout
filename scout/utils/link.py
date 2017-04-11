@@ -14,14 +14,14 @@ log = logging.getLogger(__name__)
 
 def genes_by_alias(hgnc_genes):
     """Return a dictionary with hgnc symbols as keys
-    
+
     Value of the dictionaries are information about the hgnc ids for a symbol.
     If the symbol is primary for a gene then 'true_id' will exist.
     A list of hgnc ids that the symbol points to is in ids.
-    
+
     Args:
         hgnc_genes(dict): a dictionary with hgnc_id as key and gene info as value
-    
+
     Returns:
         alias_genes(dict):
             {
@@ -36,7 +36,7 @@ def genes_by_alias(hgnc_genes):
         gene = hgnc_genes[hgnc_id]
         # This is the primary symbol:
         hgnc_symbol = gene['hgnc_symbol']
-        
+
         for alias in gene['previous_symbols']:
             true_id = None
             if alias == hgnc_symbol:
@@ -55,14 +55,14 @@ def genes_by_alias(hgnc_genes):
 
 def add_ensembl_info(gene_info, ensembl_transcripts):
     """Add gene coordinates and transcripts to gene
-    
+
     Parse and add all transcript information found in ensembl to gene.
     Add the gene coordinates.
-    
+
     Args:
         gene_info(dict): dictionary with gene information
         ensembl_transcripts(list(dict)): list with transcript information
-    
+
     """
     # Since there can be multiple transcripts with same ENSTID but different
     # refseq symbols we create a dictionary with transcript info
@@ -74,19 +74,19 @@ def add_ensembl_info(gene_info, ensembl_transcripts):
         parsed_transcript = {}
         refseq_identifier = None
         is_primary = False
-        
+
         transcript_id = transcript['ensembl_transcript_id']
         gene_start = transcript['gene_start']
         gene_end = transcript['gene_end']
         chromosome = transcript['chrom']
-        
+
         if transcript['refseq_mrna']:
             refseq_identifier = transcript['refseq_mrna']
         elif transcript['refseq_ncrna']:
             refseq_identifier = transcript['refseq_ncrna']
         elif transcript['refseq_mrna_predicted']:
             refseq_identifier = transcript['refseq_mrna_predicted']
-        
+
         if refseq_identifier:
             if refseq_identifier in gene_info['ref_seq']:
                 is_primary = True
@@ -98,7 +98,7 @@ def add_ensembl_info(gene_info, ensembl_transcripts):
         parsed_transcript['start'] = transcript['transcript_start']
         parsed_transcript['end'] = transcript['transcript_end']
         parsed_transcript['is_primary'] = is_primary
-        
+
         if transcript_id in transcripts_dict:
             if is_primary:
                 transcripts_dict[transcript_id]['is_primary'] = True
@@ -106,15 +106,15 @@ def add_ensembl_info(gene_info, ensembl_transcripts):
                 transcripts_dict[transcript_id]['refseq'].append(refseq_identifier)
         else:
             transcripts_dict[transcript_id] = parsed_transcript
-    
+
     gene_info['chromosome'] = chromosome
     gene_info['start'] = gene_start
     gene_info['end'] = gene_end
-    
+
     for transcript_id in transcripts_dict:
         gene_info['transcripts'].append(transcripts_dict[transcript_id])
-        
-    
+
+
 
 def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
                genemap_lines, hpo_lines):
@@ -122,16 +122,16 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
 
     Extract information collected from a number of sources and combine them
     into a gene dict with HGNC symbols as keys.
-    
-    hgnc_id works as the primary symbol and it is from this source we gather 
+
+    hgnc_id works as the primary symbol and it is from this source we gather
     as much information as possible (hgnc_complete_set.txt)
-    
+
     Coordinates are gathered from ensemble and the entries are linked from hgnc
     to ensembl via ENSGID.
-    
+
     From exac the gene intolerance scores are collected, genes are linked to hgnc
     via hgnc symbol. This is a unstable symbol since they often change.
-        
+
 
         Args:
             ensembl_lines(iterable(str))
@@ -160,13 +160,13 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
             ensembl_genes[ensgid].append(transcript)
         else:
             ensembl_genes[ensgid] = [transcript]
-    
+
     log.info("Add ensembl info")
     # Add gene coordinates and transcript info for hgnc genes:
     for hgnc_id in genes:
         gene_info = genes[hgnc_id]
         ensgid = gene_info['ensembl_gene_id']
-        
+
         if ensgid:
             if ensgid in ensembl_genes:
                 add_ensembl_info(gene_info, ensembl_genes[ensgid])
@@ -175,15 +175,15 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
     for exac_gene in parse_exac_genes(exac_lines):
         hgnc_symbol = exac_gene['hgnc_symbol'].upper()
         pli_score = exac_gene['pli_score']
-        
+
         if hgnc_symbol in symbol_to_id:
             hgnc_id_info = symbol_to_id[hgnc_symbol]
-            
+
             # If we have the true id we know ot os correct
             if hgnc_id_info['true_id']:
                 hgnc_id = hgnc_id_info['true_id']
                 genes[hgnc_id]['pli_score'] = pli_score
-            
+
             # Otherwise we loop over the ids and add pli score if it
             # is not already added
             else:
@@ -199,12 +199,12 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
         inheritance = omim_info.get('inheritance', set())
         if hgnc_symbol in symbol_to_id:
             hgnc_id_info = symbol_to_id[hgnc_symbol]
-            
+
             # If we have the true id we know it is correct
             if hgnc_id_info['true_id']:
                 hgnc_id = hgnc_id_info['true_id']
                 gene_info = genes[hgnc_id]
-            
+
                 # Update the omim id to the one found in omim
                 gene_info['omim_id'] = omim_info['mim_number']
 
@@ -224,12 +224,12 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
     for hgnc_symbol in get_incomplete_penetrance_genes(hpo_lines):
         if hgnc_symbol in symbol_to_id:
             hgnc_id_info = symbol_to_id[hgnc_symbol]
-            
+
             # If we have the true id we know ot os correct
             if hgnc_id_info['true_id']:
                 hgnc_id = hgnc_id_info['true_id']
                 genes[hgnc_id]['incomplete_penetrance'] = True
-            
+
             # Otherwise we loop over the ids and add incomplete penetrance if it
             # is not already added
             else:
