@@ -18,10 +18,10 @@ def export_panels(adapter, panels):
     for panel_id in panels:
         panel_obj = adapter.gene_panel(panel_id)
         headers.append(header_string.format(
-            panel_obj.panel_name,
-            panel_obj.version,
-            panel_obj.date.date(),
-            panel_obj.display_name,
+            panel_obj['panel_name'],
+            panel_obj['version'],
+            panel_obj['date'].date(),
+            panel_obj['display_name'],
         ))
         for gene_obj in panel_obj.genes:
             panel_geneids.add(gene_obj.hgnc_id)
