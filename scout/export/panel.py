@@ -23,13 +23,13 @@ def export_panels(adapter, panels):
             panel_obj['date'].date(),
             panel_obj['display_name'],
         ))
-        for gene_obj in panel_obj.genes:
-            panel_geneids.add(gene_obj.hgnc_id)
+        for gene_obj in panel_obj['genes']:
+            panel_geneids.add(gene_obj['hgnc_id'])
 
     for hgnc_id in panel_geneids:
         hgnc_geneobj = adapter.hgnc_gene(hgnc_id)
         hgnc_geneobjs.append(hgnc_geneobj)
-        chromosomes_found.add(hgnc_geneobj.chromosome)
+        chromosomes_found.add(hgnc_geneobj['chromosome'])
 
     for chrom in CHROMOSOMES:
         if chrom in chromosomes_found:
@@ -41,6 +41,6 @@ def export_panels(adapter, panels):
         yield header
 
     for hgnc_gene in hgnc_geneobjs:
-        gene_line = bed_string.format(hgnc_gene.chromosome, hgnc_gene.start, hgnc_gene.end,
-                                      hgnc_gene.id, hgnc_gene.hgnc_symbol)
+        gene_line = bed_string.format(hgnc_gene['chromosome'], hgnc_gene['start'],
+                                      hgnc_gene['end'], hgnc_gene['_id'], hgnc_gene['hgnc_symbol'])
         yield gene_line
