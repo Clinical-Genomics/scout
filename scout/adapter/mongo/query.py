@@ -149,7 +149,7 @@ class QueryHandler(object):
                     '$or': [
                         size_query,
                         {'length': {'$exists': False}}
-                        
+
                     ]}
                 logger.debug("Adding size inclusive to query.")
 
@@ -158,22 +158,20 @@ class QueryHandler(object):
         if query.get('svtype'):
             svtype = query['svtype']
             mongo_query['sub_category'] = {'$in': svtype}
-            logger.debug("Adding SV_type %s to query" % 
+            logger.debug("Adding SV_type %s to query" %
                          ', '.join(svtype))
-            
+
         if query.get('clinsig'):
             rank = query['clinsig']
             logger.debug("add CLINSIG filter for rank: %s", rank)
-            mongo_query['clnsig'] = rank
+            mongo_query['clnsig.value'] = rank
 
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}
 
-            logger.debug("Adding variant_ids %s to query" %
-                ', '.join(variant_ids))
+            logger.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
 
         if not mongo_query['$and']:
             del mongo_query['$and']
 
         return mongo_query
-        
