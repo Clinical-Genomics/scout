@@ -80,13 +80,9 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         log.info("Setting database name to %s", mongo_configs['mongodb'])
         log.debug("Setting host to {0}".format(mongo_configs['host']))
         log.debug("Setting port to {0}".format(mongo_configs['port']))
+        uri = ("mongodb://{username}:{password}@{host}:{port}/{mongodb}".format(**mongo_configs))
         try:
-            client = get_connection(
-                        host=mongo_configs['host'],
-                        port=mongo_configs['port'],
-                        username=mongo_configs['username'],
-                        password=mongo_configs['password'],
-                    )
+            client = get_connection(uri=uri)
         except ConnectionFailure:
             context.abort()
 
