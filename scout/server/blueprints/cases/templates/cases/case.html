@@ -184,27 +184,31 @@
     <ul class="list-group">
       {% for variant in causatives %}
         <li class="list-group-item">
-          <div class="row">
-            <div class="col-xs-8">
-              <span class="glyphicon glyphicon-ok-circle"></span>
-              <a href="{{ url_for('variants.variant',
-                                  institute_id=institute._id,
-                                  case_name=case.display_name,
-                                  variant_id=variant._id) }}">
-                {{ variant.hgnc_symbols|join(', ') }}
-              </a>
-              {% if variant.sanger_ordered %}
-                <span class="label label-success">Sanger ordered</span>
-              {% endif %}
+          {% if variant._id %}
+            <div class="row">
+              <div class="col-xs-8">
+                <span class="glyphicon glyphicon-ok-circle"></span>
+                <a href="{{ url_for('variants.variant',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+                  {{ variant.hgnc_symbols|join(', ') }}
+                </a>
+                {% if variant.sanger_ordered %}
+                  <span class="label label-success">Sanger ordered</span>
+                {% endif %}
+              </div>
+              <div class="col-xs-4">
+                {{ remove_form(url_for('cases.mark_causative',
+                                       institute_id=institute._id,
+                                       case_name=case.display_name,
+                                       variant_id=variant._id),
+                               button_name='action', button_value='DELETE') }}
+              </div>
             </div>
-            <div class="col-xs-4">
-              {{ remove_form(url_for('cases.mark_causative',
-                                     institute_id=institute._id,
-                                     case_name=case.display_name,
-                                     variant_id=variant._id),
-                             button_name='action', button_value='DELETE') }}
-            </div>
-          </div>
+          {% else %}
+            {{ variant }} <small class="text-muted">(not loaded)</small>
+          {% endif %}
         </li>
       {% else %}
         <div class="panel-body">No variants marked causative</div>
@@ -221,43 +225,47 @@
       <tbody>
         {% for variant in suspects %}
           <tr>
-            <td>
-              <span class="glyphicon glyphicon-bookmark"></span>
-              <a href="{{ url_for('variants.variant',
-                                  institute_id=variant.institute,
-                                  case_name=case.display_name,
-                                  variant_id=variant._id) }}">
-                {{ variant.hgnc_symbols|join(', ') }}
-              </a>
-            </td>
-            <td>
-              {% if variant.sanger_ordered %}
-                <span class="label label-default">Sanger ordered</span>
-              {% elif variant.manual_rank %}
-                <span class="label label-default">{{ variant.manual_rank }}</span>
-              {% endif %}
-            </td>
-            <td>
-              <form action="{{ url_for('cases.mark_validation',
-                                       institute_id=variant.institute,
+            {% if variant._id %}
+              <td>
+                <span class="glyphicon glyphicon-bookmark"></span>
+                <a href="{{ url_for('variants.variant',
+                                    institute_id=variant.institute,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+                  {{ variant.hgnc_symbols|join(', ') }}
+                </a>
+              </td>
+              <td>
+                {% if variant.sanger_ordered %}
+                  <span class="label label-default">Sanger ordered</span>
+                {% elif variant.manual_rank %}
+                  <span class="label label-default">{{ variant.manual_rank }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <form action="{{ url_for('cases.mark_validation',
+                                         institute_id=variant.institute,
+                                         case_name=case.display_name,
+                                         variant_id=variant._id) }}"
+                      method="POST" accept-charset="utf-8">
+                  <select class="form-control input-sm" onchange="this.form.submit()" name="type">
+                    <option>Validate Sanger...</option>
+                    {% for type in ('True positive', 'False positive') %}
+                      <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </td>
+              <td>
+                {{ remove_form(url_for('cases.pin_variant',
+                                       institute_id=institute._id,
                                        case_name=case.display_name,
-                                       variant_id=variant._id) }}"
-                    method="POST" accept-charset="utf-8">
-                <select class="form-control input-sm" onchange="this.form.submit()" name="type">
-                  <option>Validate Sanger...</option>
-                  {% for type in ('True positive', 'False positive') %}
-                    <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
-                  {% endfor %}
-                </select>
-              </form>
-            </td>
-            <td>
-              {{ remove_form(url_for('cases.pin_variant',
-                                     institute_id=institute._id,
-                                     case_name=case.display_name,
-                                     variant_id=variant._id),
-                             button_name='action', button_value='DELETE') }}
-            </td>
+                                       variant_id=variant._id),
+                               button_name='action', button_value='DELETE') }}
+              </td>
+            {% else %}
+              <td colspan="4">{{ variant }} <small class="text-muted">(not loaded)</small></td>
+            {% endif %}
           </tr>
         {% else %}
           <div class="panel-body">No variants suspected yet</div>

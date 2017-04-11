@@ -178,9 +178,9 @@ class VariantHandler(object):
            Returns:
                variant_object(Variant): A odm variant object
         """
-        result = self.variant_collection.find_one({'_id': document_id})
-        variant_obj = self.add_gene_info(result, gene_panels)
-
+        variant_obj = self.variant_collection.find_one({'_id': document_id})
+        if variant_obj:
+            variant_obj = self.add_gene_info(variant_obj, gene_panels)
         return variant_obj
 
     def get_causatives(self, institute_id):

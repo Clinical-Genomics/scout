@@ -40,9 +40,9 @@ def case(store, institute_obj, case_obj):
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
                              case_obj.get('assignees', [])]
-    suspects = [store.variant(variant_id) for variant_id in
+    suspects = [store.variant(variant_id) or variant_id for variant_id in
                 case_obj.get('suspects', [])]
-    causatives = [store.variant(variant_id) for variant_id in
+    causatives = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('causatives', [])]
 
     distinct_genes = set()
