@@ -152,24 +152,28 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
 
     symbol_to_id = genes_by_alias(genes)
     # Parse and add the ensembl gene info
-    ensembl_genes = {}
+    all_genes = {'ensembl': {}, 'symbol': {}}
     for transcript in parse_ensembl_transcripts(ensembl_lines):
+        ensg_symbol = transcript['hgnc_symbol']
         ensgid = transcript['ensembl_gene_id']
-
-        if ensgid in ensembl_genes:
-            ensembl_genes[ensgid].append(transcript)
-        else:
-            ensembl_genes[ensgid] = [transcript]
+        for id_type, gene_id in [('symbol', ensg_symbol), ('ensembl', ensgid)]:
+            if gene_id in all_genes[id_type]:
+                all_genes[id_type][gene_id].append(transcript)
+            else:
+                all_genes[id_type][gene_id] = [transcript]
 
     log.info("Add ensembl info")
     # Add gene coordinates and transcript info for hgnc genes:
-    for hgnc_id in genes:
-        gene_info = genes[hgnc_id]
+    for gene_info in genes.values():
         ensgid = gene_info['ensembl_gene_id']
+        ensg_symbol = gene_info['hgnc_symbol']
 
-        if ensgid:
-            if ensgid in ensembl_genes:
-                add_ensembl_info(gene_info, ensembl_genes[ensgid])
+        for id_type, gene_id in [('ensembl', ensgid), ('symbol', ensg_symbol)]:
+            if gene_id:
+                if gene_id in all_genes[id_type]:
+                    add_ensembl_info(gene_info, all_genes[id_type][gene_id])
+                    ensgid = 'ADDED'
+                    break
 
     log.info("Add exac pli scores")
     for exac_gene in parse_exac_genes(exac_lines):
