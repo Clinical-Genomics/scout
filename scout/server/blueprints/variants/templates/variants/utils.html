@@ -20,7 +20,7 @@
                                  institute_id=institute._id,
                                  case_name=case.display_name,
                                  variant_id=compound.variant) }}'>
-                {{ compound.display_name }}
+                {{ compound.display_name|truncate(20, True) }}
               </a>
             {% endif %}
           </td>
