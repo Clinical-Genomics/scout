@@ -11,25 +11,25 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
         Args:
             variant(dict)
             institute_id(str)
-            gene_to_panels(dict): A dictionary with 
+            gene_to_panels(dict): A dictionary with
                 {<hgnc_id>: {
-                    'panel_names': [<panel_name>, ..], 
+                    'panel_names': [<panel_name>, ..],
                     'disease_associated_transcripts': [<transcript_id>, ..]
                     }
                     .
                     .
                 }
-            
-            hgncid_to_gene(dict): A dictionary with 
+
+            hgncid_to_gene(dict): A dictionary with
                 {<hgnc_id>: <hgnc_gene info>
                     .
                     .
                 }
-                
+
 
         Returns:
             variant_obj(dict)
-    
+
         variant = dict(
             # document_id is a md5 string created by institute_genelist_caseid_variantid:
             _id = str, # required, same as document_id
@@ -49,7 +49,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
             category = str, # choices=('sv', 'snv')
             sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
             mate_id = str, # For SVs this identifies the other end
-    
+
             case_id = str, # case_id is a string like owner_caseid
             chromosome = str, # required
             position = int, # required
@@ -65,17 +65,17 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
 
             institute = str, # institute_id, required
 
-            sanger_ordered = bool, 
+            sanger_ordered = bool,
             validation = str, # Sanger validation, choices=('True positive', 'False positive')
 
-            quality = float, 
+            quality = float,
             filters = list, # list of strings
             samples = list, # list of dictionaries that are <gt_calls>
             genetic_models = list, # list of strings choices=GENETIC_MODELS
             compounds = list, # sorted list of <compound> ordering='combined_score'
 
             genes = list, # list with <gene>
-            dbsnp_id = str, 
+            dbsnp_id = str,
 
             # Gene ids:
             hgnc_ids = list, # list of hgnc ids (int)
@@ -90,7 +90,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
             max_thousand_genomes_frequency = float,
             max_exac_frequency = float,
             local_frequency = float,
-            local_obs_old = int, 
+            local_obs_old = int,
             local_obs_hom_old = int,
             local_obs_total_old = int, # default=638
             # Predicted deleteriousness:
@@ -110,12 +110,12 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
             gerp_conservation = list, # list of str, choices=CONSERVATION
             phylop_conservation = list, # list of str, choices=CONSERVATION
             # Database options:
-            gene_lists = list, 
+            gene_lists = list,
             manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
 
             acmg_evaluation = str, # choices=ACMG_TERMS
         )
-        
+
     """
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
@@ -137,18 +137,18 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     variant_obj['missing_data'] = False
     variant_obj['position'] = int(variant['position'])
     variant_obj['rank_score'] = float(variant['rank_score'])
-    
+
     end = variant.get('end')
     if end:
         variant_obj['end'] = int(end)
-    
+
     length = variant.get('length')
     if length:
         variant_obj['length'] = int(length)
 
     variant_obj['simple_id'] = variant['ids'].get('simple_id')
 
-    variant_obj['quality'] = float(variant['quality'])
+    variant_obj['quality'] = float(variant['quality']) if variant['quality'] else None
     variant_obj['filters'] = variant['filters']
 
     variant_obj['dbsnp_id'] = variant.get('dbsnp_id')
@@ -186,7 +186,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
             break
 
     variant_obj['genes'] = genes
-    
+
     # To make gene searches more effective
     variant_obj['hgnc_ids'] = variant.get('hgnc_ids')
 
