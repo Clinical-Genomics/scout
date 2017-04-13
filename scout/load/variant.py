@@ -19,10 +19,7 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
             case_obj(dict)
             variant_type(str)
     """
-    adapter.delete_variants(
-        case_id=case_obj['case_id'],
-        variant_type=variant_type
-    )
+    adapter.delete_variants(case_id=case_obj['_id'], variant_type=variant_type)
 
 
 def check_coordinates(variant, coordinates):
@@ -146,8 +143,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     logger.info("All variants inserted.")
     logger.info("Number of variants in file: {0}".format(nr_variants + 1))
     logger.info("Number of variants inserted: {0}".format(nr_inserted))
-    logger.info("Time to insert variants:{0}".format(
-                datetime.now() - start_insertion))
+    logger.info("Time to insert variants:{0}".format(datetime.now() - start_insertion))
 
     # This function will add a variant rank and add information on compound objects
     adapter.update_variants(case_obj, variant_type, category=category)

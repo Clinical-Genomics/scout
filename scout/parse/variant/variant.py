@@ -31,10 +31,10 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     """
     rank_results_header = rank_results_header or []
     variant = {}
-    if not 'info_dict' in variant_dict:
+    if 'info_dict' not in variant_dict:
         variant_dict['info_dict'] = {}
     # Create the ID for the variant
-    case_id = case['case_id']
+    case_id = case['_id']
     case_name = case['display_name']
 
     # Builds a dictionary with the different ids that are used
