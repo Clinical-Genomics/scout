@@ -12,7 +12,7 @@ def parse_ids(variant, case, variant_type):
             ids(dict): Dictionary with the relevant ids
     """
     ids = {}
-    case_id = case['case_id']
+    case_id = case['_id']
     chrom = variant['CHROM']
     pos = variant['POS']
     ref = variant['REF']
