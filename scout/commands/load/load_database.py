@@ -37,17 +37,9 @@ log = logging.getLogger(__name__)
 def region(context, hgnc_id, case_id, chromosome, start, end):
     """Load all variants in a region to a existing case"""
     adapter = context.obj['adapter']
-    try:
-        load_region(
-            adapter=adapter,
-            case_id=case_id,
-            hgnc_id=hgnc_id,
-            chrom=chromosome,
-            start=start,
-            end=end)
-    except Exception as err:
-        log.warning(err)
-        context.abort()
+    load_region(
+        adapter=adapter, case_id=case_id, hgnc_id=hgnc_id, chrom=chromosome, start=start, end=end
+    )
 
 
 @click.command('user', short_help='Load a user')
