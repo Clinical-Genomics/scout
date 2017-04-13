@@ -246,13 +246,11 @@ class VariantHandler(object):
                 variant_type(str)
         """
         # Get all variants sorted by rank score
-        variants = self.variant_collection.find(
-            {
-                'case_id': case_obj['case_id'],
-                'category': category,
-                'variant_type': variant_type,
-            }
-        ).sort('rank_score', pymongo.DESCENDING)
+        variants = self.variant_collection.find({
+            'case_id': case_obj['_id'],
+            'category': category,
+            'variant_type': variant_type,
+        }).sort('rank_score', pymongo.DESCENDING)
 
         logger.info("Updating variant_rank for all variants")
 
