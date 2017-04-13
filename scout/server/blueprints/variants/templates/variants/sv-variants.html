@@ -194,15 +194,20 @@
   {{ super() }}
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
-      $("#variantsTable").stickyTableHeaders({
+      $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
+      });
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
       });
     })
   </script>
 {% endblock %}
+
 
 {% macro variant_row(variant) %}
   <tr>
