@@ -33,8 +33,7 @@ def check_panels(adapter, panels, default_panels=None):
     return panels_exist
 
 
-def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
-                start=None, end=None):
+def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None):
     """Load all variants in a region defined by a HGNC id
 
     Args:
@@ -53,7 +52,7 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
         start = gene_obj['start']
         end = gene_obj['end']
 
-    case_obj = adapter.case(institute_id=owner, case_id=case_id)
+    case_obj = adapter.case(case_id=case_id)
     if not case_obj:
         raise ValueError("Case {} does not exist in database".format(case_id))
 
