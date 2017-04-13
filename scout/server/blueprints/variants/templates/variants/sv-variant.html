@@ -55,7 +55,7 @@
         <li class="list-group-item">
           Position
           <div class="pull-right">
-            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50), vcf=case.vcf_file) }}" target="_blank">
+            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50), vcf=case.vcf_files.vcf_sv) }}" target="_blank">
               Alignment: {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}
             </a>
           </div>

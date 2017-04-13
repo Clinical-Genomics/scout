@@ -45,6 +45,9 @@ def sv_variant(store, institute_id, case_name, variant_id):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
 
+    # fill in information for pilup view
+    variant_case(case_obj)
+
     # frequencies
     variant_obj['frequencies'] = [
         ('1000G', variant_obj.get('thousand_genomes_frequency')),
