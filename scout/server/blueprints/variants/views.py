@@ -18,7 +18,6 @@ variants_bp = Blueprint('variants', __name__, template_folder='templates')
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    variant_type = request.args['variant_type']
     page = int(request.args.get('page', 1))
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
@@ -26,13 +25,18 @@ def variants(institute_id, case_name):
     panel_choices = [(panel['panel_name'], panel['display_name'])
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
-    query = form.data
-    query['variant_type'] = variant_type
+
+    # handle HPO gene list separately
+    if form.data['gene_panels'] == ['hpo']:
+        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
+                               case_obj['dynamic_gene_list']))
+        form.hgnc_symbols.data = hpo_symbols
+
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = controllers.variants(store, variants_query, page)
 
-    return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
-                form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+    return dict(institute=institute_obj, case=case_obj, form=form,
+                severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>')

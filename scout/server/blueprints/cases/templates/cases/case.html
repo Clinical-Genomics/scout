@@ -483,10 +483,8 @@
     {% if case.dynamic_gene_list %}
       <div class="panel-footer">
          <a class="btn btn-default form-control"
-            href="{{ url_for('variants.variants',
-                             institute_id=institute.id,
-                             case_name=case.display_name,
-                             variant_type='clinical',
+            href="{{ url_for('variants.variants', institute_id=institute._id,
+                             case_name=case.display_name, variant_type='clinical',
                              gene_panels=['hpo']) }}">
              Clinical HPO variants
            </a>

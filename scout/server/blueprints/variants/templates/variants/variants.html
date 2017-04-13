@@ -3,7 +3,7 @@
 {% from "utils.html" import flash_messages %}
 
 {% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant_type|capitalize }} variants
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
 {% endblock %}
 
 {% block top_nav %}
@@ -22,7 +22,7 @@
     </a>
   </li>
   <li class="active">
-    <span class="navbar-text">{{ variant_type|capitalize }} SNV and INDELs</span>
+    <span class="navbar-text">{{ form.variant_type.data|capitalize }} SNV and INDELs</span>
   </li>
 {% endblock %}
 
@@ -33,7 +33,7 @@
     <ul class="dropdown-menu">
       <li>
         <a href="{{ url_for('variants.variants', institute_id=institute._id,
-                            case_name=case.display_name, variant_type=variant_type,
+                            case_name=case.display_name, variant_type=form.variant_type.data,
                             gene_panels=['hpo']) }}">
           HPO gene list
         </a>
@@ -41,7 +41,7 @@
     </ul>
   </li>
   <li>
-    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
+    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
   </li>
   {{ super() }}
 {% endblock %}
@@ -94,7 +94,7 @@
           </tr>
         {% else %}
           <tr>
-            <td colspan="{{ 10 if variant_type == 'clinical' else 9 }}">
+            <td colspan="{{ 10 if form.variant_type.data == 'clinical' else 9 }}">
               No matching variants
             </td>
           </tr>
@@ -169,7 +169,7 @@
   <div class="container-fluid">
     <div class="form-group text-center">
       {% if more_variants %}
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, page=(page + 1), **form.data) }}">
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
           Next page
         </a>
       {% else %}
@@ -181,7 +181,8 @@
 
 {% macro filters_form() %}
   <form method="GET">
-    <input type="hidden" name="variant_type" value="{{ variant_type }}">
+    {{ form.csrf_token }}
+    {{ form.variant_type() }}
     <div class="form-group">
       <div class="row">
         <div class="col-xs-3">
@@ -240,7 +241,7 @@
             </div>
             <div class="col-xs-6">
               <a href="{{ url_for('variants.variants', institute_id=institute._id,
-                          case_name=case.display_name, variant_type=variant_type,
+                          case_name=case.display_name, variant_type=form.variant_type.data,
                           functional_annotations=severe_so_terms,
                           region_annotations=['exonic', 'splicing'],
                           thousand_genomes_frequency=institute.frequency_cutoff,
