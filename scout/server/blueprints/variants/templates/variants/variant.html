@@ -600,7 +600,7 @@
               <tr>
                 <td>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</td>
                 <td>
-                  <a href="http://omim.org/entry/{{ disease_term.disease_id }}" target="_blank">
+                  <a href="http://omim.org/entry/{{ disease_term.disease_id|replace('OMIM:', '') }}" target="_blank">
                     {{ disease_term.description }}
                   </a>
                 </td>
