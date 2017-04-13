@@ -47,8 +47,8 @@ def institute_and_case(store, institute_id, case_name=None):
     # validate that user has access to the institute
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
-            collaborator_ids = case_obj['collaborators']
-            if not any(inst_id in collaborator_ids for inst_id in current_user.institutes):
+            if not case_name or not any(inst_id in case_obj['collaborators'] for inst_id in
+                                        current_user.institutes):
                 # you don't have access!!
                 flash("You don't have acccess to: {}".format(institute_obj['display_name']),
                       'danger')
