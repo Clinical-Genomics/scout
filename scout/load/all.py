@@ -49,9 +49,9 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
         gene_obj = adapter.hgnc_gene(hgnc_id)
         if not gene_obj:
             ValueError("Gene {} does not exist in database".format(hgnc_id))
-        chrom = gene_obj.chromosome
-        start = gene_obj.start
-        end = gene_obj.end
+        chrom = gene_obj['chromosome']
+        start = gene_obj['start']
+        end = gene_obj['end']
 
     case_obj = adapter.case(institute_id=owner, case_id=case_id)
     if not case_obj:
@@ -60,29 +60,27 @@ def load_region(adapter, case_id, owner, hgnc_id=None, chrom=None,
     log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
              " {2}, end {3}".format(case_obj['case_id'], chrom, start, end))
 
-    load_variants(adapter=adapter, variant_file=case_obj.vcf_files['vcf_snv'],
+    load_variants(adapter=adapter, variant_file=case_obj['vcf_files']['vcf_snv'],
                   case_obj=case_obj, variant_type='clinical', category='snv',
                   chrom=chrom, start=start, end=end)
 
-    vcf_sv_file = case_obj.vcf_files.get('vcf_sv')
+    vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
     if vcf_sv_file:
         log.info("Load clinical SV variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj['case_id'], chrom, start,
-                                             end))
+                 "start {2}, end {3}".format(case_obj['case_id'], chrom, start, end))
         load_variants(adapter=adapter, variant_file=vcf_sv_file,
                       case_obj=case_obj, variant_type='clinical',
                       category='sv', chrom=chrom, start=start, end=end)
 
     if case_obj.is_research:
         log.info("Load research SNV variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj['case_id'], chrom, start,
-                                             end))
-        vcf_snv_research = case_obj.vcf_files['vcf_snv_research']
+                 "start {2}, end {3}".format(case_obj['case_id'], chrom, start, end))
+        vcf_snv_research = case_obj['vcf_files']['vcf_snv_research']
         load_variants(adapter=adapter, variant_file=vcf_snv_research,
                       case_obj=case_obj, variant_type='research',
                       category='snv', chrom=chrom, start=start, end=end)
 
-        vcf_sv_research = case_obj.vcf_files['vcf_sv_research']
+        vcf_sv_research = case_obj['vcf_files'].get('vcf_sv_research')
         if vcf_sv_research:
             log.info("Load research SV variants for case: {0} region: chr {1},"
                      " start {2}, end {3}".format(case_obj['case_id'], chrom,
