@@ -16,7 +16,7 @@ def parse_compounds(variant, case, variant_type):
             compounds(list(dict)): A list of compounds
     """
     # We need the case to construct the correct id
-    case_id = case['case_id']
+    case_id = case['_id']
     case_name = case['display_name']
     compounds = []
     variant_compounds = variant.get('compound_variants', {})
