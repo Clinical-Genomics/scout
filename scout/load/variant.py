@@ -112,7 +112,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                 if coordinates:
                     if not check_coordinates(parsed_variant, coordinates):
                         add_variant = False
-        
+
                 if add_variant:
                     variant_obj = build_variant(
                         variant=parsed_variant,
@@ -138,8 +138,9 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                     inserted += 1
 
     except Exception as error:
-        logger.warning("Deleting inserted variants")
-        delete_variants(adapter, case_obj, variant_type)
+        if not coordinates:
+            logger.warning("Deleting inserted variants")
+            delete_variants(adapter, case_obj, variant_type)
         raise error
 
     logger.info("All variants inserted.")

@@ -259,13 +259,13 @@ class VariantHandler(object):
         # Update the information on all compounds
         for index, variant in enumerate(variants):
             # This is a list with the updated compound documents
-            compound_objs = self.update_compounds(variant)
+            # compound_objs = self.update_compounds(variant)
             self.variant_collection.find_one_and_update(
                 {'_id': variant['_id']},
                 {
                     '$set': {
                         'variant_rank': index + 1,
-                        'compounds': compound_objs,
+                        # 'compounds': compound_objs,
                     }
                 }
             )
