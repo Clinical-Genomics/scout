@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import pytest
-from mock import Mock
 import logging
 import datetime
 
@@ -607,10 +606,10 @@ def variants(request, variant_clinical_file):
     return variants
 
 @pytest.fixture(scope='function')
-def parsed_variant(request, one_variant, parsed_case):
+def parsed_variant(request, one_variant, case_obj):
     """Return a parsed variant"""
     print('')
-    variant_dict = parse_variant(one_variant, parsed_case)
+    variant_dict = parse_variant(one_variant, case_obj)
     return variant_dict
 
 @pytest.fixture(scope='function')
@@ -688,23 +687,23 @@ def parsed_variant():
     return variant
 
 @pytest.fixture(scope='function')
-def parsed_sv_variant(request, one_sv_variant, parsed_case):
+def parsed_sv_variant(request, one_sv_variant, case_obj):
     """Return a parsed variant"""
     print('')
-    variant_dict = parse_variant(one_sv_variant, parsed_case)
+    variant_dict = parse_variant(one_sv_variant, case_obj)
     return variant_dict
 
 @pytest.fixture(scope='function')
-def parsed_variants(request, variants, parsed_case):
+def parsed_variants(request, variants, case_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (parse_variant(variant, parsed_case) for variant in variants)
+    return (parse_variant(variant, case_obj) for variant in variants)
 
 @pytest.fixture(scope='function')
-def parsed_sv_variants(request, sv_variants, parsed_case):
+def parsed_sv_variants(request, sv_variants, case_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (parse_variant(variant, parsed_case) for variant in sv_variants)
+    return (parse_variant(variant, case_obj) for variant in sv_variants)
 
 @pytest.fixture(scope='function')
 def variant_objs(request, parsed_variants, institute_obj):
