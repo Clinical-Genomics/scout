@@ -87,6 +87,7 @@ class CaseHandler(object):
             updated_case(dict)
         """
         dynamic_gene_list = []
+        res = []
         if hgnc_ids:
             logger.info("Fetching genes by hgnc id")
             res = self.hgnc_collection.find(

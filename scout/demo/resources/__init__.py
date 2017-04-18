@@ -3,18 +3,18 @@ import pkg_resources
 ###### Files ######
 
 # Gene sources:
-hgnc_file = 'demo/resources/hgnc_reduced_set.txt'
-exac_file = 'demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt'
-transcripts37_file = 'demo/resources/ensembl_transcripts_reduced.txt'
+hgnc_file = 'demo/resources/hgnc_reduced_set.txt.gz'
+exac_file = 'demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt.gz'
+transcripts37_file = 'demo/resources/ensembl_transcripts_reduced.txt.gz'
 
 # OMIM resources:
-mim2gene_file = 'demo/resources/mim2gene_reduced.txt'
-genemap2_file = 'demo/resources/genemap2_reduced.txt'
+mim2gene_file = 'demo/resources/mim2gene_reduced.txt.gz'
+genemap2_file = 'demo/resources/genemap2_reduced.txt.gz'
 
 # Hpo resources
-hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt'
-hpoterms_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt'
-hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt'
+hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt.gz'
+hpoterms_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt.gz'
+hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt.gz'
 
 
 ###### Paths ######

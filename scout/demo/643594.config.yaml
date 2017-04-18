@@ -32,12 +32,12 @@ samples:
     sex: female
     expected_coverage: 30
 
-vcf_snv: tests/fixtures/643594.clinical.vcf
-vcf_sv: tests/fixtures/643594.clinical.SV.vcf
-vcf_snv_research: tests/fixtures/643594.research.vcf
-vcf_sv_research: tests/fixtures/643594.research.SV.vcf
+vcf_snv: scout/demo/643594.clinical.vcf.gz
+vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
+vcf_snv_research: scout/demo/643594.research.vcf.gz
+vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 
-madeline: tests/fixtures/madeline.xml
+madeline: scout/demo/madeline.xml
 default_gene_panels: [panel1]
 gene_panels: [panel1]
 

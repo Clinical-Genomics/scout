@@ -32,20 +32,6 @@ MIM2GENE_LINES = [
     "271640\tphenotype",
 ]
 
-MIMTITLES_LINES = [
-    "# Copyright (c) 1966-2016 Johns Hopkins University. Use of this file "\
-    "adheres to the terms specified at https://omim.org/help/agreement.",
-    "# Generated: 2017-02-02",
-    "# Prefix\tMim Number\tPreferred Title; symbol\tAlternative Title(s); "\
-    "symbol(s)\tIncluded Title(s); symbols",
-    "Asterisk\t615291\tUDP-GAL:BETA-GAL BETA-1,3-GALACTOSYLTRANSFERASE"\
-    " POLYPEPTIDE 6; B3GALT6\tGALACTOSYLTRANSFERASE II; GALTII;; "\
-    "BETA-1,3-GALACTOSYLTRANSFERASE 6;; BETA-3-GALT6",
-    "Number Sign\t615349\tEHLERS-DANLOS SYNDROME, PROGEROID TYPE, 2; EDSP2",
-    "Number Sign\t271640\tSPONDYLOEPIMETAPHYSEAL DYSPLASIA WITH JOINT LAXITY,"\
-    " TYPE 1, WITH OR WITHOUT FRACTURES; SEMDJL1\tSEMDJL"
-]
-
 def test_parse_omim_line():
     ## GIVEN a header and a line
     header = ['a', 'b', 'c']
@@ -74,22 +60,6 @@ def test_parse_genemap_file(genemap_handle):
         assert 'mim_number' in res
     
     assert i > 0
-
-def test_parse_mimtitles():
-    title_info = parse_mim_titles(MIMTITLES_LINES)
-    
-    first_entry = next(title_info)
-    assert first_entry['mim_number'] == 615291
-    
-    second_entry = next(title_info)
-    assert second_entry['mim_number'] == 615349
-    assert second_entry['preferred_title'] == "EHLERS-DANLOS SYNDROME, PROGEROID TYPE, 2"
-
-def test_parse_mimtitles_file(mimtitles_handle):
-    for i,res in enumerate(parse_mim_titles(mimtitles_handle)):
-        assert 'mim_number' in res
-    assert i > 0
-
 
 def test_parse_mim2gene():
     ## GIVEN some lines from a mim2gene file

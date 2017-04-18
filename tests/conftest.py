@@ -28,39 +28,18 @@ from scout.load import (load_hgnc_genes, load_panel)
 from scout.load.hpo import load_hpo
 
 # These are the reduced data files
-from scout.demo.resources import *
-from scout.demo import *
+from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, 
+exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, 
+hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path)
+from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, 
+                        clinical_sv_path, ped_path, load_path, panel_path)
 
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
-
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
-
-# Variant and load files:
-vcf_research_file = "tests/fixtures/643594.research.vcf"
-sv_research_path = "tests/fixtures/1.SV.vcf"
-vcf_clinical_file = "tests/fixtures/643594.clinical.vcf"
-sv_clinical_path = "tests/fixtures/643594.clinical.SV.vcf"
-ped_path = "tests/fixtures/643594.ped"
-scout_yaml_config = 'tests/fixtures/643594.config.yaml'
-
-# Panel file
-panel_1_path = panel_path
-madeline_file = "tests/fixtures/madeline.xml"
-
-# Resource files
-hgnc_path = hgnc_reduced_path
-ensembl_transcript_path = transcripts37_reduced_path
-exac_genes_path = exac_reduced_path
-hpo_genes_path = hpogenes_reduced_path
-hpo_terms_path = hpoterms_reduced_path
-hpo_disease_path = hpo_phenotype_to_terms_reduced_path
-mim2gene_path = mim2gene_reduced_path
-genemap_path = genemap2_reduced_path
-mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 ##################### Gene fixtures #####################
 
@@ -503,7 +482,7 @@ def panel_info(request):
     "Return one panel info as specified in tests/fixtures/config1.ini"
     panel = {
             'date': datetime.datetime.now(),
-            'file': panel_1_path,
+            'file': panel_path,
             'type': 'clinical',
             'institute': 'cust000',
             'version': '1.0',
@@ -727,80 +706,74 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
 def config_file(request):
     """Get the path to a config file"""
     print('')
-    return scout_yaml_config
+    return load_path
 
 @pytest.fixture
 def panel_1_file(request):
     """Get the path to a config file"""
     print('')
-    return panel_1_path
+    return panel_path
 
 @pytest.fixture
 def hgnc_file(request):
     """Get the path to a hgnc file"""
     print('')
-    return hgnc_path
+    return hgnc_reduced_path
 
 @pytest.fixture
 def transcripts_file(request):
     """Get the path to a ensembl transcripts file"""
     print('')
-    return ensembl_transcript_path
+    return transcripts37_reduced_path
 
 @pytest.fixture
 def exac_file(request):
     """Get the path to a exac genes file"""
     print('')
-    return exac_genes_path
+    return exac_reduced_path
 
 @pytest.fixture
 def hpo_genes_file(request):
     """Get the path to the hpo genes file"""
     print('')
-    return hpo_genes_path
+    return hpogenes_reduced_path
 
 @pytest.fixture
 def hpo_terms_file(request):
     """Get the path to the hpo terms file"""
     print('')
-    return hpo_terms_path
+    return hpoterms_reduced_path
 
 @pytest.fixture
 def hpo_disease_file(request):
     """Get the path to the hpo disease file"""
     print('')
-    return hpo_disease_path
+    return hpo_phenotype_to_terms_reduced_path
 
 
 @pytest.fixture
 def mim2gene_file(request):
     """Get the path to the mim2genes file"""
     print('')
-    return mim2gene_path
-
-@pytest.fixture
-def mimtitles_file(request):
-    """Get the path to the mim2genes file"""
-    print('')
-    return mimtitles_path
+    return mim2gene_reduced_path
 
 @pytest.fixture
 def genemap_file(request):
     """Get the path to the mim2genes file"""
     print('')
-    return genemap_path
+    return genemap2_reduced_path
 
 @pytest.fixture(scope='function')
 def variant_clinical_file(request):
     """Get the path to a variant file"""
     print('')
-    return vcf_clinical_file
+    return clinical_snv_path
 
 @pytest.fixture(scope='function')
 def sv_clinical_file(request):
     """Get the path to a variant file"""
     print('')
-    return sv_clinical_path
+    return clinical_sv_path
 
 
 @pytest.fixture(scope='function')
@@ -886,13 +859,7 @@ def hpo_disease_handle(request, hpo_disease_file):
 def mim2gene_handle(request, mim2gene_file):
     """Get a file handle to a mim2genes file"""
     print('')
-    return get_file_handle(mim2gene_path)
-
-@pytest.fixture
-def mimtitles_handle(request, mimtitles_file):
-    """Get a file handle to a mim2genes file"""
-    print('')
-    return get_file_handle(mimtitles_file)
+    return get_file_handle(mim2gene_file)
 
 @pytest.fixture
 def genemap_handle(request, genemap_file):
