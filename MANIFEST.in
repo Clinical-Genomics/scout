@@ -24,6 +24,10 @@ recursive-include /tests/fixtures/*.xml
 recursive-include /tests/fixtures/gene_listst/gene_list_test.txt
 recursive-include /tests/fixtures/resources/ *
 
+# demo
+recursive-include scout/demo/resources/ *.txt
+recursive-incluce scout/demo/ *.{yaml,vcf,txt}
+
 # excluding
 recursive-exclude  *.pyc
 recursive-exclude tests *.pyc
