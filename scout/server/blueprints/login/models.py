@@ -6,6 +6,7 @@ class LoginUser(UserMixin):
 
     def __init__(self, user_data):
         """Create a new user object."""
+        self.roles = []
         for key, value in user_data.items():
             setattr(self, key, value)
 
