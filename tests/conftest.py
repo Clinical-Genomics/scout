@@ -31,7 +31,6 @@ from scout.load.hpo import load_hpo
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, 
 exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, 
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path)
-
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, 
                         clinical_sv_path, ped_path, load_path, panel_path)
 

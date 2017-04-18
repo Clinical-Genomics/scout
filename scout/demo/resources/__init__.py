@@ -9,7 +9,7 @@ transcripts37_file = 'demo/resources/ensembl_transcripts_reduced.txt.gz'
 
 # OMIM resources:
 mim2gene_file = 'demo/resources/mim2gene_reduced.txt.gz'
-genemap2_file = 'demo/resources/genemap2_reduced.txt'
+genemap2_file = 'demo/resources/genemap2_reduced.txt.gz'
 
 # Hpo resources
 hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt.gz'
