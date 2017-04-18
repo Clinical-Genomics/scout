@@ -1,7 +1,12 @@
 # http://docs.python.org/distutils/sourcedist.html#manifest-template
 # http://docs.python.org/distutils/sourcedist.html#specifying-the-files-to-distribute
 
-include  LICENSE
+include CHANGELOG.md
+include LICENSE
+include README.md
+
+include requirements.txt
+recursive-include requirements *
 
 # including
 # templates
@@ -16,6 +21,10 @@ recursive-include scout/resources/ *.gz
 recursive-include scout/translations *
 
 # tests
+recursive-include tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
 # example data
 recursive-include /tests/fixtures/*.ped
 recursive-include /tests/fixtures/*.vcf
