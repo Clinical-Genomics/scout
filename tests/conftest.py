@@ -34,7 +34,6 @@ from scout.demo import *
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
-
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
@@ -879,12 +878,6 @@ def mim2gene_handle(request, mim2gene_file):
     """Get a file handle to a mim2genes file"""
     print('')
     return get_file_handle(mim2gene_path)
-
-@pytest.fixture
-def mimtitles_handle(request, mimtitles_file):
-    """Get a file handle to a mim2genes file"""
-    print('')
-    return get_file_handle(mimtitles_file)
 
 @pytest.fixture
 def genemap_handle(request, genemap_file):
