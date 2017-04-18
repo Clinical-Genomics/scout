@@ -40,16 +40,15 @@ init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
 # Variant and load files:
-vcf_research_file = "tests/fixtures/643594.research.vcf"
-sv_research_path = "tests/fixtures/1.SV.vcf"
-vcf_clinical_file = "tests/fixtures/643594.clinical.vcf"
-sv_clinical_path = "tests/fixtures/643594.clinical.SV.vcf"
-ped_path = "tests/fixtures/643594.ped"
-scout_yaml_config = 'tests/fixtures/643594.config.yaml'
+vcf_research_file = research_snv_path
+sv_research_path = research_sv_path
+vcf_clinical_file = clinical_snv_path
+sv_clinical_path = clinical_sv_path
+ped_path = ped_path
+scout_yaml_config = load_path
 
 # Panel file
 panel_1_path = panel_path
-madeline_file = "tests/fixtures/madeline.xml"
 
 # Resource files
 hgnc_path = hgnc_reduced_path
@@ -60,7 +59,6 @@ hpo_terms_path = hpoterms_reduced_path
 hpo_disease_path = hpo_phenotype_to_terms_reduced_path
 mim2gene_path = mim2gene_reduced_path
 genemap_path = genemap2_reduced_path
-mimtitles_path = "tests/fixtures/resources/mimTitles_reduced.txt"
 
 ##################### Gene fixtures #####################
 
@@ -777,12 +775,6 @@ def mim2gene_file(request):
     """Get the path to the mim2genes file"""
     print('')
     return mim2gene_path
-
-@pytest.fixture
-def mimtitles_file(request):
-    """Get the path to the mim2genes file"""
-    print('')
-    return mimtitles_path
 
 @pytest.fixture
 def genemap_file(request):
