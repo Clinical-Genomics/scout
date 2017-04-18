@@ -1,42 +1,27 @@
 # http://docs.python.org/distutils/sourcedist.html#manifest-template
 # http://docs.python.org/distutils/sourcedist.html#specifying-the-files-to-distribute
 
+# including
 include CHANGELOG.md
 include LICENSE
 include README.md
-
 include requirements.txt
-recursive-include requirements *
+include requirements-dev.txt
 
-# including
-# templates
-recursive-include scout/server/templates *
-recursive-include scout/server/static *
-recursive-include scout/server/blueprints/**/templates *
-recursive-include scout/server/blueprints/**/static *
-# static files
-recursive-include scout/resources/ *.gz
+# server
+recursive-include scout/server/**/templates *.html
+recursive-include scout/server/**/static *
 
 # translations
-recursive-include scout/translations *
+recursive-include scout/server/translations *
+
+# static files
+recursive-include scout/resources *.gz
+recursive-include scout/demo *
 
 # tests
 recursive-include tests *
-recursive-exclude * __pycache__
-recursive-exclude * *.py[co]
-
-# example data
-recursive-include /tests/fixtures/*.ped
-recursive-include /tests/fixtures/*.vcf
-recursive-include /tests/fixtures/*.ini
-recursive-include /tests/fixtures/*.xml
-recursive-include /tests/fixtures/gene_listst/gene_list_test.txt
-recursive-include /tests/fixtures/resources/ *
-
-# demo
-recursive-include scout/demo/resources/ *
-recursive-incluce scout/demo/ *
 
 # excluding
-recursive-exclude  *.pyc
-recursive-exclude tests *.pyc
+recursive-exclude * *.py[co]
+recursive-exclude * .DS_Store
