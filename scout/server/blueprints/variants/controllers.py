@@ -371,7 +371,7 @@ def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
     variant_link = url_for('variants.variant', institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
-    if variant_obj['_id'] not in case_obj['suspects']:
+    if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
         store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
     recipients = institute_obj['sanger_recipients']
