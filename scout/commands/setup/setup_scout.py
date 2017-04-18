@@ -1,13 +1,9 @@
 """
 Cli functions to setup scout
 """
-
 import logging
 import datetime
 import yaml
-
-from pprint import pprint as pp
-
 
 import pymongo
 import click
@@ -30,7 +26,8 @@ from scout.resources import transcripts38_path as transcripts38_path
 from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path,
             transcripts37_reduced_path, mim2gene_reduced_path,
             genemap2_reduced_path, hpogenes_reduced_path,
-            hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path)
+            hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path,
+            madeline_path)
 
 # Gene panel
 from scout.demo import (panel_path, clinical_snv_path, clinical_sv_path,
@@ -101,7 +98,7 @@ def database(context, institute_name, user_name, user_mail):
     transcripts38_handle = context.obj['transcripts38']
     exac_handle = context.obj['exac']
     hpo_genes_handle = context.obj['hpogenes']
-    
+
     mim2gene_handle = context.obj['mim2gene']
     genemap_handle = context.obj['genemap2']
 
@@ -242,6 +239,7 @@ def demo(context):
     case_data['vcf_sv'] = clinical_sv_path
     case_data['vcf_snv_research'] = research_snv_path
     case_data['vcf_sv_research'] = research_sv_path
+    case_data['madeline'] = madeline_path
 
     load_scout(adapter, case_data)
 

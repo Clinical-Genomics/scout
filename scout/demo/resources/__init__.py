@@ -16,6 +16,8 @@ hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_r
 hpoterms_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt.gz'
 hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt.gz'
 
+# Additional resources
+madeline_file = 'demo/madeline.xml'
 
 ###### Paths ######
 
@@ -32,3 +34,6 @@ genemap2_reduced_path = pkg_resources.resource_filename('scout', genemap2_file)
 hpogenes_reduced_path = pkg_resources.resource_filename('scout', hpogenes_file)
 hpoterms_reduced_path = pkg_resources.resource_filename('scout', hpoterms_file)
 hpo_phenotype_to_terms_reduced_path = pkg_resources.resource_filename('scout', hpo_phenotype_to_terms)
+
+# Additional paths
+madeline_path = pkg_resources.resource_filename('scout', madeline_file)
