@@ -74,7 +74,7 @@ class QueryHandler(object):
         if query.get('exac_frequency') is not None:
             exac = query['exac_frequency']
             if exac == '-1':
-                mongo_query['thousand_genomes_frequency'] = {'$exists': False}
+                mongo_query['exac_frequency'] = {'$exists': False}
             else:
                 mongo_query['$and'].append(
                     {
