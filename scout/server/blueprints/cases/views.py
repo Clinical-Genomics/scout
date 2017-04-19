@@ -19,7 +19,7 @@ def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
     institutes_count = ((institute_obj, store.cases(collaborator=institute_obj['_id']).count())
-                        for institute_obj in institute_objs)
+                        for institute_obj in institute_objs if institute_obj)
     return dict(institutes=institutes_count)
 
 
