@@ -82,7 +82,8 @@ def gene_edit(panel_id, hgnc_id):
     if form.validate_on_submit():
         action = 'edit' if panel_gene else 'add'
         info_data = form.data.copy()
-        del info_data['csrf_token']
+        if 'csrf_token' in info_data:
+            del info_data['csrf_token']
         store.add_pending(panel_obj, hgnc_id, action=action, info=info_data)
         return redirect(url_for('.panel', panel_id=panel_id))
 
