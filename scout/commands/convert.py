@@ -52,8 +52,8 @@ def convert(context, panel):
                     correct_gene = gene
                     #','.join(correct_gene.aliases),
                     print(correct_info.format(
-                        correct_gene.id,
-                        correct_gene.hgnc_symbol,
+                        correct_gene['hgnc_id'],
+                        correct_gene['hgnc_symbol'],
                         gene_info.get('disease_associated_transcripts',''),
                         gene_info.get('reduced_penetrance',''),
                         gene_info.get('genetic_disease_models',''),
@@ -65,12 +65,12 @@ def convert(context, panel):
             if not correct_gene:
                     keep = True
                     for gene in result_genes:
-                        if not gene.hgnc_symbol:
+                        if not gene['hgnc_symbol']:
                             keep = False
                     if keep:
                         print(correct_info.format(
-                            ','.join([str(gene.id) for gene in result_genes]),
-                            ','.join([gene.hgnc_symbol for gene in result_genes]),
+                            ','.join([str(gene['hgnc_id']) for gene in result_genes]),
+                            ','.join([gene['hgnc_symbol'] for gene in result_genes]),
                             gene_info.get('disease_associated_transcripts',''),
                             gene_info.get('reduced_penetrance',''),
                             gene_info.get('genetic_disease_models',''),

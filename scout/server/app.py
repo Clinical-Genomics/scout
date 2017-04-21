@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import coloredlogs
+import logging
 from flask import current_app, Flask, redirect, request, url_for
 from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
+
+logger = logging.getLogger(__name__)
 
 try:
     from chanjo_report.server.app import configure_template_filters
@@ -12,7 +15,7 @@ try:
 except ImportError:
     report_bp = None
     configure_template_filters = None
-    print('chanjo report not installed!')
+    logger.info('chanjo report not installed!')
 
 from . import extensions
 from .blueprints import public, genes, cases, login, variants, panels, pileup
