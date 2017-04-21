@@ -67,6 +67,7 @@ class QueryHandler(object):
                                                             }
 
             else:
+                # Replace comma with dot
                 mongo_query['$and'].append(
                     {
                         '$or': [
