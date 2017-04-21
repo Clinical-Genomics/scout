@@ -90,9 +90,9 @@ def add_ensembl_info(gene_info, ensembl_transcripts):
         if refseq_identifier:
             if refseq_identifier in gene_info['ref_seq']:
                 is_primary = True
-            parsed_transcript['refseq'] = [refseq_identifier]
+            parsed_transcript['refseq'] = set([refseq_identifier])
         else:
-            parsed_transcript['refseq'] = []
+            parsed_transcript['refseq'] = set()
 
         parsed_transcript['enst_id'] = transcript_id
         parsed_transcript['start'] = transcript['transcript_start']
@@ -103,7 +103,7 @@ def add_ensembl_info(gene_info, ensembl_transcripts):
             if is_primary:
                 transcripts_dict[transcript_id]['is_primary'] = True
             if refseq_identifier:
-                transcripts_dict[transcript_id]['refseq'].append(refseq_identifier)
+                transcripts_dict[transcript_id]['refseq'].add(refseq_identifier)
         else:
             transcripts_dict[transcript_id] = parsed_transcript
 
@@ -112,6 +112,8 @@ def add_ensembl_info(gene_info, ensembl_transcripts):
     gene_info['end'] = gene_end
 
     for transcript_id in transcripts_dict:
+        transcript_info = transcripts_dict[transcript_id]
+        transcript_info['refseq'] = list(transcript_info['refseq'])
         gene_info['transcripts'].append(transcripts_dict[transcript_id])
 
 
