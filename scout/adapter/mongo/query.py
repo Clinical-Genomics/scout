@@ -51,39 +51,67 @@ class QueryHandler(object):
             mongo_query['chromosome'] = chromosome
             #Only check coordinates if there is a chromosome
             if (query.get('start') and query.get('end')):
-                mongo_query['position'] = {'$lte': int(query['end'])}
+                mongo_query['position'] = {
+                                                '$lte': int(query['end'])
+                                        }
 
-                mongo_query['end'] = {'$gte': int(query['start'])}
+                mongo_query['end'] = {
+                                        '$gte': int(query['start'])
+                                    }
 
         if query.get('thousand_genomes_frequency') is not None:
             thousandg = query.get('thousand_genomes_frequency')
             if thousandg == '-1':
-                mongo_query['thousand_genomes_frequency'] = {'$exists': False}
+                mongo_query['thousand_genomes_frequency'] = {
+                                                                '$exists': False
+                                                            }
 
             else:
+                # Replace comma with dot
                 mongo_query['$and'].append(
                     {
                         '$or': [
-                            {'thousand_genomes_frequency':
-                                {'$lt': float(thousandg)}},
-                            {'thousand_genomes_frequency': {'$exists': False}}
+                            {
+                                'thousand_genomes_frequency': 
+                                    {
+                                        '$lt': float(thousandg)
+                                    }
+                                },
+                            {
+                                'thousand_genomes_frequency': 
+                                    {
+                                        '$exists': False
+                                    }
+                            }
                         ]
-                    })
+                    }
+                )
             logger.debug("Adding thousand_genomes_frequency to query")
 
         if query.get('exac_frequency') is not None:
             exac = query['exac_frequency']
             if exac == '-1':
-                mongo_query['exac_frequency'] = {'$exists': False}
+                mongo_query['exac_frequency'] = {
+                                                    '$exists': False
+                                                }
             else:
                 mongo_query['$and'].append(
                     {
                         '$or': [
-                            {'exac_frequency':
-                                {'$lt': float(exac)}},
-                            {'exac_frequency': {'$exists': False}}
+                            {
+                                'exac_frequency':
+                                    {
+                                        '$lt': float(exac)}
+                                    },
+                            {
+                                'exac_frequency': 
+                                    {
+                                        '$exists': False
+                                    }
+                            }
                         ]
-                    })
+                    }
+                )
 
         if query.get('cadd_score') is not None:
             cadd = query['cadd_score']
