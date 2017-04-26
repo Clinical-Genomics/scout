@@ -29,6 +29,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
         Yields:
             variant(dict): Parsed variant
     """
+    # These are to display how the rank score is built
     rank_results_header = rank_results_header or []
     variant = {}
     if 'info_dict' not in variant_dict:
@@ -42,6 +43,7 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['case_id'] = case_id
     # type can be 'clinical' or 'research'
     # category is sv or snv
+    # If SVTYPE is found in the info field we know it is a SV
     if variant_dict['info_dict'].get('SVTYPE'):
         variant['category'] = 'sv'
     else:
@@ -59,12 +61,14 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     variant['filters'] = variant_dict['FILTER'].split(';')
     variant['variant_type'] = variant_type
 
+    # Add the dbsnp ids
     variant['dbsnp_id'] = None
     dbsnp_id = variant_dict['ID']
     if dbsnp_id != '.':
         variant['dbsnp_id'] = dbsnp_id
 
     # This is the id of other position in translocations
+    # (only for specific svs)
     variant['mate_id'] = None
 
     ################# Position specific #################
