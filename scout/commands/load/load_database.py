@@ -58,7 +58,7 @@ def user(context, institute_name, user_name, user_mail):
         context.abort()
 
     user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute])
-    user.add_user(user_info)
+    adapter.add_user(user_info)
 
 
 @click.group()
