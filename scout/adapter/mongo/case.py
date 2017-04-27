@@ -58,7 +58,7 @@ class CaseHandler(object):
             users = self.user_collection.find({'name': {'$regex': name_query, '$options':'i'}})
             if users.count() > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
-            
+
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
@@ -67,7 +67,8 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort('updated_at', -1)
 
-    def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None, build='37'):
+    def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
+                                 phenotype_ids=None, build='37'):
         """Update the dynamic gene list for a case
 
         Adds a list of dictionaries to case['dynamic_gene_list'] that looks like
@@ -81,7 +82,7 @@ class CaseHandler(object):
         Arguments:
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
-            hgnc_symbols (iterable): A list of hgnc_symbols
+            hgnc_ids (iterable): A list of hgnc_ids
 
         Returns:
             updated_case(dict)
@@ -90,9 +91,7 @@ class CaseHandler(object):
         res = []
         if hgnc_ids:
             logger.info("Fetching genes by hgnc id")
-            res = self.hgnc_collection.find(
-                {'hgnc_id': { '$in': hgnc_ids }, 'build':build }
-            )
+            res = self.hgnc_collection.find({'hgnc_id': {'$in': hgnc_ids}, 'build': build})
         elif hgnc_symbols:
             logger.info("Fetching genes by hgnc symbols")
             res = []
@@ -109,13 +108,12 @@ class CaseHandler(object):
                 }
             )
 
-        logger.info("Updating the dynamic gene list for case {0}".format(
-                    case['display_name']))
-
+        logger.info("Update dynamic gene panel for: %s", case['display_name'])
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$set': {'dynamic_gene_list': dynamic_gene_list}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'$set': {'dynamic_gene_list': dynamic_gene_list,
+                      'dynamic_panel_phenotypes': phenotype_ids or []}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
