@@ -120,6 +120,8 @@
           {% set label_class = 'primary' %}
         {% elif analysis_type == 'wes' %}
           {% set label_class = 'warning' %}
+        {% elif analysis_type == 'tga' %}
+          {% set label_class = 'info' %}
         {% else %}
           {% set label_class = 'default' %}
         {% endif %}

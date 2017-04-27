@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, request, redirect, abort, flash, current_app
+from flask import Blueprint, request, redirect, abort, flash, current_app, url_for
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
@@ -25,6 +25,14 @@ def variants(institute_id, case_name):
     panel_choices = [(panel['panel_name'], panel['display_name'])
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
+
+    # update status of case if vistited for the first time
+    if case_obj['status'] == 'inactive' and not current_user.is_admin:
+        flash('You just activated this case!', 'info')
+        user_obj = store.user(current_user.email)
+        case_link = url_for('cases.case', institute_id=institute_obj['_id'],
+                            case_name=case_obj['display_name'])
+        store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
     # handle HPO gene list separately
     if form.data['gene_panels'] == ['hpo']:

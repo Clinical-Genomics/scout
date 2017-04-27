@@ -55,7 +55,7 @@ class PanelHandler(object):
         Returns:
             gene_panel: gene panel object
         """
-        query = {'panel_name':panel_id}
+        query = {'panel_name': panel_id}
         if version:
             logger.debug("Fetch gene panel {0}, version {1} from database".format(
                 panel_id, version

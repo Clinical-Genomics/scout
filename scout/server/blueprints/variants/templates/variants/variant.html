@@ -265,7 +265,11 @@
     <ul class="list-group">
       <li class="list-group-item">
         Gene panels
-        <span class="pull-right">{{ variant.panels|join(', ') }}</span>
+        <span class="pull-right">
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a> |
+          {% endfor %}
+        </span>
       </li>
     </ul>
     <div class="panel-body">
@@ -407,8 +411,8 @@
               </td>
               <td>{{ transcript.refseq_ids|join(', ') }}</td>
               <td>
-                {{ (transcript.protein_sequence_name or '') }}
-                <small class="text-muted pull-right">{{ (transcript.coding_sequence_name or '') }}</small>
+                {{ (transcript.protein_sequence_name or '')|url_decode }}
+                <small class="text-muted pull-right">{{ transcript.coding_sequence_name or '' }}</small>
               </td>
             </tr>
           {% endfor %}
@@ -598,7 +602,15 @@
           {% for gene in variant.genes %}
             {% for disease_term in gene.disease_terms %}
               <tr>
-                <td>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</td>
+                <td>
+                  {% if gene.common %}
+                    <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                      {{ gene.common.hgnc_symbol }}
+                    </a>
+                  {% else %}
+                    {{ gene.hgnc_id }}
+                  {% endif %}
+                </td>
                 <td>
                   <a href="http://omim.org/entry/{{ disease_term.disease_id|replace('OMIM:', '') }}" target="_blank">
                     {{ disease_term.description }}
@@ -606,6 +618,18 @@
                 </td>
                 <td>{{ disease_term.inheritance|join(', ') }}</td>
               </tr>
+            {% else %}
+              {% if gene.common %}
+                <tr>
+                  <td>
+                    <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                      {{ gene.common.hgnc_symbol }}
+                    </a>
+                  </td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              {% endif %}
             {% endfor %}
           {% endfor %}
         </tbody>
@@ -829,7 +853,7 @@
               <td>{{ transcript.exon or '' }}</td>
               <td>{{ transcript.intron or '' }}</td>
               <td>{{ (transcript.coding_sequence_name or '') }}</td>
-              <td>{{ (transcript.protein_sequence_name or '') }}</td>
+              <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
             </tr>
           {% endfor %}
         {% endfor %}

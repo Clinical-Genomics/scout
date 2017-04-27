@@ -137,7 +137,7 @@ def phenotypes_actions(institute_id, case_name):
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get('min_match') or 1)
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids)
+        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
     return redirect(case_url)
 

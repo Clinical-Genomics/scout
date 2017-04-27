@@ -173,7 +173,9 @@
       Delivery report
     </h5>
     <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                        case_name=case.display_name) }}" class="btn btn-default form-control">View report</a>
+                        case_name=case.display_name) }}" class="btn btn-default form-control" target="_blank">
+      View report
+    </a>
   </div>
 {% endmacro %}
 

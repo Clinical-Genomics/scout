@@ -28,7 +28,7 @@ def panels():
 @templated('panels/panel.html')
 def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
-    panel_obj = store.panel(panel_id)
+    panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
     if request.method == 'POST':
         raw_hgnc_id = request.form['hgnc_id']
         if '|' in raw_hgnc_id:
@@ -49,7 +49,7 @@ def panel(panel_id):
             log.debug("marking gene to be deleted: %s", hgnc_id)
             store.add_pending(panel_obj, hgnc_id, action='delete')
 
-    data = controllers.panel(store, panel_id)
+    data = controllers.panel(store, panel_obj)
     if request.args.get('case_id'):
         data['case'] = store.case(request.args['case_id'])
     if request.args.get('institute_id'):
