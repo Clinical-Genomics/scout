@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import urllib.parse
+
 import coloredlogs
 import logging
 from flask import current_app, Flask, redirect, request, url_for
@@ -115,6 +117,10 @@ def register_filters(app):
             # round all other numbers
             return round(number, ndigits)
 
+    @app.template_filter()
+    def url_decode(string):
+        """Decode a string with encoded hex values."""
+        return urllib.parse.unquote(string)
 
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""

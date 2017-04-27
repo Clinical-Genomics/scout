@@ -411,8 +411,8 @@
               </td>
               <td>{{ transcript.refseq_ids|join(', ') }}</td>
               <td>
-                {{ (transcript.protein_sequence_name or '') }}
-                <small class="text-muted pull-right">{{ (transcript.coding_sequence_name or '') }}</small>
+                {{ (transcript.protein_sequence_name or '')|url_decode }}
+                <small class="text-muted pull-right">{{ transcript.coding_sequence_name or '' }}</small>
               </td>
             </tr>
           {% endfor %}
@@ -833,7 +833,7 @@
               <td>{{ transcript.exon or '' }}</td>
               <td>{{ transcript.intron or '' }}</td>
               <td>{{ (transcript.coding_sequence_name or '') }}</td>
-              <td>{{ (transcript.protein_sequence_name or '') }}</td>
+              <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
             </tr>
           {% endfor %}
         {% endfor %}
