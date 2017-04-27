@@ -6,9 +6,8 @@ log = logging.getLogger(__name__)
 INHERITANCE_MODELS = ['ar', 'ad', 'mt', 'xr', 'xd', 'x', 'y']
 
 
-def panel(store, panel_id):
+def panel(store, panel_obj):
     """Preprocess a panel of genes."""
-    panel_obj = store.panel(panel_id)
     panel_obj['institute'] = store.institute(panel_obj['institute'])
     full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
     panel_obj['name_and_version'] = full_name

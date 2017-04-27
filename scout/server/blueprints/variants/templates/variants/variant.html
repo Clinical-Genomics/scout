@@ -265,7 +265,11 @@
     <ul class="list-group">
       <li class="list-group-item">
         Gene panels
-        <span class="pull-right">{{ variant.panels|join(', ') }}</span>
+        <span class="pull-right">
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a> |
+          {% endfor %}
+        </span>
       </li>
     </ul>
     <div class="panel-body">
