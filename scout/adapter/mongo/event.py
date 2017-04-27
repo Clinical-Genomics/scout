@@ -370,7 +370,7 @@ class EventHandler(object):
 
         existing_terms = set(term['phenotype_id'] for term in
                              case.get('phenotype_terms', []))
-        
+
         updated_case = case
         phenotype_terms = []
         for hpo_term in hpo_results:
@@ -1088,7 +1088,7 @@ class EventHandler(object):
 
         logger.info("Adding cohort tag {0} to {1}"
                     .format(tag, case['display_name']))
-        
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id':case['_id']},
             {
@@ -1119,12 +1119,12 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='remove_cohort',
-            subject=tag
+            subject=case['display_name'],
         )
 
         logger.info("Removing cohort tag {0} to {1}"
                     .format(tag, case['display_name']))
-        
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id':case['_id']},
             {

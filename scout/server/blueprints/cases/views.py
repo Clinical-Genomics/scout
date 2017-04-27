@@ -309,3 +309,17 @@ def research(institute_id, case_name):
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
     store.open_research(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/cohorts', methods=['POST'])
+def cohorts(institute_id, case_name):
+    """Add/remove institute tags."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('.case', institute_id=institute_id, case_name=case_name)
+    cohort_tag = request.form['cohort_tag']
+    if request.args.get('remove') == 'yes':
+        store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
+    else:
+        store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
+    return redirect(request.referrer)

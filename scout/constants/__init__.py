@@ -219,3 +219,10 @@ PHENOTYPE_GROUPS = {
         'abbr': 'MRI'
     }
 }
+
+COHORT_TAGS = [
+    'endo',
+    'mito',
+    'ketogenic diet',
+    'other',
+]

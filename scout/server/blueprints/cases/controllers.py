@@ -5,7 +5,7 @@ from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS)
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 
@@ -83,6 +83,7 @@ def case(store, institute_obj, case_obj):
         'suspects': suspects,
         'causatives': causatives,
         'collaborators': collab_ids,
+        'cohort_tags': COHORT_TAGS,
     }
     return data
 
