@@ -77,6 +77,10 @@ def parse_variant(store, variant_obj, update=False):
             variant_obj['compounds'] = new_compounds
             has_changed = True
 
+        # sort compounds on combined rank score
+        variant_obj['compounds'] = sorted(variant_obj['compounds'],
+                                          key=lambda compound: -compound['combined_score'])
+
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
