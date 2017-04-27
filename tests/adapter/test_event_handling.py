@@ -374,3 +374,88 @@ def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
     # THEN the variant should have comments
     event = adapter.event_collection.find_one()
     assert event['content'] == content
+
+def test_add_cohort(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
+    logger.info("Testing assign a user to a case")
+    assert adapter.event_collection.find().count() == 0
+    # GIVEN a populated databas
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
+    )
+    assert institute
+
+    case = adapter.case(
+        case_id=case_obj['_id']
+    )
+    assert case
+    assert case.get('cohorts') == None
+    
+    user = adapter.user(
+        email = user_obj['email']
+    )
+    assert user
+
+    cohort_name = 'cohort'
+    
+    link = 'cohortlink'
+    ## WHEN adding a cohort to a case
+    updated_case = adapter.add_cohort(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        tag=cohort_name
+    )
+    # THEN the case should have the cohort saved
+    assert set(updated_case['cohorts']) == set([cohort_name])
+    # THEN an event should have been created
+    assert adapter.event_collection.find().count() == 1
+
+    event_obj = adapter.event_collection.find_one()
+    assert event_obj['link'] == link
+
+def test_remove_cohort(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
+    logger.info("Testing assign a user to a case")
+
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
+    )
+    case = adapter.case(
+        case_id=case_obj['_id']
+    )
+    user = adapter.user(
+        email = user_obj['email']
+    )
+
+    cohort_name = 'cohort'
+    link = 'cohortlink'
+
+    updated_case = adapter.add_cohort(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        tag=cohort_name
+    )
+    assert adapter.event_collection.find().count() == 1
+    
+    case = adapter.case(
+        case_id=case_obj['_id']
+    )
+    assert case.get('cohorts')
+    
+    ## WHEN removing a cohort from a case
+    updated_case = adapter.remove_cohort(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        tag=cohort_name
+    )
+    # THEN the case should have the cohort saved
+    assert updated_case['cohorts'] == []
+    # THEN an event should have been created
+    assert adapter.event_collection.find().count() == 2
+

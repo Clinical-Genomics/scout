@@ -1083,7 +1083,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='add_cohort',
-            subject=status
+            subject=link
         )
 
         logger.info("Adding cohort tag {0} to {1}"
@@ -1092,7 +1092,7 @@ class EventHandler(object):
         updated_case = self.case_collection.find_one_and_update(
             {'_id':case['_id']},
             {
-                {'$addToSet': {'cohorts': tag}},
+                '$addToSet': {'cohorts': tag},
             },
             return_document = pymongo.ReturnDocument.AFTER
         )
@@ -1119,7 +1119,7 @@ class EventHandler(object):
             link=link,
             category='case',
             verb='remove_cohort',
-            subject=status
+            subject=tag
         )
 
         logger.info("Removing cohort tag {0} to {1}"
@@ -1128,7 +1128,7 @@ class EventHandler(object):
         updated_case = self.case_collection.find_one_and_update(
             {'_id':case['_id']},
             {
-                {'$pull': {'cohorts': tag}},
+                '$pull': {'cohorts': tag},
             },
             return_document = pymongo.ReturnDocument.AFTER
         )
