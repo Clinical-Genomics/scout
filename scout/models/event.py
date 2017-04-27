@@ -62,6 +62,8 @@ VERBS_MAP = {
   "rerun": "requested rerun of",
   "validate": "marked validation status for",
   "update_diagnosis": "updated diagnosis for",
+  "add_cohort": "updated cohort for",
+  "remove_cohort": "removed cohort for",
 }
 
 VERBS = list(VERBS_MAP.keys())

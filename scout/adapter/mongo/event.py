@@ -370,7 +370,7 @@ class EventHandler(object):
 
         existing_terms = set(term['phenotype_id'] for term in
                              case.get('phenotype_terms', []))
-        
+
         updated_case = case
         phenotype_terms = []
         for hpo_term in hpo_results:
@@ -860,7 +860,6 @@ class EventHandler(object):
         logger.debug("Variant updated")
         return updated_variant
 
-
     def mark_checked(self, institute, case, user, link,
                      unmark=False):
         """Mark a case as checked from an analysis point of view.
@@ -1062,4 +1061,76 @@ class EventHandler(object):
                 content=omim_id
             )
 
+        return updated_case
+
+    def add_cohort(self, institute, case, user, link, tag):
+        """Add a cohort tag to case
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            tag (str): The cohort tag to be added
+
+        Return:
+            updated_case(dict)
+        """
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='add_cohort',
+            subject=link
+        )
+
+        logger.info("Adding cohort tag {0} to {1}"
+                    .format(tag, case['display_name']))
+
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id':case['_id']},
+            {
+                '$addToSet': {'cohorts': tag},
+            },
+            return_document = pymongo.ReturnDocument.AFTER
+        )
+        logger.debug("Case updated")
+        return updated_case
+
+    def remove_cohort(self, institute, case, user, link, tag):
+        """Remove a cohort tag from case
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            tag (str): The cohort tag to be removed
+
+        Return:
+            updated_case(dict)
+        """
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='remove_cohort',
+            subject=case['display_name'],
+        )
+
+        logger.info("Removing cohort tag {0} to {1}"
+                    .format(tag, case['display_name']))
+
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id':case['_id']},
+            {
+                '$pull': {'cohorts': tag},
+            },
+            return_document = pymongo.ReturnDocument.AFTER
+        )
+        logger.debug("Case updated")
         return updated_case

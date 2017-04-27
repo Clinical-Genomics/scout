@@ -45,9 +45,15 @@
         </div>
 
         <div class="row">
-          <div class="col-xs-12 col-md-4">{{ candidates_list() }}</div>
-          <div class="col-xs-12 col-md-4">{{ diagnosis_panel() }}</div>
-          <div class="col-md-4">{{ comments_panel(institute, case, current_user, comments) }}</div>
+          <div class="col-xs-12 col-md-6">{{ candidates_list() }}</div>
+          <div class="col-xs-12 col-md-6">
+            {{ comments_panel(institute, case, current_user, comments) }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-md-6">{{ cohort_panel() }}</div>
+          <div class="col-xs-12 col-md-6">{{ diagnosis_panel() }}</div>
         </div>
 
         <div class="row">
@@ -329,6 +335,45 @@
       </div>
     </div>
   </form>
+{% endmacro %}
+
+{% macro cohort_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Cohort tag</div>
+    <ul class="list-group">
+      {% for cohort_tag in case.cohorts %}
+        <li class="list-group-item">
+          {{ cohort_tag }}
+          <span class="pull-right">
+            {{ remove_form(url_for('cases.cohorts', institute_id=institute._id,
+                                   case_name=case.display_name, remove='yes'),
+                           hidden_input=('cohort_tag', cohort_tag)) }}
+          </span>
+        </li>
+      {% else %}
+        <li class="list-group-item">No cohort tags added yet.</li>
+      {% endfor %}
+    </ul>
+    <div class="panel-body">
+      <form method="POST"
+            action="{{ url_for('cases.cohorts', institute_id=institute._id,
+                               case_name=case.display_name) }}">
+        <div class="row">
+          <div class="col-xs-7">
+            <select class="form-control" name="cohort_tag">
+              <option>Add cohort tag...</option>
+              {% for cohort_tag in cohort_tags %}
+                <option value="{{ cohort_tag }}">{{ cohort_tag }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-5">
+            <button class="btn btn-default form-control" type="submit">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 {% endmacro %}
 
 {% macro phenotype_groups_panel() %}
