@@ -28,6 +28,7 @@ def variants(institute_id, case_name):
 
     # update status of case if vistited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
+        flash('You just activated this case!', 'info')
         user_obj = store.user(current_user.email)
         case_link = url_for('cases.case', institute_id=institute_obj['_id'],
                             case_name=case_obj['display_name'])
