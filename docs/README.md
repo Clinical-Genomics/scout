@@ -11,6 +11,26 @@
 - **Aggregation** - Combine results from multiple analyses and VCFs into a centralized database.
 - **Collaboration** - Write comments and share cases between users and institutes.
 
+## What's new in 3.1?
+
+This updates contains many bug fixes and a few new features.
+
+### New features
+
+- Demo and other resources are now part of the PIP distribution
+- Cohort tag selection is available on the case page
+
+### Bug fixes
+
+- Compounds are now sorted on combined score
+- The delivery report opens in a new tab
+- A link from the variant page to the gene panel exists
+- Cases are properly activated when variants are first viewed
+- Fixed display of HGVS description
+- Fixed issues with Sanger email
+- Support for a new analysis type: TGA, Targeted Genome Analysis
+- Fixed issue with filtering on 1000G frequency
+
 ## What's new in 3.0?
 
 <p align="center"><img height="400" width="800" src="img/v3.jpg"></p>
