@@ -364,8 +364,9 @@ def incomplete_penetrance(variant_obj):
 
 def callers(variant_obj):
     """Return call for all callers."""
-    calls = [('GATK', variant_obj['gatk']), ('Samtools', variant_obj['samtools']),
-             ('Freebayes', variant_obj['freebayes'])]
+    calls = [('GATK', variant_obj.get('gatk', 'NA')),
+             ('Samtools', variant_obj.get('samtools', 'NA')),
+             ('Freebayes', variant_obj.get('freebayes', 'NA'))]
     existing_calls = [(name, caller) for name, caller in calls if caller]
     return existing_calls
 
