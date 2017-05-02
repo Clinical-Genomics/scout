@@ -1,16 +1,15 @@
 
-def parse_rank_score(variant, case_id):
+def parse_rank_score(rank_score_entry, case_id):
     """Parse the rank score
     
         Args:
-            variant(cyvcf2.Variant): A cyvcf2 variant
+            rank_score_entry(str): The raw rank score entry
             case_id(str)
         
         Returns:
             rank_score(float)
     """
     rank_score = None
-    rank_score_entry = variant.INFO.get('RankScore')
     
     if rank_score_entry:
         for family_info in rank_score_entry.split(','):

@@ -61,18 +61,16 @@ def test_parse_document_id():
 
 def test_parse_ids():
     # GIVEN some variant and case information
-    variant = {
-        'CHROM': '1',
-        'POS': '10',
-        'REF': 'A',
-        'ALT': 'G',
-    }
-    case = {'_id': 'cust000_1', 'case_id': 'cust000_1', 'display_name': '1'}
+    chrom = '1'
+    pos = 10
+    ref = 'A'
+    alt = 'G'
+    case_id = 'cust000_1'
     variant_type = 'clinical'
 
     # WHEN parsing the variant ids
-    variant_ids = parse_ids(variant, case, variant_type)
+    variant_ids = parse_ids(chrom, pos, ref, alt, case_id, variant_type)
 
     # THEN we should get a dictionary with all ids back
     assert isinstance(variant_ids, dict)
-    assert variant_ids['simple_id'] == '_'.join(['1', '10', 'A', 'G'])
+    assert variant_ids['simple_id'] == '_'.join([chrom, str(pos), ref, alt])

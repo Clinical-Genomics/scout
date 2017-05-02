@@ -1,13 +1,22 @@
 from scout.parse.variant.rank_score import parse_rank_score
 
-def test_parse_rank_score(cyvcf2_variant):
-    rank_scores_info = cyvcf2_variant.INFO['RankScore']
-    variant_score = rank_scores_info.split(':')[1]
-    family_id = rank_scores_info.split(':')[0]
+def test_parse_rank_score():
+    rank_scores_info = "123:10"
+    variant_score = 10.0
+    family_id = '123'
     
-    rank_score = parse_rank_score(cyvcf2_variant, family_id)
+    parsed_rank_score = parse_rank_score(rank_scores_info, family_id)
     
-    assert float(variant_score) == rank_score
+    assert variant_score == parsed_rank_score
+
+def test_parse_rank_score_no_score():
+    rank_scores_info = ""
+    family_id = '123'
+    
+    parsed_rank_score = parse_rank_score(rank_scores_info, family_id)
+    
+    assert parsed_rank_score == None
+
 
 # def test_parse_rank_scores(variants, parsed_case):
 #     """docstring for test_parse_rank_score"""
