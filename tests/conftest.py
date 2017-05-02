@@ -601,6 +601,19 @@ def variant_obj(request, parsed_variant, populated_database):
     return variant
 
 @pytest.fixture(scope='function')
+def cyvcf2_variant():
+    """Return a variant object"""
+    print('')
+    class CyvcfVariant(object):
+        def __init__(self):
+            self.POS = 1
+            self.INFO = {'RankScore':"123:10"}
+    
+    variant = CyvcfVariant()
+    return variant
+
+
+@pytest.fixture(scope='function')
 def parsed_variant():
     """Return variant information for a parsed variant with minimal information"""
     variant = {'alternative': 'C',
