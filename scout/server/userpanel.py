@@ -42,6 +42,7 @@ def build_panel(adapter, institute_id, panel_name, display_name, version, panel_
             raise ValueError("HGNC symbol not matching: {} vs. {}"
                              .format(panel_gene['symbol'], hgnc_gene['hgnc_symbol']))
         panel_gene['symbol'] = hgnc_gene['hgnc_symbol']
+        panel_gene['hgnc_id'] = hgnc_gene['hgnc_id']
 
     gene_panel = dict(
         institute=institute_id,
