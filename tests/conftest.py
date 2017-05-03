@@ -604,12 +604,15 @@ def variant_obj(request, parsed_variant, populated_database):
 def cyvcf2_variant():
     """Return a variant object"""
     print('')
-    class CyvcfVariant(object):
+    class Cyvcf2Variant(object):
         def __init__(self):
+            self.CHROM = '1'
+            self.REF = 'A'
+            self.ALT = ['C']
             self.POS = 1
             self.INFO = {'RankScore':"123:10"}
     
-    variant = CyvcfVariant()
+    variant = Cyvcf2Variant()
     return variant
 
 
