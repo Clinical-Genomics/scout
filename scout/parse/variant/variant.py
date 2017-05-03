@@ -1,5 +1,7 @@
 import logging
 
+from pprint import pprint as pp
+
 from scout.utils.md5 import generate_md5_key
 from .genotype import parse_genotypes
 from .compound import parse_compounds
@@ -11,6 +13,7 @@ from .ids import parse_ids
 from .callers import parse_callers
 from .rank_score import parse_rank_score
 from .coordinates import parse_coordinates
+from .models import parse_genetic_models
 
 from scout.exceptions import VcfError
 
@@ -135,7 +138,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add the inheritance patterns #################
 
-    genetic_models = parse_inheritance(variant.INFO.get('GeneticModels'), case_name)
+    genetic_models = parse_genetic_models(variant.INFO.get('GeneticModels'), case_name)
     if genetic_models:
         parsed_variant['genetic_models'] = genetic_models
 
@@ -149,6 +152,10 @@ def parse_variant(variant, case, variant_type='clinical',
         parsed_variant['clnsig'] = clnsig_predictions
 
     ################# Add the gene and transcript information #################
+    
+    gene_info = parse_genes(variant.INFO.get('CSQ'), vep_header)
+    
+    pp(gene_info)
 
     # variant['genes'] = parse_genes(variant_dict)
 
