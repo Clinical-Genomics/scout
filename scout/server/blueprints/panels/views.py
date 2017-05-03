@@ -6,6 +6,7 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
+from scout.server.userpanel import parse_panel, build_panel
 from .forms import PanelGeneForm
 from . import controllers
 
@@ -13,15 +14,35 @@ log = logging.getLogger(__name__)
 panels_bp = Blueprint('panels', __name__, template_folder='templates')
 
 
-@panels_bp.route('/panels')
+@panels_bp.route('/panels', methods=['GET', 'POST'])
 @templated('panels/panels.html')
 def panels():
     """Show all panels for a case."""
+    if request.method == 'POST':
+        # add new panel
+        csv_file = request.files['csv_file']
+        lines = csv_file.stream.read().decode().split('\r')
+        panel_genes = parse_panel(lines)
+        try:
+            panel_obj = build_panel(
+                adapter=store,
+                institute_id=request.form['institute_id'],
+                panel_name=request.form['panel_name'],
+                display_name=request.form['display_name'],
+                version=float(request.form['version']) if request.form.get('version') else 1.0,
+                panel_genes=panel_genes,
+            )
+        except ValueError as error:
+            flash(error.args[0], 'warning')
+            return redirect(request.referrer)
+        store.add_gene_panel(panel_obj)
+        flash("new gene panel added: {}".format(panel_obj['panel_name']), 'info')
+
     panel_groups = []
     for institute_obj in user_institutes(store, current_user):
         institute_panels = store.gene_panels(institute_id=institute_obj['_id'])
         panel_groups.append((institute_obj, institute_panels))
-    return dict(panel_groups=panel_groups)
+    return dict(panel_groups=panel_groups, institutes=user_institutes(store, current_user))
 
 
 @panels_bp.route('/panels/<panel_id>', methods=['GET', 'POST'])

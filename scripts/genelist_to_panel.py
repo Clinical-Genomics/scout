@@ -14,7 +14,7 @@ def cli(ctx, gene_list, panel_name):
         line = line.rstrip()
         if line.startswith("#"):
             if line.startswith("##"):
-                # These headers include metainformation about the panels or 
+                # These headers include metainformation about the panels or
                 # contig information which we are not interested in.
                 # They allways start with Database=<ID=<some_name> and are
                 # ',' separated.
@@ -38,7 +38,7 @@ def cli(ctx, gene_list, panel_name):
                             panel_info['panel_id'] = panel_id
                         elif key == 'Complete_name':
                             panel_info['display_name'] = value
-                        
+
                     panel_metadata[panel_id] = panel_info
             else:
                 # The header line starts with only one '#'
@@ -59,7 +59,7 @@ def cli(ctx, gene_list, panel_name):
                 # Get the hgnc symbol
                 hgnc_symbol = gene_info['HGNC_symbol']
                 panel_gene_info['hgnc_symbol'] = hgnc_symbol
-                
+
                 # Parse the manually annotated disease associated transcripts
                 transcripts_info = gene_info.get('Disease_associated_transcript')
                 transcripts = set()
@@ -67,7 +67,7 @@ def cli(ctx, gene_list, panel_name):
                     for entry in transcripts_info.split(','):
                         transcripts.add(entry.split(':')[1])
                 panel_gene_info['transcripts'] = ','.join(transcripts)
-                
+
                 # Check manually annotated reduced penetrance
                 penetrance = gene_info.get('Reduced_penetrance')
                 panel_gene_info['penetrance'] = ''
@@ -82,17 +82,17 @@ def cli(ctx, gene_list, panel_name):
 
                 # Check manually annotated disease models
                 panel_gene_info['inheritance'] = gene_info.get('Genetic_disease_model', '')
-                
+
 
                 # Parse database entry version
                 panel_gene_info['entry_version'] = gene_info.get('Database_entry_version', '')
-                
+
                 if hgnc_symbol in panel_genes:
                     # If we have multiple entries we update the information
                     pass
                 else:
                     panel_genes[hgnc_symbol] = panel_gene_info
-    
+
     # Print the headers
     click.echo("##panel_id={}".format(
         panel_metadata[panel_name]['panel_id']
@@ -112,7 +112,7 @@ def cli(ctx, gene_list, panel_name):
     click.echo("##display_name={}".format(
         panel_metadata[panel_name]['display_name']
     ))
-    
+
     new_headers = [
         'hgnc_symbol',
         'disease_associated_transcripts',
@@ -122,7 +122,7 @@ def cli(ctx, gene_list, panel_name):
         'database_entry_version'
     ]
     click.echo("#"+'\t'.join(new_headers))
-    
+
     for hgnc_symbol in panel_genes:
         panel_gene_info = panel_genes[hgnc_symbol]
         click.echo("{0}\t{1}\t{2}\t{3}\t{4}\t{5}".format(

@@ -66,6 +66,6 @@ def user_institutes(store, login_user):
     if login_user.is_admin:
         institutes = store.institutes()
     else:
-        institutes = (store.institute(inst_id) for inst_id in login_user.institutes)
+        institutes = [store.institute(inst_id) for inst_id in login_user.institutes]
 
     return institutes

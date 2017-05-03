@@ -15,6 +15,53 @@
 {% endblock %}
 
 {% block content_main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Upload gene panel</div>
+    <div class="panel-body">
+      <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Institute</label>
+          <div class="col-sm-10">
+            <select name="institute_id" class="form-control" required>
+              {% for institute in institutes %}
+                <option value="{{ institute._id }}">{{ institute.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Name (short)</label>
+          <div class="col-sm-10">
+            <input name="panel_name" class="form-control" placeholder="Panel name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Display name</label>
+          <div class="col-sm-10">
+            <input name="display_name" class="form-control" placeholder="Display name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Version</label>
+          <div class="col-sm-10">
+            <input type="number" name="version" class="form-control" placeholder="Version (e.g. 10.3)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">CSV file</label>
+          <div class="col-sm-10">
+            <input type="file" name="csv_file" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Upload</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="panel-group">
     {% for institute, panels in panel_groups %}
       <div class="panel panel-default">
