@@ -1,12 +1,9 @@
 from scout.parse.variant.callers import parse_callers
 
-def test_parse_callers():
+def test_parse_callers(cyvcf2_variant):
+    variant = cyvcf2_variant
     # GIVEN information that gatk and freebayes have passed
-    variant = {
-        'info_dict':{
-            'set': ['gatk-freebayes']
-        }
-    }
+    variant.INFO['set'] = 'gatk-freebayes'
     
     # WHEN parsing the information
     callers = parse_callers(variant)
@@ -16,13 +13,10 @@ def test_parse_callers():
     assert callers['freebayes'] == 'Pass'
     assert callers['samtools'] == None
 
-def test_parse_callers_only_one():
+def test_parse_callers_only_one(cyvcf2_variant):
+    variant = cyvcf2_variant
     # GIVEN information about the variant callers
-    variant = {
-        'info_dict':{
-            'set': ['gatk']
-        }
-    }
+    variant.INFO['set'] = 'gatk'
     
     # WHEN parsing the information
     callers = parse_callers(variant)
@@ -32,13 +26,10 @@ def test_parse_callers_only_one():
     assert callers['freebayes'] == None
     assert callers['samtools'] == None
 
-def test_parse_callers_complex():
+def test_parse_callers_complex(cyvcf2_variant):
+    variant = cyvcf2_variant
     # GIVEN information about the variant callers
-    variant = {
-        'info_dict':{
-            'set': ['gatk-filterInsamtools-freebayes']
-        }
-    }
+    variant.INFO['set'] = 'gatk-filterInsamtools-freebayes'
     
     # WHEN parsing the information
     callers = parse_callers(variant)
@@ -48,29 +39,23 @@ def test_parse_callers_complex():
     assert callers['freebayes'] == 'Pass'
     assert callers['samtools'] == 'Filtered'
 
-def test_parse_callers_intersection():
+def test_parse_callers_intersection(cyvcf2_variant):
+    variant = cyvcf2_variant
     # GIVEN information that all callers agree on Pass
-    variant = {
-        'info_dict':{
-            'set': ['Intersection']
-        }
-    }
-    
+    variant.INFO['set'] = 'Intersection'
+
     # WHEN parsing the information
     callers = parse_callers(variant)
-    
+
     #THEN all callers should be passed
     assert callers['gatk'] == 'Pass'
     assert callers['freebayes'] == 'Pass'
     assert callers['samtools'] == 'Pass'
 
-def test_parse_callers_filtered_all():
+def test_parse_callers_filtered_all(cyvcf2_variant):
+    variant = cyvcf2_variant
     # GIVEN information that all callers agree on filtered
-    variant = {
-        'info_dict':{
-            'set': ['FilteredInAll']
-        }
-    }
+    variant.INFO['set'] = 'FilteredInAll'
     
     # WHEN parsing the information
     callers = parse_callers(variant)
