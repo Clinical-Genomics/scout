@@ -4,7 +4,6 @@ from datetime import datetime
 
 from pprint import pprint as pp
 
-from vcf_parser import VCFParser
 from cyvcf2 import VCF
 
 from scout.parse.variant import parse_variant
