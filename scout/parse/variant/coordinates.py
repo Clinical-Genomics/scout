@@ -27,6 +27,8 @@ def parse_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=
         'sub_category': None,
         'mate_id':None,
     }
+    if svtype:
+        svtype = svtype.lower()
     if category in ('snv', 'indel'):
         ref_len = len(ref)
         alt_len = len(alt)
