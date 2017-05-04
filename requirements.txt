@@ -17,7 +17,9 @@ livereload
 
 # unclear
 Flask-Login
-vcf_parser
+
+# Parsing
+cyvcf2
 PyYaml
 ped_parser
 
