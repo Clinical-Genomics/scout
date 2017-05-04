@@ -16,10 +16,16 @@ def parse_clnsig(acc, sig, revstat):
 
     clnsig_accsessions = []
     if acc:
-        
-        accessions = acc.split('|')
-        significance = sig.split('|')
-        revision_statuses= revstat.split('|')
+        # There are sometimes different separators so we need to check which 
+        # one to use
+        separator = ','
+        accessions = acc.split(',')
+        if len(accessions) == 1:
+            accessions = acc.split('|')
+            if len(accessions) > 1:
+                separator = '|'
+        significance = sig.split(separator)
+        revision_statuses = revstat.split(separator)
         
         for i,annotation in enumerate(significance):
             clnsig_entry = {

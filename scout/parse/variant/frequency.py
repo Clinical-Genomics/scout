@@ -1,6 +1,4 @@
 
-
-
 def parse_frequencies(variant):
     """Add the frequencies to a variant
     
@@ -66,7 +64,7 @@ def parse_frequency(variant, info_key):
     Returns:
         frequency(float): or None if frequency does not exist
     """
-    raw_annotation = variant['info_dict'].get(info_key)
+    raw_annotation = variant.INFO.get(info_key)
     raw_annotation = None if raw_annotation == '.' else raw_annotation
-    frequency = float(raw_annotation[0]) if raw_annotation else None
+    frequency = float(raw_annotation) if raw_annotation else None
     return frequency

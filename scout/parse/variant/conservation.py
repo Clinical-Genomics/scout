@@ -35,11 +35,11 @@ def parse_conservation(variant, info_key):
         Returns:
             conservations(list): List of censervation terms
     """
-    raw_annotation = variant['info_dict'].get(info_key)
+    raw_annotation = variant.INFO.get(info_key)
     conservations = []
     
     if raw_annotation:
-        for term in raw_annotation:
+        for term in raw_annotation.split(','):
             if term in CONSERVATION:
                 conservations.append(term)
     

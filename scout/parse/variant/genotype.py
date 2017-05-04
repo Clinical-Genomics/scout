@@ -41,11 +41,11 @@ def parse_genotype(variant, ind, pos):
     genotype = variant.genotypes[pos]
     gt_call['genotype_call'] = '/'.join([str(genotype[0]), str(genotype[1])])
 
-    gt_call['read_depth'] = variant.gt_depths[pos]
+    gt_call['read_depth'] = int(variant.gt_depths[pos])
     
-    gt_call['ref_depth'] = variant.gt_ref_depths[pos]
-    gt_call['alt_depth'] = variant.gt_alt_depths[pos]
+    gt_call['ref_depth'] = int(variant.gt_ref_depths[pos])
+    gt_call['alt_depth'] = int(variant.gt_alt_depths[pos])
 
-    gt_call['genotype_quality'] = variant.gt_quals[pos]
+    gt_call['genotype_quality'] = int(variant.gt_quals[pos])
 
     return gt_call

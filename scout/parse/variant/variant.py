@@ -75,6 +75,7 @@ def parse_variant(variant, case, variant_type='clinical',
     if len(variant.ALT) > 1:
         raise VcfError("Variants are only allowed to have one alternative")
     parsed_variant['alternative'] = variant.ALT[0]
+    
     # cyvcf2 will set QUAL to None if '.' in vcf
     parsed_variant['quality'] = variant.QUAL
     if variant.FILTER:
@@ -92,13 +93,13 @@ def parse_variant(variant, case, variant_type='clinical',
     ################# Position specific #################
     parsed_variant['chromosome'] = variant.CHROM
     # position = start
-    parsed_variant['position'] = variant.POS
+    parsed_variant['position'] = int(variant.POS)
 
     svtype = variant.INFO.get('SVTYPE')
 
     svlen = variant.INFO.get('SVLEN')
 
-    end = variant.INFO.get('END')
+    end = int(variant.end)
 
     mate_id = variant.INFO.get('MATEID')
 
@@ -115,8 +116,8 @@ def parse_variant(variant, case, variant_type='clinical',
 
     parsed_variant['sub_category'] = coordinates['sub_category']
     parsed_variant['mate_id'] = coordinates['mate_id']
-    parsed_variant['end'] = coordinates['end']
-    parsed_variant['length'] = coordinates['length']
+    parsed_variant['end'] = int(coordinates['end'])
+    parsed_variant['length'] = int(coordinates['length'])
 
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
@@ -148,36 +149,36 @@ def parse_variant(variant, case, variant_type='clinical',
         sig=variant.INFO.get('CLNSIG'),
         revstat=variant.INFO.get('CLNREVSTAT'),
         )
+    
     if clnsig_predictions:
         parsed_variant['clnsig'] = clnsig_predictions
 
     ################# Add the gene and transcript information #################
     
     gene_info = parse_genes(variant.INFO.get('CSQ'), vep_header)
-    
-    pp(gene_info)
 
-    # variant['genes'] = parse_genes(variant_dict)
+    parsed_variant['genes'] = gene_info
 
     hgnc_ids = set([])
 
-    # for gene in parsed_variant['genes']:
-    #     hgnc_ids.add(gene['hgnc_id'])
-    #
-    # variant['hgnc_ids'] = list(hgnc_ids)
+    for gene in parsed_variant['genes']:
+        hgnc_ids.add(gene['hgnc_id'])
+
+    parsed_variant['hgnc_ids'] = list(hgnc_ids)
 
     ################# Add the frequencies #################
+    frequencies = parse_frequencies(variant)
+    
+    parsed_variant['frequencies'] = frequencies
 
-    # variant['frequencies'] = parse_frequencies(variant_dict)
     # parse out old local observation count
-    # variant['local_obs_old'] = (int(variant_dict['info_dict'].get('Obs')[0])
-    #                             if variant_dict['info_dict'].get('Obs') else
-    #                             None)
-    # variant['local_obs_hom_old'] = (int(variant_dict['info_dict'].get('Hom')[0])
-    #                                 if variant_dict['info_dict'].get('Hom') else
-    #                                 None)
+    parsed_variant['local_obs_old'] = (int(variant.INFO.get('Obs'))
+                                if variant.INFO.get('Obs') else None)
 
-    # Add the severity predictions
+    parsed_variant['local_obs_hom_old'] = (int(variant.INFO.get('Hom'))
+                                    if variant.INFO.get('Hom') else None)
+
+    ###################### Add the severity predictions ######################
     cadd = variant.INFO.get('CADD')
     if cadd:
         parsed_variant['cadd_score'] = float(cadd)
@@ -186,13 +187,15 @@ def parse_variant(variant, case, variant_type='clinical',
     if spidex:
         parsed_variant['spidex'] = float(spidex)
 
-    # variant['conservation'] = parse_conservations(variant_dict)
+    ###################### Add the conservation ######################
 
-    # variant['callers'] = parse_callers(variant_dict)
+    parsed_variant['conservation'] = parse_conservations(variant)
 
-    # rank_result = variant_dict['info_dict'].get('RankResult')
-    # if rank_result:
-    #     results = [int(i) for i in rank_result[0].split('|')]
-    #     variant['rank_result'] = dict(zip(rank_results_header, results))
+    parsed_variant['callers'] = parse_callers(variant)
+
+    rank_result = variant.INFO.get('RankResult')
+    if rank_result:
+        results = [int(i) for i in rank_result.split('|')]
+        parsed_variant['rank_result'] = dict(zip(rank_results_header, results))
 
     return parsed_variant
