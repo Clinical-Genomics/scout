@@ -607,9 +607,14 @@ def cyvcf2_variant():
             self.CHROM = '1'
             self.REF = 'A'
             self.ALT = ['C']
-            self.POS = 1
+            self.POS = 10
+            self.end = 11
+            self.FILTER = None
+            self.ID = '.'
+            self.QUAL = None
+            self.var_type = 'snp'
             self.INFO = {'RankScore':"123:10"}
-    
+
     variant = Cyvcf2Variant()
     return variant
 
