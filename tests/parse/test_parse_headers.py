@@ -32,4 +32,3 @@ def test_parse_vep_header(variant_clinical_file):
     assert isinstance(vep_header, list)
     assert vep_header
     assert 'Allele' in vep_header
-    assert False
