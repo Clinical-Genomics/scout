@@ -40,6 +40,7 @@ def parse_conservation(variant, info_key):
     
     if raw_annotation:
         for term in raw_annotation.split(','):
+            term = term.strip()
             if term in CONSERVATION:
                 conservations.append(term)
     
