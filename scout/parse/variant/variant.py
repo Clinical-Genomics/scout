@@ -129,11 +129,17 @@ def parse_variant(variant, case, variant_type='clinical',
     # The rank score is central for displaying variants in scout.
 
     rank_score = parse_rank_score(variant.INFO.get('RankScore',''), case_name)
-    parsed_variant['rank_score'] = rank_score
+    parsed_variant['rank_score'] = rank_score or 0
 
     ################# Add gt calls #################
-
-    parsed_variant['samples'] = parse_genotypes(variant, case, individual_positions)
+    samples = {}
+    if individual_positions:
+        samples = parse_genotypes(
+                            variant, 
+                            case, 
+                            individual_positions
+                        )
+    parsed_variant['samples'] = samples
 
     ################# Add the compound information #################
 
