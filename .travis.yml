@@ -28,6 +28,7 @@ addons:
             - mongodb-org-server
 
 install:
+    - pip install cython
     - pip install -r requirements.txt -r requirements-dev.txt -e .
     # - mongo --version
 
