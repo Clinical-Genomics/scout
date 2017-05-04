@@ -2,20 +2,21 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def test_load_variants(populated_database, variant_objs, case_obj):
+def test_load_variants(real_populated_database, variant_objs, case_obj):
     """Test to load variants into a mongo database"""
+    adapter = real_populated_database
     case_id = case_obj['case_id']
     # Make sure that there are no variants in the database
     # GIVEN a populated database without any variants
-    assert populated_database.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
     
     # WHEN adding a number of variants
     for index, variant_obj in enumerate(variant_objs):
-        populated_database.load_variant(variant_obj)
+        # print(variant_obj)
+        adapter.load_variant(variant_obj)
     
     # THEN the same number of variants should have been loaded
-    nr_variants = 0
-    result = populated_database.variants(case_id=case_id, nr_of_variants=-1)
+    result = adapter.variants(case_id=case_id, nr_of_variants=-1)
     log.info("Number of variants loaded:%s", result.count())
     assert result.count() == index+1
 

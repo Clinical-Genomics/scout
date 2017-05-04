@@ -63,7 +63,13 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['variant_type'] = variant_type
     # category is sv or snv
     # cyvcf2 knows if it is a sv, indel or snv variant
-    parsed_variant['category'] = variant.var_type
+    category = variant.var_type
+    if category == 'indel':
+        category = 'snv'
+    if category == 'snp':
+        category = 'snv'
+
+    parsed_variant['category'] = category
     #sub category is 'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv'
     # 'snv' and 'indel' are subcatogories of snv
     parsed_variant['sub_category'] = None
@@ -154,8 +160,10 @@ def parse_variant(variant, case, variant_type='clinical',
         parsed_variant['clnsig'] = clnsig_predictions
 
     ################# Add the gene and transcript information #################
-    
-    gene_info = parse_genes(variant.INFO.get('CSQ'), vep_header)
+    gene_info = []
+    if vep_header:
+        if 'CSQ' in variant.INFO:
+            gene_info = parse_genes(variant.INFO['CSQ'], vep_header)
 
     parsed_variant['genes'] = gene_info
 

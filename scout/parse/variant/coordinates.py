@@ -34,7 +34,7 @@ def parse_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=
         if ref_len == alt_len:
             coordinates['length'] = alt_len
             coordinates['end'] = position + (alt_len -1)
-            if alt_len == 1:
+            if alt_len == ref_len:
                 coordinates['sub_category'] = 'snv'
             else:
                 coordinates['sub_category'] = 'indel'
