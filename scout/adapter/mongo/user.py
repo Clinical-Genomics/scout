@@ -77,4 +77,20 @@ class UserHandler(object):
         user_obj = self.user_collection.find_one({'_id': email})
 
         return user_obj
+    
+    def delete_user(self, email):
+        """Delete a user from the database
+        
+        Args:
+            email(str)
+    
+        Returns:
+            user_obj(dict)
+        
+        """
+        log.info("Deleting user %s", email)
+        user_obj = self.user_collection.delete_one({'_id': email})
+        
+        return user_obj
+        
 

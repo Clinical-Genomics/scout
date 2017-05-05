@@ -45,6 +45,23 @@ log = logging.getLogger(__name__)
 #     for institute_obj in adapter.institutes():
 #         click.echo(institute_obj['internal_id'])
 
+@click.command('user', short_help='Delete a user')
+@click.option('-m', '--mail')
+@click.pass_context
+def user(context, mail):
+    """Delete a user from the database"""
+    log.info("Running scout delete user")
+    adapter = context.obj['adapter']
+    
+    user_obj = adapter.user(mail)
+    
+    if not user:
+        log.warning("User {0} could not be found in database".format(mail))
+    
+    else:
+        click.echo(adapter.delete_user(mail))
+
+
 @click.command('genes', short_help='Delete genes')
 @click.option('-b', 'build', type=click.Choice(['37','38']))
 @click.pass_context
@@ -133,6 +150,7 @@ def delete(context):
 
 delete.add_command(genes)
 delete.add_command(case)
+delete.add_command(user)
 
 
 
