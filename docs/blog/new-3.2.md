@@ -14,6 +14,10 @@ We have added several frequency resources links to the variant frequency table o
 
 - LocusDB family link: It is now possible to see in, which other families a variant in LocusDB were detected.
 
+### New feature: Upload all variants for a region or a gene
+
+We have done some work on the variant uploads for this release. This also means that we are now ready to accept requests to upload additional variants for a custom gene or a region. For now you can raise it by submitting a ticket in the ticketing system while we work out how to better integrate it in Scout.
+
 ### New feature: Upload new gene panel
 
 You can now upload a new gene panel directly in Scout. You will need a semi-colon (`;`) separated file following the format:
