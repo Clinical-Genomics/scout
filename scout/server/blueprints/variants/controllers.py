@@ -163,6 +163,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['thousandg_link'] = thousandg_link(variant_obj)
     variant_obj['exac_link'] = exac_link(variant_obj)
     variant_obj['gnomead_link'] = gnomead_link(variant_obj)
+    variant_obj['swegen_link'] = swegen_link(variant_obj)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
@@ -325,6 +326,13 @@ def exac_link(variant_obj):
 def gnomead_link(variant_obj):
     """Compose link to gnomeAD website."""
     url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+                    "{this[position]}-{this[reference]}-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def swegen_link(variant_obj):
+    """Compose link to SweGen Variant Frequency Database."""
+    url_template = ("https://swegen-exac.nbis.se/variant/{this[chromosome]}-"
                     "{this[position]}-{this[reference]}-{this[alternative]}")
     return url_template.format(this=variant_obj)
 
