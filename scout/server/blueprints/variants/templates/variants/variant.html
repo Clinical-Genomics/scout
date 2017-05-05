@@ -456,6 +456,14 @@
           {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
         </span>
       </li>
+      <li class="list-group-item">
+        <div class="row">
+          <div class="col-xs-3"><strong>Links</strong></div>
+          <div class="col-xs-3">
+            <a href="{{ variant.gnomead_link }}" target="_blank">gnomeAD</a>
+          </div>
+        </div>
+      </li>
     </ul>
     {% if config.LOQUSDB_SETTINGS %}
       <div class="panel-heading">
