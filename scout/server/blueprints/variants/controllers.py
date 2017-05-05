@@ -210,7 +210,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
-    for case_id in obs_data['families']:
+    for case_id in obs_data.get('families', []):
         if case_id != variant_obj['case_id'] and case_id.startswith(institute_id):
             other_variant = store.variant(variant_obj['variant_id'], case_id=case_id)
             other_case = store.case(case_id)
