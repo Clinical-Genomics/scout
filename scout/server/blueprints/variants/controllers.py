@@ -198,16 +198,24 @@ def variant(store, institute_obj, case_obj, variant_id):
         'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
                             store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
-        'observations': observations,
     }
 
 
-def observations(loqusdb, variant_obj):
+def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant."""
     composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
                     "{this[alternative]}".format(this=variant_obj))
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
     obs_data['total'] = loqusdb.case_count()
+
+    obs_data['cases'] = []
+    institute_id = variant_obj['institute']
+    for case_id in obs_data['families']:
+        if case_id != variant_obj['case_id'] and case_id.startswith(institute_id):
+            other_variant = store.variant(variant_obj['variant_id'], case_id=case_id)
+            other_case = store.case(case_id)
+            obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+
     return obs_data
 
 

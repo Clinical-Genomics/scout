@@ -168,17 +168,26 @@ class VariantHandler(object):
 
         return result
 
-    def variant(self, document_id, gene_panels=None):
+    def variant(self, document_id, gene_panels=None, case_id=None):
         """Returns the specified variant.
 
            Arguments:
-               document_id : A md5 key that represents the variant
+               document_id : A md5 key that represents the variant or "variant_id"
                gene_panels(List[GenePanel])
+               case_id (str): case id (will search with "variant_id")
 
            Returns:
                variant_object(Variant): A odm variant object
         """
-        variant_obj = self.variant_collection.find_one({'_id': document_id})
+        if case_id:
+            # search for a variant in a case
+            variant_obj = self.variant_collection.find_one({
+                'case_id': case_id,
+                'variant_id': document_id,
+            })
+        else:
+            # search with a unique id
+            variant_obj = self.variant_collection.find_one({'_id': document_id})
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
         return variant_obj

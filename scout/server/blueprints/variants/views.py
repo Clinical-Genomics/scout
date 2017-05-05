@@ -57,7 +57,7 @@ def variant(institute_id, case_name, variant_id):
     if data is None:
         return abort(404)
     if current_app.config.get('LOQUSDB_SETTINGS'):
-        data['observations'] = controllers.observations(loqusdb, data['variant'])
+        data['observations'] = controllers.observations(store, loqusdb, case_obj, data['variant'])
     return dict(institute=institute_obj, case=case_obj, **data)
 
 

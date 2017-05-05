@@ -264,7 +264,7 @@
     </div>
     <ul class="list-group">
       <li class="list-group-item">
-        Gene panels
+        <strong>Gene panels</strong>
         <span class="pull-right">
           {% for panel_id in variant.panels %}
             <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a> |
@@ -489,6 +489,22 @@
             </div>
           </div>
         </li>
+        {% if observations['cases'] %}
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-xs-3"><strong>Cases</strong></div>
+              <div class="col-xs-9">
+                {% for data in observations['cases'] %}
+                  {% if data.variant %}
+                    <a href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                  {% else %}
+                    <span class="text-muted">{{ data.case.display_name }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </li>
+        {% endif %}
       </ul>
       <div class="panel-heading">Local observations (archived)</div>
       <ul class="list-group">
