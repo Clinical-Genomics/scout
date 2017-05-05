@@ -42,6 +42,15 @@
             }),
             name: 'Genes'
           },
+          {% if vcf_file %}
+            {
+              viz: pileup.viz.variants(),
+              data: pileup.formats.vcf({
+                url: '{{ url_for("pileup.remote_static", file=vcf_file) }}'
+              }),
+              name: 'Variants'
+            },
+          {% endif %}
           {% for alignment in alignments %}
             {
               viz: pileup.viz.coverage(),

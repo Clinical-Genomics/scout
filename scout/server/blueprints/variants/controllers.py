@@ -46,7 +46,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
 
     # fill in information for pilup view
-    variant_case(case_obj)
+    variant_case(store, case_obj, variant_obj)
 
     # frequencies
     variant_obj['frequencies'] = [
@@ -121,7 +121,7 @@ def get_predictions(genes):
     return data
 
 
-def variant_case(case_obj):
+def variant_case(store, case_obj, variant_obj):
     """Pre-process case for the variant view."""
     case_obj['bam_files'] = [individual['bam_file'] for individual in
                              case_obj['individuals'] if individual.get('bam_file')]
@@ -129,6 +129,10 @@ def variant_case(case_obj):
                              case_obj['bam_files']]
     case_obj['sample_names'] = [individual['display_name'] for individual in
                                 case_obj['individuals'] if individual['bam_file']]
+
+    hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
+    vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+    case_obj['region_vcf_file'] = vcf_path
 
 
 def find_bai_file(bam_file):

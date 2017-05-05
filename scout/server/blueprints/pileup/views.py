@@ -23,6 +23,7 @@ def remote_static():
 @pileup_bp.route('/pileup')
 def viewer():
     """Visualize BAM alignments."""
+    vcf_file = request.args.get('vcf')
     bam_files = request.args.getlist('bam')
     bai_files = request.args.getlist('bai')
     samples = request.args.getlist('sample')
@@ -36,4 +37,4 @@ def viewer():
     }
 
     return render_template('pileup/pileup.html', alignments=alignments,
-                           position=position)
+                           position=position, vcf_file=vcf_file)
