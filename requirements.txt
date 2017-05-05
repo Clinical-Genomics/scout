@@ -19,7 +19,6 @@ livereload
 Flask-Login
 
 # Parsing
-Cython
 cyvcf2
 PyYaml
 ped_parser
