@@ -162,6 +162,9 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['clinsig_human'] = clinsig_human(variant_obj)
     variant_obj['thousandg_link'] = thousandg_link(variant_obj)
     variant_obj['exac_link'] = exac_link(variant_obj)
+    variant_obj['gnomead_link'] = gnomead_link(variant_obj)
+    variant_obj['swegen_link'] = swegen_link(variant_obj)
+    variant_obj['beacon_link'] = beacon_link(variant_obj)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
@@ -195,16 +198,24 @@ def variant(store, institute_obj, case_obj, variant_id):
         'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
                             store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
-        'observations': observations,
     }
 
 
-def observations(loqusdb, variant_obj):
+def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant."""
     composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
                     "{this[alternative]}".format(this=variant_obj))
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
     obs_data['total'] = loqusdb.case_count()
+
+    obs_data['cases'] = []
+    institute_id = variant_obj['institute']
+    for case_id in obs_data['families']:
+        if case_id != variant_obj['case_id'] and case_id.startswith(institute_id):
+            other_variant = store.variant(variant_obj['variant_id'], case_id=case_id)
+            other_case = store.case(case_id)
+            obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+
     return obs_data
 
 
@@ -318,6 +329,28 @@ def exac_link(variant_obj):
     url_template = ("http://exac.broadinstitute.org/variant/"
                     "{this[chromosome]}-{this[position]}-{this[reference]}"
                     "-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def gnomead_link(variant_obj):
+    """Compose link to gnomeAD website."""
+    url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+                    "{this[position]}-{this[reference]}-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def swegen_link(variant_obj):
+    """Compose link to SweGen Variant Frequency Database."""
+    url_template = ("https://swegen-exac.nbis.se/variant/{this[chromosome]}-"
+                    "{this[position]}-{this[reference]}-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def beacon_link(variant_obj):
+    """Compose link to Beacon Network."""
+    url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
+                    "chrom={this[chromosome]}&allele={this[alternative]}&"
+                    "ref={this[reference]}&rs=GRCh37")
     return url_template.format(this=variant_obj)
 
 
