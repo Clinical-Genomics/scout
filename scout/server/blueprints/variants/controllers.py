@@ -151,6 +151,8 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     if variant_obj is None:
         return None
+
+    variant_case(store, case_obj, variant_obj)
     comments = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'],
                             comments=True)
     events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
