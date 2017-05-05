@@ -1,3 +1,4 @@
+import os
 import logging
 
 log = logging.getLogger(__name__)
@@ -103,4 +104,20 @@ def test_load_coordinates(populated_database, variant_objs, case_obj):
     ## Then assert that the other variants where loaded
     assert new_nr_variants_in_gene > nr_variants_in_gene
     
+def test_get_region_vcf(populated_database, case_obj):
+    adapter = populated_database
+    case_id = case_obj['case_id']
     
+    file_name = adapter.get_region_vcf(case_obj, chrom=None, start=None, end=None, 
+                       gene_obj=None, variant_type='clinical', category='snv', 
+                       rank_threshold=None)
+    ## GIVEN a populated database with variants in a certain gene
+    nr_variants = 0
+    with open(file_name, 'r') as f:
+        for line in f:
+            if not line.startswith('#'):
+                nr_variants += 1
+    
+    os.remove(file_name)
+    
+    assert nr_variants > 0

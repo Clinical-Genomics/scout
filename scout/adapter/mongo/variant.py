@@ -2,8 +2,11 @@
 # stdlib modules
 import logging
 import re
+import pathlib
+import tempfile
 
 from datetime import datetime
+
 
 # Third party modules
 import pymongo
@@ -540,4 +543,69 @@ class VariantHandler(object):
         variants = self.variant_collection.find(query).sort(sort_key)
 
         return variants
+    
+    def get_region_vcf(self, case_obj, chrom=None, start=None, end=None, 
+                       gene_obj=None, variant_type='clinical', category='snv', 
+                       rank_threshold=None):
+        """Produce a reduced vcf with variants from the specified coordinates
+        
+        Args:
+            case_obj(dict): A case from the scout database
+            variant_type(str): 'clinical' or 'research'. Default: 'clinical'
+            category(str): 'snv' or 'sv'. Default: 'snv'
+            rank_threshold(float): Only load variants above this score. Default: 5
+            chrom(str): Load variants from a certain chromosome
+            start(int): Specify the start position
+            end(int): Specify the end position
+            gene_obj(dict): A gene object from the database
+        
+        Returns:
+            file_name(str): Path to the temporary file
+        """
+        rank_threshold = rank_threshold or -100
+        
+        variant_file = None
+        if variant_type == 'clinical':
+            if category == 'snv':
+                variant_file = case_obj['vcf_files'].get('vcf_snv')
+            elif category == 'sv':
+                variant_file = case_obj['vcf_files'].get('vcf_sv')
+        elif variant_type == 'research':
+            if category == 'snv':
+                variant_file = case_obj['vcf_files'].get('vcf_snv_research')
+            elif category == 'sv':
+                variant_file = case_obj['vcf_files'].get('vcf_sv_research')
+
+        if not variant_file:
+            raise SyntaxError("Vcf file does not seem to exist")
+        
+        vcf_obj = VCF(variant_file)
+        region = ""
+        
+        if gene_obj:
+            chrom = gene_obj['chromosome']
+            start = gene_obj['start']
+            end = gene_obj['end']
+
+        if chrom:
+            if (start and end):
+                region = "{0}:{1}-{2}".format(chrom, start, end)
+            else:
+                region = "{0}".format(chrom)
+        
+        else:
+            rank_threshold = rank_threshold or 5
+        
+        with tempfile.NamedTemporaryFile(mode='w',delete=False) as temp:
+            file_name = pathlib.Path(temp.name)
+            for header_line in vcf_obj.raw_header.split('\n'):
+                if len(header_line) > 3:
+                    temp.write(header_line+'\n')
+            for variant in vcf_obj(region):
+                temp.write(str(variant))
+        
+        return file_name
+        
+        
+        
     
