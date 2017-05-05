@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
+# stdlib modules
 import logging
 import re
 
+from datetime import datetime
+
+# Third party modules
 import pymongo
+
+from cyvcf2 import VCF
+
+# Local modules
+from scout.parse.variant.headers import (parse_rank_results_header, 
+                                         parse_vep_header)
+from scout.parse.variant.rank_score import parse_rank_score
+
+from scout.parse.variant import parse_variant
+from scout.build import build_variant
 
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError
@@ -380,15 +394,128 @@ class VariantHandler(object):
             raise IntegrityError("Variant %s already exists in database", variant_obj['_id'])
         return result.inserted_id
 
-    def load_variants(self, variants):
-        """Load many variants
+    def load_variants(self, case_obj, variant_type='clinical', category='snv', 
+                      rank_threshold=None, chrom=None, start=None, end=None, 
+                      gene_obj=None):
+        """Load variants for a case into scout.
+        
+        Load all variants for a specific analysis type and category into scout.
+        If no region is specified, load all variants above rank score treshold
+        If region or gene is specified, load all variants from that region 
+        disregarding variant rank(if not specified)
 
         Args:
-            variants(iterable(dict))
+            case_obj(dict): A case from the scout database
+            variant_type(str): 'clinical' or 'research'. Default: 'clinical'
+            category(str): 'snv' or 'sv'. Default: 'snv'
+            rank_treshold(float): Only load variants above this score. Default: 5
+            chrom(str): Load variants from a certain chromosome
+            start(int): Specify the start position
+            end(int): Specify the end position
+            gene_obj(dict): A gene object from the database
 
         """
-        logger.debug("Loading many variants")
-        result = self.variant_collection.insert_many(variants)
+        institute_obj = adapter.institute(institute_id=case_obj['owner'])
+
+        if not institute_obj:
+            raise IntegrityError("Institute {0} does not exist in"
+                                 " database.".format(case_obj['owner']))
+        gene_to_panels = self.gene_to_panels()
+
+        hgncid_to_gene = self.hgncid_to_gene()
+        
+        variant_file = None
+        if variant_type == 'clinical':
+            if category == 'snv':
+                variant_file = case_obj['vcf_files'].get('vcf_snv')
+            elif category == 'sv':
+                variant_file = case_obj['vcf_files'].get('vcf_sv')
+        elif variant_type == 'research':
+            if category == 'snv':
+                variant_file = case_obj['vcf_files'].get('vcf_snv_research')
+            elif category == 'sv':
+                variant_file = case_obj['vcf_files'].get('vcf_sv_research')
+
+        if not variant_file:
+            raise SyntaxError("Vcf file does not seem to exist")
+        
+        vcf_obj = VCF(variant_file)
+
+        # Parse the neccessary headers from vcf file
+        rank_results_header = parse_rank_results_header(vcf_obj)
+        vep_header = parse_vep_header(vcf_obj)
+        
+        # This is a dictionary to tell where ind are in vcf
+        individual_positions = {}
+        for i,ind in enumerate(vcf_obj.samples):
+            individual_positions[ind] = i
+
+        # Check if a region scould be uploaded
+        region = ""
+        if gene_obj:
+            chrom = gene_obj['chromosome']
+            start = gene_obj['start']
+            end = gene_obj['end']
+        if chrom:
+            rank_treshold = rank_treshold or -100
+            if not (start and end):
+                raise SyntaxError("Specify chrom start and end")
+            region = "{0}:{1}-{2}"
+        else:
+            rank_treshold = rank_treshold or 5
+        
+        logger.info("Start inserting variants into database")
+        start_insertion = datetime.now()
+        start_five_thousand = datetime.now()
+        nr_variants = 0
+        nr_inserted = 0
+        inserted = 0
+        
+        try:
+            for nr_variants, variant in enumerate(vcf_obj(region)):
+                rank_score = parse_rank_score(
+                    variant.INFO.get('RankScore'),
+                    case_obj['display_name']
+                )
+                
+                if rank_score > rank_treshold:
+                    # Parse the vcf variant
+                    parsed_variant = parse_variant(
+                        variant=variant,
+                        case=case_obj,
+                        variant_type=variant_type,
+                        rank_results_header=rank_results_header,
+                        vep_header = vep_header,
+                        individual_positions = individual_positions
+                    )
+                    # Build the variant object
+                    variant_obj = build_variant(
+                        variant=parsed_variant,
+                        institute_id=institute_obj['_id'],
+                        gene_to_panels=gene_to_panels,
+                        hgncid_to_gene=hgncid_to_gene,
+                    )
+                    try:
+                        self.load_variant(variant_obj)
+                        nr_inserted += 1
+                    except IntegrityError as error:
+                        pass
+                    
+                    if (nr_variants != 0 and nr_variants % 5000 == 0):
+                        logger.info("%s variants parsed" % str(nr_variants))
+                        logger.info("Time to parse variants: {} ".format(
+                                    datetime.now() - start_five_thousand))
+                        start_five_thousand = datetime.now()
+            
+                    if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
+                        logger.info("%s variants inserted" % nr_inserted)
+                        inserted += 1
+
+        except Exception as error:
+            if not coordinates:
+                logger.warning("Deleting inserted variants")
+                self.delete_variants(case_obj['_id'], variant_type)
+            raise error
 
     def overlapping(self, variant_obj):
         """Return ovelapping variants
@@ -406,3 +533,4 @@ class VariantHandler(object):
         variants = self.variant_collection.find(query).sort(sort_key)
 
         return variants
+    
