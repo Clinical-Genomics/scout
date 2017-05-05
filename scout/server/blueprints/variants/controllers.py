@@ -164,6 +164,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['exac_link'] = exac_link(variant_obj)
     variant_obj['gnomead_link'] = gnomead_link(variant_obj)
     variant_obj['swegen_link'] = swegen_link(variant_obj)
+    variant_obj['beacon_link'] = beacon_link(variant_obj)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
@@ -334,6 +335,14 @@ def swegen_link(variant_obj):
     """Compose link to SweGen Variant Frequency Database."""
     url_template = ("https://swegen-exac.nbis.se/variant/{this[chromosome]}-"
                     "{this[position]}-{this[reference]}-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def beacon_link(variant_obj):
+    """Compose link to Beacon Network."""
+    url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
+                    "chrom={this[chromosome]}&allele={this[alternative]}&"
+                    "ref={this[reference]}&rs=GRCh37")
     return url_template.format(this=variant_obj)
 
 
