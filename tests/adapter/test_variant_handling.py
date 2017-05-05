@@ -49,15 +49,58 @@ def test_load_all_variants(populated_database, variant_objs, case_obj):
 
     # THEN the same number of SV variants should have been loaded
     result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='snv')
-    print(adapter.hgnc_gene(3233))
-    # assert result.count() == nr_loaded
-    # from pprint import pprint as pp
-    # for variant in result:
-    #     pp(variant)
-    # print(nr_loaded)
-    assert False
     
+    assert nr_loaded == result.count()
 
-# def test_get_variant(variant_database):
-#     pass
+def test_load_whole_gene(populated_database, variant_objs, case_obj):
+    adapter = populated_database
+    case_id = case_obj['case_id']
+    
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+
+    nr_loaded = adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', rank_threshold=None, chrom=None, 
+                          start=None, end=None, gene_obj=None)
+
+    ## GIVEN a populated database with variants in a certain gene
+    hgnc_id = 3233
+    gene_obj = adapter.hgnc_gene(hgnc_id)
+    assert gene_obj
+    nr_variants_in_gene = adapter.variant_collection.find({'hgnc_ids': hgnc_id}).count()
+    
+    ## WHEN loading all variants for that gene
+    nr_loaded = adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', rank_threshold=None, chrom=None, 
+                          start=None, end=None, gene_obj=gene_obj)
+    new_nr_variants_in_gene = adapter.variant_collection.find({'hgnc_ids': hgnc_id}).count()
+    
+    ## Then assert that the other variants where loaded
+    assert new_nr_variants_in_gene > nr_variants_in_gene
+
+def test_load_coordinates(populated_database, variant_objs, case_obj):
+    adapter = populated_database
+    case_id = case_obj['case_id']
+    
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+
+    nr_loaded = adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', rank_threshold=None, chrom=None, 
+                          start=None, end=None, gene_obj=None)
+
+    ## GIVEN a populated database with variants in a certain gene
+    hgnc_id = 3233
+    gene_obj = adapter.hgnc_gene(hgnc_id)
+    assert gene_obj
+    nr_variants_in_gene = adapter.variant_collection.find({'hgnc_ids': hgnc_id}).count()
+    
+    ## WHEN loading all variants for that gene
+    nr_loaded = adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', rank_threshold=None, chrom=gene_obj['chromosome'], 
+                          start=gene_obj['start'], end=gene_obj['end'], gene_obj=None)
+
+    new_nr_variants_in_gene = adapter.variant_collection.find({'hgnc_ids': hgnc_id}).count()
+    
+    ## Then assert that the other variants where loaded
+    assert new_nr_variants_in_gene > nr_variants_in_gene
+    
     

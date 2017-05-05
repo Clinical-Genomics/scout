@@ -462,7 +462,7 @@ class VariantHandler(object):
             rank_threshold = rank_threshold or -100
             if not (start and end):
                 raise SyntaxError("Specify chrom start and end")
-            region = "{0}:{1}-{2}"
+            region = "{0}:{1}-{2}".format(chrom, start, end)
         else:
             rank_threshold = rank_threshold or 5
         
