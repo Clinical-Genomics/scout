@@ -35,6 +35,28 @@ def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
     result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='sv')
     assert result.count() == index+1
 
+def test_load_all_variants(populated_database, variant_objs, case_obj):
+    adapter = populated_database
+    case_id = case_obj['case_id']
+    
+    ## GIVEN a populated database without any variants
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+
+    ## WHEN loading all variants into the database
+    nr_loaded = adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', rank_threshold=None, chrom=None, 
+                          start=None, end=None, gene_obj=None)
+
+    # THEN the same number of SV variants should have been loaded
+    result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='snv')
+    print(adapter.hgnc_gene(3233))
+    # assert result.count() == nr_loaded
+    # from pprint import pprint as pp
+    # for variant in result:
+    #     pp(variant)
+    # print(nr_loaded)
+    assert False
+    
 
 # def test_get_variant(variant_database):
 #     pass

@@ -19,9 +19,10 @@ log = logging.getLogger(__name__)
 @click.option('--owner', help='parent institute for the case', default='test')
 @click.option('--ped', type=click.Path(exists=True))
 @click.option('-u', '--update', is_flag=True)
+@click.option('--no-variants', is_flag=False)
 @click.argument('config', type=click.File('r'), required=False)
 @click.pass_context
-def case(context, vcf, vcf_sv, owner, ped, update, config):
+def case(context, vcf, vcf_sv, owner, ped, update, config, no_variants):
     """Load a case into the database"""
     if config is None and ped is None:
         click.echo("You have to provide either config or ped file")

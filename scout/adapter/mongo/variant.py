@@ -400,7 +400,7 @@ class VariantHandler(object):
         """Load variants for a case into scout.
         
         Load all variants for a specific analysis type and category into scout.
-        If no region is specified, load all variants above rank score treshold
+        If no region is specified, load all variants above rank score threshold
         If region or gene is specified, load all variants from that region 
         disregarding variant rank(if not specified)
 
@@ -408,14 +408,16 @@ class VariantHandler(object):
             case_obj(dict): A case from the scout database
             variant_type(str): 'clinical' or 'research'. Default: 'clinical'
             category(str): 'snv' or 'sv'. Default: 'snv'
-            rank_treshold(float): Only load variants above this score. Default: 5
+            rank_threshold(float): Only load variants above this score. Default: 5
             chrom(str): Load variants from a certain chromosome
             start(int): Specify the start position
             end(int): Specify the end position
             gene_obj(dict): A gene object from the database
 
+        Returns:
+            nr_inserted(int)
         """
-        institute_obj = adapter.institute(institute_id=case_obj['owner'])
+        institute_obj = self.institute(institute_id=case_obj['owner'])
 
         if not institute_obj:
             raise IntegrityError("Institute {0} does not exist in"
@@ -457,19 +459,23 @@ class VariantHandler(object):
             start = gene_obj['start']
             end = gene_obj['end']
         if chrom:
-            rank_treshold = rank_treshold or -100
+            rank_threshold = rank_threshold or -100
             if not (start and end):
                 raise SyntaxError("Specify chrom start and end")
             region = "{0}:{1}-{2}"
         else:
-            rank_treshold = rank_treshold or 5
+            rank_threshold = rank_threshold or 5
         
         logger.info("Start inserting variants into database")
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
+        # These are the number of parsed varaints
         nr_variants = 0
+        # These are the number of variants that meet the criteria and gets 
+        # inserted
         nr_inserted = 0
-        inserted = 0
+        # This is to keep track of the inserted variants
+        inserted = 1
         
         try:
             for nr_variants, variant in enumerate(vcf_obj(region)):
@@ -478,7 +484,7 @@ class VariantHandler(object):
                     case_obj['display_name']
                 )
                 
-                if rank_score > rank_treshold:
+                if rank_score > rank_threshold:
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
                         variant=variant,
@@ -512,10 +518,11 @@ class VariantHandler(object):
                         inserted += 1
 
         except Exception as error:
-            if not coordinates:
-                logger.warning("Deleting inserted variants")
-                self.delete_variants(case_obj['_id'], variant_type)
+            logger.warning("Deleting inserted variants")
+            self.delete_variants(case_obj['_id'], variant_type)
             raise error
+        
+        return nr_inserted
 
     def overlapping(self, variant_obj):
         """Return ovelapping variants

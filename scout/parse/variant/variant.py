@@ -168,13 +168,14 @@ def parse_variant(variant, case, variant_type='clinical',
     ################# Add the gene and transcript information #################
     gene_info = []
     if vep_header:
-        if 'CSQ' in variant.INFO:
-            gene_info = parse_genes(variant.INFO['CSQ'], vep_header)
+        vep_info = variant.INFO.get('CSQ')
+        if vep_info:
+            gene_info = parse_genes(vep_info, vep_header)
 
     parsed_variant['genes'] = gene_info
 
     hgnc_ids = set([])
-
+    
     for gene in parsed_variant['genes']:
         hgnc_ids.add(gene['hgnc_id'])
 
