@@ -57,9 +57,8 @@ def user(context, institute_name, user_name, user_mail):
         log.info("Institute {0} does not exist".format(institute_name))
         context.abort()
 
-    user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute])
+    user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute_name])
     adapter.add_user(user_info)
-
 
 @click.group()
 @click.pass_context
