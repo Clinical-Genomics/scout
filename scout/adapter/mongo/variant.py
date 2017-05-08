@@ -14,7 +14,7 @@ import pymongo
 from cyvcf2 import VCF
 
 # Local modules
-from scout.parse.variant.headers import (parse_rank_results_header, 
+from scout.parse.variant.headers import (parse_rank_results_header,
                                          parse_vep_header)
 from scout.parse.variant.rank_score import parse_rank_score
 
@@ -397,14 +397,14 @@ class VariantHandler(object):
             raise IntegrityError("Variant %s already exists in database", variant_obj['_id'])
         return result.inserted_id
 
-    def load_variants(self, case_obj, variant_type='clinical', category='snv', 
-                      rank_threshold=None, chrom=None, start=None, end=None, 
+    def load_variants(self, case_obj, variant_type='clinical', category='snv',
+                      rank_threshold=None, chrom=None, start=None, end=None,
                       gene_obj=None):
         """Load variants for a case into scout.
-        
+
         Load all variants for a specific analysis type and category into scout.
         If no region is specified, load all variants above rank score threshold
-        If region or gene is specified, load all variants from that region 
+        If region or gene is specified, load all variants from that region
         disregarding variant rank(if not specified)
 
         Args:
@@ -428,7 +428,7 @@ class VariantHandler(object):
         gene_to_panels = self.gene_to_panels()
 
         hgncid_to_gene = self.hgncid_to_gene()
-        
+
         variant_file = None
         if variant_type == 'clinical':
             if category == 'snv':
@@ -443,13 +443,13 @@ class VariantHandler(object):
 
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
-        
+
         vcf_obj = VCF(variant_file)
 
         # Parse the neccessary headers from vcf file
         rank_results_header = parse_rank_results_header(vcf_obj)
         vep_header = parse_vep_header(vcf_obj)
-        
+
         # This is a dictionary to tell where ind are in vcf
         individual_positions = {}
         for i,ind in enumerate(vcf_obj.samples):
@@ -468,25 +468,25 @@ class VariantHandler(object):
             region = "{0}:{1}-{2}".format(chrom, start, end)
         else:
             rank_threshold = rank_threshold or 5
-        
+
         logger.info("Start inserting variants into database")
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
         # These are the number of parsed varaints
         nr_variants = 0
-        # These are the number of variants that meet the criteria and gets 
+        # These are the number of variants that meet the criteria and gets
         # inserted
         nr_inserted = 0
         # This is to keep track of the inserted variants
         inserted = 1
-        
+
         try:
             for nr_variants, variant in enumerate(vcf_obj(region)):
                 rank_score = parse_rank_score(
                     variant.INFO.get('RankScore'),
                     case_obj['display_name']
                 )
-                
+
                 if rank_score > rank_threshold:
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
@@ -509,13 +509,13 @@ class VariantHandler(object):
                         nr_inserted += 1
                     except IntegrityError as error:
                         pass
-                    
+
                     if (nr_variants != 0 and nr_variants % 5000 == 0):
                         logger.info("%s variants parsed" % str(nr_variants))
                         logger.info("Time to parse variants: {} ".format(
                                     datetime.now() - start_five_thousand))
                         start_five_thousand = datetime.now()
-            
+
                     if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
                         logger.info("%s variants inserted" % nr_inserted)
                         inserted += 1
@@ -524,7 +524,7 @@ class VariantHandler(object):
             logger.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
-        
+
         return nr_inserted
 
     def overlapping(self, variant_obj):
@@ -543,12 +543,12 @@ class VariantHandler(object):
         variants = self.variant_collection.find(query).sort(sort_key)
 
         return variants
-    
-    def get_region_vcf(self, case_obj, chrom=None, start=None, end=None, 
-                       gene_obj=None, variant_type='clinical', category='snv', 
+
+    def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,
+                       gene_obj=None, variant_type='clinical', category='snv',
                        rank_threshold=None):
         """Produce a reduced vcf with variants from the specified coordinates
-        
+
         Args:
             case_obj(dict): A case from the scout database
             variant_type(str): 'clinical' or 'research'. Default: 'clinical'
@@ -558,12 +558,12 @@ class VariantHandler(object):
             start(int): Specify the start position
             end(int): Specify the end position
             gene_obj(dict): A gene object from the database
-        
+
         Returns:
             file_name(str): Path to the temporary file
         """
         rank_threshold = rank_threshold or -100
-        
+
         variant_file = None
         if variant_type == 'clinical':
             if category == 'snv':
@@ -578,10 +578,10 @@ class VariantHandler(object):
 
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
-        
+
         vcf_obj = VCF(variant_file)
         region = ""
-        
+
         if gene_obj:
             chrom = gene_obj['chromosome']
             start = gene_obj['start']
@@ -592,20 +592,16 @@ class VariantHandler(object):
                 region = "{0}:{1}-{2}".format(chrom, start, end)
             else:
                 region = "{0}".format(chrom)
-        
+
         else:
             rank_threshold = rank_threshold or 5
-        
-        with tempfile.NamedTemporaryFile(mode='w',delete=False) as temp:
+
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp:
             file_name = pathlib.Path(temp.name)
             for header_line in vcf_obj.raw_header.split('\n'):
                 if len(header_line) > 3:
-                    temp.write(header_line+'\n')
+                    temp.write(header_line + '\n')
             for variant in vcf_obj(region):
                 temp.write(str(variant))
-        
+
         return file_name
-        
-        
-        
-    

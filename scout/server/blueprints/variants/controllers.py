@@ -131,8 +131,11 @@ def variant_case(store, case_obj, variant_obj):
                                 case_obj['individuals'] if individual['bam_file']]
 
     hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
-    vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
-    case_obj['region_vcf_file'] = vcf_path
+    if hgnc_gene_obj:
+        vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+        case_obj['region_vcf_file'] = vcf_path
+    else:
+        case_obj['region_vcf_file'] = None
 
 
 def find_bai_file(bam_file):
