@@ -130,12 +130,19 @@ def variant_case(store, case_obj, variant_obj):
     case_obj['sample_names'] = [individual['display_name'] for individual in
                                 case_obj['individuals'] if individual['bam_file']]
 
-    hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
-    if hgnc_gene_obj:
-        vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+    if len(variant_obj['genes']) == 1:
+        hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
+        if hgnc_gene_obj:
+            vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+            case_obj['region_vcf_file'] = vcf_path
+        else:
+            case_obj['region_vcf_file'] = None
+    elif len(variant_obj['genes']) > 1:
+        chrom = variant_obj['genes'][0]['common']['chromosome']
+        start = min(gene['start'] for gene in variant_obj['genes'])
+        end = max(gene['end'] for gene in variant_obj['genes'])
+        vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
         case_obj['region_vcf_file'] = vcf_path
-    else:
-        case_obj['region_vcf_file'] = None
 
 
 def find_bai_file(bam_file):
@@ -219,7 +226,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
-    for case_id in obs_data['families']:
+    for case_id in obs_data.get('families', []):
         if case_id != variant_obj['case_id'] and case_id.startswith(institute_id):
             other_variant = store.variant(variant_obj['variant_id'], case_id=case_id)
             other_case = store.case(case_id)
