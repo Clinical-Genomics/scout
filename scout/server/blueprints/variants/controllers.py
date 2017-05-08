@@ -139,8 +139,8 @@ def variant_case(store, case_obj, variant_obj):
             case_obj['region_vcf_file'] = None
     elif len(variant_obj['genes']) > 1:
         chrom = variant_obj['genes'][0]['common']['chromosome']
-        start = min(gene['start'] for gene in variant_obj['genes'])
-        end = max(gene['end'] for gene in variant_obj['genes'])
+        start = min(gene['common']['start'] for gene in variant_obj['genes'])
+        end = max(gene['common']['end'] for gene in variant_obj['genes'])
         vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
         case_obj['region_vcf_file'] = vcf_path
 
