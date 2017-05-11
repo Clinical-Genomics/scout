@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import urllib.parse
+try:
+    from urllib.parse import unquote
+except ImportError:
+    from urllib2 import unquote
 
 import coloredlogs
 import logging
@@ -120,7 +123,8 @@ def register_filters(app):
     @app.template_filter()
     def url_decode(string):
         """Decode a string with encoded hex values."""
-        return urllib.parse.unquote(string)
+        return unquote(string)
+
 
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
