@@ -24,5 +24,5 @@ def load_panel(adapter, panel_info):
     if not panel:
         adapter.add_gene_panel(panel_obj)
     else:
-        logger.info("Panel {0} version {1} already exists".format(
-            panel.panel_name, panel.version))
+        logger.info("Panel {} version {} already exists".format(panel_obj['panel_name'],
+                                                                panel_obj['version']))
