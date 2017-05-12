@@ -111,7 +111,7 @@ def test_load_coordinates(populated_database, variant_objs, case_obj):
 @pytest.mark.skipif(TRAVIS==True,
                     reason="Tempfiles seems to be problematic on travis")
 def test_get_region_vcf(populated_database, case_obj):
-    print('Travis', TRAVIS)
+    print('Travis', TRAVIS, type(TRAVIS))
     adapter = populated_database
     case_id = case_obj['case_id']
     
