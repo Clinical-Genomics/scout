@@ -2,7 +2,7 @@ from scout.parse.variant.gene import parse_genes
 
 
 
-def test_get_genes():
+def test_get_genes(cyvcf2_variant):
     csq_entry = "C|missense_variant|MODERATE|POC1A|ENSG00000164087|"\
     "Transcript|ENST00000296484|protein_coding|4/11||ENST00000296484.2"\
     ":c.322A>G|ENSP00000296484.2:p.Ser108Gly|362|322|108|S/G|Agt/Ggt"\
@@ -28,32 +28,21 @@ def test_get_genes():
     "Pfam_domain:PF00400&hmmpanther:PTHR22847:SF319&hmmpanther:"\
     "PTHR22847&PROSITE_profiles:PS50294&PROSITE_profiles:PS50082|||||"
     
-    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|"\
+    csq_header_line = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|"\
     "Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|"\
     "Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|"\
     "STRAND|SYMBOL_SOURCE|HGNC_ID|TSL|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|"\
     "SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|"\
     "MOTIF_SCORE_CHANGE"
     
-    transcript_info = [dict(zip(csq_header.split('|'), entry.split('|'))) 
-                            for entry in csq_entry.split(',')]
+    ## GIVEN a variant with vep annotation and a vep header
+    variant = cyvcf2_variant
+    variant.INFO['CSQ'] = csq_entry
     
-    csq_info = {'C':transcript_info}
-    
-    
-    variant = {
-        'ALT': 'C',
-        'vep_info': csq_info,
-        'info_dict': {
-            'Ensembl_transcript_to_refseq_transcript' : ["POC1A:ENST00000296484>NM_"\
-            "015426/XM_005265019|ENST00000394970>NM_001161580|ENST00000474012"\
-            ">NM_001161581"]
-        }
-        }
-    
-    
-    genes = parse_genes(variant)
-    
+    csq_header = csq_header_line.split('|')
+
+    genes = parse_genes(variant.INFO.get('CSQ'), csq_header)
+
     for gene in genes:
         assert gene['hgnc_id'] == 24488
     assert len(genes) == 1

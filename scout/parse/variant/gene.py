@@ -14,19 +14,23 @@ import logging
 from scout.constants import SO_TERMS
 from .transcript import (parse_transcripts)
 
-def parse_genes(variant):
-    """Get the gene from transcripts.
+def parse_genes(vep_info, vep_header):
+    """Parse transcript information and get the gene information from there.
     
     Use hgnc_id as identifier for genes and ensembl transcript id to identify transcripts
     
-        Args:
-          variant(dict)
+    Args:
+      vep_info(str): Raw CSQ string from vcf file
+      vep_header(list): A list with the CSQ column names
     
-        Returns:
-          genes (list(dict)): A list with dictionaries that represents genes
+    Returns:
+      genes (list(dict)): A list with dictionaries that represents genes
     
     """
-    transcripts = parse_transcripts(variant)
+    raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
+                       for transcript_info in vep_info.split(','))
+    
+    transcripts = parse_transcripts(raw_transcripts)
     
     # Dictionary to group the transcripts by hgnc_id
     genes_to_transcripts = {}

@@ -14,9 +14,9 @@ def parse_callers(variant):
         'freebayes': None,
         'samtools': None
     }
-    raw_info = variant['info_dict'].get('set')
+    raw_info = variant.INFO.get('set')
     if raw_info:
-        info = raw_info[0].split('-')
+        info = raw_info.split('-')
         for call in info:
             if call == 'FilteredInAll':
                 callers['gatk'] = 'Filtered'

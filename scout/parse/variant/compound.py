@@ -4,11 +4,11 @@ from scout.utils.md5 import generate_md5_key
 
 logger = logging.getLogger(__name__)
 
-def parse_compounds(variant, case, variant_type):
+def parse_compounds(compound_info, case, variant_type):
     """Get a list with compounds objects for this variant.
 
         Arguments:
-            variant(dict): A Variant dictionary
+            compound_info(str): A Variant dictionary
             case(dict)
             variant_type(str): 'research' or 'clinical'
 
@@ -16,28 +16,36 @@ def parse_compounds(variant, case, variant_type):
             compounds(list(dict)): A list of compounds
     """
     # We need the case to construct the correct id
-    case_id = case['_id']
-    case_name = case['display_name']
     compounds = []
-    variant_compounds = variant.get('compound_variants', {})
+    
+    if compound_info:
+        case_id = case['_id']
+        case_name = case['display_name']
+        parsed_compounds = {}
+        for family_info in compound_info.split(','):
+            splitted_entry = family_info.split(':')
+            # This is the family id
+            if splitted_entry[0] == case_name:
+                for compound in splitted_entry[1].split('|'):
+                    splitted_compound = compound.split('>')
+                    compound_obj = {}
+                    compound_name = splitted_compound[0]
+                    
+                    compound_obj['variant'] = generate_md5_key(
+                                               compound_name.split('_') +
+                                               [variant_type] +
+                                               case_id.split('_')
+                                              )
 
-    for compound in variant_compounds.get(case_name, []):
-        compound_obj = {}
+                    try:
+                        compound_score = float(splitted_compound[1])
+                    except (TypeError, IndexError):
+                        compound_score = 0.0
 
-        compound_name = compound['variant_id']
-        # The compound id have to match the document id
-        compound_obj['variant'] = generate_md5_key(compound_name.split('_') +
-                                   [variant_type] +
-                                   case_id.split('_'))
-        try:
-            compound_score = float(compound['compound_score'])
-        except TypeError:
-            compound_score = 0.0
-
-        compound_obj['score'] = compound_score
-        compound_obj['display_name'] = compound_name
-
-        compounds.append(compound_obj)
-
+                    compound_obj['score'] = compound_score
+                    compound_obj['display_name'] = compound_name
+                    
+                    compounds.append(compound_obj)
+                    
     return compounds
 

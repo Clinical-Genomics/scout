@@ -59,33 +59,29 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
              " {2}, end {3}".format(case_obj['_id'], chrom, start, end))
 
-    load_variants(adapter=adapter, variant_file=case_obj['vcf_files']['vcf_snv'],
-                  case_obj=case_obj, variant_type='clinical', category='snv',
-                  chrom=chrom, start=start, end=end)
+    adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', chrom=chrom, start=start, end=end)
 
     vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
     if vcf_sv_file:
         log.info("Load clinical SV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-        load_variants(adapter=adapter, variant_file=vcf_sv_file,
-                      case_obj=case_obj, variant_type='clinical',
-                      category='sv', chrom=chrom, start=start, end=end)
+        adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                              category='sv', chrom=chrom, start=start, end=end)
 
     if case_obj['is_research']:
         log.info("Load research SNV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         vcf_snv_research = case_obj['vcf_files']['vcf_snv_research']
-        load_variants(adapter=adapter, variant_file=vcf_snv_research,
-                      case_obj=case_obj, variant_type='research',
-                      category='snv', chrom=chrom, start=start, end=end)
+        adapter.load_variants(case_obj=case_obj, variant_type='research',
+                              category='snv', chrom=chrom, start=start, end=end)
 
         vcf_sv_research = case_obj['vcf_files'].get('vcf_sv_research')
         if vcf_sv_research:
             log.info("Load research SV variants for case: {0} region: chr {1},"
                      " start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-            load_variants(adapter=adapter, case_obj=case_obj,
-                          variant_type='research', variant_file=vcf_sv_research,
-                          category='sv', chrom=chrom, start=start, end=end)
+            adapter.load_variants(case_obj=case_obj, variant_type='research',
+                                  category='sv', chrom=chrom, start=start, end=end)
 
 
 def load_scout(adapter, config, ped=None, update=False):
@@ -113,16 +109,15 @@ def load_scout(adapter, config, ped=None, update=False):
     delete_variants(adapter=adapter, case_obj=case_obj)
 
     log.info("Load clinical SNV variants for case %s", case_obj['case_id'])
-    load_variants(adapter=adapter, variant_file=config['vcf_snv'],
-                  case_obj=case_obj, variant_type='clinical', category='snv',
-                  rank_threshold=case_data['rank_score_threshold'])
+    adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+                          category='snv', 
+                          rank_threshold=case_data['rank_score_threshold'])
 
     if config.get('vcf_sv'):
         log.info("Load SV variants for case %s", case_obj['case_id'])
-        load_variants(adapter=adapter, variant_file=config['vcf_sv'],
-                      case_obj=case_obj, variant_type='clinical',
-                      category='sv',
-                      rank_threshold=case_data['rank_score_threshold'])
+        adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                              category='sv',
+                              rank_threshold=case_data['rank_score_threshold'])
 
     log.debug('load case object into database')
     load_case(

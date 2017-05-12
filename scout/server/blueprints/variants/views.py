@@ -52,7 +52,6 @@ def variants(institute_id, case_name):
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    controllers.variant_case(case_obj)
     data = controllers.variant(store, institute_obj, case_obj, variant_id)
     if data is None:
         return abort(404)
@@ -81,6 +80,7 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(store, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+
 
 @variants_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')
 @templated('variants/sv-variant.html')

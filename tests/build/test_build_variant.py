@@ -18,15 +18,21 @@ def test_build_empty():
 
 def test_build_minimal(case_obj):
     ## GIVEN a variant with minimal information
-    variant = {
-        'POS': '10',
-        'REF': 'A',
-        'ALT': 'C',
-        'CHROM': '1',
-        'QUAL': '10',
-        'FILTER': 'PASS',
-        'ID': '.'
-    }
+    class Cyvcf2Variant(object):
+        def __init__(self):
+            self.CHROM = '1'
+            self.REF = 'A'
+            self.ALT = ['C']
+            self.POS = 10
+            self.end = 11
+            self.FILTER = None
+            self.ID = '.'
+            self.QUAL = None
+            self.var_type = 'snp'
+            self.INFO = {}
+    
+    variant = Cyvcf2Variant()
+    
     parsed_variant = parse_variant(variant, case_obj)
     assert 'ids' in parsed_variant
     variant_obj = build_variant(parsed_variant, INSTITUTE_ID)

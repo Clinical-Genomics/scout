@@ -5,7 +5,7 @@ import datetime
 
 from scout.utils.handle import get_file_handle
 
-from vcf_parser import VCFParser
+from cyvcf2 import VCF
 import yaml
 import pymongo
 
@@ -16,6 +16,7 @@ from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
+from scout.parse.variant.headers import parse_rank_results_header
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.ensembl import parse_ensembl_transcripts
 from scout.parse.exac import parse_exac_genes
@@ -544,7 +545,7 @@ def basic_variant_dict(request):
 @pytest.fixture(scope='function')
 def one_variant(request, variant_clinical_file):
     logger.info("Return one parsed variant")
-    variant_parser = VCFParser(infile=variant_clinical_file)
+    variant_parser = VCF(variant_clinical_file)
 
     for variant in variant_parser:
         break
@@ -554,7 +555,7 @@ def one_variant(request, variant_clinical_file):
 @pytest.fixture(scope='function')
 def one_sv_variant(request, sv_clinical_file):
     logger.info("Return one parsed SV variant")
-    variant_parser = VCFParser(infile=sv_clinical_file)
+    variant_parser = VCF(sv_clinical_file)
 
     for variant in variant_parser:
         break
@@ -564,24 +565,21 @@ def one_sv_variant(request, sv_clinical_file):
 @pytest.fixture(scope='function')
 def rank_results_header(request, variant_clinical_file):
     logger.info("Return a VCF parser with one variant")
-    variant = VCFParser(infile=variant_clinical_file)
-    rank_results = []
-    for info_line in variant.metadata.info_lines:
-        if info_line['ID'] == 'RankResult':
-            rank_results = info_line['Description'].split('|')
+    variants = VCF(variant_clinical_file)
+    rank_results = parse_rank_results_header(variants)
 
     return rank_results
 
 @pytest.fixture(scope='function')
 def sv_variants(request, sv_clinical_file):
     logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=sv_clinical_file)
+    variants = VCF(sv_clinical_file)
     return variants
 
 @pytest.fixture(scope='function')
 def variants(request, variant_clinical_file):
     logger.info("Return a VCF parser many svs")
-    variants = VCFParser(infile=variant_clinical_file)
+    variants = VCF(variant_clinical_file)
     return variants
 
 @pytest.fixture(scope='function')
@@ -599,6 +597,27 @@ def variant_obj(request, parsed_variant, populated_database):
     institute_obj = populated_database.institute(institute_id=institute_id)
     variant = build_variant(parsed_variant, institute_id=institute_obj['internal_id'])
     return variant
+
+@pytest.fixture(scope='function')
+def cyvcf2_variant():
+    """Return a variant object"""
+    print('')
+    class Cyvcf2Variant(object):
+        def __init__(self):
+            self.CHROM = '1'
+            self.REF = 'A'
+            self.ALT = ['C']
+            self.POS = 10
+            self.end = 11
+            self.FILTER = None
+            self.ID = '.'
+            self.QUAL = None
+            self.var_type = 'snp'
+            self.INFO = {'RankScore':"123:10"}
+
+    variant = Cyvcf2Variant()
+    return variant
+
 
 @pytest.fixture(scope='function')
 def parsed_variant():
@@ -676,13 +695,26 @@ def parsed_sv_variant(request, one_sv_variant, case_obj):
 def parsed_variants(request, variants, case_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (parse_variant(variant, case_obj) for variant in variants)
+    individual_positions = {}
+    for i,ind in enumerate(variants.samples):
+        individual_positions[ind] = i
+    
+    return (parse_variant(variant, case_obj, 
+            individual_positions=individual_positions) 
+            for variant in variants)
 
 @pytest.fixture(scope='function')
 def parsed_sv_variants(request, sv_variants, case_obj):
     """Get a generator with parsed variants"""
     print('')
-    return (parse_variant(variant, case_obj) for variant in sv_variants)
+    individual_positions = {}
+    for i,ind in enumerate(sv_variants.samples):
+        individual_positions[ind] = i
+
+    return (parse_variant(variant, case_obj, 
+            individual_positions=individual_positions) 
+            for variant in sv_variants)
+
 
 @pytest.fixture(scope='function')
 def variant_objs(request, parsed_variants, institute_obj):

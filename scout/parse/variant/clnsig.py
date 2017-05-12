@@ -2,39 +2,36 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def parse_clnsig(variant):
+def parse_clnsig(acc, sig, revstat):
     """Get the clnsig information
 
-        We are only interested when clnsig = 5. So for each 5 we return the
-        CLNSIG accesson number.
+    Args:
+        acc(str): The clnsig accession number, raw from vcf
+        sig(str): The clnsig significance score, raw from vcf
+        revstat(str): The clnsig revstat, raw from vcf
 
-        Args:
-            variant (dict): A Variant dictionary
-
-        Returns:
-            clnsig_accsessions(list): A list with clnsig accessions
+    Returns:
+        clnsig_accsessions(list): A list with clnsig accessions
     """
-    clnsig_key = 'CLNSIG'
-    accession_key = 'CLNACC'
-    revstat_key = 'CLNREVSTAT'
-    
-    clnsig_annotation = variant['info_dict'].get(clnsig_key)
-    accession_annotation = variant['info_dict'].get(accession_key)
-    revstat_annotation = variant['info_dict'].get(revstat_key)
 
     clnsig_accsessions = []
-    if clnsig_annotation:
+    if acc:
+        # There are sometimes different separators so we need to check which 
+        # one to use
+        separator = ','
+        accessions = acc.split(',')
+        if len(accessions) == 1:
+            accessions = acc.split('|')
+            if len(accessions) > 1:
+                separator = '|'
+        significance = sig.split(separator)
+        revision_statuses = revstat.split(separator)
         
-        clnsig_annotation = clnsig_annotation[0].split('|')
-        accession_annotation = accession_annotation[0].split('|')
-        revstat_annotation = revstat_annotation[0].split('|')
-        
-        
-        for i,annotation in enumerate(clnsig_annotation):
+        for i,annotation in enumerate(significance):
             clnsig_entry = {
                 'value': int(annotation),
-                'accession': accession_annotation[i],
-                'revstat': revstat_annotation[i]
+                'accession': accessions[i],
+                'revstat': revision_statuses[i]
             }
             clnsig_accsessions.append(clnsig_entry)
 
