@@ -108,7 +108,7 @@ def test_load_coordinates(populated_database, variant_objs, case_obj):
     ## Then assert that the other variants where loaded
     assert new_nr_variants_in_gene > nr_variants_in_gene
 
-@pytest.mark.skipif(TRAVIS==True,
+@pytest.mark.skipif(TRAVIS,
                     reason="Tempfiles seems to be problematic on travis")
 def test_get_region_vcf(populated_database, case_obj):
     print('Travis', TRAVIS, type(TRAVIS))
