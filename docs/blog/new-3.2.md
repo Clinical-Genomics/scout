@@ -1,5 +1,7 @@
 ## What's new in 3.2?
 
+_Posted: 3 May 2017_
+
 ### New feature: Frequency links
 
 We have added several frequency resources links to the variant frequency table on the variants page.

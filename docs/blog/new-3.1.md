@@ -1,5 +1,7 @@
 ## What's new in 3.1?
 
+_Posted: 27 April 2017_
+
 This updates contains many bug fixes and a few new features.
 
 ### New feature: cohort tag
