@@ -182,6 +182,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['swegen_link'] = swegen_link(variant_obj)
     variant_obj['beacon_link'] = beacon_link(variant_obj)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj)
+    variant_obj['alamut_link'] = alamut_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['incomplete_penetrance'] = incomplete_penetrance(variant_obj)
@@ -347,7 +348,6 @@ def exac_link(variant_obj):
                     "-{this[alternative]}")
     return url_template.format(this=variant_obj)
 
-
 def gnomead_link(variant_obj):
     """Compose link to gnomeAD website."""
     url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
@@ -377,6 +377,10 @@ def ucsc_link(variant_obj):
                     "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
     return url_template.format(this=variant_obj)
 
+def alamut_link(variant_obj):
+    url_template = ("http://localhost:10000/show?request={this[chromosome]}:"
+                    "{this[position]}{this[reference]}>{this[alternative]}")
+    return url_template.format(this=variant_obj)
 
 def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
