@@ -29,7 +29,7 @@ def parse_coordinates(ref, alt, position, category, svtype, svlen, end, mate_id=
     }
     if svtype:
         svtype = svtype.lower()
-    if category in ('snv', 'indel'):
+    if category in ('snv', 'indel', 'cancer'):
         ref_len = len(ref)
         alt_len = len(alt)
         # If lenth is same lenth is same as alternative

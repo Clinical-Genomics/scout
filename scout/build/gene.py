@@ -38,10 +38,10 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
     gene_obj = dict()
-    
+ 
     hgnc_id = int(gene['hgnc_id'])
     gene_obj['hgnc_id'] = hgnc_id
-    
+
     hgnc_gene = hgncid_to_gene.get(hgnc_id)
     
     inheritance = set()

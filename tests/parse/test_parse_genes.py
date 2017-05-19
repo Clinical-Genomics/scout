@@ -1,5 +1,5 @@
 from scout.parse.variant.gene import parse_genes
-
+from scout.parse.variant.transcript import parse_transcripts
 
 
 def test_get_genes(cyvcf2_variant):
@@ -36,12 +36,22 @@ def test_get_genes(cyvcf2_variant):
     "MOTIF_SCORE_CHANGE"
     
     ## GIVEN a variant with vep annotation and a vep header
-    variant = cyvcf2_variant
-    variant.INFO['CSQ'] = csq_entry
+    raw_transcripts = (
+        dict(
+            zip(
+                csq_header_line.split('|'), 
+                csq_entry.split('|')
+                )
+            )
+        for transcript_info in csq_entry.split(',')
+    )
+    parsed_transcripts = []
+    for parsed_transcript in parse_transcripts(raw_transcripts, allele='C'):
+        parsed_transcripts.append(parsed_transcript)
     
-    csq_header = csq_header_line.split('|')
-
-    genes = parse_genes(variant.INFO.get('CSQ'), csq_header)
+    # variant = cyvcf2_variant
+    # variant.INFO['CSQ'] = csq_entry
+    genes = parse_genes(parsed_transcripts)
 
     for gene in genes:
         assert gene['hgnc_id'] == 24488

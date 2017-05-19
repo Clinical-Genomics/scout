@@ -34,7 +34,7 @@ class UserHandler(object):
             Returns:
                 user_info(dict): a copy of what was inserted
         """
-        log.info("Adding user to the database")
+        log.info("Adding user %s to the database", user_info['email'])
         if not '_id' in user_info:
             user_info['_id'] = user_info['email']
     

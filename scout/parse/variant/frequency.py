@@ -1,12 +1,13 @@
 
-def parse_frequencies(variant):
+def parse_frequencies(variant, transcripts):
     """Add the frequencies to a variant
     
-    This needs to be expanded so that other keys are allowed and easy
-    to implement.
+    Frequencies are parsed either directly from keys in info fieds or from the 
+    transcripts is they are annotated there.
 
     Args:
-        variant(dict): A parsed vcf variant
+        variant(cyvcf2.Variant): A parsed vcf variant
+        transcripts(iterable(dict)): Parsed transcripts
 
     Returns:
         frequencies(dict): A dictionary with the relevant frequencies
@@ -42,6 +43,22 @@ def parse_frequencies(variant):
             frequencies['exac_max'] = exac_max
             break
     
+    # Search transcripts if not found in VCF
+    if not frequencies:
+        for transcript in transcripts:
+            exac = transcript.get('exac_maf')
+            thousand_g = transcript.get('thousand_g_maf')
+            exac_max = transcript.get('exac_max')
+            thousandg_max = transcript.get('thousandg_max')
+            if exac:
+                frequencies['exac'] = exac
+            if exac_max:
+                frequencies['exac_max'] = exac_max
+            if thousand_g:
+                frequencies['thousand_g'] = thousand_g
+            if thousandg_max:
+                frequencies['thousand_g_max'] = thousandg_max
+
     #These are SV-specific frequencies
     thousand_g_left = parse_frequency(variant, 'left_1000GAF')
     if thousand_g_left:
@@ -58,7 +75,7 @@ def parse_frequency(variant, info_key):
     """Parse any frequency from the info dict
     
     Args:
-        variant(dict)
+        variant(cyvcf2.Variant)
         info_key(str)
     
     Returns:

@@ -43,7 +43,7 @@ def test_parse_frequencies(cyvcf2_variant):
     variant.INFO['EXACAF'] = '0.001'
     
     # WHEN frequencies are parsed    
-    frequencies = parse_frequencies(variant)
+    frequencies = parse_frequencies(variant, [])
     
     # THEN the frequencies should be returned in a dictionary
     assert frequencies['thousand_g'] == float(variant.INFO['1000GAF'])

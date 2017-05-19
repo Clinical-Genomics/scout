@@ -12,26 +12,19 @@ Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 import logging
 
 from scout.constants import SO_TERMS
-from .transcript import (parse_transcripts)
 
-def parse_genes(vep_info, vep_header):
+def parse_genes(transcripts):
     """Parse transcript information and get the gene information from there.
     
     Use hgnc_id as identifier for genes and ensembl transcript id to identify transcripts
     
     Args:
-      vep_info(str): Raw CSQ string from vcf file
-      vep_header(list): A list with the CSQ column names
-    
+        transcripts(iterable(dict))
+
     Returns:
       genes (list(dict)): A list with dictionaries that represents genes
     
     """
-    raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
-                       for transcript_info in vep_info.split(','))
-    
-    transcripts = parse_transcripts(raw_transcripts)
-    
     # Dictionary to group the transcripts by hgnc_id
     genes_to_transcripts = {}
     
@@ -42,6 +35,7 @@ def parse_genes(vep_info, vep_header):
     for transcript in transcripts:
         # Check what hgnc_id a transcript belongs to
         hgnc_id = transcript['hgnc_id']
+        hgnc_symbol = transcript['hgnc_symbol']
 
         # If there is a identifier we group the transcripts under gene
         if hgnc_id:
@@ -49,6 +43,12 @@ def parse_genes(vep_info, vep_header):
                 genes_to_transcripts[hgnc_id].append(transcript)
             else:
                 genes_to_transcripts[hgnc_id] = [transcript]
+        else:
+            if hgnc_symbol:
+                if hgnc_symbol in genes_to_transcripts:
+                    genes_to_transcripts[hgnc_symbol].append(transcript)
+                else:
+                    genes_to_transcripts[hgnc_symbol] = [transcript]
 
     # We need to find out the most severe consequence in all transcripts
     # and save in what transcript we found it
@@ -71,6 +71,8 @@ def parse_genes(vep_info, vep_header):
         
         # Loop over all transcripts for a gene to check which is most severe
         for transcript in gene_transcripts:
+            hgnc_id = transcript['hgnc_id']
+            hgnc_symbol = transcript['hgnc_symbol']
             # Loop over the consequences for a transcript
             for consequence in transcript['functional_annotations']:
                 # Get the rank based on SO_TERM
@@ -92,7 +94,8 @@ def parse_genes(vep_info, vep_header):
             'most_severe_consequence': most_severe_consequence,
             'most_severe_sift': most_severe_sift,
             'most_severe_polyphen': most_severe_polyphen,
-            'hgnc_id': gene_id,
+            'hgnc_id': hgnc_id,
+            'hgnc_symbol': hgnc_symbol,
             'region_annotation': most_severe_region,
         }
         genes.append(gene)    

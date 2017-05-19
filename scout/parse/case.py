@@ -62,8 +62,14 @@ def parse_individual(sample):
     ind_info['father'] = sample.get('father')
     ind_info['mother'] = sample.get('mother')
 
-    ind_info['bam_file'] = sample.get('bam_path')
-    ind_info['analysis_type'] = sample.get('analysis_type')
+    bam_file = sample.get('bam_path')
+    if bam_file:
+        ind_info['bam_file'] = bam_file
+
+    analysis_type =  sample.get('analysis_type')
+    if analysis_type:
+        ind_info['analysis_type'] = analysis_type
+    
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
 
@@ -133,9 +139,6 @@ def parse_case(config, ped=None):
 
     individuals = parse_individuals(config['samples'])
 
-    if 'vcf_snv' not in config:
-        raise ConfigError("A case has to have a snv vcf")
-
     case_data = {
         'owner': owner,
         'collaborators': [owner],
@@ -144,17 +147,19 @@ def parse_case(config, ped=None):
         'display_name': family_id,
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
-        'rank_score_threshold': config.get('rank_score_threshold', 5),
+        'rank_score_threshold': config.get('rank_score_threshold', 0),
         'analysis_date': config['analysis_date'],
         'individuals': individuals,
         'vcf_files': {
             'vcf_snv': config.get('vcf_snv'),
             'vcf_sv': config.get('vcf_sv'),
+            'vcf_cancer': config.get('vcf_cancer'),
             'vcf_snv_research': config.get('vcf_snv_research'),
             'vcf_sv_research': config.get('vcf_sv_research'),
+            'vcf_cancer_research': config.get('vcf_cancer_research'),
         },
-        'default_panels': config.get('default_gene_panels'),
-        'gene_panels': config.get('gene_panels'),
+        'default_panels': config.get('default_gene_panels',[]),
+        'gene_panels': config.get('gene_panels',[]),
         'assignee': config.get('assignee'),
     }
 
