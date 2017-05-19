@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% from "utils.html" import flash_messages %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Variants
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">{% block page_title %}{% endblock %}</span>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid main">
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+              Filters
+            </a>
+          </h4>
+        </div>
+        <div id="collapseFilters" class="panel-collapse collapse">
+          <div class="panel-body">
+            {% block filters %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{ flash_messages() }}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          {% block table_headers %}{% endblock %}
+        </tr>
+      </thead>
+      <tbody>
+        {% block table_body %}{% endblock %}
+      </tbody>
+    </table>
+
+    {{ footer() }}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        container: 'body',
+      });
+
+      $('table').stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
+    })
+  </script>
+{% endblock %}
+
+{% macro footer() %}
+  <div class="container-fluid">
+    <div class="form-group text-center">
+      {% if more_variants %}
+        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+          Next page
+        </a>
+      {% else %}
+        <i class="text-muted">No more variants to display</i>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

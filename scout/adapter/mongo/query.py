@@ -72,13 +72,13 @@ class QueryHandler(object):
                     {
                         '$or': [
                             {
-                                'thousand_genomes_frequency': 
+                                'thousand_genomes_frequency':
                                     {
                                         '$lt': float(thousandg)
                                     }
                                 },
                             {
-                                'thousand_genomes_frequency': 
+                                'thousand_genomes_frequency':
                                     {
                                         '$exists': False
                                     }
@@ -104,7 +104,7 @@ class QueryHandler(object):
                                         '$lt': float(exac)}
                                     },
                             {
-                                'exac_frequency': 
+                                'exac_frequency':
                                     {
                                         '$exists': False
                                     }
@@ -193,6 +193,30 @@ class QueryHandler(object):
             rank = query['clinsig']
             logger.debug("add CLINSIG filter for rank: %s", rank)
             mongo_query['clnsig.value'] = rank
+
+        if query.get('depth'):
+            logger.debug("add depth filter")
+            mongo_query['$and'].append({
+                'tumor.read_depth': {
+                    '$gt': query.get('depth'),
+                }
+            })
+
+        if query.get('alt_count'):
+            logger.debug("add min alt count filter")
+            mongo_query['$and'].append({
+                'tumor.alt_depth': {
+                    '$gt': query.get('alt_count'),
+                }
+            })
+
+        if query.get('control_frequency'):
+            logger.debug("add minimum control frequency filter")
+            mongo_query['$and'].append({
+                'normal.alt_freq': {
+                    '$lt': float(query.get('control_frequency')),
+                }
+            })
 
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}

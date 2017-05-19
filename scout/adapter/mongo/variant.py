@@ -58,7 +58,7 @@ class VariantHandler(object):
             transcripts_dict = {}
             if hgnc_gene:
                 # Add transcript information from the hgnc gene
-                for transcript in hgnc_gene.get('transcripts',[]):
+                for transcript in hgnc_gene.get('transcripts', []):
                     tx_id = transcript['ensembl_transcript_id']
                     transcripts_dict[tx_id] = transcript
 
@@ -138,9 +138,8 @@ class VariantHandler(object):
 
         return variant_obj
 
-    def variants(self, case_id, query=None, variant_ids=None,
-                 category='snv', nr_of_variants=10, skip=0,
-                 sort_key='variant_rank'):
+    def variants(self, case_id, query=None, variant_ids=None, category='snv',
+                 nr_of_variants=10, skip=0, sort_key='variant_rank'):
         """Returns variants specified in question for a specific case.
 
         If skip not equal to 0 skip the first n variants.
@@ -149,7 +148,7 @@ class VariantHandler(object):
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
             variant_ids(List[str])
-            category(str): 'sv' or 'snv'
+            category(str): 'sv' or 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: 'variant_rank' or 'rank_score'

@@ -57,6 +57,7 @@ def variant(institute_id, case_name, variant_id):
         return abort(404)
     if current_app.config.get('LOQUSDB_SETTINGS'):
         data['observations'] = controllers.observations(store, loqusdb, case_obj, data['variant'])
+    data['cancer'] = request.args.get('cancer') == 'yes'
     return dict(institute=institute_obj, case=case_obj, **data)
 
 
@@ -116,3 +117,11 @@ def sanger(institute_id, case_name, variant_id):
     except controllers.MissingSangerRecipientError:
         flash('No sanger recipients added to institute.', 'danger')
     return redirect(request.referrer)
+
+
+@variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
+@templated('variants/cancer-variants.html')
+def cancer_variants(institute_id, case_name):
+    """Show cancer variants overview."""
+    data = controllers.cancer_variants(store, request.args, institute_id, case_name)
+    return data

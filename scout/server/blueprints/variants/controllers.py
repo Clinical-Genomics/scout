@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import os.path
 
 from flask import url_for
@@ -6,7 +7,9 @@ from flask_mail import Message
 
 from scout.constants import CLINSIG_MAP
 from scout.server.utils import institute_and_case
+from .forms import CancerFiltersForm
 
+log = logging.getLogger(__name__)
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
 
 
@@ -130,19 +133,22 @@ def variant_case(store, case_obj, variant_obj):
     case_obj['sample_names'] = [individual['display_name'] for individual in
                                 case_obj['individuals'] if individual['bam_file']]
 
-    if len(variant_obj['genes']) == 1:
-        hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
-        if hgnc_gene_obj:
-            vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+    try:
+        if len(variant_obj['genes']) == 1:
+            hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
+            if hgnc_gene_obj:
+                vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+                case_obj['region_vcf_file'] = vcf_path
+            else:
+                case_obj['region_vcf_file'] = None
+        elif len(variant_obj['genes']) > 1:
+            chrom = variant_obj['genes'][0]['common']['chromosome']
+            start = min(gene['common']['start'] for gene in variant_obj['genes'])
+            end = max(gene['common']['end'] for gene in variant_obj['genes'])
+            vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
             case_obj['region_vcf_file'] = vcf_path
-        else:
-            case_obj['region_vcf_file'] = None
-    elif len(variant_obj['genes']) > 1:
-        chrom = variant_obj['genes'][0]['common']['chromosome']
-        start = min(gene['common']['start'] for gene in variant_obj['genes'])
-        end = max(gene['common']['end'] for gene in variant_obj['genes'])
-        vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
-        case_obj['region_vcf_file'] = vcf_path
+    except SyntaxError:
+        log.warning("skip VCF region for alignment view")
 
 
 def find_bai_file(bam_file):
@@ -348,6 +354,7 @@ def exac_link(variant_obj):
                     "-{this[alternative]}")
     return url_template.format(this=variant_obj)
 
+
 def gnomead_link(variant_obj):
     """Compose link to gnomeAD website."""
     url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
@@ -377,10 +384,12 @@ def ucsc_link(variant_obj):
                     "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
     return url_template.format(this=variant_obj)
 
+
 def alamut_link(variant_obj):
     url_template = ("http://localhost:10000/show?request={this[chromosome]}:"
                     "{this[position]}{this[reference]}>{this[alternative]}")
     return url_template.format(this=variant_obj)
+
 
 def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
@@ -479,3 +488,18 @@ def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
     mail.send(message)
 
     store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+
+
+def cancer_variants(store, request_args, institute_id, case_name):
+    """Fetch data related to cancer variants for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    form = CancerFiltersForm(request_args)
+    variants_query = store.variants(case_obj['_id'], category='cancer', query=form.data).limit(50)
+    data = dict(
+        institute=institute_obj,
+        case=case_obj,
+        variants=(parse_variant(store, variant, update=True) for variant in variants_query),
+        form=form,
+        variant_type=request_args.get('variant_type', 'clinical'),
+    )
+    return data

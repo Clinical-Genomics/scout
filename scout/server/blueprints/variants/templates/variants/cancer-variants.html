@@ -1,0 +1,76 @@
+{% extends "variants/layout.html" %}
+{% from "variants/components.html" import gene_cell, frequency_cell, filters_form %}
+
+{% block page_title %}
+  {{ variant_type|capitalize }} cancer variants
+{% endblock %}
+
+{% block filters %}
+  {{ filters_form(form) }}
+{% endblock %}
+
+{% block table_headers %}
+  <th></th>
+  <th>Tier</th>
+  <th>Gene</th>
+  <th>Chr pos</th>
+  <th>ExAC</th>
+  <th>Type</th>
+  <th>Consequence</th>
+  <th>Tumor</th>
+  <th>Normal</th>
+{% endblock %}
+
+{% block table_body %}
+  {% for variant in variants %}
+    <tr>
+      <td>{{ actions_cell(variant) }}</td>
+      <td>{{ tier_cell(variant) }}</td>
+      <td>{{ gene_cell(variant) }}</td>
+      <td>{{ position_cell(variant) }}</td>
+      <td class="text-right">{{ frequency_cell(variant, exac=True) }}</td>
+      <td>{{ variant.sub_category }}</td>
+      <td>{{ variant.functional_annotations|join(', ') }}</td>
+      <td>{{ allele_cell(variant.tumor or {}) }}</td>
+      <td>{{ allele_cell(variant.normal or {}) }}</td>
+    </tr>
+  {% endfor %}
+{% endblock %}
+
+{% macro actions_cell(variant) %}
+  <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
+                      variant_id=variant._id, cancer='yes') }}">View</a>
+  {% if variant.comments %}
+    <span class="glyphicon glyphicon-comment"></span>
+  {% endif %}
+{% endmacro %}
+
+{% macro tier_cell(variant) %}
+  {% if variant.manual_rank %}
+    {% if variant.manual_rank == 1 %}
+      {% set label_class = 'default' %}
+    {% elif variant.manual_rank == 2 %}
+      {% set label_class = 'info' %}
+    {% elif variant.manual_rank == 3 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.manual_rank == 4 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.manual_rank == 5 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+    <div class="label label-{{ label_class }}">{{ variant.manual_rank }}</div>
+  {% endif %}
+{% endmacro %}
+
+{% macro position_cell(variant) %}
+  {{ variant.chromosome }}<span class="text-muted">:{{ variant.position }}</span>
+{% endmacro %}
+
+{% macro allele_cell(allele) %}
+  {% if allele.alt_freq is not none %}
+    {{ allele.alt_freq|round(4)  }}%
+  {% else %}
+    <span class="text-muted">N/A</span>
+  {% endif %}
+   <small>({{ allele.ref_depth }} / {{ allele.alt_depth }})</small>
+{% endmacro %}
