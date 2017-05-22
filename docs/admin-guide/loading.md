@@ -25,8 +25,10 @@ samples:
 
 vcf_snv: str(optional)
 vcf_sv: str(optional)
+vcf_cancer: str(optional)
 vcf_snv_research: str(optional)
 vcf_sv_research: str(optional)
+vcf_cancer_research: str(optional)
 
 madeline: str(optional)
 default_gene_panels: list[str](optional)
@@ -39,7 +41,7 @@ analysis_date: datetime(optional)
 human_genome_build: str(optional)
 ```
 
-An example file:
+An example file, (this file is located in `scout/demo/643594.config.yaml`):
 
 ```yaml
 ---
@@ -76,12 +78,12 @@ samples:
     sex: female
     expected_coverage: 30
 
-vcf_snv: tests/fixtures/643594.clinical.vcf
-vcf_sv: tests/fixtures/643594.clinical.SV.vcf
-vcf_snv_research: tests/fixtures/643594.research.vcf
-vcf_sv_research: tests/fixtures/643594.research.SV.vcf
+vcf_snv: scout/demo/643594.clinical.vcf.gz
+vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
+vcf_snv_research: scout/demo/643594.research.vcf.gz
+vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 
-madeline: tests/fixtures/madeline.xml
+madeline: scout/demo/madeline.xml
 default_gene_panels: [panel1]
 gene_panels: [panel1]
 
@@ -89,6 +91,22 @@ gene_panels: [panel1]
 rank_model_version: 1.12
 rank_score_threshold: -100
 analysis_date: 2016-10-12 14:00:46
-human_genome_build: GRCh.37
+human_genome_build: 37
 
 ```
+
+## Load case from CLI without config
+
+Cases can be loaded without config file, in that case the user needs to specify a ped file and optionally one or several VCF files. An example could look like
+
+```
+scout load case --ped path/to/file.ped --vcf-snv path/to/file.vcf
+```
+
+Please use 
+
+```
+scout load case --help
+```
+
+for more instructions

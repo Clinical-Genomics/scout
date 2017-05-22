@@ -22,8 +22,21 @@ We also use separate ``@clinicalgenomics.se`` accounts to be able to enforce 2-f
 This is the first page a you see after logging in. Notice your first name in the upper right corner. You can also access the list of institutes you belong to.
 
 ### Institute selection
-Users can belong to multiple institutes. Each institutes defines what cases can be viewed by the user. If you only belong to a single institute you will be redirected automatically to "Cases".
+Users can belong to multiple institutes. Each institutes defines what cases can be viewed by the user. If you only belong to a single institute you will be redirected automatically to [Cases](cases.md).
 
 
-% Refer to cases.md here
-% Refer to variants.md
+### Cases page
+
+An overview of the [cases](cases.md) that belongs to an institute and status for the cases.
+
+### Variants page
+
+A list of the [variants](variants.md) with some relevant information
+
+### Detailed variant page
+
+When choosing a [variant](variants.md) the detailed variant information is displayed
+
+### Gene Panels
+
+Page to investigate and manipulating [gene panels](panels.md).
