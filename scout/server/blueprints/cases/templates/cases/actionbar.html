@@ -229,8 +229,8 @@
           <div class="input-group">
             <select class="form-control" name="collaborator">
               <option>Select institute</option>
-              {% for collab_id in collaborators %}
-                <option value="{{ collab_id }}">{{ collab_id }}</option>
+              {% for collab_id, collab_name in collaborators %}
+                <option value="{{ collab_id }}">{{ collab_name }}</option>
               {% endfor %}
             </select>
             <div class="input-group-btn">
@@ -246,8 +246,8 @@
         <div class="input-group">
           <select class="form-control" name="collaborator">
             <option>Select institute</option>
-            {% for collab_id in case.o_collaborators %}
-              <option value="{{ collab_id }}">{{ collab_id }}</option>
+            {% for collab_id, collab_name in case.o_collaborators %}
+              <option value="{{ collab_id }}">{{ collab_name }}</option>
             {% endfor %}
           </select>
           <div class="input-group-btn">

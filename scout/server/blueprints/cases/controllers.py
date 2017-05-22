@@ -60,12 +60,13 @@ def case(store, institute_obj, case_obj):
                                 .format(hpo_term['phenotype_id']))
 
     # other collaborators than the owner of the case
-    case_obj['o_collaborators'] = [collab_id for collab_id in
-                                   case_obj['collaborators'] if
-                                   collab_id != case_obj['owner']]
+    o_collaborators = [store.institute(collab_id) for collab_id in case_obj['collaborators'] if
+                       collab_id != case_obj['owner']]
+    case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
+                                   collab_obj in o_collaborators]
 
     irrelevant_ids = ('cust000', institute_obj['_id'])
-    collab_ids = [collab['_id'] for collab in store.institutes() if
+    collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
                   (collab['_id'] not in irrelevant_ids) and
                   (collab['_id'] not in case_obj['collaborators'])]
 
