@@ -1,8 +1,9 @@
 # Getting started with Scout
-Scout is a web-based visualizer for VCF-files. It helps you manage multiple patient cases in a unified and intuative interface. You can collaborate with other clinicians and share comments and findings across your team.
+Scout is a web-based visualizer for VCF-files. It helps to manage multiple patient cases in a unified and intuitive interface. Users can collaborate with other clinicians sharing comments and findings across your team.
+
 
 ## Institutes, Cases, Variants
-Scout has a few levels of abstraction to deal with the data it tries to present. Institutes contain multiple cases and group users into teams. Cases are usually the same as families or a group of related VCF-files - they all share a subset of called variants. Variants are individual genotype calls across a single case.
+Scout has a few levels of abstraction to deal with the data it presents. *Institutes* contain multiple cases and group users into teams. Cases are a unit that is analysed together, usually the same as a family or a tumor/normal sample - they all share a subset of called variants. Variants are individual genotype calls across a single case.
 
 > [insert screenshot here]
 

@@ -35,7 +35,8 @@ This is the first a user looks at when assesing the variant.
   - CLINSIG number
 
 ## Details
-Depending on the first assessment, this section represents what a user digs deeper into.
+
+see [Annotations](annotations.md)
 
 ### Functional Annotation ###
 
@@ -44,20 +45,6 @@ This is the worst functional impact of all transcripts
 ### Region Annotation ###
 
 This is the region of the most severe functional impact
-
-### Sift Prediction ###
-
-This is most severe sift prediction of all transcripts
-
-### Polyphen Prediction ###
-
-This is most severe polyphen prediction of all transcripts
-
-  - Predicted protein changes
-  - Severities
-  - Conservation
-
-  => "Matrix" with highlighted cells (significant numbers)
 
 ### GT Call
 

@@ -3,7 +3,10 @@ If you find a variant that seems interesting enough that you believe someone sho
 
 A variant can be pinned by anyone and likewise unpinned by anyone (not just the person who originally pinned it). The activity log will store records of who did what for future reference, however.
 
-> In the future, we would also like to add the possibility of linking a confirmed disease causing mutation to a specific case. One could imagine that process to start of by suspecting a variant, pinning it, confirming the mutation, and lastly tagging it as disease causing. This would also allow us to build up a local database of conclusive findings which would be valuable on it's own.
+# Mark Causative
+A variant is marked causative when it is confirmed to be disease causing in a case. The variant will show up on the [case](cases.md) page as causative variant. A case can have multiple causative variants.
+When a variant is marked causative, Scout will remember the variant so when when entering a new case Scout will indicate if a variant that was previously marked causative within the same institute exists in the particular case.
+
 
 # Sending Sanger email
 It's possible to send an email to a user defined email address with information regarding a variant for Sanger validation. You can access this functionality through the variant detail view in the upper right ahnd corner.
