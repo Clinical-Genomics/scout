@@ -31,7 +31,7 @@ class TagListField(Field):
 class FiltersForm(FlaskForm):
     variant_type = HiddenField(default='clinical')
     gene_panels = SelectMultipleField(choices=[])
-    hgnc_symbols = TagListField()
+    hgnc_symbols = TagListField('HGNC Symbols (case sensitive)')
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
