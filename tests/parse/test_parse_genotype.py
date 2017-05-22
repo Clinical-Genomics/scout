@@ -29,9 +29,10 @@ def test_parse_genotype(variants):
             vcf_read_depth = int(variant.gt_depths[pos])
             vcf_quality = float(variant.gt_quals[pos])
             
-            assert genotype['genotype_call'] == gt_call
-            assert genotype['read_depth'] == vcf_read_depth
-            assert genotype['genotype_quality'] == vcf_quality
+            if vcf_read_depth != -1:
+                assert genotype['genotype_call'] == gt_call
+                assert genotype['read_depth'] == vcf_read_depth
+                assert genotype['genotype_quality'] == vcf_quality
 
 def test_parse_genotypes(variants):
     ## GIVEN a set of variants and information about the individuals

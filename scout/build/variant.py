@@ -5,7 +5,8 @@ from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
 log = logging.getLogger(__name__)
 
-def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=None):
+def build_variant(variant, institute_id, gene_to_panels = None, 
+                  hgncid_to_gene=None, sample_info=None):
     """Build a variant object based on parsed information
 
         Args:
@@ -25,6 +26,8 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
                     .
                     .
                 }
+            sample_info(dict): A dictionary with info about samples.
+                               Strictly for cancer to tell which is tumor
 
 
         Returns:
@@ -119,6 +122,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     """
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
+    sample_info = sample_info or {}
 
     log.debug("Building variant %s", variant['ids']['document_id'])
     variant_obj = dict(
@@ -152,6 +156,7 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     variant_obj['filters'] = variant['filters']
 
     variant_obj['dbsnp_id'] = variant.get('dbsnp_id')
+    variant_obj['cosmic_ids'] = variant.get('cosmic_ids')
 
     variant_obj['category'] = variant['category']
     variant_obj['sub_category'] = variant.get('sub_category')
@@ -163,6 +168,21 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     for sample in variant.get('samples', []):
         gt_call = build_genotype(sample)
         gt_types.append(gt_call)
+        
+        if sample_info:
+            sample_id = sample['individual_id']
+            if sample_info[sample_id] == 'case':
+                key = 'tumor'
+            else:
+                key = 'normal'
+            variant_obj[key] = {
+                    'alt_depth': sample['alt_depth'],
+                    'ref_depth': sample['ref_depth'],
+                    'read_depth': sample['read_depth'],
+                    'alt_freq': sample['alt_frequency'],
+                    'ind_id': sample_id
+                }
+        
 
     variant_obj['samples'] = gt_types
 
@@ -181,20 +201,21 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     # Add the genes with transcripts
     genes = []
     for index, gene in enumerate(variant.get('genes', [])):
-        gene_obj = build_gene(gene, gene_to_panels, hgncid_to_gene)
-        genes.append(gene_obj)
-        if index > 30:
-            # avoid uploading too much data (specifically for SV variants)
-            # mark variant as missing data
-            variant_obj['missing_data'] = True
-            break
+        if gene.get('hgnc_id'):
+            gene_obj = build_gene(gene, gene_to_panels, hgncid_to_gene)
+            genes.append(gene_obj)
+            if index > 30:
+                # avoid uploading too much data (specifically for SV variants)
+                # mark variant as missing data
+                variant_obj['missing_data'] = True
+                break
 
     if genes:
         variant_obj['genes'] = genes
 
     # To make gene searches more effective
     if 'hgnc_ids' in variant:
-        variant_obj['hgnc_ids'] = variant['hgnc_ids']
+        variant_obj['hgnc_ids'] = [hgnc_id for hgnc_id in variant['hgnc_ids'] if hgnc_id]
 
     # Add the hgnc symbols from the database genes
     hgnc_symbols = []
@@ -202,8 +223,8 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
         gene_obj = hgncid_to_gene.get(hgnc_id)
         if gene_obj:
             hgnc_symbols.append(gene_obj['hgnc_symbol'])
-        else:
-            log.warn("missing HGNC symbol for: %s", hgnc_id)
+        # else:
+            # log.warn("missing HGNC symbol for: %s", hgnc_id)
 
     if hgnc_symbols:
         variant_obj['hgnc_symbols'] = hgnc_symbols
@@ -236,6 +257,12 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     
     if call_info.get('freebayes'):
         variant_obj['freebayes'] = call_info['freebayes']
+
+    if call_info.get('mutect'):
+        variant_obj['mutect'] = call_info['mutect']
+
+    if call_info.get('pindel'):
+        variant_obj['pindel'] = call_info['pindel']
 
     # Add the conservation
     conservation_info = variant.get('conservation', {})

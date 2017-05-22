@@ -67,8 +67,9 @@ def database(context, institute_name, user_name, user_mail):
     log.info("Setting up database %s", context.obj['mongodb'])
     log.info("Deleting previous database")
     for collection_name in adapter.db.collection_names():
-        log.info("Deleting collection %s", collection_name)
-        adapter.db.drop_collection(collection_name)
+        if not collection_name.startswith('system'):
+            log.info("Deleting collection %s", collection_name)
+            adapter.db.drop_collection(collection_name)
     log.info("Database deleted")
 
     # Build a institute with id institute_name
@@ -329,6 +330,7 @@ def setup(context):
                     port=context.obj['port'],
                     username=context.obj['username'],
                     password=context.obj['password'],
+                    mongodb = context.obj['mongodb']
                 )
     except ConnectionFailure:
         context.abort()

@@ -75,6 +75,7 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
     mongo_configs['password'] = password or configs.get('password')
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+    
     if context.invoked_subcommand not in ('setup', 'serve'):
         log.info("Setting database name to %s", mongo_configs['mongodb'])
         log.debug("Setting host to {0}".format(mongo_configs['host']))

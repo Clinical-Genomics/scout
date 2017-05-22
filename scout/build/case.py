@@ -158,7 +158,7 @@ def build_case(case_data, adapter):
     case_panels = case_data.get('gene_panels', [])
     default_panels = case_data.get('default_panels', [])
     panels = []
-
+    
     for panel_name in case_panels:
         panel_obj = adapter.gene_panel(panel_name)
         if not panel_obj:

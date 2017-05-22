@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import compounds_table %}
+{% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import flash_messages %}
 
 {% block title %}
@@ -85,8 +86,8 @@
             <td>{{ cell_rank(variant) }}</td>
             <td class="text-right">{{ variant.rank_score|int }}</td>
             <td>{{ variant.chromosome }}</td>
-            <td>{{ cell_gene(variant) }}</td>
-            <td class="text-right">{{ cell_1000g(variant) }}</td>
+            <td>{{ gene_cell(variant) }}</td>
+            <td class="text-right">{{ frequency_cell(variant) }}</td>
             <td class="text-right">{{ cell_cadd(variant) }}</td>
             <td>{{ variant.region_annotations|join(', ') }}</td>
             <td>{{ variant.functional_annotations|join(', ') }}</td>
@@ -118,28 +119,6 @@
     <!-- At least show if there are any comments written -->
     <span class="badge pull-right">*</span>
   {% endif %}
-{% endmacro %}
-
-{% macro cell_gene(variant) %}
-  {% for gene in variant.genes %}
-    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-      {{ gene.hgnc_symbol or gene.hgnc_id }}
-    </a>
-  {% endfor %}
-{% endmacro %}
-
-{% macro cell_1000g(variant) %}
-  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-    <div class='text-left'>
-      <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }} <br>
-      <strong>ExAC</strong>
-      {{ variant.exac_frequency|human_decimal if variant.exac_frequency }} <br>
-      <strong>ExAC (max)</strong>
-      {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
-    </div>
-  ">
-    {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
-  </div>
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}

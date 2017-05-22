@@ -133,7 +133,7 @@ VARIANT_CALL = (
 
 ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown')
 
-SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown'}
+SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown', 0: 'unknown'}
 REV_SEX_MAP = {value: key for key, value in SEX_MAP.items()}
 
 PHENOTYPE_MAP = {1: 'unaffected', 2: 'affected', 0: 'unknown', -9: 'unknown'}
@@ -149,6 +149,17 @@ CLINSIG_MAP = {
     6: 'drug response',
     7: 'histocompatibility',
     255: 'other'
+}
+REV_CLINSIG_MAP = {
+    'uncertain_significance': 0,
+    'not_provided': 1,
+    'benign': 2,
+    'likely_benign': 3,
+    'likely_pathogenic': 4,
+    'pathogenic': 5,
+    'drug_response': 6,
+    'histocompatibility': 7,
+    'other': 255
 }
 
 CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived")

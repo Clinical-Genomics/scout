@@ -12,7 +12,9 @@ def parse_callers(variant):
     callers = {
         'gatk': None,
         'freebayes': None,
-        'samtools': None
+        'samtools': None,
+        'mutect': None,
+        'pindel': None,
     }
     raw_info = variant.INFO.get('set')
     if raw_info:
@@ -35,4 +37,11 @@ def parse_callers(variant):
                     callers['freebayes'] = 'Filtered'
             elif call in ['gatk', 'samtools', 'freebayes']:
                 callers[call] = 'Pass'
+    # The following is parsing of a custom made merge
+    other_info = variant.INFO.get('FOUND_IN')
+    if other_info:
+        for info in other_info.split(','):
+            called_by = info.split('|')[0]
+            callers[called_by] = 'Pass'
+
     return callers

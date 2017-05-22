@@ -14,7 +14,8 @@ def test_parse_clnsig():
     clnsig_annotations = parse_clnsig(
         acc=variant['info_dict']['CLNACC'], 
         sig=variant['info_dict']['CLNSIG'], 
-        revstat=variant['info_dict']['CLNREVSTAT']
+        revstat=variant['info_dict']['CLNREVSTAT'],
+        transcripts=[]
     )
     
     ## THEN assert that they where parsed correct

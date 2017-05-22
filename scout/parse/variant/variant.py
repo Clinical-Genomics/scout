@@ -14,6 +14,8 @@ from .callers import parse_callers
 from .rank_score import parse_rank_score
 from .coordinates import parse_coordinates
 from .models import parse_genetic_models
+from .transcript import parse_transcripts
+from .deleteriousness import parse_cadd
 
 from scout.exceptions import VcfError
 
@@ -21,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def parse_variant(variant, case, variant_type='clinical', 
                  rank_results_header=None, vep_header=None, 
-                 individual_positions=None):
+                 individual_positions=None, category=None):
     """Return a parsed variant
 
         Get all the necessary information to build a variant object
@@ -34,6 +36,7 @@ def parse_variant(variant, case, variant_type='clinical',
         vep_header(list)
         individual_positions(dict): Explain what position each individual has 
                                     in vcf
+        category(str): 'snv', 'sv' or 'cancer'
 
     Returns:
         parsed_variant(dict): Parsed variant
@@ -63,11 +66,12 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['variant_type'] = variant_type
     # category is sv or snv
     # cyvcf2 knows if it is a sv, indel or snv variant
-    category = variant.var_type
-    if category == 'indel':
-        category = 'snv'
-    if category == 'snp':
-        category = 'snv'
+    if not category:
+        category = variant.var_type
+        if category == 'indel':
+            category = 'snv'
+        if category == 'snp':
+            category = 'snv'
 
     parsed_variant['category'] = category
     #sub category is 'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv'
@@ -142,12 +146,13 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['samples'] = samples
 
     ################# Add the compound information #################
-
-    parsed_variant['compounds'] = parse_compounds(
+    compounds = parse_compounds(
                                 compound_info=variant.INFO.get('Compounds'),
                                 case=case,
                                 variant_type=variant_type
                                 )
+    if compounds:
+        parsed_variant['compounds'] = compounds 
 
     ################# Add the inheritance patterns #################
 
@@ -155,22 +160,32 @@ def parse_variant(variant, case, variant_type='clinical',
     if genetic_models:
         parsed_variant['genetic_models'] = genetic_models
 
-    # Add the clinsig prediction
-    clnsig_predictions = parse_clnsig(
-        acc=variant.INFO.get('CLNACC'),
-        sig=variant.INFO.get('CLNSIG'),
-        revstat=variant.INFO.get('CLNREVSTAT'),
-        )
-    
-    if clnsig_predictions:
-        parsed_variant['clnsig'] = clnsig_predictions
-
     ################# Add the gene and transcript information #################
-    gene_info = []
+    raw_transcripts = []
     if vep_header:
         vep_info = variant.INFO.get('CSQ')
         if vep_info:
-            gene_info = parse_genes(vep_info, vep_header)
+            raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
+                               for transcript_info in vep_info.split(','))
+            
+    
+    parsed_transcripts = []
+    dbsnp_ids = set()
+    cosmic_ids = set()
+    for parsed_transcript in parse_transcripts(raw_transcripts, parsed_variant['alternative']):
+        parsed_transcripts.append(parsed_transcript)
+        for dbsnp in parsed_transcript.get('dbsnp', []):
+            dbsnp_ids.add(dbsnp)
+        for cosmic in parsed_transcript.get('cosmic', []):
+            cosmic_ids.add(cosmic)
+    
+    if (dbsnp_ids and not parsed_variant['dbsnp_id']):
+        parsed_variant['dbsnp_id'] = ';'.join(dbsnp_ids)
+    
+    if cosmic_ids:
+        parsed_variant['cosmic_ids'] = list(cosmic_ids)
+
+    gene_info = parse_genes(parsed_transcripts)
 
     parsed_variant['genes'] = gene_info
 
@@ -181,22 +196,35 @@ def parse_variant(variant, case, variant_type='clinical',
 
     parsed_variant['hgnc_ids'] = list(hgnc_ids)
 
+    ################# Add the clinsig prediction #################
+    clnsig_predictions = parse_clnsig(
+        acc=variant.INFO.get('CLNACC'),
+        sig=variant.INFO.get('CLNSIG'),
+        revstat=variant.INFO.get('CLNREVSTAT'),
+        transcripts = parsed_transcripts
+        )
+    
+    if clnsig_predictions:
+        parsed_variant['clnsig'] = clnsig_predictions
+
     ################# Add the frequencies #################
-    frequencies = parse_frequencies(variant)
+    frequencies = parse_frequencies(variant, parsed_transcripts)
     
     parsed_variant['frequencies'] = frequencies
 
     # parse out old local observation count
-    parsed_variant['local_obs_old'] = (int(variant.INFO.get('Obs'))
-                                if variant.INFO.get('Obs') else None)
+    local_obs_old = variant.INFO.get('Obs')
+    if local_obs_old:
+        parsed_variant['local_obs_old'] = int(local_obs_old)
 
-    parsed_variant['local_obs_hom_old'] = (int(variant.INFO.get('Hom'))
-                                    if variant.INFO.get('Hom') else None)
+    local_obs_hom_old = variant.INFO.get('Hom')
+    if local_obs_hom_old:
+        parsed_variant['local_obs_hom_old'] = int(local_obs_hom_old)
 
     ###################### Add the severity predictions ######################
-    cadd = variant.INFO.get('CADD')
+    cadd = parse_cadd(variant, parsed_transcripts)
     if cadd:
-        parsed_variant['cadd_score'] = float(cadd)
+        parsed_variant['cadd_score'] = cadd
 
     spidex = variant.INFO.get('SPIDEX')
     if spidex:

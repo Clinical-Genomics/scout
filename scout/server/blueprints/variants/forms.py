@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField)
+                     HiddenField, IntegerField)
 from wtforms.widgets import TextInput
 
 from scout.constants import CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS, SV_TYPES
@@ -29,7 +29,7 @@ class TagListField(Field):
 
 
 class FiltersForm(FlaskForm):
-    variant_type = HiddenField()
+    variant_type = HiddenField(default='clinical')
     gene_panels = SelectMultipleField(choices=[])
     hgnc_symbols = TagListField()
 
@@ -43,6 +43,13 @@ class FiltersForm(FlaskForm):
 
     thousand_genomes_frequency = DecimalField('1000 Genomes', places=2)
     exac_frequency = DecimalField('ExAC', places=2)
+
+
+class CancerFiltersForm(FiltersForm):
+    """docstring for CancerFiltersForm"""
+    depth = IntegerField('Depth >')
+    alt_count = IntegerField('Min alt count >')
+    control_frequency = DecimalField('Control freq. <', places=2)
 
 
 class SvFiltersForm(FlaskForm):

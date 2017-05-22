@@ -18,9 +18,15 @@
     </a>
   </li>
   <li>
-    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
-      {{ variant.variant_type|capitalize }} SNV and INDELs
-    </a>
+    {% if cancer %}
+      <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} cancer variants
+      </a>
+    {% else %}
+      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} SNV and INDELs
+      </a>
+    {% endif %}
   </li>
   <li class="active">
     <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>

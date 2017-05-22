@@ -58,7 +58,7 @@ class VariantHandler(object):
             transcripts_dict = {}
             if hgnc_gene:
                 # Add transcript information from the hgnc gene
-                for transcript in hgnc_gene.get('transcripts',[]):
+                for transcript in hgnc_gene.get('transcripts', []):
                     tx_id = transcript['ensembl_transcript_id']
                     transcripts_dict[tx_id] = transcript
 
@@ -138,9 +138,8 @@ class VariantHandler(object):
 
         return variant_obj
 
-    def variants(self, case_id, query=None, variant_ids=None,
-                 category='snv', nr_of_variants=10, skip=0,
-                 sort_key='variant_rank'):
+    def variants(self, case_id, query=None, variant_ids=None, category='snv',
+                 nr_of_variants=10, skip=0, sort_key='variant_rank'):
         """Returns variants specified in question for a specific case.
 
         If skip not equal to 0 skip the first n variants.
@@ -149,7 +148,7 @@ class VariantHandler(object):
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
             variant_ids(List[str])
-            category(str): 'sv' or 'snv'
+            category(str): 'sv' or 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: 'variant_rank' or 'rank_score'
@@ -402,7 +401,7 @@ class VariantHandler(object):
                       gene_obj=None):
         """Load variants for a case into scout.
 
-        Load all variants for a specific analysis type and category into scout.
+        Load the variants for a specific analysis type and category into scout.
         If no region is specified, load all variants above rank score threshold
         If region or gene is specified, load all variants from that region
         disregarding variant rank(if not specified)
@@ -411,7 +410,7 @@ class VariantHandler(object):
             case_obj(dict): A case from the scout database
             variant_type(str): 'clinical' or 'research'. Default: 'clinical'
             category(str): 'snv' or 'sv'. Default: 'snv'
-            rank_threshold(float): Only load variants above this score. Default: 5
+            rank_threshold(float): Only load variants above this score. Default: 0
             chrom(str): Load variants from a certain chromosome
             start(int): Specify the start position
             end(int): Specify the end position
@@ -435,11 +434,16 @@ class VariantHandler(object):
                 variant_file = case_obj['vcf_files'].get('vcf_snv')
             elif category == 'sv':
                 variant_file = case_obj['vcf_files'].get('vcf_sv')
+            elif category == 'cancer':
+                # Currently this implies a paired tumor normal
+                variant_file = case_obj['vcf_files'].get('vcf_cancer')
         elif variant_type == 'research':
             if category == 'snv':
                 variant_file = case_obj['vcf_files'].get('vcf_snv_research')
             elif category == 'sv':
                 variant_file = case_obj['vcf_files'].get('vcf_sv_research')
+            elif category == 'cancer':
+                variant_file = case_obj['vcf_files'].get('vcf_cancer_research')
 
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
@@ -449,6 +453,15 @@ class VariantHandler(object):
         # Parse the neccessary headers from vcf file
         rank_results_header = parse_rank_results_header(vcf_obj)
         vep_header = parse_vep_header(vcf_obj)
+
+        # Dictionary for cancer analysis
+        sample_info = {}
+        if category == 'cancer':
+            for ind in case_obj['individuals']:
+                if ind['phenotype'] == 2:
+                    sample_info[ind['individual_id']] = 'case'
+                else:
+                    sample_info[ind['individual_id']] = 'control'
 
         # This is a dictionary to tell where ind are in vcf
         individual_positions = {}
@@ -467,7 +480,7 @@ class VariantHandler(object):
                 raise SyntaxError("Specify chrom start and end")
             region = "{0}:{1}-{2}".format(chrom, start, end)
         else:
-            rank_threshold = rank_threshold or 5
+            rank_threshold = rank_threshold or 0
 
         logger.info("Start inserting variants into database")
         start_insertion = datetime.now()
@@ -487,7 +500,7 @@ class VariantHandler(object):
                     case_obj['display_name']
                 )
 
-                if rank_score > rank_threshold:
+                if (not rank_score or rank_score > rank_threshold):
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
                         variant=variant,
@@ -495,14 +508,17 @@ class VariantHandler(object):
                         variant_type=variant_type,
                         rank_results_header=rank_results_header,
                         vep_header = vep_header,
-                        individual_positions = individual_positions
+                        individual_positions = individual_positions,
+                        category=category,
                     )
+                    
                     # Build the variant object
                     variant_obj = build_variant(
                         variant=parsed_variant,
                         institute_id=institute_obj['_id'],
                         gene_to_panels=gene_to_panels,
                         hgncid_to_gene=hgncid_to_gene,
+                        sample_info=sample_info
                     )
                     try:
                         self.load_variant(variant_obj)
@@ -524,7 +540,8 @@ class VariantHandler(object):
             logger.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
-
+        
+        logger.info("Nr variants inserted: %s", nr_inserted)
         return nr_inserted
 
     def overlapping(self, variant_obj):

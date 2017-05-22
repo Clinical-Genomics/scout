@@ -180,6 +180,33 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
+    def load_case(self, case_obj, update=False):
+        """Load a case into the database
+        
+        Check if the case exists, if not add it to the database.
+        
+        Args:
+            case_obj(dict)
+            update(bool)
+        
+        Returns:
+            case_obj(dict)
+        """
+        logger.info('Loading case %s into database'.format(case_obj['display_name']))
+        # Check if case exists in database
+        existing_case = self.case(case_obj['_id'])
+        
+        if existing_case:
+            if update:
+                self.update_case(case_obj)
+            else:
+                raise IntegrityError("Case {0} already exists in database".format(
+                                     case_obj['case_id']))
+        else:
+            self.add_case(case_obj)
+        
+        return case_obj
+
     def add_case(self, case_obj):
         """Add a case to the database
            If the case already exists exception is raised
