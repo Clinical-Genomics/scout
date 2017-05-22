@@ -84,6 +84,13 @@
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
+      {% if case.individuals|length > 1 %}
+        <span class="label label-info">
+          {% for item in case.individuals %}
+            <span class="small glyphicon glyphicon-user"></span>
+          {% endfor %}
+        </span>
+      {% endif %}
       {% for user in case.assignees %}
         <span class="badge pull-right">{{ user.name }}</span>
       {% endfor %}
