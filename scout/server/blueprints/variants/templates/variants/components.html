@@ -6,7 +6,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro frequency_cell(variant, exac=True) %}
+{% macro frequency_cell(variant, exac=False) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       <strong>1000G</strong>: {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }} <br>
