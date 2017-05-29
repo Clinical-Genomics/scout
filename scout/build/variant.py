@@ -163,6 +163,15 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if 'mate_id' in variant:
         variant_obj['mate_id'] = variant['mate_id']
+    
+    if 'cytoband_start' in variant:
+        variant_obj['cytoband_start'] = variant['cytoband_start']
+
+    if 'cytoband_end' in variant:
+        variant_obj['cytoband_end'] = variant['cytoband_end']
+    
+    if 'end_chrom' in variant:
+        variant_obj['end_chrom'] = variant['end_chrom']
 
     gt_types = []
     for sample in variant.get('samples', []):
