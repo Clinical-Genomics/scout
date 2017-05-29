@@ -775,6 +775,7 @@
           <tr>
             <th>Variant</th>
             <th>Gene</th>
+	    <th>Type</th>
             <th>Combined score</th>
             <th>Rank score</th>
             <th>Length</th>
@@ -792,9 +793,11 @@
                 </a>
               </td>
               <td>{{ sv_variant.hgnc_symbols|join(', ')|truncate(40, True) }}</td>
-              <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
+              <td>{{ sv_variant.sub_category|upper }}</td>
+	      <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.length }}</td>
+	      
               <td>{{ sv_variant.region_annotations|join(', ')|truncate(40, True) }}</td>
               <td>{{ sv_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>
             </tr>
