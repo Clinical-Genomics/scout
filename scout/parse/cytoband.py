@@ -49,6 +49,13 @@ def cli(infile):
     print("Check some coordinates:")
     
     print("checking chrom 1 pos 2")
+    intervals = cytobands['1'][2]
+    for interval in intervals:
+        print(interval)
+        print(interval.begin)
+        print(interval.end)
+        print(interval.data)
+        # print(interval.__dict__)
     print(cytobands['1'][2])
     
     print("checking chrom 8 pos 101677777")
