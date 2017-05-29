@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from scout.parse.cytoband import parse_cytoband
+from scout.resources import cytobands_path
+from scout.utils.handle import get_file_handle
+
+cytobands_handle = get_file_handle(cytobands_path)
+
+CYTOBANDS = parse_cytoband(cytobands_handle)
+
 # These are the valid SO terms with corresponfing severity rank
 SO_TERMS = {
     'transcript_ablation': {'rank':1, 'region':'exonic'},

@@ -52,9 +52,12 @@ def parse_variant(variant, case, variant_type='clinical',
     case_id = case['_id']
     case_name = case['display_name']
 
+    chrom = variant.CHROM
+    if (chrom.startswith('chr') or chrom.startswith('CHR')):
+        chrom = chrom[3:]
     # Builds a dictionary with the different ids that are used
     parsed_variant['ids'] = parse_ids(
-        chrom=variant.CHROM, 
+        chrom=chrom, 
         pos=variant.POS, 
         ref=variant.REF, 
         alt=variant.ALT[0], 
@@ -101,7 +104,7 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['mate_id'] = None
 
     ################# Position specific #################
-    parsed_variant['chromosome'] = variant.CHROM
+    parsed_variant['chromosome'] = chrom
     # position = start
     parsed_variant['position'] = int(variant.POS)
 
@@ -114,6 +117,7 @@ def parse_variant(variant, case, variant_type='clinical',
     mate_id = variant.INFO.get('MATEID')
 
     coordinates = parse_coordinates(
+        chrom = parsed_variant['chromosome'],
         ref=parsed_variant['reference'],
         alt=parsed_variant['alternative'],
         position=parsed_variant['position'],
@@ -128,6 +132,9 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['mate_id'] = coordinates['mate_id']
     parsed_variant['end'] = int(coordinates['end'])
     parsed_variant['length'] = int(coordinates['length'])
+    parsed_variant['end_chrom'] = coordinates['end_chrom']
+    parsed_variant['cytoband_start'] = coordinates['cytoband_start']
+    parsed_variant['cytoband_end'] = coordinates['cytoband_end']
 
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
