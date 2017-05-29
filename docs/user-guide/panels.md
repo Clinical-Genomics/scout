@@ -9,17 +9,17 @@ A case can then be associated with one or several gene panels.
 
 ### File format
 
-The gene panel is a tab separated text file with a header that describes the columns and one line for each gene entry.
+The gene panel is a semi colon separated text file with a header that describes the columns and one line for each gene entry.
 
 The columns that will be used by scout is the following:
 
-- **hgnc_id(int)** This identifies the gene. *Mandatory*
-- **hgnc_symbol(str)** This is used for sanity check when humans look at the file. *Optional*
-- **disease_associated_transcripts(str)** ','-separated list of manually curated transcripts. *Optional*
-- **genetic_disease_models(str)** ','-separated list of manually curated inheritance patterns that are followed for a gene. *Optional*
-- **mosaicism(str)** If a gene is known to be associated with mosaicism this is annotated. *Optional*
-- **reduced_penetrance(str)** If a gene is known to have reduced penetrance this is annotated. *Optional*
-- **database_entry_version(str)** The database entry version is a way to track when a a gene was added or modified. *Optional*
+- **hgnc_id** This identifies the gene. *Mandatory*. (integer)
+- **hgnc_symbol** This is used for sanity check when humans look at the file. *Optional*. (string)
+- **disease_associated_transcripts** ','-separated list of manually curated transcripts. *Optional*. (string)
+- **genetic_disease_models** ','-separated list of manually curated inheritance patterns that are followed for a gene. *Optional*. (string)
+- **mosaicism** If a gene is known to be associated with mosaicism this is annotated. *Optional*. (string)
+- **reduced_penetrance** If a gene is known to have reduced penetrance this is annotated. *Optional*. (string)
+- **database_entry_version** The database entry version is a way to track when a a gene was added or modified. *Optional*. (string)
 
 Each gene in a gene panel have to be identified with a hgnc id
 
