@@ -114,7 +114,11 @@
     {{ variant.variant_rank }}
   </a>
   {% set comment_count = variant.comments.count() %}
-  {% if variant.manual_rank %}
+  {% if variant.acmg_classification %}
+    <span class="badge pull-right" title="{{ variant.acmg_classification }}">
+      {{ variant.acmg_short }}
+    </span>
+  {% elif variant.manual_rank %}
     <span class="badge pull-right">{{ variant.manual_rank }}</span>
   {% elif comment_count > 0 %}
     <!-- At least show if there are any comments written -->

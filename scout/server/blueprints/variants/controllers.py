@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 import os.path
 
 from flask import url_for
 from flask_mail import Message
 
-from scout.constants import CLINSIG_MAP
+from scout.constants import CLINSIG_MAP, ACMG_MAP, ACMG_SHORT_MAP
+from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
+from scout.utils.acmg import get_acmg
 from .forms import CancerFiltersForm
 from .acmg import ACMG_CRITERIA
 
@@ -112,6 +113,10 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj['genes']))
 
+    if isinstance(variant_obj.get('acmg_classification'), int):
+        variant_obj['acmg_classification'] = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_short'] = ACMG_SHORT_MAP[variant_obj['acmg_classification']]
+
     return variant_obj
 
 
@@ -179,7 +184,9 @@ def variant(store, institute_obj, case_obj, variant_id):
     if variant_obj is None:
         return None
     variant_case(store, case_obj, variant_obj)
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id']))
+    for event in events:
+        event['verb'] = VERBS_MAP[event['verb']]
     other_causatives = []
     for other_variant in store.other_causatives(case_obj, variant_obj):
         case_display_name = other_variant['case_id'].split('-', 1)[-1]
@@ -230,16 +237,6 @@ def variant(store, institute_obj, case_obj, variant_id):
                             variant_obj in store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'ACMG_OPTIONS': ACMG_OPTIONS,
-        'acmg_classifications': [{
-            'user': {
-                'name': 'Robin Andeer',
-            },
-            'category': {'title': 'Likely Pathogenic'},
-            'created_at': datetime.datetime.now(),
-            'variant': variant_obj,
-            'case': case_obj,
-            'institute': institute_obj,
-        }]
     }
 
 
@@ -541,3 +538,11 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
                 CRITERIA=ACMG_CRITERIA)
+
+
+def variant_acmg_post(store, institute_id, case_name, variant_id, criteria):
+    """Calculate an ACMG classification based on a list of criteria."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    classification = get_acmg(criteria)
+    return classification

@@ -107,11 +107,11 @@ def variant_update(institute_id, case_name, variant_id):
         new_manual_rank = int(request.form['manual_rank'])
         store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
                                  new_manual_rank)
-        flash("updated manual rank: {}".format(new_manual_rank))
+        flash("updated manual rank: {}".format(new_manual_rank), 'info')
     elif request.form.get('acmg_classification'):
-        new_acmg = int(request.form['acmg_classification'])
+        new_acmg = request.form['acmg_classification']
         store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
-        flash("updated ACMG classification: {}".format(new_acmg))
+        flash("updated ACMG classification: {}".format(new_acmg), 'info')
     return redirect(request.referrer)
 
 
@@ -137,9 +137,16 @@ def cancer_variants(institute_id, case_name):
     return data
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg')
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET', 'POST'])
 @templated('variants/acmg.html')
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
-    data = controllers.variant_acmg(store, institute_id, case_name, variant_id)
-    return data
+    if request.method == 'GET':
+        data = controllers.variant_acmg(store, institute_id, case_name, variant_id)
+        return data
+    else:
+        criteria = request.form.getlist('criteria')
+        acmg = controllers.variant_acmg_post(store, institute_id, case_name, variant_id, criteria)
+        flash("classified as: {}".format(acmg), 'info')
+        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                                variant_id=variant_id))
