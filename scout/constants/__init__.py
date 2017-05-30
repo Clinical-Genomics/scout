@@ -132,6 +132,14 @@ ACMG_TERMS = (
   'benign'
 )
 
+ACMG_MAP = {
+  4: 'Pathogenic',
+  3: 'Likely Pathogenic',
+  2: 'Likely Benign',
+  1: 'Benign',
+  0: 'Uncertain Significance'
+}
+
 VARIANT_CALL = (
     'Pass',
     'Filtered',
