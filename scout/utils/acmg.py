@@ -2,7 +2,7 @@ def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
     """Check if the criterias for Pathogenic is fullfilled
 
     The following are descriptions of Pathogenic clasification from ACMG paper:
-    
+
     Pathogenic
       (i) 1 Very strong (PVS1) AND
         (a) ≥1 Strong (PS1–PS4) OR
@@ -14,13 +14,13 @@ def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
         (a)≥3 Moderate (PM1–PM6) OR
         (b)2 Moderate (PM1–PM6) AND ≥2 Supporting (PP1–PP5) OR
         (c)1 Moderate (PM1–PM6) AND ≥4 supporting (PP1–PP5)
-    
+
     Args:
         pvs(bool): Pathogenic Very Strong
         ps_terms(list(str)): Pathogenic Strong terms
         pm_terms(list(str)): Pathogenic Moderate terms
         pp_terms(list(str)): Pathogenic Supporting terms
-    
+
     Returns:
         bool: if classification indicates Pathogenic level
     """
@@ -57,7 +57,7 @@ def is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
     """Check if the criterias for Likely Pathogenic is fullfilled
 
     The following are descriptions of Likely Pathogenic clasification from ACMG paper:
-    
+
     Likely pathogenic
       (i) 1 Very strong (PVS1) AND 1 moderate (PM1– PM6) OR
       (ii) 1 Strong (PS1–PS4) AND 1–2 moderate (PM1–PM6) OR
@@ -65,13 +65,13 @@ def is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
       (iv)  ≥3 Moderate (PM1–PM6) OR
       (v) 2 Moderate (PM1–PM6) AND ≥2 supporting (PP1–PP5) OR
       (vi) 1 Moderate (PM1–PM6) AND ≥4 supportin (PP1–PP5)
-    
+
     Args:
         pvs(bool): Pathogenic Very Strong
         ps_terms(list(str)): Pathogenic Strong terms
         pm_terms(list(str)): Pathogenic Moderate terms
         pp_terms(list(str)): Pathogenic Supporting terms
-    
+
     Returns:
         bool: if classification indicates Likely Pathogenic level
     """
@@ -79,7 +79,7 @@ def is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
         # Likely Pathogenic (i):
         if pm_terms:
             return True
-    
+
     if ps_terms:
         # Likely Pathogenic (ii):
         if pm_terms:
@@ -87,7 +87,7 @@ def is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
         # Likely Pathogenic (iii):
         if len(ps_terms) >= 2:
             return True
-    
+
     if pm_terms:
         # Likely Pathogenic (iv):
         if len(pm_terms) >= 3:
@@ -104,17 +104,17 @@ def is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
 
 def is_benign(ba, bs_terms):
     """Check if criterias for Benign are fullfilled
-    
+
     The following are descriptions of Benign clasification from ACMG paper:
-    
+
     Benign
       (i) 1 Stand-alone (BA1) OR
       (ii) ≥2 Strong (BS1–BS4)
-    
+
     Args:
         ba(bool): Stand Alone term for evidence of benign impact
         bs_terms(list(str)): Terms that indicate strong evidence for benign variant
-    
+
     Returns:
         bool: if classification indicates Benign level
     """
@@ -128,17 +128,17 @@ def is_benign(ba, bs_terms):
 
 def is_likely_benign(bs_terms, bp_terms):
     """Check if criterias for Likely Benign are fullfilled
-    
+
     The following are descriptions of Likely Benign clasification from ACMG paper:
-    
+
     Likely Benign
       (i) 1 Strong (BS1–BS4) and 1 supporting (BP1– BP7) OR
       (ii) ≥2 Supporting (BP1–BP7)
-    
+
     Args:
         bs_terms(list(str)): Terms that indicate strong evidence for benign variant
         bp_terms(list(str)): Terms that indicate supporting evidence for benign variant
-    
+
     Returns:
         bool: if classification indicates Benign level
     """
@@ -154,10 +154,10 @@ def is_likely_benign(bs_terms, bp_terms):
 
 def get_acmg(acmg_terms):
     """Use the algorithm described in ACMG paper to get a ACMG calssification
-    
+
     Args:
         acmg_terms(set(str)): A collection of prediction terms
-    
+
     Returns:
         prediction(int):
                 0 - Uncertain Significanse
@@ -196,25 +196,24 @@ def get_acmg(acmg_terms):
             bs_terms.append(term)
         elif term.startswith('BP'):
             bp_terms.append(term)
-    
+
     # We need to start by checking for Pathogenecity
     pathogenic = is_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
     likely_pathogenic = is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
     benign = is_benign(ba, bs_terms)
     likely_benign = is_likely_benign(bs_terms, bp_terms)
-    
+
     if (pathogenic or likely_pathogenic):
         if (benign or likely_benign):
-            prediction = 0
+            prediction = 'uncertain_significance'
         elif pathogenic:
-            prediction = 4
+            prediction = 'pathogenic'
         else:
-            prediction = 3
+            prediction = 'likely_pathogenic'
     else:
         if benign:
-            prediction = 1
+            prediction = 'benign'
         if likely_benign:
-            prediction = 2
+            prediction = 'likely_benign'
 
     return prediction
-        

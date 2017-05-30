@@ -64,6 +64,7 @@ VERBS_MAP = {
   "update_diagnosis": "updated diagnosis for",
   "add_cohort": "updated cohort for",
   "remove_cohort": "removed cohort for",
+  "acmg": "updated ACMG classification for",
 }
 
 VERBS = list(VERBS_MAP.keys())

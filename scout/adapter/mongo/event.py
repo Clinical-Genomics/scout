@@ -4,7 +4,7 @@ from datetime import datetime
 from bson import ObjectId
 import pymongo
 
-from scout.constants import CASE_STATUSES
+from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
 logger = logging.getLogger(__name__)
 
@@ -855,6 +855,41 @@ class EventHandler(object):
             {'_id':variant['_id']},
             {'$set': {'manual_rank': manual_rank}},
             return_document = pymongo.ReturnDocument.AFTER
+        )
+
+        logger.debug("Variant updated")
+        return updated_variant
+
+    def update_acmg(self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str):
+        """Create an event for updating the ACMG classification of a variant.
+
+        Arguments:
+            institute_obj (dict): A Institute object
+            case_obj (dict): Case object
+            user_obj (dict): A User object
+            link (str): The url to be used in the event
+            variant_obj (dict): A variant object
+            acmg_str (str): The new ACMG classification string
+
+        Returns:
+            updated_variant
+        """
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category='variant',
+            verb='acmg',
+            variant=variant_obj,
+            subject=variant_obj['display_name'],
+        )
+        logger.info("Setting ACMG to {} for: {}".format(acmg_str, variant_obj['display_name']))
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant_obj['_id']},
+            {'$set': {'acmg_classification': REV_ACMG_MAP[acmg_str]}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         logger.debug("Variant updated")
