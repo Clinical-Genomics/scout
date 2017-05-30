@@ -96,17 +96,23 @@ def sv_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/priority',
-                   methods=['POST'])
-def manual_rank(institute_id, case_name, variant_id):
-    """Update the manual variant rank for a variant."""
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
+def variant_update(institute_id, case_name, variant_id):
+    """Update user-defined information about a variant: manual rank & ACMG."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
-    new_manual_rank = int(request.form['manual_rank'])
     link = request.referrer
-    store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
-                             new_manual_rank)
+
+    if request.form.get('manual_rank'):
+        new_manual_rank = int(request.form['manual_rank'])
+        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
+                                 new_manual_rank)
+        flash("updated manual rank: {}".format(new_manual_rank))
+    elif request.form.get('acmg_classification'):
+        new_acmg = int(request.form['acmg_classification'])
+        store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
+        flash("updated ACMG classification: {}".format(new_acmg))
     return redirect(request.referrer)
 
 
@@ -129,4 +135,12 @@ def sanger(institute_id, case_name, variant_id):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     data = controllers.cancer_variants(store, request.args, institute_id, case_name)
+    return data
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg')
+@templated('variants/acmg.html')
+def variant_acmg(institute_id, case_name, variant_id):
+    """ACMG classification form."""
+    data = controllers.variant_acmg(store, institute_id, case_name, variant_id)
     return data

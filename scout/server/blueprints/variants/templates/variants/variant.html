@@ -279,7 +279,7 @@
       </li>
     </ul>
     <div class="panel-body">
-      <form action="{{ url_for('variants.manual_rank', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label>Priority</label>
         <div class="row">
           <div class="col-xs-8">
@@ -298,6 +298,16 @@
         </div>
       </form>
     </div>
+    <div class="panel-body">
+      {{ acmg_form() }}
+    </div>
+    {% if acmg_classifications %}
+      <ul class="list-group">
+        {% for classification in acmg_classifications %}
+          {{ acmg_classification_item(classification) }}
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -797,7 +807,7 @@
 	      <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.length }}</td>
-	      
+
               <td>{{ sv_variant.region_annotations|join(', ')|truncate(40, True) }}</td>
               <td>{{ sv_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>
             </tr>
@@ -1019,6 +1029,38 @@
       </div>
     {% endfor %}
   </div>
+{% endmacro %}
+
+{% macro acmg_form(selected=None) %}
+  <label>ACMG classification</label>
+  <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <div class="d-flex justify-content-between">
+      {% for short_name, category, title in ACMG_OPTIONS %}
+        <button class="btn btn-{{ 'info' if (category == selected) else 'default' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ category }}" title="{{ title }}">
+          {{ short_name }}
+        </button>
+      {% endfor %}
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro acmg_classification_item(data) %}
+  {% set current_variant = (data.variant._id == variant._id) %}
+  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
+    <div class="d-flex justify-content-between">
+      <span>{{ data.category.title }}</span>
+      <span>
+        {% if current_variant %}
+          <small>(current)</small>
+        {% else %}
+          <a href="{{ url_for('variants.variant', institute_id=data.institute._id, case_name=data.case.display_name, variant_id=data.variant._id) }}">
+            <small>{{ data.case.display_name }}</small>
+          </a>
+        {% endif %}
+      </span>
+    </div>
+    <small class="text-muted">{{ data.user.name }} on {{ data.created_at.date() }}</small>
+  </li>
 {% endmacro %}
 
 {% block scripts %}

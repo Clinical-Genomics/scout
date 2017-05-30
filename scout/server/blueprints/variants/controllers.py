@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 import os.path
 
@@ -8,9 +9,17 @@ from flask_mail import Message
 from scout.constants import CLINSIG_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
+from .acmg import ACMG_CRITERIA
 
 log = logging.getLogger(__name__)
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
+ACMG_OPTIONS = [
+    ('P', 'pathogenic', 'Pathogenic'),
+    ('LP', 'likely_pathogenic', 'Likely Pathogenic'),
+    ('US', 'uncertain_significance', 'Uncertain Significance'),
+    ('LB', 'likely_benign', 'Likely Benign'),
+    ('B', 'benign', 'Benign'),
+]
 
 
 class MissingSangerRecipientError(Exception):
@@ -221,6 +230,17 @@ def variant(store, institute_obj, case_obj, variant_id):
         'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
                             store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'ACMG_OPTIONS': ACMG_OPTIONS,
+        'acmg_classifications': [{
+            'user': {
+                'name': 'Robin Andeer',
+            },
+            'category': {'title': 'Likely Pathogenic'},
+            'created_at': datetime.datetime.now(),
+            'variant': variant_obj,
+            'case': case_obj,
+            'institute': institute_obj,
+        }]
     }
 
 
@@ -503,3 +523,11 @@ def cancer_variants(store, request_args, institute_id, case_name):
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+
+def variant_acmg(store, institute_id, case_name, variant_id):
+    """Collect data relevant for rendering ACMG classification form."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
+                CRITERIA=ACMG_CRITERIA)
