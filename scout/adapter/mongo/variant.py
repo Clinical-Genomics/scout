@@ -563,6 +563,7 @@ class VariantHandler(object):
         region_start = None
         region_end = None
         chromosome = variant_obj['chromosome']
+
         for gene_id in variant_obj['hgnc_ids']:
             gene_obj = self.hgnc_gene(gene_id)
             if gene_obj:
@@ -579,15 +580,16 @@ class VariantHandler(object):
                     if gene_end > region_end:
                         region_end = gene_end
 
-        query = {
-            'case_id': variant_obj['case_id'],
-            'variant_type': variant_obj['variant_type'],
-            'chrom': chromosome,
-            'start': region_start,
-            'end': region_end,
-            'category': category,
-        }
-
+        query = self.build_query(
+            case_id = variant_obj['case_id'], 
+            query = {
+                'variant_type': variant_obj['variant_type'],
+                'chrom': chromosome,
+                'start': region_start,
+                'end': region_end,
+                }, 
+            category=category)
+        
         sort_key = [('rank_score', pymongo.DESCENDING)]
         variants = self.variant_collection.find(query).sort(sort_key)
 
