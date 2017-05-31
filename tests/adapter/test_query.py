@@ -200,10 +200,6 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         hgnc_ids=[1968]
     )
     populated_database.load_variant(sv_one)
-    # for gene in populated_database.all_genes():
-    #     # print(gene)
-    #     if gene['chromosome'] == "1":
-    #         print(gene)
     ## THEN make sure that the variants where inserted
     result = populated_database.variants(case_id, category='snv')
     # Thow snvs where loaded
