@@ -545,17 +545,48 @@ class VariantHandler(object):
         return nr_inserted
 
     def overlapping(self, variant_obj):
-        """Return ovelapping variants
+        """Return ovelapping variants.
+        
+        Look at the genes that a variant overlapps to get coordinates.
+        Then return all variants that overlap these coordinates.
 
-            if variant_obj is sv it will return the overlapping snvs and oposite
+        If variant_obj is sv it will return the overlapping snvs and oposite
+        
+        Args:
+            variant_obj(dict)
+        
+        Returns:
+            variants(iterable(dict))
         """
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
+
+        region_start = None
+        region_end = None
+        chromosome = variant_obj['chromosome']
+        for gene_id in variant_obj['hgnc_ids']:
+            gene_obj = self.hgnc_gene(gene_id)
+            gene_start = gene_obj['start']
+            gene_end = gene_obj['end']
+            if not region_start:
+                region_start = gene_start
+            else:
+                if gene_start < region_start:
+                    region_start = gene_start
+            if not region_end:
+                region_end = gene_end
+            else:
+                if gene_end > region_end:
+                    region_end = gene_end
+
         query = {
             'case_id': variant_obj['case_id'],
             'variant_type': variant_obj['variant_type'],
-            'hgnc_symbols': variant_obj['hgnc_symbols'],
+            'chrom': chromosome,
+            'start': region_start,
+            'end': region_end,
             'category': category,
         }
+
         sort_key = [('rank_score', pymongo.DESCENDING)]
         variants = self.variant_collection.find(query).sort(sort_key)
 
