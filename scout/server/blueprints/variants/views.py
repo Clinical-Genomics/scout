@@ -34,6 +34,11 @@ def variants(institute_id, case_name):
                             case_name=case_obj['display_name'])
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
+    # check if supplied gene symbols exist
+    for hgnc_symbol in form.hgnc_symbols.data:
+        if store.hgnc_genes(hgnc_symbol).count() == 0:
+            flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+
     # handle HPO gene list separately
     if form.data['gene_panels'] == ['hpo']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
@@ -91,17 +96,23 @@ def sv_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/priority',
-                   methods=['POST'])
-def manual_rank(institute_id, case_name, variant_id):
-    """Update the manual variant rank for a variant."""
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
+def variant_update(institute_id, case_name, variant_id):
+    """Update user-defined information about a variant: manual rank & ACMG."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
-    new_manual_rank = int(request.form['manual_rank'])
     link = request.referrer
-    store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
-                             new_manual_rank)
+
+    if request.form.get('manual_rank'):
+        new_manual_rank = int(request.form['manual_rank'])
+        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
+                                 new_manual_rank)
+        flash("updated manual rank: {}".format(new_manual_rank), 'info')
+    elif request.form.get('acmg_classification'):
+        new_acmg = request.form['acmg_classification']
+        store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
+        flash("updated ACMG classification: {}".format(new_acmg), 'info')
     return redirect(request.referrer)
 
 
@@ -125,3 +136,19 @@ def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     data = controllers.cancer_variants(store, request.args, institute_id, case_name)
     return data
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET', 'POST'])
+@templated('variants/acmg.html')
+def variant_acmg(institute_id, case_name, variant_id):
+    """ACMG classification form."""
+    if request.method == 'GET':
+        data = controllers.variant_acmg(store, institute_id, case_name, variant_id)
+        return data
+    else:
+        criteria = request.form.getlist('criteria')
+        acmg = controllers.variant_acmg_post(store, institute_id, case_name, variant_id,
+                                             current_user.email, criteria)
+        flash("classified as: {}".format(acmg), 'info')
+        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                                variant_id=variant_id))

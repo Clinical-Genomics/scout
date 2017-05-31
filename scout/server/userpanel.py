@@ -19,12 +19,12 @@ def parse_panel(csv_stream):
 
         panel_gene = dict(
             symbol=gene_row['HGNC_symbol'].strip() if gene_row.get('HGNC_symbol') else None,
-            hgnc_id=(int(gene_row['HGNC_IDnumber'].strip()) if gene_row.get('HGNC_IDnumber')
-                     else None),
+            hgnc_id=int(gene_row['HGNC_IDnumber'].strip()),
             disease_associated_transcripts=transcripts_list,
             reduced_penetrance=True if gene_row.get('Reduced_penetrance') else None,
             mosaicism=True if gene_row.get('Mosaicism') else None,
             inheritance_models=models_list,
+            database_entry_version=gene_row.get('Database_entry_version'),
         )
         genes.append(panel_gene)
 

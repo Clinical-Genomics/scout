@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }} - Classify
+{% endblock %}
+
+{% block content_main %}
+  <div class="container">
+    <form action="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <button class="btn btn-default form-control">Classify!</button>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        {% for category, criteria_group in CRITERIA.items() %}
+          <div class="flex-1 {{ 'mr-3' if not loop.last }}">
+            <h4>Evidence of {{ category }}</h4>
+
+            {% for evidence, criteria in criteria_group.items() %}
+              <ul class="list-group">
+                <li class="list-group-item">{{ evidence }}</li>
+                {% for criterion_code, criterion in criteria.items() %}
+                  <li class="list-group-item d-flex justify-content-between">
+                    <div data-toggle="tooltip" data-placement="top" title="{{ criterion.description }}">
+                      <span class="label label-info mr-1">{{ criterion_code }}</span>
+                      {{ criterion.short }}
+                    </div>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}">
+                      <label for="checkbox-{{ criterion_code }}"></label>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% macro preview() %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <span class="text-muted">Classification</span>
+      <h5>Likely Pathogenic</h5>
+    </div>
+  </div>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    })
+  </script>
+{% endblock %}

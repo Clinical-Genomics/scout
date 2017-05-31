@@ -25,13 +25,11 @@
     </div>
   </div>
 
-  {% if prio_cases %}
-    <div class="table-responsive">
-      {{ cases_table([('priority', prio_cases)]) }}
-    </div>
-  {% endif %}
-
-  <div class="table-responsive">{{ cases_table(cases) }}</div>
+  {% for group_name, case_group in cases %}
+    {% if case_group|length > 0 %}
+      <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+    {% endif %}
+  {% endfor %}
 {% endblock %}
 
 {% macro search_form() %}
@@ -59,11 +57,11 @@
   </form>
 {% endmacro %}
 
-{% macro cases_table(case_groups) %}
+{% macro cases_table(group_name, cases) %}
   <table class="table table-hover table-special">
     <thead>
       <tr>
-        <th class="col-xs-4">Case</th>
+        <th class="col-xs-4">{{ group_name|capitalize }} cases</th>
         <th class="col-xs-2">Status</th>
         <th class="col-xs-2">Analysis date</th>
         <th class="col-xs-2">Link</th>
@@ -71,16 +69,13 @@
       </tr>
     </thead>
     <tbody>
-      {% for group_id, cases in case_groups %}
-        {% for case in cases %}
-          {{ case_row(case) }}
-        {% endfor %}
-      {% endfor %}
-      {% if found_cases == 0 %}
+      {% for case in cases %}
+        {{ case_row(case) }}
+      {% else %}
         <tr>
           <td colspan="5">No cases found.</td>
         </tr>
-      {% endif %}
+      {% endfor %}
     </tbody>
   </table>
 {% endmacro %}
@@ -91,6 +86,13 @@
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
+      {% if case.individuals|length > 1 %}
+        <span class="label label-info">
+          {% for item in case.individuals %}
+            <span class="small glyphicon glyphicon-user"></span>
+          {% endfor %}
+        </span>
+      {% endif %}
       {% for user in case.assignees %}
         <span class="badge pull-right">{{ user.name }}</span>
       {% endfor %}
@@ -109,9 +111,17 @@
     </td>
     <td>
       {% if case.is_research %}
-        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
+        {% if case.vcf_files.vcf_snv %}
+          <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
+        {% elif case.vcf_files.vcf_cancer %}
+          <a href="{{ url_for('variants.cancer_variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Clinical cancer variants</a>
+        {% endif %}
       {% else %}
-        <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+        {% if case.vcf_files.vcf_snv %}
+          <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+        {% elif case.vcf_files.vcf_cancer %}
+          <a href="{{ url_for('variants.cancer_variants', institute_id=case.owner, case_name=case.display_name, variant_type='clinical') }}">Clinical cancer variants</a>
+        {% endif %}
       {% endif %}
     </td>
     <td>
@@ -133,3 +143,16 @@
     </td>
   </tr>
 {% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script>
+    $(function () {
+      $('table').stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+    })
+  </script>
+{% endblock %}

@@ -5,12 +5,22 @@ import os.path
 from flask import url_for
 from flask_mail import Message
 
-from scout.constants import CLINSIG_MAP
+from scout.constants import CLINSIG_MAP, ACMG_MAP, ACMG_SHORT_MAP
+from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
+from scout.utils.acmg import get_acmg
 from .forms import CancerFiltersForm
+from .acmg import ACMG_CRITERIA
 
 log = logging.getLogger(__name__)
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
+ACMG_OPTIONS = [
+    ('P', 'pathogenic', 'Pathogenic'),
+    ('LP', 'likely_pathogenic', 'Likely Pathogenic'),
+    ('US', 'uncertain_significance', 'Uncertain Significance'),
+    ('LB', 'likely_benign', 'Likely Benign'),
+    ('B', 'benign', 'Benign'),
+]
 
 
 class MissingSangerRecipientError(Exception):
@@ -101,6 +111,10 @@ def parse_variant(store, variant_obj, update=False):
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj['genes']))
 
+    if isinstance(variant_obj.get('acmg_classification'), int):
+        variant_obj['acmg_classification'] = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_short'] = ACMG_SHORT_MAP[variant_obj['acmg_classification']]
+
     return variant_obj
 
 
@@ -171,7 +185,9 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_case(store, case_obj, variant_obj)
     comments = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'],
                             comments=True)
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id']))
+    for event in events:
+        event['verb'] = VERBS_MAP[event['verb']]
     other_causatives = []
     for other_variant in store.other_causatives(case_obj, variant_obj):
         case_display_name = other_variant['case_id'].split('-', 1)[-1]
@@ -221,6 +237,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
                             store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'ACMG_OPTIONS': ACMG_OPTIONS,
     }
 
 
@@ -503,3 +520,31 @@ def cancer_variants(store, request_args, institute_id, case_name):
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+
+def variant_acmg(store, institute_id, case_name, variant_id):
+    """Collect data relevant for rendering ACMG classification form."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
+                CRITERIA=ACMG_CRITERIA)
+
+
+def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
+    """Calculate an ACMG classification based on a list of criteria."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(user_email)
+    classification = get_acmg(criteria)
+    variant_link = url_for('variants.variant', institute_id=institute_id,
+                           case_name=case_name, variant_id=variant_id)
+    store.submit_classification(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        user=user_obj,
+        link=variant_link,
+        classification=classification,
+        criteria=criteria,
+    )
+    return classification
