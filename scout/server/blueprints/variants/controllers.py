@@ -530,9 +530,21 @@ def variant_acmg(store, institute_id, case_name, variant_id):
                 CRITERIA=ACMG_CRITERIA)
 
 
-def variant_acmg_post(store, institute_id, case_name, variant_id, criteria):
+def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
     """Calculate an ACMG classification based on a list of criteria."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
+    user_obj = store.user(user_email)
     classification = get_acmg(criteria)
+    variant_link = url_for('variants.variant', institute_id=institute_id,
+                           case_name=case_name, variant_id=variant_id)
+    store.submit_classification(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        user=user_obj,
+        link=variant_link,
+        classification=classification,
+        criteria=criteria,
+    )
     return classification
