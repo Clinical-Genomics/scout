@@ -40,31 +40,33 @@ def research(context, case_id, institute, force):
 
     default_threshold = 8
     for case_obj in case_objs:
-        if force or case_obj.research_requested:
-            log.info("Delete variants for case %s", case_obj.case_id)
+        if force or case_obj.get('research_requested'):
+            log.info("Delete variants for case %s", case_obj['_id'])
             delete_variants(adapter=adapter, case_obj=case_obj, variant_type='research')
 
-            log.info("Load research SNV for: %s", case_obj.case_id)
+            log.info("Load research SNV for: %s", case_obj['_id'])
             load_variants(
                 adapter=adapter,
-                variant_file=case_obj.vcf_files['vcf_snv_research'],
+                variant_file=case_obj['vcf_files']['vcf_snv_research'],
                 case_obj=case_obj,
                 variant_type='research',
                 category='snv',
                 rank_threshold=default_threshold,
             )
-            if case_obj.vcf_files.get('vcf_sv_research'):
-                log.info("Load research SV for: %s", case_obj.case_id)
+            if case_obj['vcf_files'].get('vcf_sv_research'):
+                log.info("Load research SV for: %s", case_obj['_id'])
                 load_variants(
                     adapter=adapter,
-                    variant_file=case_obj.vcf_files['vcf_sv_research'],
+                    variant_file=case_obj['vcf_files']['vcf_sv_research'],
                     case_obj=case_obj,
                     variant_type='research',
                     category='sv',
                     rank_threshold=default_threshold,
                 )
-            case_obj.is_research = True
-            case_obj.research_requested = False
-            case_obj.save()
+
+            adapter.case_collection.find_one_and_update(
+                {'_id': case_obj['_id']},
+                {'$set': {'is_research': True, 'research_requested': False}}
+            )
         else:
             log.warn("research not requested, use '--force'")
