@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+from functools import partial
 import logging
 
 import click
 
-from scout.load.variant import load_variants, delete_variants
+from scout.load.variant import delete_variants
 
 log = logging.getLogger(__name__)
 
@@ -40,31 +42,24 @@ def research(context, case_id, institute, force):
 
     default_threshold = 8
     for case_obj in case_objs:
-        if force or case_obj.research_requested:
-            log.info("Delete variants for case %s", case_obj.case_id)
+        if force or case_obj.get('research_requested'):
+            log.info("Delete variants for case %s", case_obj['_id'])
             delete_variants(adapter=adapter, case_obj=case_obj, variant_type='research')
 
-            log.info("Load research SNV for: %s", case_obj.case_id)
-            load_variants(
-                adapter=adapter,
-                variant_file=case_obj.vcf_files['vcf_snv_research'],
-                case_obj=case_obj,
-                variant_type='research',
-                category='snv',
-                rank_threshold=default_threshold,
+            load_variants = partial(adapter.load_variants,
+                                    case_obj=case_obj, variant_type='research',
+                                    rank_threshold=default_threshold)
+
+            log.info("Load research SNV for: %s", case_obj['_id'])
+            load_variants(category='snv')
+
+            if case_obj['vcf_files'].get('vcf_sv_research'):
+                log.info("Load research SV for: %s", case_obj['_id'])
+                load_variants(category='sv')
+
+            adapter.case_collection.find_one_and_update(
+                {'_id': case_obj['_id']},
+                {'$set': {'is_research': True, 'research_requested': False}}
             )
-            if case_obj.vcf_files.get('vcf_sv_research'):
-                log.info("Load research SV for: %s", case_obj.case_id)
-                load_variants(
-                    adapter=adapter,
-                    variant_file=case_obj.vcf_files['vcf_sv_research'],
-                    case_obj=case_obj,
-                    variant_type='research',
-                    category='sv',
-                    rank_threshold=default_threshold,
-                )
-            case_obj.is_research = True
-            case_obj.research_requested = False
-            case_obj.save()
         else:
             log.warn("research not requested, use '--force'")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from . import (load_case, load_variants, delete_variants)
+from . import load_case, delete_variants
 from scout.parse.case import parse_case
 from scout.build import build_case
 from scout.exceptions.config import ConfigError
@@ -59,7 +59,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
              " {2}, end {3}".format(case_obj['_id'], chrom, start, end))
 
-    adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+    adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                           category='snv', chrom=chrom, start=start, end=end)
 
     vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
@@ -72,7 +72,6 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     if case_obj['is_research']:
         log.info("Load research SNV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-        vcf_snv_research = case_obj['vcf_files']['vcf_snv_research']
         adapter.load_variants(case_obj=case_obj, variant_type='research',
                               category='snv', chrom=chrom, start=start, end=end)
 
@@ -109,8 +108,8 @@ def load_scout(adapter, config, ped=None, update=False):
     delete_variants(adapter=adapter, case_obj=case_obj)
 
     log.info("Load clinical SNV variants for case %s", case_obj['case_id'])
-    adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
-                          category='snv', 
+    adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                          category='snv',
                           rank_threshold=case_data['rank_score_threshold'])
 
     if config.get('vcf_sv'):
