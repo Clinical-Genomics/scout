@@ -146,7 +146,8 @@ def variant_acmg(institute_id, case_name, variant_id):
         return data
     else:
         criteria = request.form.getlist('criteria')
-        acmg = controllers.variant_acmg_post(store, institute_id, case_name, variant_id, criteria)
+        acmg = controllers.variant_acmg_post(store, institute_id, case_name, variant_id,
+                                             current_user.email, criteria)
         flash("classified as: {}".format(acmg), 'info')
         return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id))
