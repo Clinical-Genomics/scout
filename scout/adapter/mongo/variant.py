@@ -565,18 +565,19 @@ class VariantHandler(object):
         chromosome = variant_obj['chromosome']
         for gene_id in variant_obj['hgnc_ids']:
             gene_obj = self.hgnc_gene(gene_id)
-            gene_start = gene_obj['start']
-            gene_end = gene_obj['end']
-            if not region_start:
-                region_start = gene_start
-            else:
-                if gene_start < region_start:
+            if gene_obj:
+                gene_start = gene_obj['start']
+                gene_end = gene_obj['end']
+                if not region_start:
                     region_start = gene_start
-            if not region_end:
-                region_end = gene_end
-            else:
-                if gene_end > region_end:
+                else:
+                    if gene_start < region_start:
+                        region_start = gene_start
+                if not region_end:
                     region_end = gene_end
+                else:
+                    if gene_end > region_end:
+                        region_end = gene_end
 
         query = {
             'case_id': variant_obj['case_id'],
