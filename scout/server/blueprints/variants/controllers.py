@@ -17,7 +17,7 @@ MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
 ACMG_OPTIONS = [
     ('P', 'pathogenic', 'Pathogenic'),
     ('LP', 'likely_pathogenic', 'Likely Pathogenic'),
-    ('US', 'uncertain_significance', 'Uncertain Significance'),
+    ('VUS', 'uncertain_significance', 'Uncertain Significance'),
     ('LB', 'likely_benign', 'Likely Benign'),
     ('B', 'benign', 'Benign'),
 ]
