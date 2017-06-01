@@ -17,6 +17,7 @@
 	* [Variants](user-guide/variants.md)
 	* [Gene Panels](user-guide/panels.md)
 	* [Annotations](user-guide/annotations.md)
+	* [ACMG criterias](user-guide/acmg-criterias.md)
 
 * [Admin Guide](admin-guide/README.md)
 	* [Loading](admin-guide/loading.md)
