@@ -46,7 +46,7 @@ def variants(institute_id, case_name):
         form.hgnc_symbols.data = hpo_symbols
 
     variants_query = store.variants(case_obj['_id'], query=form.data)
-    data = controllers.variants(store, variants_query, page)
+    data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, form=form,
                 severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
@@ -82,8 +82,7 @@ def sv_variants(institute_id, case_name):
     query = form.data
     query['variant_type'] = variant_type
     variants_query = store.variants(case_obj['_id'], category='sv', query=form.data)
-
-    data = controllers.sv_variants(store, variants_query, page)
+    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 

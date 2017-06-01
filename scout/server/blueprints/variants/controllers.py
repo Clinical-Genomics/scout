@@ -17,27 +17,26 @@ class MissingSangerRecipientError(Exception):
     pass
 
 
-def variants(store, variants_query, page=1, per_page=50):
+def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(store, variant_obj, update=True) for variant_obj in
-                     variants_query.skip(skip_count).limit(per_page)),
+        'variants': (parse_variant(store, institute_obj, case_obj, variant_obj, update=True) for
+                     variant_obj in variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
 
 
-def sv_variants(store, variants_query, page, per_page=50):
+def sv_variants(store, institute_obj, case_obj, variants_query, page, per_page=50):
     """Pre-process list of SV variants."""
-
     skip_count = (per_page * max(page - 1, 0))
     more_variants = True if variants_query.count() > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(store, variant) for variant in
+        'variants': (parse_variant(store, institute_obj, case_obj, variant) for variant in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -58,7 +57,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
     ]
 
-    overlapping_snvs = (parse_variant(store, variant) for variant in
+    overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
 
     return dict(
@@ -69,7 +68,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
     )
 
 
-def parse_variant(store, variant_obj, update=False):
+def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     """Parse information about variants."""
     has_changed = False
     compounds = variant_obj.get('compounds', [])
@@ -95,6 +94,9 @@ def parse_variant(store, variant_obj, update=False):
 
     if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
+
+    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
+                                           variant_id=variant_obj['variant_id'], comments=True)
 
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))
@@ -167,10 +169,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     if variant_obj is None:
         return None
-
     variant_case(store, case_obj, variant_obj)
-    comments = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'],
-                            comments=True)
     events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
     other_causatives = []
     for other_variant in store.other_causatives(case_obj, variant_obj):
@@ -216,10 +215,9 @@ def variant(store, institute_obj, case_obj, variant_id):
     return {
         'variant': variant_obj,
         'causatives': other_causatives,
-        'comments': comments,
         'events': events,
-        'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
-                            store.overlapping(variant_obj)),
+        'overlapping_svs': (parse_variant(store, institute_obj, case_obj, variant_obj) for
+                            variant_obj in store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
     }
 
