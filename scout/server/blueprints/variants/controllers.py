@@ -180,7 +180,8 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj)
     variant_obj['end_position'] = end_position(variant_obj)
     variant_obj['frequency'] = frequency(variant_obj)
-    variant_obj['clinsig_human'] = clinsig_human(variant_obj)
+    variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
+                                    else None)
     variant_obj['thousandg_link'] = thousandg_link(variant_obj)
     variant_obj['exac_link'] = exac_link(variant_obj)
     variant_obj['gnomead_link'] = gnomead_link(variant_obj)
@@ -330,8 +331,11 @@ def frequency(variant_obj):
 def clinsig_human(variant_obj):
     """Convert to human readable version of CLINSIG evaluation."""
     for clinsig_obj in variant_obj['clnsig']:
-        human_str = CLINSIG_MAP.get(clinsig_obj.value, 'not provided')
-        yield clinsig_obj, human_str
+        human_str = CLINSIG_MAP.get(clinsig_obj['value'], 'not provided')
+        clinsig_obj['human'] = human_str
+        clinsig_obj['link'] = ("https://www.ncbi.nlm.nih.gov/clinvar/{}"
+                               .format(clinsig_obj['accession']))
+        yield clinsig_obj
 
 
 def thousandg_link(variant_obj):

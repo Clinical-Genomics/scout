@@ -342,19 +342,33 @@
         </tr>
       </tbody>
     </table>
-    <ul class="list-group">
-      <li class="list-group-item">
-        CLSIG
-        <span class="pull-right">
-          {% for clinsig, human_str in variant.clnsig_human %}
-            <a href="http://www.ncbi.nlm.nih.gov/clinvar/{{ clinsig.accession }}" target="_blank">
-              {{ human_str }}
-            </a>
+    {% if variant.clinsig_human %}
+      <table class="table table-bordered table-fixed">
+        <thead>
+          <thead>
+            <tr class="active">
+              <th>CLINSIG</th>
+              <th>Accession</th>
+              <th>Revstat</th>
+            </tr>
+          </thead>
+        </thead>
+        <tbody>
+          {% for clinsig in variant.clinsig_human %}
+            <tr>
+              <td>{{ clinsig.human }}</td>
+              <td>
+                <a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a>
+              </td>
+              <td>{{ clinsig.revstat }}</td>
+            </tr>
           {% else %}
             <i>No annotations</i>
           {% endfor %}
-        </span>
-      </li>
+        </tbody>
+      </table>
+    {% endif %}
+    <ul class="list-group">
       {% if variant.dbsnp_id %}
         <li class="list-group-item">
           SNPedia
@@ -797,7 +811,7 @@
 	      <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.rank_score }}</td>
               <td class="text-right">{{ sv_variant.length }}</td>
-	      
+
               <td>{{ sv_variant.region_annotations|join(', ')|truncate(40, True) }}</td>
               <td>{{ sv_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>
             </tr>
