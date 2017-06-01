@@ -167,6 +167,18 @@ def parse_variant(variant, case, variant_type='clinical',
     if genetic_models:
         parsed_variant['genetic_models'] = genetic_models
 
+    ################# Add autozygosity calls if present #################
+
+    azlength = variant_dict['info_dict'].get('AZLENGTH')
+    if azlength:
+        value = azlength[0]
+        variant['azlength'] = int(value)
+
+    azqual = variant_dict['info_dict'].get('AZQUAL')
+    if azqual:
+        value = azqual[0]
+        variant['azqual'] = int(value)
+
     ################# Add the gene and transcript information #################
     raw_transcripts = []
     if vep_header:
