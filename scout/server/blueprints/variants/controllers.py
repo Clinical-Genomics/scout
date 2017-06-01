@@ -177,7 +177,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         other_variant['case_display_name'] = case_display_name
         other_causatives.append(other_variant)
 
-    variant_obj = parse_variant(store, variant_obj)
+    variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj)
     variant_obj['end_position'] = end_position(variant_obj)
     variant_obj['frequency'] = frequency(variant_obj)
     variant_obj['clinsig_human'] = clinsig_human(variant_obj)
@@ -496,7 +496,8 @@ def cancer_variants(store, request_args, institute_id, case_name):
     data = dict(
         institute=institute_obj,
         case=case_obj,
-        variants=(parse_variant(store, variant, update=True) for variant in variants_query),
+        variants=(parse_variant(store, institute_obj, case_obj, variant, update=True) for
+                  variant in variants_query),
         form=form,
         variant_type=request_args.get('variant_type', 'clinical'),
     )
