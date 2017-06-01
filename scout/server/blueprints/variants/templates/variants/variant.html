@@ -407,7 +407,15 @@
 {% endmacro %}
 
 {% macro transcript_overview() %}
-  <div class="panel panel-default">
+  <div class="panel panel-default fixed-panel">
+    <div class="panel-heading">Disease associated transcripts</div>
+    <div class="panel-body">
+      {% for transcript_str in variant.disease_associated_transcripts %}
+        {{ transcript_str }}
+      {% else %}
+        <span class="text-muted">No transcripts</span>
+      {% endfor %}
+    </div>
     <div class="panel-heading">Transcript overview</div>
     <table class="table table-bordered table-hover">
       <thead>
@@ -431,22 +439,16 @@
               </td>
               <td>{{ transcript.refseq_ids|join(', ') }}</td>
               <td>
-                {{ (transcript.protein_sequence_name or '')|url_decode }}
-                <small class="text-muted pull-right">{{ transcript.coding_sequence_name or '' }}</small>
+                {{ transcript.coding_sequence_name or '' }}
+                <span class="text-muted pull-right">
+                  {{ (transcript.protein_sequence_name or '')|url_decode }}
+                </span>
               </td>
             </tr>
           {% endfor %}
         {% endfor %}
       </tbody>
     </table>
-    <div class="panel-heading">Disease associated transcripts</div>
-    <div class="panel-body">
-      {% for transcript_str in variant.disease_associated_transcripts %}
-        {{ transcript_str }}
-      {% else %}
-        <span class="text-muted">No transcripts</span>
-      {% endfor %}
-    </div>
   </div>
 {% endmacro %}
 

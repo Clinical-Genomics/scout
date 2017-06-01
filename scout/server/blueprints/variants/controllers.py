@@ -295,9 +295,16 @@ def parse_transcript(gene_obj, tx_obj):
 
 def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string."""
-    change_str = "{}:exon{}:{}:{}".format(
+    if transcript_obj.get('exon'):
+        gene_part, part_count_raw = 'exon', transcript_obj['exon']
+    else:
+        gene_part, part_count_raw = 'intron', transcript_obj['intron']
+
+    part_count = part_count_raw.rpartition('/')[0]
+    change_str = "{}:{}{}:{}:{}".format(
         ','.join(transcript_obj['refseq_ids']),
-        transcript_obj.get('exon', '').rpartition('/')[0],
+        gene_part,
+        part_count,
         transcript_obj.get('coding_sequence_name', 'NA'),
         transcript_obj.get('protein_sequence_name', 'NA'),
     )
