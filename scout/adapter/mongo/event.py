@@ -102,6 +102,11 @@ class EventHandler(object):
 
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
 
+    def user_events(self, user_obj=None):
+        """Fetch all events by a specific user."""
+        query = dict(user_id=user_obj['_id']) if user_obj else dict()
+        return self.event_collection.find(query)
+
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
 

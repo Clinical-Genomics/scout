@@ -200,3 +200,7 @@ th {
 	/* light green */
 	background-color: #dff0d8 !important;
 }
+
+.rank-shield {
+	height: 50px;
+}
