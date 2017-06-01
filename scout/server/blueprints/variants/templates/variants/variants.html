@@ -208,13 +208,17 @@
     </div>
     <div class="form-group">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-xs-2">
           {{ form.thousand_genomes_frequency.label(class="control-label") }}
           {{ form.thousand_genomes_frequency(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-xs-2">
           {{ form.exac_frequency.label(class="control-label") }}
           {{ form.exac_frequency(class="form-control") }}
+        </div>
+        <div class="col-xs-2">
+          {{ form.local_obs.label(class="control-label") }}
+          {{ form.local_obs(class="form-control") }}
         </div>
         <div class="col-xs-6">
           <label class="control-label">Submit</label>
