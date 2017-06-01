@@ -134,6 +134,18 @@ def parse_variant(variant_dict, case, variant_type='clinical', rank_results_head
     # Add the clinsig prediction
     variant['clnsig'] = parse_clnsig(variant_dict)
 
+    ################# Add autozygosity calls if present #################
+
+    azlength = variant_dict['info_dict'].get('AZLENGTH')
+    if azlength:
+        value = azlength[0]
+        variant['azlength'] = int(value)
+
+    azqual = variant_dict['info_dict'].get('AZQUAL')
+    if azqual:
+        value = azqual[0]
+        variant['azqual'] = int(value)
+
     ################# Add the gene and transcript information #################
 
     variant['genes'] = parse_genes(variant_dict)

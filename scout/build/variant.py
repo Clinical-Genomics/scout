@@ -248,6 +248,13 @@ def build_variant(variant, institute_id, gene_to_panels = None, hgncid_to_gene=N
     if conservation_info.get('phylop'):
         variant_obj['phylop_conservation'] = conservation_info['phylop']
 
+    # Add autozygosity calls
+    if variant.get('azlength'):
+        variant_obj['azlength'] = variant['azlength']
+
+    if variant.get('azqual'):
+        variant_obj['azqual'] = variant['azqual']
+
     # Add the frequencies
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):
