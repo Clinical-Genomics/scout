@@ -177,7 +177,7 @@ def parse_variant(variant, case, variant_type='clinical',
     azqual = variant_dict['info_dict'].get('AZQUAL')
     if azqual:
         value = azqual[0]
-        variant['azqual'] = int(value)
+        variant['azqual'] = float(value)
 
     ################# Add the gene and transcript information #################
     raw_transcripts = []

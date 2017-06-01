@@ -616,7 +616,8 @@
       </li>
     </ul>
 
-    <div class="panel-heading">Autozygosity</div>
+    {% if variant.azlength %}
+    <div class="panel-heading">Autozygous region</div>
     <table class="table table-bordered table-fixed">
       <tbody>
         <tr>
@@ -631,6 +632,7 @@
         </tr>
       </tbody>
     </table>
+    {% endif %}
 
     <div class="panel-heading">Incomplete penetrance</div>
     <table class="table table-bordered">
