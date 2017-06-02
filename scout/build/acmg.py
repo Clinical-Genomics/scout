@@ -1,9 +1,9 @@
 import datetime
 
-def build_evaluation(variant_specific, variant_id, user_id, user_name, 
+def build_evaluation(variant_specific, variant_id, user_id, user_name,
                      institute_id, case_id, classification, criteria):
     """Build a evaluation object ready to be inserted to database
-    
+
     Args:
         variant_specific(str): md5 string for the specific variant
         variant_id(str): md5 string for the common variant
@@ -13,10 +13,10 @@ def build_evaluation(variant_specific, variant_id, user_id, user_name,
         case_id(str)
         classification(str): The ACMG classification
         criteria(list(dict)): A list of dictionaries with ACMG criterias
-    
+
     Returns:
         evaluation_obj(dict): Correctly formatted evaluation object
-    
+
     """
     criteria = criteria or []
     evaluation_obj = dict(
@@ -40,9 +40,9 @@ def build_evaluation(variant_specific, variant_id, user_id, user_name,
         if 'links' in info:
             criteria_obj['links'] = info['links']
         criteria_objs.append(criteria_obj)
-    
+
     evaluation_obj['criteria'] = criteria_objs
-    
+
     return evaluation_obj
-        
-    
+
+

@@ -304,10 +304,10 @@
     <div class="panel-body">
       <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
     </div>
-    {% if acmg_classifications %}
+    {% if evaluations.count() %}
       <ul class="list-group">
-        {% for classification in acmg_classifications %}
-          {{ acmg_classification_item(classification) }}
+        {% for evaluation in evaluations %}
+          {{ acmg_classification_item(evaluation) }}
         {% endfor %}
       </ul>
     {% endif %}
@@ -1064,10 +1064,10 @@
 {% endmacro %}
 
 {% macro acmg_classification_item(data) %}
-  {% set current_variant = (data.variant._id == variant._id) %}
+  {% set current_variant = (data.variant_specific == variant._id) %}
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
     <div class="d-flex justify-content-between">
-      <span>{{ data.category.title }}</span>
+      <span>{{ data.classification }}</span>
       <span>
         {% if current_variant %}
           <small>(current)</small>
@@ -1078,7 +1078,10 @@
         {% endif %}
       </span>
     </div>
-    <small class="text-muted">{{ data.user.name }} on {{ data.created_at.date() }}</small>
+    <small class="text-muted">
+      {{ data.user_name }} on {{ data.created_at.date() }}
+      ·
+    </small>
   </li>
 {% endmacro %}
 

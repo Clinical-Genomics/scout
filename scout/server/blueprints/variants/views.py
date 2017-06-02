@@ -146,12 +146,33 @@ def variant_acmg(institute_id, case_name, variant_id):
         data = controllers.variant_acmg(store, institute_id, case_name, variant_id)
         return data
     else:
-        criteria = request.form.getlist('criteria')
+        criteria = []
+        criteria_terms = request.form.getlist('criteria')
+        for term in criteria_terms:
+            criteria.append(dict(
+                term=term,
+                comment=request.form.get("comment-{}".format(term)),
+                links=[request.form.get("link-{}".format(term))],
+            ))
         acmg = controllers.variant_acmg_post(store, institute_id, case_name, variant_id,
                                              current_user.email, criteria)
         flash("classified as: {}".format(acmg), 'info')
         return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id))
+
+
+@variants_bp.route('/evaluations/<evaluation_id>', methods=['GET', 'POST'])
+@templated('variants/acmg.html')
+def evaluation(evaluation_id):
+    """Show or delete an ACMG evaluation."""
+    data = controllers.evaluation(evaluation_id)
+    if request.method == 'POST':
+        link = url_for('.variant', institute_id=data['evaluation']['institute']['_id'],
+                       case_name=data['evaluation']['case']['display_name'],
+                       variant_id=data['evaluation']['variant_specific'])
+        store.delete_evaluation(data['evaluation'])
+        return redirect(link)
+    return data
 
 
 @variants_bp.route('/api/v1/acmg')

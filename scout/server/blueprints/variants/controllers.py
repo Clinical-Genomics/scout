@@ -229,6 +229,7 @@ def variant(store, institute_obj, case_obj, variant_id):
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
 
+    evaluations = store.get_evaluations(variant_obj)
     return {
         'variant': variant_obj,
         'causatives': other_causatives,
@@ -237,6 +238,7 @@ def variant(store, institute_obj, case_obj, variant_id):
                             variant_obj in store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'ACMG_OPTIONS': ACMG_OPTIONS,
+        'evaluations': evaluations,
     }
 
 
@@ -545,16 +547,22 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(user_email)
-    classification = get_acmg(criteria)
     variant_link = url_for('variants.variant', institute_id=institute_id,
                            case_name=case_name, variant_id=variant_id)
-    store.submit_classification(
-        institute=institute_obj,
-        case=case_obj,
-        variant=variant_obj,
-        user=user_obj,
+    classification = store.submit_evaluation(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variant_obj=variant_obj,
+        user_obj=user_obj,
         link=variant_link,
-        classification=classification,
         criteria=criteria,
     )
     return classification
+
+
+def evaluation(store, evaluation_id):
+    """Fetch and fill-in evaluation object."""
+    evaluation_obj = store.get_evaluation(evaluation_id)
+    evaluation['institute'] = store.institute(evaluation_obj['institute_id'])
+    evaluation['case'] = store.case(evaluation['case_id'])
+    return dict(evaluation=evaluation_obj)
