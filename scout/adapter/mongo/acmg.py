@@ -56,6 +56,24 @@ class ACMGHandler(object):
         """Load a evaluation object into the database"""
         res = self.acmg_collection.insert_one(evaluation_obj)
         return res
+    
+    def delete_evaluation(self, evaluation_obj):
+        """Delete an evaluation from the database
+        
+        Args:
+            evaluation_obj(dict)
+        
+        """
+        self.acmg_collection.delete_one({'_id': evaluation_obj['_id']})
+
+    def get_evaluation(self, evaluation_id):
+        """Get a single evaluation from the database
+        
+        Args:
+            evaluation_id(ObjectId)
+        
+        """
+        return self.acmg_collection.find_one({'_id': evaluation_id})
         
     def get_evaluations(self, variant_specific, variant_id):
         """Return all evaluations for a certain variant
