@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from bson import ObjectId
 import pymongo
 
 from scout.utils.acmg import get_acmg
@@ -80,10 +81,10 @@ class ACMGHandler(object):
         """Get a single evaluation from the database
 
         Args:
-            evaluation_id(ObjectId)
+            evaluation_id(str)
 
         """
-        return self.acmg_collection.find_one({'_id': evaluation_id})
+        return self.acmg_collection.find_one({'_id': ObjectId(evaluation_id)})
 
     def get_evaluations(self, variant_obj):
         """Return all evaluations for a certain variant.

@@ -5,20 +5,30 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="float-top-secondary">
-    <div class="d-flex justify-content-between">
-      <div class="btn-group btn-group-justified">
-        {% for short, code, label in ACMG_OPTIONS %}
-          <a id="acmg-{{ code }}" class="btn btn-default acmg-preview">{{ label }}</a>
-        {% endfor %}
+  {% if not evaluation %}
+    <div class="float-top-secondary">
+      <div class="d-flex justify-content-between">
+        <div class="btn-group btn-group-justified">
+          {% for option in ACMG_OPTIONS %}
+            <a id="acmg-{{ option.code }}" class="btn btn-default acmg-preview">{{ option.label }}</a>
+          {% endfor %}
+        </div>
       </div>
     </div>
-  </div>
+  {% endif %}
   <div class="container">
     <form action="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
       <div class="panel panel-default">
         <div class="panel-body">
-          <button class="btn btn-primary form-control">Submit</button>
+          {% if not evaluation %}
+            <button class="btn btn-primary form-control">Submit</button>
+          {% else %}
+            <h4>
+              {{ evaluation.classification.label }}
+              <span class="label label-info">{{ evaluation.classification.short }}</span>
+            </h4>
+            By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
+          {% endif %}
         </div>
       </div>
 
@@ -38,11 +48,11 @@
                         {{ criterion.short }}
                       </div>
                       <div>
-                        <input type="checkbox" class="ios8-switch" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}">
+                        <input type="checkbox" class="ios8-switch" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation }}>
                         <label for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
-                    <div id="comment-{{ criterion_code }}" class="collapse mt-2">
+                    <div id="comment-{{ criterion_code }}" class="collapse {{ 'in' if evaluation and evaluation.criteria.get(criterion_code).comment }} mt-2">
                       <div class="form-group">
                         <textarea class="form-control" name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)"></textarea>
                       </div>

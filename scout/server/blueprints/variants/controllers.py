@@ -8,19 +8,22 @@ from flask_mail import Message
 from scout.constants import CLINSIG_MAP, ACMG_MAP, ACMG_SHORT_MAP
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
-from scout.utils.acmg import get_acmg
 from .forms import CancerFiltersForm
 from .acmg import ACMG_CRITERIA
 
 log = logging.getLogger(__name__)
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
-ACMG_OPTIONS = [
-    ('P', 'pathogenic', 'Pathogenic'),
-    ('LP', 'likely_pathogenic', 'Likely Pathogenic'),
-    ('VUS', 'uncertain_significance', 'Uncertain Significance'),
-    ('LB', 'likely_benign', 'Likely Benign'),
-    ('B', 'benign', 'Benign'),
-]
+ACMG_COMPLETE_MAP = {
+    'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
+    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Pathogenic',
+                              color='warning'),
+    'uncertain_significance': dict(code='uncertain_significance', short='VUS',
+                                   label='Uncertain Significance', color='primary'),
+    'likely_benign': dict(code='likely_benign', short='LB', label='Likely Benign',
+                          color='info'),
+    'benign': dict(code='benign', short='B', label='Benign', color='success'),
+}
+ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()
 
 
 class MissingSangerRecipientError(Exception):
@@ -114,8 +117,8 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         compound_obj.update(get_predictions(compound_obj['genes']))
 
     if isinstance(variant_obj.get('acmg_classification'), int):
-        variant_obj['acmg_classification'] = ACMG_MAP[variant_obj['acmg_classification']]
-        variant_obj['acmg_short'] = ACMG_SHORT_MAP[variant_obj['acmg_classification']]
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
     return variant_obj
 
@@ -229,7 +232,10 @@ def variant(store, institute_obj, case_obj, variant_id):
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
 
-    evaluations = store.get_evaluations(variant_obj)
+    evaluations = []
+    for evaluation_obj in store.get_evaluations(variant_obj):
+        evaluation(store, evaluation_obj)
+        evaluations.append(evaluation_obj)
     return {
         'variant': variant_obj,
         'causatives': other_causatives,
@@ -560,9 +566,12 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
     return classification
 
 
-def evaluation(store, evaluation_id):
+def evaluation(store, evaluation_obj):
     """Fetch and fill-in evaluation object."""
-    evaluation_obj = store.get_evaluation(evaluation_id)
-    evaluation['institute'] = store.institute(evaluation_obj['institute_id'])
-    evaluation['case'] = store.case(evaluation['case_id'])
-    return dict(evaluation=evaluation_obj)
+    evaluation_obj['institute'] = store.institute(evaluation_obj['institute_id'])
+    evaluation_obj['case'] = store.case(evaluation_obj['case_id'])
+    evaluation_obj['variant'] = store.variant(evaluation_obj['variant_specific'])
+    evaluation_obj['criteria'] = {criterion['term']: criterion for criterion in
+                                  evaluation_obj['criteria']}
+    evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+    return evaluation_obj

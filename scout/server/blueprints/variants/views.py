@@ -9,6 +9,7 @@ from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
 from . import controllers
+from .acmg import ACMG_CRITERIA
 from .forms import FiltersForm, SvFiltersForm
 
 log = logging.getLogger(__name__)
@@ -165,14 +166,17 @@ def variant_acmg(institute_id, case_name, variant_id):
 @templated('variants/acmg.html')
 def evaluation(evaluation_id):
     """Show or delete an ACMG evaluation."""
-    data = controllers.evaluation(evaluation_id)
+    evaluation_obj = store.get_evaluation(evaluation_id)
+    controllers.evaluation(store, evaluation_obj)
     if request.method == 'POST':
-        link = url_for('.variant', institute_id=data['evaluation']['institute']['_id'],
-                       case_name=data['evaluation']['case']['display_name'],
-                       variant_id=data['evaluation']['variant_specific'])
-        store.delete_evaluation(data['evaluation'])
+        link = url_for('.variant', institute_id=evaluation_obj['institute']['_id'],
+                       case_name=evaluation_obj['case']['display_name'],
+                       variant_id=evaluation_obj['variant_specific'])
+        store.delete_evaluation(evaluation_obj)
         return redirect(link)
-    return data
+    return dict(evaluation=evaluation_obj, institute=evaluation_obj['institute'],
+                case=evaluation_obj['case'], variant=evaluation_obj['variant'],
+                CRITERIA=ACMG_CRITERIA)
 
 
 @variants_bp.route('/api/v1/acmg')
