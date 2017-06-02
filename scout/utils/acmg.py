@@ -30,7 +30,7 @@ def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
             return True
         if pm_terms:
             # Pathogenic (i)(c):
-            if ps_terms:
+            if pp_terms:
                 return True
             # Pathogenic (i)(b):
             if len(pm_terms) >= 2:
