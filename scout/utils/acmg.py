@@ -85,7 +85,7 @@ def is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
         if pm_terms:
             return True
         # Likely Pathogenic (iii):
-        if len(ps_terms) >= 2:
+        if len(pp_terms) >= 2:
             return True
 
     if pm_terms:
