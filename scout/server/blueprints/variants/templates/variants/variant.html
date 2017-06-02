@@ -279,7 +279,7 @@
       </li>
     </ul>
     <div class="panel-body">
-      <form action="{{ url_for('variants.manual_rank', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label>Priority</label>
         <div class="row">
           <div class="col-xs-8">
@@ -298,6 +298,19 @@
         </div>
       </form>
     </div>
+    <div class="panel-body">
+      {{ acmg_form(variant.acmg_classification.code) }}
+    </div>
+    <div class="panel-body">
+      <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
+    </div>
+    {% if evaluations %}
+      <ul class="list-group">
+        {% for evaluation in evaluations %}
+          {{ acmg_classification_item(evaluation) }}
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -1035,6 +1048,45 @@
       </div>
     {% endfor %}
   </div>
+{% endmacro %}
+
+{% macro acmg_form(selected=None) %}
+  <label>ACMG classification</label>
+  <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <div class="d-flex justify-content-between">
+      {% for option in ACMG_OPTIONS %}
+        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'default' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
+          {{ option.short }}
+        </button>
+      {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro acmg_classification_item(data) %}
+  {% set current_variant = (data.variant_specific == variant._id) %}
+  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
+    <div class="d-flex justify-content-between">
+      <span>
+        <a href="{{ url_for('variants.evaluation', evaluation_id=data._id) }}">
+          {{ data.classification.label }}
+        </a>
+        <span class="label label-info">{{ data.classification.short }}</span>
+      </span>
+      <span>
+        {% if not current_variant %}
+          <small>{{ data.case.display_name }}</small>
+        {% endif %}
+      </span>
+    </div>
+    <small class="text-muted">
+      <form action="{{ url_for('variants.evaluation', evaluation_id=data._id) }}" method="POST">
+      {{ data.user_name }} on {{ data.created_at.date() }}
+      {% if current_variant %}
+        <button class="btn btn-xs btn-link">Delete</button>
+      {% endif %}
+      </form>
+    </small>
+  </li>
 {% endmacro %}
 
 {% block scripts %}

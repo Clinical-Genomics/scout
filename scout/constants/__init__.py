@@ -124,13 +124,16 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
-ACMG_TERMS = (
-  'pathegenic',
-  'likely pathegenic',
-  'uncertain significance',
-  'likely benign',
-  'benign'
-)
+ACMG_MAP = {
+    4: 'pathogenic',
+    3: 'likely_pathogenic',
+    2: 'likely_benign',
+    1: 'benign',
+    0: 'uncertain_significance'
+}
+REV_ACMG_MAP = {value: key for key, value in ACMG_MAP.items()}
+ACMG_SHORT_MAP = {value: ''.join([word[0].upper() for word in value.split('_')]) for value in
+                  ACMG_MAP.values()}
 
 VARIANT_CALL = (
     'Pass',

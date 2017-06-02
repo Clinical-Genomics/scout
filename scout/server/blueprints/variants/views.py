@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, request, redirect, abort, flash, current_app, url_for
+from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
 from scout.server.extensions import store, mail, loqusdb
-from scout.server.utils import templated, institute_and_case
+from scout.server.utils import templated, institute_and_case, public_endpoint
+from scout.utils.acmg import get_acmg
 from . import controllers
+from .acmg import ACMG_CRITERIA
 from .forms import FiltersForm, SvFiltersForm
 
 log = logging.getLogger(__name__)
@@ -95,17 +97,23 @@ def sv_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/priority',
-                   methods=['POST'])
-def manual_rank(institute_id, case_name, variant_id):
-    """Update the manual variant rank for a variant."""
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
+def variant_update(institute_id, case_name, variant_id):
+    """Update user-defined information about a variant: manual rank & ACMG."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
-    new_manual_rank = int(request.form['manual_rank'])
     link = request.referrer
-    store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
-                             new_manual_rank)
+
+    if request.form.get('manual_rank'):
+        new_manual_rank = int(request.form['manual_rank'])
+        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
+                                 new_manual_rank)
+        flash("updated manual rank: {}".format(new_manual_rank), 'info')
+    elif request.form.get('acmg_classification'):
+        new_acmg = request.form['acmg_classification']
+        store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
+        flash("updated ACMG classification: {}".format(new_acmg), 'info')
     return redirect(request.referrer)
 
 
@@ -129,3 +137,52 @@ def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     data = controllers.cancer_variants(store, request.args, institute_id, case_name)
     return data
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET', 'POST'])
+@templated('variants/acmg.html')
+def variant_acmg(institute_id, case_name, variant_id):
+    """ACMG classification form."""
+    if request.method == 'GET':
+        data = controllers.variant_acmg(store, institute_id, case_name, variant_id)
+        return data
+    else:
+        criteria = []
+        criteria_terms = request.form.getlist('criteria')
+        for term in criteria_terms:
+            criteria.append(dict(
+                term=term,
+                comment=request.form.get("comment-{}".format(term)),
+                links=[request.form.get("link-{}".format(term))],
+            ))
+        acmg = controllers.variant_acmg_post(store, institute_id, case_name, variant_id,
+                                             current_user.email, criteria)
+        flash("classified as: {}".format(acmg), 'info')
+        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                                variant_id=variant_id))
+
+
+@variants_bp.route('/evaluations/<evaluation_id>', methods=['GET', 'POST'])
+@templated('variants/acmg.html')
+def evaluation(evaluation_id):
+    """Show or delete an ACMG evaluation."""
+    evaluation_obj = store.get_evaluation(evaluation_id)
+    controllers.evaluation(store, evaluation_obj)
+    if request.method == 'POST':
+        link = url_for('.variant', institute_id=evaluation_obj['institute']['_id'],
+                       case_name=evaluation_obj['case']['display_name'],
+                       variant_id=evaluation_obj['variant_specific'])
+        store.delete_evaluation(evaluation_obj)
+        return redirect(link)
+    return dict(evaluation=evaluation_obj, institute=evaluation_obj['institute'],
+                case=evaluation_obj['case'], variant=evaluation_obj['variant'],
+                CRITERIA=ACMG_CRITERIA)
+
+
+@variants_bp.route('/api/v1/acmg')
+@public_endpoint
+def acmg():
+    """Calculate an ACMG classification from submitted criteria."""
+    criteria = request.args.getlist('criterion')
+    classification = get_acmg(criteria)
+    return jsonify(dict(classification=classification))

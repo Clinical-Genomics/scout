@@ -25,8 +25,10 @@
     </div>
   </div>
 
-  {% for group_name, case in cases %}
-    <div class="table-responsive">{{ cases_table(group_name, case) }}</div>
+  {% for group_name, case_group in cases %}
+    {% if case_group|length > 0 %}
+      <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+    {% endif %}
   {% endfor %}
 {% endblock %}
 

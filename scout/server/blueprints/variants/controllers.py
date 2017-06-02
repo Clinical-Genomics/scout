@@ -5,12 +5,25 @@ import os.path
 from flask import url_for
 from flask_mail import Message
 
-from scout.constants import CLINSIG_MAP
+from scout.constants import CLINSIG_MAP, ACMG_MAP, ACMG_SHORT_MAP
+from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
+from .acmg import ACMG_CRITERIA
 
 log = logging.getLogger(__name__)
 MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
+ACMG_COMPLETE_MAP = {
+    'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
+    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Pathogenic',
+                              color='warning'),
+    'uncertain_significance': dict(code='uncertain_significance', short='VUS',
+                                   label='Uncertain Significance', color='primary'),
+    'likely_benign': dict(code='likely_benign', short='LB', label='Likely Benign',
+                          color='info'),
+    'benign': dict(code='benign', short='B', label='Benign', color='success'),
+}
+ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()
 
 
 class MissingSangerRecipientError(Exception):
@@ -103,6 +116,10 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj['genes']))
 
+    if isinstance(variant_obj.get('acmg_classification'), int):
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+
     return variant_obj
 
 
@@ -170,7 +187,9 @@ def variant(store, institute_obj, case_obj, variant_id):
     if variant_obj is None:
         return None
     variant_case(store, case_obj, variant_obj)
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id']))
+    for event in events:
+        event['verb'] = VERBS_MAP[event['verb']]
     other_causatives = []
     for other_variant in store.other_causatives(case_obj, variant_obj):
         case_display_name = other_variant['case_id'].split('-', 1)[-1]
@@ -213,6 +232,10 @@ def variant(store, institute_obj, case_obj, variant_id):
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
 
+    evaluations = []
+    for evaluation_obj in store.get_evaluations(variant_obj):
+        evaluation(store, evaluation_obj)
+        evaluations.append(evaluation_obj)
     return {
         'variant': variant_obj,
         'causatives': other_causatives,
@@ -220,6 +243,8 @@ def variant(store, institute_obj, case_obj, variant_id):
         'overlapping_svs': (parse_variant(store, institute_obj, case_obj, variant_obj) for
                             variant_obj in store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'ACMG_OPTIONS': ACMG_OPTIONS,
+        'evaluations': evaluations,
     }
 
 
@@ -513,3 +538,40 @@ def cancer_variants(store, request_args, institute_id, case_name):
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+
+def variant_acmg(store, institute_id, case_name, variant_id):
+    """Collect data relevant for rendering ACMG classification form."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
+                CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
+
+
+def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
+    """Calculate an ACMG classification based on a list of criteria."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(user_email)
+    variant_link = url_for('variants.variant', institute_id=institute_id,
+                           case_name=case_name, variant_id=variant_id)
+    classification = store.submit_evaluation(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        link=variant_link,
+        criteria=criteria,
+    )
+    return classification
+
+
+def evaluation(store, evaluation_obj):
+    """Fetch and fill-in evaluation object."""
+    evaluation_obj['institute'] = store.institute(evaluation_obj['institute_id'])
+    evaluation_obj['case'] = store.case(evaluation_obj['case_id'])
+    evaluation_obj['variant'] = store.variant(evaluation_obj['variant_specific'])
+    evaluation_obj['criteria'] = {criterion['term']: criterion for criterion in
+                                  evaluation_obj['criteria']}
+    evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+    return evaluation_obj
