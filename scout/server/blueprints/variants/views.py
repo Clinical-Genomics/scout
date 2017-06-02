@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, request, redirect, abort, flash, current_app, url_for
+from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
 from scout.server.extensions import store, mail, loqusdb
-from scout.server.utils import templated, institute_and_case
+from scout.server.utils import templated, institute_and_case, public_endpoint
+from scout.utils.acmg import get_acmg
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm
 
@@ -151,3 +152,12 @@ def variant_acmg(institute_id, case_name, variant_id):
         flash("classified as: {}".format(acmg), 'info')
         return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id))
+
+
+@variants_bp.route('/api/v1/acmg')
+@public_endpoint
+def acmg():
+    """Calculate an ACMG classification from submitted criteria."""
+    criteria = request.args.getlist('criterion')
+    classification = get_acmg(criteria)
+    return jsonify(dict(classification=classification))

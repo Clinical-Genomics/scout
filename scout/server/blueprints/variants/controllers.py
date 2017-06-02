@@ -537,7 +537,7 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
-                CRITERIA=ACMG_CRITERIA)
+                CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
 
 
 def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):

@@ -1,6 +1,7 @@
 :root {
   --bg-color: #eee;
   --border-color: #ccc;
+  --main-color: #00bcd4;
 }
 
 *, :after, :before {
@@ -226,6 +227,14 @@ th {
 	margin-right: 3rem;
 }
 
+.mt-1 {
+	margin-top: 1rem;
+}
+
+.mt-2 {
+	margin-top: 1.5rem;
+}
+
 /* CHECKBOX */
 input[type="checkbox"].ios8-switch {
     position: absolute;
@@ -271,4 +280,19 @@ input[type="checkbox"].ios8-switch:checked + label:after {
 }
 input[type="checkbox"].ios8-switch:checked + label:before {
     background: #55D069;
+}
+
+.float-top-secondary {
+	position: fixed;
+	top: 51px;
+	left: 0;
+	right: 0;
+	padding: 1rem;
+	z-index: 99;
+	background-color: var(--main-color);
+	border-bottom: 1px solid rgb(0, 153, 172);
+}
+
+.float-top-secondary + .container {
+	margin-top: 60px;
 }
