@@ -166,7 +166,7 @@ def get_acmg(acmg_terms):
                 3 - Likely Pathogenic
                 4 - Pathogenic
     """
-    prediction = 0
+    prediction = 'uncertain_significance'
     # This variable indicates if Pathogenecity Very Strong exists
     pvs = False
     # Collection of terms with Pathogenecity Strong

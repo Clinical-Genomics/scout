@@ -1,4 +1,5 @@
-from scout.utils.acmg import (is_pathogenic, is_likely_pathogenic, is_benign, is_likely_benign)
+from scout.utils.acmg import (is_pathogenic, is_likely_pathogenic, is_benign,
+                              is_likely_benign, get_acmg)
 
 
 def test_is_pathogenic_1():
@@ -358,4 +359,27 @@ def test_is_benign_2():
     bp_terms = ['BP1']
     res = is_likely_benign(bs_terms, bp_terms)
     assert not res
-    
+
+def test_get_acmg_no_terms():
+    acmg_terms = []
+    res = get_acmg(acmg_terms)
+    assert res == 'uncertain_significance'
+
+def test_get_acmg_pathogenic():
+    acmg_terms = ['PVS1', 'PS1']
+    res = get_acmg(acmg_terms)
+    assert res == 'pathogenic'
+
+    acmg_terms = ['PVS1', 'PS1', 'BS1']
+    res = get_acmg(acmg_terms)
+    assert res == 'pathogenic'
+
+def test_get_acmg_uncertain():
+    acmg_terms = ['PVS1']
+    res = get_acmg(acmg_terms)
+    assert res == 'uncertain_significance'
+
+    acmg_terms = ['PVS1', 'PS1', 'BA1']
+    res = get_acmg(acmg_terms)
+    assert res == 'uncertain_significance'
+
