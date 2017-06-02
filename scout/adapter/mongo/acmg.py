@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 class ACMGHandler(object):
 
-    def submit_evaluation(self, variant_obj, user_obj, institute_obj, case_obj, criterias):
+    def submit_evaluation(self, variant_obj, user_obj, institute_obj, case_obj, link, criterias):
         """Submit an evaluation to the database
         
         Get all the relevant information, build a evaluation_obj
@@ -17,6 +17,7 @@ class ACMGHandler(object):
             user_obj(dict)
             institute_obj(dict)
             case_obj(dict)
+            link(str): variant url
             criterias(list(dict)):
         
                 [
@@ -46,6 +47,10 @@ class ACMGHandler(object):
         )
     
         self._load_evaluation(evaluation_obj)
+        
+        # Update the acmg classification for the variant:
+        self.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, classification)
+        
 
     def _load_evaluation(self, evaluation_obj):
         """Load a evaluation object into the database"""
