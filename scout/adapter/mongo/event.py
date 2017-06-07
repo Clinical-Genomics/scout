@@ -1174,3 +1174,25 @@ class EventHandler(object):
         )
         logger.debug("Case updated")
         return updated_case
+
+    def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
+        """Update default panels for a case."""
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category='case',
+            verb='update_default_panels',
+            subject=case_obj['display_name'],
+        )
+
+        logger.info("Update default panels for {}".format(case_obj['display_name']))
+
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case_obj['_id']},
+            {},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        logger.debug("Case updated")
+        return updated_case

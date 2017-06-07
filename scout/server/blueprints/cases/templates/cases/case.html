@@ -587,6 +587,25 @@
         </tbody>
       </table>
     </div>
+    <div class="panel-body">
+      <form action="" method="POST">
+        <div class="form-group">
+          <label>Change default gene panels</label>
+        </div>
+        <div class="row">
+          <div class="col-xs-8">
+            <select name="panel_id" class="form-control" multiple>
+              {% for panel in case.panels %}
+                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-default form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 {% endmacro %}
 
@@ -596,6 +615,7 @@
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
       function getTerms(query, process) {
@@ -609,7 +629,11 @@
         minLength: 3,
       });
 
-      $('[data-toggle="tooltip"]').tooltip()
+      $('[data-toggle="tooltip"]').tooltip();
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
 
       $('table').stickyTableHeaders({
         scrollableArea: $(".fixed-panel")[0]

@@ -148,3 +148,12 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
                   # cc the sender of the email for confirmation
                   cc=[user_obj['email']])
     mail.send(msg)
+
+
+def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
+    """Update default panels for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
+    panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
+    store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
