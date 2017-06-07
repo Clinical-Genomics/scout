@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from intervaltree import (IntervalTree, Interval)
+
 from scout.parse.cytoband import parse_cytoband
 from scout.resources import cytobands_path
 from scout.utils.handle import get_file_handle
@@ -248,3 +250,18 @@ COHORT_TAGS = [
     'ketogenic diet',
     'other',
 ]
+
+PAR_COORDINATES = {
+        '37': {
+            'X': IntervalTree([Interval(60001, 2699521, 'par1'),
+                               Interval(154931044, 155260561, 'par2')]),
+            'Y': IntervalTree([Interval(10001, 2649521, 'par1'), 
+                               Interval(59034050, 59363567, 'par2')])
+        },
+        '38': {
+            'X': IntervalTree([Interval(10001, 2781480, 'par1'), 
+                               Interval(155701383, 156030896, 'par2')]),
+            'Y': IntervalTree([Interval(10001, 2781480, 'par1'), 
+                               Interval(56887903, 57217416, 'par2')])
+        },
+    }

@@ -235,7 +235,12 @@
         <tr>
           <td>
             Position
-            <span class="pull-right"><strong>{{ variant.chromosome }}:{{ variant.position }}</strong></span>
+            <span class="pull-right">
+              <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+              {% if variant.is_par %}
+                <span class="label label-info">PAR</span>
+              {% endif %}
+            </span>
           </td>
           <td>
             Change
@@ -299,7 +304,7 @@
       </form>
     </div>
     <div class="panel-body">
-      {{ acmg_form(variant.acmg_classification.code) }}
+      {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
     </div>
     <div class="panel-body">
       <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
@@ -705,7 +710,12 @@
 
 {% macro gtcall_panel() %}
   <div class="panel panel-default">
-    <div class="panel-heading">GT call</div>
+    <div class="panel-heading">
+      GT call
+      {% if variant.is_par %}
+        <span class="label label-info">PAR</span>
+      {% endif %}
+    </div>
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>

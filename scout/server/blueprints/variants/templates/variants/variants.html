@@ -96,8 +96,16 @@
             <td>{{ gene_cell(variant) }}</td>
             <td class="text-right">{{ frequency_cell(variant) }}</td>
             <td class="text-right">{{ cell_cadd(variant) }}</td>
-            <td>{{ variant.region_annotations|join(', ') }}</td>
-            <td>{{ variant.functional_annotations|join(', ') }}</td>
+            <td>
+              {% for annotation in variant.region_annotations %}
+                <div>{{ annotation }}</div>
+              {% endfor %}
+            </td>
+            <td>
+              {% for annotation in variant.functional_annotations %}
+                <div>{{ annotation }}</div>
+              {% endfor %}
+            </td>
             <td>{{ cell_models(variant) }}</td>
           </tr>
         {% else %}

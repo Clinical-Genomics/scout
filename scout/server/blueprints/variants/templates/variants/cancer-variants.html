@@ -30,7 +30,11 @@
       <td>{{ position_cell(variant) }}</td>
       <td class="text-right">{{ frequency_cell(variant, exac=True) }}</td>
       <td>{{ variant.sub_category }}</td>
-      <td>{{ variant.functional_annotations|join(', ') }}</td>
+      <td>
+        {% for annotation in variant.functional_annotations %}
+          <div>{{ annotation }}</div>
+        {% endfor %}
+      </td>
       <td>{{ allele_cell(variant.tumor or {}) }}</td>
       <td>{{ allele_cell(variant.normal or {}) }}</td>
     </tr>
@@ -72,5 +76,6 @@
   {% else %}
     <span class="text-muted">N/A</span>
   {% endif %}
-   <small>({{ allele.ref_depth }} / {{ allele.alt_depth }})</small>
+  <br>
+  <small class="text-muted">{{ allele.ref_depth }} / {{ allele.alt_depth }}</small>
 {% endmacro %}

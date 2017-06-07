@@ -21,6 +21,8 @@ from scout.parse.variant.rank_score import parse_rank_score
 from scout.parse.variant import parse_variant
 from scout.build import build_variant
 
+from scout.utils.par import is_par
+
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError
 
@@ -206,6 +208,10 @@ class VariantHandler(object):
             variant_obj = self.variant_collection.find_one({'_id': document_id})
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
+            if variant_obj['chromosome'] in ['X', 'Y']:
+                ## TODO add the build here
+                variant_obj['is_par'] = is_par(variant_obj['chromosome'], 
+                                               variant_obj['position'])
         return variant_obj
 
     def get_causatives(self, institute_id):
