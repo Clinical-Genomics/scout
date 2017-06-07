@@ -323,3 +323,11 @@ def cohorts(institute_id, case_name):
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/default-panels', methods=['POST'])
+def default_panels(institute_id, case_name):
+    """Update default panels for a case."""
+    panel_ids = request.form.getlist('panel_id')
+    controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
+    return redirect(request.referrer)
