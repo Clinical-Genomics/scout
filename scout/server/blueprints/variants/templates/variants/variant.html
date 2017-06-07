@@ -235,7 +235,12 @@
         <tr>
           <td>
             Position
-            <span class="pull-right"><strong>{{ variant.chromosome }}:{{ variant.position }}</strong></span>
+            <span class="pull-right">
+              <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+              {% if variant.is_par %}
+                <span class="label label-info">PAR</span>
+              {% endif %}
+            </span>
           </td>
           <td>
             Change
@@ -705,7 +710,12 @@
 
 {% macro gtcall_panel() %}
   <div class="panel panel-default">
-    <div class="panel-heading">GT call</div>
+    <div class="panel-heading">
+      GT call
+      {% if variant.is_par %}
+        <span class="label label-info">PAR</span>
+      {% endif %}
+    </div>
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>
