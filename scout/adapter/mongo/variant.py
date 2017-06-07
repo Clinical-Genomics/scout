@@ -93,18 +93,7 @@ class VariantHandler(object):
 
                 if gene_info.get('mosaicism'):
                     mosaicism = True
-                if gene_info.get('ar'):
-                    manual_inheritance.add('AR')
-                if gene_info.get('ad'):
-                    manual_inheritance.add('AD')
-                if gene_info.get('mt'):
-                    manual_inheritance.add('MT')
-                if gene_info.get('xr'):
-                    manual_inheritance.add('XR')
-                if gene_info.get('xd'):
-                    manual_inheritance.add('XD')
-                if gene_info.get('y'):
-                    manual_inheritance.add('Y')
+                manual_inheritance.update(gene_info.get('inheritance_models', []))
 
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
@@ -210,7 +199,7 @@ class VariantHandler(object):
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
             if variant_obj['chromosome'] in ['X', 'Y']:
                 ## TODO add the build here
-                variant_obj['is_par'] = is_par(variant_obj['chromosome'], 
+                variant_obj['is_par'] = is_par(variant_obj['chromosome'],
                                                variant_obj['position'])
         return variant_obj
 
@@ -517,7 +506,7 @@ class VariantHandler(object):
                         individual_positions = individual_positions,
                         category=category,
                     )
-                    
+
                     # Build the variant object
                     variant_obj = build_variant(
                         variant=parsed_variant,
@@ -546,7 +535,7 @@ class VariantHandler(object):
             logger.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
-        
+
         logger.info("Nr variants inserted: %s", nr_inserted)
         return nr_inserted
 

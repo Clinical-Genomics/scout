@@ -224,6 +224,10 @@ def variant(store, institute_obj, case_obj, variant_id):
 
     variant_obj['disease_associated_transcripts'] = []
     for gene_obj in variant_obj['genes']:
+        omim_models = set()
+        for disease_term in gene_obj.get('disease_terms', []):
+            omim_models.update(disease_term.get('inheritance', []))
+        gene_obj['omim_inheritance'] = list(omim_models)
         for transcript_obj in gene_obj['transcripts']:
             if transcript_obj.get('is_disease_associated'):
                 hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
@@ -439,11 +443,10 @@ def spidex_human(variant_obj):
 
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
-    all_models = set()
+    manual_models = set()
     for gene in variant_obj['genes']:
-        for model in (gene.get('common') or {}).get('inheritance_models', []):
-            all_models.add(model)
-    return list(all_models)
+        manual_models.update(gene.get('manual_inheritance', []))
+    return list(manual_models)
 
 
 def incomplete_penetrance(variant_obj):

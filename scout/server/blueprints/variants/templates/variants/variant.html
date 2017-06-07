@@ -609,21 +609,38 @@
         Variant
         <span class="pull-right">
           {% for model in variant.genetic_models|sort %}
-            <span class="label label-default">{{ model }}</span>
+            <span class="label label-info">{{ model }}</span>
           {% else %}
             <span class="label label-warning">No models followed</span>
           {% endfor %}
         </span>
       </li>
-      <li class="list-group-item">
-        Expected
-        <span class="pull-right">
-          {% for model in variant.expected_inheritance|sort %}
-            <span class="label label-default">{{ model }}</span>
-          {% endfor %}
-        </span>
-      </li>
     </ul>
+    <div class="panel-heading">Inheritance models</div>
+    <table class="table table-bordered">
+      <thead>
+        <th>Gene</th>
+        <th>OMIM</th>
+        <th>Manual</th>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          <tr>
+            <td>{{ gene.hgnc_symbol }}</td>
+            <td>
+              {% for model in gene.omim_inheritance %}
+                <span class="label label-info">{{ model }}</span>
+              {% endfor %}
+            </td>
+            <td>
+              {% for model in gene.manual_inheritance %}
+                <span class="label label-info">{{ model }}</span>
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
     <div class="panel-heading">Incomplete penetrance</div>
     <table class="table table-bordered">
       <thead>
