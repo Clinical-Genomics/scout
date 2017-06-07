@@ -2,7 +2,7 @@
 import logging
 import os.path
 
-from flask import url_for
+from flask import url_for, flash
 from flask_mail import Message
 
 from scout.constants import CLINSIG_MAP, ACMG_MAP, ACMG_SHORT_MAP
@@ -575,3 +575,17 @@ def evaluation(store, evaluation_obj):
                                   evaluation_obj['criteria']}
     evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
     return evaluation_obj
+
+
+def upload_panel(store, institute_id, case_name, stream):
+    """Parse out HGNC symbols from a stream."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    raw_symbols = [line.strip().split('\t')[0] for line in stream if not line.startswith('#')]
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    for raw_symbol in raw_symbols:
+        if store.hgnc_genes(raw_symbol).count() == 0:
+            flash("HGNC symbol not found: {}".format(raw_symbol), 'warning')
+        else:
+            hgnc_symbols.append(raw_symbol)
+    return hgnc_symbols

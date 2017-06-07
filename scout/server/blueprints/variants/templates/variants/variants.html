@@ -30,7 +30,7 @@
 {% block top_nav_right %}
   <li><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
   <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">HPO panels <span class="caret"></span></a>
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li>
         <a href="{{ url_for('variants.variants', institute_id=institute._id,
@@ -39,10 +39,17 @@
           HPO gene list
         </a>
       </li>
+      <li>
+        <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
+      </li>
+      <li role="separator" class="divider"></li>
+      <li class="dropdown-header">Upload gene panel</li>
+      <li>
+        <form id="file-form" action="{{ url_for('variants.upload_panel', institute_id=institute._id, case_name=case.display_name, **form.data) }}" method="POST" enctype="multipart/form-data">
+          <input id="file-input" class="form-control btn btn-link" name="file" type="file" required>
+        </form>
+      </li>
     </ul>
-  </li>
-  <li>
-    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
   </li>
   {{ super() }}
 {% endblock %}
@@ -267,6 +274,10 @@
       $('select[multiple]').multiselect({
         buttonWidth: '100%'
       });
+
+      document.getElementById('file-input').onchange = function() {
+        document.getElementById('file-form').submit();
+      };
     })
   </script>
 {% endblock %}
