@@ -13,3 +13,9 @@ def docs(context):
     context.run("git commit -a -m 'Update docs'")
     context.run("git push origin gh-pages")
     context.run("git checkout master")
+
+
+@task
+def deploy(context):
+    """Deploy recent updated to AWS demo instance."""
+    context.run("./scripts/deploy")

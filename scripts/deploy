@@ -1,0 +1,1 @@
+ssh ec2-tb "git -C ~/scout pull && supervisorctl restart scout"
