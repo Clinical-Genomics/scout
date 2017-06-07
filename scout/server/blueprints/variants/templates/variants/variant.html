@@ -299,7 +299,7 @@
       </form>
     </div>
     <div class="panel-body">
-      {{ acmg_form(variant.acmg_classification.code) }}
+      {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
     </div>
     <div class="panel-body">
       <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
