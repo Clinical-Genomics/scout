@@ -114,7 +114,7 @@ def phenotypes_actions(institute_id, case_name):
             store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
     elif action == 'PHENOMIZER':
         if len(hpo_ids) == 0:
-            hpo_ids = [term['phenotype_id'] for term in case_obj['phenotype_terms']]
+            hpo_ids = [term['phenotype_id'] for term in case_obj.get('phenotype_terms', [])]
 
         username = current_app.config['PHENOMIZER_USERNAME']
         password = current_app.config['PHENOMIZER_PASSWORD']
