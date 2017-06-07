@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import io
 import logging
 
 from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify
@@ -186,3 +187,26 @@ def acmg():
     criteria = request.args.getlist('criterion')
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
+
+
+@variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
+def upload_panel(institute_id, case_name):
+    """Parse gene panel file and fill in HGNC symbols for filter."""
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file', 'warning')
+        return redirect(request.referrer)
+
+    try:
+        stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
+    except UnicodeDecodeError as error:
+        flash("Only text files are supported!", 'warning')
+        return (request.referrer)
+
+    params = dict(request.args)
+    hgnc_symbols = set(params.get('hgnc_symbols', []))
+    new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
+    hgnc_symbols.update(new_hgnc_symbols)
+    params['hgnc_symbols'] = list(hgnc_symbols)
+    return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
+                            **params))
