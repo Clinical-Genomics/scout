@@ -95,7 +95,7 @@ class HpoHandler(object):
         else:
             log.info("Fetching all disease terms")
 
-        return self.disease_term_collection.find(query)
+        return list(self.disease_term_collection.find(query))
 
     def load_disease_term(self, disease_obj):
         """Load a disease term into the database

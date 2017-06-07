@@ -210,7 +210,6 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['alamut_link'] = alamut_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
-    variant_obj['incomplete_penetrance'] = incomplete_penetrance(variant_obj)
     variant_obj['callers'] = callers(variant_obj)
 
     for gene_obj in variant_obj['genes']:
@@ -326,8 +325,11 @@ def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string."""
     if transcript_obj.get('exon'):
         gene_part, part_count_raw = 'exon', transcript_obj['exon']
-    else:
+    elif transcript_obj.get('intron'):
         gene_part, part_count_raw = 'intron', transcript_obj['intron']
+    else:
+        # variant between genes
+        gene_part, part_count_raw = 'intergenic', '0'
 
     part_count = part_count_raw.rpartition('/')[0]
     change_str = "{}:{}{}:{}:{}".format(
@@ -447,18 +449,6 @@ def expected_inheritance(variant_obj):
     for gene in variant_obj['genes']:
         manual_models.update(gene.get('manual_inheritance', []))
     return list(manual_models)
-
-
-def incomplete_penetrance(variant_obj):
-    """Return gene marked as low penetrance."""
-    for gene_obj in variant_obj['genes']:
-        hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
-                       gene_obj['hgnc_id'])
-        yield {
-            'hgnc_symbol': hgnc_symbol,
-            'omim': gene_obj.get('omim_penetrance'),
-            'manual': gene_obj.get('manual_penetrance'),
-        }
 
 
 def callers(variant_obj):
