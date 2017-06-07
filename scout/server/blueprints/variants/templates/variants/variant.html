@@ -285,14 +285,13 @@
     </ul>
     <div class="panel-body">
       <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-        <label>Priority</label>
+        <label>Variant tag</label>
         <div class="row">
           <div class="col-xs-8">
             <select name="manual_rank" class="form-control">
-              {% for rank in manual_rank_options %}
-                <option {% if rank == variant.manual_rank %}selected{% endif %}
-                        value="{{ rank }}">
-                  {{ rank }}
+              {% for rank, label in manual_rank_options.items() %}
+                <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
+                  {{ label }}
                 </option>
               {% endfor %}
             </select>

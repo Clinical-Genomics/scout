@@ -12,7 +12,8 @@ from .forms import CancerFiltersForm
 from .acmg import ACMG_CRITERIA
 
 log = logging.getLogger(__name__)
-MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
+MANUAL_RANK_OPTIONS = {0: 'Unknown', 1: 'Discarded', 2: 'Probably benign', 3: 'Interesting',
+                       4: 'Very interesting', 5: 'Other'}
 ACMG_COMPLETE_MAP = {
     'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
     'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Pathogenic',
