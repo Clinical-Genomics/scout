@@ -24,6 +24,9 @@ individual = dict(
     capture_kits = list, # List of names of capture kits
     bam_file = str, # Path to bam file
     analysis_type = str, # choices=ANALYSIS_TYPES
+    confirmed_sex = bool,
+    confirmed_parent = bool,
+    predicted_ancestry = str, # one of AFR AMR EAS EUR SAS UNKNOWN
 )
 
 case = dict(
