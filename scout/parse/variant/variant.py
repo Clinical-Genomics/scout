@@ -171,13 +171,11 @@ def parse_variant(variant, case, variant_type='clinical',
 
     azlength = variant.INFO.get('AZLENGTH')
     if azlength:
-        value = azlength[0]
-        parsed_variant['azlength'] = int(value)
+        parsed_variant['azlength'] = int(azlength)
     
     azqual = variant.INFO.get('AZQUAL')
     if azqual:
-        value = azqual[0]
-        parsed_variant['azqual'] = float(value)
+        parsed_variant['azqual'] = float(azqual)
 
     ################# Add the gene and transcript information #################
     raw_transcripts = []
