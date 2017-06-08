@@ -25,6 +25,27 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
     log.info("Number of variants loaded:%s", result.count())
     assert result.count() == index+1
 
+# def test_manual_rank(real_populated_database, variant_objs, case_obj):
+#     """Check that the manual rank is added"""
+#     adapter = real_populated_database
+#     case_id = case_obj['case_id']
+#     # Make sure that there are no variants in the database
+#     # GIVEN a populated database without any variants
+#     assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+#
+#     # WHEN adding a number of variants
+#     for index, variant_obj in enumerate(variant_objs):
+#         # print(variant_obj)
+#         adapter.load_variant(variant_obj)
+#
+#     # THEN the same number of variants should have been loaded
+#     result = adapter.variants(case_id=case_id, nr_of_variants=-1)
+#     log.info("Number of variants loaded:%s", result.count())
+#
+#     for variant in result:
+#         assert 'variant_rank' in variant
+
+
 def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
     """Test to load variants into a mongo database"""
     case_id = case_obj['case_id']

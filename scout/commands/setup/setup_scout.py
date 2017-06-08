@@ -140,6 +140,13 @@ def database(context, institute_name, user_name, user_mail):
 
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('chromosome', pymongo.ASCENDING)])
+
+    adapter.variant_collection.create_index([('case_id', pymongo.ASCENDING),
+                                          ('rank_score', pymongo.DESCENDING)])
+
+    adapter.variant_collection.create_index([('case_id', pymongo.ASCENDING),
+                                          ('variant_rank', pymongo.ASCENDING)])
+
     log.info("hgnc gene index created")
 
     log.info("Scout instance setup successful")
@@ -248,6 +255,13 @@ def demo(context):
 
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('chromosome', pymongo.ASCENDING)])
+
+    adapter.variant_collection.create_index([('case_id', pymongo.ASCENDING),
+                                          ('rank_score', pymongo.DESCENDING)])
+
+    adapter.variant_collection.create_index([('case_id', pymongo.ASCENDING),
+                                          ('variant_rank', pymongo.ASCENDING)])
+    
     log.info("hgnc gene index created")
 
     log.info("Scout demo instance setup successful")

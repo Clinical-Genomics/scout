@@ -535,6 +535,7 @@ class VariantHandler(object):
             logger.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
+        self.update_variants(case_obj, variant_type, category=category)
 
         logger.info("Nr variants inserted: %s", nr_inserted)
         return nr_inserted

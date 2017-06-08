@@ -8,7 +8,7 @@ from scout.exceptions import IntegrityError
 
 def test_add_hpo_term(adapter):
     ## GIVEN a empty adapter
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -20,11 +20,11 @@ def test_add_hpo_term(adapter):
     adapter.load_hpo_term(hpo_term)
     
     ## THEN assert that the term have been loaded
-    assert adapter.hpo_terms().count() == 1
+    assert len([term for term in adapter.hpo_terms()]) == 1
 
 def test_add_hpo_term_twice(adapter):
     ## GIVEN a empty adapter
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -39,7 +39,7 @@ def test_add_hpo_term_twice(adapter):
 
 def test_fetch_term(adapter):
     ## GIVEN a adapter with one hpo term
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -57,7 +57,7 @@ def test_fetch_term(adapter):
 
 def test_fetch_non_existing_hpo_term(adapter):
     ## GIVEN a adapter with one hpo term
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -75,7 +75,7 @@ def test_fetch_non_existing_hpo_term(adapter):
 
 def test_fetch_all_hpo_terms(adapter):
     ## GIVEN a adapter with one hpo term
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -86,15 +86,16 @@ def test_fetch_all_hpo_terms(adapter):
     adapter.load_hpo_term(hpo_term)
 
     ## WHEN fetching the hpo terms
-    res = adapter.hpo_terms()
+    res = [term for term in adapter.hpo_terms()]
+
     
     ## THEN assert the term was fetched
-    assert res.count() == 1
+    assert len(res) == 1
 
 def test_fetch_all_hpo_terms_query(real_adapter):
     adapter = real_adapter
     ## GIVEN a adapter with one hpo term
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -113,15 +114,15 @@ def test_fetch_all_hpo_terms_query(real_adapter):
     adapter.load_hpo_term(hpo_term2)
 
     ## WHEN fetching the hpo terms with partial query
-    res = adapter.hpo_terms(query = '1')
+    res = [term for term in adapter.hpo_terms(query = '1')]
     
     ## THEN assert only one term was matched
-    assert res.count() == 1
+    assert len(res) == 1
 
 def test_fetch_all_hpo_terms_query_description(real_adapter):
     adapter = real_adapter
     ## GIVEN a adapter with one hpo term
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -140,17 +141,17 @@ def test_fetch_all_hpo_terms_query_description(real_adapter):
     adapter.load_hpo_term(hpo_term2)
 
     ## WHEN fetching the hpo terms with partial query
-    res = adapter.hpo_terms(query = 'second')
+    res = [term for term in adapter.hpo_terms(query = 'second')]
     
     ## THEN assert only one term was matched
-    assert res.count() == 1
+    assert len(res) == 1
     for term in res:
         assert term['_id'] == 'HP2'
 
 def test_fetch_all_hpo_terms_query_description_term(real_adapter):
     adapter = real_adapter
     ## GIVEN a adapter with one hpo term
-    assert adapter.hpo_terms().count() == 0
+    assert len([term for term in adapter.hpo_terms()]) == 0
     
     hpo_term = dict(
         _id = 'HP1', # Same as hpo_id
@@ -172,7 +173,7 @@ def test_fetch_all_hpo_terms_query_description_term(real_adapter):
     res = adapter.hpo_terms(query = 'term')
     
     ## THEN assert only one term was matched
-    assert res.count() == 2
+    assert len([term for term in res]) == 2
 
 
 #########################################################
@@ -181,7 +182,7 @@ def test_fetch_all_hpo_terms_query_description_term(real_adapter):
 
 def test_add_disease_term(adapter):
     ## GIVEN a empty adapter
-    assert adapter.disease_terms().count() == 0
+    assert len([term for term in adapter.disease_terms()]) == 0
     
     disease_term = dict(
         _id = 'OMIM:1', 
@@ -194,12 +195,14 @@ def test_add_disease_term(adapter):
     ## WHEN loading a hpo term
     adapter.load_disease_term(disease_term)
     
+    res = adapter.disease_terms()
+    
     ## THEN assert that the term have been loaded
-    assert adapter.disease_terms().count() == 1
+    assert len([term for term in res]) == 1
 
 def test_add_disease_term(adapter):
     ## GIVEN a empty adapter
-    assert adapter.disease_terms().count() == 0
+    assert len([term for term in adapter.disease_terms()]) == 0
     
     disease_term = dict(
         _id = 'OMIM:1', 
@@ -218,7 +221,7 @@ def test_add_disease_term(adapter):
 
 def test_fetch_disease_term(adapter):
     ## GIVEN a adapter loaded with one disease term
-    assert adapter.disease_terms().count() == 0
+    assert len([term for term in adapter.disease_terms()]) == 0
     
     disease_term = dict(
         _id = 'OMIM:1', 
@@ -237,7 +240,7 @@ def test_fetch_disease_term(adapter):
 
 def test_fetch_disease_term_by_number(adapter):
     ## GIVEN a adapter loaded with one disease term
-    assert adapter.disease_terms().count() == 0
+    assert len([term for term in adapter.disease_terms()]) == 0
     
     disease_term = dict(
         _id = 'OMIM:1', 
@@ -256,7 +259,7 @@ def test_fetch_disease_term_by_number(adapter):
 
 def test_fetch_disease_term_by_hgnc_id(adapter):
     ## GIVEN a adapter loaded with one disease term
-    assert adapter.disease_terms().count() == 0
+    assert len([term for term in adapter.disease_terms()]) == 0
     
     disease_term = dict(
         _id = 'OMIM:1', 
@@ -277,11 +280,11 @@ def test_fetch_disease_term_by_hgnc_id(adapter):
     res = adapter.disease_terms(hgnc_id=1)
     
     ## THEN assert the correct term was fetched
-    assert res.count() == 2
+    assert len([term for term in res]) == 2
 
 def test_fetch_disease_term_by_hgnc_id_again(adapter):
     ## GIVEN a adapter loaded with one disease term
-    assert adapter.disease_terms().count() == 0
+    assert len([term for term in adapter.disease_terms()]) == 0
     
     disease_term = dict(
         _id = 'OMIM:1', 
@@ -303,4 +306,4 @@ def test_fetch_disease_term_by_hgnc_id_again(adapter):
     res = adapter.disease_terms(hgnc_id=1)
     
     ## THEN assert the correct term was fetched
-    assert res.count() == 1
+    assert len([term for term in res]) == 1

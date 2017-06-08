@@ -87,6 +87,12 @@ class HpoHandler(object):
         """Return all disease terms that overlaps a gene
 
             If no gene, return all disease terms
+        
+        Args:
+            hgnc_id(int)
+        
+        Returns:
+            iterable(dict): A list with all disease terms that match
         """
         query = {}
         if hgnc_id:
