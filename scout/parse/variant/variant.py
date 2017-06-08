@@ -169,15 +169,15 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add autozygosity calls if present #################
 
-    azlength = variant_dict['info_dict'].get('AZLENGTH')
+    azlength = variant.INFO.get('AZLENGTH')
     if azlength:
         value = azlength[0]
-        variant['azlength'] = int(value)
-
-    azqual = variant_dict['info_dict'].get('AZQUAL')
+        parsed_variant['azlength'] = int(value)
+    
+    azqual = variant.INFO.get('AZQUAL')
     if azqual:
         value = azqual[0]
-        variant['azqual'] = float(value)
+        parsed_variant['azqual'] = float(value)
 
     ################# Add the gene and transcript information #################
     raw_transcripts = []
