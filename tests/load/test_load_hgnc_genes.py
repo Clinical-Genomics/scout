@@ -17,5 +17,4 @@ def test_load_hgnc_genes(adapter, genes):
     
     assert adapter.all_genes().count() == nr_genes
     
-    print(gene_info)
     assert adapter.hgnc_gene(gene_info['hgnc_id'])
