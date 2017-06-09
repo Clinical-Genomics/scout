@@ -57,16 +57,22 @@ def case(context, case_id, case_name, institute, add_collaborator, vcf, vcf_sv,
             log.info("Adding collaborator %s", add_collaborator)
     
     if vcf:
+        log.info("Updating 'vcf_snv' to %s", vcf)
         case_obj['vcf_files']['vcf_snv'] = vcf
     if vcf_sv:
+        log.info("Updating 'vcf_sv' to %s", vcf_sv)
         case_obj['vcf_files']['vcf_sv'] = vcf_sv
     if vcf_cancer:
+        log.info("Updating 'vcf_cancer' to %s", vcf_cancer)
         case_obj['vcf_files']['vcf_cancer'] = vcf_cancer
     if vcf_research:
+        log.info("Updating 'vcf_research' to %s", vcf_research)
         case_obj['vcf_files']['vcf_research'] = vcf_research
     if vcf_sv_research:
+        log.info("Updating 'vcf_sv_research' to %s", vcf_sv_research)
         case_obj['vcf_files']['vcf_sv_research'] = vcf_sv_research
     if vcf_cancer_research:
+        log.info("Updating 'vcf_cancer_research' to %s", vcf_cancer_research)
         case_obj['vcf_files']['vcf_cancer_research'] = vcf_cancer_research
 
     adapter.update_case(case_obj)
