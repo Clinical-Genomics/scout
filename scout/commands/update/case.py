@@ -27,9 +27,11 @@ log = logging.getLogger(__name__)
               help='path to research VCF with sv variants to be added')
 @click.option('--vcf-cancer-research', type=click.Path(exists=True),
               help='path to research VCF with cancer variants to be added')
+@click.option('--peddy-ped', type=click.Path(exists=True),
+              help='path to outfile .peddy.ped from peddy')
 @click.pass_context
 def case(context, case_id, case_name, institute, add_collaborator, vcf, vcf_sv,
-         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research):
+         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research, peddy_ped):
     """
     Update a case in the database
     """

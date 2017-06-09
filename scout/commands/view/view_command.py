@@ -4,6 +4,8 @@ import click
 
 from pprint import pprint as pp
 
+from scout.constants import (SEX_MAP, PHENOTYPE_MAP)
+
 from .case import cases
 
 logger = logging.getLogger(__name__)
@@ -49,6 +51,63 @@ def users(context):
             ', '.join(user_obj.get('institutes',[])),
             )
         )
+
+@click.command('individuals', short_help='Display individuals')
+@click.option('-i', '--institute',
+              help='institute id of related cases'
+)
+@click.option('--causatives',
+              is_flag=True,
+              help='Has causative variants'
+)
+@click.option('-c', '--case-id')
+@click.pass_context
+def individuals(context, institute, causatives, case_id):
+    """Show all individuals from all cases in the database"""
+    logger.info("Running scout view individuals")
+    adapter = context.obj['adapter']
+    individuals = []
+    
+    if case_id:
+        case = adapter.case(case_id=case_id)
+        if case:
+            cases = [case]
+        else:
+            logger.info("Could not find case %s", case_id)
+            return
+    else:
+        cases = [case_obj for case_obj in 
+                 adapter.cases(
+                     collaborator=institute, 
+                     has_causatives=causatives)]
+        if len(cases) == 0:
+            logger.info("Could not find cases that match criteria")
+            return
+        individuals = (ind_obj for case_obj in cases for ind_obj in case_obj['individuals'])
+
+    click.echo("#case_id\tind_id\tdisplay_name\tsex\tphenotype\tmother\tfather")
+    
+    for case in cases:
+        for ind_obj in case['individuals']:
+            ind_info = [
+                case['case_id'], ind_obj['individual_id'], 
+                ind_obj['display_name'], SEX_MAP[int(ind_obj['sex'])],
+                PHENOTYPE_MAP[ind_obj['phenotype']], ind_obj['mother'],
+                ind_obj['father']
+                ]
+            click.echo('\t'.join(ind_info))
+    # if user_objs.count() == 0:
+    #     logger.info("No users found")
+    #     context.abort()
+    #
+    # for user_obj in user_objs:
+    #     click.echo("{0}\t{1}\t{2}\t{3}\t".format(
+    #         user_obj['name'],
+    #         user_obj.get('mail', user_obj['_id']),
+    #         ', '.join(user_obj.get('roles',[])),
+    #         ', '.join(user_obj.get('institutes',[])),
+    #         )
+    #     )
 
 @click.command('whitelist', short_help='Display whitelist')
 @click.pass_context
@@ -170,3 +229,4 @@ view.add_command(diseases)
 view.add_command(hpo)
 view.add_command(whitelist)
 view.add_command(aliases)
+view.add_command(individuals)

@@ -19,7 +19,23 @@ def parse_peddy_ped(lines):
         else:
             ind_info = dict(zip(header, line.split('\t')))
             
-            # one of AFR AMR EAS EUR SAS UNKNOWN
+            # PC1/PC2/PC3/PC4: the first 4 values after this sample was 
+            # projected onto the thousand genomes principle components.
+            ind_info['PC1'] = convert_number(ind_info['PC1'])
+            ind_info['PC2'] = convert_number(ind_info['PC2'])
+            ind_info['PC3'] = convert_number(ind_info['PC3'])
+            # ancestry-prediction one of AFR AMR EAS EUR SAS UNKNOWN
+
+            ind_info['het_call_rate'] = convert_number(ind_info['het_call_rate'])
+
+            # idr_baf: inter-decile range (90th percentile - 10th percentile) 
+            # of b-allele frequency. We make a distribution of all sites of 
+            # alts / (ref + alts) and then report the difference between the
+            # 90th and the 10th percentile. 
+            # Large values indicated likely sample contamination.
+            ind_info['het_idr_baf'] = convert_number(ind_info['het_idr_baf'])
+
+            ind_info['het_mean_depth'] = convert_number(ind_info['het_mean_depth'])
             
             peddy_ped.append(ind_info)
     return peddy_ped
@@ -109,32 +125,21 @@ def parse_peddy_sex_check(lines):
             header = line.lstrip('#').split(',')
         else:
             ind_info = dict(zip(header, line.split(',')))
-            error = ind_info.get('error')
-            if error:
-                if error in ['False', 'false']:
-                    ind_info['error'] = False
-                else:
-                    ind_info['error'] = True
-            try:
-                ind_info['het_count'] = int(ind_info['het_count'])
-            except ValueError:
-                ind_info['het_count'] = None
 
-            try:
-                ind_info['het_ratio'] = float(ind_info['het_ratio'])
-            except ValueError:
-                ind_info['het_ratio'] = None
+            # boolean indicating wether there is a mismatch between X 
+            # genotypes and ped sex.
+            ind_info['error'] = make_bool(ind_info.get('error'))
 
-            try:
-                ind_info['hom_alt_count'] = int(ind_info['hom_alt_count'])
-            except ValueError:
-                ind_info['hom_alt_count'] = None
+            # number of homozygous-alternate calls
+            ind_info['hom_alt_count'] = convert_number(ind_info['hom_alt_count'])
+            #number of homozygous-reference calls
+            ind_info['hom_ref_count'] = convert_number(ind_info['hom_ref_count'])
+            # number of heterozygote calls
+            ind_info['het_count'] = convert_number(ind_info['het_count'])
 
-            try:
-                ind_info['hom_ref_count'] = int(ind_info['hom_ref_count'])
-            except ValueError:
-                ind_info['hom_ref_count'] = None
-                
+            # ratio of het_count / hom_alt_count. Low for males, high for females
+            ind_info['het_ratio'] = convert_number(ind_info['het_ratio'])
+
             sex_check.append(ind_info)
 
     return sex_check

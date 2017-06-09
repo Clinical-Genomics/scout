@@ -1,4 +1,6 @@
 import logging
+import yaml
+import datetime
 
 from path import Path
 from ped_parser import FamilyParser
@@ -7,7 +9,58 @@ from scout.exceptions import (PedigreeError, ConfigError)
 from scout.constants import (PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP,
                              REV_PHENOTYPE_MAP)
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
+
+def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None, 
+                    vcf_sv=None, vcf_cancer=None):
+    """Parse all data necessary for loading a case into scout
+    
+    This can be done either by providing a VCF file and other information 
+    on the command line. Or all the information can be specifed in a config file.
+    Please see Scout documentation for further instructions.
+    
+    Args:
+        config(iterable(str)): A yaml formatted config file
+        ped(iterable(str)): A ped formatted family file
+        owner(str): The institute that owns a case
+    
+    Returns:
+        config_data(dict): Holds all the necessary information for loading 
+                           Scout
+    """
+    config_data = yaml.load(config) if config else {}
+    # Default the analysis date to now if not specified in load config
+    if not config_data:
+        config_data['analysis_date'] = datetime.datetime.now()
+
+    if ped:
+        with open(ped, 'r') as f:
+            family_id, samples = parse_ped(f)
+            config_data['family'] = family_id
+            config_data['samples'] = samples
+
+    if 'owner' not in config_data:
+        if not owner:
+            click.echo()
+            raise SyntaxError("Case has no owner")
+        else:
+            config_data['owner'] = owner
+
+    if 'gene_panels' in config_data:
+        log.debug("handle whitespace in gene panel names")
+        config_data['gene_panels'] = [panel.strip() for panel in
+                                      config_data['gene_panels']]
+        config_data['default_gene_panels'] = [panel.strip() for panel in
+                                              config_data['default_gene_panels']]
+    
+    config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
+    config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
+    config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
+    
+    # Set default rank score treshold to 0
+    config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
+    
+    return config_data
 
 
 def parse_individual(sample):
@@ -39,7 +92,7 @@ def parse_individual(sample):
         raise PedigreeError("Sample %s is missing 'sex'" % sample_id)
     sex = sample['sex']
     if sex not in REV_SEX_MAP:
-        logger.warning("'sex' is only allowed to have values from {}"
+        log.warning("'sex' is only allowed to have values from {}"
                        .format(', '.join(list(REV_SEX_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated sex" % sample_id)
 
@@ -49,7 +102,7 @@ def parse_individual(sample):
                             % sample_id)
     phenotype = sample['phenotype']
     if phenotype not in REV_PHENOTYPE_MAP:
-        logger.warning("'phenotype' is only allowed to have values from {}"
+        log.warning("'phenotype' is only allowed to have values from {}"
                        .format(', '.join(list(REV_PHENOTYPE_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated phenotype" % sample_id)
 
