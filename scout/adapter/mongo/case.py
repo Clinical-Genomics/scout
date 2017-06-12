@@ -300,6 +300,8 @@ class CaseHandler(object):
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
+                    'is_research': case_obj.get('is_research', False),
+                    'research_requested': case_obj.get('research_requested', False),
                 }
             },
             return_document = pymongo.ReturnDocument.AFTER

@@ -9,10 +9,14 @@ from scout.exceptions import (PedigreeError, ConfigError)
 from scout.constants import (PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP,
                              REV_PHENOTYPE_MAP)
 
+from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check, 
+                               parse_peddy_sex_check)
+
 log = logging.getLogger(__name__)
 
 def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None, 
-                    vcf_sv=None, vcf_cancer=None):
+                    vcf_sv=None, vcf_cancer=None, peddy_ped=None, 
+                    peddy_sex=None, peddy_check=None):
     """Parse all data necessary for loading a case into scout
     
     This can be done either by providing a VCF file and other information 
@@ -23,6 +27,10 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config(iterable(str)): A yaml formatted config file
         ped(iterable(str)): A ped formatted family file
         owner(str): The institute that owns a case
+        vcf_snv(str): Path to a vcf file
+        vcf_sv(str): Path to a vcf file
+        vcf_cancer(str): Path to a vcf file
+        peddy_ped(str): Path to a peddy ped
     
     Returns:
         config_data(dict): Holds all the necessary information for loading 
@@ -53,6 +61,16 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data['default_gene_panels'] = [panel.strip() for panel in
                                               config_data['default_gene_panels']]
     
+    if peddy_ped:
+        config_data['peddy_ped'] = peddy_ped
+    if peddy_sex:
+        config_data['peddy_sex_check'] = peddy_sex
+    if peddy_check:
+        config_data['peddy_ped_check'] = peddy_check
+    
+    # This will add information from peddy to the individuals
+    add_peddy_information(config_data)
+    
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
@@ -62,6 +80,61 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     
     return config_data
 
+def add_peddy_information(config_data):
+    """Add information from peddy outfiles to the individuals"""
+    ped_info = {}
+    ped_check = {}
+    sex_check = {}
+    relations = []
+    
+    if 'peddy_ped' in config_data:
+        file_handle = open(config_data['peddy_ped'], 'r')
+        for ind_info in parse_peddy_ped(file_handle):
+            ped_info[ind_info['sample_id']] = ind_info
+    
+    if 'peddy_ped_check' in config_data:
+        file_handle = open(config_data['peddy_ped_check'], 'r')
+        for pair_info in parse_peddy_ped_check(file_handle):
+            ped_check[(pair_info['sample_a'], pair_info['sample_b'])] = pair_info
+
+    if 'peddy_sex_check' in config_data:
+        file_handle = open(config_data['peddy_sex_check'], 'r')
+        for ind_info in parse_peddy_sex_check(file_handle):
+            sex_check[ind_info['sample_id']] = ind_info
+    
+    analysis_inds = {}
+    for ind in config_data['samples']:
+        ind_id = ind['sample_id']
+        analysis_inds[ind_id] = ind
+    
+    for ind_id in analysis_inds:
+        ind = analysis_inds[ind_id]
+        # Check if peddy has inferred the ancestry
+        if ind_id in ped_info:
+            ind['predicted_ancestry'] = ped_info[ind_id].get(
+                                             'ancestry-prediction', 'UNKNOWN')
+        # Check if peddy has inferred the sex
+        if ind_id in sex_check:
+            if sex_check[ind_id]['error']:
+               ind['confirmed_sex'] = False
+            else:
+               ind['confirmed_sex'] = True
+        
+        # Check if peddy har confirmed parental relations
+        for parent in ['mother', 'father']:
+            # If we are looking at individual with parents
+            if ind[parent] != '0':
+                # Check if the child/parent pair is in peddy data
+                for pair in ped_check:
+                    if (ind_id in pair and ind[parent] in pair):
+                        # If there is a parent error we mark that
+                        if ped_check[pair]['parent_error']:
+                            analysis_inds[ind[parent]]['confirmed_parent'] = False
+                        else:
+                        # Else if parent confirmation has not been done
+                            if 'confirmed_parent' not in analysis_inds[ind[parent]]:
+                                # Set confirmatio to True
+                                analysis_inds[ind[parent]]['confirmed_parent'] = True   
 
 def parse_individual(sample):
     """Parse individual information

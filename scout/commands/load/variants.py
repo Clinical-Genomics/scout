@@ -43,7 +43,6 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
         log.info("No matching case found")
         context.abort()
 
-    pp(case_obj)
     files = [
         {'category': 'cancer', 'variant_type': 'clinical', 'upload': cancer},
         {'category': 'cancer', 'variant_type': 'research', 'upload': cancer_research},

@@ -6,8 +6,7 @@ from pprint import pprint as pp
 import click
 
 from scout.load import load_scout
-from scout.parse.case import (parse_ped, parse_case, parse_case_data)
-from scout.build.case import build_case
+from scout.parse.case import (parse_case_data)
 from scout.exceptions import IntegrityError, ConfigError
 
 log = logging.getLogger(__name__)    
@@ -24,8 +23,15 @@ log = logging.getLogger(__name__)
 @click.option('-u', '--update', is_flag=True)
 @click.option('--no-variants', is_flag=False)
 @click.argument('config', type=click.File('r'), required=False)
+@click.option('--peddy-ped', type=click.Path(exists=True),
+              help='path to a peddy.ped file')
+@click.option('--peddy-sex', type=click.Path(exists=True),
+              help='path to a sex_check.csv file')
+@click.option('--peddy-check', type=click.Path(exists=True),
+              help='path to a ped_check.csv file')
 @click.pass_context
-def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config, no_variants):
+def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config, 
+         no_variants, peddy_ped, peddy_sex, peddy_check):
     """Load a case into the database.
     
     A case can be loaded without specifying vcf files and/or bam files
@@ -39,12 +45,23 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config, no_varian
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
     try:
-        config_data = parse_case_data(config, ped, owner, vcf, vcf_sv, 
-                                      vcf_cancer)
+        config_data = parse_case_data(
+            config=config, 
+            ped=ped, 
+            owner=owner, 
+            vcf_snv=vcf, 
+            vcf_sv=vcf_sv, 
+            vcf_cancer=vcf_cancer, 
+            peddy_ped=peddy_ped, 
+            peddy_sex=peddy_sex, 
+            peddy_check=peddy_check
+        )
     except SyntaxError as err:
         log.warning(err)
         context.abort()
 
+    pp(config_data)
+    context.abort()
     log.info("Use family %s" % config_data['family'])
 
     try:
