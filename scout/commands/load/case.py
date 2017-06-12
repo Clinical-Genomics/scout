@@ -60,8 +60,6 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
         log.warning(err)
         context.abort()
 
-    pp(config_data)
-    context.abort()
     log.info("Use family %s" % config_data['family'])
 
     try:

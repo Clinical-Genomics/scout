@@ -187,6 +187,10 @@ def parse_individual(sample):
 
     ind_info['father'] = sample.get('father')
     ind_info['mother'] = sample.get('mother')
+    
+    ind_info['confirmed_parent'] = sample.get('confirmed_parent')
+    ind_info['confirmed_sex'] = sample.get('confirmed_sex')
+    ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
     bam_file = sample.get('bam_path')
     if bam_file:
@@ -239,12 +243,11 @@ def parse_individuals(samples):
     return individuals
 
 
-def parse_case(config, ped=None):
+def parse_case(config):
     """Parse case information from config or PED files.
 
     Args:
         config (dict): case config with detailed information
-        ped (stream): PED file stream with sample information
 
     Returns:
         dict: parsed case data
@@ -252,12 +255,6 @@ def parse_case(config, ped=None):
     if 'owner' not in config:
         raise ConfigError("A case has to have a owner")
     owner = config['owner']
-
-    if ped:
-        with open(ped, 'r') as f:
-            family_id, samples = parse_ped(f)
-        config['family'] = family_id
-        config['samples'] = samples
 
     if 'family' not in config:
         raise ConfigError("A case has to have a 'family'")

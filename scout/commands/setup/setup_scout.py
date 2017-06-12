@@ -38,7 +38,6 @@ from scout.demo import load_path
 
 # Import the functions to setup scout
 from scout.parse.panel import parse_gene_panel
-from scout.parse.case import parse_case
 
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 

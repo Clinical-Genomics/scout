@@ -202,7 +202,6 @@ class CaseHandler(object):
         
         # Parse the case information
         parsed_case = parse_case(config=config_data)
-        
         # Build the case object
         case_obj = build_case(parsed_case, self)
 
