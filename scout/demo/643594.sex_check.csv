@@ -1,0 +1,4 @@
+error,het_count,het_ratio,hom_alt_count,hom_ref_count,ped_sex,predicted_sex,sample_id
+False,1542,0.03289,46877,38758,male,male,ADM1059A2
+False,1654,0.0328,50420,36021,male,male,ADM1059A1
+False,49493,1.7,29122,18348,female,female,ADM1059A3
