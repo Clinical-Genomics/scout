@@ -38,6 +38,11 @@ vcf_snv_research: scout/demo/643594.research.vcf.gz
 vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 
 madeline: scout/demo/madeline.xml
+
+peddy_ped: scout/demo/643594.peddy.ped
+peddy_ped_check: scout/demo/643594.ped_check.csv
+peddy_sex_check: scout/demo/643594.sex_check.csv
+
 default_gene_panels: [panel1]
 gene_panels: [panel1]
 

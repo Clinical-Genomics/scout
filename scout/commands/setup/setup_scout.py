@@ -8,6 +8,8 @@ import yaml
 import pymongo
 import click
 
+from pprint import pprint as pp
+
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
 from scout.adapter.client import get_connection
@@ -241,14 +243,8 @@ def demo(context):
 
     case_handle = get_file_handle(load_path)
     case_data = yaml.load(case_handle)
-
-    case_data['vcf_snv'] = clinical_snv_path
-    case_data['vcf_sv'] = clinical_sv_path
-    case_data['vcf_snv_research'] = research_snv_path
-    case_data['vcf_sv_research'] = research_sv_path
-    case_data['madeline'] = madeline_path
-
-    load_scout(adapter, case_data)
+    
+    adapter.load_case(case_data)
 
     log.info("Creating indexes")
 
@@ -278,61 +274,77 @@ def setup(context):
     context.obj['user_mail'] = 'clark.kent@mail.com'
 
     if context.invoked_subcommand == 'demo':
+        log.info("Loading hgnc genes from %s", hgnc_reduced_path)
+        hgnc = get_file_handle(hgnc_reduced_path)
+        hgnc38 = get_file_handle(hgnc_reduced_path)
+        log.info("Loading exac genes from %s", exac_reduced_path)
+        exac = get_file_handle(exac_reduced_path)
+        exac38 = get_file_handle(exac_reduced_path)
+        log.info("Loading mim2gene info from %s", mim2gene_reduced_path)
+        mim2gene = get_file_handle(mim2gene_reduced_path)
+        mim2gene38 = get_file_handle(mim2gene_reduced_path)
+        log.info("Loading genemap info from %s", genemap2_reduced_path)
+        genemap = get_file_handle(genemap2_reduced_path)
+        genemap38 = get_file_handle(genemap2_reduced_path)
+        log.info("Loading hpo gene info from %s", hpogenes_reduced_path)
+        hpogenes = get_file_handle(hpogenes_reduced_path)
+        hpogenes38 = get_file_handle(hpogenes_reduced_path)
+        log.info("Loading hpo disease info from %s", hpo_phenotype_to_terms_reduced_path)
+        hpodiseases = get_file_handle(hpo_phenotype_to_terms_reduced_path)
+        log.info("Loading hpo terms from %s", hpoterms_reduced_path)
+        hpoterms = get_file_handle(hpoterms_reduced_path)
+        log.info("Loading omim disease info from %s", genemap2_reduced_path)
+        diseaseterms = get_file_handle(genemap2_reduced_path)
+        log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
+        transcripts37 = get_file_handle(transcripts37_reduced_path)
+        transcripts38 = get_file_handle(transcripts37_reduced_path)
         # Update context.obj settings here
         log.info("Change database name to scout-demo")
         context.obj['mongodb'] = 'scout-demo'
-        log.info("Loading hgnc genes from %s", hgnc_reduced_path)
-        context.obj['hgnc'] = get_file_handle(hgnc_reduced_path)
-        context.obj['hgnc38'] = get_file_handle(hgnc_reduced_path)
-        log.info("Loading exac genes from %s", exac_reduced_path)
-        context.obj['exac'] = get_file_handle(exac_reduced_path)
-        context.obj['exac38'] = get_file_handle(exac_reduced_path)
-        log.info("Loading mim2gene info from %s", mim2gene_reduced_path)
-        context.obj['mim2gene'] = get_file_handle(mim2gene_reduced_path)
-        context.obj['mim2gene38'] = get_file_handle(mim2gene_reduced_path)
-        log.info("Loading genemap info from %s", genemap2_reduced_path)
-        context.obj['genemap2'] = get_file_handle(genemap2_reduced_path)
-        context.obj['genemap2_38'] = get_file_handle(genemap2_reduced_path)
-        log.info("Loading hpo gene info from %s", hpogenes_reduced_path)
-        context.obj['hpogenes'] = get_file_handle(hpogenes_reduced_path)
-        context.obj['hpogenes_38'] = get_file_handle(hpogenes_reduced_path)
-        log.info("Loading hpo disease info from %s", hpo_phenotype_to_terms_reduced_path)
-        context.obj['hpodiseases'] = get_file_handle(hpo_phenotype_to_terms_reduced_path)
-        log.info("Loading hpo terms from %s", hpoterms_reduced_path)
-        context.obj['hpo_terms'] = get_file_handle(hpoterms_reduced_path)
-        log.info("Loading omim disease info from %s", genemap2_reduced_path)
-        context.obj['disease_terms'] = get_file_handle(genemap2_reduced_path)
-        log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
-        context.obj['transcripts37'] = get_file_handle(transcripts37_reduced_path)
         # log.info("Loading transcripts build 38 info from %s", transcripts38_path)
         # context.obj['transcripts38'] = get_file_handle(transcripts38_path)
 
     else:
-        log.info("Loading hgnc genes from %s", hgnc_path)
-        context.obj['hgnc'] = get_file_handle(hgnc_path)
-        context.obj['hgnc38'] = get_file_handle(hgnc_path)
-        log.info("Loading exac genes from %s", exac_path)
-        context.obj['exac'] = get_file_handle(exac_path)
-        context.obj['exac38'] = get_file_handle(exac_path)
-        log.info("Loading mim2gene info from %s", mim2gene_path)
-        context.obj['mim2gene'] = get_file_handle(mim2gene_path)
-        context.obj['mim2gene38'] = get_file_handle(mim2gene_path)
-        log.info("Loading genemap info from %s", genemap2_path)
-        context.obj['genemap2'] = get_file_handle(genemap2_path)
-        context.obj['genemap2_38'] = get_file_handle(genemap2_path)
-        log.info("Loading hpo gene info from %s", hpogenes_path)
-        context.obj['hpogenes'] = get_file_handle(hpogenes_path)
-        context.obj['hpogenes_38'] = get_file_handle(hpogenes_path)
-        log.info("Loading hpo disease info from %s", hpo_phenotype_to_terms_path)
-        context.obj['hpodiseases'] = get_file_handle(hpo_phenotype_to_terms_path)
-        log.info("Loading hpo terms from %s", hpoterms_path)
-        context.obj['hpo_terms'] = get_file_handle(hpoterms_path)
-        log.info("Loading omim disease info from %s", genemap2_path)
-        context.obj['disease_terms'] = get_file_handle(genemap2_path)
-        log.info("Loading transcripts build 37 info from %s", transcripts37_path)
-        context.obj['transcripts37'] = get_file_handle(transcripts37_path)
-        log.info("Loading transcripts build 38 info from %s", transcripts38_path)
-        context.obj['transcripts38'] = get_file_handle(transcripts38_path)
+        log.info("Loading hgnc genes from %s", hgnc_reduced_path)
+        hgnc = get_file_handle(hgnc_path)
+        hgnc38 = get_file_handle(hgnc_path)
+        log.info("Loading exac genes from %s", exac_reduced_path)
+        exac = get_file_handle(exac_path)
+        exac38 = get_file_handle(exac_path)
+        log.info("Loading mim2gene info from %s", mim2gene_reduced_path)
+        mim2gene = get_file_handle(mim2gene_path)
+        mim2gene38 = get_file_handle(mim2gene_path)
+        log.info("Loading genemap info from %s", genemap2_reduced_path)
+        genemap = get_file_handle(genemap2_path)
+        genemap38 = get_file_handle(genemap2_path)
+        log.info("Loading hpo gene info from %s", hpogenes_reduced_path)
+        hpogenes = get_file_handle(hpogenes_path)
+        hpogenes38 = get_file_handle(hpogenes_path)
+        log.info("Loading hpo disease info from %s", hpo_phenotype_to_terms_reduced_path)
+        hpodiseases = get_file_handle(hpo_phenotype_to_terms_path)
+        log.info("Loading hpo terms from %s", hpoterms_reduced_path)
+        hpoterms = get_file_handle(hpoterms_path)
+        log.info("Loading omim disease info from %s", genemap2_reduced_path)
+        diseaseterms = get_file_handle(genemap2_path)
+        log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
+        transcripts37 = get_file_handle(transcripts37_path)
+        tramscripts38 = get_file_handle(transcripts38_path)
+
+    context.obj['hgnc'] = hgnc
+    context.obj['hgnc38'] = hgnc38
+    context.obj['exac'] = exac
+    context.obj['exac38'] = exac38
+    context.obj['mim2gene'] = mim2gene
+    context.obj['mim2gene38'] = mim2gene38
+    context.obj['genemap2'] = genemap
+    context.obj['genemap2_38'] = genemap38
+    context.obj['hpogenes'] = hpogenes
+    context.obj['hpogenes_38'] = hpogenes38
+    context.obj['hpodiseases'] = hpodiseases
+    context.obj['hpo_terms'] = hpoterms
+    context.obj['disease_terms'] = diseaseterms
+    context.obj['transcripts37'] = transcripts37
+    context.obj['transcripts38'] = transcripts38
 
     log.info("Setting database name to %s", context.obj['mongodb'])
     log.debug("Setting host to %s", context.obj['host'])
