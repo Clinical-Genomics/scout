@@ -1,0 +1,4 @@
+sample_a,sample_b,n,shared_hets,hets_a,ibs2,rel,hets_b,ibs0,pedigree_parents,pedigree_relatedness,predicted_parents,parent_error,sample_duplication_error,rel_difference
+ADM1059A2,ADM1059A1,16370,3995,8019,8452,0.5051,7882,7,True,0.5,True,False,False,-0.005075
+ADM1059A2,ADM1059A3,16370,3907,8019,8384,0.5012,7776,5,True,0.5,True,False,False,-0.001157
+ADM1059A1,ADM1059A3,16370,2962,7882,5097,-0.01492,7776,1539,False,0,False,False,False,0.01492

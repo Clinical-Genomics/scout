@@ -1,4 +1,6 @@
 import logging
+import yaml
+import datetime
 
 from path import Path
 from ped_parser import FamilyParser
@@ -7,8 +9,132 @@ from scout.exceptions import (PedigreeError, ConfigError)
 from scout.constants import (PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP,
                              REV_PHENOTYPE_MAP)
 
-logger = logging.getLogger(__name__)
+from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check, 
+                               parse_peddy_sex_check)
 
+log = logging.getLogger(__name__)
+
+def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None, 
+                    vcf_sv=None, vcf_cancer=None, peddy_ped=None, 
+                    peddy_sex=None, peddy_check=None):
+    """Parse all data necessary for loading a case into scout
+    
+    This can be done either by providing a VCF file and other information 
+    on the command line. Or all the information can be specifed in a config file.
+    Please see Scout documentation for further instructions.
+    
+    Args:
+        config(iterable(str)): A yaml formatted config file
+        ped(iterable(str)): A ped formatted family file
+        owner(str): The institute that owns a case
+        vcf_snv(str): Path to a vcf file
+        vcf_sv(str): Path to a vcf file
+        vcf_cancer(str): Path to a vcf file
+        peddy_ped(str): Path to a peddy ped
+    
+    Returns:
+        config_data(dict): Holds all the necessary information for loading 
+                           Scout
+    """
+    config_data = yaml.load(config) if config else {}
+    # Default the analysis date to now if not specified in load config
+    if not config_data:
+        config_data['analysis_date'] = datetime.datetime.now()
+
+    if ped:
+        with open(ped, 'r') as f:
+            family_id, samples = parse_ped(f)
+            config_data['family'] = family_id
+            config_data['samples'] = samples
+
+    if 'owner' not in config_data:
+        if not owner:
+            click.echo()
+            raise SyntaxError("Case has no owner")
+        else:
+            config_data['owner'] = owner
+
+    if 'gene_panels' in config_data:
+        log.debug("handle whitespace in gene panel names")
+        config_data['gene_panels'] = [panel.strip() for panel in
+                                      config_data['gene_panels']]
+        config_data['default_gene_panels'] = [panel.strip() for panel in
+                                              config_data['default_gene_panels']]
+    
+    if peddy_ped:
+        config_data['peddy_ped'] = peddy_ped
+    if peddy_sex:
+        config_data['peddy_sex_check'] = peddy_sex
+    if peddy_check:
+        config_data['peddy_ped_check'] = peddy_check
+    
+    # This will add information from peddy to the individuals
+    add_peddy_information(config_data)
+    
+    config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
+    config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
+    config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
+    
+    # Set default rank score treshold to 0
+    config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
+    
+    return config_data
+
+def add_peddy_information(config_data):
+    """Add information from peddy outfiles to the individuals"""
+    ped_info = {}
+    ped_check = {}
+    sex_check = {}
+    relations = []
+    
+    if 'peddy_ped' in config_data:
+        file_handle = open(config_data['peddy_ped'], 'r')
+        for ind_info in parse_peddy_ped(file_handle):
+            ped_info[ind_info['sample_id']] = ind_info
+    
+    if 'peddy_ped_check' in config_data:
+        file_handle = open(config_data['peddy_ped_check'], 'r')
+        for pair_info in parse_peddy_ped_check(file_handle):
+            ped_check[(pair_info['sample_a'], pair_info['sample_b'])] = pair_info
+
+    if 'peddy_sex_check' in config_data:
+        file_handle = open(config_data['peddy_sex_check'], 'r')
+        for ind_info in parse_peddy_sex_check(file_handle):
+            sex_check[ind_info['sample_id']] = ind_info
+    
+    analysis_inds = {}
+    for ind in config_data['samples']:
+        ind_id = ind['sample_id']
+        analysis_inds[ind_id] = ind
+    
+    for ind_id in analysis_inds:
+        ind = analysis_inds[ind_id]
+        # Check if peddy has inferred the ancestry
+        if ind_id in ped_info:
+            ind['predicted_ancestry'] = ped_info[ind_id].get(
+                                             'ancestry-prediction', 'UNKNOWN')
+        # Check if peddy has inferred the sex
+        if ind_id in sex_check:
+            if sex_check[ind_id]['error']:
+               ind['confirmed_sex'] = False
+            else:
+               ind['confirmed_sex'] = True
+        
+        # Check if peddy har confirmed parental relations
+        for parent in ['mother', 'father']:
+            # If we are looking at individual with parents
+            if ind[parent] != '0':
+                # Check if the child/parent pair is in peddy data
+                for pair in ped_check:
+                    if (ind_id in pair and ind[parent] in pair):
+                        # If there is a parent error we mark that
+                        if ped_check[pair]['parent_error']:
+                            analysis_inds[ind[parent]]['confirmed_parent'] = False
+                        else:
+                        # Else if parent confirmation has not been done
+                            if 'confirmed_parent' not in analysis_inds[ind[parent]]:
+                                # Set confirmatio to True
+                                analysis_inds[ind[parent]]['confirmed_parent'] = True   
 
 def parse_individual(sample):
     """Parse individual information
@@ -39,7 +165,7 @@ def parse_individual(sample):
         raise PedigreeError("Sample %s is missing 'sex'" % sample_id)
     sex = sample['sex']
     if sex not in REV_SEX_MAP:
-        logger.warning("'sex' is only allowed to have values from {}"
+        log.warning("'sex' is only allowed to have values from {}"
                        .format(', '.join(list(REV_SEX_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated sex" % sample_id)
 
@@ -49,7 +175,7 @@ def parse_individual(sample):
                             % sample_id)
     phenotype = sample['phenotype']
     if phenotype not in REV_PHENOTYPE_MAP:
-        logger.warning("'phenotype' is only allowed to have values from {}"
+        log.warning("'phenotype' is only allowed to have values from {}"
                        .format(', '.join(list(REV_PHENOTYPE_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated phenotype" % sample_id)
 
@@ -61,6 +187,10 @@ def parse_individual(sample):
 
     ind_info['father'] = sample.get('father')
     ind_info['mother'] = sample.get('mother')
+    
+    ind_info['confirmed_parent'] = sample.get('confirmed_parent')
+    ind_info['confirmed_sex'] = sample.get('confirmed_sex')
+    ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
     bam_file = sample.get('bam_path')
     if bam_file:
@@ -113,12 +243,11 @@ def parse_individuals(samples):
     return individuals
 
 
-def parse_case(config, ped=None):
+def parse_case(config):
     """Parse case information from config or PED files.
 
     Args:
         config (dict): case config with detailed information
-        ped (stream): PED file stream with sample information
 
     Returns:
         dict: parsed case data
@@ -126,12 +255,6 @@ def parse_case(config, ped=None):
     if 'owner' not in config:
         raise ConfigError("A case has to have a owner")
     owner = config['owner']
-
-    if ped:
-        with open(ped, 'r') as f:
-            family_id, samples = parse_ped(f)
-        config['family'] = family_id
-        config['samples'] = samples
 
     if 'family' not in config:
         raise ConfigError("A case has to have a 'family'")

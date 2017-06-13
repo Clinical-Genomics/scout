@@ -410,7 +410,7 @@ def case_database(request, institute_database, case_obj):
     "Returns an adapter to a database populated with institute, user and case"
     adapter = institute_database
 
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     return adapter
 
@@ -419,7 +419,7 @@ def populated_database(request, panel_database, institute_obj, parsed_user, case
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
 
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     return adapter
 
@@ -428,7 +428,7 @@ def real_populated_database(request, real_panel_database, institute_obj, parsed_
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
 
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     return adapter
 

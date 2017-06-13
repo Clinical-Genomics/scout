@@ -353,7 +353,7 @@ class VariantHandler(object):
             if (not_same_case and same_variant):
                 yield other_variant
 
-    def delete_variants(self, case_id, variant_type):
+    def delete_variants(self, case_id, variant_type, category='snv'):
         """Delete variants of one type for a case
 
             This is used when a case i reanalyzed
@@ -362,18 +362,18 @@ class VariantHandler(object):
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
         """
-        logger.info("Deleting old {0} variants for case {1}".format(
-                    variant_type, case_id))
+        logger.info("Deleting old {0} {1} variants for case {1}".format(
+                    variant_type, category, case_id))
 
         result = self.variant_collection.delete_many(
             {
                 'case_id': case_id,
-                'variant_type': variant_type
+                'variant_type': variant_type,
+                'category': category
             }
         )
 
         logger.info("{0} variants deleted".format(result.deleted_count))
-        logger.debug("Variants deleted")
 
     def load_variant(self, variant_obj):
         """Load a variant object
@@ -494,7 +494,6 @@ class VariantHandler(object):
                     variant.INFO.get('RankScore'),
                     case_obj['display_name']
                 )
-
                 if (not rank_score or rank_score > rank_threshold):
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
