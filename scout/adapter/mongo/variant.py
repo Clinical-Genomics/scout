@@ -467,8 +467,9 @@ class VariantHandler(object):
         region = ""
         if gene_obj:
             chrom = gene_obj['chromosome']
-            start = gene_obj['start']
-            end = gene_obj['end']
+            # Add same padding as VEP
+            start = max(gene_obj['start'] - 5000, 0)
+            end = gene_obj['end'] + 5000
         if chrom:
             rank_threshold = rank_threshold or -100
             if not (start and end):
