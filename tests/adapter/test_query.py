@@ -139,16 +139,16 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         sub_category='snv',
         case_id=case_id,
         chromosome='1',
-        position=10,
-        end=10,
+        position=235824342,
+        end=235824342,
         length=1,
         reference='A',
         alternative='T',
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
-        hgnc_symbols=['ADK'],
-        hgnc_ids=[1]
+        hgnc_symbols=['LYST'],
+        hgnc_ids=[1968]
     )
     populated_database.load_variant(snv_one)
 
@@ -163,16 +163,16 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         sub_category='snv',
         case_id=case_id,
         chromosome='1',
-        position=14,
-        end=14,
+        position=235824350,
+        end=235824350,
         length=1,
         reference='G',
         alternative='T',
         rank_score=9,
         variant_rank=2,
         institute=institute_obj,
-        hgnc_symbols=['ADK'],
-        hgnc_ids=[1]
+        hgnc_symbols=['LYST'],
+        hgnc_ids=[1968]
     )
     
     populated_database.load_variant(snv_two)
@@ -188,19 +188,18 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         sub_category='ins',
         case_id=case_id,
         chromosome='1',
-        position=8,
-        end=12,
+        position=235824350,
+        end=235824355,
         length=5,
         reference='A',
         alternative='ATTTTTT',
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
-        hgnc_symbols=['ADK'],
-        hgnc_ids=[1]
+        hgnc_symbols=['LYST'],
+        hgnc_ids=[1968]
     )
     populated_database.load_variant(sv_one)
-    
     ## THEN make sure that the variants where inserted
     result = populated_database.variants(case_id, category='snv')
     # Thow snvs where loaded
@@ -211,22 +210,22 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     assert result.count() == 1
         
     #Try to match only snv_one
-    query = {'chrom': '1', 'start': 10, 'end':10}
+    query = {'chrom': '1', 'start': 235824342, 'end':235824342}
     result = populated_database.variants(case_id, category='snv', query=query)
     assert result.count() == 1
 
-    #Try to match only both snvs
-    query = {'chrom': '1', 'start': 5, 'end':20}
+    #Try to match both snvs
+    query = {'chrom': '1', 'start': 235824341, 'end':235824352}
     result = populated_database.variants(case_id, category='snv', query=query)
     assert result.count() == 2
 
     #Try interval larger than sv
-    query = {'chrom': '1', 'start': 5, 'end':20}
+    query = {'chrom': '1', 'start': 235824342, 'end':235824360}
     result = populated_database.variants(case_id, category='sv', query=query)
     assert result.count() == 1
 
     #Try interval lower overlap sv
-    query = {'chrom': '1', 'start': 5, 'end':8}
+    query = {'chrom': '1', 'start': 235824332, 'end':235824352}
     result = populated_database.variants(case_id, category='sv', query=query)
     assert result.count() == 1
 
@@ -236,7 +235,7 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     assert result.count() == 0
 
     #Try minimal interval sv
-    query = {'chrom': '1', 'start': 10, 'end':10}
+    query = {'chrom': '1', 'start': 235824352, 'end':235824352}
     result = populated_database.variants(case_id, category='sv', query=query)
     assert result.count() == 1
 
