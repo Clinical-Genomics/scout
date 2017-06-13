@@ -213,7 +213,7 @@ def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
 def test_add_phenotype_group(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add OMIM term for a case")
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     hpo_term = 'HP:0000878'
     
@@ -291,7 +291,7 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
 def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add OMIM term for a case")
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
     
     #Existing mim phenotype
     mim_obj = adapter.disease_term_collection.find_one()
@@ -318,7 +318,7 @@ def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
 def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add a HPO term for a case")
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     # GIVEN a populated database
     assert adapter.event_collection.find().count() == 0
