@@ -6,11 +6,11 @@ from flask import Blueprint, request, redirect, abort, flash, current_app, url_f
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
+from scout.constants.acmg import ACMG_CRITERIA
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
 from . import controllers
-from .acmg import ACMG_CRITERIA
 from .forms import FiltersForm, SvFiltersForm
 
 log = logging.getLogger(__name__)

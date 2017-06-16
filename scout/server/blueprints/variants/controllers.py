@@ -5,26 +5,14 @@ import os.path
 from flask import url_for, flash
 from flask_mail import Message
 
-from scout.constants import CLINSIG_MAP, ACMG_MAP, ACMG_SHORT_MAP
+from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS,
+                             ACMG_COMPLETE_MAP)
+from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
-from .acmg import ACMG_CRITERIA
 
 log = logging.getLogger(__name__)
-MANUAL_RANK_OPTIONS = {0: 'Unknown', 1: 'Discarded', 2: 'Probably benign', 3: 'Interesting',
-                       4: 'Very interesting', 5: 'Other'}
-ACMG_COMPLETE_MAP = {
-    'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
-    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Pathogenic',
-                              color='warning'),
-    'uncertain_significance': dict(code='uncertain_significance', short='VUS',
-                                   label='Uncertain Significance', color='primary'),
-    'likely_benign': dict(code='likely_benign', short='LB', label='Likely Benign',
-                          color='info'),
-    'benign': dict(code='benign', short='B', label='Benign', color='success'),
-}
-ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()
 
 
 class MissingSangerRecipientError(Exception):

@@ -255,13 +255,66 @@ PAR_COORDINATES = {
         '37': {
             'X': IntervalTree([Interval(60001, 2699521, 'par1'),
                                Interval(154931044, 155260561, 'par2')]),
-            'Y': IntervalTree([Interval(10001, 2649521, 'par1'), 
+            'Y': IntervalTree([Interval(10001, 2649521, 'par1'),
                                Interval(59034050, 59363567, 'par2')])
         },
         '38': {
-            'X': IntervalTree([Interval(10001, 2781480, 'par1'), 
+            'X': IntervalTree([Interval(10001, 2781480, 'par1'),
                                Interval(155701383, 156030896, 'par2')]),
-            'Y': IntervalTree([Interval(10001, 2781480, 'par1'), 
+            'Y': IntervalTree([Interval(10001, 2781480, 'par1'),
                                Interval(56887903, 57217416, 'par2')])
         },
     }
+
+MANUAL_RANK_OPTIONS = {
+    8: {
+        'label': 'known pathogenic',
+        'description': 'Previously known pathogenic in Clinvar Hgmd literature etc',
+    },
+    7: {
+        'label': 'pathogenic',
+        'description': ("Novel mutation but overlapping phenotype with known pathogenic, "
+                        "no further experimental validation needed"),
+    },
+    6: {
+        'label': 'novel validated pathogenic',
+        'description': 'Novel mutation and validated experimentally',
+    },
+    5: {
+        'label': 'pathogenic partial phenotype',
+        'description': ("Pathogenic variant explains part of patients phenotype, but "
+                        "not all symptoms"),
+    },
+    4: {
+        'label': 'likely pathogenic',
+        'description': 'Experimental validation required to prove causality',
+    },
+    3: {
+        'label': 'possibly pathogenic',
+        'description': 'Uncertain significance, but cannot disregard yet',
+    },
+    2: {
+        'label': 'likely benign',
+        'description': 'Uncertain significance, but can discard',
+    },
+    1: {
+        'label': 'benign',
+        'description': 'Does not cause phenotype',
+    },
+    0: {
+        'label': 'other',
+        'description': 'Phenotype not related to disease',
+    },
+}
+
+ACMG_COMPLETE_MAP = {
+    'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
+    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Pathogenic',
+                              color='warning'),
+    'uncertain_significance': dict(code='uncertain_significance', short='VUS',
+                                   label='Uncertain Significance', color='primary'),
+    'likely_benign': dict(code='likely_benign', short='LB', label='Likely Benign',
+                          color='info'),
+    'benign': dict(code='benign', short='B', label='Benign', color='success'),
+}
+ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()
