@@ -132,7 +132,7 @@ def phenotypes_actions(institute_id, case_name):
 
     elif action == 'GENERATE':
         if len(hpo_ids) == 0:
-            hpo_ids = [term['phenotype_id'] for term in case_obj['phenotype_terms']]
+            hpo_ids = [term['phenotype_id'] for term in case_obj.get('phenotype_terms', [])]
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get('min_match') or 1)

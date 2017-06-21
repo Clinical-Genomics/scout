@@ -66,17 +66,18 @@ def logout():
 @login_bp.route('/authorized')
 @public_endpoint
 def authorized():
-    oauth_response = google.authorized_response()
+    try:
+        oauth_response = google.authorized_response()
+    except OAuthException as error:
+        current_app.logger.warn(oauth_response.message)
+        flash("{} - try again!".format(oauth_response.message), 'warning')
+        return redirect(url_for('public.index'))
+
     if oauth_response is None:
         flash("Access denied: reason={} error={}"
               .format(request.args['error_reason'],
                       request.args['error_description']), 'danger')
         return abort(403)
-
-    elif isinstance(oauth_response, OAuthException):
-        current_app.logger.warn(oauth_response.message)
-        flash("{} - try again!".format(oauth_response.message), 'warning')
-        return redirect(url_for('public.index'))
 
     # add token to session, do it before validation to be able to fetch
     # additional data (like email) on the authenticated user
