@@ -147,6 +147,7 @@ def setup(context, institute, user_mail, user_name):
     database = client[context.obj['mongodb']]
     LOG.info("Test if mongod is running")
     try:
+        log.info("Test if mongod is running")
         database.test.find_one()
     except ServerSelectionTimeoutError as err:
         LOG.warning("Connection could not be established")
@@ -160,4 +161,3 @@ def setup(context, institute, user_mail, user_name):
 
 setup.add_command(database)
 setup.add_command(demo)
-
