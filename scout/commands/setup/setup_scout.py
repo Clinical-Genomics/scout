@@ -168,29 +168,24 @@ def demo(context):
     log.info("Setting up database %s", context.obj['mongodb'])
     log.info("Deleting previous database")
     for collection_name in adapter.db.collection_names():
-        log.info("Deleting collection %s", collection_name)
-        adapter.db.drop_collection(collection_name)
+        if not collection_name.startswith('system.'):
+            log.info("Deleting collection %s", collection_name)
+            adapter.db.drop_collection(collection_name)
     log.info("Database deleted")
 
     # Build a institute with id institute_name
     institute_obj = build_institute(
         internal_id=institute_name,
         display_name=institute_name,
-        sanger_recipients=[user_mail]
+        sanger_recipients=[user_mail],
     )
 
     # Add the institute to database
     adapter.add_institute(institute_obj)
 
     # Build a user obj
-    user_obj = dict(
-                _id=user_mail,
-                email=user_mail,
-                name=user_name,
-                roles=['admin'],
-                institutes=[institute_name]
-            )
-
+    user_obj = dict(_id=user_mail, email=user_mail, name=user_name, roles=['admin'],
+                    institutes=[institute_name])
     adapter.add_user(user_obj)
 
     # Load the genes and transcripts
@@ -225,14 +220,14 @@ def demo(context):
     )
 
     panel_info = {
-            'date': datetime.datetime.now(),
-            'file': panel_path,
-            'type': 'clinical',
-            'institute': 'cust000',
-            'version': '1.0',
-            'panel_name': 'panel1',
-            'full_name': 'Test panel'
-        }
+        'date': datetime.datetime.now(),
+        'file': panel_path,
+        'type': 'clinical',
+        'institute': 'cust000',
+        'version': '1.0',
+        'panel_name': 'panel1',
+        'full_name': 'Test panel'
+    }
 
     parsed_panel = parse_gene_panel(panel_info)
     panel_obj = build_panel(parsed_panel, adapter)
@@ -243,7 +238,7 @@ def demo(context):
 
     case_handle = get_file_handle(load_path)
     case_data = yaml.load(case_handle)
-    
+
     adapter.load_case(case_data)
 
     log.info("Creating indexes")
@@ -252,13 +247,12 @@ def demo(context):
                                           ('chromosome', pymongo.ASCENDING)])
 
     adapter.variant_collection.create_index([('case_id', pymongo.ASCENDING),
-                                          ('rank_score', pymongo.DESCENDING)])
+                                             ('rank_score', pymongo.DESCENDING)])
 
     adapter.variant_collection.create_index([('case_id', pymongo.ASCENDING),
-                                          ('variant_rank', pymongo.ASCENDING)])
-    
-    log.info("hgnc gene index created")
+                                             ('variant_rank', pymongo.ASCENDING)])
 
+    log.info("hgnc gene index created")
     log.info("Scout demo instance setup successful")
 
 
@@ -298,9 +292,8 @@ def setup(context):
         log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
         transcripts37 = get_file_handle(transcripts37_reduced_path)
         transcripts38 = get_file_handle(transcripts37_reduced_path)
-        # Update context.obj settings here
-        log.info("Change database name to scout-demo")
-        context.obj['mongodb'] = 'scout-demo'
+
+        context.obj['mongodb'] = context.obj['mongodb'] or 'scout-demo'
         # log.info("Loading transcripts build 38 info from %s", transcripts38_path)
         # context.obj['transcripts38'] = get_file_handle(transcripts38_path)
 
@@ -362,8 +355,8 @@ def setup(context):
 
     log.info("connecting to database %s", context.obj['mongodb'])
     database = client[context.obj['mongodb']]
-    log.info("Test if mongod is running")
     try:
+        log.info("Test if mongod is running")
         database.test.find_one()
     except ServerSelectionTimeoutError as err:
         log.warning("Connection could not be established")
@@ -377,4 +370,3 @@ def setup(context):
 
 setup.add_command(database)
 setup.add_command(demo)
-
