@@ -191,13 +191,13 @@
   <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-ok-sign"></span>
-      Coverage report
+      QC reports
     </h5>
     <form method="POST" action="{{ url_for('report.report', group_id=case._id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
       <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
       <div class="form-group">
-        <button type="submit" class="btn btn-default form-control">View report</button>
+        <button type="submit" class="btn btn-default form-control">Coverage report</button>
       </div>
     </form>
     <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
@@ -207,10 +207,19 @@
         <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
 
         <div class="form-group">
-          <button type="submit" class="btn btn-default form-control">Download PDF</button>
+          <button type="submit" class="btn btn-default form-control">
+            Download PDF (coverage)
+          </button>
         </div>
       </form>
     </p>
+    {% if case.multiqc %}
+      <p>
+        <div class="form-group">
+          <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}">MultiQC report</a>
+        </div>
+      </p>
+    {% endif %}
   </div>
 {% endmacro %}
 
