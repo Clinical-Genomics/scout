@@ -89,6 +89,7 @@ def add_peddy_information(config_data):
     ped_info = {}
     ped_check = {}
     sex_check = {}
+    relations = []
 
     if config_data.get('peddy_ped'):
         file_handle = open(config_data['peddy_ped'], 'r')
@@ -288,6 +289,7 @@ def parse_case(config):
         'peddy_sex': config.get('peddy_sex'),
         'peddy_check': config.get('peddy_check'),
         'delivery_report': config.get('delivery_report'),
+        'multiqc': config.get('multiqc'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db

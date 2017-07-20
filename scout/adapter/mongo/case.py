@@ -288,6 +288,7 @@ class CaseHandler(object):
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - has_svvariants: If there are new svvariants
+            - multiqc: If there's an upadted multiqc report location
 
             Args:
                 case_obj(dict): The new case information
@@ -326,6 +327,7 @@ class CaseHandler(object):
                     'has_svvariants': case_obj.get('has_svvariants'),
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
+                    'multiqc': case_obj['multiqc'],
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
