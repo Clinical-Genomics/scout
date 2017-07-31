@@ -289,6 +289,7 @@
         <div class="row">
           <div class="col-xs-8">
             <select name="manual_rank" class="form-control">
+              <option disabled>Select a tag</option>
               {% for rank, data in manual_rank_options.items() %}
                 <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
                   {{ data.label }}
