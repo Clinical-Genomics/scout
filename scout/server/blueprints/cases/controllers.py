@@ -16,8 +16,9 @@ PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
 
 def cases(store, case_query):
     """Preprocess case objects."""
+    limit = 100
     case_groups = {status: [] for status in CASE_STATUSES}
-    for case_obj in case_query:
+    for case_obj in case_query.limit(limit):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
@@ -27,6 +28,7 @@ def cases(store, case_query):
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
+        'limit': limit,
     }
     return data
 

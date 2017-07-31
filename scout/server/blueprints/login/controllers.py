@@ -26,6 +26,6 @@ def users(store):
         user_obj['events'] = store.user_events(user_obj).count()
         user_obj['events_rank'] = event_rank(user_obj['events'])
     return dict(
-        users=user_objs,
+        users=sorted(user_objs, key=lambda user: -user['events']),
         total_events=total_events,
     )
