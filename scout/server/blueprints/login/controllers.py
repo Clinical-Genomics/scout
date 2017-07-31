@@ -5,15 +5,15 @@ def event_rank(count):
     """Determine event ranking."""
     if count < 10:
         return 'constable'
-    elif count < 20:
-        return 'sergeant'
-    elif count < 50:
-        return 'inspector'
     elif count < 100:
+        return 'sergeant'
+    elif count < 250:
+        return 'inspector'
+    elif count < 500:
         return 'superintendent'
-    elif count < 150:
+    elif count < 1000:
         return 'commander'
-    elif count > 200:
+    else:
         return 'commissioner'
 
 
