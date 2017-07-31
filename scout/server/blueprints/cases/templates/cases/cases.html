@@ -21,7 +21,7 @@
       {{ search_form() }}
     </div>
     <div class="panel-footer text-center">
-      Showing {{ limit if limit > found_cases else found_cases }} / <strong>{{ found_cases }}</strong> cases
+      Showing {{ limit if limit < found_cases else found_cases }} /  {{ found_cases }} cases
     </div>
   </div>
 
