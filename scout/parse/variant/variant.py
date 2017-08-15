@@ -218,7 +218,7 @@ def parse_variant(variant, case, variant_type='clinical',
         acc=variant.INFO.get('CLNACC'),
         sig=variant.INFO.get('CLNSIG'),
         revstat=variant.INFO.get('CLNREVSTAT'),
-        transcripts = parsed_transcripts
+        transcripts=parsed_transcripts
         )
 
     if clnsig_predictions:

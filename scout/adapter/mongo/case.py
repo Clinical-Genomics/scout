@@ -185,13 +185,13 @@ class CaseHandler(object):
 
     def load_case(self, config_data, update=False):
         """Load a case into the database
-        
+
         Check if the owner and the institute exists.
-        
+
         Args:
             config_data(dict): A dictionary with all the necessary information
             update(bool): If existing case should be updated
-        
+
         Returns:
             case_obj(dict)
         """
@@ -199,7 +199,7 @@ class CaseHandler(object):
         institute_obj = self.institute(config_data['owner'])
         if not institute_obj:
             raise IntegrityError("Institute '%s' does not exist in database" % config_data['owner'])
-        
+
         # Parse the case information
         parsed_case = parse_case(config=config_data)
         # Build the case object
@@ -216,26 +216,26 @@ class CaseHandler(object):
         else:
             logger.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)
-        
+
         files = [
-            {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category':'snv'},
-            {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category':'sv'},
-            {'file_name': 'vcf_cancer', 'variant_type': 'clinical', 'category':'cancer'},
+            {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
+            {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
+            {'file_name': 'vcf_cancer', 'variant_type': 'clinical', 'category': 'cancer'},
         ]
-        
+
         for vcf_file in files:
             try:
                 if case_obj['vcf_files'].get(vcf_file['file_name']):
                     variant_type = vcf_file['variant_type']
                     category = vcf_file['category']
-                    
+
                     if update:
                         self.delete_variants(case_id=case_obj['_id'], variant_type=variant_type)
                     self.load_variants(
-                        case_obj=case_obj, 
-                        variant_type=variant_type, 
+                        case_obj=case_obj,
+                        variant_type=variant_type,
                         category=category,
-                        rank_threshold=case_obj.get('rank_score_threshold',0)
+                        rank_threshold=case_obj.get('rank_score_threshold', 0)
                     )
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
