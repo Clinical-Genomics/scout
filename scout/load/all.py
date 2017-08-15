@@ -2,7 +2,7 @@
 import logging
 
 from . import (load_case, load_variants, delete_variants)
-from scout.parse.case import parse_case
+from scout.parse.case import parse_case, parse_ped
 from scout.build import build_case
 from scout.exceptions.config import ConfigError
 
@@ -59,7 +59,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
              " {2}, end {3}".format(case_obj['_id'], chrom, start, end))
 
-    adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
+    adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                           category='snv', chrom=chrom, start=start, end=end)
 
     vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
@@ -100,7 +100,10 @@ def load_scout(adapter, config, ped=None, update=False):
         raise ConfigError("Some panel(s) does not exist in the database")
 
     log.debug('parse case data from config and ped')
-    case_data = parse_case(config, ped)
+    case_data = parse_case(config)
+    if ped:
+        more_case_data = parse_ped(ped)
+        case_data.update(more_case_data)
     log.debug('build case object from parsed case data')
 
     case_obj = build_case(case_data, adapter)
@@ -109,9 +112,8 @@ def load_scout(adapter, config, ped=None, update=False):
     delete_variants(adapter=adapter, case_obj=case_obj)
 
     log.info("Load clinical SNV variants for case %s", case_obj['case_id'])
-    adapter.load_variants(case_obj=case_obj, variant_type='clinical', 
-                          category='snv', 
-                          rank_threshold=case_data['rank_score_threshold'])
+    adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                          category='snv', rank_threshold=case_data['rank_score_threshold'])
 
     if config.get('vcf_sv'):
         log.info("Load SV variants for case %s", case_obj['case_id'])

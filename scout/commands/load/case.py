@@ -9,7 +9,7 @@ from scout.load import load_scout
 from scout.parse.case import (parse_case_data)
 from scout.exceptions import IntegrityError, ConfigError
 
-log = logging.getLogger(__name__)    
+log = logging.getLogger(__name__)
 
 @click.command('case', short_help='Load a case')
 @click.option('--vcf', type=click.Path(exists=True),
@@ -30,10 +30,10 @@ log = logging.getLogger(__name__)
 @click.option('--peddy-check', type=click.Path(exists=True),
               help='path to a ped_check.csv file')
 @click.pass_context
-def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config, 
+def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
          no_variants, peddy_ped, peddy_sex, peddy_check):
     """Load a case into the database.
-    
+
     A case can be loaded without specifying vcf files and/or bam files
     """
     adapter = context.obj['adapter']
@@ -41,19 +41,19 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
     if config is None and ped is None:
         click.echo("You have to provide either config or ped file")
         context.abort()
-    
+
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
     try:
         config_data = parse_case_data(
-            config=config, 
-            ped=ped, 
-            owner=owner, 
-            vcf_snv=vcf, 
-            vcf_sv=vcf_sv, 
-            vcf_cancer=vcf_cancer, 
-            peddy_ped=peddy_ped, 
-            peddy_sex=peddy_sex, 
+            config=config,
+            ped=ped,
+            owner=owner,
+            vcf_snv=vcf,
+            vcf_sv=vcf_sv,
+            vcf_cancer=vcf_cancer,
+            peddy_ped=peddy_ped,
+            peddy_sex=peddy_sex,
             peddy_check=peddy_check
         )
     except SyntaxError as err:

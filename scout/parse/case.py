@@ -9,20 +9,21 @@ from scout.exceptions import (PedigreeError, ConfigError)
 from scout.constants import (PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP,
                              REV_PHENOTYPE_MAP)
 
-from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check, 
+from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
                                parse_peddy_sex_check)
 
 log = logging.getLogger(__name__)
 
-def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None, 
-                    vcf_sv=None, vcf_cancer=None, peddy_ped=None, 
+
+def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
+                    vcf_sv=None, vcf_cancer=None, peddy_ped=None,
                     peddy_sex=None, peddy_check=None):
     """Parse all data necessary for loading a case into scout
-    
-    This can be done either by providing a VCF file and other information 
+
+    This can be done either by providing a VCF file and other information
     on the command line. Or all the information can be specifed in a config file.
     Please see Scout documentation for further instructions.
-    
+
     Args:
         config(iterable(str)): A yaml formatted config file
         ped(iterable(str)): A ped formatted family file
@@ -31,9 +32,9 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         vcf_sv(str): Path to a vcf file
         vcf_cancer(str): Path to a vcf file
         peddy_ped(str): Path to a peddy ped
-    
+
     Returns:
-        config_data(dict): Holds all the necessary information for loading 
+        config_data(dict): Holds all the necessary information for loading
                            Scout
     """
     config_data = yaml.load(config) if config else {}
@@ -49,7 +50,6 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
 
     if 'owner' not in config_data:
         if not owner:
-            click.echo()
             raise SyntaxError("Case has no owner")
         else:
             config_data['owner'] = owner
@@ -60,38 +60,38 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
                                       config_data['gene_panels']]
         config_data['default_gene_panels'] = [panel.strip() for panel in
                                               config_data['default_gene_panels']]
-    
+
     if peddy_ped:
         config_data['peddy_ped'] = peddy_ped
     if peddy_sex:
         config_data['peddy_sex_check'] = peddy_sex
     if peddy_check:
         config_data['peddy_ped_check'] = peddy_check
-    
+
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
-    
+
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
-    
+
     # Set default rank score treshold to 0
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
-    
+
     return config_data
+
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals"""
     ped_info = {}
     ped_check = {}
     sex_check = {}
-    relations = []
-    
+
     if 'peddy_ped' in config_data:
         file_handle = open(config_data['peddy_ped'], 'r')
         for ind_info in parse_peddy_ped(file_handle):
             ped_info[ind_info['sample_id']] = ind_info
-    
+
     if 'peddy_ped_check' in config_data:
         file_handle = open(config_data['peddy_ped_check'], 'r')
         for pair_info in parse_peddy_ped_check(file_handle):
@@ -101,25 +101,24 @@ def add_peddy_information(config_data):
         file_handle = open(config_data['peddy_sex_check'], 'r')
         for ind_info in parse_peddy_sex_check(file_handle):
             sex_check[ind_info['sample_id']] = ind_info
-    
+
     analysis_inds = {}
     for ind in config_data['samples']:
         ind_id = ind['sample_id']
         analysis_inds[ind_id] = ind
-    
+
     for ind_id in analysis_inds:
         ind = analysis_inds[ind_id]
         # Check if peddy has inferred the ancestry
         if ind_id in ped_info:
-            ind['predicted_ancestry'] = ped_info[ind_id].get(
-                                             'ancestry-prediction', 'UNKNOWN')
+            ind['predicted_ancestry'] = ped_info[ind_id].get('ancestry-prediction', 'UNKNOWN')
         # Check if peddy has inferred the sex
         if ind_id in sex_check:
             if sex_check[ind_id]['error']:
-               ind['confirmed_sex'] = False
+                ind['confirmed_sex'] = False
             else:
-               ind['confirmed_sex'] = True
-        
+                ind['confirmed_sex'] = True
+
         # Check if peddy har confirmed parental relations
         for parent in ['mother', 'father']:
             # If we are looking at individual with parents
@@ -131,10 +130,11 @@ def add_peddy_information(config_data):
                         if ped_check[pair]['parent_error']:
                             analysis_inds[ind[parent]]['confirmed_parent'] = False
                         else:
-                        # Else if parent confirmation has not been done
+                            # Else if parent confirmation has not been done
                             if 'confirmed_parent' not in analysis_inds[ind[parent]]:
                                 # Set confirmatio to True
-                                analysis_inds[ind[parent]]['confirmed_parent'] = True   
+                                analysis_inds[ind[parent]]['confirmed_parent'] = True
+
 
 def parse_individual(sample):
     """Parse individual information
@@ -166,7 +166,7 @@ def parse_individual(sample):
     sex = sample['sex']
     if sex not in REV_SEX_MAP:
         log.warning("'sex' is only allowed to have values from {}"
-                       .format(', '.join(list(REV_SEX_MAP.keys()))))
+                    .format(', '.join(list(REV_SEX_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated sex" % sample_id)
 
     # Check the phenotype
@@ -176,7 +176,7 @@ def parse_individual(sample):
     phenotype = sample['phenotype']
     if phenotype not in REV_PHENOTYPE_MAP:
         log.warning("'phenotype' is only allowed to have values from {}"
-                       .format(', '.join(list(REV_PHENOTYPE_MAP.keys()))))
+                    .format(', '.join(list(REV_PHENOTYPE_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated phenotype" % sample_id)
 
     ind_info['individual_id'] = sample_id
@@ -187,7 +187,7 @@ def parse_individual(sample):
 
     ind_info['father'] = sample.get('father')
     ind_info['mother'] = sample.get('mother')
-    
+
     ind_info['confirmed_parent'] = sample.get('confirmed_parent')
     ind_info['confirmed_sex'] = sample.get('confirmed_sex')
     ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
@@ -196,10 +196,10 @@ def parse_individual(sample):
     if bam_file:
         ind_info['bam_file'] = bam_file
 
-    analysis_type =  sample.get('analysis_type')
+    analysis_type = sample.get('analysis_type')
     if analysis_type:
         ind_info['analysis_type'] = analysis_type
-    
+
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
 
@@ -232,13 +232,11 @@ def parse_individuals(samples):
         father = parsed_ind['father']
         if (father and father != '0'):
             if father not in ind_ids:
-                raise PedigreeError('father %s does not exist in family'
-                                    % father)
+                raise PedigreeError('father %s does not exist in family' % father)
         mother = parsed_ind['mother']
         if (mother and mother != '0'):
             if mother not in ind_ids:
-                raise PedigreeError('mother %s does not exist in family'
-                                    % mother)
+                raise PedigreeError('mother %s does not exist in family' % mother)
 
     return individuals
 
@@ -281,8 +279,8 @@ def parse_case(config):
             'vcf_sv_research': config.get('vcf_sv_research'),
             'vcf_cancer_research': config.get('vcf_cancer_research'),
         },
-        'default_panels': config.get('default_gene_panels',[]),
-        'gene_panels': config.get('gene_panels',[]),
+        'default_panels': config.get('default_gene_panels', []),
+        'gene_panels': config.get('gene_panels', []),
         'assignee': config.get('assignee'),
     }
 
