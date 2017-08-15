@@ -562,7 +562,8 @@ def evaluation(store, evaluation_obj):
 def upload_panel(store, institute_id, case_name, stream):
     """Parse out HGNC symbols from a stream."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    raw_symbols = [line.strip().split('\t')[0] for line in stream if not line.startswith('#')]
+    raw_symbols = [line.strip().split('\t')[0] for line in stream if
+                   line and not line.startswith('#')]
     # check if supplied gene symbols exist
     hgnc_symbols = []
     for raw_symbol in raw_symbols:

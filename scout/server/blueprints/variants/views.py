@@ -201,12 +201,14 @@ def upload_panel(institute_id, case_name):
         stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
     except UnicodeDecodeError as error:
         flash("Only text files are supported!", 'warning')
-        return (request.referrer)
+        return redirect(request.referrer)
 
-    params = dict(request.args)
-    hgnc_symbols = set(params.get('hgnc_symbols', []))
+    form = FiltersForm(request.args)
+    hgnc_symbols = set(form.hgnc_symbols.data)
     new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
     hgnc_symbols.update(new_hgnc_symbols)
-    params['hgnc_symbols'] = list(hgnc_symbols)
+    form.hgnc_symbols.data = ','.join(hgnc_symbols)
+    # reset gene panels
+    form.gene_panels.data = ''
     return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
-                            **params))
+                            **form.data))
