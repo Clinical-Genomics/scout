@@ -309,7 +309,7 @@ MANUAL_RANK_OPTIONS = {
 
 ACMG_COMPLETE_MAP = {
     'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
-    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Pathogenic',
+    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Likely Pathogenic',
                               color='warning'),
     'uncertain_significance': dict(code='uncertain_significance', short='VUS',
                                    label='Uncertain Significance', color='primary'),

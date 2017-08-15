@@ -100,6 +100,14 @@ class QueryHandler(object):
                     ]
                 })
 
+        if query.get('local_obs') is not None:
+            mongo_query['$and'].append({
+                '$or': [
+                    {'local_obs_old': {'$exists': False}},
+                    {'local_obs_old': {'$lt': query['local_obs'] + 1}},
+                ]
+            })
+
         if query.get('cadd_score') is not None:
             cadd = query['cadd_score']
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
