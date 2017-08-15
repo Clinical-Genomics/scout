@@ -611,13 +611,13 @@
       </table>
     </div>
     <div class="panel-body">
-      <form action="" method="POST">
+      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
         <div class="form-group">
           <label>Change default gene panels</label>
         </div>
         <div class="row">
           <div class="col-xs-8">
-            <select name="panel_id" class="form-control" multiple>
+            <select name="panel_ids" class="form-control" multiple>
               {% for panel in case.panels %}
                 <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
               {% endfor %}
