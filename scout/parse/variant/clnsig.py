@@ -4,6 +4,7 @@ from scout.constants import REV_CLINSIG_MAP
 
 logger = logging.getLogger(__name__)
 
+
 def parse_clnsig(acc, sig, revstat, transcripts):
     """Get the clnsig information
 
@@ -16,40 +17,31 @@ def parse_clnsig(acc, sig, revstat, transcripts):
     Returns:
         clnsig_accsessions(list): A list with clnsig accessions
     """
-
     clnsig_accsessions = []
     if acc:
-        # There are sometimes different separators so we need to check which 
+        # There are sometimes different separators so we need to check which
         # one to use
-        separator = ','
-        accessions = acc.split(',')
-        if len(accessions) == 1:
-            accessions = acc.split('|')
-            if len(accessions) > 1:
-                separator = '|'
-        significance = sig.split(separator)
-        revision_statuses = revstat.split(separator)
-        
-        for i,annotation in enumerate(significance):
-            clnsig_accsessions.append(
-                {
-                    'value': int(annotation),
-                    'accession': accessions[i],
-                    'revstat': revision_statuses[i]
-                }
-            )
+        acc_groups = acc.split('|')
+        sig_groups = sig.split('|')
+        revstat_groups = revstat.split('|')
+        for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
+            accessions = acc_group.split(',')
+            significances = sig_group.split(',')
+            revstats = revstat_group.split(',')
+            for accession, significance, revstat in zip(accessions, significances, revstats):
+                clnsig_accsessions.append({
+                    'value': int(significance),
+                    'accession': accession,
+                    'revstat': revstat,
+                })
 
     elif transcripts:
         clnsig = set()
         for transcript in transcripts:
-            for annotation in transcript.get('clinsig',[]):
+            for annotation in transcript.get('clinsig', []):
                 clnsig.add(annotation)
         for annotation in clnsig:
             if annotation in REV_CLINSIG_MAP:
-                clnsig_accsessions.append(
-                    {
-                        'value': REV_CLINSIG_MAP[annotation]
-                    }
-                )
+                clnsig_accsessions.append({'value': REV_CLINSIG_MAP[annotation]})
 
     return clnsig_accsessions

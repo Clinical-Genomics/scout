@@ -21,8 +21,8 @@ from scout.exceptions import VcfError
 
 logger = logging.getLogger(__name__)
 
-def parse_variant(variant, case, variant_type='clinical', 
-                 rank_results_header=None, vep_header=None, 
+def parse_variant(variant, case, variant_type='clinical',
+                 rank_results_header=None, vep_header=None,
                  individual_positions=None, category=None):
     """Return a parsed variant
 
@@ -34,7 +34,7 @@ def parse_variant(variant, case, variant_type='clinical',
         variant_type(str): 'clinical' or 'research'
         rank_results_header(list)
         vep_header(list)
-        individual_positions(dict): Explain what position each individual has 
+        individual_positions(dict): Explain what position each individual has
                                     in vcf
         category(str): 'snv', 'sv' or 'cancer'
 
@@ -45,9 +45,9 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_results_header = rank_results_header or []
     # Vep information
     vep_header = vep_header or []
-    
+
     parsed_variant = {}
-    
+
     # Create the ID for the variant
     case_id = case['_id']
     case_name = case['display_name']
@@ -57,11 +57,11 @@ def parse_variant(variant, case, variant_type='clinical',
         chrom = chrom[3:]
     # Builds a dictionary with the different ids that are used
     parsed_variant['ids'] = parse_ids(
-        chrom=chrom, 
-        pos=variant.POS, 
-        ref=variant.REF, 
-        alt=variant.ALT[0], 
-        case_id=case_id, 
+        chrom=chrom,
+        pos=variant.POS,
+        ref=variant.REF,
+        alt=variant.ALT[0],
+        case_id=case_id,
         variant_type=variant_type
     )
     parsed_variant['case_id'] = case_id
@@ -88,7 +88,7 @@ def parse_variant(variant, case, variant_type='clinical',
     if len(variant.ALT) > 1:
         raise VcfError("Variants are only allowed to have one alternative")
     parsed_variant['alternative'] = variant.ALT[0]
-    
+
     # cyvcf2 will set QUAL to None if '.' in vcf
     parsed_variant['quality'] = variant.QUAL
     if variant.FILTER:
@@ -117,7 +117,7 @@ def parse_variant(variant, case, variant_type='clinical',
     mate_id = variant.INFO.get('MATEID')
 
     coordinates = parse_coordinates(
-        chrom = parsed_variant['chromosome'],
+        chrom=parsed_variant['chromosome'],
         ref=parsed_variant['reference'],
         alt=parsed_variant['alternative'],
         position=parsed_variant['position'],
@@ -139,15 +139,15 @@ def parse_variant(variant, case, variant_type='clinical',
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
 
-    rank_score = parse_rank_score(variant.INFO.get('RankScore',''), case_name)
+    rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), case_name)
     parsed_variant['rank_score'] = rank_score or 0
 
     ################# Add gt calls #################
     samples = {}
     if individual_positions:
         samples = parse_genotypes(
-                            variant, 
-                            case, 
+                            variant,
+                            case,
                             individual_positions
                         )
     parsed_variant['samples'] = samples
@@ -159,7 +159,7 @@ def parse_variant(variant, case, variant_type='clinical',
                                 variant_type=variant_type
                                 )
     if compounds:
-        parsed_variant['compounds'] = compounds 
+        parsed_variant['compounds'] = compounds
 
     ################# Add the inheritance patterns #################
 
@@ -172,7 +172,7 @@ def parse_variant(variant, case, variant_type='clinical',
     azlength = variant.INFO.get('AZLENGTH')
     if azlength:
         parsed_variant['azlength'] = int(azlength)
-    
+
     azqual = variant.INFO.get('AZQUAL')
     if azqual:
         parsed_variant['azqual'] = float(azqual)
@@ -184,8 +184,8 @@ def parse_variant(variant, case, variant_type='clinical',
         if vep_info:
             raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
                                for transcript_info in vep_info.split(','))
-            
-    
+
+
     parsed_transcripts = []
     dbsnp_ids = set()
     cosmic_ids = set()
@@ -195,10 +195,10 @@ def parse_variant(variant, case, variant_type='clinical',
             dbsnp_ids.add(dbsnp)
         for cosmic in parsed_transcript.get('cosmic', []):
             cosmic_ids.add(cosmic)
-    
+
     if (dbsnp_ids and not parsed_variant['dbsnp_id']):
         parsed_variant['dbsnp_id'] = ';'.join(dbsnp_ids)
-    
+
     if cosmic_ids:
         parsed_variant['cosmic_ids'] = list(cosmic_ids)
 
@@ -207,7 +207,7 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['genes'] = gene_info
 
     hgnc_ids = set([])
-    
+
     for gene in parsed_variant['genes']:
         hgnc_ids.add(gene['hgnc_id'])
 
@@ -220,13 +220,13 @@ def parse_variant(variant, case, variant_type='clinical',
         revstat=variant.INFO.get('CLNREVSTAT'),
         transcripts = parsed_transcripts
         )
-    
+
     if clnsig_predictions:
         parsed_variant['clnsig'] = clnsig_predictions
 
     ################# Add the frequencies #################
     frequencies = parse_frequencies(variant, parsed_transcripts)
-    
+
     parsed_variant['frequencies'] = frequencies
 
     # parse out old local observation count

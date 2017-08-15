@@ -502,8 +502,8 @@ class VariantHandler(object):
                         case=case_obj,
                         variant_type=variant_type,
                         rank_results_header=rank_results_header,
-                        vep_header = vep_header,
-                        individual_positions = individual_positions,
+                        vep_header=vep_header,
+                        individual_positions=individual_positions,
                         category=category,
                     )
 
@@ -532,25 +532,26 @@ class VariantHandler(object):
                         inserted += 1
 
         except Exception as error:
+            logger.exception('unexpected error')
             logger.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
-        self.update_variants(case_obj, variant_type, category=category)
 
+        self.update_variants(case_obj, variant_type, category=category)
         logger.info("Nr variants inserted: %s", nr_inserted)
         return nr_inserted
 
     def overlapping(self, variant_obj):
         """Return ovelapping variants.
-        
+
         Look at the genes that a variant overlapps to get coordinates.
         Then return all variants that overlap these coordinates.
 
         If variant_obj is sv it will return the overlapping snvs and oposite
-        
+
         Args:
             variant_obj(dict)
-        
+
         Returns:
             variants(iterable(dict))
         """
@@ -577,15 +578,15 @@ class VariantHandler(object):
                         region_end = gene_end
 
         query = self.build_query(
-            case_id = variant_obj['case_id'], 
+            case_id = variant_obj['case_id'],
             query = {
                 'variant_type': variant_obj['variant_type'],
                 'chrom': chromosome,
                 'start': region_start,
                 'end': region_end,
-                }, 
+                },
             category=category)
-        
+
         sort_key = [('rank_score', pymongo.DESCENDING)]
         variants = self.variant_collection.find(query).sort(sort_key)
 
