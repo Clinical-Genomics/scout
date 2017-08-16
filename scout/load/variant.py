@@ -2,8 +2,6 @@ import logging
 
 from datetime import datetime
 
-from pprint import pprint as pp
-
 from cyvcf2 import VCF
 
 from scout.parse.variant import parse_variant
@@ -11,8 +9,7 @@ from scout.build import build_variant
 from scout.exceptions import IntegrityError
 from scout.parse.variant.rank_score import parse_rank_score
 
-from scout.parse.variant.headers import (parse_rank_results_header, 
-                                         parse_vep_header)
+from scout.parse.variant.headers import (parse_rank_results_header, parse_vep_header)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +37,7 @@ def check_coordinates(variant, coordinates):
             return True
     return False
 
+
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
                   category='snv', rank_threshold=5, chrom=None, start=None,
                   end=None):
@@ -66,7 +64,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     gene_to_panels = adapter.gene_to_panels()
 
     hgncid_to_gene = adapter.hgncid_to_gene()
-    
+
     coordinates = {}
 
     vcf_obj = VCF(variant_file)
@@ -97,7 +95,7 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     try:
         for nr_variants, variant in enumerate(vcf_obj):
             rank_score = parse_rank_score(
-                variant.INFO.get('RankScore'), 
+                variant.INFO.get('RankScore'),
                 case_obj['display_name']
             )
             variant_obj = None

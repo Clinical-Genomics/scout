@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+from functools import partial
 import logging
 
 import click
 
-from scout.load.variant import load_variants, delete_variants
+from scout.load.variant import delete_variants
 
 log = logging.getLogger(__name__)
 
