@@ -228,15 +228,20 @@ class CaseHandler(object):
                 if case_obj['vcf_files'].get(vcf_file['file_name']):
                     variant_type = vcf_file['variant_type']
                     category = vcf_file['category']
-
                     if update:
-                        self.delete_variants(case_id=case_obj['_id'], variant_type=variant_type)
+                        self.delete_variants(
+                            case_id=case_obj['_id'],
+                            variant_type=variant_type,
+                            category=category
+                        )
                     self.load_variants(
                         case_obj=case_obj,
                         variant_type=variant_type,
                         category=category,
                         rank_threshold=case_obj.get('rank_score_threshold', 0)
                     )
+                else:
+                    logger.debug("didn't find {}, skipping".format(vcf_file['file_name']))
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
 

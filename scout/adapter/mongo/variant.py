@@ -353,7 +353,7 @@ class VariantHandler(object):
             if (not_same_case and same_variant):
                 yield other_variant
 
-    def delete_variants(self, case_id, variant_type, category='snv'):
+    def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
 
             This is used when a case i reanalyzed
@@ -364,15 +364,10 @@ class VariantHandler(object):
         """
         logger.info("Deleting old {0} {1} variants for case {1}".format(
                     variant_type, category, case_id))
-
-        result = self.variant_collection.delete_many(
-            {
-                'case_id': case_id,
-                'variant_type': variant_type,
-                'category': category
-            }
-        )
-
+        query = {'case_id': case_id, 'variant_type': variant_type}
+        if category:
+            query['category'] = category
+        result = self.variant_collection.delete_many(query)
         logger.info("{0} variants deleted".format(result.deleted_count))
 
     def load_variant(self, variant_obj):
@@ -460,7 +455,7 @@ class VariantHandler(object):
 
         # This is a dictionary to tell where ind are in vcf
         individual_positions = {}
-        for i,ind in enumerate(vcf_obj.samples):
+        for i, ind in enumerate(vcf_obj.samples):
             individual_positions[ind] = i
 
         # Check if a region scould be uploaded
