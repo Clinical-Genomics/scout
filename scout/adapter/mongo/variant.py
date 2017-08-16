@@ -490,7 +490,7 @@ class VariantHandler(object):
                     variant.INFO.get('RankScore'),
                     case_obj['display_name']
                 )
-                if (not rank_score or rank_score > rank_threshold):
+                if (rank_score is None) or (rank_score > rank_threshold):
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
                         variant=variant,
