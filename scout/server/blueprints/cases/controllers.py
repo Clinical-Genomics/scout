@@ -16,8 +16,9 @@ PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
 
 def cases(store, case_query):
     """Preprocess case objects."""
+    limit = 100
     case_groups = {status: [] for status in CASE_STATUSES}
-    for case_obj in case_query:
+    for case_obj in case_query.limit(limit):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
@@ -25,9 +26,9 @@ def cases(store, case_query):
         case_groups[case_obj['status']].append(case_obj)
 
     data = {
-        'prio_cases': case_groups['prioritized'],
-        'cases': [(status, case_groups[status]) for status in CASE_STATUSES[1:]],
+        'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
+        'limit': limit,
     }
     return data
 
@@ -61,12 +62,13 @@ def case(store, institute_obj, case_obj):
                                 .format(hpo_term['phenotype_id']))
 
     # other collaborators than the owner of the case
-    case_obj['o_collaborators'] = [collab_id for collab_id in
-                                   case_obj['collaborators'] if
-                                   collab_id != case_obj['owner']]
+    o_collaborators = [store.institute(collab_id) for collab_id in case_obj['collaborators'] if
+                       collab_id != case_obj['owner']]
+    case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
+                                   collab_obj in o_collaborators]
 
     irrelevant_ids = ('cust000', institute_obj['_id'])
-    collab_ids = [collab['_id'] for collab in store.institutes() if
+    collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
                   (collab['_id'] not in irrelevant_ids) and
                   (collab['_id'] not in case_obj['collaborators'])]
 
@@ -148,3 +150,12 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
                   # cc the sender of the email for confirmation
                   cc=[user_obj['email']])
     mail.send(msg)
+
+
+def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
+    """Update default panels for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
+    panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
+    store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)

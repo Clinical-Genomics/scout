@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from intervaltree import (IntervalTree, Interval)
+
 from scout.parse.cytoband import parse_cytoband
 from scout.resources import cytobands_path
 from scout.utils.handle import get_file_handle
@@ -124,13 +126,16 @@ GENETIC_MODELS = (
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
 
-ACMG_TERMS = (
-  'pathegenic',
-  'likely pathegenic',
-  'uncertain significance',
-  'likely benign',
-  'benign'
-)
+ACMG_MAP = {
+    4: 'pathogenic',
+    3: 'likely_pathogenic',
+    2: 'likely_benign',
+    1: 'benign',
+    0: 'uncertain_significance'
+}
+REV_ACMG_MAP = {value: key for key, value in ACMG_MAP.items()}
+ACMG_SHORT_MAP = {value: ''.join([word[0].upper() for word in value.split('_')]) for value in
+                  ACMG_MAP.values()}
 
 VARIANT_CALL = (
     'Pass',
@@ -142,7 +147,7 @@ VARIANT_CALL = (
 ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown')
 
 SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown', 0: 'unknown'}
-REV_SEX_MAP = {value: key for key, value in SEX_MAP.items()}
+REV_SEX_MAP = {value: key for key, value in SEX_MAP.items() if key != 'other'}
 
 PHENOTYPE_MAP = {1: 'unaffected', 2: 'affected', 0: 'unknown', -9: 'unknown'}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
@@ -245,3 +250,71 @@ COHORT_TAGS = [
     'ketogenic diet',
     'other',
 ]
+
+PAR_COORDINATES = {
+        '37': {
+            'X': IntervalTree([Interval(60001, 2699521, 'par1'),
+                               Interval(154931044, 155260561, 'par2')]),
+            'Y': IntervalTree([Interval(10001, 2649521, 'par1'),
+                               Interval(59034050, 59363567, 'par2')])
+        },
+        '38': {
+            'X': IntervalTree([Interval(10001, 2781480, 'par1'),
+                               Interval(155701383, 156030896, 'par2')]),
+            'Y': IntervalTree([Interval(10001, 2781480, 'par1'),
+                               Interval(56887903, 57217416, 'par2')])
+        },
+    }
+
+MANUAL_RANK_OPTIONS = {
+    8: {
+        'label': 'known pathogenic',
+        'description': 'Previously known pathogenic in Clinvar Hgmd literature etc',
+    },
+    7: {
+        'label': 'pathogenic',
+        'description': ("Novel mutation but overlapping phenotype with known pathogenic, "
+                        "no further experimental validation needed"),
+    },
+    6: {
+        'label': 'novel validated pathogenic',
+        'description': 'Novel mutation and validated experimentally',
+    },
+    5: {
+        'label': 'pathogenic partial phenotype',
+        'description': ("Pathogenic variant explains part of patients phenotype, but "
+                        "not all symptoms"),
+    },
+    4: {
+        'label': 'likely pathogenic',
+        'description': 'Experimental validation required to prove causality',
+    },
+    3: {
+        'label': 'possibly pathogenic',
+        'description': 'Uncertain significance, but cannot disregard yet',
+    },
+    2: {
+        'label': 'likely benign',
+        'description': 'Uncertain significance, but can discard',
+    },
+    1: {
+        'label': 'benign',
+        'description': 'Does not cause phenotype',
+    },
+    0: {
+        'label': 'other',
+        'description': 'Phenotype not related to disease',
+    },
+}
+
+ACMG_COMPLETE_MAP = {
+    'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
+    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Likely Pathogenic',
+                              color='warning'),
+    'uncertain_significance': dict(code='uncertain_significance', short='VUS',
+                                   label='Uncertain Significance', color='primary'),
+    'likely_benign': dict(code='likely_benign', short='LB', label='Likely Benign',
+                          color='info'),
+    'benign': dict(code='benign', short='B', label='Benign', color='success'),
+}
+ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()

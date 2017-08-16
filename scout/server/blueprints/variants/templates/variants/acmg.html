@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }} - Classify
+{% endblock %}
+
+{% block content_main %}
+  {% if not evaluation %}
+    <div class="float-top-secondary">
+      <div class="d-flex justify-content-between">
+        <div class="btn-group btn-group-justified">
+          {% for option in ACMG_OPTIONS %}
+            <a id="acmg-{{ option.code }}" class="btn btn-default acmg-preview">{{ option.label }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  <div class="container">
+    <form action="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          {% if not evaluation %}
+            <button class="btn btn-primary form-control">Submit</button>
+          {% else %}
+            <h4>
+              {{ evaluation.classification.label }}
+              <span class="label label-info">{{ evaluation.classification.short }}</span>
+            </h4>
+            By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        {% for category, criteria_group in CRITERIA.items() %}
+          <div class="flex-1 {{ 'mr-3' if not loop.last }}">
+            <h4>Evidence of {{ category }}</h4>
+
+            {% for evidence, criteria in criteria_group.items() %}
+              <ul class="list-group">
+                <li class="list-group-item">{{ evidence }}</li>
+                {% for criterion_code, criterion in criteria.items() %}
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-toggle="tooltip" data-placement="top" title="{{ criterion.description }}">
+                        <span class="label label-info mr-1">{{ criterion_code }}</span>
+                        {{ criterion.short }}
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation }}>
+                        <label for="checkbox-{{ criterion_code }}"></label>
+                      </div>
+                    </div>
+                    <div id="comment-{{ criterion_code }}" class="collapse {{ 'in' if evaluation and evaluation.criteria.get(criterion_code).comment }} mt-2">
+                      <div class="form-group">
+                        <textarea class="form-control" name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ evaluation.criteria.get(criterion_code).comment if evaluation and evaluation.criteria.get(criterion_code).comment }}</textarea>
+                      </div>
+                      <input type="url" class="form-control" name="link-{{ criterion_code }}" placeholder="Supporting link (optional)" value="{{ evaluation.criteria.get(criterion_code).link if evaluation and evaluation.criteria.get(criterion_code).link }}">
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% macro preview() %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <span class="text-muted">Classification</span>
+      <h5>Likely Pathogenic</h5>
+    </div>
+  </div>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+
+      $('.ios8-switch').change(function(event) {
+        var el = $('#comment-' + event.target.value);
+        if (event.target.checked) {
+          el.collapse('show');
+        } else {
+          el.collapse('hide');
+        }
+
+        update_classification()
+      });
+    });
+
+    function update_classification() {
+      var criteria = $(':checked').map(function(idx, elem) {
+        return 'criterion=' + elem.value
+      });
+      $.getJSON('/api/v1/acmg?' + criteria.toArray().join('&'), function(data) {
+        // reset the selection
+        $('.acmg-preview').removeClass('btn-primary');
+        // add new selection
+        $('#acmg-' + data.classification).addClass('btn-primary');
+      });
+    }
+  </script>
+{% endblock %}

@@ -17,6 +17,7 @@
 	* [Variants](user-guide/variants.md)
 	* [Gene Panels](user-guide/panels.md)
 	* [Annotations](user-guide/annotations.md)
+	* [ACMG criterias](user-guide/acmg-criterias.md)
 
 * [Admin Guide](admin-guide/README.md)
 	* [Loading](admin-guide/loading.md)
@@ -25,3 +26,4 @@
 	* [What's new in 3.0?](blog/new-3.0.md)
 	* [What's new in 3.1?](blog/new-3.1.md)
 	* [What's new in 3.2?](blog/new-3.2.md)
+	* [What's new in 3.3?](blog/new-3.3.md)

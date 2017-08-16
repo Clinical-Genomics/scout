@@ -21,6 +21,8 @@ from scout.parse.variant.rank_score import parse_rank_score
 from scout.parse.variant import parse_variant
 from scout.build import build_variant
 
+from scout.utils.par import is_par
+
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError
 
@@ -91,18 +93,7 @@ class VariantHandler(object):
 
                 if gene_info.get('mosaicism'):
                     mosaicism = True
-                if gene_info.get('ar'):
-                    manual_inheritance.add('AR')
-                if gene_info.get('ad'):
-                    manual_inheritance.add('AD')
-                if gene_info.get('mt'):
-                    manual_inheritance.add('MT')
-                if gene_info.get('xr'):
-                    manual_inheritance.add('XR')
-                if gene_info.get('xd'):
-                    manual_inheritance.add('XD')
-                if gene_info.get('y'):
-                    manual_inheritance.add('Y')
+                manual_inheritance.update(gene_info.get('inheritance_models', []))
 
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
@@ -206,6 +197,10 @@ class VariantHandler(object):
             variant_obj = self.variant_collection.find_one({'_id': document_id})
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
+            if variant_obj['chromosome'] in ['X', 'Y']:
+                ## TODO add the build here
+                variant_obj['is_par'] = is_par(variant_obj['chromosome'],
+                                               variant_obj['position'])
         return variant_obj
 
     def get_causatives(self, institute_id):
@@ -358,7 +353,7 @@ class VariantHandler(object):
             if (not_same_case and same_variant):
                 yield other_variant
 
-    def delete_variants(self, case_id, variant_type):
+    def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
 
             This is used when a case i reanalyzed
@@ -367,18 +362,13 @@ class VariantHandler(object):
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
         """
-        logger.info("Deleting old {0} variants for case {1}".format(
-                    variant_type, case_id))
-
-        result = self.variant_collection.delete_many(
-            {
-                'case_id': case_id,
-                'variant_type': variant_type
-            }
-        )
-
+        logger.info("Deleting old {0} {1} variants for case {1}".format(
+                    variant_type, category, case_id))
+        query = {'case_id': case_id, 'variant_type': variant_type}
+        if category:
+            query['category'] = category
+        result = self.variant_collection.delete_many(query)
         logger.info("{0} variants deleted".format(result.deleted_count))
-        logger.debug("Variants deleted")
 
     def load_variant(self, variant_obj):
         """Load a variant object
@@ -465,15 +455,16 @@ class VariantHandler(object):
 
         # This is a dictionary to tell where ind are in vcf
         individual_positions = {}
-        for i,ind in enumerate(vcf_obj.samples):
+        for i, ind in enumerate(vcf_obj.samples):
             individual_positions[ind] = i
 
         # Check if a region scould be uploaded
         region = ""
         if gene_obj:
             chrom = gene_obj['chromosome']
-            start = gene_obj['start']
-            end = gene_obj['end']
+            # Add same padding as VEP
+            start = max(gene_obj['start'] - 5000, 0)
+            end = gene_obj['end'] + 5000
         if chrom:
             rank_threshold = rank_threshold or -100
             if not (start and end):
@@ -499,19 +490,18 @@ class VariantHandler(object):
                     variant.INFO.get('RankScore'),
                     case_obj['display_name']
                 )
-
-                if (not rank_score or rank_score > rank_threshold):
+                if (rank_score is None) or (rank_score > rank_threshold):
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
                         variant=variant,
                         case=case_obj,
                         variant_type=variant_type,
                         rank_results_header=rank_results_header,
-                        vep_header = vep_header,
-                        individual_positions = individual_positions,
+                        vep_header=vep_header,
+                        individual_positions=individual_positions,
                         category=category,
                     )
-                    
+
                     # Build the variant object
                     variant_obj = build_variant(
                         variant=parsed_variant,
@@ -537,25 +527,61 @@ class VariantHandler(object):
                         inserted += 1
 
         except Exception as error:
+            logger.exception('unexpected error')
             logger.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
-        
+
+        self.update_variants(case_obj, variant_type, category=category)
         logger.info("Nr variants inserted: %s", nr_inserted)
         return nr_inserted
 
     def overlapping(self, variant_obj):
-        """Return ovelapping variants
+        """Return ovelapping variants.
 
-            if variant_obj is sv it will return the overlapping snvs and oposite
+        Look at the genes that a variant overlapps to get coordinates.
+        Then return all variants that overlap these coordinates.
+
+        If variant_obj is sv it will return the overlapping snvs and oposite
+
+        Args:
+            variant_obj(dict)
+
+        Returns:
+            variants(iterable(dict))
         """
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
-        query = {
-            'case_id': variant_obj['case_id'],
-            'variant_type': variant_obj['variant_type'],
-            'hgnc_symbols': variant_obj['hgnc_symbols'],
-            'category': category,
-        }
+
+        region_start = None
+        region_end = None
+        chromosome = variant_obj['chromosome']
+
+        for gene_id in variant_obj['hgnc_ids']:
+            gene_obj = self.hgnc_gene(gene_id)
+            if gene_obj:
+                gene_start = gene_obj['start']
+                gene_end = gene_obj['end']
+                if not region_start:
+                    region_start = gene_start
+                else:
+                    if gene_start < region_start:
+                        region_start = gene_start
+                if not region_end:
+                    region_end = gene_end
+                else:
+                    if gene_end > region_end:
+                        region_end = gene_end
+
+        query = self.build_query(
+            case_id = variant_obj['case_id'],
+            query = {
+                'variant_type': variant_obj['variant_type'],
+                'chrom': chromosome,
+                'start': region_start,
+                'end': region_end,
+                },
+            category=category)
+
         sort_key = [('rank_score', pymongo.DESCENDING)]
         variants = self.variant_collection.find(query).sort(sort_key)
 

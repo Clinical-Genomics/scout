@@ -7,7 +7,7 @@ This page describes gene panels, how they are annotated and how they are used in
 Scout is developed to be used in a clinical setting and therefore gene panels is a central concept. The gene panels describes a set of genes with additional information that is often associated with a disease or a disease group.
 A case can then be associated with one or several gene panels.
 
-## File format
+### File format
 
 The gene panel is a tab separated text file with a header that describes the columns and one line for each gene entry.
 
@@ -24,7 +24,7 @@ The columns that will be used by scout is the following:
 Each gene in a gene panel have to be identified with a hgnc id
 
 
-###Notes on entries
+### Notes on entries
 
 - **hgnc_id**: This one have to be a valid hgnc id that exists in scout
 - **genetic_disease_models** can be anyone in [AR,AD,XR,XD,MT,X,Y]
@@ -32,4 +32,11 @@ Each gene in a gene panel have to be identified with a hgnc id
 - **reduced_penetrance** Any entry here will be interpreted as true
 - **database_entry_version** This should refer to a earlier version of the panel
 
+## Uploading a new gene panel version
 
+You can upload a text file in Scout to upload an existing gene panel. It should follow the format specified in this file: [panel-example](../static/scout-3-panel-file-example.csv). The file is `;` (semi-colon) separated.
+
+You can also use this example [Excel template](../static/scout-3-panel-file-example.xlsx) as a starting point. When you are ready to update the gene panel simply:
+
+1. choose **"Save as..."** and select **"Comma Separated Values (.csv)"** as the format
+2. fill out the form in Scout and upload the "*.csv" file to update your gene panel

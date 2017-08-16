@@ -114,7 +114,7 @@ def phenotypes_actions(institute_id, case_name):
             store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
     elif action == 'PHENOMIZER':
         if len(hpo_ids) == 0:
-            hpo_ids = [term['phenotype_id'] for term in case_obj['phenotype_terms']]
+            hpo_ids = [term['phenotype_id'] for term in case_obj.get('phenotype_terms', [])]
 
         username = current_app.config['PHENOMIZER_USERNAME']
         password = current_app.config['PHENOMIZER_PASSWORD']
@@ -132,7 +132,7 @@ def phenotypes_actions(institute_id, case_name):
 
     elif action == 'GENERATE':
         if len(hpo_ids) == 0:
-            hpo_ids = [term['phenotype_id'] for term in case_obj['phenotype_terms']]
+            hpo_ids = [term['phenotype_id'] for term in case_obj.get('phenotype_terms', [])]
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get('min_match') or 1)
@@ -322,4 +322,12 @@ def cohorts(institute_id, case_name):
         store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/default-panels', methods=['POST'])
+def default_panels(institute_id, case_name):
+    """Update default panels for a case."""
+    panel_ids = request.form.getlist('panel_ids')
+    controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
     return redirect(request.referrer)

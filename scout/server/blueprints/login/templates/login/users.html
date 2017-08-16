@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - Users
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="active">
+    <span class="navbar-text">Users</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Institutes</th>
+        <th>Rank</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <td>
+            {{ user.name }}
+            {% if 'admin' in user.roles %}
+              <span class="label label-info pull-right">ADMIN</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+          </td>
+          <td>
+            {% for institute in user.institutes %}
+              {{ institute.display_name }} <small>({{ institute._id }})</small><br>
+            {% endfor %}
+          </td>
+          <td>
+            <div class="pull-left">
+              <strong>{{ user.events_rank|capitalize }}</strong><br>
+              <span class="text-muted">{{ user.events }} events</span>
+            </div>
+            <img class="rank-shield pull-right" src="{{ url_for('login.static', filename=(user.events_rank + '.svg')) }}" alt="{{ user.events_rank }}">
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

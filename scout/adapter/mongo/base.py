@@ -39,12 +39,13 @@ from .panel import PanelHandler
 from .query import QueryHandler
 from .variant import VariantHandler
 from .user import UserHandler
+from .acmg import ACMGHandler
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
                    HpoHandler, PanelHandler, QueryHandler, VariantHandler,
-                   UserHandler):
+                   UserHandler, ACMGHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -57,7 +58,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         host = app.config.get('MONGO_HOST', 'localhost')
         port = app.config.get('MONGO_PORT', 27017)
         dbname = app.config['MONGO_DBNAME']
-        logger.info("connecting to database: %s:%s/%s", host, port, dbname)
+        log.info("connecting to database: %s:%s/%s", host, port, dbname)
         self.setup(app.extensions['pymongo']['MONGO'][1])
 
     def setup(self, database):
@@ -73,3 +74,4 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.hpo_term_collection = database.hpo_term
         self.disease_term_collection = database.disease_term
         self.variant_collection = database.variant
+        self.acmg_collection = database.acmg

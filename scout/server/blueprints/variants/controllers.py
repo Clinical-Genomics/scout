@@ -2,42 +2,43 @@
 import logging
 import os.path
 
-from flask import url_for
+from flask import url_for, flash
 from flask_mail import Message
 
-from scout.constants import CLINSIG_MAP
+from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS,
+                             ACMG_COMPLETE_MAP)
+from scout.constants.acmg import ACMG_CRITERIA
+from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
 
 log = logging.getLogger(__name__)
-MANUAL_RANK_OPTIONS = [0, 1, 2, 3, 4, 5]
 
 
 class MissingSangerRecipientError(Exception):
     pass
 
 
-def variants(store, variants_query, page=1, per_page=50):
+def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(store, variant_obj, update=True) for variant_obj in
-                     variants_query.skip(skip_count).limit(per_page)),
+        'variants': (parse_variant(store, institute_obj, case_obj, variant_obj, update=True) for
+                     variant_obj in variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
 
 
-def sv_variants(store, variants_query, page, per_page=50):
+def sv_variants(store, institute_obj, case_obj, variants_query, page, per_page=50):
     """Pre-process list of SV variants."""
-
     skip_count = (per_page * max(page - 1, 0))
     more_variants = True if variants_query.count() > (skip_count + per_page) else False
 
     return {
-        'variants': (parse_variant(store, variant) for variant in
+        'variants': (parse_variant(store, institute_obj, case_obj, variant) for variant in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -58,7 +59,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
     ]
 
-    overlapping_snvs = (parse_variant(store, variant) for variant in
+    overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
 
     return dict(
@@ -69,7 +70,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
     )
 
 
-def parse_variant(store, variant_obj, update=False):
+def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     """Parse information about variants."""
     has_changed = False
     compounds = variant_obj.get('compounds', [])
@@ -96,10 +97,17 @@ def parse_variant(store, variant_obj, update=False):
     if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
 
+    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
+                                           variant_id=variant_obj['variant_id'], comments=True)
+
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj['genes']))
+
+    if isinstance(variant_obj.get('acmg_classification'), int):
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
     return variant_obj
 
@@ -167,21 +175,21 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     if variant_obj is None:
         return None
-
     variant_case(store, case_obj, variant_obj)
-    comments = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'],
-                            comments=True)
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id']))
+    for event in events:
+        event['verb'] = VERBS_MAP[event['verb']]
     other_causatives = []
     for other_variant in store.other_causatives(case_obj, variant_obj):
         case_display_name = other_variant['case_id'].split('-', 1)[-1]
         other_variant['case_display_name'] = case_display_name
         other_causatives.append(other_variant)
 
-    variant_obj = parse_variant(store, variant_obj)
+    variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj)
     variant_obj['end_position'] = end_position(variant_obj)
     variant_obj['frequency'] = frequency(variant_obj)
-    variant_obj['clinsig_human'] = clinsig_human(variant_obj)
+    variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
+                                    else None)
     variant_obj['thousandg_link'] = thousandg_link(variant_obj)
     variant_obj['exac_link'] = exac_link(variant_obj)
     variant_obj['gnomead_link'] = gnomead_link(variant_obj)
@@ -191,7 +199,6 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['alamut_link'] = alamut_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
-    variant_obj['incomplete_penetrance'] = incomplete_penetrance(variant_obj)
     variant_obj['callers'] = callers(variant_obj)
 
     for gene_obj in variant_obj['genes']:
@@ -205,6 +212,10 @@ def variant(store, institute_obj, case_obj, variant_id):
 
     variant_obj['disease_associated_transcripts'] = []
     for gene_obj in variant_obj['genes']:
+        omim_models = set()
+        for disease_term in gene_obj.get('disease_terms', []):
+            omim_models.update(disease_term.get('inheritance', []))
+        gene_obj['omim_inheritance'] = list(omim_models)
         for transcript_obj in gene_obj['transcripts']:
             if transcript_obj.get('is_disease_associated'):
                 hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
@@ -213,14 +224,19 @@ def variant(store, institute_obj, case_obj, variant_id):
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
 
+    evaluations = []
+    for evaluation_obj in store.get_evaluations(variant_obj):
+        evaluation(store, evaluation_obj)
+        evaluations.append(evaluation_obj)
     return {
         'variant': variant_obj,
         'causatives': other_causatives,
-        'comments': comments,
         'events': events,
-        'overlapping_svs': (parse_variant(store, variant_obj) for variant_obj in
-                            store.overlapping(variant_obj)),
+        'overlapping_svs': (parse_variant(store, institute_obj, case_obj, variant_obj) for
+                            variant_obj in store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'ACMG_OPTIONS': ACMG_OPTIONS,
+        'evaluations': evaluations,
     }
 
 
@@ -296,9 +312,19 @@ def parse_transcript(gene_obj, tx_obj):
 
 def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string."""
-    change_str = "{}:exon{}:{}:{}".format(
+    if transcript_obj.get('exon'):
+        gene_part, part_count_raw = 'exon', transcript_obj['exon']
+    elif transcript_obj.get('intron'):
+        gene_part, part_count_raw = 'intron', transcript_obj['intron']
+    else:
+        # variant between genes
+        gene_part, part_count_raw = 'intergenic', '0'
+
+    part_count = part_count_raw.rpartition('/')[0]
+    change_str = "{}:{}{}:{}:{}".format(
         ','.join(transcript_obj['refseq_ids']),
-        transcript_obj.get('exon', '').rpartition('/')[0],
+        gene_part,
+        part_count,
         transcript_obj.get('coding_sequence_name', 'NA'),
         transcript_obj.get('protein_sequence_name', 'NA'),
     )
@@ -332,8 +358,11 @@ def frequency(variant_obj):
 def clinsig_human(variant_obj):
     """Convert to human readable version of CLINSIG evaluation."""
     for clinsig_obj in variant_obj['clnsig']:
-        human_str = CLINSIG_MAP.get(clinsig_obj.value, 'not provided')
-        yield clinsig_obj, human_str
+        human_str = CLINSIG_MAP.get(clinsig_obj['value'], 'not provided')
+        clinsig_obj['human'] = human_str
+        clinsig_obj['link'] = ("https://www.ncbi.nlm.nih.gov/clinvar/{}"
+                               .format(clinsig_obj['accession']))
+        yield clinsig_obj
 
 
 def thousandg_link(variant_obj):
@@ -405,23 +434,10 @@ def spidex_human(variant_obj):
 
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
-    all_models = set()
+    manual_models = set()
     for gene in variant_obj['genes']:
-        for model in (gene.get('common') or {}).get('inheritance_models', []):
-            all_models.add(model)
-    return list(all_models)
-
-
-def incomplete_penetrance(variant_obj):
-    """Return gene marked as low penetrance."""
-    for gene_obj in variant_obj['genes']:
-        hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
-                       gene_obj['hgnc_id'])
-        yield {
-            'hgnc_symbol': hgnc_symbol,
-            'omim': gene_obj.get('omim_penetrance'),
-            'manual': gene_obj.get('manual_penetrance'),
-        }
+        manual_models.update(gene.get('manual_inheritance', []))
+    return list(manual_models)
 
 
 def callers(variant_obj):
@@ -498,8 +514,61 @@ def cancer_variants(store, request_args, institute_id, case_name):
     data = dict(
         institute=institute_obj,
         case=case_obj,
-        variants=(parse_variant(store, variant, update=True) for variant in variants_query),
+        variants=(parse_variant(store, institute_obj, case_obj, variant, update=True) for
+                  variant in variants_query),
         form=form,
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+
+def variant_acmg(store, institute_id, case_name, variant_id):
+    """Collect data relevant for rendering ACMG classification form."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
+                CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
+
+
+def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
+    """Calculate an ACMG classification based on a list of criteria."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(user_email)
+    variant_link = url_for('variants.variant', institute_id=institute_id,
+                           case_name=case_name, variant_id=variant_id)
+    classification = store.submit_evaluation(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        link=variant_link,
+        criteria=criteria,
+    )
+    return classification
+
+
+def evaluation(store, evaluation_obj):
+    """Fetch and fill-in evaluation object."""
+    evaluation_obj['institute'] = store.institute(evaluation_obj['institute_id'])
+    evaluation_obj['case'] = store.case(evaluation_obj['case_id'])
+    evaluation_obj['variant'] = store.variant(evaluation_obj['variant_specific'])
+    evaluation_obj['criteria'] = {criterion['term']: criterion for criterion in
+                                  evaluation_obj['criteria']}
+    evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+    return evaluation_obj
+
+
+def upload_panel(store, institute_id, case_name, stream):
+    """Parse out HGNC symbols from a stream."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    raw_symbols = [line.strip().split('\t')[0] for line in stream if
+                   line and not line.startswith('#')]
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    for raw_symbol in raw_symbols:
+        if store.hgnc_genes(raw_symbol).count() == 0:
+            flash("HGNC symbol not found: {}".format(raw_symbol), 'warning')
+        else:
+            hgnc_symbols.append(raw_symbol)
+    return hgnc_symbols

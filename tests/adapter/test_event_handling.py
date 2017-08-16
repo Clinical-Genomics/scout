@@ -1,5 +1,7 @@
 import pytest
 import logging
+import datetime
+import pymongo
 
 from scout.models.event import VERBS_MAP
 
@@ -211,7 +213,7 @@ def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
 def test_add_phenotype_group(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add OMIM term for a case")
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     hpo_term = 'HP:0000878'
     
@@ -289,7 +291,7 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
 def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add OMIM term for a case")
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
     
     #Existing mim phenotype
     mim_obj = adapter.disease_term_collection.find_one()
@@ -316,7 +318,7 @@ def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
 def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add a HPO term for a case")
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     # GIVEN a populated database
     assert adapter.event_collection.find().count() == 0
@@ -459,3 +461,59 @@ def test_remove_cohort(case_database, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 2
 
+def test_update_default_panels(case_database, institute_obj, case_obj, user_obj):
+    adapter = case_database
+    print('')
+    # GIVEN a case with one gene panel
+    assert len(case_obj['panels']) == 1
+    
+    for panel in case_obj['panels']:
+        if panel['panel_name'] == 'panel1':
+            assert panel['is_default'] == True
+            print(panel)
+    
+    new_panel = {
+        '_id': 'an_id', 
+        'panel_id': 'an_id', 
+        'panel_name': 'panel2', 
+        'display_name': 'Test panel2', 
+        'version': 1.0, 
+        'updated_at': datetime.datetime.now(), 
+        'nr_genes': 263, 
+        'is_default': False
+    }
+    case_obj = adapter.case_collection.find_one_and_update(
+        {'_id':case_obj['_id']},
+        {
+            '$addToSet': {'panels': new_panel},
+        },
+        return_document = pymongo.ReturnDocument.AFTER
+    )
+    
+    assert len(case_obj['panels']) == 2
+    
+    # WHEN updating the default panels
+    
+    updated_case = adapter.update_default_panels(
+         institute_obj=institute_obj,
+         case_obj=case_obj,
+         user_obj=user_obj,
+         link='update_default_link',
+         panel_objs = [new_panel]
+    )
+
+    # THEN the the updated case should have panel1 as not default and panel2 
+    # as default
+    for panel in updated_case['panels']:
+        if panel['panel_name'] == 'panel1':
+            assert panel['is_default'] == False
+        elif panel['panel_name'] == 'panel2':
+            assert panel['is_default'] == True
+        
+    # assert adapter.event_collection.find().count() == 2
+    #
+    # # THEN the case should not be assigned
+    # assert updated_case.get('assignees') == []
+    # # THEN a unassign event should be created
+    # event = adapter.event_collection.find_one({'verb': 'unassign'})
+    # assert event['link'] == 'unassignlink'

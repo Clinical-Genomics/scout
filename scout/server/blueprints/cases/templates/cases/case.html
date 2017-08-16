@@ -31,21 +31,27 @@
         {{ flash_messages() }}
 
         <div class="row">
-          <div class="col-xs-12 col-md-6">{{ variants_buttons() }}</div>
-          <div class="col-xs-12 col-md-6">{{ related_causatives_list() }}</div>
-        </div>
-
-        <div class="row">
-          {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
-          <div class="col-xs-12 {{ 'col-md-4' if has_pedigree else 'col-md-6'}}">{{ individuals_table() }}</div>
-          {% if has_pedigree %}
-            <div class="col-xs-12 col-md-4">{{ pedigree_panel() }}</div>
-          {% endif %}
-          <div class="col-xs-12 {{ 'col-md-4' if has_pedigree else 'col-md-6'}}">{{ synopsis_panel() }}</div>
+          <div class="col-xs-12">{{ variants_buttons() }}</div>
         </div>
 
         <div class="row">
           <div class="col-xs-12 col-md-6">{{ candidates_list() }}</div>
+          <div class="col-xs-12 col-md-6">{{ related_causatives_list() }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-md-8">{{ individuals_table() }}</div>
+          <div class="col-xs-12 col-md-4">
+            {% if case.madeline_info and case.individuals|length > 1 %}
+              {{ pedigree_panel() }}
+            {% else %}
+              <p>Single sample family. No pedigree available.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-md-6">{{ synopsis_panel() }}</div>
           <div class="col-xs-12 col-md-6">
             {{ comments_panel(institute, case, current_user, comments) }}
           </div>
@@ -131,15 +137,32 @@
             <th>Sex</th>
             <th>Phenotype</th>
             <th>Sequencing</th>
+            <th>Ancestry (pred.)</th>
+            <th>Parenthood</th>
           </tr>
         </thead>
         <tbody>
           {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'affected' %}class="bg-danger"{% endif %}>
+            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger" {% endif %}>
               <td>{{ ind.display_name }}</td>
-              <td>{{ ind.sex_human }}</td>
+              <td>
+                {{ ind.sex_human }}
+                {% if ind.confirmed_sex %}
+                  <span class="glyphicon glyphicon-ok"></span>
+                {% endif %}
+              </td>
               <td>{{ ind.phenotype_human }}</td>
               <td>{{ ind.analysis_type|upper }}</td>
+              <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+              <td>
+                {% if ind.confirmed_parent == True %}
+                  <span class="glyphicon glyphicon-ok text-success"></span>
+                {% elif ind.confirmed_parent == False %}
+                  <span class="glyphicon glyphicon-remove text-danger"></span>
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -465,14 +488,6 @@
       </ul>
       <div class="panel-footer">
         <div class="row">
-          <div class="col-xs-3">
-            <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
-          </div>
-          {% if config.PHENOMIZER_USERNAME %}
-            <div class="col-xs-4">
-              <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
-            </div>
-          {% endif %}
           <div class="col-xs-5">
             <div class="input-group">
               <span class="input-group-btn">
@@ -480,6 +495,14 @@
               </span>
               <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
             </div>
+          </div>
+          {% if config.PHENOMIZER_USERNAME %}
+            <div class="col-xs-4">
+              <button class="btn btn-default form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+            </div>
+          {% endif %}
+          <div class="col-xs-3">
+            <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
         </div>
       </div>
@@ -587,6 +610,25 @@
         </tbody>
       </table>
     </div>
+    <div class="panel-body">
+      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <div class="form-group">
+          <label>Change default gene panels</label>
+        </div>
+        <div class="row">
+          <div class="col-xs-8">
+            <select name="panel_ids" class="form-control" multiple>
+              {% for panel in case.panels %}
+                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-default form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 {% endmacro %}
 
@@ -596,6 +638,7 @@
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
       function getTerms(query, process) {
@@ -609,7 +652,11 @@
         minLength: 3,
       });
 
-      $('[data-toggle="tooltip"]').tooltip()
+      $('[data-toggle="tooltip"]').tooltip();
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
 
       $('table').stickyTableHeaders({
         scrollableArea: $(".fixed-panel")[0]

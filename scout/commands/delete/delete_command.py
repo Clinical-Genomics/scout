@@ -45,6 +45,7 @@ log = logging.getLogger(__name__)
 #     for institute_obj in adapter.institutes():
 #         click.echo(institute_obj['internal_id'])
 
+
 @click.command('user', short_help='Delete a user')
 @click.option('-m', '--mail')
 @click.pass_context
@@ -52,29 +53,27 @@ def user(context, mail):
     """Delete a user from the database"""
     log.info("Running scout delete user")
     adapter = context.obj['adapter']
-    
     user_obj = adapter.user(mail)
-    
-    if not user:
+    if not user_obj:
         log.warning("User {0} could not be found in database".format(mail))
-    
     else:
         click.echo(adapter.delete_user(mail))
 
 
 @click.command('genes', short_help='Delete genes')
-@click.option('-b', 'build', type=click.Choice(['37','38']))
+@click.option('-b', 'build', type=click.Choice(['37', '38']))
 @click.pass_context
 def genes(context, build):
     """Delete all genes in the database"""
     log.info("Running scout delete genes")
     adapter = context.obj['adapter']
-    
+
     if build:
         log.info("Dropping genes collection for build: %s", build)
     else:
         log.info("Dropping genes collection")
         adapter.drop_genes()
+
 
 @click.command('case', short_help='Delete a case')
 @click.option('-i', '--institute', help='institute id of related cases')
@@ -84,7 +83,6 @@ def genes(context, build):
 def case(context, institute, case_id, display_name):
     """Delete a case and it's variants from the database"""
     adapter = context.obj['adapter']
-
     if not (case_id or display_name):
         click.echo("Please specify what case to delete")
         context.abort()
@@ -92,18 +90,17 @@ def case(context, institute, case_id, display_name):
     if display_name:
         if not institute:
             click.echo("Please specify the owner of the case that should be "
-                           "deleted with flag '-i/--institute'.")
+                       "deleted with flag '-i/--institute'.")
             context.abort()
         case_id = "{0}-{1}".format(institute, display_name)
 
     log.info("Running deleting case {0}".format(case_id))
-
     case = adapter.delete_case(
         case_id=case_id,
         institute_id=institute,
         display_name=display_name
     )
-    
+
     if case.deleted_count == 1:
         adapter.delete_variants(case_id=case_id, variant_type='clinical')
         adapter.delete_variants(case_id=case_id, variant_type='research')
@@ -148,9 +145,7 @@ def delete(context):
     """
     pass
 
+
 delete.add_command(genes)
 delete.add_command(case)
 delete.add_command(user)
-
-
-

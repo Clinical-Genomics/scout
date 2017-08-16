@@ -8,7 +8,6 @@ from scout.load.variant import delete_variants
 
 log = logging.getLogger(__name__)
 
-
 @click.command(short_help='Upload research variants')
 @click.option('-c', '--case-id', help='family or case id')
 @click.option('-i', '--institute', help='institute id of related cases')
@@ -42,24 +41,50 @@ def research(context, case_id, institute, force):
 
     default_threshold = 8
     for case_obj in case_objs:
-        if force or case_obj.get('research_requested'):
-            log.info("Delete variants for case %s", case_obj['_id'])
-            delete_variants(adapter=adapter, case_obj=case_obj, variant_type='research')
+        if force or case_obj['research_requested']:
+            # Test to upload research snvs
+            if case_obj['vcf_files'].get('vcf_snv_research'):
+                adapter.delete_variants(case_id=case_obj['_id'], 
+                                        variant_type='research', 
+                                        category='snv')
 
-            load_variants = partial(adapter.load_variants,
-                                    case_obj=case_obj, variant_type='research',
-                                    rank_threshold=default_threshold)
-
-            log.info("Load research SNV for: %s", case_obj['_id'])
-            load_variants(category='snv')
-
+                log.info("Load research SNV for: %s", case_obj['case_id'])
+                adapter. load_variants(
+                    case_obj=case_obj,
+                    variant_type='research',
+                    category='snv',
+                    rank_threshold=default_threshold,
+                    )
+            
+            # Test to upload research svs
             if case_obj['vcf_files'].get('vcf_sv_research'):
-                log.info("Load research SV for: %s", case_obj['_id'])
-                load_variants(category='sv')
+                adapter.delete_variants(case_id=case_obj['_id'], 
+                                        variant_type='research', 
+                                        category='sv')
+                log.info("Load research SV for: %s", case_obj['case_id'])
+                adapter. load_variants(
+                    case_obj=case_obj,
+                    variant_type='research',
+                    category='sv',
+                    rank_threshold=default_threshold,
+                    )
 
-            adapter.case_collection.find_one_and_update(
-                {'_id': case_obj['_id']},
-                {'$set': {'is_research': True, 'research_requested': False}}
-            )
+            # Test to upload research cancer variants
+            if case_obj['vcf_files'].get('vcf_sv_research'):
+                adapter.delete_variants(case_id=case_obj['_id'], 
+                                        variant_type='research', 
+                                        category='cancer')
+                
+                log.info("Load research cancer for: %s", case_obj['case_id'])
+                adapter. load_variants(
+                    case_obj=case_obj,
+                    variant_type='research',
+                    category='cancer',
+                    rank_threshold=default_threshold,
+                    )
+
+            case_obj['is_research'] = True
+            case_obj['research_requested'] = False
+            adapter.update_case(case_obj)
         else:
             log.warn("research not requested, use '--force'")

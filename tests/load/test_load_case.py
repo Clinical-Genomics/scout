@@ -8,11 +8,7 @@ def test_load_case(case_obj, panel_database):
     assert adapter.users().count() > 0
     assert adapter.institutes().count() > 0
     # WHEN loading a case
-    case_obj = load_case(
-        adapter=adapter,
-        case_obj=case_obj,
-        update=False,
-    )
+    adapter._add_case(case_obj)
     # THEN assert that the case have been loaded with correct info
     assert adapter.cases().count() == 1
     loaded_case = adapter.case(case_obj['_id'])

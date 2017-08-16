@@ -1,20 +1,33 @@
 {% macro gene_cell(variant) %}
   {% for gene in variant.genes %}
-    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-      {{ gene.hgnc_symbol or gene.hgnc_id }}
-    </a>
+    <div>
+      <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+        {{ gene.hgnc_symbol or gene.hgnc_id }}
+      </a>
+    </div>
   {% endfor %}
 {% endmacro %}
 
-{% macro frequency_cell(variant, exac=True) %}
+{% macro frequency_cell(variant, exac=False) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
-      <strong>1000G</strong>: {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }} <br>
-      <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }} <br>
-      <strong>ExAC</strong>
-      {{ variant.exac_frequency|human_decimal if variant.exac_frequency }} <br>
-      <strong>ExAC (max)</strong>
-      {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
+      <div>
+        <strong>1000G</strong>: {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
+      </div>
+      <div>
+        <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }}
+      </div>
+      <div>
+        <strong>ExAC</strong>:
+        {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
+      </div>
+      <div>
+        <strong>ExAC (max)</strong>:
+        {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
+      </div>
+      <div>
+        <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
+      </div>
     </div>
   ">
     {% if exac %}

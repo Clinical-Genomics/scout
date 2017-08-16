@@ -2,7 +2,6 @@
 import logging
 
 from scout.exceptions import IntegrityError
-from scout.build.case import build_case
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ def load_case(adapter, case_obj, update=False):
 
     # Check if case exists in database
     existing_case = adapter.case(case_obj['_id'])
-    
+
     if existing_case:
         if update:
             adapter.update_case(case_obj)

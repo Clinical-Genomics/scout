@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import decimal
+
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
                      HiddenField, IntegerField)
@@ -28,28 +30,44 @@ class TagListField(Field):
             self.data = []
 
 
+class BetterDecimalField(DecimalField):
+    """
+    Very similar to WTForms DecimalField, except handles ',' and '.'.
+    """
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            raw_decimal = valuelist[0].replace(',', '.')
+            try:
+                self.data = decimal.Decimal(raw_decimal)
+            except (decimal.InvalidOperation, ValueError):
+                self.data = None
+                raise ValueError(self.gettext('Not a valid decimal value'))
+
+
 class FiltersForm(FlaskForm):
     variant_type = HiddenField(default='clinical')
     gene_panels = SelectMultipleField(choices=[])
-    hgnc_symbols = TagListField()
+    hgnc_symbols = TagListField('HGNC Symbols (case sensitive)')
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
-    cadd_score = DecimalField('CADD', places=2)
+    cadd_score = BetterDecimalField('CADD', places=2)
     cadd_inclusive = BooleanField()
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
 
-    thousand_genomes_frequency = DecimalField('1000 Genomes', places=2)
-    exac_frequency = DecimalField('ExAC', places=2)
+    thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
+    exac_frequency = BetterDecimalField('ExAC', places=2)
+    local_obs = IntegerField('Local obs. (archive)')
 
 
 class CancerFiltersForm(FiltersForm):
     """docstring for CancerFiltersForm"""
     depth = IntegerField('Depth >')
     alt_count = IntegerField('Min alt count >')
-    control_frequency = DecimalField('Control freq. <', places=2)
+    control_frequency = BetterDecimalField('Control freq. <', places=2)
 
 
 class SvFiltersForm(FlaskForm):
@@ -60,7 +78,7 @@ class SvFiltersForm(FlaskForm):
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
-    cadd_score = DecimalField('CADD', places=2)
+    cadd_score = BetterDecimalField('CADD', places=2)
     cadd_inclusive = BooleanField()
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
 
@@ -69,4 +87,4 @@ class SvFiltersForm(FlaskForm):
     size_inclusive = BooleanField('Length inclusive')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
 
-    thousand_genomes_frequency = DecimalField('1000 Genomes', places=2)
+    thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)

@@ -2,15 +2,17 @@
 from datetime import datetime
 
 from flask import (abort, current_app, Blueprint, flash, redirect, request,
-                   session, url_for)
+                   session, url_for, render_template)
 from flask_login import login_user, logout_user
 from flask_oauthlib.client import OAuthException
 
 from scout.server.extensions import google, login_manager, store
 from scout.server.utils import public_endpoint
+from . import controllers
 from .models import LoginUser
 
-login_bp = Blueprint('login', __name__)
+login_bp = Blueprint('login', __name__, template_folder='templates',
+                     static_folder='static', static_url_path='/login/static')
 
 
 login_manager.login_view = 'login.login'
@@ -64,17 +66,18 @@ def logout():
 @login_bp.route('/authorized')
 @public_endpoint
 def authorized():
-    oauth_response = google.authorized_response()
+    try:
+        oauth_response = google.authorized_response()
+    except OAuthException as error:
+        current_app.logger.warn(oauth_response.message)
+        flash("{} - try again!".format(oauth_response.message), 'warning')
+        return redirect(url_for('public.index'))
+
     if oauth_response is None:
         flash("Access denied: reason={} error={}"
               .format(request.args['error_reason'],
                       request.args['error_description']), 'danger')
         return abort(403)
-
-    elif isinstance(oauth_response, OAuthException):
-        current_app.logger.warn(oauth_response.message)
-        flash("{} - try again!".format(oauth_response.message), 'warning')
-        return redirect(url_for('public.index'))
 
     # add token to session, do it before validation to be able to fetch
     # additional data (like email) on the authenticated user
@@ -94,6 +97,13 @@ def authorized():
     user_obj['accessed_at'] = datetime.now()
     store.update_user(user_obj)
     return perform_login(user_obj)
+
+
+@login_bp.route('/users')
+def users():
+    """Show all users in the system."""
+    data = controllers.users(store)
+    return render_template('login/users.html', **data)
 
 
 def perform_login(user_dict):

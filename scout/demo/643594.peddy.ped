@@ -1,0 +1,4 @@
+#family_id	sample_id	paternal_id	maternal_id	sex	phenotype	het_call_rate	het_ratio	het_mean_depth	het_idr_baf	ancestry-prediction	PC1	PC2	PC3	sex_het_ratio
+643594-300M	ADM1059A2	ADM1059A1	ADM1059A3	1	1	1	0.4899	23.7	0.2871	EUR	-0.2145	-1.629	-0.4117	0.03289
+643594-300M	ADM1059A1	0	0	1	1	1	0.4815	24	0.2802	EUR	-0.1179	-1.482	-0.62	0.0328
+643594-300M	ADM1059A3	0	0	2	1	1	0.475	21.95	0.2941	EUR	-0.3578	-1.546	-0.4366	1.7

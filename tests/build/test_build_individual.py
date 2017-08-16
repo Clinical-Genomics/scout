@@ -62,6 +62,7 @@ def test_build_individual_no_display_name():
     assert ind_obj['display_name'] == ind_info['individual_id']
 
 def test_build_individual_no_sex():
+    
     ## GIVEN information about a individual without sex
     ind_info = {
         'individual_id': '1',
@@ -74,7 +75,7 @@ def test_build_individual_no_sex():
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
     ## THEN assert that sex was set to other
-    assert ind_obj['sex'] == 'other'
+    assert ind_obj['sex'] == '0'
 
 
 def test_build_individual_wrong_sex():

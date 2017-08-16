@@ -14,7 +14,7 @@ def test_add_cases(panel_database, case_obj):
     assert adapter.case_collection.find().count() == 0
     
     ## WHEN adding a new case to the database
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
 
     ## THEN it should be populated with the new case
     result = adapter.cases()
@@ -30,11 +30,11 @@ def test_add_existing_case(panel_database, case_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
 
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
     ## WHEN adding a existing case to the database
     with pytest.raises(IntegrityError):
     ## THEN it should raise integrity error
-        adapter.add_case(case_obj)
+        adapter._add_case(case_obj)
 
 def test_get_case(panel_database, case_obj):
     adapter = panel_database
@@ -131,7 +131,7 @@ def test_get_non_existing_case(panel_database, case_obj):
     adapter = panel_database
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
-    adapter.add_case(case_obj)
+    adapter._add_case(case_obj)
     logger.info("Testing to get case")
 
     # WHEN retreiving an non existing case from the database

@@ -4,7 +4,10 @@ import datetime
 
 import pymongo
 
-from scout.exceptions import IntegrityError
+from scout.parse.case import parse_case
+from scout.build.case import build_case
+
+from scout.exceptions import IntegrityError, ConfigError
 
 logger = logging.getLogger(__name__)
 
@@ -180,22 +183,30 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
-    def load_case(self, case_obj, update=False):
+    def load_case(self, config_data, update=False):
         """Load a case into the database
-        
-        Check if the case exists, if not add it to the database.
-        
+
+        Check if the owner and the institute exists.
+
         Args:
-            case_obj(dict)
-            update(bool)
-        
+            config_data(dict): A dictionary with all the necessary information
+            update(bool): If existing case should be updated
+
         Returns:
             case_obj(dict)
         """
-        logger.info('Loading case %s into database'.format(case_obj['display_name']))
+        # Check that the owner exists in the database
+        institute_obj = self.institute(config_data['owner'])
+        if not institute_obj:
+            raise IntegrityError("Institute '%s' does not exist in database" % config_data['owner'])
+
+        # Parse the case information
+        parsed_case = parse_case(config=config_data)
+        # Build the case object
+        case_obj = build_case(parsed_case, self)
+
         # Check if case exists in database
         existing_case = self.case(case_obj['_id'])
-        
         if existing_case:
             if update:
                 self.update_case(case_obj)
@@ -203,18 +214,46 @@ class CaseHandler(object):
                 raise IntegrityError("Case {0} already exists in database".format(
                                      case_obj['case_id']))
         else:
-            self.add_case(case_obj)
-        
+            logger.info('Loading case %s into database', case_obj['display_name'])
+            self._add_case(case_obj)
+
+        files = [
+            {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
+            {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
+            {'file_name': 'vcf_cancer', 'variant_type': 'clinical', 'category': 'cancer'},
+        ]
+
+        for vcf_file in files:
+            try:
+                if case_obj['vcf_files'].get(vcf_file['file_name']):
+                    variant_type = vcf_file['variant_type']
+                    category = vcf_file['category']
+                    if update:
+                        self.delete_variants(
+                            case_id=case_obj['_id'],
+                            variant_type=variant_type,
+                            category=category
+                        )
+                    self.load_variants(
+                        case_obj=case_obj,
+                        variant_type=variant_type,
+                        category=category,
+                        rank_threshold=case_obj.get('rank_score_threshold', 0)
+                    )
+                else:
+                    logger.debug("didn't find {}, skipping".format(vcf_file['file_name']))
+            except (IntegrityError, ValueError, ConfigError, KeyError) as error:
+                logger.warning(error)
+
         return case_obj
 
-    def add_case(self, case_obj):
+    def _add_case(self, case_obj):
         """Add a case to the database
            If the case already exists exception is raised
 
             Args:
                 case_obj(Case)
         """
-        logger.info("Adding case %s to database" % case_obj['case_id'])
         if self.case(case_obj['case_id']):
             raise IntegrityError("Case %s already exists in database" % case_obj['case_id'])
 
@@ -265,6 +304,8 @@ class CaseHandler(object):
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
+                    'is_research': case_obj.get('is_research', False),
+                    'research_requested': case_obj.get('research_requested', False),
                 }
             },
             return_document = pymongo.ReturnDocument.AFTER

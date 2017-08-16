@@ -60,6 +60,9 @@ def build_individual(ind):
     ind_obj['mother'] = ind.get('mother')
     ind_obj['capture_kits'] = ind.get('capture_kits', [])
     ind_obj['bam_file'] = ind.get('bam_file')
+    ind_obj['confirmed_sex'] = ind.get('confirmed_sex')
+    ind_obj['confirmed_parent'] = ind.get('confirmed_parent')
+    ind_obj['predicted_ancestry'] = ind.get('predicted_ancestry')
     
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')

@@ -4,7 +4,7 @@ from datetime import datetime
 from bson import ObjectId
 import pymongo
 
-from scout.constants import CASE_STATUSES
+from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +101,11 @@ class EventHandler(object):
             query['verb'] = 'comment'
 
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
+
+    def user_events(self, user_obj=None):
+        """Fetch all events by a specific user."""
+        query = dict(user_id=user_obj['_id']) if user_obj else dict()
+        return self.event_collection.find(query)
 
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
@@ -860,6 +865,41 @@ class EventHandler(object):
         logger.debug("Variant updated")
         return updated_variant
 
+    def update_acmg(self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str):
+        """Create an event for updating the ACMG classification of a variant.
+
+        Arguments:
+            institute_obj (dict): A Institute object
+            case_obj (dict): Case object
+            user_obj (dict): A User object
+            link (str): The url to be used in the event
+            variant_obj (dict): A variant object
+            acmg_str (str): The new ACMG classification string
+
+        Returns:
+            updated_variant
+        """
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category='variant',
+            verb='acmg',
+            variant=variant_obj,
+            subject=variant_obj['display_name'],
+        )
+        logger.info("Setting ACMG to {} for: {}".format(acmg_str, variant_obj['display_name']))
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant_obj['_id']},
+            {'$set': {'acmg_classification': REV_ACMG_MAP[acmg_str]}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+
+        logger.debug("Variant updated")
+        return updated_variant
+
     def mark_checked(self, institute, case, user, link,
                      unmark=False):
         """Mark a case as checked from an analysis point of view.
@@ -1133,4 +1173,49 @@ class EventHandler(object):
             return_document = pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
+        return updated_case
+
+    def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
+        """Update default panels for a case.
+        
+        Arguments:
+            institute_obj (dict): A Institute object
+            case_obj (dict): Case object
+            user_obj (dict): A User object
+            link (str): The url to be used in the event
+            panel_objs (list(dict)): List of panel objs
+
+        Return:
+            updated_case(dict)
+        
+        """
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category='case',
+            verb='update_default_panels',
+            subject=case_obj['display_name'],
+        )
+
+        logger.info("Update default panels for {}".format(case_obj['display_name']))
+        
+        panel_ids = [panel['_id'] for panel in panel_objs]
+        
+        for existing_panel in case_obj['panels']:
+            if existing_panel['panel_id'] in panel_ids:
+                existing_panel['is_default'] = True
+            else:
+                existing_panel['is_default'] = False
+                
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case_obj['_id']},
+            {
+                '$set': {'panels': case_obj['panels']}
+            },
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        logger.debug("Case updated")
+
         return updated_case
