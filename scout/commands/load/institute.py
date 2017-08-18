@@ -7,15 +7,15 @@ logger = logging.getLogger(__name__)
 from scout.load import load_institute
 
 @click.command('institute', short_help='Load a institute')
-@click.option('-i', '--internal_id',
+@click.option('-i', '--internal-id',
                 required=True
 )
-@click.option('-d', '--display_name',
+@click.option('-d', '--display-name',
 )
 @click.pass_context
 def institute(ctx, internal_id, display_name):
     """
-    Load a institute to the 
+    Create a new institute and add it to the database
     
     """
     adapter = ctx.obj['adapter']

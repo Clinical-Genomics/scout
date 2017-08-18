@@ -39,7 +39,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     """
     config_data = yaml.load(config) if config else {}
     # Default the analysis date to now if not specified in load config
-    if not config_data:
+    if 'analysis_date' not in config_data:
         config_data['analysis_date'] = datetime.datetime.now()
 
     if ped:
