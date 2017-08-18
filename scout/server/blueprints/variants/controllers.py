@@ -142,14 +142,15 @@ def variant_case(store, case_obj, variant_obj):
                                 case_obj['individuals'] if individual['bam_file']]
 
     try:
-        if len(variant_obj['genes']) == 1:
+        genes = variant_obj.get('genes', [])
+        if len(genes) == 1:
             hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
             if hgnc_gene_obj:
                 vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
                 case_obj['region_vcf_file'] = vcf_path
             else:
                 case_obj['region_vcf_file'] = None
-        elif len(variant_obj['genes']) > 1:
+        elif len(genes) > 1:
             chrom = variant_obj['genes'][0]['common']['chromosome']
             start = min(gene['common']['start'] for gene in variant_obj['genes'])
             end = max(gene['common']['end'] for gene in variant_obj['genes'])
@@ -201,7 +202,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['callers'] = callers(variant_obj)
 
-    for gene_obj in variant_obj['genes']:
+    for gene_obj in variant_obj.get('genes', []):
         parse_gene(gene_obj)
 
     individuals = {individual['individual_id']: individual for individual in
@@ -211,7 +212,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         sample_obj['is_affected'] = True if individual['phenotype'] == 2 else False
 
     variant_obj['disease_associated_transcripts'] = []
-    for gene_obj in variant_obj['genes']:
+    for gene_obj in variant_obj.get('genes', []):
         omim_models = set()
         for disease_term in gene_obj.get('disease_terms', []):
             omim_models.update(disease_term.get('inheritance', []))
@@ -435,7 +436,7 @@ def spidex_human(variant_obj):
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
     manual_models = set()
-    for gene in variant_obj['genes']:
+    for gene in variant_obj.get('genes', []):
         manual_models.update(gene.get('manual_inheritance', []))
     return list(manual_models)
 
@@ -466,7 +467,7 @@ def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
                                         sample_obj['genotype_call'])
                for sample_obj in variant_obj['samples']]
     tx_changes = []
-    for gene_obj in variant_obj['genes']:
+    for gene_obj in variant_obj.get('genes', []):
         for transcript_obj in gene_obj['transcripts']:
             parse_transcript(gene_obj, transcript_obj)
             if transcript_obj.get('change_str'):
