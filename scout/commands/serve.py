@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import os.path
+import logging
 
 import click
 from livereload import Server
 
 from scout.server.app import create_app
 
+from scout.adapter.utils import check_connection
+
+log = logging.getLogger(__name__)
 
 @click.command()
 @click.option('-c', '--config', type=click.Path(exists=True), envvar='SCOUT_CONFIG',
@@ -24,6 +28,20 @@ def serve(context, config, host, port, debug, livereload):
         MONGO_USERNAME=context.obj['username'],
         MONGO_PASSWORD=context.obj['password'],
     )
+    
+    valid_connection = check_connection(
+        host=pymongo_config['MONGO_HOST'], 
+        port=pymongo_config['MONGO_PORT'], 
+        username=pymongo_config['MONGO_USERNAME'], 
+        password=pymongo_config['MONGO_PASSWORD'], )
+
+    log.info("Test if mongod is running")
+    if not valid_connection:
+        log.warning("Connection could not be established")
+        log.info("Is mongod running?")
+        context.abort()
+    
+
     config = os.path.abspath(config) if config else None
     app = create_app(config=pymongo_config, config_file=config)
     if livereload:

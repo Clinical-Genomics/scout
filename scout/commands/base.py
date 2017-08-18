@@ -25,6 +25,8 @@ from scout.commands.delete import delete
 from scout.commands.serve import serve
 from scout.commands.update import update as update_command
 
+from scout.adapter.utils import check_connection
+
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 log = logging.getLogger(__name__)
 
@@ -75,23 +77,36 @@ def cli(context, mongodb, username, password, host, port, logfile, loglevel,
     mongo_configs['password'] = password or configs.get('password')
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+        
+        
     
     if context.invoked_subcommand not in ('setup', 'serve'):
         log.info("Setting database name to %s", mongo_configs['mongodb'])
         log.debug("Setting host to {0}".format(mongo_configs['host']))
         log.debug("Setting port to {0}".format(mongo_configs['port']))
+        
+        valid_connection = check_connection(
+            host=mongo_configs['host'], 
+            port=mongo_configs['port'], 
+            username=mongo_configs['username'], 
+            password=mongo_configs['password'], )
+    
+        log.info("Test if mongod is running")
+        if not valid_connection:
+            log.warning("Connection could not be established")
+            context.abort()
+        
         try:
             client = get_connection(**mongo_configs)
         except ConnectionFailure:
             context.abort()
 
         database = client[mongo_configs['mongodb']]
-        log.info("Test if mongod is running")
-        try:
-            database.test.find_one()
-        except ServerSelectionTimeoutError as err:
-            log.warning("Connection could not be established")
-            context.abort()
+        # try:
+        #     database.test.find_one()
+        # except ServerSelectionTimeoutError as err:
+        #     log.warning("Connection could not be established")
+        #     context.abort()
 
         log.info("Setting up a mongo adapter")
         mongo_adapter = MongoAdapter(database)

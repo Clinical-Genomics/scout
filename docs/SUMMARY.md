@@ -13,6 +13,8 @@
 	* [Getting Started](user-guide/getting-started.md)
 	* [General Usage](user-guide/using-scout.md)
 	* [Pages](user-guide/pages.md)
+	* [Institutes](user-guide/institutes.md)
+	* [Users](user-guide/users.md)
 	* [Cases](user-guide/cases.md)
 	* [Variants](user-guide/variants.md)
 	* [Gene Panels](user-guide/panels.md)
@@ -21,6 +23,7 @@
 
 * [Admin Guide](admin-guide/README.md)
 	* [Loading](admin-guide/loading.md)
+	* [Load config](admin-guide/load-config.md)
 
 * [Blog](blog/README.md)
 	* [What's new in 3.0?](blog/new-3.0.md)

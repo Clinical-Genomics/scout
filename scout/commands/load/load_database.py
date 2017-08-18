@@ -44,21 +44,21 @@ def region(context, hgnc_id, case_id, chromosome, start, end):
 
 
 @click.command('user', short_help='Load a user')
-@click.option('-i', '--institute-name', required=True,)
-@click.option('-u', '--user-name', default='Clark Kent')
-@click.option('-m', '--user-mail', default='clark.kent@mail.com')
+@click.option('-i', '--institute-id', required=True,)
+@click.option('-u', '--user-name', required=True)
+@click.option('-m', '--user-mail', required=True)
 @click.pass_context
-def user(context, institute_name, user_name, user_mail):
-    """Add a user to the database"""
+def user(context, institute_id, user_name, user_mail):
+    """Add a user to the database."""
     adapter = context.obj['adapter']
 
     institute = adapter.institute(institute_id=institute_name)
 
     if not institute:
-        log.info("Institute {0} does not exist".format(institute_name))
+        log.info("Institute {0} does not exist".format(institute_id))
         context.abort()
 
-    user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute_name])
+    user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute_id])
     adapter.add_user(user_info)
 
 @click.group()
