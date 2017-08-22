@@ -33,7 +33,7 @@ def test_gene(client):
     # WHEN accessing the gene view
     resp = client.get(url_for('genes.gene', hgnc_id=hgnc_id))
     # THEN it should return a 404 page
-    assert resp.status_code == 404
+    assert resp.status_code == 200
 
 
 def test_api_genes(client):
