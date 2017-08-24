@@ -164,8 +164,7 @@ def events(institute_id, case_name, event_id=None):
                           variant=variant_obj, content=content, comment_level=level)
         else:
             # create a case comment
-            store.comment(institute_obj, case_obj, user_obj, link,
-                          content=content)
+            store.comment(institute_obj, case_obj, user_obj, link, content=content)
 
     return redirect(request.referrer)
 
