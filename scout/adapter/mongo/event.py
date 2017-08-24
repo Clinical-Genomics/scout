@@ -784,7 +784,7 @@ class EventHandler(object):
         )
 
         # mark the case as active again
-        if len(case.get('causatives', [])) == 0:
+        if len(updated_case.get('causatives', [])) == 0:
             logger.info("Marking case as 'active'")
             updated_case = self.case_collection.find_one_and_update(
                 {'_id':case['_id']},
