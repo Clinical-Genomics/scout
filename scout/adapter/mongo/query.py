@@ -186,8 +186,9 @@ class QueryHandler(object):
 
         if query.get('clinsig'):
             rank = query['clinsig']
-            logger.debug("add CLINSIG filter for rank: %s", rank)
-            mongo_query['clnsig.value'] = rank
+            logger.debug("add CLINSIG filter for rank: %s" %
+                        ', '.join(rank))
+            mongo_query['clnsig.value'] = {'$in': rank}
 
         if query.get('depth'):
             logger.debug("add depth filter")

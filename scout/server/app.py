@@ -36,7 +36,8 @@ def create_app(config_file=None, config=None):
     if config_file:
         app.config.from_pyfile(config_file)
 
-    coloredlogs.install(level='DEBUG' if app.debug else 'INFO')
+    current_log_level=logger.getEffectiveLevel()
+    coloredlogs.install(level='DEBUG' if app.debug else current_log_level)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
