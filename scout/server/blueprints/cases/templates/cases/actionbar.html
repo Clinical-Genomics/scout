@@ -176,6 +176,14 @@
                         case_name=case.display_name) }}" class="btn btn-default form-control" target="_blank">
       View report
     </a>
+    <hr>
+    {% for analysis in case.analyses %}
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                          case_name=case.display_name, date=analysis.date) }}" target="_blank">
+        {{ analysis.date.date() }}
+      </a>
+      <br />
+    {% endfor %}
   </div>
 {% endmacro %}
 

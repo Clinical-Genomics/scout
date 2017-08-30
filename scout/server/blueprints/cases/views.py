@@ -4,6 +4,7 @@ import os.path
 from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, send_from_directory, jsonify)
 from flask_login import current_user
+from dateutil.parser import parse as parse_date
 
 from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case, user_institutes
@@ -268,8 +269,20 @@ def delivery_report(institute_id, case_name):
     if case_obj.get('delivery_report') is None:
         return abort(404)
 
-    out_dir = os.path.dirname(case_obj['delivery_report'])
-    filename = os.path.basename(case_obj['delivery_report'])
+    date_str = request.args.get('date')
+    if date_str:
+        delivery_report = None
+        analysis_date = parse_date(date_str)
+        for analysis_data in case_obj['analyses']:
+            if analysis_data['date'] == analysis_date:
+                delivery_report = analysis_data['delivery_report']
+        if delivery_report is None:
+            return abort(404)
+    else:
+        delivery_report = case_obj['delivery_report']
+
+    out_dir = os.path.dirname(delivery_report)
+    filename = os.path.basename(delivery_report)
     return send_from_directory(out_dir, filename)
 
 
