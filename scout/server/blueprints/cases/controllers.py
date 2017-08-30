@@ -24,6 +24,7 @@ def cases(store, case_query):
         case_obj['assignees'] = [store.user(user_email) for user_email in
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
+        case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],

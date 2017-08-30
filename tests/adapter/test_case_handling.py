@@ -12,7 +12,7 @@ def test_add_cases(panel_database, case_obj):
     adapter = panel_database
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find().count() == 0
-    
+
     ## WHEN adding a new case to the database
     adapter._add_case(case_obj)
 
@@ -92,11 +92,11 @@ def test_get_cases_assignees(real_panel_database, case_obj):
     adapter = real_panel_database
     ## GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
-    
+
     user_obj = adapter.user_collection.find_one()
     case_obj['assignees'] = [user_obj['email']]
     adapter.case_collection.insert_one(case_obj)
-    
+
     ## WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query='john')
     ## THEN we should get the correct case
@@ -106,11 +106,11 @@ def test_get_cases_non_existing_assignee(real_panel_database, case_obj):
     adapter = real_panel_database
     ## GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
-    
+
     user_obj = adapter.user_collection.find_one()
     case_obj['assignees'] = [user_obj['email']]
     adapter.case_collection.insert_one(case_obj)
-    
+
     ## WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query='damien')
     ## THEN we should get the correct case
@@ -167,10 +167,10 @@ def test_update_case_collaborators(panel_database, case_obj):
     coll_3 = 'test2'
     case_obj['collaborators'].append(coll_2)
     case_obj['collaborators'].append(coll_3)
-    
+
     ## WHEN updating a case with new collaborators
     res = adapter.update_case(case_obj)
-    
+
     ## THEN assert collaborator has been added
     assert len(res['collaborators']) == 3
     ## THEN assert all collaborators where added
@@ -195,33 +195,9 @@ def test_update_case_individuals(panel_database, case_obj):
     ## WHEN updating a case with new individuals
     res = adapter.update_case(case_obj)
     ## THEN assert that 'individuals' has changed
-    
+
     assert len(res['individuals']) == 1
 
-def test_update_case_analysis_dates(panel_database, case_obj):
-    adapter = panel_database
-    ## GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
-    adapter.case_collection.insert_one(case_obj)
-    assert adapter.cases().count() == 1
-    logger.info("Testing to update case")
-
-    res = adapter.case(case_obj['_id'])
-    old_date = res['analysis_date']
-    old_update = res['updated_at']
-    assert len(res['analysis_dates']) == 1
-
-    new_analysis = datetime.datetime.now()
-    case_obj['analysis_date'] = new_analysis
-    ## WHEN updating a case with new analysis date
-    res = adapter.update_case(case_obj)
-    
-    ## THEN assert that the new analysis date is added to 'analysis_dates'
-    assert len(res['analysis_dates']) == 2
-    ## THEN assert that 'analysis_date' is set to the new date
-    assert res['analysis_date'] > old_date 
-    ## THEN assert that 'updated_at' has been changed
-    assert res['updated_at'] > old_update
 
 def test_update_case_rerun_status(panel_database, case_obj):
     adapter = panel_database
@@ -235,8 +211,8 @@ def test_update_case_rerun_status(panel_database, case_obj):
     res = adapter.case(case_obj['_id'])
     assert res['rerun_requested'] is True
 
-    ## WHEN updating a case 
+    ## WHEN updating a case
     res = adapter.update_case(case_obj)
-    
+
     ## THEN assert that 'rerun_requested' is set to False
     assert res['rerun_requested'] is False
