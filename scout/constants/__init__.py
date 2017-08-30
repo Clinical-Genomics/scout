@@ -249,6 +249,7 @@ COHORT_TAGS = [
     'endo',
     'mito',
     'ketogenic diet',
+    'pedhep',
     'other',
 ]
 
