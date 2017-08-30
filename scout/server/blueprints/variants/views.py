@@ -39,9 +39,19 @@ def variants(institute_id, case_name):
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
     # check if supplied gene symbols exist
+    hgnc_symbols = []
     for hgnc_symbol in form.hgnc_symbols.data:
-        if store.hgnc_genes(hgnc_symbol).count() == 0:
+        if hgnc_symbol.isdigit():
+            hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+            if hgnc_gene is None:
+                flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+            else:
+                hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+        elif store.hgnc_genes(hgnc_symbol).count() == 0:
             flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+        else:
+            hgnc_symbols.append(hgnc_symbol)
+    form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
     if form.data['gene_panels'] == ['hpo']:
