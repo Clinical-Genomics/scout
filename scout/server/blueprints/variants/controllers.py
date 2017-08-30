@@ -211,6 +211,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         individual = individuals[sample_obj['sample_id']]
         sample_obj['is_affected'] = True if individual['phenotype'] == 2 else False
 
+    gene_models = set()
     variant_obj['disease_associated_transcripts'] = []
     for gene_obj in variant_obj.get('genes', []):
         omim_models = set()
@@ -224,6 +225,10 @@ def variant(store, institute_obj, case_obj, variant_id):
                 refseq_ids = ', '.join(transcript_obj['refseq_ids'])
                 transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
+        gene_models = gene_models | omim_models
+
+    variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
+    variant_obj['is_matching_inheritance'] = variant_models & gene_models
 
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
