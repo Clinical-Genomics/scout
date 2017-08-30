@@ -57,8 +57,9 @@ log = logging.getLogger(__name__)
 def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         config, demo):
     """scout: manage interactions with a scout instance."""
-    coloredlogs.install(log_level=loglevel)
+    coloredlogs.install(level=loglevel)
     log.info("Running scout version %s", __version__)
+    log.debug("Debug logging enabled.")
 
     mongo_configs = {}
     configs = {}
