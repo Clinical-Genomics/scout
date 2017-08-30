@@ -156,7 +156,7 @@ def variant_case(store, case_obj, variant_obj):
             end = max(gene['common']['end'] for gene in variant_obj['genes'])
             vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
             case_obj['region_vcf_file'] = vcf_path
-    except SyntaxError:
+    except (SyntaxError, Exception):
         log.warning("skip VCF region for alignment view")
 
 
