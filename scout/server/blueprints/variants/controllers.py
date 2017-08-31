@@ -62,12 +62,13 @@ def sv_variant(store, institute_id, case_name, variant_id):
     overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
 
-    return dict(
-        institute=institute_obj,
-        case=case_obj,
-        variant=variant_obj,
-        overlapping_snvs=overlapping_snvs,
-    )
+    return {
+        'institute': institute_obj,
+        'case': case_obj,
+        'variant': variant_obj,
+        'overlapping_snvs': overlapping_snvs,
+        'manual_rank_options': MANUAL_RANK_OPTIONS,
+    }
 
 
 def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
