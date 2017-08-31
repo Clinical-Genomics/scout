@@ -25,4 +25,31 @@ def index():
         {'$group': {'_id': '$individuals.analysis_type', 'count': {'$sum': 1}}}
     ])
     analysis_types = [{'name': group['_id'], 'count': group['count']} for group in query]
-    return render_template('dashboard/index.html', cases=cases, analysis_types=analysis_types)
+
+    phenotype_terms = store.case_collection.find({'phenotype_terms.1': {'$exists': True}}).count()
+    causative_variants = store.case_collection.find({'causatives.1': {'$exists': True}}).count()
+    pinned_variants = store.case_collection.find({'suspects.1': {'$exists': True}}).count()
+    cohort_tags = store.case_collection.find({'cohorts.1': {'$exists': True}}).count()
+    overview = [{
+        'title': 'Phenotype terms',
+        'count': phenotype_terms,
+        'percent': phenotype_terms / total_cases,
+    }, {
+        'title': 'Causative variants',
+        'count': causative_variants,
+        'percent': causative_variants / total_cases,
+    }, {
+        'title': 'Pinned variants',
+        'count': pinned_variants,
+        'percent': pinned_variants / total_cases,
+    }, {
+        'title': 'Cohort tag',
+        'count': cohort_tags,
+        'percent': cohort_tags / total_cases,
+    }]
+    return render_template(
+        'dashboard/index.html',
+        cases=cases,
+        analysis_types=analysis_types,
+        overview=overview,
+    )
