@@ -25,6 +25,12 @@
   </li>
 {% endblock %}
 
+{% block top_nav_right %}
+  <li>{{ pin_button() }}</li>
+  <li>{{ causative_button() }}</li>
+  {{ super() }}
+{% endblock %}
+
 {% block content_main %}
   {% if variant.missing_data %}
     <div class="alert alert-warning">Showing only first 30 genes!</div>
@@ -47,6 +53,8 @@
           <span class="badge">{{ variant.sub_category|upper }}</span>
           Category
         </li>
+
+
       </ul>
     </div>
 
@@ -103,6 +111,50 @@
     </div>
   </div>
 {% endblock %}
+
+{% macro pin_button() %}
+  {% if variant._id not in case.suspects %}
+    <form action="{{ url_for('cases.pin_variant',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id) }}"
+          method="POST">
+      <button name="action" value="ADD" type="submit" class="btn btn-default navbar-btn" title="Pin variant">Pin</button>
+    </form>
+  {% else %}
+    <form action="{{ url_for('cases.pin_variant',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id) }}"
+          method="POST">
+      <button name="action" value="DELETE" type="submit" class="btn btn-default navbar-btn" title="Unpin variant">Unpin</button>
+    </form>
+  {% endif %}
+{% endmacro %}
+
+{% macro causative_button() %}
+  {% if variant._id in case.causatives %}
+      <form action="{{ url_for('cases.mark_causative',
+                               institute_id=institute._id,
+                               case_name=case.display_name,
+                               variant_id=variant._id) }}"
+            method="POST">
+        <button name="action" value="DELETE" type="submit" class="btn btn-default navbar-btn" title="Reset causative">
+          Reset causative
+        </button>
+      </form>
+  {% else %}
+    <form action="{{ url_for('cases.mark_causative',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id) }}"
+          method="POST">
+      <button name="action" value="ADD" type="submit" class="btn btn-default navbar-btn" title="Mark causative" onclick="return confirm('Are you sure?')">
+        Mark causative
+      </button>
+    </form>
+  {% endif %}
+{% endmacro %}
 
 {% macro frequencies(variant) %}
   <div class="panel panel-default">
