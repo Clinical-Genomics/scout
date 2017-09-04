@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 
 import pymongo
@@ -124,6 +125,8 @@ class PanelHandler(object):
             updated_panel(dict)
         """
         logger.info("Updating panel %s", panel_obj['panel_name'])
+        # update date of panel to "today"
+        panel_obj['date'] = dt.datetime.now()
         updated_panel = self.panel_collection.find_one_and_replace(
             {'_id': panel_obj['_id']},
             panel_obj,
