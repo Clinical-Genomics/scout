@@ -57,7 +57,7 @@ def test_build_cadd_exclusive(adapter):
 def test_build_cadd_inclusive(adapter):
     case_id = 'cust000'
     cadd = 10.0
-    cadd_inclusive = 'yes'
+    cadd_inclusive = True
     query = {'cadd_score': cadd, 'cadd_inclusive': cadd_inclusive}
 
     mongo_query = adapter.build_query(case_id, query=query)

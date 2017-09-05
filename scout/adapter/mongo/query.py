@@ -114,15 +114,16 @@ class QueryHandler(object):
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
 
-            if query.get('cadd_inclusive') == 'yes':
+            if query.get('cadd_inclusive') == True:
                 cadd_query = {
                     '$or': [
                         cadd_query,
                         {'cadd_score': {'$exists': False}}
-                    ]}
+                        ]}
                 logger.debug("Adding cadd inclusive to query")
 
             mongo_query['$and'].append(cadd_query)
+                    
 
         if query.get('genetic_models'):
             models = query['genetic_models']
