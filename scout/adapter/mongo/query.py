@@ -114,8 +114,7 @@ class QueryHandler(object):
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
 
-            if query.get('cadd_inclusive') is not None:
-                logger.debug("cadd_inclusive is %s" % query['cadd_inclusive'])
+            if query.get('cadd_inclusive') == True:
                 cadd_query = {
                     '$or': [
                         cadd_query,
