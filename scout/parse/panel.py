@@ -6,12 +6,11 @@ logger = logging.getLogger(__name__)
 
 VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
 
-def parse_gene(gene_line, header):
+def parse_gene(gene_info):
     """Parse a gene line with information from a panel file
     
         Args:
-            gene_line(list[str]): A raw line from the panel file
-            header(list[str]): A list with the header information
+            gene_info(dict): dictionary with gene info
     
         Returns:
             gene(dict): A dictionary with the gene information
@@ -27,46 +26,70 @@ def parse_gene(gene_line, header):
 
     """
     gene = {}
-    gene_info = dict(zip(header, gene_line))
+    # This is either hgnc id or hgnc symbol
+    identifier = None
     
-    #The hgnc id allways has to be present
-    gene['hgnc_id'] = int(gene_info['hgnc_id'])
+    hgnc_id = None
+    try:
+        if 'hgnc_id' in gene_info:
+            hgnc_id = int(gene_info['hgnc_id'])
+        elif 'hgnc_idnumber' in gene_info:
+            hgnc_id = int(gene_info['hgnc_idnumber'])
+        elif 'hgncid' in gene_info:
+            hgnc_id = int(gene_info['hgncid'])
+    except ValueError as e:
+        raise SyntaxError("Invalid hgnc id: {0}".format(hgnc_id))
     
-    #Hgnc symbol is optional
-    hgnc_symbol = gene_info.get('hgnc_symbol')
-    if hgnc_symbol:
-        gene['hgnc_symbol'] = hgnc_symbol.upper()
-    else:
-        gene['hgnc_symbol'] = None
-
+    gene['hgnc_id'] = hgnc_id
+    identifier = hgnc_id
+    
+    hgnc_symbol = None
+    if 'hgnc_symbol' in gene_info:
+        hgnc_symbol = gene_info['hgnc_symbol']
+    elif 'hgncsymbol' in gene_info:
+        hgnc_symbol = gene_info['hgncsymbol']
+    elif 'symbol' in gene_info:
+        hgnc_symbol = gene_info['symbol']
+    
+    gene['hgnc_symbol'] = hgnc_symbol
+    
+    if not identifier:
+        if hgnc_symbol:
+            identifier = hgnc_symbol
+        else:
+            raise SyntaxError("No gene identifier could be found")
+    gene['identifier'] = identifier
     # Disease associated transcripts is a ','-separated list of
-    # manually curated transcripts 
-    transcripts = gene_info.get('disease_associated_transcripts')
-    if transcripts:
-        gene['transcripts'] = [
-            transcript.split('.')[0] for transcript in transcripts.split(',')
+    # manually curated transcripts
+    transcripts = ""
+    if 'disease_associated_transcripts' in gene_info:
+        transcripts = gene_info['disease_associated_transcripts']
+    elif 'disease_associated_transcript' in gene_info:
+        transcripts = gene_info['disease_associated_transcript']
+    elif 'transcripts' in gene_info:
+        transcripts = gene_info['transcripts']
+
+    gene['transcripts'] = [
+            transcript.strip() for transcript in 
+            transcripts.split(',') if transcript
         ]
-    else:
-        gene['transcripts'] = []
-    
+
     # Genetic disease models is a ','-separated list of manually curated
     # inheritance patterns that are followed for a gene
-    models = None
+    models = ""
     if 'genetic_disease_models' in gene_info:
-        models = gene_info.get('genetic_disease_models')
+        models = gene_info['genetic_disease_models']
+    elif 'genetic_disease_model' in gene_info:
+        models = gene_info['genetic_disease_model']
     elif 'inheritance_models' in gene_info:
-        models = gene_info.get('inheritance_models')
+        models = gene_info['inheritance_models']
     elif 'genetic_inheritance_models' in gene_info:
-        models = gene_info.get('genetic_inheritance_models')
+        models = gene_info['genetic_inheritance_models']
 
-    gene['inheritance_models'] = []
-    if models:
-        for model in models.split(','):
-            if model in VALID_MODELS:
-                gene['inheritance_models'].append(model)
-            else:
-                logger.warning("Invalid model found in gene %s" % gene['hgnc_id'])
-                logger.info("Skipping model %s" % model)
+    gene['inheritance_models'] = [
+        model.strip() for model in models.split(',') 
+        if model.strip() in VALID_MODELS
+    ]
     
     # If a gene is known to be associated with mosaicism this is annotated
     gene['mosaicism'] = True if gene_info.get('mosaicism') else False
@@ -79,34 +102,64 @@ def parse_gene(gene_line, header):
     gene['database_entry_version'] = gene_info.get('database_entry_version')
 
     return gene
-    
 
 def parse_genes(gene_lines):
     """Parse a file with genes and return the hgnc ids
 
     Args:
-        gene_lines(iterable(str)): Path to gene panel file
+        gene_lines(iterable(str)): Stream with genes
 
     Returns:
         genes(list(dict)): Dictionaries with relevant gene info
     """
     genes = []
     header = []
-    hgnc_ids = set()
-
-    for line in gene_lines:
+    hgnc_identifiers = set()
+    # This can be '\t' or ';'
+    delimiter = '\t'
+    
+    # There are files that have '#' to indicate headers
+    # There are some files that start with a header line without
+    # any special symbol
+    for i,line in enumerate(gene_lines):
         line = line.rstrip()
+        if not len(line) > 0:
+            continue
         if line.startswith('#'):
             if not line.startswith('##'):
-                header = [word.lower() for word in line[1:].split('\t')]
+                if ';' in line:
+                    delimiter = ';'
+                header = [word.lower() for word in line[1:].split(delimiter)]
         else:
-            line = line.split('\t')
-            gene = parse_gene(line, header)
+            # If no header symbol assume first line is header
+            if i == 0:
+                # Check the delimiter
+                if ';' in line:
+                    delimiter = ';'
+                # If first line is a header 'hgnc' should be there
+                if ('hgnc' in line or 'HGNC' in line):
+                    header = [word.lower() for word in line.split(delimiter)]
+                    continue
+                else:
+                # If first line is not a header try to sniff what the first
+                # columns holds
+                    if line.split(delimiter)[0].isdigit():
+                        header = ['hgnc_id']
+                    else:
+                        header = ['hgnc_symbol']
             
-            hgnc_id = gene['hgnc_id']
-            
-            if not hgnc_id in hgnc_ids:
-                hgnc_ids.add(hgnc_id)
+            splitted_line = line.split(delimiter)
+            gene_info = dict(zip(header, splitted_line))
+            try:
+                gene = parse_gene(gene_info)
+            except Exception as e:
+                logger.warning(e)
+                raise SyntaxError("Line {0} is malformed".format(i))
+
+            identifier = gene.pop('identifier')
+
+            if not identifier in hgnc_identifiers:
+                hgnc_identifiers.add(identifier)
                 genes.append(gene)
 
     return genes
