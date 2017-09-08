@@ -150,6 +150,18 @@ def parse_genes(gene_lines):
             
             splitted_line = line.split(delimiter)
             gene_info = dict(zip(header, splitted_line))
+            
+            # There are cases when excel exports empty lines that looks like
+            # ;;;;;;;. This is a exception to handle these
+            info_found = False
+            for key in gene_info:
+                if gene_info[key]:
+                    info_found = True
+                    break
+            # If no info was found we skip that line
+            if not info_found:
+                continue
+
             try:
                 gene = parse_gene(gene_info)
             except Exception as e:
