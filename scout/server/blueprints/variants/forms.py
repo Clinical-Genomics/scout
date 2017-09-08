@@ -55,8 +55,9 @@ class FiltersForm(FlaskForm):
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
     cadd_score = BetterDecimalField('CADD', places=2)
-    cadd_inclusive = BooleanField()
+    cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
+    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
     exac_frequency = BetterDecimalField('ExAC', places=2)
@@ -79,8 +80,9 @@ class SvFiltersForm(FlaskForm):
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
     cadd_score = BetterDecimalField('CADD', places=2)
-    cadd_inclusive = BooleanField()
+    cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
+    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
 
     chrom = TextField('Chromosome')
     size = TextField('Length')
