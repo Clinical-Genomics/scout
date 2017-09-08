@@ -6,8 +6,9 @@ def test_parse_minimal_gene():
     ## GIVEN minimal gene line and header
     header = ["hgnc_id"]
     gene_line = ["10"]
+    gene_info = dict(zip(header, gene_line))
     ## WHEN parsing the genes
-    gene = parse_gene(gene_line, header)
+    gene = parse_gene(gene_info)
     ## THEN assert that the gene is correctly parsed
     
     assert gene['hgnc_id'] == 10
@@ -40,11 +41,13 @@ def test_parse_gene():
         mosaicism,
         version
     ]
+    gene_info = dict(zip(header, gene_line))
+    
     ## WHEN parsing the genes
-    gene = parse_gene(gene_line, header)
+    gene = parse_gene(gene_info)
     ## THEN assert that the gene is correctly parsed
     assert gene['hgnc_id'] == int(hgnc_id)
-    assert gene['hgnc_symbol'] == hgnc_symbol.upper()
+    assert gene['hgnc_symbol'] == hgnc_symbol
     assert gene['transcripts'] == transcripts.split(',')
     assert gene['inheritance_models'] == models.split(',')
     assert gene['reduced_penetrance'] == True if penetrance else False

@@ -25,7 +25,7 @@ from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_di
 from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel, build_variant)
-from scout.load import (load_hgnc_genes, load_panel)
+from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 
 # These are the reduced data files
@@ -385,8 +385,7 @@ def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
     logger.info("Creating a panel adapter")
-    load_panel(
-        adapter=adapter,
+    adapter.load_panel(
         panel_info=panel_info
     )
 
@@ -397,8 +396,7 @@ def real_panel_database(request, real_gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = real_gene_database
     logger.info("Creating a panel adapter")
-    load_panel(
-        adapter=adapter,
+    adapter.load_panel(
         panel_info=panel_info
     )
 
