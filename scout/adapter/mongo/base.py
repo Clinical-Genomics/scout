@@ -40,12 +40,13 @@ from .query import QueryHandler
 from .variant import VariantHandler
 from .user import UserHandler
 from .acmg import ACMGHandler
+from .index import IndexHandler
 
 log = logging.getLogger(__name__)
 
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
                    HpoHandler, PanelHandler, QueryHandler, VariantHandler,
-                   UserHandler, ACMGHandler):
+                   UserHandler, ACMGHandler, IndexHandler):
 
     """Adapter for cummunication with a mongo database."""
 

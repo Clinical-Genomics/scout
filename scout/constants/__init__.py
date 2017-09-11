@@ -7,6 +7,8 @@ from scout.parse.cytoband import parse_cytoband
 from scout.resources import cytobands_path
 from scout.utils.handle import get_file_handle
 
+from .indexes import INDEXES
+
 cytobands_handle = get_file_handle(cytobands_path)
 
 CYTOBANDS = parse_cytoband(cytobands_handle)
