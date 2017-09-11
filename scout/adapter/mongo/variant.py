@@ -325,7 +325,7 @@ class VariantHandler(object):
         """
         variants = self.variant_collection.find(
             {
-                'case_id': case_obj['case_id'],
+                'case_id': case_obj['_id'],
                 'category': category,
                 'variant_type': variant_type,
             },
@@ -336,7 +336,7 @@ class VariantHandler(object):
         for index, variant in enumerate(variants):
             self.variant_collection.find_one_and_update(
                 {'_id': variant['_id']},
-                {'$set': {'variant_rank': index+1}}
+                {'$set': {'variant_rank': index + 1}}
             )
         logger.info("Updating variant_rank done")
 

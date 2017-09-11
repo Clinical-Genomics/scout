@@ -141,7 +141,7 @@ class CaseHandler(object):
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Fetching case %s institute %s" % (display_name, institute_id))
+            logger.info("Fetching case %s institute %s", display_name, institute_id)
             query['owner'] = institute_id
             query['display_name'] = display_name
 
@@ -176,7 +176,7 @@ class CaseHandler(object):
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Deleting case %s institute %s", (display_name, institute_id))
+            logger.info("Deleting case %s institute %s", display_name, institute_id)
             query['owner'] = institute_id
             query['display_name'] = display_name
 
@@ -255,7 +255,7 @@ class CaseHandler(object):
                 case_obj(Case)
         """
         if self.case(case_obj['case_id']):
-            raise IntegrityError("Case %s already exists in database" % case_obj['case_id'])
+            raise IntegrityError("Case %s already exists in database" % case_obj['_id'])
 
         return self.case_collection.insert_one(case_obj)
 
