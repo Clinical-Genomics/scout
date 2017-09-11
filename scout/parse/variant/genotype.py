@@ -1,4 +1,22 @@
 # encoding: utf-8
+"""
+parse_genotypes will try to collect and merge information from vcf with 
+genotypes called by multiple variant callers. This is a complex problem, 
+especially for Structural Variants. I will try to explain some of the specific 
+problems here.
+
+## cnvnator
+Calls copy number events such as deletions and duplications. Genotype calls 
+are simple and not that informative. It includes 'GT' and 'CN' wich estimates
+the number of copies of an event. We will not use 'CN' since it is a bit 
+unclear at the moment.
+
+## tiddit
+Calls most type of structural events, specialized on translocations.
+Uses 'DV' to describe number of paired ends that supports the event and
+'RV' that are number of split reads that supports the event.
+
+"""
 
 GENOTYPE_MAP = {0: '0', 1: '1', -1:'.'}
 
@@ -25,6 +43,9 @@ def parse_genotype(variant, ind, pos):
     """Get the genotype information in the proper format
     
     Sv specific format fields:
+    
+    ##FORMAT=<ID=DV,Number=1,Type=Integer,
+    Description="Number of paired-ends that support the event">
     
     ##FORMAT=<ID=PE,Number=1,Type=Integer,
     Description="Number of paired-ends that support the event">
@@ -78,15 +99,11 @@ def parse_genotype(variant, ind, pos):
     split_read_alt = None
     split_read_ref = None
 
-    print((variant.CHROM, variant.POS))
     # Check if PE is annotated
     # This is the number of paired end reads that supports the variant
     if 'PE' in variant.FORMAT:
         try:
-            print('PE')
-            print(variant.format('PE'))
             value = int(variant.format('PE')[pos])
-            print(value)
             if not value < 0:
                 paired_end_alt = value
         except ValueError as e:
@@ -95,10 +112,7 @@ def parse_genotype(variant, ind, pos):
     # Check if PR is annotated
     # Number of paired end reads that supports ref and alt
     if 'PR' in variant.FORMAT:
-        print('PR')
-        print(variant.format('PR'))
         values = variant.format('PR')[pos]
-        print(values)
         try:
             alt_value = int(values[1])
             ref_value = int(values[0])
@@ -110,12 +124,8 @@ def parse_genotype(variant, ind, pos):
             pass
     
     # Check if 'SR' is annotated
-    # This field is used different by different callers
     if 'SR' in variant.FORMAT:
-        print('SR')
-        print(variant.format('SR'))
         values = variant.format('SR')[pos]
-        print(values)
         alt_value = 0
         ref_value = 0
         if len(values) == 1:
@@ -127,8 +137,36 @@ def parse_genotype(variant, ind, pos):
             split_read_alt = alt_value
         if not ref_value < 0:
             split_read_ref = ref_value
-            
+    
+    # Number of paired ends that supports the event
+    if 'DV' in variant.FORMAT:
+        values = variant.format('DV')[pos]
+        alt_value = int(values[0])
+        if not alt_value < 0:
+            paired_end_alt = alt_value
 
+    # Number of paired ends that supports the reference
+    if 'DR' in variant.FORMAT:
+        values = variant.format('DR')[pos]
+        ref_value = int(values[0])
+        if not alt_value < 0:
+            paired_end_ref = ref_value
+
+    # Number of split reads that supports the event
+    if 'RV' in variant.FORMAT:
+        values = variant.format('RV')[pos]
+        alt_value = int(values[0])
+        if not alt_value < 0:
+            split_read_alt = alt_value
+    
+    # Number of split reads that supports the reference
+    if 'RR' in variant.FORMAT:
+        values = variant.format('RR')[pos]
+        ref_value = int(values[0])
+        if not ref_value < 0:
+            split_read_ref = ref_value
+    
+    
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth == -1:
         if 'VD' in variant.FORMAT:
@@ -164,12 +202,12 @@ def parse_genotype(variant, ind, pos):
         # If read depth could not be parsed by cyvcf2, try to get it manually
         if 'DP' in variant.FORMAT:
             read_depth = int(variant.format('DP')[pos][0])
-        elif (alt_depth != -1 and ref_depth != -1):
-            read_depth = alt_depth + ref_depth
-
-    if (ref_depth==0 and read_depth!=-1 and alt_depth!=-1):
-        ref_depth = read_depth - alt_depth
-
+        elif (alt_depth != -1 or ref_depth != -1):
+            read_depth = 0
+            if alt_depth != -1:
+                read_depth += alt_depth
+            if ref_depth != -1:
+                read_depth += alt_depth
 
     gt_call['read_depth'] = read_depth
 
