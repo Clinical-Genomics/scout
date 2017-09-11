@@ -89,8 +89,10 @@ def parse_genotype(variant, ind, pos):
     
     # Fill the object with the relevant information:
     genotype = variant.genotypes[pos]
+    
     ref_call = genotype[0]
     alt_call = genotype[1]
+    
     gt_call['genotype_call'] = '/'.join([GENOTYPE_MAP[ref_call], 
                                          GENOTYPE_MAP[alt_call]])
     
