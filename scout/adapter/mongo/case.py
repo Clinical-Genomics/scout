@@ -205,18 +205,6 @@ class CaseHandler(object):
         # Build the case object
         case_obj = build_case(parsed_case, self)
 
-        # Check if case exists in database
-        existing_case = self.case(case_obj['_id'])
-        if existing_case:
-            if update:
-                self.update_case(case_obj)
-            else:
-                raise IntegrityError("Case {0} already exists in database".format(
-                                     case_obj['case_id']))
-        else:
-            logger.info('Loading case %s into database', case_obj['display_name'])
-            self._add_case(case_obj)
-
         files = [
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
             {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
@@ -244,6 +232,18 @@ class CaseHandler(object):
                     logger.debug("didn't find {}, skipping".format(vcf_file['file_name']))
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
+
+        # Check if case exists in database
+        existing_case = self.case(case_obj['_id'])
+        if existing_case:
+            if update:
+                self.update_case(case_obj)
+            else:
+                raise IntegrityError("Case {0} already exists in database".format(
+                                     case_obj['case_id']))
+        else:
+            logger.info('Loading case %s into database', case_obj['display_name'])
+            self._add_case(case_obj)
 
         return case_obj
 
