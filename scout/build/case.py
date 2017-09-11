@@ -200,7 +200,7 @@ def build_case(case_data, adapter):
     for phenotype in case_data.get('phenotype_terms', []):
         phenotype_obj = build_phenotype(phenotype, adapter)
         if phenotype_obj:
-            phenotypes.append[phenotype_obj]
+            phenotypes.append(phenotype_obj)
     if phenotypes:
         case_obj['phenotype_terms'] = phenotypes
 
@@ -209,7 +209,7 @@ def build_case(case_data, adapter):
     for phenotype in case_data.get('phenotype_groups', []):
         phenotype_obj = build_phenotype(phenotype, adapter)
         if phenotype_obj:
-            phenotype_groups.append[phenotype_obj]
+            phenotype_groups.append(phenotype_obj)
     if phenotype_groups:
         case_obj['phenotype_groups'] = phenotype_groups
 
