@@ -1,6 +1,30 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 
+ACMG_MAP = {
+    4: 'pathogenic',
+    3: 'likely_pathogenic',
+    2: 'likely_benign',
+    1: 'benign',
+    0: 'uncertain_significance'
+}
+REV_ACMG_MAP = {value: key for key, value in ACMG_MAP.items()}
+ACMG_SHORT_MAP = {value: ''.join([word[0].upper() for word in value.split('_')]) for value in
+                  ACMG_MAP.values()}
+
+
+ACMG_COMPLETE_MAP = OrderedDict(
+    pathogenic=dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
+    likely_pathogenic=dict(code='likely_pathogenic', short='LP', label='Likely Pathogenic',
+                           color='warning'),
+    uncertain_significance=dict(code='uncertain_significance', short='VUS',
+                                label='Uncertain Significance', color='primary'),
+    likely_benign=dict(code='likely_benign', short='LB', label='Likely Benign', color='info'),
+    benign=dict(code='benign', short='B', label='Benign', color='success'),
+)
+
+ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()
+
 ACMG_CRITERIA = {
     'pathogenicity': OrderedDict([
         ('Very Strong', OrderedDict([
