@@ -29,7 +29,6 @@ class IndexHandler(object):
                     indexes.append(index_name)
         return indexes
 
-
     def load_indexes(self):
         """Add a hpo object
 
