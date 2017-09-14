@@ -9,7 +9,7 @@ A case can then be associated with one or several gene panels.
 
 ### File format
 
-The gene panel is a semi colon separated text file with a header that describes the columns and one line for each gene entry.
+The gene panel is a semi colon or tab separated text file with a header that describes the columns and one line for each gene entry.
 
 The columns that will be used by scout is the following:
 
@@ -34,9 +34,9 @@ Each gene in a gene panel have to be identified with a hgnc id
 
 ## Uploading a new gene panel version
 
-You can upload a text file in Scout to upload an existing gene panel. It should follow the format specified in this file: [panel-example](../static/scout-3-panel-file-example.csv). The file is `;` (semi-colon) separated.
+You can upload a text file in Scout to upload an existing gene panel. It should follow the format specified in this file: [panel-example](../static/scout-3-panel-file-example.csv). The file is `;` (semi-colon) separated, could also be tab-separated.
 
 You can also use this example [Excel template](../static/scout-3-panel-file-example.xlsx) as a starting point. When you are ready to update the gene panel simply:
 
-1. choose **"Save as..."** and select **"Comma Separated Values (.csv)"** as the format
+1. choose **"Save as..."** in Excel and select **"Comma Separated Values (.csv)"** as the format
 2. fill out the form in Scout and upload the "*.csv" file to update your gene panel
