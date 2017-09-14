@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from collections import OrderedDict
 
 from intervaltree import (IntervalTree, Interval)
 
@@ -249,24 +248,23 @@ COHORT_TAGS = [
     'endo',
     'mito',
     'ketogenic diet',
-    'pedhep',
     'other',
 ]
 
 PAR_COORDINATES = {
-    '37': {
-        'X': IntervalTree([Interval(60001, 2699521, 'par1'),
-                           Interval(154931044, 155260561, 'par2')]),
-        'Y': IntervalTree([Interval(10001, 2649521, 'par1'),
-                           Interval(59034050, 59363567, 'par2')])
-    },
-    '38': {
-        'X': IntervalTree([Interval(10001, 2781480, 'par1'),
-                           Interval(155701383, 156030896, 'par2')]),
-        'Y': IntervalTree([Interval(10001, 2781480, 'par1'),
-                           Interval(56887903, 57217416, 'par2')])
-    },
-}
+        '37': {
+            'X': IntervalTree([Interval(60001, 2699521, 'par1'),
+                               Interval(154931044, 155260561, 'par2')]),
+            'Y': IntervalTree([Interval(10001, 2649521, 'par1'),
+                               Interval(59034050, 59363567, 'par2')])
+        },
+        '38': {
+            'X': IntervalTree([Interval(10001, 2781480, 'par1'),
+                               Interval(155701383, 156030896, 'par2')]),
+            'Y': IntervalTree([Interval(10001, 2781480, 'par1'),
+                               Interval(56887903, 57217416, 'par2')])
+        },
+    }
 
 MANUAL_RANK_OPTIONS = {
     8: {
@@ -309,13 +307,14 @@ MANUAL_RANK_OPTIONS = {
     },
 }
 
-ACMG_COMPLETE_MAP = OrderedDict(
-    pathogenic=dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
-    likely_pathogenic=dict(code='likely_pathogenic', short='LP', label='Likely Pathogenic',
-                           color='warning'),
-    uncertain_significance=dict(code='uncertain_significance', short='VUS',
-                                label='Uncertain Significance', color='primary'),
-    likely_benign=dict(code='likely_benign', short='LB', label='Likely Benign', color='info'),
-    benign=dict(code='benign', short='B', label='Benign', color='success'),
-)
+ACMG_COMPLETE_MAP = {
+    'pathogenic': dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
+    'likely_pathogenic': dict(code='likely_pathogenic', short='LP', label='Likely Pathogenic',
+                              color='warning'),
+    'uncertain_significance': dict(code='uncertain_significance', short='VUS',
+                                   label='Uncertain Significance', color='primary'),
+    'likely_benign': dict(code='likely_benign', short='LB', label='Likely Benign',
+                          color='info'),
+    'benign': dict(code='benign', short='B', label='Benign', color='success'),
+}
 ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()

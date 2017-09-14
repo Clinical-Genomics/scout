@@ -27,16 +27,18 @@ def gene(hgnc_id=None, hgnc_symbol=None):
     """Render information about a gene."""
     if hgnc_symbol:
         query = store.hgnc_genes(hgnc_symbol)
-        if query.count() == 1:
-            hgnc_id = query.first()['hgnc_id']
+        if query.count() < 2:
+            gene_obj = query.first()
         else:
             return redirect(url_for('.genes', query=hgnc_symbol))
-    try:
-        genes = controllers.gene(store, hgnc_id)
-    except ValueError as error:
+    else:
+        gene_obj = store.hgnc_gene(hgnc_id)
+
+    if gene_obj is None:
         return abort(404)
-    
-    return genes
+
+    controllers.gene(gene_obj)
+    return dict(gene=gene_obj)
 
 
 @genes_bp.route('/api/v1/genes')
