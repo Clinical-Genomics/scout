@@ -273,12 +273,12 @@ class QueryHandler(object):
 
             else:
                 logger.debug("add CLINSIG filter for rank: %s" %
-                             ', '.join(query['clinsig']))
+                             ', '.join(str(query['clinsig'])))
                 if mongo_query_minor:
                     mongo_query_minor.append({'clnsig.value': {'$in': rank}})
                 else:
                     # if this is the only minor critera, use implicit and.
-                    mongo_query['clnsig.value'] = {'$in': rank} 
+                    mongo_query['clnsig.value'] = {'$in': rank}
 
         if mongo_query_minor and mongo_query_major:
             mongo_query['$or'] = [ {'$and': mongo_query_minor }, mongo_query_major ]
