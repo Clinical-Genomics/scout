@@ -160,3 +160,12 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
+
+
+def multiqc(store, institute_id, case_name):
+    """Find MultiQC report for the case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+    )

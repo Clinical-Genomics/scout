@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import yaml
 import datetime
@@ -86,6 +87,7 @@ def add_peddy_information(config_data):
     ped_info = {}
     ped_check = {}
     sex_check = {}
+    relations = []
 
     if 'peddy_ped' in config_data:
         file_handle = open(config_data['peddy_ped'], 'r')
@@ -134,7 +136,6 @@ def add_peddy_information(config_data):
                             if 'confirmed_parent' not in analysis_inds[ind[parent]]:
                                 # Set confirmatio to True
                                 analysis_inds[ind[parent]]['confirmed_parent'] = True
-
 
 def parse_individual(sample):
     """Parse individual information
@@ -282,6 +283,7 @@ def parse_case(config):
         'default_panels': config.get('default_gene_panels', []),
         'gene_panels': config.get('gene_panels', []),
         'assignee': config.get('assignee'),
+        'multiqc': config.get('multiqc'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db
@@ -297,11 +299,11 @@ def parse_case(config):
 
 def parse_ped(ped_stream, family_type='ped'):
     """Parse out minimal family information from a PED file.
-    
+
     Args:
         ped_stream(iterable(str))
         family_type(str): Format of the pedigree information
-    
+
     Returns:
         family_id(str), samples(list[dict])
     """
