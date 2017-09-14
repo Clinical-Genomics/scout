@@ -100,7 +100,7 @@ def test_build_clinsig(adapter):
 
     assert mongo_query['$and'] == [ 
         {'clnsig.value': {
-                '$in': 3,4,5
+                '$in': clinsig_items
                 }
          }
         ]
@@ -110,20 +110,19 @@ def test_build_clinsig_filter(adapter):
     clinsig_items = [ '4', '5' ]
     region_annotation = ['exonic', 'splicing']
     
-        query = {'region_annotations': region_annotation, 
+    query = {'region_annotations': region_annotation, 
                  'clnsig': clinsig_items }
         
-        assert mongo_query['$and'] == [
-            { 'genes.region_annotation':
-                  {'$in': region_annotation }
-              },
-            { 'clnsig.value':
-                  { '$in': clinsig_items }
-              } 
-            ]
+    assert mongo_query['$and'] == [
+        { 'genes.region_annotation':
+              {'$in': region_annotation }
+          },
+        { 'clnsig.value':
+              { '$in': clinsig_items }
+          } 
+        ]
 
-
-def test_build_clinsig_always(adapter)
+def test_build_clinsig_always(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     clinsig_items = [ '4', '5' ]
@@ -144,7 +143,7 @@ def test_build_clinsig_always(adapter)
         { 'clnsig':
               {
                 '$elemMatch': { 'value':
-                                    ( '$in' : clinsig_items },
+                                    { '$in' : clinsig_items },
                                 'revstat':
                                     { '$in' : ['mult', 
                                                'single', 
@@ -156,7 +155,7 @@ def test_build_clinsig_always(adapter)
           }
         ]
 
-def test_build_clinsig_always_only(adapter)
+def test_build_clinsig_always_only(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     clinsig_items = [ '4', '5' ]
@@ -167,9 +166,9 @@ def test_build_clinsig_always_only(adapter)
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert mongo_query['clinsig'] = {
+    assert mongo_query['clinsig'] == {
         '$elemMatch': { 'value':
-                            ( '$in' : clinsig_items },
+                            { '$in' : clinsig_items },
                         'revstat':
                             { '$in' : ['mult', 
                                        'single', 
