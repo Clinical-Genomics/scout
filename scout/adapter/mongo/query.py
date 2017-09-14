@@ -17,6 +17,7 @@ class QueryHandler(object):
                 'hgnc_symbols': list,
                 'region_annotations': list,
                 'functional_annotations': list,
+                'clinsig': list,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str,
                 'start': int,
@@ -113,15 +114,16 @@ class QueryHandler(object):
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
 
-            if query.get('cadd_inclusive') == 'yes':
+            if query.get('cadd_inclusive') == True:
                 cadd_query = {
                     '$or': [
                         cadd_query,
                         {'cadd_score': {'$exists': False}}
-                    ]}
+                        ]}
                 logger.debug("Adding cadd inclusive to query")
 
             mongo_query['$and'].append(cadd_query)
+                    
 
         if query.get('genetic_models'):
             models = query['genetic_models']
@@ -185,9 +187,11 @@ class QueryHandler(object):
                          ', '.join(svtype))
 
         if query.get('clinsig'):
-            rank = query['clinsig']
-            logger.debug("add CLINSIG filter for rank: %s", rank)
-            mongo_query['clnsig.value'] = rank
+            logger.debug("add CLINSIG filter for rank: %s" %
+                        ', '.join(query['clinsig']))
+            rank = [int(item) for item in query['clinsig']]
+
+            mongo_query['clnsig.value'] = {'$in': rank}
 
         if query.get('depth'):
             logger.debug("add depth filter")
@@ -220,5 +224,7 @@ class QueryHandler(object):
 
         if not mongo_query['$and']:
             del mongo_query['$and']
+
+        logger.debug("mongo query: %s", mongo_query)
 
         return mongo_query

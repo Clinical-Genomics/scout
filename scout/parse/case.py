@@ -39,7 +39,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     """
     config_data = yaml.load(config) if config else {}
     # Default the analysis date to now if not specified in load config
-    if not config_data:
+    if 'analysis_date' not in config_data:
         config_data['analysis_date'] = datetime.datetime.now()
 
     if ped:
@@ -55,7 +55,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
             config_data['owner'] = owner
 
     if 'gene_panels' in config_data:
-        log.debug("handle whitespace in gene panel names")
+        # handle whitespace in gene panel names
         config_data['gene_panels'] = [panel.strip() for panel in
                                       config_data['gene_panels']]
         config_data['default_gene_panels'] = [panel.strip() for panel in
@@ -296,7 +296,15 @@ def parse_case(config):
 
 
 def parse_ped(ped_stream, family_type='ped'):
-    """Parse out minimal family information from a PED file."""
+    """Parse out minimal family information from a PED file.
+    
+    Args:
+        ped_stream(iterable(str))
+        family_type(str): Format of the pedigree information
+    
+    Returns:
+        family_id(str), samples(list[dict])
+    """
     pedigree = FamilyParser(ped_stream, family_type=family_type)
 
     if len(pedigree.families) != 1:

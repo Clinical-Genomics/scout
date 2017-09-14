@@ -18,6 +18,7 @@ try:
     from chanjo_report.server.blueprints import report_bp
     from chanjo_report.server.extensions import api as chanjo_api
 except ImportError:
+    chanjo_api = None
     report_bp = None
     configure_template_filters = None
     logger.info('chanjo report not installed!')
@@ -35,7 +36,8 @@ def create_app(config_file=None, config=None):
     if config_file:
         app.config.from_pyfile(config_file)
 
-    coloredlogs.install(level='DEBUG' if app.debug else 'INFO')
+    current_log_level=logger.getEffectiveLevel()
+    coloredlogs.install(level='DEBUG' if app.debug else current_log_level)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
@@ -150,10 +152,11 @@ def configure_coverage(app):
     """Setup coverage related extensions."""
     # setup chanjo report
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True if app.debug else False
-    chanjo_api.init_app(app)
-    configure_template_filters(app)
-    # register chanjo report blueprint
-    app.register_blueprint(report_bp, url_prefix='/reports')
+    if chanjo_api:
+        chanjo_api.init_app(app)
+        configure_template_filters(app)
+        # register chanjo report blueprint
+        app.register_blueprint(report_bp, url_prefix='/reports')
 
     babel = Babel(app)
 

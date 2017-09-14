@@ -7,6 +7,7 @@ from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
 from scout.constants.acmg import ACMG_CRITERIA
+from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
@@ -38,9 +39,19 @@ def variants(institute_id, case_name):
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
     # check if supplied gene symbols exist
+    hgnc_symbols = []
     for hgnc_symbol in form.hgnc_symbols.data:
-        if store.hgnc_genes(hgnc_symbol).count() == 0:
+        if hgnc_symbol.isdigit():
+            hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+            if hgnc_gene is None:
+                flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+            else:
+                hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+        elif store.hgnc_genes(hgnc_symbol).count() == 0:
             flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+        else:
+            hgnc_symbols.append(hgnc_symbol)
+    form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
     if form.data['gene_panels'] == ['hpo']:
@@ -113,6 +124,9 @@ def variant_update(institute_id, case_name, variant_id):
         flash("updated manual rank: {}".format(new_manual_rank), 'info')
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
+        acmg_classification = variant_obj.get('acmg_classification')
+        if acmg_classification and (new_acmg == ACMG_MAP[acmg_classification]):
+            new_acmg = None
         store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
         flash("updated ACMG classification: {}".format(new_acmg), 'info')
     return redirect(request.referrer)

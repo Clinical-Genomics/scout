@@ -64,11 +64,11 @@
     <div class="col-xs-12 col-sm-6">{{ severity_list() }}</div>
   </div>
   <div class="row">
-    {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
     <div class="col-xs-12 col-sm-6 {{ 'col-md-4' if has_pedigree }}">
       {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
     </div>
     <div class="col-xs-12 col-sm-6 {{ 'col-md-5' if has_pedigree }}">{{ gtcall_panel() }}</div>
+    {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
     {% if has_pedigree %}
       <div class="col-xs-12 col-md-3">{{ pedigree_panel() }}</div>
     {% endif %}
@@ -635,7 +635,7 @@
     </table>
     {% endif %}
 
-    <div class="panel-heading">Incomplete penetrance</div>
+    <div class="panel-heading">Gene models</div>
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -1099,6 +1099,7 @@
         </button>
       {% endfor %}
     </div>
+  </form>
 {% endmacro %}
 
 {% macro acmg_classification_item(data) %}

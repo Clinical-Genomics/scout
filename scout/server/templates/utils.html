@@ -11,6 +11,38 @@
   {% endwith %}
 {% endmacro %}
 
+{% macro comments_table(institute, case, comments, variant_id=None) %}
+  <table class='table table-bordered table-hover table-condensed'>
+    <thead>
+      <tr>
+	<th>User</th>
+	<th>Comment</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for comment in comments %}    
+      <tr>
+	<td>
+	  <small> 
+	    <strong> {{ comment.user_name }} </strong>
+	    on {{ comment.created_at.date() }}
+	    {% if comment.level == 'global' %}
+              <span class='label label-info'>GLOBAL</span>
+            {% endif %}
+	    {% if comment.created_at < case.updated_at %}
+              <span class='label label-warning'>OLD</span>
+            {% endif %}
+	  </small>
+	</td>
+	<td>
+	  {{ comment.content }}
+	</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
   <div class="panel panel-default">
     <div class="panel-heading">Comments</div>

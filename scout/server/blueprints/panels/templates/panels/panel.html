@@ -144,44 +144,46 @@
         </form>
       </div>
     {% endif %}
-    {% for gene in panel.pending %}
-      {% if gene.info %}
-        <table class="table table-bordered">
-          <tbody>
-            <tr>
-              <th>Gene</th>
-              <td>{{ gene.symbol }}</td>
-            </tr>
-            {% for key, value in gene.info.items() %}
-              <tr>
-                <th>{{ key }}</th>
-                <td>
-                  {% if value is iterable and value is not string %}
-                    {{ value|join(', ') }}
-                  {% else %}
-                    {{ value }}
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <ul class="list-group">
-          <li class="list-group-item">
+    <ul class="list-group">
+      {% for gene in panel.pending %}
+        <li class="list-group-item">
+          <span data-toggle="tooltip" data-placement="right" data-html="true" title="
+            <div class='text-left'>
+              <strong>Transcripts</strong>:
+              {{ gene.info.disease_associated_transcripts|join(',') }} <br>
+              <strong>Reduced penetrance</strong>:
+              {{ 'yes' if gene.info.reduced_penetrance else 'no' }} <br>
+              <strong>Mosaicism</strong>:
+              {{ 'yes' if gene.info.mosaicism else 'no' }} <br>
+              <strong>Mosaicism</strong>:
+              {{ 'yes' if gene.info.mosaicism else 'no' }} <br>
+              <strong>Inheritance models</strong>:
+              {{ gene.info.inheritance_models|join(',') }} <br>
+              <strong>Entry version</strong>:
+              {{ gene.info.database_entry_version }} <br>
+            </div>
+          ">
             {{ gene.symbol }}
-            <span class="badge pull-right">{{ gene.action }}</span>
-          </li>
-        </ul>
-      {% endif %}
-    {% else %}
-      <ul class="list-group">
+          </span>
+          <span class="badge pull-right">{{ gene.action }}</span>
+        </li>
+      {% else %}
         <li class="list-group-item">No pending genes</li>
-      </ul>
-    {% endfor %}
+      {% endfor %}
+    </ul>
     {% if panel.pending and not panel.is_archived %}
       <div class="panel-footer">
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-xs-3">
+                <label>Version</label>
+              </div>
+              <div class="col-xs-9">
+                <input class="form-control" name="version" type="number" value="{{ panel.version + 1 }}">
+              </div>
+            </div>
+          </div>
           <button class="btn btn-primary form-control">Update panel</button>
         </form>
       </div>
@@ -204,6 +206,7 @@
         source: getTerms,
         minLength: 2,
       });
+      $('[data-toggle="tooltip"]').tooltip();
     })
   </script>
 {% endblock %}

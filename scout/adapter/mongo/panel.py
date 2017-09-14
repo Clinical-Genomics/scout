@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 
 import pymongo
@@ -6,6 +7,7 @@ from bson import ObjectId
 from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
+
 
 class PanelHandler(object):
 
@@ -22,9 +24,8 @@ class PanelHandler(object):
             panel_name, panel_version
         ))
         if self.gene_panel(panel_name, panel_version):
-            raise IntegrityError("Panel {0} with version {1} already"\
-                                 " exist in database".format(
-                                 panel_name, panel_version))
+            raise IntegrityError("Panel {0} with version {1} already"
+                                 " exist in database".format(panel_name, panel_version))
         logger.debug("Panel saved")
 
         self.panel_collection.insert_one(panel_obj)
@@ -124,10 +125,12 @@ class PanelHandler(object):
             updated_panel(dict)
         """
         logger.info("Updating panel %s", panel_obj['panel_name'])
+        # update date of panel to "today"
+        panel_obj['date'] = dt.datetime.now()
         updated_panel = self.panel_collection.find_one_and_replace(
             {'_id': panel_obj['_id']},
             panel_obj,
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         return updated_panel
@@ -247,3 +250,10 @@ class PanelHandler(object):
         panel_obj['is_archived'] = True
         self.update_panel(panel_obj)
         return new_panel
+
+    def latest_panels(self, institute_id):
+        """Return the latest version of each panel."""
+        panel_names = self.gene_panels(institute_id=institute_id).distinct('panel_name')
+        for panel_name in panel_names:
+            panel_obj = self.gene_panel(panel_name)
+            yield panel_obj

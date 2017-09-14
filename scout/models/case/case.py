@@ -54,7 +54,6 @@ case = dict(
     rerun_requested = bool, # default=False
 
     analysis_date = datetime,
-    analysis_dates = list, # list of datetimes
 
     # default_panels specifies which panels that should be shown when
     # the case is opened
