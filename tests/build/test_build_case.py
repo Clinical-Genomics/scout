@@ -7,7 +7,7 @@ from scout.build import build_case
 
 def test_build_case(parsed_case, panel_database):
     adapter = panel_database
-
+    
     #GIVEN a parsed case
     #WHEN bulding a case model
     case_obj = build_case(parsed_case, adapter)
@@ -26,6 +26,7 @@ def test_build_case(parsed_case, panel_database):
     assert case_obj['rerun_requested'] == False
 
     assert case_obj['analysis_date'] == parsed_case['analysis_date']
+    assert case_obj['analysis_dates'] == [parsed_case['analysis_date']]
 
     assert len(case_obj['dynamic_gene_list']) == 0
 
@@ -99,7 +100,7 @@ def test_build_case_non_existing_owner(institute_database):
     with pytest.raises(ConfigError):
         case_obj = build_case(case_info, institute_database)
 
-
+    
 # def test_build_case_config(parsed_case):
 #     case_obj = build_case(parsed_case)
 #     print(case_obj.to_json())

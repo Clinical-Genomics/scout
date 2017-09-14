@@ -2,7 +2,7 @@
 
 Flask>=0.10
 Flask-DebugToolbar
-Flask-PyMongo
+Flask-PyMongo>=0.5.1
 Flask-Bootstrap
 path.py
 Flask-OAuthlib
@@ -27,4 +27,3 @@ ped_parser
 intervaltree
 
 # chanjo-report
-python-dateutil

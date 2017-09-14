@@ -64,7 +64,7 @@ def build_case(case_data, adapter):
         rerun_requested = bool, # default=False
 
         analysis_date = datetime,
-        analyses = list, # list of dict
+        analysis_dates = list, # list of datetimes
 
         # default_panels specifies which panels that should be shown when
         # the case is opened
@@ -152,12 +152,13 @@ def build_case(case_data, adapter):
     analysis_date = case_data.get('analysis_date')
     if analysis_date:
         case_obj['analysis_date'] = analysis_date
+        case_obj['analysis_dates'] = [analysis_date]
 
     # We store some metadata and references about gene panels in 'panels'
     case_panels = case_data.get('gene_panels', [])
     default_panels = case_data.get('default_panels', [])
     panels = []
-
+    
     for panel_name in case_panels:
         panel_obj = adapter.gene_panel(panel_name)
         if not panel_obj:
@@ -200,7 +201,7 @@ def build_case(case_data, adapter):
     for phenotype in case_data.get('phenotype_terms', []):
         phenotype_obj = build_phenotype(phenotype, adapter)
         if phenotype_obj:
-            phenotypes.append[phenotype_obj]
+            phenotypes.append(phenotype_obj)
     if phenotypes:
         case_obj['phenotype_terms'] = phenotypes
 
@@ -209,7 +210,7 @@ def build_case(case_data, adapter):
     for phenotype in case_data.get('phenotype_groups', []):
         phenotype_obj = build_phenotype(phenotype, adapter)
         if phenotype_obj:
-            phenotype_groups.append[phenotype_obj]
+            phenotype_groups.append(phenotype_obj)
     if phenotype_groups:
         case_obj['phenotype_groups'] = phenotype_groups
 

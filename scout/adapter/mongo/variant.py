@@ -51,7 +51,7 @@ class VariantHandler(object):
 
         # Loop over the genes in the variant object to add information
         # from hgnc_genes and panel genes
-        for variant_gene in variant_obj.get('genes', []):
+        for variant_gene in variant_obj['genes']:
             hgnc_id = variant_gene['hgnc_id']
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
@@ -302,7 +302,7 @@ class VariantHandler(object):
             if variant_obj:
                 not_loaded = False
                 compound['rank_score'] = variant_obj['rank_score']
-                for gene in variant_obj.get('genes', []):
+                for gene in variant_obj['genes']:
                     gene_obj = {
                         'hgnc_id': gene['hgnc_id'],
                         'hgnc_symbol': gene.get('hgnc_symbol'),
@@ -325,7 +325,7 @@ class VariantHandler(object):
         """
         variants = self.variant_collection.find(
             {
-                'case_id': case_obj['case_id'],
+                'case_id': case_obj['_id'],
                 'category': category,
                 'variant_type': variant_type,
             },
@@ -336,7 +336,7 @@ class VariantHandler(object):
         for index, variant in enumerate(variants):
             self.variant_collection.find_one_and_update(
                 {'_id': variant['_id']},
-                {'$set': {'variant_rank': index+1}}
+                {'$set': {'variant_rank': index + 1}}
             )
         logger.info("Updating variant_rank done")
 
@@ -488,7 +488,7 @@ class VariantHandler(object):
             for nr_variants, variant in enumerate(vcf_obj(region)):
                 rank_score = parse_rank_score(
                     variant.INFO.get('RankScore'),
-                    case_obj['display_name']
+                    case_obj['_id']
                 )
                 if (rank_score is None) or (rank_score > rank_threshold):
                     # Parse the vcf variant

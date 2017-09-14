@@ -141,7 +141,7 @@ class CaseHandler(object):
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Fetching case %s institute %s" % (display_name, institute_id))
+            logger.info("Fetching case %s institute %s", display_name, institute_id)
             query['owner'] = institute_id
             query['display_name'] = display_name
 
@@ -176,7 +176,7 @@ class CaseHandler(object):
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Deleting case %s institute %s", (display_name, institute_id))
+            logger.info("Deleting case %s institute %s", display_name, institute_id)
             query['owner'] = institute_id
             query['display_name'] = display_name
 
@@ -204,18 +204,6 @@ class CaseHandler(object):
         parsed_case = parse_case(config=config_data)
         # Build the case object
         case_obj = build_case(parsed_case, self)
-
-        # Check if case exists in database
-        existing_case = self.case(case_obj['_id'])
-        if existing_case:
-            if update:
-                self.update_case(case_obj)
-            else:
-                raise IntegrityError("Case {0} already exists in database".format(
-                                     case_obj['case_id']))
-        else:
-            logger.info('Loading case %s into database', case_obj['display_name'])
-            self._add_case(case_obj)
 
         files = [
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
@@ -245,6 +233,18 @@ class CaseHandler(object):
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
 
+        # Check if case exists in database
+        existing_case = self.case(case_obj['_id'])
+        if existing_case:
+            if update:
+                self.update_case(case_obj)
+            else:
+                raise IntegrityError("Case {0} already exists in database".format(
+                                     case_obj['case_id']))
+        else:
+            logger.info('Loading case %s into database', case_obj['display_name'])
+            self._add_case(case_obj)
+
         return case_obj
 
     def _add_case(self, case_obj):
@@ -255,7 +255,7 @@ class CaseHandler(object):
                 case_obj(Case)
         """
         if self.case(case_obj['case_id']):
-            raise IntegrityError("Case %s already exists in database" % case_obj['case_id'])
+            raise IntegrityError("Case %s already exists in database" % case_obj['_id'])
 
         return self.case_collection.insert_one(case_obj)
 
@@ -265,7 +265,7 @@ class CaseHandler(object):
         The following will be updated:
             - collaborators: If new collaborators these will be added to the old ones
             - analysis_date: Is updated to the new date
-            - analyses: The new analysis date will be added to old runs
+            - analysis_dates: The new analysis date will be added to analysisi dates
             - individuals: There could be new individuals
             - updated_at: When the case was updated in the database
             - rerun_requested: Is set to False since that is probably what happened
@@ -284,18 +284,13 @@ class CaseHandler(object):
                 updated_case(dict): The updated case information
         """
         logger.info("Updating case {0}".format(case_obj['_id']))
-        old_case = self.case_collection.find_one(
-                        {'_id': case_obj['_id']}
-                    )
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {
                 '$addToSet': {
                     'collaborators': {'$each': case_obj['collaborators']},
-                    'analyses': {
-                        'date': old_case['analysis_date'],
-                        'delivery_report': old_case.get('delivery_report')
-                    }
+                    'analysis_dates': case_obj['analysis_date'],
                 },
                 '$set': {
                     'analysis_date': case_obj['analysis_date'],

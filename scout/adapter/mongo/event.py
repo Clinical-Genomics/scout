@@ -784,7 +784,7 @@ class EventHandler(object):
         )
 
         # mark the case as active again
-        if len(updated_case.get('causatives', [])) == 0:
+        if len(case.get('causatives', [])) == 0:
             logger.info("Marking case as 'active'")
             updated_case = self.case_collection.find_one_and_update(
                 {'_id':case['_id']},
@@ -891,18 +891,11 @@ class EventHandler(object):
         )
         logger.info("Setting ACMG to {} for: {}".format(acmg_str, variant_obj['display_name']))
 
-        if acmg_str is None:
-            updated_variant = self.variant_collection.find_one_and_update(
-                {'_id': variant_obj['_id']},
-                {'$unset': {'acmg_classification': 1}},
-                return_document=pymongo.ReturnDocument.AFTER
-            )
-        else:
-            updated_variant = self.variant_collection.find_one_and_update(
-                {'_id': variant_obj['_id']},
-                {'$set': {'acmg_classification': REV_ACMG_MAP[acmg_str]}},
-                return_document=pymongo.ReturnDocument.AFTER
-            )
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant_obj['_id']},
+            {'$set': {'acmg_classification': REV_ACMG_MAP[acmg_str]}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
 
         logger.debug("Variant updated")
         return updated_variant
@@ -1184,7 +1177,7 @@ class EventHandler(object):
 
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.
-
+        
         Arguments:
             institute_obj (dict): A Institute object
             case_obj (dict): Case object
@@ -1194,7 +1187,7 @@ class EventHandler(object):
 
         Return:
             updated_case(dict)
-
+        
         """
         self.create_event(
             institute=institute_obj,
@@ -1207,15 +1200,15 @@ class EventHandler(object):
         )
 
         logger.info("Update default panels for {}".format(case_obj['display_name']))
-
+        
         panel_ids = [panel['_id'] for panel in panel_objs]
-
+        
         for existing_panel in case_obj['panels']:
             if existing_panel['panel_id'] in panel_ids:
                 existing_panel['is_default'] = True
             else:
                 existing_panel['is_default'] = False
-
+                
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {

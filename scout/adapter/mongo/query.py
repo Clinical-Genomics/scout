@@ -147,16 +147,17 @@ class QueryHandler(object):
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
 
-            if query.get('cadd_inclusive') == True:
+            if query.get('cadd_inclusive') == 'yes':
                 cadd_query = {
                     '$or': [
                         cadd_query,
                         {'cadd_score': {'$exists': False}}
-                        ]}
+                    ]}
                 logger.debug("Adding cadd inclusive to query")
 
+
             mongo_query_minor.append(cadd_query)
-                    
+                 
         if query.get('genetic_models'):
             models = query['genetic_models']
             mongo_query_minor.append({'genetic_models': {'$in': models}})
@@ -267,8 +268,7 @@ class QueryHandler(object):
             mongo_query['variant_id'] = {'$in': variant_ids}
 
             logger.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
-            
-            
+
         logger.debug("mongo query: %s", mongo_query)
 
         return mongo_query

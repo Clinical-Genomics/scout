@@ -39,7 +39,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     """
     config_data = yaml.load(config) if config else {}
     # Default the analysis date to now if not specified in load config
-    if 'analysis_date' not in config_data:
+    if not config_data:
         config_data['analysis_date'] = datetime.datetime.now()
 
     if ped:
@@ -55,7 +55,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
             config_data['owner'] = owner
 
     if 'gene_panels' in config_data:
-        # handle whitespace in gene panel names
+        log.debug("handle whitespace in gene panel names")
         config_data['gene_panels'] = [panel.strip() for panel in
                                       config_data['gene_panels']]
         config_data['default_gene_panels'] = [panel.strip() for panel in
@@ -254,9 +254,9 @@ def parse_case(config):
         raise ConfigError("A case has to have a owner")
     owner = config['owner']
 
-    if 'family' not in config:
-        raise ConfigError("A case has to have a 'family'")
-    family_id = config['family']
+    if 'family_id' not in config:
+        raise ConfigError("A case has to have a 'family_id'")
+    family_id = config['family_id']
 
     individuals = parse_individuals(config['samples'])
 
@@ -264,8 +264,8 @@ def parse_case(config):
         'owner': owner,
         'collaborators': [owner],
         # Q: can we switch to a dash? we use this across other apps
-        'case_id': "{}-{}".format(owner, family_id),
-        'display_name': family_id,
+        'case_id': family_id,
+        'display_name': config.get('family_name') or family_id,
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
         'rank_score_threshold': config.get('rank_score_threshold', 0),
@@ -296,15 +296,7 @@ def parse_case(config):
 
 
 def parse_ped(ped_stream, family_type='ped'):
-    """Parse out minimal family information from a PED file.
-    
-    Args:
-        ped_stream(iterable(str))
-        family_type(str): Format of the pedigree information
-    
-    Returns:
-        family_id(str), samples(list[dict])
-    """
+    """Parse out minimal family information from a PED file."""
     pedigree = FamilyParser(ped_stream, family_type=family_type)
 
     if len(pedigree.families) != 1:

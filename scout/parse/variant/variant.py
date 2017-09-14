@@ -50,7 +50,6 @@ def parse_variant(variant, case, variant_type='clinical',
 
     # Create the ID for the variant
     case_id = case['_id']
-    case_name = case['display_name']
 
     chrom = variant.CHROM
     if (chrom.startswith('chr') or chrom.startswith('CHR')):
@@ -139,7 +138,7 @@ def parse_variant(variant, case, variant_type='clinical',
     ################# Add the rank score #################
     # The rank score is central for displaying variants in scout.
 
-    rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), case_name)
+    rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), case_id)
     parsed_variant['rank_score'] = rank_score or 0
 
     ################# Add gt calls #################
@@ -163,7 +162,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add the inheritance patterns #################
 
-    genetic_models = parse_genetic_models(variant.INFO.get('GeneticModels'), case_name)
+    genetic_models = parse_genetic_models(variant.INFO.get('GeneticModels'), case_id)
     if genetic_models:
         parsed_variant['genetic_models'] = genetic_models
 
