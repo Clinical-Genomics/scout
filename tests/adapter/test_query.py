@@ -91,6 +91,94 @@ def test_build_thousand_g_and_cadd(adapter):
         }
     ]
 
+def test_build_clinsig(adapter):
+    case_id = 'cust000'
+    clinsig_items = [ '3', '4', '5' ]
+    query = {'clinsig': clinsig_items}
+    
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert mongo_query['$and'] == [ 
+        {'clnsig.value': {
+                '$in': 3,4,5
+                }
+         }
+        ]
+
+def test_build_clinsig_filter(adapter):
+    case_id = 'cust000'
+    clinsig_items = [ '4', '5' ]
+    region_annotation = ['exonic', 'splicing']
+    
+        query = {'region_annotations': region_annotation, 
+                 'clnsig': clinsig_items }
+        
+        assert mongo_query['$and'] == [
+            { 'genes.region_annotation':
+                  {'$in': region_annotation }
+              },
+            { 'clnsig.value':
+                  { '$in': clinsig_items }
+              } 
+            ]
+
+
+def test_build_clinsig_always(adapter)
+    case_id = 'cust000'
+    clinsig_confident_always_returned = True
+    clinsig_items = [ '4', '5' ]
+    region_annotation = ['exonic', 'splicing']
+    
+    query = {'region_annotations': region_annotation, 
+             'clnsig': clinsig_items,
+             'clinsig_confident_always_returned': clinsig_confident_always_returned
+             }
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert mongo_query['$or'] == [
+        { '$and': 
+          {'genes.region_annotation':
+               {'$in': region_annotation }
+          } },
+        { 'clnsig':
+              {
+                '$elemMatch': { 'value':
+                                    ( '$in' : clinsig_items },
+                                'revstat':
+                                    { '$in' : ['mult', 
+                                               'single', 
+                                               'exp', 
+                                               'guidline'] 
+                                      }
+                                }
+                }
+          }
+        ]
+
+def test_build_clinsig_always_only(adapter)
+    case_id = 'cust000'
+    clinsig_confident_always_returned = True
+    clinsig_items = [ '4', '5' ]
+
+    query = {'clnsig': clinsig_items,
+             'clinsig_confident_always_returned': clinsig_confident_always_returned
+             }
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert mongo_query['clinsig'] = {
+        '$elemMatch': { 'value':
+                            ( '$in' : clinsig_items },
+                        'revstat':
+                            { '$in' : ['mult', 
+                                       'single', 
+                                       'exp', 
+                                       'guidline'] 
+                              }
+                        }
+        }
+
 def test_build_chrom(adapter):
     case_id = 'cust000'
     chrom = '1'
