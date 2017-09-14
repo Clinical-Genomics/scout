@@ -13,11 +13,13 @@ class QueryHandler(object):
                 'thousand_genomes_frequency': float,
                 'exac_frequency': float,
                 'cadd_score': float,
+                'cadd_inclusive": boolean,
                 'genetic_models': list(str),
                 'hgnc_symbols': list,
                 'region_annotations': list,
                 'functional_annotations': list,
                 'clinsig': list,
+                'clinsig_confident_always_returned': boolean,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str,
                 'start': int,
@@ -44,6 +46,10 @@ class QueryHandler(object):
         # We need to check if there is any query specified in the input query
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
         logger.debug("Set variant type to %s", mongo_query['variant_type'])
+
+        # Requests to filter based on gene panels, hgnc_symbols or
+        # coordinate ranges must always be honored. They are always added to 
+        # query as top level, implicit '$and'.
 
         if query.get('hgnc_symbols') and query.get('gene_panels'):
             gene_query = [
@@ -74,7 +80,17 @@ class QueryHandler(object):
                 mongo_query['end'] = {
                                         '$gte': int(query['start'])
                                     }
-                
+
+        # A minor, excluding filter criteria will hide variants in general,
+        # but can be overridden by an including, major filter criteria 
+        # such as a Pathogenic ClinSig. 
+        # If there are no major criteria given, all minor criteria are added as a
+        # top level '$and' to the query. 
+        # If there is only one major criteria given without any minor, it will also be
+        # added as a top level '$and'.
+        # Otherwise, major criteria are added as a high level '$or' and all minor criteria 
+        # are joined together with them as a single lower level '$and'.
+
         mongo_query_minor = []
 
         if query.get('thousand_genomes_frequency') is not None:
@@ -208,9 +224,11 @@ class QueryHandler(object):
                 }
             })
 
-
-
         mongo_query_major = None
+
+        # Given a request to always return confident clinical variants, 
+        # add the clnsig query as a major criteria, but only
+        # trust clnsig entries with trusted revstat levels.
 
         if query.get('clinsig'):
             rank = [int(item) for item in query['clinsig']]
@@ -228,17 +246,22 @@ class QueryHandler(object):
                                           } 
                          }
                     }                
+
             else:
                 logger.debug("add CLINSIG filter for rank: %s" %
                              ', '.join(query['clinsig']))
-                mongo_query_minor.append({'clnsig.value': {'$in': rank}})
-        
+                if mongo_query_minor:
+                    mongo_query_minor.append({'clnsig.value': {'$in': rank}})
+                else:
+                    # if this is the only minor critera, use implicit and.
+                    mongo_query['clnsig.value'] = {'$in': rank} 
+
         if mongo_query_minor and mongo_query_major:
             mongo_query['$or'] = [ {'$and': mongo_query_minor }, mongo_query_major ]
         elif mongo_query_minor:
             mongo_query['$and'] = mongo_query_minor
         elif mongo_query_major:
-            mongo_query['$and'] = mongo_query_major
+            mongo_query['clnsig'] = mongo_query_major['clnsig']
 
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}
