@@ -68,6 +68,7 @@ def test_assign(case_database, institute_obj, case_obj, user_obj):
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
 
+
 def test_unassign(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     print('')
@@ -99,97 +100,6 @@ def test_unassign(case_database, institute_obj, case_obj, user_obj):
     event = adapter.event_collection.find_one({'verb': 'unassign'})
     assert event['link'] == 'unassignlink'
 
-def test_mark_causative(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
-    logger.info("Testing mark a variant causative")
-    # GIVEN a populated database with variants
-    assert adapter.variant_collection.find().count() > 0
-    assert adapter.event_collection.find().count() == 0
-    
-    variant = adapter.variant_collection.find_one()
-    # GIVEN a populated databas
-    institute = adapter.institute(
-        institute_id=institute_obj['internal_id']
-    )
-    assert institute
-
-    case = adapter.case(
-        case_id=case_obj['_id']
-    )
-    assert case
-    assert len(case.get('causatives', [])) == 0
-    
-    user = adapter.user(
-        email = user_obj['email']
-    )
-    assert user
-
-    link = 'markCausativelink'
-    ## WHEN marking a variant as causative
-    updated_case = adapter.mark_causative(
-        institute=institute,
-        case=case,
-        user=user,
-        link=link,
-        variant=variant
-    )
-    # THEN the case should have a causative variant
-    assert len(updated_case['causatives']) == 1
-    # THEN two events should have been created, one for the case and one for the variant
-    assert adapter.event_collection.find().count() == 2
-
-    # THEN assert that case status is updated to solved
-    assert updated_case['status'] == 'solved'
-    
-    event_obj = adapter.event_collection.find_one()
-    assert event_obj['link'] == link
-
-def test_unmark_causative(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
-    logger.info("Testing mark a variant causative")
-    
-    variant = adapter.variant_collection.find_one()
-    institute = adapter.institute(
-        institute_id=institute_obj['internal_id']
-    )
-    case = adapter.case(
-        case_id=case_obj['_id']
-    )
-    user = adapter.user(
-        email = user_obj['email']
-    )
-    link = 'markCausativelink'
-    updated_case = adapter.mark_causative(
-        institute=institute,
-        case=case,
-        user=user,
-        link=link,
-        variant=variant
-    )
-    # GIVEN a populated database with one variant marked causative
-    assert len(updated_case['causatives']) == 1
-    assert updated_case['status'] == 'solved'
-    assert adapter.event_collection.find().count() == 2
-
-    ## WHEN marking a unmarking a variant as causative
-
-    link = 'unMarkCausativelink'
-    updated_case = adapter.unmark_causative(
-        institute=institute,
-        case=updated_case,
-        user=user,
-        link=link,
-        variant=variant
-    )
-    
-    ## THEN assert that the cusative variant is removed
-    assert len(updated_case['causatives']) == 0
-
-    ## THEN assert that the status is changed to 'active'
-    assert updated_case['status'] == 'active'
-    
-    # THEN two new events should have been created, one for the case and one for the variant
-    assert adapter.event_collection.find().count() == 4
 
 def test_update_synopsis(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database

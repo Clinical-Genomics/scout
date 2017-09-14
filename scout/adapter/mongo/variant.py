@@ -51,7 +51,7 @@ class VariantHandler(object):
 
         # Loop over the genes in the variant object to add information
         # from hgnc_genes and panel genes
-        for variant_gene in variant_obj.get('genes', []):
+        for variant_gene in variant_obj['genes']:
             hgnc_id = variant_gene['hgnc_id']
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
@@ -302,7 +302,7 @@ class VariantHandler(object):
             if variant_obj:
                 not_loaded = False
                 compound['rank_score'] = variant_obj['rank_score']
-                for gene in variant_obj.get('genes', []):
+                for gene in variant_obj['genes']:
                     gene_obj = {
                         'hgnc_id': gene['hgnc_id'],
                         'hgnc_symbol': gene.get('hgnc_symbol'),

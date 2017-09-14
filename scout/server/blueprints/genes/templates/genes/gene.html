@@ -1,7 +1,7 @@
 {% extends "genes/layout.html" %}
 
 {% block title %}
-  {{ super() }} - Genes - {{ symbol }}
+  {{ super() }} - Genes - {{ gene.hgnc_symbol }}
 {% endblock %}
 
 {% block top_nav %}
@@ -9,7 +9,7 @@
     <a href="{{ url_for('genes.genes') }}">Genes</a>
   </li>
   <li class="active">
-    <p class="navbar-text">{{ symbol }}</p>
+    <p class="navbar-text">{{ gene.hgnc_symbol }}</p>
   </li>
 {% endblock %}
 
@@ -22,28 +22,28 @@
       <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
     </div>
   </div>
-  
-  <h1>
-    {{ symbol }} <small>{{ ensembl_id }}</small>
-  </h1>
-  <p class="lead">{{ description }}</p>
 
-  {% for build, gene in builds.items() %}
-  	<div class="panel panel-default">
-      <div class="panel-heading">GRCh{{ build }}</div>
-	  <div class="panel-body">
-	  	{% if gene %}
-		  <div class="row">
-		    <div class="col-md-6">{{ overview(gene) }}</div>
-		    <div class="col-md-6">{{ transcripts(gene) }}</div>
-		  </div>
-		{% else %}
-	      <div>No info for build GRCh{{ build }}.</div>
-		{% endif %}
-	  </div>
-  	</div>
-  {% endfor %}
+  {# ROW 1 #}
+  <div class="row">
+    <div class="col-md-12">{{ header(gene) }}</div>
+  </div>
+
+  {# ROW 2 #}
+  <div class="row">
+    <div class="col-md-6">{{ overview(gene) }}</div>
+    <div class="col-md-6">{{ transcripts(gene) }}</div>
+  </div>
 {% endblock %}
+
+{% macro header(gene) %}
+  <h1>
+    <a href="{{ gene.hgnc_link }}" title="HGNC link" target="_blank">
+      {{ gene.hgnc_symbol }}
+    </a>
+    <small>{{ gene.ensembl_id }}</small>
+  </h1>
+  <p class="lead">{{ gene.description }}</p>
+{% endmacro %}
 
 {% macro overview(gene) %}
   <ul class="list-group">
@@ -82,8 +82,7 @@
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-          {{ transcript.ensembl_transcript_id }} / {{ transcript.refseq_ids|join(', ') or '-' }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
-		  <span class="pull-right">{{ transcript['position'] }}</span>
+          {{ transcript.refseq_ids|join(', ') or transcript.ensembl_transcript_id }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
         </li>
       {% endfor %}
     </ul>

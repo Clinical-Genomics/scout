@@ -265,7 +265,7 @@ class CaseHandler(object):
         The following will be updated:
             - collaborators: If new collaborators these will be added to the old ones
             - analysis_date: Is updated to the new date
-            - analyses: The new analysis date will be added to old runs
+            - analysis_dates: The new analysis date will be added to analysisi dates
             - individuals: There could be new individuals
             - updated_at: When the case was updated in the database
             - rerun_requested: Is set to False since that is probably what happened
@@ -284,18 +284,13 @@ class CaseHandler(object):
                 updated_case(dict): The updated case information
         """
         logger.info("Updating case {0}".format(case_obj['_id']))
-        old_case = self.case_collection.find_one(
-                        {'_id': case_obj['_id']}
-                    )
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {
                 '$addToSet': {
                     'collaborators': {'$each': case_obj['collaborators']},
-                    'analyses': {
-                        'date': old_case['analysis_date'],
-                        'delivery_report': old_case.get('delivery_report')
-                    }
+                    'analysis_dates': case_obj['analysis_date'],
                 },
                 '$set': {
                     'analysis_date': case_obj['analysis_date'],

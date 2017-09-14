@@ -27,4 +27,3 @@ ped_parser
 intervaltree
 
 # chanjo-report
-python-dateutil
