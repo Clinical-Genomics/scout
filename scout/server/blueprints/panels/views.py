@@ -22,6 +22,7 @@ def panels():
         csv_file = request.files['csv_file']
         lines = csv_file.stream.read().decode('windows-1252').split('\r')
         panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
+        ##TODO handle situation when panel_obj is None
         return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
 
     institutes = list(user_institutes(store, current_user))

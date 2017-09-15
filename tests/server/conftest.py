@@ -8,7 +8,6 @@ from scout.server.app import create_app
 from scout.adapter import MongoAdapter
 from scout.load.hgnc_gene import load_hgnc_genes
 from scout.load.hpo import load_hpo
-from scout.load.panel import load_panel
 
 
 log = logging.getLogger(__name__)
@@ -56,7 +55,7 @@ def real_database(database_name, institute_obj, user_obj, genes, panel_info):
     load_hgnc_genes(adapter, genes)
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
-    load_panel(adapter=adapter, panel_info=panel_info)
+    adapter.load_panel(panel_info=panel_info)
 
     # load_hpo(adapter=gene_database, hpo_lines=hpo_terms_handle, disease_lines=genemap_handle)
     # adapter.add_case(case_obj)

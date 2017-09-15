@@ -3,7 +3,7 @@ import logging
 
 from flask import flash
 
-from scout.server.userpanel import parse_panel
+from scout.parse.panel import parse_genes
 
 log = logging.getLogger(__name__)
 
@@ -28,19 +28,29 @@ def update_panel(store, panel_name, csv_lines):
     """Update an existing gene panel with genes."""
     panel_obj = store.gene_panel(panel_name)
     existing_genes = {gene['hgnc_id'] for gene in panel_obj['genes']}
-    new_genes = parse_panel(csv_lines)
+    try:
+        new_genes = parse_genes(csv_lines)
+    except Exception as err:
+        flash(err.message, 'danger')
+        return None
+        
     for new_gene in new_genes:
-        gene_obj = store.hgnc_gene(new_gene['hgnc_id'])
-        if gene_obj is None:
-            flash("gene not found: {} - {}".format(new_gene['hgnc_id'], new_gene['symbol']),
+        if not new_gene['hgnc_id']:
+            flash("gene missing hgnc id: {}".format(new_gene['hgnc_symbol']),
                   'danger')
             continue
-        if new_gene['symbol'] and gene_obj['hgnc_symbol'] != new_gene['symbol']:
-            flash("symbol mis-match: {} | {}".format(gene_obj['hgnc_symbol'], new_gene['symbol']),
-                  'warning')
+            
+        gene_obj = store.hgnc_gene(new_gene['hgnc_id'])
+        if gene_obj is None:
+            flash("gene not found: {} - {}".format(new_gene['hgnc_id'], new_gene['hgnc_symbol']),
+                  'danger')
+            continue
+        if new_gene['hgnc_symbol'] and gene_obj['hgnc_symbol'] != new_gene['hgnc_symbol']:
+            flash("symbol mis-match: {} | {}".format(gene_obj['hgnc_symbol'], 
+                  new_gene['hgnc_symbol']), 'warning')
         action = 'edit' if gene_obj['hgnc_id'] in existing_genes else 'add'
         info_data = {
-            'disease_associated_transcripts': new_gene['disease_associated_transcripts'],
+            'disease_associated_transcripts': new_gene['transcripts'],
             'reduced_penetrance': new_gene['reduced_penetrance'],
             'mosaicism': new_gene['mosaicism'],
             'inheritance_models': new_gene['inheritance_models'],

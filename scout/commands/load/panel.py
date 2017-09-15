@@ -3,9 +3,13 @@ import logging
 
 import click
 
-from scout.load import load_panel
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
+
+from scout.parse.panel import parse_gene_panel
+from scout.build import build_panel
+
+from scout.exceptions import IntegrityError
 
 log = logging.getLogger(__name__)
 
@@ -66,6 +70,9 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
         'panel_name': panel_id,
         'full_name': name,
     }
-
-
-    load_panel(adapter=adapter, panel_info=info)
+    
+    try:
+        adapter.load_panel(info)
+    except IntegrityError as e:
+        logger.warning(e)
+        context.abort()
