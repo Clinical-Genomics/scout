@@ -25,8 +25,6 @@ from scout.commands.delete import delete
 from scout.commands.serve import serve
 from scout.commands.update import update as update_command
 
-from scout.adapter.utils import check_connection
-
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 log = logging.getLogger(__name__)
 
@@ -57,9 +55,8 @@ log = logging.getLogger(__name__)
 def cli(context, mongodb, username, password, host, port, logfile, loglevel,
         config, demo):
     """scout: manage interactions with a scout instance."""
-    coloredlogs.install(level=loglevel)
+    coloredlogs.install(log_level=loglevel)
     log.info("Running scout version %s", __version__)
-    log.debug("Debug logging enabled.")
 
     mongo_configs = {}
     configs = {}

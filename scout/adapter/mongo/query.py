@@ -13,11 +13,13 @@ class QueryHandler(object):
                 'thousand_genomes_frequency': float,
                 'exac_frequency': float,
                 'cadd_score': float,
+                'cadd_inclusive": boolean,
                 'genetic_models': list(str),
                 'hgnc_symbols': list,
                 'region_annotations': list,
                 'functional_annotations': list,
                 'clinsig': list,
+                'clinsig_confident_always_returned': boolean,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str,
                 'start': int,
@@ -45,8 +47,27 @@ class QueryHandler(object):
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
         logger.debug("Set variant type to %s", mongo_query['variant_type'])
 
-        mongo_query['$and'] = []
+        # Requests to filter based on gene panels, hgnc_symbols or
+        # coordinate ranges must always be honored. They are always added to 
+        # query as top level, implicit '$and'.
 
+        if query.get('hgnc_symbols') and query.get('gene_panels'):
+            gene_query = [
+                        {'hgnc_symbols': {'$in': query['hgnc_symbols']}},
+                        {'panels': {'$in': query['gene_panels']}}
+                    ]
+            mongo_query['$or']=gene_query
+        else:
+            if query.get('hgnc_symbols'):
+                hgnc_symbols = query['hgnc_symbols']
+                mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
+                logger.debug("Adding hgnc_symbols: %s to query" %
+                             ', '.join(hgnc_symbols))
+
+            if query.get('gene_panels'):
+                gene_panels = query['gene_panels']
+                mongo_query['panels'] = {'$in': gene_panels}
+ 
         if query.get('chrom'):
             chromosome = query['chrom']
             mongo_query['chromosome'] = chromosome
@@ -60,6 +81,18 @@ class QueryHandler(object):
                                         '$gte': int(query['start'])
                                     }
 
+        # A minor, excluding filter criteria will hide variants in general,
+        # but can be overridden by an including, major filter criteria 
+        # such as a Pathogenic ClinSig. 
+        # If there are no major criteria given, all minor criteria are added as a
+        # top level '$and' to the query. 
+        # If there is only one major criteria given without any minor, it will also be
+        # added as a top level '$and'.
+        # Otherwise, major criteria are added as a high level '$or' and all minor criteria 
+        # are joined together with them as a single lower level '$and'.
+
+        mongo_query_minor = []
+
         if query.get('thousand_genomes_frequency') is not None:
             thousandg = query.get('thousand_genomes_frequency')
             if thousandg == '-1':
@@ -69,7 +102,7 @@ class QueryHandler(object):
 
             else:
                 # Replace comma with dot
-                mongo_query['$and'].append(
+                mongo_query_minor.append(
                     {
                         '$or': [
                             {
@@ -94,7 +127,7 @@ class QueryHandler(object):
             if exac == '-1':
                 mongo_query['exac_frequency'] = {'$exists': False}
             else:
-                mongo_query['$and'].append({
+                mongo_query_minor.append({
                     '$or': [
                         {'exac_frequency': {'$lt': float(exac)}},
                         {'exac_frequency': {'$exists': False}}
@@ -102,7 +135,7 @@ class QueryHandler(object):
                 })
 
         if query.get('local_obs') is not None:
-            mongo_query['$and'].append({
+            mongo_query_minor.append({
                 '$or': [
                     {'local_obs_old': {'$exists': False}},
                     {'local_obs_old': {'$lt': query['local_obs'] + 1}},
@@ -114,52 +147,34 @@ class QueryHandler(object):
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
             logger.debug("Adding cadd_score: %s to query" % cadd)
 
-            if query.get('cadd_inclusive') == True:
+            if query.get('cadd_inclusive') == 'yes':
                 cadd_query = {
                     '$or': [
                         cadd_query,
                         {'cadd_score': {'$exists': False}}
-                        ]}
+                    ]}
                 logger.debug("Adding cadd inclusive to query")
 
-            mongo_query['$and'].append(cadd_query)
-                    
 
+            mongo_query_minor.append(cadd_query)
+                 
         if query.get('genetic_models'):
             models = query['genetic_models']
-            mongo_query['genetic_models'] = {'$in': models}
+            mongo_query_minor.append({'genetic_models': {'$in': models}})
 
             logger.debug("Adding genetic_models: %s to query" %
                          ', '.join(models))
 
-        if query.get('hgnc_symbols') and query.get('gene_panels'):
-            gene_query = {
-                    '$or': [
-                        {'hgnc_symbols': {'$in': query['hgnc_symbols']}},
-                        {'panels': {'$in': query['gene_panels']}}
-                    ]}
-            mongo_query['$and'].append(gene_query)
-        else:
-            if query.get('hgnc_symbols'):
-                hgnc_symbols = query['hgnc_symbols']
-                mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
-                logger.debug("Adding hgnc_symbols: %s to query" %
-                             ', '.join(hgnc_symbols))
-
-            if query.get('gene_panels'):
-                gene_panels = query['gene_panels']
-                mongo_query['panels'] = {'$in': gene_panels}
-
         if query.get('functional_annotations'):
             functional = query['functional_annotations']
-            mongo_query['genes.functional_annotation'] = {'$in': functional}
+            mongo_query_minor.append({'genes.functional_annotation': {'$in': functional}})
 
             logger.debug("Adding functional_annotations %s to query" %
                          ', '.join(functional))
 
         if query.get('region_annotations'):
             region = query['region_annotations']
-            mongo_query['genes.region_annotation'] = {'$in': region}
+            mongo_query_minor.append({'genes.region_annotation': {'$in': region}})
 
             logger.debug("Adding region_annotations %s to query" %
                          ', '.join(region))
@@ -178,24 +193,17 @@ class QueryHandler(object):
                     ]}
                 logger.debug("Adding size inclusive to query.")
 
-            mongo_query['$and'].append(size_query)
+            mongo_query_minor.append(size_query)
 
         if query.get('svtype'):
             svtype = query['svtype']
-            mongo_query['sub_category'] = {'$in': svtype}
+            mongo_query_minor.append({'sub_category': {'$in': svtype}})
             logger.debug("Adding SV_type %s to query" %
                          ', '.join(svtype))
 
-        if query.get('clinsig'):
-            logger.debug("add CLINSIG filter for rank: %s" %
-                        ', '.join(query['clinsig']))
-            rank = [int(item) for item in query['clinsig']]
-
-            mongo_query['clnsig.value'] = {'$in': rank}
-
         if query.get('depth'):
             logger.debug("add depth filter")
-            mongo_query['$and'].append({
+            mongo_query_minor.append({
                 'tumor.read_depth': {
                     '$gt': query.get('depth'),
                 }
@@ -203,7 +211,7 @@ class QueryHandler(object):
 
         if query.get('alt_count'):
             logger.debug("add min alt count filter")
-            mongo_query['$and'].append({
+            mongo_query_minor.append({
                 'tumor.alt_depth': {
                     '$gt': query.get('alt_count'),
                 }
@@ -211,19 +219,55 @@ class QueryHandler(object):
 
         if query.get('control_frequency'):
             logger.debug("add minimum control frequency filter")
-            mongo_query['$and'].append({
+            mongo_query_minor.append({
                 'normal.alt_freq': {
                     '$lt': float(query.get('control_frequency')),
                 }
             })
 
+        mongo_query_major = None
+
+        # Given a request to always return confident clinical variants, 
+        # add the clnsig query as a major criteria, but only
+        # trust clnsig entries with trusted revstat levels.
+
+        if query.get('clinsig'):
+            rank = [int(item) for item in query['clinsig']]
+
+            if query.get('clinsig_confident_always_returned') == True:
+
+                trusted_revision_level = ['mult', 'single', 'exp', 'guideline']
+
+                mongo_query_major = { "clnsig": 
+                        { 
+                            '$elemMatch': { 'value': 
+                                            { '$in': rank }, 
+                                            'revstat': 
+                                            { '$in': trusted_revision_level }
+                                          } 
+                         }
+                    }                
+
+            else:
+                logger.debug("add CLINSIG filter for rank: %s" %
+                             ', '.join(str(query['clinsig'])))
+                if mongo_query_minor:
+                    mongo_query_minor.append({'clnsig.value': {'$in': rank}})
+                else:
+                    # if this is the only minor critera, use implicit and.
+                    mongo_query['clnsig.value'] = {'$in': rank}
+
+        if mongo_query_minor and mongo_query_major:
+            mongo_query['$or'] = [ {'$and': mongo_query_minor }, mongo_query_major ]
+        elif mongo_query_minor:
+            mongo_query['$and'] = mongo_query_minor
+        elif mongo_query_major:
+            mongo_query['clnsig'] = mongo_query_major['clnsig']
+
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}
 
             logger.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
-
-        if not mongo_query['$and']:
-            del mongo_query['$and']
 
         logger.debug("mongo query: %s", mongo_query)
 

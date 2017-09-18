@@ -48,15 +48,16 @@ class BetterDecimalField(DecimalField):
 class FiltersForm(FlaskForm):
     variant_type = HiddenField(default='clinical')
     gene_panels = SelectMultipleField(choices=[])
-    hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
+    hgnc_symbols = TagListField('HGNC Symbols (case sensitive)')
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
     cadd_score = BetterDecimalField('CADD', places=2)
-    cadd_inclusive = BooleanField()
+    cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
+    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
     exac_frequency = BetterDecimalField('ExAC', places=2)
@@ -79,8 +80,9 @@ class SvFiltersForm(FlaskForm):
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
     cadd_score = BetterDecimalField('CADD', places=2)
-    cadd_inclusive = BooleanField()
+    cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
+    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
 
     chrom = TextField('Chromosome')
     size = TextField('Length')

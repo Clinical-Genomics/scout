@@ -63,5 +63,5 @@ _book/
 # Textmate
 .tm_properties
 
-# Other
-/local
+# Files
+local/

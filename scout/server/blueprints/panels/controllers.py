@@ -5,6 +5,7 @@ from flask import flash
 
 from scout.parse.panel import parse_genes
 
+
 log = logging.getLogger(__name__)
 
 INHERITANCE_MODELS = ['ar', 'ad', 'mt', 'xr', 'xd', 'x', 'y']
@@ -22,7 +23,6 @@ def existing_gene(store, panel_obj, hgnc_id):
     """Check if gene is already added to a panel."""
     existing_genes = {gene['hgnc_id']: gene for gene in panel_obj['genes']}
     return existing_genes.get(hgnc_id)
-
 
 def update_panel(store, panel_name, csv_lines):
     """Update an existing gene panel with genes."""
@@ -58,3 +58,4 @@ def update_panel(store, panel_name, csv_lines):
         }
         store.add_pending(panel_obj, gene_obj['hgnc_id'], action=action, info=info_data)
     return panel_obj
+

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
+from scout.server.userpanel import parse_panel, build_panel
 from .forms import PanelGeneForm
 from . import controllers
 
@@ -18,8 +19,9 @@ panels_bp = Blueprint('panels', __name__, template_folder='templates')
 def panels():
     """Show all panels for a case."""
     if request.method == 'POST':
-        # update an existing panel
+        # add new panel
         csv_file = request.files['csv_file']
+
         lines = csv_file.stream.read().decode('windows-1252').split('\r')
         panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
         ##TODO handle situation when panel_obj is None
@@ -30,11 +32,12 @@ def panels():
                    for institute in institutes
                    for name in
                    store.gene_panels(institute_id=institute['_id']).distinct('panel_name')]
+
     panel_groups = []
-    for institute_obj in institutes:
-        institute_panels = store.latest_panels(institute_obj['_id'])
+    for institute_obj in user_institutes(store, current_user):
+        institute_panels = store.gene_panels(institute_id=institute_obj['_id'])
         panel_groups.append((institute_obj, institute_panels))
-    return dict(panel_groups=panel_groups, panel_names=panel_names)
+    return dict(panel_groups=panel_groups, institutes=user_institutes(store, current_user))
 
 
 @panels_bp.route('/panels/<panel_id>', methods=['GET', 'POST'])
