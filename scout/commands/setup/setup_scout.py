@@ -292,7 +292,7 @@ def setup(context):
         diseaseterms = get_file_handle(genemap2_reduced_path)
         log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
         transcripts37 = get_file_handle(transcripts37_reduced_path)
-        transcripts38 = get_file_handle(transcripts37_reduced_path)
+        transcripts38 = get_file_handle(transcripts38_reduced_path)
         # Update context.obj settings here
         log.info("Change database name to scout-demo")
         context.obj['mongodb'] = 'scout-demo'
@@ -323,7 +323,7 @@ def setup(context):
         diseaseterms = get_file_handle(genemap2_path)
         log.info("Loading transcripts build 37 info from %s", transcripts37_reduced_path)
         transcripts37 = get_file_handle(transcripts37_path)
-        tramscripts38 = get_file_handle(transcripts38_path)
+        transcripts38 = get_file_handle(transcripts38_path)
 
     context.obj['hgnc'] = hgnc
     context.obj['hgnc38'] = hgnc38
