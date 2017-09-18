@@ -60,7 +60,7 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
         log.warning(err)
         context.abort()
 
-    log.info("Use family %s" % config_data['family'])
+    log.info("Use family %s" % config_data['family_id'])
 
     try:
         case_obj = adapter.load_case(config_data, update)

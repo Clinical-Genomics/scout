@@ -21,22 +21,17 @@ def panels():
     if request.method == 'POST':
         # add new panel
         csv_file = request.files['csv_file']
-        lines = csv_file.stream.read().decode().split('\r')
-        panel_genes = parse_panel(lines)
-        try:
-            panel_obj = build_panel(
-                adapter=store,
-                institute_id=request.form['institute_id'],
-                panel_name=request.form['panel_name'],
-                display_name=request.form['display_name'],
-                version=float(request.form['version']) if request.form.get('version') else 1.0,
-                panel_genes=panel_genes,
-            )
-        except ValueError as error:
-            flash(error.args[0], 'warning')
-            return redirect(request.referrer)
-        store.add_gene_panel(panel_obj)
-        flash("new gene panel added: {}".format(panel_obj['panel_name']), 'info')
+
+        lines = csv_file.stream.read().decode('windows-1252').split('\r')
+        panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
+        ##TODO handle situation when panel_obj is None
+        return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
+
+    institutes = list(user_institutes(store, current_user))
+    panel_names = [name
+                   for institute in institutes
+                   for name in
+                   store.gene_panels(institute_id=institute['_id']).distinct('panel_name')]
 
     panel_groups = []
     for institute_obj in user_institutes(store, current_user):

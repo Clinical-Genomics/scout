@@ -15,7 +15,7 @@ def test_parse_case(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
-    assert case_data['case_id'] == '{0}-{1}'.format(scout_config['owner'], scout_config['family'])
+    assert case_data['case_id'] == scout_config['family_id']
 
 def test_parse_case_madeline(scout_config):
     # GIVEN you load sample information from a scout config

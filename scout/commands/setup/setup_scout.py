@@ -43,7 +43,7 @@ from scout.parse.panel import parse_gene_panel
 
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 
-from scout.load import (load_hgnc_genes, load_hpo, load_panel, load_scout)
+from scout.load import (load_hgnc_genes, load_hpo, load_scout)
 
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
@@ -234,12 +234,7 @@ def demo(context):
             'full_name': 'Test panel'
         }
 
-    parsed_panel = parse_gene_panel(panel_info)
-    panel_obj = build_panel(parsed_panel, adapter)
-    load_panel(
-        adapter=adapter,
-        panel_info=panel_info
-    )
+    adapter.load_panel(panel_info=panel_info)
 
     case_handle = get_file_handle(load_path)
     case_data = yaml.load(case_handle)

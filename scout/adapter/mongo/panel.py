@@ -3,11 +3,33 @@ import logging
 import pymongo
 from bson import ObjectId
 
+from scout.parse.panel import parse_gene_panel
+from scout.build import build_panel
+
 from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
 class PanelHandler(object):
+    
+    def load_panel(self, panel_info):
+        """Load a gene panel based on the info sent
+        
+        Args:
+            panel_info(dict): {
+                'file': <path to panel file>(str),
+                'institute': <institute>(str),
+                'type': <panel type>(str),
+                'date': date,
+                'version': version,
+                'panel_name': panel_id,
+                'full_name': name,
+            }
+        """
+        panel_data = parse_gene_panel(panel_info)
+        panel_obj = build_panel(panel_data, self)
+        
+        self.add_gene_panel(panel_obj)
 
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database

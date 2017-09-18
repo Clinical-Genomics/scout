@@ -45,7 +45,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     if ped:
         with open(ped, 'r') as f:
             family_id, samples = parse_ped(f)
-            config_data['family'] = family_id
+            config_data['family_id'] = family_id
             config_data['samples'] = samples
 
     if 'owner' not in config_data:

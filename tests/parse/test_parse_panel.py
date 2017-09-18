@@ -6,8 +6,9 @@ def test_parse_minimal_gene():
     ## GIVEN minimal gene line and header
     header = ["hgnc_id"]
     gene_line = ["10"]
+    gene_info = dict(zip(header, gene_line))
     ## WHEN parsing the genes
-    gene = parse_gene(gene_line, header)
+    gene = parse_gene(gene_info)
     ## THEN assert that the gene is correctly parsed
     
     assert gene['hgnc_id'] == 10
@@ -40,11 +41,13 @@ def test_parse_gene():
         mosaicism,
         version
     ]
+    gene_info = dict(zip(header, gene_line))
+    
     ## WHEN parsing the genes
-    gene = parse_gene(gene_line, header)
+    gene = parse_gene(gene_info)
     ## THEN assert that the gene is correctly parsed
     assert gene['hgnc_id'] == int(hgnc_id)
-    assert gene['hgnc_symbol'] == hgnc_symbol.upper()
+    assert gene['hgnc_symbol'] == hgnc_symbol
     assert gene['transcripts'] == transcripts.split(',')
     assert gene['inheritance_models'] == models.split(',')
     assert gene['reduced_penetrance'] == True if penetrance else False
@@ -127,3 +130,99 @@ def test_get_full_list_panel(panel_info):
     assert len(panel['genes']) == nr_genes
     assert panel['date'] == panel_info['date']
     assert panel['institute'] == panel_info['institute']
+
+def test_parse_minimal_panel_lines_id():
+    ## GIVEN a iterable with panel lines
+    panel_lines = [
+        "1"
+    ]
+    nr_genes = len([line for line in panel_lines if not line.startswith('#')])
+    
+    ## WHEN parsing the panel of genes
+    genes = parse_genes(panel_lines)
+    
+    ## THEN assert that all genes from the file have been parsed
+    assert len(genes) == nr_genes
+    
+    ## THEN assert that some genes exists in the panel
+    for gene in genes:
+        assert gene['hgnc_id'] == 1
+        assert gene.get('hgnc_symbol') == None
+
+def test_parse_minimal_panel_lines_symbol():
+    ## GIVEN a iterable with panel lines
+    panel_lines = [
+        "ADK"
+    ]
+    nr_genes = len([line for line in panel_lines if not line.startswith('#')])
+    
+    ## WHEN parsing the panel of genes
+    genes = parse_genes(panel_lines)
+    
+    ## THEN assert that all genes from the file have been parsed
+    assert len(genes) == nr_genes
+    
+    ## THEN assert that some genes exists in the panel
+    for gene in genes:
+        assert gene.get('hgnc_id') == None
+        assert gene.get('hgnc_symbol') == 'ADK'
+
+def test_parse_panel_lines_excel_export():
+    ## GIVEN a iterable with panel lines
+    panel_lines = [
+        "hgnc_id;hgnc_symbol",
+        "13666;AAAS",
+        "16262;YAP1"
+    ]
+    nr_genes = 2
+    
+    ## WHEN parsing the panel of genes
+    genes = parse_genes(panel_lines)
+    
+    ## THEN assert that all genes from the file have been parsed
+    assert len(genes) == nr_genes
+    
+    ## THEN assert that some genes exists in the panel
+    gene1 = genes[0]
+    assert gene1.get('hgnc_id') == 13666
+    assert gene1.get('hgnc_symbol') == 'AAAS'
+
+    gene2 = genes[1]
+    assert gene2.get('hgnc_id') == 16262
+    assert gene2.get('hgnc_symbol') == 'YAP1'
+
+def test_parse_panel_lines_excel_export_empty_line():
+    ## GIVEN a iterable with panel lines
+    panel_lines = [
+        "hgnc_id;hgnc_symbol",
+        "13666;AAAS",
+        "16262;YAP1",
+        ";",
+        "",
+    ]
+    nr_genes = 2
+    
+    ## WHEN parsing the panel of genes
+    genes = parse_genes(panel_lines)
+    
+    ## THEN assert that all genes from the file have been parsed
+    assert len(genes) == nr_genes
+
+def test_parse_panel_lines_modified_excel_export():
+    ## GIVEN a iterable with panel lines
+    panel_lines = [
+        "HGNC_IDnumber;HGNC_symbol",
+        "13666;AAAS"
+    ]
+    nr_genes = 1
+    
+    ## WHEN parsing the panel of genes
+    genes = parse_genes(panel_lines)
+    
+    ## THEN assert that all genes from the file have been parsed
+    assert len(genes) == nr_genes
+    
+    ## THEN assert that some genes exists in the panel
+    for gene in genes:
+        assert gene.get('hgnc_id') == 13666
+        assert gene.get('hgnc_symbol') == 'AAAS'
