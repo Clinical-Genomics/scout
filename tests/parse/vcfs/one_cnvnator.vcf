@@ -1,0 +1,231 @@
+##fileformat=VCFv4.2
+##ALT=<ID=BND,Description="Break end">
+##ALT=<ID=DEL,Description="Deletion">
+##ALT=<ID=DUP,Description="Duplication">
+##ALT=<ID=DUP:TANDEM,Description="Tandem Duplication">
+##ALT=<ID=IDUP,Description="Interspersed duplication">
+##ALT=<ID=INS,Description="Insertion">
+##ALT=<ID=INV,Description="Inversion">
+##ALT=<ID=TDUP,Description="Tandem duplication">
+##FILTER=<ID=BelowExpectedLinks,Description="The number of links or reads between A and B is less than 40% of the expected value">
+##FILTER=<ID=FewLinks,Description="Fewer than 40% of the links in window A link to chromosome B">
+##FILTER=<ID=LowQual,Description="PE/SR support below 3 or mapping quality below 20.">
+##FILTER=<ID=MaxDepth,Description="Depth is greater than 3x the median chromosome depth near one or both variant breakends">
+##FILTER=<ID=MaxMQ0Frac,Description="For a small variant (<1000 bases), the fraction of reads in all samples with MAPQ0 around either breakend exceeds 0.4">
+##FILTER=<ID=MinGQ,Description="GQ score is less than 15 (filter applied at sample level and record level if all samples are filtered)">
+##FILTER=<ID=MinQUAL,Description="QUAL score is less than 20">
+##FILTER=<ID=NoPairSupport,Description="For variants significantly larger than the paired read fragment size, no paired reads support the alternate allele in any sample.">
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=Ploidy,Description="For DEL & DUP variants, the genotypes of overlapping variants (with similar size) are inconsistent with diploid expectation">
+##FILTER=<ID=Smear,Description="window A and Window B overlap">
+##FILTER=<ID=UnexpectedCoverage,Description="The coverage of the window on chromosome B or A is higher than 10*average coverage">
+##FORMAT=<ID=CN,Number=1,Type=Integer,Description="Copy number genotype for imprecise events">
+##FORMAT=<ID=DR,Number=1,Type=Integer,Description="# high-quality reference pairs">
+##FORMAT=<ID=DV,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+##FORMAT=<ID=FT,Number=.,Type=String,Description="Genotype-level filter">
+##FORMAT=<ID=GL,Number=G,Type=Float,Description="Log10-scaled genotype likelihoods for RR,RA,AA genotypes">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PE,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=PR,Number=.,Type=Integer,Description="Spanning paired-read support for the ref and alt alleles in the order listed">
+##FORMAT=<ID=RC,Number=1,Type=Integer,Description="Raw high-quality read counts for the SV">
+##FORMAT=<ID=RCL,Number=1,Type=Integer,Description="Raw high-quality read counts for the left control region">
+##FORMAT=<ID=RCR,Number=1,Type=Integer,Description="Raw high-quality read counts for the right control region">
+##FORMAT=<ID=RR,Number=1,Type=Integer,Description="# high-quality reference junction reads">
+##FORMAT=<ID=RV,Number=1,Type=Integer,Description="Number of split reads that support the event">
+##FORMAT=<ID=SR,Number=.,Type=Integer,Description="Split reads for the ref and alt alleles in the order listed, for reads where P(allele|read)>0.999">
+##INFO=<ID=1000GAF,Number=.,Type=Float,Description="calculated field: 1000GAF">
+##INFO=<ID=AF,Number=A,Type=Float,Description="transfered from matched variants in /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_all_sv_-phase3_v2.2013-05-02-.vcf.gz">
+##INFO=<ID=Annotation,Number=.,Type=String,Description="Annotates what feature(s) this variant belongs to.">
+##INFO=<ID=BND_DEPTH,Number=1,Type=Integer,Description="Read depth at local translocation breakend">
+##INFO=<ID=CE,Number=1,Type=Float,Description="Consensus sequence entropy">
+##INFO=<ID=CHR2,Number=1,Type=String,Description="Chromosome for END coordinate in case of a translocation">
+##INFO=<ID=CHRA,Number=1,Type=String,Description="The chromosome of window A">
+##INFO=<ID=CHRB,Number=1,Type=String,Description="The chromosome of window B">
+##INFO=<ID=CIEND,Number=2,Type=Integer,Description="PE confidence interval around END">
+##INFO=<ID=CIGAR,Number=A,Type=String,Description="CIGAR alignment for each alternate indel allele">
+##INFO=<ID=CIPOS,Number=2,Type=Integer,Description="PE confidence interval around POS">
+##INFO=<ID=CONSENSUS,Number=1,Type=String,Description="Split-read consensus sequence">
+##INFO=<ID=COVA,Number=1,Type=Float,Description="Coverage on window A">
+##INFO=<ID=COVB,Number=1,Type=Float,Description="Coverage on window B">
+##INFO=<ID=COVM,Number=1,Type=Float,Description="The coverage between A and B">
+##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|LoFtool|LoF|LoF_filter|LoF_flags|LoF_info">
+##INFO=<ID=CT,Number=1,Type=String,Description="Paired-end signature induced connection type">
+##INFO=<ID=EL,Number=1,Type=Float,Description="Expected links to window B">
+##INFO=<ID=EL2,Number=1,Type=Float,Description="Expected links to window B">
+##INFO=<ID=END,Number=1,Type=Integer,Description="Stop position of the interval">
+##INFO=<ID=ER,Number=1,Type=Float,Description="Expected number of split reads">
+##INFO=<ID=ER2,Number=1,Type=Float,Description="Expected number of split reads">
+##INFO=<ID=EVENT,Number=1,Type=String,Description="ID of event associated to breakend">
+##INFO=<ID=HOMLEN,Number=1,Type=Integer,Description="Predicted microhomology length using a max. edit distance of 2">
+##INFO=<ID=HOMSEQ,Number=.,Type=String,Description="Sequence of base pair identical homology at event breakpoints">
+##INFO=<ID=ID,Number=1,Type=String,Description="calculated by first of overlapping values in field ID from /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_all_sv_-phase3_v2.2013-05-02-.vcf.gz">
+##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description="Imprecise structural variation">
+##INFO=<ID=INSLEN,Number=1,Type=Integer,Description="Predicted length of the insertion">
+##INFO=<ID=INV3,Number=0,Type=Flag,Description="Inversion breakends open 3' of reported location">
+##INFO=<ID=INV5,Number=0,Type=Flag,Description="Inversion breakends open 5' of reported location">
+##INFO=<ID=JUNCTION_QUAL,Number=1,Type=Integer,Description="If the SV junction is part of an EVENT (ie. a multi-adjacency variant), this field provides the QUAL value for the adjacency in question only">
+##INFO=<ID=LCB,Number=1,Type=Integer,Description="Links to chromosome B">
+##INFO=<ID=LEFT_SVINSSEQ,Number=.,Type=String,Description="Known left side of insertion for an insertion of unknown length">
+##INFO=<ID=LFA,Number=1,Type=Integer,Description="Links from window A">
+##INFO=<ID=LFB,Number=1,Type=Integer,Description="Links from window B">
+##INFO=<ID=LTE,Number=1,Type=Integer,Description="Links to event">
+##INFO=<ID=MAPQ,Number=1,Type=Integer,Description="Median mapping quality of paired-ends">
+##INFO=<ID=MATEID,Number=.,Type=String,Description="ID of mate breakend">
+##INFO=<ID=MATE_BND_DEPTH,Number=1,Type=Integer,Description="Read depth at remote translocation mate breakend">
+##INFO=<ID=OA,Number=1,Type=String,Description="Orientation of the reads in window A">
+##INFO=<ID=OB,Number=1,Type=String,Description="Orientation of the mates in window B">
+##INFO=<ID=OLD_MULTIALLELIC,Number=1,Type=String,Description="Original chr:pos:ref:alt encoding">
+##INFO=<ID=PE,Number=1,Type=Integer,Description="Paired-end support of the structural variant">
+##INFO=<ID=PRECISE,Number=0,Type=Flag,Description="Precise structural variation">
+##INFO=<ID=QUALA,Number=1,Type=String,Description="The average mapping quality of the reads in window A">
+##INFO=<ID=QUALB,Number=1,Type=String,Description="The average mapping quality of the reads in window B">
+##INFO=<ID=RATIO,Number=1,Type=Float,Description="The number of links divided by the expected number of links">
+##INFO=<ID=RATIO2,Number=1,Type=Float,Description="The number of links divided by the ER2">
+##INFO=<ID=RDRATIO,Number=1,Type=Float,Description="Read-depth ratio of het. SV carrier vs. non-carrier.">
+##INFO=<ID=RIGHT_SVINSSEQ,Number=.,Type=String,Description="Known right side of insertion for an insertion of unknown length">
+##INFO=<ID=SAMPLES,Number=.,Type=String,Description="Sample genotyped to have the variant">
+##INFO=<ID=SR,Number=1,Type=Integer,Description="Split-read support">
+##INFO=<ID=SRQ,Number=1,Type=Float,Description="Split-read consensus alignment quality">
+##INFO=<ID=SVINSLEN,Number=.,Type=Integer,Description="Length of insertion">
+##INFO=<ID=SVINSSEQ,Number=.,Type=String,Description="Sequence of insertion">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Difference in length between REF and ALT alleles">
+##INFO=<ID=SVMETHOD,Number=1,Type=String,Description="Type of approach used to detect SV">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
+##INFO=<ID=VARID,Number=1,Type=String,Description="The variant ID of merged samples">
+##INFO=<ID=WINA,Number=2,Type=Integer,Description="start and stop positon of window A">
+##INFO=<ID=WINB,Number=2,Type=Integer,Description="start and stop position of window B">
+##INFO=<ID=clingen_cgh_benign,Number=1,Type=Integer,Description="The number of occurances of the event in the database">
+##INFO=<ID=clingen_cgh_benignAF,Number=1,Type=Float,Description="The frequency of the event in the database">
+##INFO=<ID=clingen_cgh_pathogenic,Number=1,Type=Integer,Description="The number of occurances of the event in the database">
+##INFO=<ID=clingen_cgh_pathogenicAF,Number=1,Type=Float,Description="The frequency of the event in the database">
+##INFO=<ID=clingen_ngi,Number=1,Type=Integer,Description="The number of occurances of the event in the database">
+##INFO=<ID=clingen_ngiAF,Number=1,Type=Float,Description="The frequency of the event in the database">
+##INFO=<ID=decipher,Number=1,Type=Integer,Description="The number of occurances of the event in the database">
+##INFO=<ID=decipherAF,Number=1,Type=Float,Description="The frequency of the event in the database">
+##INFO=<ID=left_1000GAF,Number=.,Type=String,Description="1000 genomes frequency SV left interval">
+##INFO=<ID=left_AF,Number=A,Type=Float,Description="transfered from matched variants in /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_all_sv_-phase3_v2.2013-05-02-.vcf.gz at end left">
+##INFO=<ID=left_ID,Number=1,Type=String,Description="calculated by first of overlapping values in field ID from /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_all_sv_-phase3_v2.2013-05-02-.vcf.gz at end left">
+##INFO=<ID=most_severe_consequence,Number=.,Type=String,Description="Most severe genomic consequence.">
+##INFO=<ID=natorP1,Number=1,Type=Float,Description="e-val by t-test">
+##INFO=<ID=natorP2,Number=1,Type=Float,Description="e-val by Gaussian tail">
+##INFO=<ID=natorP3,Number=1,Type=Float,Description="e-val by t-test (middle)">
+##INFO=<ID=natorP4,Number=1,Type=Float,Description="e-val by Gaussian tail (middle)">
+##INFO=<ID=natorPE,Number=1,Type=Integer,Description="Number of paired-ends support the event">
+##INFO=<ID=natorQ0,Number=1,Type=Float,Description="Fraction of reads with 0 mapping quality">
+##INFO=<ID=natorRD,Number=1,Type=Float,Description="Normalized RD">
+##INFO=<ID=right_1000GAF,Number=.,Type=String,Description="1000 genomes frequency SV right interval">
+##INFO=<ID=right_AF,Number=A,Type=Float,Description="transfered from matched variants in /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_all_sv_-phase3_v2.2013-05-02-.vcf.gz at end right">
+##INFO=<ID=right_ID,Number=1,Type=String,Description="calculated by first of overlapping values in field ID from /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_all_sv_-phase3_v2.2013-05-02-.vcf.gz at end right">
+##INFO=<ID=set,Number=1,Type=String,Description="Source VCF for the merged record in SVDB">
+##LibraryStats=TIDDIT-1.1.6 Coverage=25.6877 ReadLength=151 MeanInsertSize=388 STDInsertSize=191 Orientation=innie
+##LoF=Loss-of-function annotation (HC = High Confidence; LC = Low Confidence)
+##LoF_filter=Reason for LoF not being HC
+##LoF_flags=Possible warning flags for LoF
+##LoF_info=Info used for LoF annotation
+##LoFtool=LoFtool score for gene
+##SVDB_version=1.0.7 cmd="/mnt/hds/proj/bioinfo/SERVER/miniconda/envs/mip5.0/bin/svdb --merge --notag --vcf /scratch/859805/ADM1059A5_lanes_7_sorted_md_brecal_tiddit.vcf /scratch/859805/ADM1059A4_lanes_8_sorted_md_brecal_tiddit.vcf /scratch/859805/ADM1059A6_lanes_8_sorted_md_brecal_tiddit.vcf"
+##Software=<ID=vcfparser,Version=1.2.10,Date=20170909
+##TIDDITcmd="TIDDIT --sv -p 6 -o /scratch/859805/ADM1059A5_lanes_7_sorted_md_brecal_tiddit -b /scratch/859805/ADM1059A5_lanes_7_sorted_md_brecal.bam"
+##VEP=v88 cache=/mnt/hds/proj/bioinfo/SERVER/apps/mip/resources/ensembl-tools-release-88.8/cache/homo_sapiens/88_GRCh37 db=. ESP=20141103 polyphen=2.2.2 gencode=GENCODE 19 ExAC=0.3 ClinVar=201610 genebuild=2011-04 1000genomes=phase3 dbSNP=147 HGMD-PUBLIC=20162 regbuild=1.0 COSMIC=78 assembly=GRCh37.p13 sift=sift5.2.2
+##bcftools_annotateCommand=annotate --header-lines /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/vcfanno_headerLines_-v1.0-.txt --output-type v /scratch/859806/643594-300M_sorted_md_brecal_comb_SV_vt_svdbq_sorted_filt_genmod_filter_vcfanno.vcf; Date=Fri Sep  8 23:02:49 2017
+##bcftools_annotateVersion=1.4.1+htslib-1.4.1
+##bcftools_concatCommand=concat --allow-overlaps --output-type b --output /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_DEL_concat.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_1_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_2_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_3_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_4_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_5_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_6_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_7_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_X_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_8_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_9_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_10_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_11_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_12_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_13_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_14_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_15_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_16_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_17_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_18_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_19_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_20_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_21_DEL.bcf /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_22_DEL.bcf; Date=Sat Aug 26 15:46:10 2017
+##bcftools_concatVersion=1.4.1+htslib-1.4.1
+##bcftools_mergeCommand=merge --output-type b --output /scratch/854512/643594-300M_sorted_md_brecal_dellycall_dellyreformat_SV_1_DEL.bcf /scratch/854512/ADM1059A4_lanes_8_sorted_md_brecal_dellycall_dellyreformat_1_DEL_geno.bcf /scratch/854512/ADM1059A5_lanes_7_sorted_md_brecal_dellycall_dellyreformat_1_DEL_geno.bcf /scratch/854512/ADM1059A6_lanes_8_sorted_md_brecal_dellycall_dellyreformat_1_DEL_geno.bcf; Date=Sat Aug 26 15:46:09 2017
+##bcftools_mergeVersion=1.4.1+htslib-1.4.1
+##bcftools_viewCommand=view --apply-filters PASS --output-type v --output-file /scratch/859806/643594-300M_sorted_md_brecal_comb_SV_vt_svdbq_sorted_filt.vcf /scratch/859806/643594-300M_sorted_md_brecal_comb_SV_vt_svdbq_sorted.vcf; Date=Fri Sep  8 23:01:08 2017
+##bcftools_viewVersion=1.4.1+htslib-1.4.1
+##cmdline=/mnt/hds/proj/bioinfo/SERVER/miniconda/envs/mip5.0/bin/configManta.py --referenceFasta /mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_homo_sapiens_-d5-.fasta --bam /scratch/854513/ADM1059A4_lanes_8_sorted_md_brecal.bam --bam /scratch/854513/ADM1059A5_lanes_7_sorted_md_brecal.bam --bam /scratch/854513/ADM1059A6_lanes_8_sorted_md_brecal.bam --runDir /scratch/854513
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+##contig=<ID=NC_007605,length=171823>
+##contig=<ID=hs37d5,length=35477943>
+##reference=file:///mnt/hds/proj/bioinfo/MIP_ANALYSIS/references_5.0/GRCh37_homo_sapiens_-d5-.fasta
+##source=MergeVCF
+##svdbcmdline=/mnt/hds/proj/bioinfo/SERVER/miniconda/envs/mip5.0/bin/svdb --merge --notag --vcf /scratch/859805/ADM1059A5_lanes_7_sorted_md_brecal_tiddit.vcf /scratch/859805/ADM1059A4_lanes_8_sorted_md_brecal_tiddit.vcf /scratch/859805/ADM1059A6_lanes_8_sorted_md_brecal_tiddit.vcf
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	ADM1059A4	ADM1059A5	ADM1059A6
+1	1	CNVnator_del_1	N	<DEL>	.	PASS	CSQ=deletion|regulatory_region_variant|MODIFIER|||RegulatoryFeature|ENSR00000341929|||||||||||||||||||||||||||||||||||||,deletion|downstream_gene_variant|MODIFIER|WASH7P|ENSG00000227232|Transcript|ENST00000423562|unprocessed_pseudogene|||||||||||4363|-1||HGNC|38034|||||||||||||||||||||,deletion|upstream_gene_variant|MODIFIER|DDX11L1|ENSG00000223972|Transcript|ENST00000450305|transcribed_unprocessed_pseudogene|||||||||||2010|1||HGNC|37102|||||||||||||||||||||;END=10000;IMPRECISE;SVLEN=-10000;SVTYPE=DEL;clingen_cgh_benign=0;clingen_cgh_benignAF=0;clingen_cgh_pathogenic=0;clingen_cgh_pathogenicAF=0;clingen_ngi=284;clingen_ngiAF=0.989547;decipher=0;decipherAF=0;most_severe_consequence=38034:deletion|downstream_gene_variant,37102:deletion|upstream_gene_variant;natorP1=1.59373e-11;natorP2=0;natorP3=1.99216e-11;natorP4=0;natorQ0=-1;natorRD=0;set=cnvnator	GT:CN	1/1:0	1/1:0	./.:.

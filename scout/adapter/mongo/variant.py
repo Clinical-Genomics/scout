@@ -356,7 +356,7 @@ class VariantHandler(object):
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
 
-            This is used when a case i reanalyzed
+            This is used when a case is reanalyzed
 
             Args:
                 case_id(str): The case id

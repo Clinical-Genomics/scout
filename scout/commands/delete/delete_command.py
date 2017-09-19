@@ -46,6 +46,18 @@ log = logging.getLogger(__name__)
 #         click.echo(institute_obj['internal_id'])
 
 
+@click.command('index', short_help='Delete all indexes')
+@click.pass_context
+def index(context):
+    """Delete all indexes in the database"""
+    log.info("Running scout delete index")
+    adapter = context.obj['adapter']
+    
+    for collection in adapter.db.collection_names():
+        adapter.db[collection].drop_indexes()
+    log.info("All indexes deleted")
+
+
 @click.command('user', short_help='Delete a user')
 @click.option('-m', '--mail')
 @click.pass_context
@@ -149,3 +161,4 @@ def delete(context):
 delete.add_command(genes)
 delete.add_command(case)
 delete.add_command(user)
+delete.add_command(index)

@@ -8,18 +8,35 @@ from scout.constants import (SEX_MAP, PHENOTYPE_MAP)
 
 from .case import cases
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
+
+@click.command('index', short_help='Display all indexes')
+@click.option('-n', '--collection-name')
+@click.pass_context
+def index(context, collection_name):
+    """Show all indexes in the database"""
+    log.info("Running scout view index")
+    adapter = context.obj['adapter']
+    
+    i = 0
+    for index in adapter.indexes(collection_name):
+        click.echo(index)
+        i += 1
+    
+    if i == 0:
+        log.info("No indexes found")
+
 
 @click.command('panels', short_help='Display gene panels')
 @click.pass_context
 def panels(context):
     """Show all gene panels in the database"""
-    logger.info("Running scout view panels")
+    log.info("Running scout view panels")
     adapter = context.obj['adapter']
     
     panel_objs = adapter.gene_panels()
     if panel_objs.count() == 0:
-        logger.info("No panels found")
+        log.info("No panels found")
         context.abort()
     click.echo("#panel_name\tversion\tnr_genes")
         
@@ -34,12 +51,12 @@ def panels(context):
 @click.pass_context
 def users(context):
     """Show all users in the database"""
-    logger.info("Running scout view users")
+    log.info("Running scout view users")
     adapter = context.obj['adapter']
     
     user_objs = adapter.users()
     if user_objs.count() == 0:
-        logger.info("No users found")
+        log.info("No users found")
         context.abort()
     
     click.echo("#name\temail\troles\tinstitutes")
@@ -64,7 +81,7 @@ def users(context):
 @click.pass_context
 def individuals(context, institute, causatives, case_id):
     """Show all individuals from all cases in the database"""
-    logger.info("Running scout view individuals")
+    log.info("Running scout view individuals")
     adapter = context.obj['adapter']
     individuals = []
     
@@ -73,7 +90,7 @@ def individuals(context, institute, causatives, case_id):
         if case:
             cases = [case]
         else:
-            logger.info("Could not find case %s", case_id)
+            log.info("Could not find case %s", case_id)
             return
     else:
         cases = [case_obj for case_obj in 
@@ -81,7 +98,7 @@ def individuals(context, institute, causatives, case_id):
                      collaborator=institute, 
                      has_causatives=causatives)]
         if len(cases) == 0:
-            logger.info("Could not find cases that match criteria")
+            log.info("Could not find cases that match criteria")
             return
         individuals = (ind_obj for case_obj in cases for ind_obj in case_obj['individuals'])
 
@@ -97,7 +114,7 @@ def individuals(context, institute, causatives, case_id):
                 ]
             click.echo('\t'.join(ind_info))
     # if user_objs.count() == 0:
-    #     logger.info("No users found")
+    #     log.info("No users found")
     #     context.abort()
     #
     # for user_obj in user_objs:
@@ -113,7 +130,7 @@ def individuals(context, institute, causatives, case_id):
 @click.pass_context
 def whitelist(context):
     """Show all objects in the whitelist collection"""
-    logger.info("Running scout view users")
+    log.info("Running scout view users")
     adapter = context.obj['adapter']
     
     ## TODO add a User interface to the adapter
@@ -125,7 +142,7 @@ def whitelist(context):
 @click.pass_context
 def institutes(context):
     """Show all institutes in the database"""
-    logger.info("Running scout view institutes")
+    log.info("Running scout view institutes")
     adapter = context.obj['adapter']
     
     institute_objs = adapter.institutes()
@@ -145,7 +162,7 @@ def institutes(context):
 @click.pass_context
 def aliases(context, build):
     """Show all alias symbols and how they map to ids"""
-    logger.info("Running scout view aliases")
+    log.info("Running scout view aliases")
     adapter = context.obj['adapter']
     
     alias_genes = adapter.genes_by_alias(build=build)
@@ -166,7 +183,7 @@ def aliases(context, build):
 @click.pass_context
 def genes(context, build):
     """Show all genes in the database"""
-    logger.info("Running scout view genes")
+    log.info("Running scout view genes")
     adapter = context.obj['adapter']
     
     click.echo("Chromosom\tstart\tend\thgnc_id\thgnc_symbol")
@@ -183,7 +200,7 @@ def genes(context, build):
 @click.pass_context
 def diseases(context):
     """Show all diseases in the database"""
-    logger.info("Running scout view diseases")
+    log.info("Running scout view diseases")
     adapter = context.obj['adapter']
     
     disease_objs = adapter.disease_terms()
@@ -195,13 +212,13 @@ def diseases(context):
         click.echo("Disease")
         for disease_obj in adapter.disease_terms():
             click.echo("{0}".format(disease_obj['_id']))
-        logger.info("{0} diseases found".format(nr_diseases))
+        log.info("{0} diseases found".format(nr_diseases))
 
 @click.command('hpo', short_help='Display all hpo terms')
 @click.pass_context
 def hpo(context):
     """Show all hpo terms in the database"""
-    logger.info("Running scout view hpo")
+    log.info("Running scout view hpo")
     adapter = context.obj['adapter']
     
     click.echo("hpo_id\tdescription")
@@ -230,3 +247,4 @@ view.add_command(hpo)
 view.add_command(whitelist)
 view.add_command(aliases)
 view.add_command(individuals)
+view.add_command(index)
