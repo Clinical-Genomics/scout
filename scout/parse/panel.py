@@ -8,10 +8,10 @@ VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
 
 def parse_gene(gene_info):
     """Parse a gene line with information from a panel file
-    
+
         Args:
             gene_info(dict): dictionary with gene info
-    
+
         Returns:
             gene(dict): A dictionary with the gene information
                 {
@@ -28,7 +28,7 @@ def parse_gene(gene_info):
     gene = {}
     # This is either hgnc id or hgnc symbol
     identifier = None
-    
+
     hgnc_id = None
     try:
         if 'hgnc_id' in gene_info:
@@ -39,10 +39,10 @@ def parse_gene(gene_info):
             hgnc_id = int(gene_info['hgncid'])
     except ValueError as e:
         raise SyntaxError("Invalid hgnc id: {0}".format(hgnc_id))
-    
+
     gene['hgnc_id'] = hgnc_id
     identifier = hgnc_id
-    
+
     hgnc_symbol = None
     if 'hgnc_symbol' in gene_info:
         hgnc_symbol = gene_info['hgnc_symbol']
@@ -50,9 +50,9 @@ def parse_gene(gene_info):
         hgnc_symbol = gene_info['hgncsymbol']
     elif 'symbol' in gene_info:
         hgnc_symbol = gene_info['symbol']
-    
+
     gene['hgnc_symbol'] = hgnc_symbol
-    
+
     if not identifier:
         if hgnc_symbol:
             identifier = hgnc_symbol
@@ -70,7 +70,7 @@ def parse_gene(gene_info):
         transcripts = gene_info['transcripts']
 
     gene['transcripts'] = [
-            transcript.strip() for transcript in 
+            transcript.strip() for transcript in
             transcripts.split(',') if transcript
         ]
 
@@ -87,16 +87,16 @@ def parse_gene(gene_info):
         models = gene_info['genetic_inheritance_models']
 
     gene['inheritance_models'] = [
-        model.strip() for model in models.split(',') 
+        model.strip() for model in models.split(',')
         if model.strip() in VALID_MODELS
     ]
-    
+
     # If a gene is known to be associated with mosaicism this is annotated
     gene['mosaicism'] = True if gene_info.get('mosaicism') else False
-    
+
     # If a gene is known to have reduced penetrance this is annotated
     gene['reduced_penetrance'] = True if gene_info.get('reduced_penetrance') else False
-    
+
     # The database entry version is a way to track when a a gene was added or
     # modified, optional
     gene['database_entry_version'] = gene_info.get('database_entry_version')
@@ -117,7 +117,7 @@ def parse_genes(gene_lines):
     hgnc_identifiers = set()
     # This can be '\t' or ';'
     delimiter = '\t'
-    
+
     # There are files that have '#' to indicate headers
     # There are some files that start with a header line without
     # any special symbol
@@ -147,10 +147,10 @@ def parse_genes(gene_lines):
                         header = ['hgnc_id']
                     else:
                         header = ['hgnc_symbol']
-            
+
             splitted_line = line.split(delimiter)
             gene_info = dict(zip(header, splitted_line))
-            
+
             # There are cases when excel exports empty lines that looks like
             # ;;;;;;;. This is a exception to handle these
             info_found = False

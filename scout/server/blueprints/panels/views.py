@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import abort, Blueprint, request, redirect, url_for, flash
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -22,7 +22,8 @@ def panels():
         csv_file = request.files['csv_file']
         lines = csv_file.stream.read().decode('windows-1252').split('\r')
         panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
-        ##TODO handle situation when panel_obj is None
+        if panel_obj is None:
+            return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
         return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
 
     institutes = list(user_institutes(store, current_user))

@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 class PanelHandler(object):
-    
+
     def load_panel(self, panel_info):
         """Load a gene panel based on the info sent
-        
+
         Args:
             panel_info(dict): {
                 'file': <path to panel file>(str),
@@ -30,7 +30,7 @@ class PanelHandler(object):
         """
         panel_data = parse_gene_panel(panel_info)
         panel_obj = build_panel(panel_data, self)
-        
+
         self.add_gene_panel(panel_obj)
 
     def add_gene_panel(self, panel_obj):
@@ -86,7 +86,7 @@ class PanelHandler(object):
             query['version'] = version
             return self.panel_collection.find_one(query)
         else:
-            logger.info("Fething gene panels %s from database" % panel_id)
+            logger.info("Fething gene panels %s from database", panel_id)
             res = self.panel_collection.find(query).sort('version', -1)
             if res.count() > 0:
                 return res[0]
