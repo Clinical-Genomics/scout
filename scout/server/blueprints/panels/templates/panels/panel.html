@@ -155,8 +155,6 @@
               {{ 'yes' if gene.info.reduced_penetrance else 'no' }} <br>
               <strong>Mosaicism</strong>:
               {{ 'yes' if gene.info.mosaicism else 'no' }} <br>
-              <strong>Mosaicism</strong>:
-              {{ 'yes' if gene.info.mosaicism else 'no' }} <br>
               <strong>Inheritance models</strong>:
               {{ gene.info.inheritance_models|join(',') }} <br>
               <strong>Entry version</strong>:

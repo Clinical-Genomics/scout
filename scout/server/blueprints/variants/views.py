@@ -125,7 +125,7 @@ def variant_update(institute_id, case_name, variant_id):
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
         acmg_classification = variant_obj.get('acmg_classification')
-        if acmg_classification and (new_acmg == ACMG_MAP[acmg_classification]):
+        if isinstance(acmg_classification, int) and (new_acmg == ACMG_MAP[acmg_classification]):
             new_acmg = None
         store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
         flash("updated ACMG classification: {}".format(new_acmg), 'info')
