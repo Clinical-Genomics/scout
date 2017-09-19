@@ -27,26 +27,29 @@ def existing_gene(store, panel_obj, hgnc_id):
 def update_panel(store, panel_name, csv_lines):
     """Update an existing gene panel with genes."""
     panel_obj = store.gene_panel(panel_name)
+    if panel_obj is None:
+        return None
+
     existing_genes = {gene['hgnc_id'] for gene in panel_obj['genes']}
     try:
         new_genes = parse_genes(csv_lines)
-    except Exception as err:
-        flash(err.message, 'danger')
+    except SyntaxError as error:
+        flash(error.args[0], 'danger')
         return None
-        
+
     for new_gene in new_genes:
         if not new_gene['hgnc_id']:
             flash("gene missing hgnc id: {}".format(new_gene['hgnc_symbol']),
                   'danger')
             continue
-            
+
         gene_obj = store.hgnc_gene(new_gene['hgnc_id'])
         if gene_obj is None:
             flash("gene not found: {} - {}".format(new_gene['hgnc_id'], new_gene['hgnc_symbol']),
                   'danger')
             continue
         if new_gene['hgnc_symbol'] and gene_obj['hgnc_symbol'] != new_gene['hgnc_symbol']:
-            flash("symbol mis-match: {} | {}".format(gene_obj['hgnc_symbol'], 
+            flash("symbol mis-match: {} | {}".format(gene_obj['hgnc_symbol'],
                   new_gene['hgnc_symbol']), 'warning')
         action = 'edit' if gene_obj['hgnc_id'] in existing_genes else 'add'
         info_data = {
