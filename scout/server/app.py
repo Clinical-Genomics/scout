@@ -24,7 +24,7 @@ except ImportError:
     logger.info('chanjo report not installed!')
 
 from . import extensions
-from .blueprints import public, genes, cases, login, variants, panels, pileup
+from .blueprints import public, genes, cases, login, variants, panels, pileup, dashboard
 
 
 def create_app(config_file=None, config=None):
@@ -92,6 +92,7 @@ def register_blueprints(app):
     app.register_blueprint(variants.variants_bp)
     app.register_blueprint(panels.panels_bp)
     app.register_blueprint(pileup.pileup_bp)
+    app.register_blueprint(dashboard.dashboard_bp)
 
 
 def register_filters(app):

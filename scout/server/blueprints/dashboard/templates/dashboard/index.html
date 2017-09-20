@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content_main %}
+  <h1>Basic statistics</h1>
+  <div class="row">
+    {% for group in analysis_types %}
+      <div class="col-xs-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">{{ group.name|capitalize }} samples</div>
+          <div class="panel-body">
+            <h1 class="text-center">
+              {{ group.count }}
+            </h1>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="row">
+    {% for group in cases %}
+      <div class="col-xs-4 col-md-2">
+        <div class="panel panel-default">
+          <div class="panel-heading">{{ group.status|capitalize }} Cases</div>
+          <div class="panel-body">
+            <h1 class="text-center {{ 'text-success' if group.status == 'solved' }}">
+              {{ group.count }}
+            </h1>
+            <div class="text-center"><span class="text-muted">
+              {{ (group.percent * 100)|round(1) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <h1>Cases with...</h1>
+  <div class="row">
+    {% for topic in overview %}
+      <div class="col-xs-4 col-md-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">{{ topic.title }}</div>
+          <div class="panel-body">
+            <h1 class="text-center">{{ topic.count }}</h1>
+            <div class="text-center">
+              <span class="text-muted">{{ (topic.percent * 100)|round(1) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
