@@ -45,7 +45,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     if ped:
         with open(ped, 'r') as f:
             family_id, samples = parse_ped(f)
-            config_data['family_id'] = family_id
+            config_data['family'] = family_id
             config_data['samples'] = samples
 
     if 'owner' not in config_data:
@@ -252,20 +252,16 @@ def parse_case(config):
     """
     if 'owner' not in config:
         raise ConfigError("A case has to have a owner")
-    owner = config['owner']
 
-    if 'family_id' not in config:
-        raise ConfigError("A case has to have a 'family_id'")
-    family_id = config['family_id']
+    if 'family' not in config:
+        raise ConfigError("A case has to have a 'family'")
 
     individuals = parse_individuals(config['samples'])
-
     case_data = {
-        'owner': owner,
-        'collaborators': [owner],
-        # Q: can we switch to a dash? we use this across other apps
-        'case_id': family_id,
-        'display_name': config.get('family_name') or family_id,
+        'owner': config['owner'],
+        'collaborators': [config['owner']],
+        'case_id': '-'.join([config['owner'], config['family']]),
+        'display_name': config['family'],
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
         'rank_score_threshold': config.get('rank_score_threshold', 0),
@@ -297,11 +293,11 @@ def parse_case(config):
 
 def parse_ped(ped_stream, family_type='ped'):
     """Parse out minimal family information from a PED file.
-    
+
     Args:
         ped_stream(iterable(str))
         family_type(str): Format of the pedigree information
-    
+
     Returns:
         family_id(str), samples(list[dict])
     """

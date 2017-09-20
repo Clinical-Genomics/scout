@@ -488,7 +488,7 @@ class VariantHandler(object):
             for nr_variants, variant in enumerate(vcf_obj(region)):
                 rank_score = parse_rank_score(
                     variant.INFO.get('RankScore'),
-                    case_obj['_id']
+                    case_obj['display_name'],
                 )
                 if (rank_score is None) or (rank_score > rank_threshold):
                     # Parse the vcf variant
