@@ -157,14 +157,14 @@ class PanelHandler(object):
 
         return updated_panel
 
-    def add_pending(self, panel_obj, hgnc_id, action, info=None):
+    def add_pending(self, panel_obj, hgnc_gene, action, info=None):
         """Add a pending action to a gene panel
 
         Store the pending actions in panel.pending
 
         Args:
             panel_obj(dict): The panel that is about to be updated
-            hgnc_id(int):
+            hgnc_gene(dict)
             action(str): choices=['add','delete','edit']
 
         Returns:
@@ -175,10 +175,9 @@ class PanelHandler(object):
         if action not in valid_actions:
             raise ValueError("Invalid action {0}".format(action))
 
-        hgnc_gene = self.hgnc_gene(hgnc_id)
         info = info or {}
         pending_action = {
-            'hgnc_id': hgnc_id,
+            'hgnc_id': hgnc_gene['hgnc_id'],
             'action': action,
             'info': info,
             'symbol': hgnc_gene['hgnc_symbol'],

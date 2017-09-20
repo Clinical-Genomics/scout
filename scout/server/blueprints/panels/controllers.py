@@ -59,5 +59,5 @@ def update_panel(store, panel_name, csv_lines):
             'inheritance_models': new_gene['inheritance_models'],
             'database_entry_version': new_gene['database_entry_version'],
         }
-        store.add_pending(panel_obj, gene_obj['hgnc_id'], action=action, info=info_data)
+        store.add_pending(panel_obj, gene_obj, action=action, info=info_data)
     return panel_obj
