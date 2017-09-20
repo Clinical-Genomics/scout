@@ -217,11 +217,11 @@
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-xs-2">
           {{ form.cadd_score.label(class="control-label") }}
           {{ form.cadd_score(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-xs-2">
           {{ form.cadd_inclusive.label(class="control-label") }}
           <div>{{ form.cadd_inclusive() }}</div>
         </div>
@@ -229,6 +229,10 @@
           {{ form.clinsig.label(class="control-label") }}
           {{ form.clinsig(class="form-control") }}
         </div>
+	<div class="col-xs-2">
+	  {{ form.clinsig_confident_always_returned.label(class="control-label") }}
+	  <div>{{ form.clinsig_confident_always_returned() }}</div>
+	</div>
       </div>
     </div>
     <div class="form-group">
@@ -256,6 +260,8 @@
                           case_name=case.display_name, variant_type=form.variant_type.data,
                           functional_annotations=severe_so_terms,
                           region_annotations=['exonic', 'splicing'],
+			  clinsig=[4,5],
+			  clinsig_confident_always_returned=True,
                           thousand_genomes_frequency=institute.frequency_cutoff,
                           gene_panels=form.data.get('gene_panels')) }}"
                  class="btn btn-default form-control">
