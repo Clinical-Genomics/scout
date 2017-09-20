@@ -6,6 +6,7 @@ import pymongo
 
 from scout.parse.case import parse_case
 from scout.build.case import build_case
+from scout.parse.variant.ids import parse_document_id
 
 from scout.exceptions import IntegrityError, ConfigError
 
@@ -320,3 +321,53 @@ class CaseHandler(object):
         return updated_case
         ##TODO Add event for updating case?
 
+    def update_caseid(self, case_obj, family_id):
+        """Update case id for a case across the database."""
+        old_caseid = case_obj['_id']
+        case_obj['_id'] = family_id
+
+        # update suspects and causatives
+        for case_variants in ['suspects', 'causatives']:
+            new_variantids = []
+            for variant_id in case_obj.get(case_variants, []):
+                case_variant = self.variant(variant_id)
+                new_variantid = get_variantid(case_variant, family_id)
+                new_variantids.append(new_variantid)
+            case_obj[case_variants] = new_variantids
+
+        # update ACMG
+        for acmg_obj in self.acmg_collection.find({'case_id': old_caseid}):
+            logger.info("update ACMG classification: %s", acmg_obj['classification'])
+            acmg_variant = self.variant(acmg_obj['variant_specific'])
+            new_specific_id = get_variantid(acmg_variant, family_id)
+            self.acmg_collection.find_one_and_update(
+                {'_id': acmg_obj['_id']},
+                {'$set': {'case_id': family_id, 'variant_specific': new_specific_id}},
+            )
+
+        # update events
+        for event_obj in self.event_collection.find({'case_id': old_caseid}):
+            logger.info("update event: %s", event_obj['verb'])
+            self.event_collection.find_one_and_update(
+                {'_id': event_obj['_id']},
+                {'$set': {'case_id': family_id}},
+            )
+
+        # insert the updated case
+        self.case_collection.insert(case_obj)
+        # delete the old case
+        self.case_collection.find_one_and_delete({'_id': old_caseid})
+        return case_obj
+
+
+def get_variantid(variant_obj, family_id):
+    """Create a new variant id."""
+    new_id = parse_document_id(
+        chrom=variant_obj['chromosome'],
+        pos=variant_obj['position'],
+        ref=variant_obj['reference'],
+        alt=variant_obj['alternative'],
+        variant_type=variant_obj['variant_type'],
+        case_id=family_id,
+    )
+    return new_id
