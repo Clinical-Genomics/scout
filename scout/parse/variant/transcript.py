@@ -122,16 +122,21 @@ def parse_transcripts(raw_transcripts, allele=None):
         thousandg_frequencies = []
         for key in entry:
             if key.endswith('MAF'):
-                # If the frequency starts with 'ExAC' we know it is a exac freq
-                splitted_entry = entry[key].split(':')
-                if splitted_entry[0] == allele:
-                    value = float(splitted_entry[1])
-                    if value > 0:
-                        if key.startswith('ExAC'):
-                            exac_frequencies.append(value)
-                # Otherwise we know it is a 1000G frequency
-                        else:
-                            thousandg_frequencies.append(value)
+
+                maf_allele_entries = entry[key].split('&')
+
+                for maf_allele in maf_allele_entries:
+                    
+                    # If the frequency starts with 'ExAC' we know it is a exac freq
+                    splitted_entry = maf_allele.split(':')
+                    if splitted_entry[0] == allele:
+                        value = float(splitted_entry[1])
+                        if value > 0:
+                            if key.startswith('ExAC'):
+                                exac_frequencies.append(value)
+                                # Otherwise we know it is a 1000G frequency
+                            else:
+                                thousandg_frequencies.append(value)
 
         if exac_frequencies:
             transcript['exac_maf'] = sum(exac_frequencies)/len(exac_frequencies)
