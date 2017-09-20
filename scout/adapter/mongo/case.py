@@ -234,6 +234,15 @@ class CaseHandler(object):
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
 
+        # Check if case exists with old case id
+        old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
+        old_case = self.case(old_caseid)
+        if old_case:
+            if update:
+                self.update_caseid(old_case, case_obj['_id'])
+            else:
+                raise IntegrityError("Case %s exists with old id", old_caseid)
+
         # Check if case exists in database
         existing_case = self.case(case_obj['_id'])
         if existing_case:
@@ -255,7 +264,7 @@ class CaseHandler(object):
             Args:
                 case_obj(Case)
         """
-        if self.case(case_obj['case_id']):
+        if self.case(case_obj['_id']):
             raise IntegrityError("Case %s already exists in database" % case_obj['_id'])
 
         return self.case_collection.insert_one(case_obj)
