@@ -252,16 +252,15 @@ def parse_case(config):
     """
     if 'owner' not in config:
         raise ConfigError("A case has to have a owner")
-    owner = config['owner']
 
     if 'family' not in config:
         raise ConfigError("A case has to have a 'family'")
 
     individuals = parse_individuals(config['samples'])
     case_data = {
-        'owner': owner,
-        'collaborators': [owner],
-        'case_id': '-'.join([owner, config['family']]),
+        'owner': config['owner'],
+        'collaborators': [config['owner']],
+        'case_id': '-'.join([config['owner'], config['family']]),
         'display_name': config['family'],
         'genome_build': config.get('human_genome_build'),
         'rank_model_version': config.get('rank_model_version'),
