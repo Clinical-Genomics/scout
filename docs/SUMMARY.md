@@ -31,3 +31,4 @@
 	* [What's new in 3.1?](blog/new-3.1.md)
 	* [What's new in 3.2?](blog/new-3.2.md)
 	* [What's new in 3.3?](blog/new-3.3.md)
+	* [What's new in 3.4?](blog/new-3.4.md)
