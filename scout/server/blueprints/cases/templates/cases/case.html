@@ -224,11 +224,19 @@
             <div class="row">
               <div class="col-xs-8">
                 <span class="glyphicon glyphicon-ok-circle"></span>
+		  {% if variant.category == "snv" %}
                 <a href="{{ url_for('variants.variant',
-                                    institute_id=institute._id,
+                                    institute_id=variant.institute,
                                     case_name=case.display_name,
                                     variant_id=variant._id) }}">
-                  {{ variant.hgnc_symbols|join(', ') }}
+                      {{ variant.hgnc_symbols|join(', ') }}
+		  {% else %}
+		      <a href="{{ url_for('variants.sv_variant',
+                                    institute_id=variant.institute,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+		      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+		  {% endif %}
                 </a>
                 {% if variant.sanger_ordered %}
                   <span class="label label-success">Sanger ordered</span>
@@ -264,11 +272,20 @@
             {% if variant._id %}
               <td>
                 <span class="glyphicon glyphicon-bookmark"></span>
+
+		  {% if variant.category == "snv" %}
                 <a href="{{ url_for('variants.variant',
                                     institute_id=variant.institute,
                                     case_name=case.display_name,
                                     variant_id=variant._id) }}">
-                  {{ variant.hgnc_symbols|join(', ') }}
+                      {{ variant.hgnc_symbols|join(', ') }}
+		  {% else %}
+		      <a href="{{ url_for('variants.sv_variant',
+                                    institute_id=variant.institute,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+		      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+		  {% endif %}
                 </a>
               </td>
               <td>
