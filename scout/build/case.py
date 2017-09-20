@@ -94,14 +94,11 @@ def build_case(case_data, adapter):
 
     )
     """
-    try:
-        log.info("build case with id: {0}".format(case_data['case_id']))
-        case_obj = {'_id': case_data['case_id']}
-        case_obj['case_id'] = case_data['case_id']
-    except KeyError as err:
-        raise PedigreeError("Case has to have a case id")
-
-    case_obj['display_name'] = case_data.get('display_name', case_obj['case_id'])
+    log.info("build case with id: {0}".format(case_data['case_id']))
+    case_obj = {
+        '_id': case_data['case_id'],
+        'display_name': case_data['display_name'],
+    }
 
     # Check if institute exists in database
     try:

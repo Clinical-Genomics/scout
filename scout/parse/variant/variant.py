@@ -51,7 +51,6 @@ def parse_variant(variant, case, variant_type='clinical',
     # Create the ID for the variant
     case_id = case['_id']
     case_name = case['display_name']
-
     chrom = variant.CHROM
     if (chrom.startswith('chr') or chrom.startswith('CHR')):
         chrom = chrom[3:]
@@ -143,21 +142,16 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['rank_score'] = rank_score or 0
 
     ################# Add gt calls #################
-    samples = {}
-    if individual_positions:
-        samples = parse_genotypes(
-                            variant,
-                            case,
-                            individual_positions
-                        )
-    parsed_variant['samples'] = samples
+    if individual_positions and case['individuals']:
+        parsed_variant['samples'] = parse_genotypes(variant, case['individuals'],
+                                                    individual_positions)
+    else:
+        parsed_variant['samples'] = []
 
     ################# Add the compound information #################
-    compounds = parse_compounds(
-                                compound_info=variant.INFO.get('Compounds'),
-                                case=case,
-                                variant_type=variant_type
-                                )
+    compounds = parse_compounds(compound_info=variant.INFO.get('Compounds'),
+                                case_id=case_id,
+                                variant_type=variant_type)
     if compounds:
         parsed_variant['compounds'] = compounds
 

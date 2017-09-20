@@ -26,8 +26,8 @@ def parse_ids(chrom, pos, ref, alt, case_id, variant_type):
 
 def parse_simple_id(chrom, pos, ref, alt):
     """Parse the simple id for a variant
-    
-    Simple id is used as a human readable reference for a position, it is 
+
+    Simple id is used as a human readable reference for a position, it is
     in no way unique.
 
     Args:
@@ -43,8 +43,8 @@ def parse_simple_id(chrom, pos, ref, alt):
 
 def parse_variant_id(chrom, pos, ref, alt, variant_type):
     """Parse the variant id for a variant
-    
-    variant_id is used to identify variants within a certain type of 
+
+    variant_id is used to identify variants within a certain type of
     analysis. It is not human readable since it is a md5 key.
 
     Args:
@@ -61,7 +61,7 @@ def parse_variant_id(chrom, pos, ref, alt, variant_type):
 
 def parse_display_name(chrom, pos, ref, alt, variant_type):
     """Parse the variant id for a variant
-    
+
     This is used to display the variant in scout.
 
     Args:
@@ -78,7 +78,7 @@ def parse_display_name(chrom, pos, ref, alt, variant_type):
 
 def parse_document_id(chrom, pos, ref, alt, variant_type, case_id):
     """Parse the unique document id for a variant.
-    
+
     This will allways bu unique in the database.
 
     Args:
@@ -87,10 +87,10 @@ def parse_document_id(chrom, pos, ref, alt, variant_type, case_id):
         ref(str)
         alt(str)
         variant_type(str): 'clinical' or 'research'
-        case_id(str): format is institute_familyid
+        case_id(str): unqiue family id
 
     Returns:
         document_id(str): The unique document id in an md5 string
     """
-    return generate_md5_key([chrom, pos, ref, alt, variant_type] + case_id.split('_'))
+    return generate_md5_key([chrom, pos, ref, alt, variant_type, case_id])
 
