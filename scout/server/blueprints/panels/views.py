@@ -49,6 +49,10 @@ def panel(panel_id):
             raw_hgnc_id = raw_hgnc_id.split(' | ', 1)[0]
         hgnc_id = int(raw_hgnc_id)
         action = request.form['action']
+        gene_obj = store.hgnc_gene(hgnc_id)
+        if gene_obj is None:
+            flash("HGNC id not found: {}".format(hgnc_id))
+            return redirect(request.referer)
 
         if action == 'add':
             panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
@@ -61,7 +65,7 @@ def panel(panel_id):
                                         hgnc_id=hgnc_id))
         elif action == 'delete':
             log.debug("marking gene to be deleted: %s", hgnc_id)
-            store.add_pending(panel_obj, hgnc_id, action='delete')
+            store.add_pending(panel_obj, gene_obj, action='delete')
 
     data = controllers.panel(store, panel_obj)
     if request.args.get('case_id'):
@@ -100,7 +104,7 @@ def gene_edit(panel_id, hgnc_id):
         info_data = form.data.copy()
         if 'csrf_token' in info_data:
             del info_data['csrf_token']
-        store.add_pending(panel_obj, hgnc_id, action=action, info=info_data)
+        store.add_pending(panel_obj, hgnc_gene, action=action, info=info_data)
         return redirect(url_for('.panel', panel_id=panel_id))
 
     if panel_gene:
