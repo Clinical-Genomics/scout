@@ -190,12 +190,14 @@ class GeneHandler(object):
             build(str)
         
         Returns:
-            alias_genes(dict): {<hgnc_alias>: [<hgnc_id_1>, <hgnc_id_2>, ...]}
+            alias_genes(dict): {<hgnc_alias>: {'true': <hgnc_id>, 'ids': {<hgnc_id_1>, <hgnc_id_2>, ...}}}
         """
+        logger.info("Fetching all genes by alias")
         alias_genes = {}
         for gene in self.hgnc_collection.find({'build':build}):
             hgnc_id = gene['hgnc_id']
             hgnc_symbol = gene['hgnc_symbol']
+            # Loop aver all aliases
             for alias in gene['aliases']:
                 true_id = None
                 if alias == hgnc_symbol:
@@ -229,4 +231,25 @@ class GeneHandler(object):
                 return gene['hgnc_symbol']
         else:
             return None
+    
+    def add_hgnc_id(self, genes):
+        """Add the correct hgnc id to a set of genes with hgnc symbols
+        
+        Args:
+            genes(list(dict)): A set of genes with hgnc symbols only
+        
+        """
+        genes_by_alias = self.genes_by_alias()
+        
+        for gene in genes:
+            id_info = genes_by_alias.get(gene['hgnc_symbol'])
+            if not id_info:
+                logger.warning("Gene %s does not exist in scout", gene['hgnc_symbol'])
+                continue
+            gene['hgnc_id'] = id_info['true']
+            if not id_info['true']:
+                if len(id_info['ids']) > 1:
+                    logger.warning("Gene %s has ambiguous value, please choose one hgnc id in result", gene['hgnc_symbol'])
+                gene['hgnc_id'] = ','.join([str(hgnc_id) for hgnc_id in id_info['ids']])
+        
 
