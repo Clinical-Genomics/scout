@@ -249,8 +249,7 @@ class CaseHandler(object):
             if update:
                 self.update_case(case_obj)
             else:
-                raise IntegrityError("Case {0} already exists in database".format(
-                                     case_obj['case_id']))
+                raise IntegrityError("Case {0} already exists in database".format(case_obj['_id']))
         else:
             logger.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)

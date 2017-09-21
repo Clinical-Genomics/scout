@@ -44,8 +44,8 @@ def research(context, case_id, institute, force):
         if force or case_obj['research_requested']:
             # Test to upload research snvs
             if case_obj['vcf_files'].get('vcf_snv_research'):
-                adapter.delete_variants(case_id=case_obj['_id'], 
-                                        variant_type='research', 
+                adapter.delete_variants(case_id=case_obj['_id'],
+                                        variant_type='research',
                                         category='snv')
 
                 log.info("Load research SNV for: %s", case_obj['case_id'])
@@ -55,11 +55,11 @@ def research(context, case_id, institute, force):
                     category='snv',
                     rank_threshold=default_threshold,
                     )
-            
+
             # Test to upload research svs
             if case_obj['vcf_files'].get('vcf_sv_research'):
-                adapter.delete_variants(case_id=case_obj['_id'], 
-                                        variant_type='research', 
+                adapter.delete_variants(case_id=case_obj['_id'],
+                                        variant_type='research',
                                         category='sv')
                 log.info("Load research SV for: %s", case_obj['case_id'])
                 adapter. load_variants(
@@ -71,11 +71,11 @@ def research(context, case_id, institute, force):
 
             # Test to upload research cancer variants
             if case_obj['vcf_files'].get('vcf_sv_research'):
-                adapter.delete_variants(case_id=case_obj['_id'], 
-                                        variant_type='research', 
+                adapter.delete_variants(case_id=case_obj['_id'],
+                                        variant_type='research',
                                         category='cancer')
-                
-                log.info("Load research cancer for: %s", case_obj['case_id'])
+
+                log.info("Load research cancer for: %s", case_obj['_id'])
                 adapter. load_variants(
                     case_obj=case_obj,
                     variant_type='research',

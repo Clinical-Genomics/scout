@@ -56,7 +56,7 @@ def test_parse_document_id():
     # WHEN parsing the document id
     variant_id = parse_document_id(chrom, pos, ref, alt, variant_type, case_id)
     # THEN we should get a correct md5 string back
-    assert variant_id == generate_md5_key([chrom, pos, ref, alt, variant_type] + case_id.split('_'))
+    assert variant_id == generate_md5_key([chrom, pos, ref, alt, variant_type, case_id])
 
 
 def test_parse_ids():

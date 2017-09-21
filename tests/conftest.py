@@ -29,10 +29,10 @@ from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 
 # These are the reduced data files
-from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, 
-exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, 
+from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path,
+exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path,
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path)
-from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, 
+from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path)
 
 DATABASE = 'testdb'
@@ -696,9 +696,9 @@ def parsed_variants(request, variants, case_obj):
     individual_positions = {}
     for i,ind in enumerate(variants.samples):
         individual_positions[ind] = i
-    
-    return (parse_variant(variant, case_obj, 
-            individual_positions=individual_positions) 
+
+    return (parse_variant(variant, case_obj,
+            individual_positions=individual_positions)
             for variant in variants)
 
 @pytest.fixture(scope='function')
@@ -709,8 +709,8 @@ def parsed_sv_variants(request, sv_variants, case_obj):
     for i,ind in enumerate(sv_variants.samples):
         individual_positions[ind] = i
 
-    return (parse_variant(variant, case_obj, 
-            individual_positions=individual_positions) 
+    return (parse_variant(variant, case_obj,
+            individual_positions=individual_positions)
             for variant in sv_variants)
 
 

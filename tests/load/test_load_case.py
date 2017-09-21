@@ -12,10 +12,10 @@ def test_load_case(case_obj, panel_database):
     # THEN assert that the case have been loaded with correct info
     assert adapter.cases().count() == 1
     loaded_case = adapter.case(case_obj['_id'])
-    
-    assert loaded_case['case_id'] == case_obj['case_id']
+
+    assert loaded_case['_id'] == case_obj['_id']
 
     assert len(loaded_case['panels']) > 0
-    
+
     for panel in loaded_case['panels']:
         assert panel['display_name']
