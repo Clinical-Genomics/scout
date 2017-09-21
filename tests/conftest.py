@@ -416,18 +416,14 @@ def case_database(request, institute_database, case_obj):
 def populated_database(request, panel_database, institute_obj, parsed_user, case_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
-
     adapter._add_case(case_obj)
-
     return adapter
 
 @pytest.fixture(scope='function')
 def real_populated_database(request, real_panel_database, institute_obj, parsed_user, case_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
-
     adapter._add_case(case_obj)
-
     return adapter
 
 @pytest.fixture(scope='function')

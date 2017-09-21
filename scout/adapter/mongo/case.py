@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 import logging
 import datetime
 
@@ -331,8 +332,8 @@ class CaseHandler(object):
 
     def update_caseid(self, case_obj, family_id):
         """Update case id for a case across the database."""
-        old_caseid = case_obj['_id']
-        case_obj['_id'] = family_id
+        new_case = deepcopy(case_obj)
+        new_case['_id'] = family_id
 
         # update suspects and causatives
         for case_variants in ['suspects', 'causatives']:
@@ -341,10 +342,10 @@ class CaseHandler(object):
                 case_variant = self.variant(variant_id)
                 new_variantid = get_variantid(case_variant, family_id)
                 new_variantids.append(new_variantid)
-            case_obj[case_variants] = new_variantids
+            new_case[case_variants] = new_variantids
 
         # update ACMG
-        for acmg_obj in self.acmg_collection.find({'case_id': old_caseid}):
+        for acmg_obj in self.acmg_collection.find({'case_id': case_obj['_id']}):
             logger.info("update ACMG classification: %s", acmg_obj['classification'])
             acmg_variant = self.variant(acmg_obj['variant_specific'])
             new_specific_id = get_variantid(acmg_variant, family_id)
@@ -354,25 +355,26 @@ class CaseHandler(object):
             )
 
         # update events
-        for event_obj in self.event_collection.find({'case_id': old_caseid}):
+        institute_obj = self.institute(case_obj['owner'])
+        for event_obj in self.events(institute_obj, case=case_obj):
             logger.info("update event: %s", event_obj['verb'])
             self.event_collection.find_one_and_update(
                 {'_id': event_obj['_id']},
-                {'$set': {'case_id': family_id}},
+                {'$set': {'case': family_id}},
             )
 
         # insert the updated case
-        self.case_collection.insert(case_obj)
+        self.case_collection.insert(new_case)
         # delete the old case
-        self.case_collection.find_one_and_delete({'_id': old_caseid})
-        return case_obj
+        self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
+        return new_case
 
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id."""
     new_id = parse_document_id(
         chrom=variant_obj['chromosome'],
-        pos=variant_obj['position'],
+        pos=str(variant_obj['position']),
         ref=variant_obj['reference'],
         alt=variant_obj['alternative'],
         variant_type=variant_obj['variant_type'],
