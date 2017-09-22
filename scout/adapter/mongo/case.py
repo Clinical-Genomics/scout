@@ -364,7 +364,7 @@ class CaseHandler(object):
             )
 
         # insert the updated case
-        self.case_collection.insert(new_case)
+        self.case_collection.insert_one(new_case)
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
