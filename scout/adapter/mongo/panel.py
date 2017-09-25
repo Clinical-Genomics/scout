@@ -1,3 +1,4 @@
+from copy import deepcopy
 import datetime as dt
 import logging
 
@@ -199,15 +200,16 @@ class PanelHandler(object):
         """Apply the pending changes to an existing gene panel
 
         Args:
-            panel_obj(dict)
+            panel_obj(dict): panel in database to update
 
         Returns:
             new_panel(dict): Panel with changes
         """
         updates = {}
-        new_panel = dict(panel_obj)
+        new_panel = deepcopy(panel_obj)
         new_panel.pop('_id')
         new_panel['pending'] = []
+        new_panel['date'] = dt.datetime.now()
 
         new_genes = []
 
