@@ -207,6 +207,19 @@ class CaseHandler(object):
         # Build the case object
         case_obj = build_case(parsed_case, self)
 
+        # Check if case exists with old case id
+        old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
+        old_case = self.case(old_caseid)
+        if old_case:
+            logger.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
+            self.update_caseid(old_case, case_obj['_id'])
+            update = True
+
+        # Check if case exists in database
+        existing_case = self.case(case_obj['_id'])
+        if existing_case and not update:
+            raise IntegrityError("Case %s already exists in database", case_obj['_id'])
+
         files = [
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
             {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
@@ -235,22 +248,8 @@ class CaseHandler(object):
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
 
-        # Check if case exists with old case id
-        old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
-        old_case = self.case(old_caseid)
-        if old_case:
-            if update:
-                self.update_caseid(old_case, case_obj['_id'])
-            else:
-                raise IntegrityError("Case %s exists with old id", old_caseid)
-
-        # Check if case exists in database
-        existing_case = self.case(case_obj['_id'])
-        if existing_case:
-            if update:
-                self.update_case(case_obj)
-            else:
-                raise IntegrityError("Case {0} already exists in database".format(case_obj['_id']))
+        if existing_case and update:
+            self.update_case(case_obj)
         else:
             logger.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)
