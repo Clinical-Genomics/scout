@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_connection(host='localhost', port=27017, username=None, password=None,
-                   uri=None, mongodb=None, timeout=20):
+                   uri=None, mongodb=None, authdb=None, timeout=20):
     """Get a client to the mongo database
 
         host(str): Host of database
@@ -29,13 +29,15 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
         username(str)
         password(str)
         uri(str)
+        authdb (str): database to use for authentication
         timeout(int): How long should the client try to connect
 
     """
+    authdb = authdb or mongodb
     if uri is None:
         if username and password:
             uri = ("mongodb://{}:{}@{}:{}/{}"
-                   .format(quote_plus(username), quote_plus(password), host, port, mongodb))
+                   .format(quote_plus(username), quote_plus(password), host, port, authdb))
         else:
             uri = "mongodb://%s:%s" % (host, port)
 

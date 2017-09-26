@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 import logging
 import datetime
 
@@ -6,6 +7,7 @@ import pymongo
 
 from scout.parse.case import parse_case
 from scout.build.case import build_case
+from scout.parse.variant.ids import parse_document_id
 
 from scout.exceptions import IntegrityError, ConfigError
 
@@ -205,6 +207,19 @@ class CaseHandler(object):
         # Build the case object
         case_obj = build_case(parsed_case, self)
 
+        # Check if case exists with old case id
+        old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
+        old_case = self.case(old_caseid)
+        if old_case:
+            logger.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
+            self.update_caseid(old_case, case_obj['_id'])
+            update = True
+
+        # Check if case exists in database
+        existing_case = self.case(case_obj['_id'])
+        if existing_case and not update:
+            raise IntegrityError("Case %s already exists in database", case_obj['_id'])
+
         files = [
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
             {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
@@ -233,14 +248,8 @@ class CaseHandler(object):
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
                 logger.warning(error)
 
-        # Check if case exists in database
-        existing_case = self.case(case_obj['_id'])
-        if existing_case:
-            if update:
-                self.update_case(case_obj)
-            else:
-                raise IntegrityError("Case {0} already exists in database".format(
-                                     case_obj['case_id']))
+        if existing_case and update:
+            self.update_case(case_obj)
         else:
             logger.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)
@@ -254,7 +263,7 @@ class CaseHandler(object):
             Args:
                 case_obj(Case)
         """
-        if self.case(case_obj['case_id']):
+        if self.case(case_obj['_id']):
             raise IntegrityError("Case %s already exists in database" % case_obj['_id'])
 
         return self.case_collection.insert_one(case_obj)
@@ -320,3 +329,54 @@ class CaseHandler(object):
         return updated_case
         ##TODO Add event for updating case?
 
+    def update_caseid(self, case_obj, family_id):
+        """Update case id for a case across the database."""
+        new_case = deepcopy(case_obj)
+        new_case['_id'] = family_id
+
+        # update suspects and causatives
+        for case_variants in ['suspects', 'causatives']:
+            new_variantids = []
+            for variant_id in case_obj.get(case_variants, []):
+                case_variant = self.variant(variant_id)
+                new_variantid = get_variantid(case_variant, family_id)
+                new_variantids.append(new_variantid)
+            new_case[case_variants] = new_variantids
+
+        # update ACMG
+        for acmg_obj in self.acmg_collection.find({'case_id': case_obj['_id']}):
+            logger.info("update ACMG classification: %s", acmg_obj['classification'])
+            acmg_variant = self.variant(acmg_obj['variant_specific'])
+            new_specific_id = get_variantid(acmg_variant, family_id)
+            self.acmg_collection.find_one_and_update(
+                {'_id': acmg_obj['_id']},
+                {'$set': {'case_id': family_id, 'variant_specific': new_specific_id}},
+            )
+
+        # update events
+        institute_obj = self.institute(case_obj['owner'])
+        for event_obj in self.events(institute_obj, case=case_obj):
+            logger.info("update event: %s", event_obj['verb'])
+            self.event_collection.find_one_and_update(
+                {'_id': event_obj['_id']},
+                {'$set': {'case': family_id}},
+            )
+
+        # insert the updated case
+        self.case_collection.insert_one(new_case)
+        # delete the old case
+        self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
+        return new_case
+
+
+def get_variantid(variant_obj, family_id):
+    """Create a new variant id."""
+    new_id = parse_document_id(
+        chrom=variant_obj['chromosome'],
+        pos=str(variant_obj['position']),
+        ref=variant_obj['reference'],
+        alt=variant_obj['alternative'],
+        variant_type=variant_obj['variant_type'],
+        case_id=family_id,
+    )
+    return new_id

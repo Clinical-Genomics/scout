@@ -169,9 +169,10 @@ class VariantHandler(object):
             sorting = [('rank_score', pymongo.DESCENDING)]
 
         result = self.variant_collection.find(
-                        mongo_query,
-                        skip=skip,
-                        limit=nr_of_variants).sort(sorting)
+            mongo_query,
+            skip=skip,
+            limit=nr_of_variants
+        ).sort(sorting)
 
         return result
 
@@ -410,12 +411,7 @@ class VariantHandler(object):
             nr_inserted(int)
         """
         institute_obj = self.institute(institute_id=case_obj['owner'])
-
-        if not institute_obj:
-            raise IntegrityError("Institute {0} does not exist in"
-                                 " database.".format(case_obj['owner']))
         gene_to_panels = self.gene_to_panels()
-
         hgncid_to_gene = self.hgncid_to_gene()
 
         variant_file = None
@@ -486,10 +482,7 @@ class VariantHandler(object):
 
         try:
             for nr_variants, variant in enumerate(vcf_obj(region)):
-                rank_score = parse_rank_score(
-                    variant.INFO.get('RankScore'),
-                    case_obj['display_name'],
-                )
+                rank_score = parse_rank_score(variant.INFO.get('RankScore'), case_obj['_id'])
                 if (rank_score is None) or (rank_score > rank_threshold):
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
@@ -517,13 +510,13 @@ class VariantHandler(object):
                         pass
 
                     if (nr_variants != 0 and nr_variants % 5000 == 0):
-                        logger.info("%s variants parsed" % str(nr_variants))
-                        logger.info("Time to parse variants: {} ".format(
-                                    datetime.now() - start_five_thousand))
+                        logger.info("%s variants parsed", str(nr_variants))
+                        logger.info("Time to parse variants: %s",
+                                    (datetime.now() - start_five_thousand))
                         start_five_thousand = datetime.now()
 
                     if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
-                        logger.info("%s variants inserted" % nr_inserted)
+                        logger.info("%s variants inserted", nr_inserted)
                         inserted += 1
 
         except Exception as error:
@@ -573,14 +566,15 @@ class VariantHandler(object):
                         region_end = gene_end
 
         query = self.build_query(
-            case_id = variant_obj['case_id'],
-            query = {
+            case_id=variant_obj['case_id'],
+            query={
                 'variant_type': variant_obj['variant_type'],
                 'chrom': chromosome,
                 'start': region_start,
                 'end': region_end,
-                },
-            category=category)
+            },
+            category=category
+        )
 
         sort_key = [('rank_score', pymongo.DESCENDING)]
         variants = self.variant_collection.find(query).sort(sort_key)
