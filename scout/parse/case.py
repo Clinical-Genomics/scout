@@ -62,11 +62,11 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
                                               config_data['default_gene_panels']]
 
     if peddy_ped:
-        config_data['peddy_ped'] = peddy_ped
+        config_data['peddy_ped'] = peddy_ped or config_data.get('peddy_ped')
     if peddy_sex:
-        config_data['peddy_sex_check'] = peddy_sex
+        config_data['peddy_sex_check'] = peddy_sex or config_data.get('peddy_sex')
     if peddy_check:
-        config_data['peddy_ped_check'] = peddy_check
+        config_data['peddy_ped_check'] = peddy_check or config_data.get('peddy_check')
 
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
@@ -278,6 +278,9 @@ def parse_case(config):
         'default_panels': config.get('default_gene_panels', []),
         'gene_panels': config.get('gene_panels', []),
         'assignee': config.get('assignee'),
+        'peddy_ped': config.get('peddy_ped'),
+        'peddy_sex': config.get('peddy_sex'),
+        'peddy_check': config.get('peddy_check'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db
