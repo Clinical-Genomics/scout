@@ -9,12 +9,11 @@ from scout.utils.handle import get_file_handle
 
 from .indexes import INDEXES
 
-from .acmg import (ACMG_COMPLETE_MAP, ACMG_OPTIONS, ACMG_CRITERIA, ACMG_MAP, 
-                   REV_ACMG_MAP, ACMG_SHORT_MAP)
+from .acmg import (ACMG_COMPLETE_MAP, ACMG_OPTIONS, ACMG_CRITERIA, ACMG_MAP, REV_ACMG_MAP)
 from .so_terms import (SO_TERMS, SO_TERM_KEYS, SEVERE_SO_TERMS)
-from .variant_tags import (CONSEQUENCE, CONSERVATION, FEATURE_TYPES, SV_TYPES, 
+from .variant_tags import (CONSEQUENCE, CONSERVATION, FEATURE_TYPES, SV_TYPES,
                            GENETIC_MODELS, VARIANT_CALL, MANUAL_RANK_OPTIONS)
-from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP, 
+from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP,
                         REV_PHENOTYPE_MAP, CASE_STATUSES)
 from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
