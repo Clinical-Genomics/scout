@@ -208,14 +208,38 @@
   </script>
 {% endblock %}
 
-
-{% macro variant_row(variant) %}
-  <tr>
-    <td>
+{% macro cell_rank(variant) %}
       <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
                           case_name=case.display_name, variant_id=variant._id) }}">
         {{ variant.variant_rank }}
       </a>
+      {% set comment_count = variant.comments.count() %}
+      {% if variant.acmg_classification %}
+      <span class="badge pull-right" title="{{ variant.acmg_classification.label }}">
+	{{ variant.acmg_classification.short }}
+      </span>
+      {% elif variant.manual_rank %}
+      <span class="badge pull-right">{{ variant.manual_rank }}</span>
+      {% elif comment_count > 0 %}
+      <a href="#" 
+	 class="badge pull-right" 
+	 data-toggle="popover" 
+	 data-placement="right" 
+	 data-html="true" 
+	 data-trigger="hover click" 
+	 data-content="{{ comments_table(institute, case, variant.comments, variant._id) }}"
+	 >
+	{{ comment_count }}
+	<span class="glyphicon glyphicon-comment"></span>
+      </a>
+      {% endif %}
+{% endmacro %}
+
+{% macro variant_row(variant) %}
+  <tr>
+    <td>
+      {{ cell_rank(variant) }}
+
     </td>
     <td>{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
