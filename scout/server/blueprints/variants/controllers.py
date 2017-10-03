@@ -32,7 +32,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     }
 
 
-def sv_variants(store, institute_obj, case_obj, variants_query, page, per_page=50):
+def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
     skip_count = (per_page * max(page - 1, 0))
     more_variants = True if variants_query.count() > (skip_count + per_page) else False
@@ -61,6 +61,9 @@ def sv_variant(store, institute_id, case_name, variant_id):
 
     overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
+
+    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
+                                           variant_id=variant_obj['variant_id'], comments=True)
 
     return {
         'institute': institute_obj,

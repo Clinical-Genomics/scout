@@ -127,3 +127,17 @@
     </ul>
   </div>
 {% endmacro %}
+
+{% macro pedigree_panel(case) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Pedigree</div>
+    <div class="panel-body table-responsive">
+      {% if case.individuals|length == 1 %}
+        <p>Single sample case: {{ case.individuals.0.display_name }}</p>
+      {% else %}
+        {{ case.madeline_info|safe }}
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+

@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "utils.html" import flash_messages %}
+{% from "utils.html" import flash_messages, comments_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -214,13 +214,11 @@
         {{ variant.variant_rank }}
       </a>
       {% set comment_count = variant.comments.count() %}
-      {% if variant.acmg_classification %}
-      <span class="badge pull-right" title="{{ variant.acmg_classification.label }}">
-	{{ variant.acmg_classification.short }}
-      </span>
-      {% elif variant.manual_rank %}
+      {% if variant.manual_rank %}
       <span class="badge pull-right">{{ variant.manual_rank }}</span>
-      {% elif comment_count > 0 %}
+      {% endif %}
+
+      {% if comment_count > 0 %}
       <a href="#" 
 	 class="badge pull-right" 
 	 data-toggle="popover" 
@@ -239,7 +237,6 @@
   <tr>
     <td>
       {{ cell_rank(variant) }}
-
     </td>
     <td>{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>

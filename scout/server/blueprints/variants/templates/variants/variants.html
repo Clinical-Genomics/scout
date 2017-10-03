@@ -135,8 +135,9 @@
     </span>
   {% elif variant.manual_rank %}
     <span class="badge pull-right">{{ variant.manual_rank }}</span>
-  {% elif comment_count > 0 %}
-    <a href="#" 
+  {% endif %}
+  {% if comment_count > 0 %}
+    <a href="#"
        class="badge pull-right" 
        data-toggle="popover" 
        data-placement="right" 
