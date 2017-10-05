@@ -36,9 +36,11 @@ def cases(store, case_query):
 
 def case(store, institute_obj, case_obj):
     """Preprocess a single case."""
+    case_obj['individual_ids'] = []
     for individual in case_obj['individuals']:
         individual['sex_human'] = SEX_MAP.get(individual['sex'], 'unknown')
         individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
+        case_obj['individual_ids'].append(individual['individual_id'])
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
                              case_obj.get('assignees', [])]
