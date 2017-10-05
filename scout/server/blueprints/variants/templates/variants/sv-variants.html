@@ -197,6 +197,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
+      $('[data-toggle="popover"]').popover({
+        container: 'body',
+      });
+
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
@@ -209,13 +213,14 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
-      <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
+      <a class="variants-row-item flex-small layout"
+	 href="{{ url_for('variants.sv_variant', institute_id=institute._id,
                           case_name=case.display_name, variant_id=variant._id) }}">
         {{ variant.variant_rank }}
       </a>
       {% set comment_count = variant.comments.count() %}
       {% if variant.manual_rank %}
-      <span class="badge pull-right">{{ variant.manual_rank }}</span>
+      <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
       {% endif %}
 
       {% if comment_count > 0 %}
@@ -225,7 +230,7 @@
 	 data-placement="right" 
 	 data-html="true" 
 	 data-trigger="hover click" 
-	 data-content="{{ comments_table(institute, case, variant.comments, variant._id) }}"
+	 data-content="<small>{{ comments_table(institute, case, variant.comments, variant._id) }}</small>"
 	 >
 	{{ comment_count }}
 	<span class="glyphicon glyphicon-comment"></span>
