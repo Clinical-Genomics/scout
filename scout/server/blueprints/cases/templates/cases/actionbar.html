@@ -193,7 +193,7 @@
       <span class="glyphicon glyphicon-ok-sign"></span>
       Coverage report
     </h5>
-    <form method="POST" action="{{ url_for('report.report', group_id=case._id, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+    <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
       <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
       <div class="form-group">
@@ -202,7 +202,7 @@
     </form>
     <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
     <p>
-      <form method="POST" action="{{ url_for('report.pdf', group_id=case._id, level=institute.coverage_cutoff, dl='yes') }}">
+      <form method="POST" action="{{ url_for('report.pdf', sample_id=case.individual_ids, level=institute.coverage_cutoff, dl='yes') }}">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
         <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
 
