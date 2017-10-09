@@ -1,3 +1,4 @@
+import copy
 import logging
 import datetime
 
@@ -36,6 +37,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
+    config_data = copy.deepcopy(config)
     # Default the analysis date to now if not specified in load config
     if 'analysis_date' not in config_data:
         config_data['analysis_date'] = datetime.datetime.now()
