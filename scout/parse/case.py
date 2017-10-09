@@ -61,12 +61,9 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data['default_gene_panels'] = [panel.strip() for panel in
                                               config_data['default_gene_panels']]
 
-    if peddy_ped:
-        config_data['peddy_ped'] = peddy_ped or config_data.get('peddy_ped')
-    if peddy_sex:
-        config_data['peddy_sex_check'] = peddy_sex or config_data.get('peddy_sex')
-    if peddy_check:
-        config_data['peddy_ped_check'] = peddy_check or config_data.get('peddy_check')
+    config_data['peddy_ped'] = peddy_ped or config_data.get('peddy_ped')
+    config_data['peddy_sex_check'] = peddy_sex or config_data.get('peddy_sex')
+    config_data['peddy_ped_check'] = peddy_check or config_data.get('peddy_check')
 
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
@@ -87,17 +84,17 @@ def add_peddy_information(config_data):
     ped_check = {}
     sex_check = {}
 
-    if 'peddy_ped' in config_data:
+    if config_data.get('peddy_ped'):
         file_handle = open(config_data['peddy_ped'], 'r')
         for ind_info in parse_peddy_ped(file_handle):
             ped_info[ind_info['sample_id']] = ind_info
 
-    if 'peddy_ped_check' in config_data:
+    if config_data.get('peddy_ped_check'):
         file_handle = open(config_data['peddy_ped_check'], 'r')
         for pair_info in parse_peddy_ped_check(file_handle):
             ped_check[(pair_info['sample_a'], pair_info['sample_b'])] = pair_info
 
-    if 'peddy_sex_check' in config_data:
+    if config_data.get('peddy_sex_check'):
         file_handle = open(config_data['peddy_sex_check'], 'r')
         for ind_info in parse_peddy_sex_check(file_handle):
             sex_check[ind_info['sample_id']] = ind_info
