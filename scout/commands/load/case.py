@@ -4,6 +4,7 @@ import logging
 from pprint import pprint as pp
 
 import click
+import yaml
 
 from scout.load import load_scout
 from scout.parse.case import (parse_case_data)
@@ -44,9 +45,10 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
 
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
+    config_raw = yaml.load(config) if config else {}
     try:
         config_data = parse_case_data(
-            config=config,
+            config=config_raw,
             ped=ped,
             owner=owner,
             vcf_snv=vcf,
