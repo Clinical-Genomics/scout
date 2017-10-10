@@ -122,7 +122,7 @@ def get_predictions(genes):
         'functional_annotations': [],
     }
     for gene_obj in genes:
-        for pred_key in data.keys():
+        for pred_key in data:
             gene_key = pred_key[:-1]
             if len(genes) == 1:
                 value = gene_obj.get(gene_key, '-')
@@ -135,12 +135,17 @@ def get_predictions(genes):
 
 def variant_case(store, case_obj, variant_obj):
     """Pre-process case for the variant view."""
-    case_obj['bam_files'] = [individual['bam_file'] for individual in
-                             case_obj['individuals'] if individual.get('bam_file')]
-    case_obj['bai_files'] = [find_bai_file(bam_file) for bam_file in
-                             case_obj['bam_files']]
-    case_obj['sample_names'] = [individual['display_name'] for individual in
-                                case_obj['individuals'] if individual['bam_file']]
+    case_obj['bam_files'] = []
+    case_obj['bai_files'] = []
+    case_obj['sample_names'] = []
+    for individual in case_obj['individuals']:
+        bam_path = individual.get('bam_file')
+        if bam_path and os.path.exists(bam_path):
+            case_obj['bam_files'].append(individual['bam_file'])
+            case_obj['bai_files'].append(find_bai_file(individual['bam_file']))
+            case_obj['bam_files'].append(individual['display_name'])
+        else:
+            log.debug("no bam file found".format(individual['individual_id']))
 
     try:
         genes = variant_obj.get('genes', [])
