@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import datetime as dt
 import logging
 
 from flask import flash
 
 from scout.parse.panel import parse_genes
+from scout.build.panel import build_panel
 
 log = logging.getLogger(__name__)
 
@@ -60,4 +62,38 @@ def update_panel(store, panel_name, csv_lines):
             'database_entry_version': new_gene['database_entry_version'],
         }
         store.add_pending(panel_obj, gene_obj, action=action, info=info_data)
+    return panel_obj
+
+
+def new_panel(store, institute_id, panel_name, display_name, csv_lines):
+    """Create a new gene panel."""
+    institute_obj = store.institute(institute_id)
+    if institute_obj is None:
+        flash("{}: institute not found".format(institute_id))
+        return None
+
+    panel_obj = store.gene_panel(panel_name)
+    if panel_obj:
+        flash("panel already exists: {} - {}".format(panel_obj['panel_name'],
+                                                     panel_obj['display_name']))
+        return None
+
+    log.debug("parse genes from CSV input")
+    try:
+        new_genes = parse_genes(csv_lines)
+    except SyntaxError as error:
+        flash(error.args[0], 'danger')
+        return None
+
+    log.debug("build new gene panel")
+    panel_data = build_panel(dict(
+        panel_name=panel_name,
+        institute=institute_obj['_id'],
+        version=1.0,
+        date=dt.datetime.now(),
+        display_name=display_name,
+        genes=new_genes,
+    ), store)
+
+    panel_obj = store.add_gene_panel(panel_data)
     return panel_obj
