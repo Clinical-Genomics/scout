@@ -1,5 +1,5 @@
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify)
+                   request, url_for, send_from_directory, jsonify, flash)
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -11,6 +11,9 @@ blueprint = Blueprint('dashboard', __name__, template_folder='templates')
 def index():
     """Display the Scout dashboard."""
     total_cases = store.cases().count()
+    if total_cases == 0:
+        flash('no cases loaded - please visit the dashboard later!', 'info')
+        return redirect(url_for('cases.index'))
     cases = [{'status': 'all', 'count': total_cases, 'percent': 1}]
     query = store.case_collection.aggregate([
         {'$group' : {'_id': '$status', 'count': {'$sum': 1}}}
