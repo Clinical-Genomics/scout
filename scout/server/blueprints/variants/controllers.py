@@ -228,8 +228,9 @@ def variant(store, institute_obj, case_obj, variant_id):
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
         gene_models = gene_models | omim_models
 
-    variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
-    variant_obj['is_matching_inheritance'] = variant_models & gene_models
+    if variant_obj.get('genetic_models'):
+        variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
+        variant_obj['is_matching_inheritance'] = variant_models & gene_models
 
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
