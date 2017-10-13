@@ -53,12 +53,11 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     log.debug("Debug logging enabled.")
 
     mongo_config = {}
+    cli_config = {}
     if config:
         log.debug("Use config file %s", config)
         with open(config, 'r') as in_handle:
             cli_config = yaml.load(in_handle)
-    else:
-        cli_config = {}
 
     mongo_config['mongodb'] = (mongodb or cli_config.get('mongodb') or 'scout')
     if demo:
