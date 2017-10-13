@@ -13,6 +13,13 @@ To load a user into scout use the command `scout load user`. A user has to:
 - have a *name*
 - have a *email adress*
 
+An example could look like:
+
+```bash
+scout load user --institute-id cust000 --user-name "Clark Kent" --user-mail clark@mail.com
+```
+
+
 ## Case
 When loading a case into scout it is possible to use either a config file or to specify parameters on the command line.
 
