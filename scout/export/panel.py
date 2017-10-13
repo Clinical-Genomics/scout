@@ -7,10 +7,11 @@ CHROMOSOMES = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
 log = logging.getLogger(__name__)
 
 
-def export_panels(adapter, panels):
+def export_panels(adapter, panels, build='37'):
     """Export all genes in gene panels"""
     headers = []
     header_string = ("##gene_panel={0},version={1},updated_at={2},display_name={3}")
+    build_string = ("##Genome_build={0}".format(build))
     contig_string = ("##contig={0}")
     bed_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
 
@@ -30,12 +31,14 @@ def export_panels(adapter, panels):
             panel_geneids.add(gene_obj['hgnc_id'])
 
     for hgnc_id in panel_geneids:
-        hgnc_geneobj = adapter.hgnc_gene(hgnc_id)
+        hgnc_geneobj = adapter.hgnc_gene(hgnc_id, build=build)
         if hgnc_geneobj is None:
             log.warn("missing HGNC gene: %s", hgnc_id)
             continue
         hgnc_geneobjs.append(hgnc_geneobj)
         chromosomes_found.add(hgnc_geneobj['chromosome'])
+
+    headers.append(build_string)
 
     for chrom in CHROMOSOMES:
         if chrom in chromosomes_found:

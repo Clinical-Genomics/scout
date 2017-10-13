@@ -97,8 +97,13 @@ def omim(context, version, build, to_json, outfile):
                 nargs=-1,
                 metavar='<panel_name>'
 )
+@click.option('-b', '--build',
+                type=click.Choice(['37', '38']),
+                default='37',
+                show_default=True
+)
 @click.pass_context
-def panel(context, panel):
+def panel(context, panel, build):
     """Export gene panels to .bed like format.
     
         Specify any number of panels on the command line
@@ -111,7 +116,8 @@ def panel(context, panel):
         context.abort()
 
     logger.info("Exporting panels: {}".format(', '.join(panel)))
-    export_panels(adapter, panel)
+    for line in export_panels(adapter, panel, build):
+        print(line)
 
 @click.command('genes', short_help='Export genes')
 @click.pass_context
