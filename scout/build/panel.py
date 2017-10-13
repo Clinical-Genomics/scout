@@ -32,7 +32,6 @@ def build_gene(gene_info, adapter):
             xd = bool,
             x = bool,
             y = bool,
-
         )
 
     """
