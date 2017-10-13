@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 
+# from worst to most certain benign
 ACMG_MAP = OrderedDict([
     (4, 'pathogenic'),
     (3, 'likely_pathogenic'),
+    (0, 'uncertain_significance'),
     (2, 'likely_benign'),
     (1, 'benign'),
-    (0, 'uncertain_significance')
 ])
 
 REV_ACMG_MAP = OrderedDict([(value, key) for key, value in ACMG_MAP.items()])
