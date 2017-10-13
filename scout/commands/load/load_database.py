@@ -52,7 +52,7 @@ def user(context, institute_id, user_name, user_mail):
     """Add a user to the database."""
     adapter = context.obj['adapter']
 
-    institute = adapter.institute(institute_id=institute_name)
+    institute = adapter.institute(institute_id=institute_id)
 
     if not institute:
         log.info("Institute {0} does not exist".format(institute_id))
