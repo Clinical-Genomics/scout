@@ -34,7 +34,12 @@ class VariantHandler(object):
     """Methods to handle variants in the mongo adapter"""
 
     def add_gene_info(self, variant_obj, gene_panels=None):
-        """Add extra information about genes from gene panels"""
+        """Add extra information about genes from gene panels
+        
+        Args:
+            variant_obj(dict): A variant from the database
+            gene_panels(list(dict)): List of panels from database
+        """
         gene_panels = gene_panels or []
 
         # We need to check if there are any additional information in the gene panels
@@ -75,6 +80,8 @@ class VariantHandler(object):
 
             # Manually annotated disease associated transcripts
             disease_associated = set()
+            # We need to strip the version to compare against others
+            disease_associated_no_version = set()
             manual_penetrance = False
             mosaicism = False
             manual_inheritance = set()
@@ -83,11 +90,11 @@ class VariantHandler(object):
             # panels
             for gene_info in panel_info:
                 # Check if there are manually annotated disease transcripts
-                if gene_info.get('disease_associated_transcripts'):
-                    for tx in gene_info['disease_associated_transcripts']:
-                        # We remove the version of transcript at this stage
-                        tx = re.sub(r'\.[0-9]', '', tx)
-                        disease_associated.add(tx)
+                for tx in gene_info.get('disease_associated_transcripts', []):
+                    # We remove the version of transcript at this stage
+                    stripped = re.sub(r'\.[0-9]', '', tx)
+                    disease_associated_no_version.add(stripped)
+                    disease_associated.add(tx)
                 if gene_info.get('reduced_penetrance'):
                     manual_penetrance = True
 
@@ -116,7 +123,7 @@ class VariantHandler(object):
 
                         # Check if any of the refseq ids are disease associated
                         for refseq_id in refseq_ids:
-                            if refseq_id in disease_associated:
+                            if refseq_id in disease_associated_no_version:
                                 transcript['is_disease_associated'] = True
 
                     if hgnc_transcript.get('is_primary'):
