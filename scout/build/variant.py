@@ -258,20 +258,10 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     # Add the callers
     call_info = variant.get('callers', {})
-    if call_info.get('gatk'):
-        variant_obj['gatk'] = call_info['gatk']
     
-    if call_info.get('samtools'):
-        variant_obj['samtools'] = call_info['samtools']
-    
-    if call_info.get('freebayes'):
-        variant_obj['freebayes'] = call_info['freebayes']
-
-    if call_info.get('mutect'):
-        variant_obj['mutect'] = call_info['mutect']
-
-    if call_info.get('pindel'):
-        variant_obj['pindel'] = call_info['pindel']
+    for caller in call_info:
+        if call_info[caller]:
+            variant_obj[caller] = call_info[caller]
 
     # Add the conservation
     conservation_info = variant.get('conservation', {})
