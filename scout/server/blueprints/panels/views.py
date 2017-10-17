@@ -21,9 +21,23 @@ def panels():
         # update an existing panel
         csv_file = request.files['csv_file']
         lines = csv_file.stream.read().decode('windows-1252').split('\r')
-        panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
-        if panel_obj is None:
-            return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
+
+        new_panel_name = request.form.get('new_panel_name')
+        if new_panel_name:
+            panel_obj = controllers.new_panel(
+                store=store,
+                institute_id=request.form['institute'],
+                panel_name=new_panel_name,
+                display_name=request.form['display_name'],
+                csv_lines=lines,
+            )
+            if panel_obj is None:
+                return redirect(request.referrer)
+            flash("new gene panel added: {}!".format(panel_obj['panel_name']))
+        else:
+            panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
+            if panel_obj is None:
+                return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
         return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
 
     institutes = list(user_institutes(store, current_user))
@@ -35,7 +49,7 @@ def panels():
     for institute_obj in institutes:
         institute_panels = store.latest_panels(institute_obj['_id'])
         panel_groups.append((institute_obj, institute_panels))
-    return dict(panel_groups=panel_groups, panel_names=panel_names)
+    return dict(panel_groups=panel_groups, panel_names=panel_names, institutes=institutes)
 
 
 @panels_bp.route('/panels/<panel_id>', methods=['GET', 'POST'])
