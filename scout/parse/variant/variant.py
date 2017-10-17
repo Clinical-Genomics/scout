@@ -7,7 +7,7 @@ from .genotype import parse_genotypes
 from .compound import parse_compounds
 from .clnsig import parse_clnsig
 from .gene import parse_genes
-from .frequency import parse_frequencies
+from .frequency import (parse_frequencies, parse_sv_frequencies)
 from .conservation import parse_conservations
 from .ids import parse_ids
 from .callers import parse_callers
