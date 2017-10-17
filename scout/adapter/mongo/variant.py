@@ -489,8 +489,9 @@ class VariantHandler(object):
 
         try:
             for nr_variants, variant in enumerate(vcf_obj(region)):
+                mt_variant = 'MT' in variant.CHROM
                 rank_score = parse_rank_score(variant.INFO.get('RankScore'), case_obj['_id'])
-                if (rank_score is None) or (rank_score > rank_threshold):
+                if (rank_score is None) or (rank_score > rank_threshold) or mt_variant:
                     # Parse the vcf variant
                     parsed_variant = parse_variant(
                         variant=variant,
