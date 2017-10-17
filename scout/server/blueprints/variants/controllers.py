@@ -6,7 +6,7 @@ from flask import url_for, flash
 from flask_mail import Message
 
 from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS,
-                             ACMG_COMPLETE_MAP)
+                             ACMG_COMPLETE_MAP, CALLERS)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
@@ -63,6 +63,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
         ('Decipher', variant_obj.get('decipher')),
     ]
 
+    variant_obj['callers'] = callers(variant_obj, category='sv')
     overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
 
@@ -205,7 +206,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['alamut_link'] = alamut_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
-    variant_obj['callers'] = callers(variant_obj)
+    variant_obj['callers'] = callers(variant_obj, category='snv')
 
     for gene_obj in variant_obj.get('genes', []):
         parse_gene(gene_obj)
@@ -452,13 +453,11 @@ def expected_inheritance(variant_obj):
     return list(manual_models)
 
 
-def callers(variant_obj):
-    """Return call for all callers."""
-    calls = [('GATK', variant_obj.get('gatk', 'NA')),
-             ('Samtools', variant_obj.get('samtools', 'NA')),
-             ('Freebayes', variant_obj.get('freebayes', 'NA'))]
-    existing_calls = [(name, caller) for name, caller in calls if caller]
-    return existing_calls
+def callers(variant_obj, category='snv'):
+    """Return info about callers."""
+    calls = [(caller['name'], variant_obj.get(caller['id']))
+             for caller in CALLERS[category] if variant_obj.get(caller['id'])]
+    return calls
 
 
 def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):

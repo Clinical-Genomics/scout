@@ -222,6 +222,13 @@
         {% endfor %}
       </tbody>
     </table>
+    {% if variant.callers %}
+      <div class="panel-footer">
+        {% for name, caller in variant.callers %}
+          <span class="label label-default">{{ name }}: {{ caller }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 {% endmacro %}
 
