@@ -57,6 +57,10 @@ def sv_variant(store, institute_id, case_name, variant_id):
         ('1000G', variant_obj.get('thousand_genomes_frequency')),
         ('1000G (left)', variant_obj.get('thousand_genomes_frequency_left')),
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
+        ('ClinGen CGH (benign)', variant_obj.get('clingen_cgh_benign')),
+        ('ClinGen CGH (pathogenic)', variant_obj.get('clingen_cgh_pathogenic')),
+        ('ClinGen NGI', variant_obj.get('clingen_ngi')),
+        ('Decipher', variant_obj.get('decipher')),
     ]
 
     overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
