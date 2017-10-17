@@ -145,7 +145,7 @@ def variant_case(store, case_obj, variant_obj):
             case_obj['bai_files'].append(find_bai_file(individual['bam_file']))
             case_obj['bam_files'].append(individual['display_name'])
         else:
-            log.debug("no bam file found".format(individual['individual_id']))
+            log.debug("%s: no bam file found", individual['individual_id'])
 
     try:
         genes = variant_obj.get('genes', [])
