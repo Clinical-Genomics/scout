@@ -140,7 +140,7 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['cytoband_start'] = coordinates['cytoband_start']
     parsed_variant['cytoband_end'] = coordinates['cytoband_end']
 
-    ################# Add the rank score #################
+    ################# Add rank score #################
     # The rank score is central for displaying variants in scout.
 
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
@@ -153,14 +153,14 @@ def parse_variant(variant, case, variant_type='clinical',
     else:
         parsed_variant['samples'] = []
 
-    ################# Add the compound information #################
+    ################# Add compound information #################
     compounds = parse_compounds(compound_info=variant.INFO.get('Compounds'),
                                 case_id=genmod_key,
                                 variant_type=variant_type)
     if compounds:
         parsed_variant['compounds'] = compounds
 
-    ################# Add the inheritance patterns #################
+    ################# Add inheritance patterns #################
 
     genetic_models = parse_genetic_models(variant.INFO.get('GeneticModels'), genmod_key)
     if genetic_models:
@@ -176,7 +176,7 @@ def parse_variant(variant, case, variant_type='clinical',
     if azqual:
         parsed_variant['azqual'] = float(azqual)
 
-    ################# Add the gene and transcript information #################
+    ################# Add gene and transcript information #################
     raw_transcripts = []
     if vep_header:
         vep_info = variant.INFO.get('CSQ')
@@ -212,7 +212,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     parsed_variant['hgnc_ids'] = list(hgnc_ids)
 
-    ################# Add the clinsig prediction #################
+    ################# Add clinsig prediction #################
     clnsig_predictions = parse_clnsig(
         acc=variant.INFO.get('CLNACC'),
         sig=variant.INFO.get('CLNSIG'),
@@ -237,7 +237,7 @@ def parse_variant(variant, case, variant_type='clinical',
     if local_obs_hom_old:
         parsed_variant['local_obs_hom_old'] = int(local_obs_hom_old)
 
-    ###################### Add the severity predictions ######################
+    ###################### Add severity predictions ######################
     cadd = parse_cadd(variant, parsed_transcripts)
     if cadd:
         parsed_variant['cadd_score'] = cadd
@@ -246,7 +246,7 @@ def parse_variant(variant, case, variant_type='clinical',
     if spidex:
         parsed_variant['spidex'] = float(spidex)
 
-    ###################### Add the conservation ######################
+    ###################### Add conservation ######################
 
     parsed_variant['conservation'] = parse_conservations(variant)
 
@@ -256,5 +256,10 @@ def parse_variant(variant, case, variant_type='clinical',
     if rank_result:
         results = [int(i) for i in rank_result.split('|')]
         parsed_variant['rank_result'] = dict(zip(rank_results_header, results))
+
+    ###################### Add SV specific annotations ######################
+    sv_frequencies = parse_sv_frequencies(variant)
+    for key in sv_frequencies:
+        parsed_variant['frequencies'][key] = sv_frequencies[key]
 
     return parsed_variant
