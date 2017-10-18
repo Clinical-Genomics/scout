@@ -76,12 +76,25 @@ class GeneHandler(object):
         """
         logger.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
+            # first search for a full match
+            full_query = self.hgnc_collection.find(
+                {
+                    '$or': [
+                        {'aliases': hgnc_symbol},
+                        {'hgnc_id': int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
+                    ],
+                    'build': build
+                }
+            )
+            if full_query.count() != 0:
+                return full_query
+
             return self.hgnc_collection.find(
-                        {
-                            'aliases': {'$regex': hgnc_symbol, '$options':'i'},
-                            'build': build
-                        }
-                    )
+                {
+                    'aliases': {'$regex': hgnc_symbol, '$options': 'i'},
+                    'build': build
+                }
+            )
 
         return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build': build})
 
@@ -120,13 +133,13 @@ class GeneHandler(object):
 
     def hgncid_to_gene(self, build='37'):
         """Return a dictionary with hgnc_id as key and gene_obj as value
-            
+
         The result will have ONE entry for each gene in the database.
         (For a specific build)
 
         Args:
             build(str):
-        
+
         Returns:
             hgnc_dict(dict): {<hgnc_id(int)>: <gene(dict)>}
 
@@ -140,16 +153,16 @@ class GeneHandler(object):
 
     def hgncsymbol_to_gene(self):
         """Return a dictionary with hgnc_symbol as key and gene_obj as value
-        
+
         The result will have ONE entry for each gene in the database.
         (For a specific build)
 
         Args:
             build(str)
-        
+
         Returns:
             hgnc_dict(dict): {<hgnc_symbol(str)>: <gene(dict)>}
-        
+
         """
         hgnc_dict = {}
         logger.info("Building hgncsymbol_to_gene")
@@ -161,21 +174,21 @@ class GeneHandler(object):
     def gene_by_alias(self, symbol, build='37'):
         """Return a iterable with hgnc_genes.
 
-        If the gene symbol is listed as primary the iterable will only have 
+        If the gene symbol is listed as primary the iterable will only have
         one result. If not the iterable will include all hgnc genes that have
         the symbol as an alias.
-        
+
         Args:
             symbol(str)
             build(str)
-        
+
         Returns:
             res(pymongo.Cursor(dict))
         """
         res = self.hgnc_collection.find({'hgnc_symbol': symbol, 'build':build})
         if res.count() == 0:
             res = self.hgnc_collection.find({'aliases': symbol, 'build':build})
-        
+
         return res
 
     def genes_by_alias(self, build='37'):
@@ -185,10 +198,10 @@ class GeneHandler(object):
         If a gene symbol is listed as primary the list of ids will only consist
         of that entry if not the gene can not be determined so the result is a list
         of hgnc_ids
-        
+
         Args:
             build(str)
-        
+
         Returns:
             alias_genes(dict): {<hgnc_alias>: {'true': <hgnc_id>, 'ids': {<hgnc_id_1>, <hgnc_id_2>, ...}}}
         """
