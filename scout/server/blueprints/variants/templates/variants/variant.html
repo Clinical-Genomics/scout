@@ -276,11 +276,13 @@
     <ul class="list-group">
       <li class="list-group-item">
         <strong>Gene panels</strong>
-        <span class="pull-right">
+        <ul class="list-inline pull-right">
           {% for panel_id in variant.panels %}
-            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a> |
+            <li>
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
+            </li>
           {% endfor %}
-        </span>
+        </ul>
       </li>
     </ul>
     <div class="panel-body">
@@ -1046,7 +1048,7 @@
       <div class="panel-heading">
         External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
       </div>
-      <div class="panel-body table-responsive">
+      <div class="panel-body">
         <div class="btn-group btn-group-justified">
           <a href="{{ gene.ensembl_link }}" class="btn btn-default" target="_blank">Ensembl</a>
           <a href="{{ gene.hpa_link }}" class="btn btn-default" target="_blank">HPA</a>
@@ -1056,7 +1058,10 @@
           <a href="http://tools.genes.toronto.edu/" class="btn btn-default" target="_blank">SPANR</a>
           <a href="{{ gene.reactome_link }}" class="btn btn-default" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-default" target="_blank">Expr. Atlas</a>
-	  <a href="{{ variant.alamut_link }}" class="btn btn-default" target="_blank">Alamut</a>
+          <a href="{{ variant.alamut_link }}" class="btn btn-default" target="_blank">Alamut</a>
+          {% if variant.chromosome == 'MT' %}
+            <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
+          {% endif %}
         </div>
       </div>
       <div class="panel-body">
