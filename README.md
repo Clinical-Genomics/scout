@@ -89,7 +89,7 @@ This is an example of the config file:
 # scoutconfig.py
 
 # list of email addresses to send errors to in production
-ADMINS = ['???']
+ADMINS = ['paul.anderson@magnolia.com']
 
 MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
@@ -99,15 +99,14 @@ MONGO_PASSWORD = 'testPass'
 
 # enable user authentication using Google OAuth
 GOOGLE = dict(
-		consumer_key='???',
-		consumer_secret='???',
-
+		consumer_key='CLIENT_ID',
+		consumer_secret='CLIENT_SECRET',
 		base_url='https://www.googleapis.com/oauth2/v1/',
 		authorize_url='https://accounts.google.com/o/oauth2/auth',
 		request_token_url=None,
 		request_token_params={
 				'scope': ("https://www.googleapis.com/auth/userinfo.profile "
-									"https://www.googleapis.com/auth/userinfo.email"),
+						  "https://www.googleapis.com/auth/userinfo.email"),
 		},
 		access_token_url='https://accounts.google.com/o/oauth2/token',
 		access_token_method='POST'
