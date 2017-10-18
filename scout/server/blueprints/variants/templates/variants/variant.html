@@ -445,7 +445,7 @@
       </thead>
       <tbody>
         {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts|selectattr('refseq_ids') %}
+          {% for transcript in gene.primary_transcripts %}
             <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
               <td>
                 <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
@@ -455,9 +455,9 @@
                   <span class="badge pull-right" title="canonical">C</span>
                 {% endif %}
               </td>
-              <td>{{ transcript.refseq_ids|join(', ') }}</td>
-              <td>
-                {{ transcript.coding_sequence_name or '' }}
+              <td>{{ transcript.refseq_ids|join(', ') if transcript.refseq_ids else transcript.transcript_id }}</td>
+              <td title="{{ transcript.coding_sequence_name or '' }}">
+                {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
                 <span class="text-muted pull-right">
                   {{ (transcript.protein_sequence_name or '')|url_decode }}
                 </span>

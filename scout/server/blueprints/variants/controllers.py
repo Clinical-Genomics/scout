@@ -297,6 +297,12 @@ def parse_gene(gene_obj):
         gene_obj['reactome_link'] = reactome_link
         gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
 
+        refseq_transcripts = [transcript for transcript in gene_obj['transcripts'] if
+                              transcript.get('refseq_ids')]
+        # select refseq transcripts as "primary" or use all Ensembl transcripts
+        gene_obj['primary_transcripts'] = (refseq_transcripts if len(refseq_transcripts) > 0 else
+                                           gene_obj['transcripts'])
+
     for tx_obj in gene_obj['transcripts']:
         parse_transcript(gene_obj, tx_obj)
 
