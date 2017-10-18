@@ -117,11 +117,15 @@ def variant_update(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     link = request.referrer
 
-    if request.form.get('manual_rank'):
-        new_manual_rank = int(request.form['manual_rank'])
+    manual_rank = request.form.get('manual_rank')
+    if manual_rank:
+        new_manual_rank = int(manual_rank) if manual_rank != '-1' else None
         store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
                                  new_manual_rank)
-        flash("updated manual rank: {}".format(new_manual_rank), 'info')
+        if new_manual_rank:
+            flash("updated variant tag: {}".format(new_manual_rank), 'info')
+        else:
+            flash("reset variant tag: {}".format(variant_obj['manual_rank']), 'info')
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
         acmg_classification = variant_obj.get('acmg_classification')
