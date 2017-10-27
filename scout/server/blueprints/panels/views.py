@@ -20,7 +20,11 @@ def panels():
     if request.method == 'POST':
         # update an existing panel
         csv_file = request.files['csv_file']
-        lines = csv_file.stream.read().decode('windows-1252').split('\r')
+        content = csv_file.stream.read()
+        if b'\n' in content:
+            lines = content.decode().split('\n')
+        else:
+            lines = content.decode('windows-1252').split('\r')
 
         new_panel_name = request.form.get('new_panel_name')
         if new_panel_name:
