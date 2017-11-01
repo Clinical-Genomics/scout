@@ -74,5 +74,5 @@ def panel(context, date, name, version, panel_type, panel_id, path, institute):
     try:
         adapter.load_panel(info)
     except IntegrityError as e:
-        logger.warning(e)
+        log.warning(e)
         context.abort()

@@ -45,7 +45,7 @@ def build_gene(gene_info, adapter):
     
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
     if hgnc_gene is None:
-        raise IntegrityError
+        raise IntegrityError("hgnc_id {0} is not in the gene database!".format(hgnc_id))
     
     gene_obj['symbol'] = hgnc_gene['hgnc_symbol']
 
