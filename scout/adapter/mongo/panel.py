@@ -280,3 +280,13 @@ class PanelHandler(object):
         for panel_name in panel_names:
             panel_obj = self.gene_panel(panel_name)
             yield panel_obj
+
+    def clinical_symbols(self, case_obj):
+        """Return all the clinical gene symbols for a case."""
+        panel_ids = [panel['panel_id'] for panel in case_obj['panels']]
+        query = self.panel_collection.aggregate([
+            {'$match': {'_id': {'$in': panel_ids}}},
+            {'$unwind': '$genes'},
+            {'$group': {'_id': '$genes.symbol'}}
+        ])
+        return set(item['_id'] for item in query)
