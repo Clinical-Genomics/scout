@@ -457,7 +457,13 @@
                   <span class="badge pull-right" title="canonical">C</span>
                 {% endif %}
               </td>
-              <td>{{ transcript.refseq_ids|join(', ') if transcript.refseq_ids else transcript.transcript_id }}</td>
+              <td>
+                {% for refseq_id in transcript.refseq_ids %}
+                  <div>{{ refseq_id }}</div>
+                {% else %}
+                  {{ transcript.transcript_id }}
+                {% endfor %}
+              </td>
               <td title="{{ transcript.coding_sequence_name or '' }}">
                 {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
                 <span class="text-muted pull-right">

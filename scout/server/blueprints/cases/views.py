@@ -45,6 +45,27 @@ def case(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, **data)
 
 
+@cases_bp.route('/<institute_id>/causatives')
+@templated('cases/causatives.html')
+def causatives(institute_id):
+    institute_obj = institute_and_case(store, institute_id)
+    variants = store.check_causatives(institute_obj=institute_obj)
+    all_variants = {}
+    all_cases = {}
+    for variant_obj in variants:
+        if variant_obj['case_id'] not in all_cases:
+            case_obj = store.case(variant_obj['case_id'])
+            all_cases[variant_obj['case_id']] = case_obj
+        else:
+            case_obj = all_cases[variant_obj['case_id']]
+
+        if variant_obj['variant_id'] not in all_variants:
+            all_variants[variant_obj['variant_id']] = []
+        all_variants[variant_obj['variant_id']].append((case_obj, variant_obj))
+
+    return dict(institute=institute_obj, variant_groups=all_variants)
+
+
 @cases_bp.route('/<institute_id>/<case_name>/synopsis', methods=['POST'])
 def case_synopsis(institute_id, case_name):
     """Update (PUT) synopsis of a specific case."""

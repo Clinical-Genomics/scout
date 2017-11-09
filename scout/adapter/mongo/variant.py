@@ -224,7 +224,7 @@ class VariantHandler(object):
             for variant_id in case.get('causatives', []):
                 yield variant_id
 
-    def check_causatives(self, case_obj):
+    def check_causatives(self, case_obj=None, institute_obj=None):
         """Check if there are any variants that are previously marked causative
 
             Loop through all variants that are marked 'causative' for an
@@ -232,28 +232,30 @@ class VariantHandler(object):
             current case.
 
             Args:
-                case(Case): A Case object
+                case_obj (dict): A Case object
+                institute_obj (dict): check across the whole institute
 
             Returns:
                 causatives(iterable(Variant))
         """
-        # owner is a string
-        unique_ids = list(self.get_causatives(case_obj['owner']))
+        institute_id = case_obj['owner'] if case_obj else institute_obj['_id']
+        unique_ids = list(self.get_causatives(institute_id))
         if len(unique_ids) == 0:
             return []
 
         # get (non-unique) variant ids
-        query = self.variant_collection.find({
-            '_id': {'$in': unique_ids}
-        }, {
-            'variant_id': 1
-        })
+        query = self.variant_collection.find(
+            {'_id': {'$in': unique_ids}},
+            {'variant_id': 1}
+        )
         variant_ids = [item['variant_id'] for item in query]
 
-        return self.variant_collection.find({
-            'case_id': case_obj['_id'],
-            'variant_id': {'$in': variant_ids}
-        })
+        filters = {'variant_id': {'$in': variant_ids}}
+        if case_obj:
+            filters['case_id'] = case_obj['_id']
+        else:
+            filters['institute'] = institute_obj['_id']
+        return self.variant_collection.find(filters)
 
     def update_variant(self, variant_obj):
         """Update one variant document in the database.
