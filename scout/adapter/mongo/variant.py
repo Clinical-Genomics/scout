@@ -35,7 +35,7 @@ class VariantHandler(object):
 
     def add_gene_info(self, variant_obj, gene_panels=None):
         """Add extra information about genes from gene panels
-        
+
         Args:
             variant_obj(dict): A variant from the database
             gene_panels(list(dict)): List of panels from database
@@ -237,10 +237,18 @@ class VariantHandler(object):
             Returns:
                 causatives(iterable(Variant))
         """
-        #owner is a string
-        variant_ids = list(self.get_causatives(case_obj['owner']))
-        if len(variant_ids) == 0:
+        # owner is a string
+        unique_ids = list(self.get_causatives(case_obj['owner']))
+        if len(unique_ids) == 0:
             return []
+
+        # get (non-unique) variant ids
+        query = self.variant_collection.find({
+            '_id': {'$in': unique_ids}
+        }, {
+            'variant_id': 1
+        })
+        variant_ids = [item['variant_id'] for item in query]
 
         return self.variant_collection.find({
             'case_id': case_obj['_id'],

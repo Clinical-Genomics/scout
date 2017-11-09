@@ -115,7 +115,7 @@
       {% for variant in other_causatives %}
         <li class="list-group-item">
           <a href="{{ url_for('variants.variant', institute_id=institute._id,
-                              case_name=case.display_name, variant_id=variant.id) }}">
+                              case_name=case.display_name, variant_id=variant._id) }}">
             {{ variant.hgnc_symbols|join(', ') }}
           </a>
         </li>
