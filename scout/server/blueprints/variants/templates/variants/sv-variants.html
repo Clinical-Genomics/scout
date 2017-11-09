@@ -248,7 +248,7 @@
     <td>{{ variant.chromosome }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td>{{ 'inf' if variant.length == 100000000000 else variant.length }}</td>
+    <td>{{ variant.length }}</td>
     <td>{{ variant.region_annotations[:3]|join(', ') }}</td>
     <td>{{ variant.functional_annotations[:3]|join(', ') }}</td>
     <td>{{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}</td>

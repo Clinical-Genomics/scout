@@ -118,6 +118,10 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
         variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
+    # convert length for SV variants
+    variant_length = variant_obj.get('length')
+    variant_obj['length'] = {100000000000: 'inf', -1: 'n.d.'}.get(variant_length, variant_length)
+
     return variant_obj
 
 
