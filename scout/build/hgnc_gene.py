@@ -1,5 +1,87 @@
+import logging
 
-def build_hgnc_transcript(transcript_info):
+from scout.models.exon import Exon
+
+LOG = logging.getLogger(__name__)
+
+def build_exon(exon_info, build='37'):
+    """Build a Exon object object
+
+        Args:
+            exon_info(dict): Exon information
+
+        Returns:
+            exon_obj(Exon)
+        
+        "exon_id": str, # str(chrom-start-end)
+        "chrom": str, 
+        "start": int, 
+        "end": int,     
+        "transcript": str, # ENST ID
+        "gene": int,      # HGNC_id
+        "rank": int, # Order of exon in transcript
+        "build": str, # Genome build
+    """
+
+    try:
+        chrom = exon_info['chrom']
+    except KeyError:
+        raise KeyError("Exons has to have a chromosome")
+
+    try:
+        start = int(exon_info['start'])
+    except KeyError:
+        raise KeyError("Exon has to have a start")
+    except TypeError:
+        raise TypeError("Exon start has to be integer")
+    
+    try:
+        end = int(exon_info['end'])
+    except KeyError:
+        raise KeyError("Exon has to have a end")
+    except TypeError:
+        raise TypeError("Exon end has to be integer")
+
+    try:
+        rank = int(exon_info['rank'])
+    except KeyError:
+        raise KeyError("Exon has to have a rank")
+    except TypeError:
+        raise TypeError("Exon rank has to be integer")
+
+    try:
+        exon_id = exon_info['exon_id']
+    except KeyError:
+        raise KeyError("Exons has to have a id")
+
+    try:
+        transcript = exon_info['transcript']
+    except KeyError:
+        raise KeyError("Exons has to have a transcript")
+
+    try:
+        hgnc_id = int(exon_info['hgnc_id'])
+    except KeyError:
+        raise KeyError("Exons has to have a hgnc_id")
+    except TypeError:
+        raise TypeError("hgnc_id has to be integer")
+
+    exon_obj = Exon(
+        exon_id = exon_id,
+        chrom = chrom,
+        start = start,
+        end = end,
+        rank = rank,
+        transcript = transcript,
+        hgnc_id = hgnc_id,
+        build = build,
+    )
+
+    return exon_obj
+    
+
+
+def build_hgnc_transcript(transcript_info, build='37'):
     """Build a hgnc_transcript object
 
         Args:
@@ -8,20 +90,32 @@ def build_hgnc_transcript(transcript_info):
         Returns:
             transcript_obj(HgncTranscript)
             {
-                ensembl_transcript_id: str, required
+                transcript_id: str, required
+                hgnc_id: int, required
+                build: str, required
                 refseq_id: str,
+                chrom: str, required
                 start: int, required
                 end: int, required
                 is_primary: bool
             }
     """
     try:
-        transcript_obj = {'ensembl_transcript_id':transcript_info['enst_id']}
+        transcript_obj = {'transcript_id':transcript_info['transcript']}
     except KeyError:
         raise KeyError("Transcript has to have ensembl id")
+    
+    transcript_obj['build'] = build
     transcript_obj['is_primary'] = transcript_info.get('is_primary', False)
     
-    transcript_obj['refseq_ids'] = transcript_info['refseq']
+    if transcript_info.get('refseq_id'):
+        transcript_obj['refseq_id'] = transcript_info['refseq_id']
+    
+
+    try:
+        transcript_obj['chrom'] = transcript_info['chrom']
+    except KeyError:
+        raise KeyError("Transcript has to have a chromosome")
     
     try:
         transcript_obj['start'] = int(transcript_info['start'])
@@ -36,6 +130,15 @@ def build_hgnc_transcript(transcript_info):
         raise KeyError("Transcript has to have end")
     except TypeError:
         raise TypeError("Transcript end has to be integer")
+
+    try:
+        transcript_obj['hgnc_id'] = int(transcript_info['hgnc_id'])
+    except KeyError:
+        raise KeyError("Transcript has to have a hgnc id")
+    except TypeError:
+        raise TypeError("hgnc id has to be integer")
+
+    transcript_obj['length'] = transcript_obj['end'] - transcript_obj['start']
 
     return transcript_obj
 
@@ -140,13 +243,6 @@ def build_hgnc_gene(gene_info, build='37'):
     gene_obj['ucsc_id'] = gene_info.get('ucsc_id')
     gene_obj['uniprot_ids'] = gene_info.get('uniprot_ids', [])
     gene_obj['vega_id'] = gene_info.get('vega_id')
-
-    transcript_objs = []
-    for transcript_info in gene_info.get('transcripts',[]):
-        transcript_objs.append(
-            build_hgnc_transcript(transcript_info))
-
-    gene_obj['transcripts'] = transcript_objs
 
     gene_obj['incomplete_penetrance'] = gene_info.get('incomplete_penetrance', False)
     gene_obj['inheritance_models'] = gene_info.get('inheritance_models', [])

@@ -2,7 +2,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def build_transcript(transcript):
+def build_transcript(transcript, build='37'):
     """Build a transcript object
     
         Args:
@@ -12,7 +12,7 @@ def build_transcript(transcript):
             transcript_obj(dict)
     """
     
-    # TRanscripts has to have an id
+    # Transcripts has to have an id
     transcript_id = transcript['transcript_id']
     transcript_obj = dict(
         transcript_id = transcript_id

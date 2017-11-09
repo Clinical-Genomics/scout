@@ -13,64 +13,80 @@ def parse_ensembl_line(line, header):
             ensembl_info(dict): A dictionary with the relevant info
     """
     line = line.rstrip().split('\t')
+    header = [head.lower() for head in header]
     raw_info = dict(zip(header, line))
-    chrom = None
-    gene_start = None
-    gene_end = None
-    transcript_start = None
-    transcript_end = None
-    hgnc_symbol = None
-    ensembl_gene_id = None
-    ensembl_transcript_id = None
-    refseq_mrna = None
-    refseq_mrna_predicted = None
-    refseq_ncrna_predicted = None
-    refseq_ncrna = None
+    
+    ensembl_info = {}
     
     for word in raw_info:
-        if 'Gene ID' in word:
-            ensembl_gene_id = raw_info[word]
-        if 'Chromosome' in word:
-            chrom = raw_info[word]
-        if 'Gene Start' in word:
-            gene_start = int(raw_info[word])
-        if 'Gene End' in word:
-            gene_end = int(raw_info[word])
-        if 'HGNC symbol' in word:
-            hgnc_symbol = raw_info[word]
-        if "Associated Gene Name" in word:
-            hgnc_symbol = raw_info[word]
-        if 'Transcript ID' in word:
-            ensembl_transcript_id = raw_info[word]
-        if 'Transcript Start' in word:
-            transcript_start = int(raw_info[word])
-        if 'Transcript End' in word:
-            transcript_end = int(raw_info[word])
-        if 'RefSeq mRNA' in word:
-            if 'predicted' in word:
-                refseq_mrna_predicted = raw_info[word]
-            else:
-                refseq_mrna = raw_info[word]
-        if 'RefSeq ncRNA' in word:
-            if 'predicted' in word:
-                refseq_ncrna_predicted = raw_info[word]
-            else:
-                refseq_ncrna = raw_info[word]
+        value = raw_info[word]
         
-    ensembl_info = {
-        'chrom': chrom,
-        'gene_start': gene_start,
-        'gene_end': gene_end,
-        'transcript_start': transcript_start,
-        'transcript_end': transcript_end,
-        'refseq_mrna': refseq_mrna,
-        'refseq_mrna_predicted': refseq_mrna_predicted,
-        'refseq_ncrna': refseq_ncrna,
-        'refseq_ncrna_predicted': refseq_ncrna_predicted,
-        'hgnc_symbol': hgnc_symbol,
-        'ensembl_gene_id': ensembl_gene_id,
-        'ensembl_transcript_id': ensembl_transcript_id,
-    }
+        if not value:
+            continue
+        
+        if 'chromosome' in word:
+            ensembl_info['chrom'] = value
+        
+        if 'gene' in word:
+            if 'id' in word:
+                ensembl_info['ensembl_gene_id'] = value
+            elif 'start' in word:
+                ensembl_info['gene_start'] = int(value)
+            elif 'end' in word:
+                ensembl_info['gene_end'] = int(value)
+        
+        if 'hgnc symbol' in word:
+            ensembl_info['hgnc_symbol'] = value
+        if "gene name" in word:
+            ensembl_info['hgnc_symbol'] = value
+
+        if 'hgnc id' in word:
+            ensembl_info['hgnc_id'] = int(value.split(':')[-1])
+        
+        if 'transcript' in word:
+            if 'id' in word:
+                ensembl_info['ensembl_transcript_id'] = value
+            elif 'start' in word:
+                ensembl_info['transcript_start'] = int(value)
+            elif 'end' in word:
+                ensembl_info['transcript_end'] = int(value)
+        
+        if 'exon' in word:
+            if 'start' in word:
+                ensembl_info['exon_start'] = int(value)
+            elif 'end' in word:
+                ensembl_info['exon_end'] = int(value)
+            elif 'rank' in word:
+                ensembl_info['exon_rank'] = int(value)
+                
+        
+        if 'utr' in word:
+
+            if 'start' in word:
+                if '5' in word:
+                    ensembl_info['utr_5_start'] = int(value)
+                elif '3' in word:
+                    ensembl_info['utr_3_start'] = int(value)
+            elif 'end' in word:
+                if '5' in word:
+                    ensembl_info['utr_5_end'] = int(value)
+                elif '3' in word:
+                    ensembl_info['utr_3_end'] = int(value)
+        
+        if 'strand' in word:
+            ensembl_info['strand'] = int(value)
+        
+        if 'refseq' in word:
+            if 'mrna' in word:
+                if 'predicted' in word:
+                    ensembl_info['refseq_mrna_predicted'] = value
+                else:
+                    ensembl_info['refseq_mrna'] = value
+                    
+        
+            if 'ncrna' in word:
+                ensembl_info['refseq_ncrna'] = value
+
     return ensembl_info
 
 def parse_ensembl_genes(lines):
@@ -87,15 +103,14 @@ def parse_ensembl_genes(lines):
     """
     header = []
     for index,line in enumerate(lines):
-        line = line.rstrip().split('\t')
         
         #File allways start with a header line
         if index == 0:
-            header = line
+            header = line.rstrip().split('\t')
+            continue
         #After that each line represents a gene
-        else:
             
-            yield parse_ensembl_line(line, header)
+        yield parse_ensembl_line(line, header)
 
 def parse_ensembl_transcripts(lines):
     """Parse lines with ensembl formated transcripts
@@ -110,7 +125,7 @@ def parse_ensembl_transcripts(lines):
             ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    logger.info("Parsing ensembl transcripts...")
+    logger.debug("Parsing ensembl transcripts...")
     for index,line in enumerate(lines):
         
         #File allways start with a header line
@@ -119,3 +134,75 @@ def parse_ensembl_transcripts(lines):
         #After that each line represents a transcript
         else:
             yield parse_ensembl_line(line, header)
+
+def parse_ensembl_exons(lines):
+    """Parse lines with ensembl formated exons
+        
+        This is designed to take a biomart dump with exons from ensembl.
+        Check documentation for spec for download
+    
+        Args:
+            lines(iterable(str)): An iterable with ensembl formated exons
+        Yields:
+            ensembl_gene(dict): A dictionary with the relevant information
+    """
+    header = []
+    logger.debug("Parsing ensembl exons...")
+    for index,line in enumerate(lines):
+        
+        #File allways start with a header line
+        if index == 0:
+            header = line.rstrip().split('\t')
+            continue
+        
+        exon_info = parse_ensembl_line(line, header)
+        chrom = exon_info['chrom']
+        start = exon_info['exon_start']
+        end = exon_info['exon_end']
+        transcript = exon_info['ensembl_transcript_id']
+        gene = exon_info['ensembl_gene_id']
+        
+        rank = exon_info['exon_rank']
+        strand = exon_info['strand']
+        
+        
+        # Recalculate start and stop (taking UTR regions into account for end exons)    
+        if strand == 1:
+            # highest position: start of exon or end of 5' UTR
+            # If no 5' UTR make sure exon_start is allways choosen
+            start = max(start, exon_info.get('utr_5_end') or -1)
+            # lowest position: end of exon or start of 3' UTR
+            end = min(end, exon_info.get('utr_3_start') or float('inf'))
+        elif strand == -1:
+            # highest position: start of exon or end of 3' UTR
+            start = max(start, exon_info.get('utr_3_end') or -1)
+            # lowest position: end of exon or start of 5' UTR
+            end = min(end, exon_info.get('utr_5_start') or float('inf'))
+        
+        exon_id = "-".join([chrom, str(start), str(end)])
+        
+        if start > end:
+            raise ValueError("ERROR: %s" % exon_id)
+        data = {
+            "exon_id": exon_id,
+            "chrom": chrom,
+            "start": start,
+            "end": end,
+            "transcript": transcript,
+            "gene": gene,
+            "rank": rank,
+        }
+        
+        yield data
+
+
+
+
+
+
+
+
+
+
+
+

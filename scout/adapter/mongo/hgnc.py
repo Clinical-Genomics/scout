@@ -4,6 +4,7 @@ import intervaltree
 
 LOG = logging.getLogger(__name__)
 
+from scout.build.hgnc_gene import build_exon
 
 class GeneHandler(object):
 
@@ -18,6 +19,26 @@ class GeneHandler(object):
         #             (gene_obj['hgnc_symbol'], gene_obj['build']))
         res = self.hgnc_collection.insert_one(gene_obj)
         #LOG.debug("Gene saved")
+        return res
+
+    def load_hgnc_transcript(self, transcript_obj):
+        """Add a transcript object to the database
+
+        Arguments:
+            transcript_obj(dict)
+
+        """
+        res = self.transcript_collection.insert_one(transcript_obj)
+        return res
+
+    def load_exon(self, exon_obj):
+        """Add a exon object to the database
+
+        Arguments:
+            exon_obj(dict)
+
+        """
+        res = self.exon_collection.insert_one(exon_obj)
         return res
 
     def hgnc_gene(self, hgnc_identifyer, build='37'):
@@ -94,7 +115,7 @@ class GeneHandler(object):
                 'build': build
             })
 
-        return self.hgnc_collection.find({'aliases': hgnc_symbol, 'build': build})
+        return self.hgnc_collection.find({'build': build, 'aliases': hgnc_symbol})
 
     def all_genes(self, build='37'):
         """Fetch all hgnc genes
@@ -128,6 +149,42 @@ class GeneHandler(object):
         else:
             LOG.info("Dropping the hgnc_gene collection")
             self.hgnc_collection.drop()
+
+    def drop_transcripts(self, build=None):
+        """Delete the transcripts collection"""
+        if build:
+            LOG.info("Dropping the transcripts collection, build %s", build)
+            self.transcript_collection.delete_many({'build': build})
+        else:
+            LOG.info("Dropping the transcripts collection")
+            self.transcript_collection.drop()
+
+    def drop_exons(self, build=None):
+        """Delete the exons collection"""
+        if build:
+            LOG.info("Dropping the exons collection, build %s", build)
+            self.exon_collection.delete_many({'build': build})
+        else:
+            LOG.info("Dropping the exons collection")
+            self.exon_collection.drop()
+
+    def ensembl_transcripts(self, build='37'):
+        """Return a dictionary with ensembl ids as keys and transcripts as value.
+
+        Args:
+            build(str)
+        
+        Returns:
+            ensembl_transcripts(dict): {<enst_id>: transcripts_obj, ...}
+        """
+        ensembl_transcripts = {}
+        LOG.info("Fetching all transcripts")
+        for transcript_obj in self.transcript_collection.find({'build':build}):
+            enst_id = transcript_obj['transcript_id']
+            ensembl_transcripts[enst_id] = transcript_obj
+        LOG.info("Ensembl transcripts fetched")
+
+        return ensembl_transcripts
 
     def hgncid_to_gene(self, build='37', genes=None):
         """Return a dictionary with hgnc_id as key and gene_obj as value
@@ -243,6 +300,93 @@ class GeneHandler(object):
 
         return alias_genes
 
+    def get_id_transcripts(self, transcripts):
+        """Return a set with identifier transcript(s)
+
+        Choose all refseq transcripts with NM symbols, if none where found choose one with NR,
+        if no NR choose one with XM. If there are no RefSeq transcripts identifiers choose the 
+        longest ensembl transcript.
+
+        Args:
+            transcripts(list)
+
+        Returns:
+            identifier_transcripts(set)
+
+        """
+        identifier_transcripts = set()
+        longest = None
+        nr = []
+        xm = []
+        for tx in transcripts:
+            enst_id = tx['transcript_id']
+            if not longest:
+                longest = enst_id
+            refseq_id = tx.get('refseq_id')
+            if not refseq_id:
+                continue
+            
+            if 'NM' in refseq_id:
+                identifier_transcripts.add(enst_id)
+            elif 'NR' in refseq_id:
+                nr.append(enst_id)
+            elif 'XM' in refseq_id:
+                xm.append(enst_id)
+        
+        if identifier_transcripts:
+            return identifier_transcripts
+        
+        if nr:
+            return set([nr[0]])
+
+        if xm:
+            return set([xm[0]])
+        
+        return set([longest])
+
+    def transcripts_by_gene(self, build='37'):
+        """Return a dictionary with hgnc_id as keys and a list of transcripts as value"""
+        hgnc_transcripts = {}
+        LOG.info("Fetching all transcripts")
+        for transcript in self.transcript_collection.find({'build':build}):
+            hgnc_id = transcript['hgnc_id']
+            if not hgnc_id in hgnc_transcripts:
+                hgnc_transcripts[hgnc_id] = []
+            
+            hgnc_transcripts[hgnc_id].append(transcript)
+        
+        return hgnc_transcripts
+
+    def ensembl_genes(self, build='37'):
+        """Return a dictionary with ensembl ids as keys and gene objects as value.
+
+        Args:
+            build(str)
+        
+        Returns:
+            genes(dict): {<ensg_id>: gene_obj, ...}
+        """
+        genes = {}
+        
+        gene_transcripts = self.transcripts_by_gene(build)
+        
+        LOG.info("Fetching all genes")
+        for gene_obj in self.hgnc_collection.find({'build':build}):
+            ensg_id = gene_obj['ensembl_id']
+            hgnc_id = gene_obj['hgnc_id']
+            # This is a set with the identifier transcripts for a gene
+            # id transcripts are the transcripts with NM symbols
+            # if no NM symbol check for NR symbols, if not NR go for XM 
+            # If no ref seq identifiers was found use longest transcript
+            if not hgnc_id in gene_transcripts:
+                continue
+            gene_obj['id_transcripts'] = self.get_id_transcripts(gene_transcripts[hgnc_id])
+            genes[ensg_id] = gene_obj
+        
+        LOG.info("Ensembl genes fetched")
+
+        return genes
+
     def to_hgnc(self, hgnc_alias, build='37'):
         """Check if a hgnc symbol is an alias
 
@@ -333,3 +477,16 @@ class GeneHandler(object):
 
         return intervals
 
+    def load_exons(self, exons, genes=None, build='37'):
+        """Create exon objects and insert them into the database
+        
+        Args:
+            exons(iterable(dict))
+        """
+        genes = genes or self.ensembl_genes(build)
+        for exon in exons:
+            exon_obj = build_exon(exon, genes)
+            if not exon_obj:
+                continue
+            
+            res = self.exon_collection.insert_one(exon_obj)

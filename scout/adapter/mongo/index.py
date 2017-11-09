@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
+<<<<<<< HEAD
 LOG = logging.getLogger(__name__)
 
+=======
+>>>>>>> New structure for transcripts and exons
 from scout.constants import INDEXES
+
+LOG = logging.getLogger(__name__)
 
 class IndexHandler(object):
 
@@ -50,5 +55,20 @@ class IndexHandler(object):
                 ', '.join([index.document.get('name') for index in indexes])
                 ))
             self.db[collection_name].create_indexes(indexes)
+
+    def update_indexes(self):
+        """Update the indexes
+        
+        If there are any indexes that are not added to the database, add those.
+
+        """
+        for collection_name in INDEXES:
+            existing_indexes = self.indexes(collection_name)
+            indexes = INDEXES[collection_name]
+            for index in indexes:
+                index_name = index.document.get('name')
+                if index_name not in existing_indexes:
+                    LOG.info("Adding index : %s" % index_name)
+                    self.db[collection_name].create_indexes(indexes)
         
 

@@ -60,4 +60,12 @@ INDEXES = {
             ('description', ASCENDING)],
             name="description"),
     ],
+    'transcript_collection': [
+        IndexModel([
+            ('build', ASCENDING),
+            ('hgnc_id', ASCENDING),
+            ('length', DESCENDING)],
+            name="hgncid_length"),
+    ],
+    
 }
