@@ -284,22 +284,28 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     # Add the frequencies
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):
-        variant_obj['thousand_genomes_frequency'] = frequencies['thousand_g']
+        variant_obj['thousand_genomes_frequency'] = float(frequencies['thousand_g'])
 
     if frequencies.get('thousand_g_max'):
-        variant_obj['max_thousand_genomes_frequency'] = frequencies['thousand_g_max']
+        variant_obj['max_thousand_genomes_frequency'] = float(frequencies['thousand_g_max'])
     
     if frequencies.get('exac'):
-        variant_obj['exac_frequency'] = frequencies['exac']
+        variant_obj['exac_frequency'] = float(frequencies['exac'])
 
     if frequencies.get('exac_max'):
-        variant_obj['max_exac_frequency'] = frequencies['exac_max']
+        variant_obj['max_exac_frequency'] = float(frequencies['exac_max'])
+
+    if frequencies.get('gnomad'):
+        variant_obj['gnomad_frequency'] = float(frequencies['gnomad'])
+
+    if frequencies.get('gnomad_max'):
+        variant_obj['max_gnomad_frequency'] = float(frequencies['gnomad_max'])
     
     if frequencies.get('thousand_g_left'):
-        variant_obj['thousand_genomes_frequency_left'] = frequencies['thousand_g_left']
+        variant_obj['thousand_genomes_frequency_left'] = float(frequencies['thousand_g_left'])
     
     if frequencies.get('thousand_g_right'):
-        variant_obj['thousand_genomes_frequency_right'] = frequencies['thousand_g_right']
+        variant_obj['thousand_genomes_frequency_right'] = float(frequencies['thousand_g_right'])
 
     # add the local observation counts from the old archive
     if variant.get('local_obs_old'):

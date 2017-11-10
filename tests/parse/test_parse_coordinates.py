@@ -58,6 +58,27 @@ def test_parse_coordinates_translocation():
     assert coordinates['end_chrom'] == 'hs37d5'
     assert coordinates['length'] == 10e10
     assert coordinates['sub_category'] ==  'bnd'
+
+def test_parse_coordinates_translocation_2():
+    info_dict = {
+        'SVTYPE': 'BND',
+    }
+    variant = CyvcfVariant(
+        ref='N', 
+        alt='N[GL000232.1:25141[',
+        pos=724779,
+        end=724779,
+        var_type='sv',
+        info_dict=info_dict,
+    )
+    
+    coordinates = parse_coordinates(variant, 'sv')
+    
+    assert coordinates['position'] == variant.POS
+    assert coordinates['end'] == 25141
+    assert coordinates['end_chrom'] == 'GL000232.1'
+    assert coordinates['length'] == 10e10
+    assert coordinates['sub_category'] ==  'bnd'
     
     
 ###### parse subcategory #######

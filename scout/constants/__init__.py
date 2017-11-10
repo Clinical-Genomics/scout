@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from collections import OrderedDict
 
 from intervaltree import (IntervalTree, Interval)
@@ -68,3 +69,6 @@ CALLERS = {
         'name': 'Manta',
     }]
 }
+
+BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
+CHR_PATTERN = re.compile(r'(chr)?(.*)', re.IGNORECASE)
