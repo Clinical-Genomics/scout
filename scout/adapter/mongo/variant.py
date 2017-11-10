@@ -220,9 +220,12 @@ class VariantHandler(object):
             Yields:
                 str: variant document id
         """
-        for case in self.cases(collaborator=institute_id, has_causatives=True):
-            for variant_id in case.get('causatives', []):
-                yield variant_id
+        query = self.case_collection.aggregate([
+            {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True}}},
+            {'$unwind': '$causatives'},
+            {'$group': {'_id': '$causatives'}}
+        ])
+        return [item['_id'] for item in query]
 
     def check_causatives(self, case_obj=None, institute_obj=None):
         """Check if there are any variants that are previously marked causative
@@ -239,7 +242,7 @@ class VariantHandler(object):
                 causatives(iterable(Variant))
         """
         institute_id = case_obj['owner'] if case_obj else institute_obj['_id']
-        unique_ids = list(self.get_causatives(institute_id))
+        unique_ids = self.get_causatives(institute_id)
         if len(unique_ids) == 0:
             return []
 
