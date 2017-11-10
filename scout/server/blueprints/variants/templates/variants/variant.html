@@ -505,11 +505,22 @@
         </span>
       </li>
       <li class="list-group-item">
+        <a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a>
+        <span class="pull-right">
+          {% if 'gnomad_frequency' in variant%}
+            {% if variant.max_gnomad_frequency %}
+              {{ variant.max_gnomad_frequency|human_decimal }}
+              <small>(max)</small> |
+            {% endif %}
+            {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+          {% else %}
+            <span class="text-muted">Not annotated</span>
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item">
         <div class="row">
           <div class="col-xs-3"><strong>Links</strong></div>
-          <div class="col-xs-3">
-            <a href="{{ variant.gnomead_link }}" target="_blank">gnomeAD</a>
-          </div>
           <div class="col-xs-3">
             <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
           </div>
