@@ -11,6 +11,14 @@
 {% macro frequency_cell(variant, exac=False) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
+      {% if 'gnomad_frequency' in variant %}
+        <div>
+          <strong>gnomAD</strong>: {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+        </div>
+        <div>
+          <strong>gnomAD (max)</strong>: {{ variant.max_gnomad_frequency|human_decimal if variant.max_gnomad_frequency }}
+        </div>
+      {% endif %}
       <div>
         <strong>1000G</strong>: {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
       </div>

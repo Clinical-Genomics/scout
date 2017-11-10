@@ -211,7 +211,7 @@ def variant(store, institute_obj, case_obj, variant_id):
                                     else None)
     variant_obj['thousandg_link'] = thousandg_link(variant_obj)
     variant_obj['exac_link'] = exac_link(variant_obj)
-    variant_obj['gnomead_link'] = gnomead_link(variant_obj)
+    variant_obj['gnomad_link'] = gnomad_link(variant_obj)
     variant_obj['swegen_link'] = swegen_link(variant_obj)
     variant_obj['beacon_link'] = beacon_link(variant_obj)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj)
@@ -415,8 +415,8 @@ def exac_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def gnomead_link(variant_obj):
-    """Compose link to gnomeAD website."""
+def gnomad_link(variant_obj):
+    """Compose link to gnomAD website."""
     url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
                     "{this[position]}-{this[reference]}-{this[alternative]}")
     return url_template.format(this=variant_obj)
