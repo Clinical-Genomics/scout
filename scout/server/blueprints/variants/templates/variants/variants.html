@@ -134,15 +134,17 @@
       {{ variant.acmg_classification.short }}
     </span>
   {% elif variant.manual_rank %}
-    <span class="badge pull-right">{{ variant.manual_rank }}</span>
-  {% elif comment_count > 0 %}
-    <a href="#" 
+    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+  {% endif %}
+  {% if comment_count > 0 %}
+    <a href="#"
        class="badge pull-right" 
        data-toggle="popover" 
        data-placement="right" 
-       data-html="true" 
+       data-html="true"
        data-trigger="hover click" 
        data-content="{{ comments_table(institute, case, variant.comments, variant._id) }}"
+       title=""
        >
       {{ comment_count }}
       <span class="glyphicon glyphicon-comment"></span>

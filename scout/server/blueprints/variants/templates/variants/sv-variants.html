@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "utils.html" import flash_messages %}
+{% from "utils.html" import flash_messages, comments_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -197,6 +197,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
+      $('[data-toggle="popover"]').popover({
+        container: 'body',
+      });
+
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
@@ -208,14 +212,36 @@
   </script>
 {% endblock %}
 
+{% macro cell_rank(variant) %}
+      <a class="variants-row-item flex-small layout"
+	 href="{{ url_for('variants.sv_variant', institute_id=institute._id,
+                          case_name=case.display_name, variant_id=variant._id) }}">
+        {{ variant.variant_rank }}
+      </a>
+      {% set comment_count = variant.comments.count() %}
+      {% if variant.manual_rank %}
+      <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+      {% endif %}
+
+      {% if comment_count > 0 %}
+      <a href="#" 
+	 class="badge pull-right" 
+	 data-toggle="popover" 
+	 data-placement="right" 
+	 data-html="true" 
+	 data-trigger="hover click" 
+	 data-content="<small>{{ comments_table(institute, case, variant.comments, variant._id) }}</small>"
+	 >
+	{{ comment_count }}
+	<span class="glyphicon glyphicon-comment"></span>
+      </a>
+      {% endif %}
+{% endmacro %}
 
 {% macro variant_row(variant) %}
   <tr>
     <td>
-      <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
-                          case_name=case.display_name, variant_id=variant._id) }}">
-        {{ variant.variant_rank }}
-      </a>
+      {{ cell_rank(variant) }}
     </td>
     <td>{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
