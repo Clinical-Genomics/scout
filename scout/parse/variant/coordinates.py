@@ -19,7 +19,20 @@ def get_cytoband_coordinates(chrom, pos):
     return coordinate
 
 def get_sub_category(alt_len, ref_len, category, svtype=None):
-    """Get the subcategory"""
+    """Get the subcategory for a VCF variant
+    
+    The sub categories are:
+        'snv', 'indel', 'del', 'ins', 'dup', 'bnd', 'inv'
+    
+    Args:
+        alt_len(int)
+        ref_len(int)
+        category(str)
+        svtype(str)
+    
+    Returns:
+        subcategory(str)
+    """
     subcategory = ''
     
     if category in ('snv', 'indel', 'cancer'):
@@ -32,99 +45,147 @@ def get_sub_category(alt_len, ref_len, category, svtype=None):
     
     return subcategory
 
-def get_length(alt_len, ref_len, category, svtype=None, svlen=None):
-    """docstring for get_length"""
+def get_length(alt_len, ref_len, category, pos, end, svtype=None, svlen=None):
+    """Return the length of a variant
+    
+    Args:
+        alt_len(int)
+        ref_len(int)
+        category(str)
+        svtype(str)
+        svlen(int)
+    """
+    # -1 would indicate uncertain length
+    length = -1
     if category in ('snv', 'indel', 'cancer'):
         if ref_len == alt_len:
             length = alt_len
         else:
-            length = abs(ref_len-alt_len)
+            length = abs(ref_len - alt_len)
+    
     elif category == 'sv':
         if svtype == 'bnd':
             length = int(10e10)
         else:
             if svlen:
                 length = abs(int(svlen))
-            else:
-                # -1 would indicate uncertain length
-                length = -1
+            # Some software does not give a length but they give END
+            elif end:
+                if end != pos:
+                    length = end - pos
     return length
 
-def get_end(pos, length, alt, category, svtype=None):
-    """docstring for get_length"""
-    end = None
+def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
+    """Return the end coordinate for a variant
+    
+    Args:
+        pos(int)
+        alt(str)
+        category(str)
+        snvend(str)
+        svend(int)
+        svlen(int)
+    
+    Returns:
+        end(int)
+    """
+    # If nothing is known we set end to be same as start
+    end = pos
+    # If variant is snv or indel we know that cyvcf2 can handle end pos
     if category in ('snv', 'indel', 'cancer'):
-        end = pos + length
+        end = snvend
 
+    # With SVs we have to be a bit more careful
     elif category == 'sv':
+        # The END field from INFO usually works fine
+        end = svend
+        
+        # For some cases like insertions the callers set end to same as pos
+        # In those cases we can hope that there is a svlen...
+        if svend == pos:
+            if svlen:
+                end = pos + svlen
+        # If variant is 'BND' they have ':' in alt field
+        # Information about other end is in the alt field
         if ':' in alt:
             other_coordinates = alt.strip('ACGTN[]').split(':')
             # For BND end will represent the end position of the other end
             try:
                 end = int(other_coordinates[1])
             except ValueError as err:
-                end = pos + length
-        else:
-            end = pos + length
-    
+                pass
+
     return end
 
-
-def parse_coordinates(chrom, ref, alt, position, category, svtype, svlen, end, mate_id=None):
+def parse_coordinates(variant, category):
     """Find out the coordinates for a variant
     
     Args:
-        chrom(str)
-        ref(str)
-        alt(str)
-        position(int)
-        category(str)
-        svtype(str)
-        svlen(int)
-        end(int)
-        mate_id(str)
+        variant(cyvcf2.Variant)
     
     Returns:
         coordinates(dict): A dictionary on the form:
         {
+            'position':<int>, 
             'end':<int>, 
+            'end_chrom':<str>,
             'length':<int>, 
             'sub_category':<str>,
             'mate_id':<str>,
+            'cytoband_start':<str>,
+            'cytoband_end':<str>,
         }
     """
-    coordinates = {
-        'end': end,
-        'length': None,
-        'sub_category': None,
-        'mate_id':None,
-        'cytoband_start':None,
-        'cytoband_end':None,
-        'end_chrom':None,
-    }
+    ref = variant.REF
+    alt = variant.ALT[0]
+    chrom = variant.CHROM
+    if (chrom.startswith('chr') or chrom.startswith('CHR')):
+        chrom = chrom[3:]
+    
+    svtype = variant.INFO.get('SVTYPE')
     if svtype:
         svtype = svtype.lower()
 
+    mate_id = variant.INFO.get('MATEID')
+
+    svlen = variant.INFO.get('SVLEN')
+    
+    svend = variant.INFO.get('END')
+    snvend = int(variant.end)
+    
+    position = int(variant.POS)
+
     ref_len = len(ref)
     alt_len = len(alt)
-    coordinates['mate_id'] = mate_id
-    coordinates['sub_category'] = get_sub_category(alt_len, ref_len, category, svtype)
-    coordinates['length'] = get_length(alt_len, ref_len, category, svtype, svlen)
-    coordinates['end'] = get_end(position, coordinates['length'], alt, category, svtype)
-    coordinates['end_chrom'] = chrom
-
-    if coordinates['sub_category'] == 'bnd':    
-            if ':' in alt:
-                other_coordinates = alt.strip('ACGTN[]').split(':')
-                # BND will often be translocations between different chromosomes
-                other_chrom = other_coordinates[0]
-                coordinates['end_chrom'] = other_coordinates[0].lstrip('chrCHR')
     
-    coordinates['cytoband_start'] = get_cytoband_coordinates(
-        chrom, position
-    )
-    coordinates['cytoband_end'] = get_cytoband_coordinates(
-        coordinates['end_chrom'], coordinates['end']
-    )
+    sub_category = get_sub_category(alt_len, ref_len, category, svtype)
+    end = get_end(position, alt, category, snvend, svend)
+
+    length = get_length(alt_len, ref_len, category, position, end, svtype, svlen)
+    end_chrom = chrom
+
+    if sub_category == 'bnd':    
+        if ':' in alt:
+            other_coordinates = alt.strip('ACGTN[]').split(':')
+            # BND will often be translocations between different chromosomes
+            other_chrom = other_coordinates[0]
+            if (other_chrom.startswith('chr') or other_chrom.startswith('CHR')):
+                other_chrom = other_chrom[3:]
+            end_chrom = other_chrom
+    
+    cytoband_start = get_cytoband_coordinates(chrom, position)
+    cytoband_end = get_cytoband_coordinates(end_chrom, end)
+
+    coordinates = {
+        'position': position,
+        'end': end,
+        'length': length,
+        'sub_category': sub_category,
+        'mate_id': mate_id,
+        'cytoband_start': cytoband_start,
+        'cytoband_end': cytoband_end,
+        'end_chrom': end_chrom,
+    }
+
 
     return coordinates

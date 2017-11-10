@@ -81,20 +81,19 @@ def parse_variant(variant, case, variant_type='clinical',
             category = 'snv'
 
     parsed_variant['category'] = category
-    #sub category is 'snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv'
-    # 'snv' and 'indel' are subcatogories of snv
-    parsed_variant['sub_category'] = None
 
     ################# General information #################
 
     parsed_variant['reference'] = variant.REF
-    # We allways assume splitted and normalized vcfs
+    
+    ### We allways assume splitted and normalized vcfs!!!
     if len(variant.ALT) > 1:
         raise VcfError("Variants are only allowed to have one alternative")
     parsed_variant['alternative'] = variant.ALT[0]
 
     # cyvcf2 will set QUAL to None if '.' in vcf
     parsed_variant['quality'] = variant.QUAL
+    
     if variant.FILTER:
         parsed_variant['filters'] = variant.FILTER.split(';')
     else:
@@ -109,33 +108,14 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Position specific #################
     parsed_variant['chromosome'] = chrom
-    # position = start
-    parsed_variant['position'] = int(variant.POS)
 
-    svtype = variant.INFO.get('SVTYPE')
+    coordinates = parse_coordinates(variant, category)
 
-    svlen = variant.INFO.get('SVLEN')
-
-    end = int(variant.end)
-
-    mate_id = variant.INFO.get('MATEID')
-
-    coordinates = parse_coordinates(
-        chrom=parsed_variant['chromosome'],
-        ref=parsed_variant['reference'],
-        alt=parsed_variant['alternative'],
-        position=parsed_variant['position'],
-        category=parsed_variant['category'],
-        svtype=svtype,
-        svlen=svlen,
-        end=end,
-        mate_id=mate_id,
-    )
-
+    parsed_variant['position'] = coordinates['position']
     parsed_variant['sub_category'] = coordinates['sub_category']
     parsed_variant['mate_id'] = coordinates['mate_id']
-    parsed_variant['end'] = int(coordinates['end'])
-    parsed_variant['length'] = int(coordinates['length'])
+    parsed_variant['end'] = coordinates['end']
+    parsed_variant['length'] = coordinates['length']
     parsed_variant['end_chrom'] = coordinates['end_chrom']
     parsed_variant['cytoband_start'] = coordinates['cytoband_start']
     parsed_variant['cytoband_end'] = coordinates['cytoband_end']
