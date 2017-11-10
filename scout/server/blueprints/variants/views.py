@@ -40,17 +40,22 @@ def variants(institute_id, case_name):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
-    for hgnc_symbol in form.hgnc_symbols.data:
-        if hgnc_symbol.isdigit():
-            hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-            if hgnc_gene is None:
-                flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+    if len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+                flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                flash("Gene not included in clinical list: {}".format(hgnc_symbol), 'warning')
             else:
-                hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
-        elif store.hgnc_genes(hgnc_symbol).count() == 0:
-            flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
-        else:
-            hgnc_symbols.append(hgnc_symbol)
+                hgnc_symbols.append(hgnc_symbol)
     form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
@@ -117,11 +122,15 @@ def variant_update(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     link = request.referrer
 
-    if request.form.get('manual_rank'):
-        new_manual_rank = int(request.form['manual_rank'])
+    manual_rank = request.form.get('manual_rank')
+    if manual_rank:
+        new_manual_rank = int(manual_rank) if manual_rank != '-1' else None
         store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
                                  new_manual_rank)
-        flash("updated manual rank: {}".format(new_manual_rank), 'info')
+        if new_manual_rank:
+            flash("updated variant tag: {}".format(new_manual_rank), 'info')
+        else:
+            flash("reset variant tag: {}".format(variant_obj['manual_rank']), 'info')
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
         acmg_classification = variant_obj.get('acmg_classification')

@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - Institutes
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">Causatives</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  {% for _, group in variant_groups.items() %}
+    <div class="panel panel-default">
+      {% set variant = group[0][1] %}
+      <div class="panel-heading">
+        {{ variant.hgnc_symbols|join(', ') }}
+        <span class="text-muted">
+          {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
+          <span class="label label-info">PAR</span>
+          {% endif %} {{ variant.reference }} → {{ variant.alternative }}
+        </span>
+      </div>
+      <ul class="list-group">
+        {% for case, variant in group %}
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-xs-8 col-md-4">
+                <a href="{{ url_for('variants.variant',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+                  {{ variant.display_name }}
+                </a>
+                {% set is_marked = variant._id in case.causatives %}
+                <span class="label {{ 'label-success' if is_marked else 'label-warning' }} pull-right">
+                  {{ 'Causative' if is_marked else 'Not causative' }}
+                </span>
+              </div>
+              <div class="col-md-4"></div>
+              <div class="col-xs-4">
+                <a href="{{ url_for('cases.case',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name) }}">
+                  {{ case.display_name }}
+                </a>
+                <span class="label label-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+                  {{ case.status }}
+                </span>
+
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+{% endblock %}

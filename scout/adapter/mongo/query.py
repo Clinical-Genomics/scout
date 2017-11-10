@@ -48,7 +48,7 @@ class QueryHandler(object):
         logger.debug("Set variant type to %s", mongo_query['variant_type'])
 
         # Requests to filter based on gene panels, hgnc_symbols or
-        # coordinate ranges must always be honored. They are always added to 
+        # coordinate ranges must always be honored. They are always added to
         # query as top level, implicit '$and'.
 
         if query.get('hgnc_symbols') and query.get('gene_panels'):
@@ -67,7 +67,7 @@ class QueryHandler(object):
             if query.get('gene_panels'):
                 gene_panels = query['gene_panels']
                 mongo_query['panels'] = {'$in': gene_panels}
- 
+
         if query.get('chrom'):
             chromosome = query['chrom']
             mongo_query['chromosome'] = chromosome
@@ -80,17 +80,17 @@ class QueryHandler(object):
                 mongo_query['end'] = {
                                         '$gte': int(query['start'])
                                     }
-                
+
         mongo_query_minor = []
 
         # A minor, excluding filter criteria will hide variants in general,
-        # but can be overridden by an including, major filter criteria 
-        # such as a Pathogenic ClinSig. 
+        # but can be overridden by an including, major filter criteria
+        # such as a Pathogenic ClinSig.
         # If there are no major criteria given, all minor criteria are added as a
-        # top level '$and' to the query. 
+        # top level '$and' to the query.
         # If there is only one major criteria given without any minor, it will also be
         # added as a top level '$and'.
-        # Otherwise, major criteria are added as a high level '$or' and all minor criteria 
+        # Otherwise, major criteria are added as a high level '$or' and all minor criteria
         # are joined together with them as a single lower level '$and'.
 
         mongo_query_minor = []
@@ -139,7 +139,7 @@ class QueryHandler(object):
         if query.get('local_obs') is not None:
             mongo_query_minor.append({
                 '$or': [
-                    {'local_obs_old': {'$exists': False}},
+                    {'local_obs_old': None},
                     {'local_obs_old': {'$lt': query['local_obs'] + 1}},
                 ]
             })
@@ -147,9 +147,9 @@ class QueryHandler(object):
         if query.get('cadd_score') is not None:
             cadd = query['cadd_score']
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
-            logger.debug("Adding cadd_score: %s to query" % cadd)
+            logger.debug("Adding cadd_score: %s to query", cadd)
 
-            if query.get('cadd_inclusive') == True:
+            if query.get('cadd_inclusive') is True:
                 cadd_query = {
                     '$or': [
                         cadd_query,
@@ -158,7 +158,7 @@ class QueryHandler(object):
                 logger.debug("Adding cadd inclusive to query")
 
             mongo_query_minor.append(cadd_query)
-                    
+
         if query.get('genetic_models'):
             models = query['genetic_models']
             mongo_query_minor.append({'genetic_models': {'$in': models}})
@@ -228,7 +228,7 @@ class QueryHandler(object):
 
         mongo_query_major = None
 
-        # Given a request to always return confident clinical variants, 
+        # Given a request to always return confident clinical variants,
         # add the clnsig query as a major criteria, but only
         # trust clnsig entries with trusted revstat levels.
 
@@ -239,15 +239,15 @@ class QueryHandler(object):
 
                 trusted_revision_level = ['mult', 'single', 'exp', 'guideline']
 
-                mongo_query_major = { "clnsig": 
-                        { 
-                            '$elemMatch': { 'value': 
-                                            { '$in': rank }, 
-                                            'revstat': 
+                mongo_query_major = { "clnsig":
+                        {
+                            '$elemMatch': { 'value':
+                                            { '$in': rank },
+                                            'revstat':
                                             { '$in': trusted_revision_level }
-                                          } 
+                                          }
                          }
-                    }                
+                    }
 
             else:
                 logger.debug("add CLINSIG filter for rank: %s" %
@@ -264,13 +264,13 @@ class QueryHandler(object):
             mongo_query['$and'] = mongo_query_minor
         elif mongo_query_major:
             mongo_query['clnsig'] = mongo_query_major['clnsig']
-    
+
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}
 
             logger.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
-            
-            
+
+
         logger.debug("mongo query: %s", mongo_query)
 
         return mongo_query

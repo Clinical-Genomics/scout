@@ -13,6 +13,11 @@
   <li class="active">
     <span class="navbar-text">{{ institute.display_name }}</span>
   </li>
+  {% if config.SHOW_CAUSATIVES %}
+    <li>
+      <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+    </li>
+   {% endif %}
 {% endblock %}
 
 {% block content_main %}

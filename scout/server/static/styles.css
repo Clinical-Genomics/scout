@@ -26,13 +26,21 @@ body {
 }
 
 .flex {
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
-	align-items: center;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
 	justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
 }
 
 .flex-fill {
-	flex: 1;
+	-webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
 }
 
 .no-padding {
@@ -208,15 +216,27 @@ th {
 
 /* BOOTSTRAP 4 CLASSES */
 .d-flex {
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
 }
 
 .flex-1 {
-	flex: 1;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
 }
 
 .justify-content-between {
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
 	justify-content: space-between;
+}
+
+.align-items-center {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
 }
 
 .mr-1 {

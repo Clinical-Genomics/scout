@@ -19,3 +19,6 @@ MAIL_USE_SSL = False
 # Chanjo-Report
 REPORT_LANGUAGE = 'en'
 ACCEPT_LANGUAGES = ['en', 'sv']
+
+# FEATURE FLAGS
+SHOW_CAUSATIVES = False

@@ -822,7 +822,7 @@ class EventHandler(object):
         return updated_case
 
     def update_manual_rank(self, institute, case, user, link, variant,
-                              manual_rank):
+                           manual_rank):
         """Create an event for updating the manual rank of a variant
 
           This function will create a event and update the manual rank
@@ -840,7 +840,7 @@ class EventHandler(object):
             updated_variant
 
         """
-        logger.info("Creating event for updating the manual rank for "\
+        logger.info("Creating event for updating manual rank for "
                     "variant {0}".format(variant['display_name']))
 
         self.create_event(
@@ -852,16 +852,22 @@ class EventHandler(object):
             verb='manual_rank',
             variant=variant,
             subject=variant['display_name'],
-          )
-        logger.info("Setting manual rank to {0} for variant {1}".format(
-              manual_rank, variant['display_name']))
-
-        updated_variant = self.variant_collection.find_one_and_update(
-            {'_id':variant['_id']},
-            {'$set': {'manual_rank': manual_rank}},
-            return_document = pymongo.ReturnDocument.AFTER
         )
 
+        if manual_rank:
+            logger.info("Setting manual rank to {0} for variant {1}"
+                        .format(manual_rank, variant['display_name']))
+            action = '$set'
+        else:
+            logger.info("Reset manual rank from {0} for variant {1}"
+                        .format(variant['manual_rank'], variant['display_name']))
+            action = '$unset'
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant['_id']},
+            {action: {'manual_rank': manual_rank}},
+            return_document = pymongo.ReturnDocument.AFTER
+        )
         logger.debug("Variant updated")
         return updated_variant
 
