@@ -131,7 +131,7 @@ def test_get_genes_regex(real_adapter):
         'hgnc_id': 3,
         'hgnc_symbol': 'AB',
         'build': '37',
-        'aliases': ['A', 'AC'],
+        'aliases': ['C', 'AC'],
     }
 
     adapter.load_hgnc_gene(gene_obj3)
