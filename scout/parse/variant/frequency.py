@@ -85,3 +85,39 @@ def parse_frequency(variant, info_key):
     raw_annotation = None if raw_annotation == '.' else raw_annotation
     frequency = float(raw_annotation) if raw_annotation else None
     return frequency
+
+def parse_sv_frequencies(variant):
+    """Parsing of some custom sv frequencies
+    
+    These are very specific at the moment, this will hopefully get better over time when the 
+    field of structural variants is more developed.
+    
+    Args:
+        variant(cyvcf2.Variant)
+    
+    Returns:
+        sv_frequencies(dict)
+    """
+    frequency_keys = [
+        'clingen_cgh_benignAF', 
+        'clingen_cgh_benign',
+        'clingen_cgh_pathogenicAF',
+        'clingen_cgh_pathogenic',
+        'clingen_ngi',
+        'clingen_ngiAF',
+        'decipherAF',
+        'decipher'
+    ]
+    sv_frequencies = {}
+    
+    for key in frequency_keys:
+        value = variant.INFO.get(key, 0)
+        if 'AF' in key:
+            value = float(value)
+        else:
+            value = int(value)
+        if value > 0:
+            sv_frequencies[key] = value
+    
+    return sv_frequencies
+    

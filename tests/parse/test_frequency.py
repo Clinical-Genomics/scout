@@ -1,4 +1,5 @@
-from scout.parse.variant.frequency import parse_frequency, parse_frequencies
+from scout.parse.variant.frequency import (parse_frequency, parse_frequencies, 
+                                           parse_sv_frequencies)
 
 def test_parse_frequency(cyvcf2_variant):
     # GIVEN a variant dict with a frequency in info_dict
@@ -48,3 +49,16 @@ def test_parse_frequencies(cyvcf2_variant):
     # THEN the frequencies should be returned in a dictionary
     assert frequencies['thousand_g'] == float(variant.INFO['1000GAF'])
     assert frequencies['exac'] == float(variant.INFO['EXACAF'])
+
+def test_parse_sv_frequencies_clingen_benign(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN a variant dict with a differenct frequencies
+    variant.INFO['clingen_cgh_benignAF'] = '0.01'
+    variant.INFO['clingen_cgh_benign'] = '3'
+    
+    # WHEN frequencies are parsed    
+    frequencies = parse_sv_frequencies(variant)
+    
+    # THEN the frequencies should be returned in a dictionary
+    assert frequencies['clingen_cgh_benignAF'] == float(variant.INFO['clingen_cgh_benignAF'])
+    assert frequencies['clingen_cgh_benign'] == int(variant.INFO['clingen_cgh_benign'])

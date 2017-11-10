@@ -37,3 +37,34 @@ PAR_COORDINATES = {
     },
 }
 
+CALLERS = {
+    'snv': [{
+        'id': 'gatk',
+        'name': 'GATK',
+    }, {
+        'id': 'freebayes',
+        'name': 'Freebayes',
+    }, {
+        'id': 'samtools',
+        'name': 'SAMtools',
+    }, {
+        'id': 'mutect',
+        'name': 'MuTect',
+    }, {
+        'id': 'pindel',
+        'name': 'Pindel',
+    }],
+    'sv': [{
+        'id': 'cnvnator',
+        'name': 'CNVnator',
+    }, {
+        'id': 'delly',
+        'name': 'Delly',
+    }, {
+        'id': 'tiddit',
+        'name': 'TIDDIT',
+    }, {
+        'id': 'manta',
+        'name': 'Manta',
+    }]
+}

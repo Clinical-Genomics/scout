@@ -258,20 +258,10 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     # Add the callers
     call_info = variant.get('callers', {})
-    if call_info.get('gatk'):
-        variant_obj['gatk'] = call_info['gatk']
     
-    if call_info.get('samtools'):
-        variant_obj['samtools'] = call_info['samtools']
-    
-    if call_info.get('freebayes'):
-        variant_obj['freebayes'] = call_info['freebayes']
-
-    if call_info.get('mutect'):
-        variant_obj['mutect'] = call_info['mutect']
-
-    if call_info.get('pindel'):
-        variant_obj['pindel'] = call_info['pindel']
+    for caller in call_info:
+        if call_info[caller]:
+            variant_obj[caller] = call_info[caller]
 
     # Add the conservation
     conservation_info = variant.get('conservation', {})
@@ -318,6 +308,16 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if variant.get('local_obs_hom_old'):
         variant_obj['local_obs_hom_old'] = variant['local_obs_hom_old']
 
+    # Add the sv counts:
+    if frequencies.get('clingen_cgh_benign'):
+        variant_obj['clingen_cgh_benign'] = frequencies['clingen_cgh_benign']
+    if frequencies.get('clingen_cgh_pathogenic'):
+        variant_obj['clingen_cgh_pathogenic'] = frequencies['clingen_cgh_pathogenic']
+    if frequencies.get('clingen_ngi'):
+        variant_obj['clingen_ngi'] = frequencies['clingen_ngi']
+    if frequencies.get('decipher'):
+        variant_obj['decipher'] = frequencies['decipher']
+    
     # Add the severity predictors
 
     if variant.get('cadd_score'):
