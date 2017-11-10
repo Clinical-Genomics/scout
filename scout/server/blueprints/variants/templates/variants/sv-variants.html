@@ -213,29 +213,28 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
-      <a class="variants-row-item flex-small layout"
-	 href="{{ url_for('variants.sv_variant', institute_id=institute._id,
-                          case_name=case.display_name, variant_id=variant._id) }}">
-        {{ variant.variant_rank }}
-      </a>
-      {% set comment_count = variant.comments.count() %}
-      {% if variant.manual_rank %}
-      <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
-      {% endif %}
+  <a class="variants-row-item flex-small layout"
+     href="{{ url_for('variants.sv_variant', institute_id=institute._id,
+                      case_name=case.display_name, variant_id=variant._id) }}">
+    {{ variant.variant_rank }}
+  </a>
+  {% set comment_count = variant.comments.count() %}
+  {% if variant.manual_rank %}
+    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+  {% endif %}
 
-      {% if comment_count > 0 %}
-      <a href="#" 
-	 class="badge pull-right" 
-	 data-toggle="popover" 
-	 data-placement="right" 
-	 data-html="true" 
-	 data-trigger="hover click" 
-	 data-content="<small>{{ comments_table(institute, case, variant.comments, variant._id) }}</small>"
-	 >
-	{{ comment_count }}
-	<span class="glyphicon glyphicon-comment"></span>
-      </a>
-      {% endif %}
+  {% if comment_count > 0 %}
+    <a href="#"
+      class="badge pull-right"
+      data-toggle="popover"
+      data-placement="right"
+      data-html="true"
+      data-trigger="hover click"
+      data-content="<small>{{ comments_table(institute, case, variant.comments, variant._id) }}</small>">
+      {{ comment_count }}
+      <span class="glyphicon glyphicon-comment"></span>
+    </a>
+  {% endif %}
 {% endmacro %}
 
 {% macro variant_row(variant) %}
@@ -249,19 +248,33 @@
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
     <td>{{ variant.length }}</td>
-    <td>{{ variant.region_annotations[:3]|join(', ') }}</td>
-    <td>{{ variant.functional_annotations[:3]|join(', ') }}</td>
+    <td>
+      {% for annotation in variant.region_annotations[:3] %}
+        <div>{{ annotation }}</div>
+      {% endfor %}
+    </td>
+    <td>
+      {% for annotation in variant.functional_annotations[:3] %}
+        <div>{{ annotation }}</div>
+      {% endfor %}
+    </td>
     <td>{{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}</td>
     <td>
-      {% if variant.hgnc_symbols|length >= 5 %}
-        {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
-      {% else %}
-        {{ variant.hgnc_symbols|join(', ') }}
-      {% endif %}
+      <div class="flex">
+        <div>
+          {% if variant.hgnc_symbols|length >= 5 %}
+            {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
+          {% else %}
+            {% for symbol in variant.hgnc_symbols %}
+              <div>{{ symbol }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
 
-      {% if variant.hgnc_symbols %}
-        <span class="badge pull-right">{{ variant.hgnc_symbols|length }}</span>
-      {% endif %}
+        {% if variant.hgnc_symbols %}
+          <span class="badge">{{ variant.hgnc_symbols|length }}</span>
+        {% endif %}
+      </div>
     </td>
   </tr>
 {% endmacro %}
