@@ -17,6 +17,8 @@ from .models import parse_genetic_models
 from .transcript import parse_transcripts
 from .deleteriousness import parse_cadd
 
+from scout.constants import CHR_PATTERN
+
 from scout.exceptions import VcfError
 
 logger = logging.getLogger(__name__)
@@ -56,9 +58,8 @@ def parse_variant(variant, case, variant_type='clinical',
     else:
         genmod_key = case['_id']
 
-    chrom = variant.CHROM
-    if (chrom.startswith('chr') or chrom.startswith('CHR')):
-        chrom = chrom[3:]
+    chrom_match = CHR_PATTERN.match(variant.CHROM)
+    chrom = chrom_match.group(2)
     # Builds a dictionary with the different ids that are used
     parsed_variant['ids'] = parse_ids(
         chrom=chrom,

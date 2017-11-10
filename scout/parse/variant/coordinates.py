@@ -1,4 +1,4 @@
-from scout.constants import CYTOBANDS
+from scout.constants import CYTOBANDS, BND_ALT_PATTERN, CHR_PATTERN
 
 def get_cytoband_coordinates(chrom, pos):
     """Get the cytoband coordinate for a position
@@ -108,12 +108,9 @@ def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
         # If variant is 'BND' they have ':' in alt field
         # Information about other end is in the alt field
         if ':' in alt:
-            other_coordinates = alt.strip('ACGTN[]').split(':')
-            # For BND end will represent the end position of the other end
-            try:
-                end = int(other_coordinates[1])
-            except ValueError as err:
-                pass
+            match = BND_ALT_PATTERN.match(alt)
+            if match:
+                end = int(match.group(2))
 
     return end
 
@@ -138,10 +135,9 @@ def parse_coordinates(variant, category):
     """
     ref = variant.REF
     alt = variant.ALT[0]
-    chrom = variant.CHROM
-    if (chrom.startswith('chr') or chrom.startswith('CHR')):
-        chrom = chrom[3:]
-    
+    chrom_match = CHR_PATTERN.match(variant.CHROM)
+    chrom = chrom_match.group(2)
+        
     svtype = variant.INFO.get('SVTYPE')
     if svtype:
         svtype = svtype.lower()
@@ -166,12 +162,12 @@ def parse_coordinates(variant, category):
 
     if sub_category == 'bnd':    
         if ':' in alt:
-            other_coordinates = alt.strip('ACGTN[]').split(':')
+            match = BND_ALT_PATTERN.match(alt)
             # BND will often be translocations between different chromosomes
-            other_chrom = other_coordinates[0]
-            if (other_chrom.startswith('chr') or other_chrom.startswith('CHR')):
-                other_chrom = other_chrom[3:]
-            end_chrom = other_chrom
+            if match:
+                other_chrom = match.group(1)
+                match = CHR_PATTERN.match(other_chrom)
+                end_chrom = match.group(2)
     
     cytoband_start = get_cytoband_coordinates(chrom, position)
     cytoband_end = get_cytoband_coordinates(end_chrom, end)

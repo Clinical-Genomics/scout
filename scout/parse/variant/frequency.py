@@ -16,8 +16,12 @@ def parse_frequencies(variant, transcripts):
     # These lists could be extended...
     thousand_genomes_keys = ['1000GAF']
     thousand_genomes_max_keys = ['1000G_MAX_AF']
+
     exac_keys = ['EXACAF']
     exac_max_keys = ['ExAC_MAX_AF', 'EXAC_MAX_AF']
+
+    gnomad_keys = ['GNOMADAF', 'GNOMAD_AF']
+    gnomad_max_keys = ['GNOMADAF_POPMAX', 'GNOMADAF_MAX']
     
     for test_key in thousand_genomes_keys:
         thousand_g = parse_frequency(variant, test_key)
@@ -42,7 +46,19 @@ def parse_frequencies(variant, transcripts):
         if exac_max:
             frequencies['exac_max'] = exac_max
             break
-    
+
+    for test_key in gnomad_keys:
+        gnomad = parse_frequency(variant, test_key)
+        if gnomad:
+            frequencies['gnomad'] = gnomad
+            break
+
+    for test_key in gnomad_max_keys:
+        gnomad_max = parse_frequency(variant, test_key)
+        if gnomad_max:
+            frequencies['gnomad_max'] = gnomad_max
+            break
+
     # Search transcripts if not found in VCF
     if not frequencies:
         for transcript in transcripts:
@@ -58,6 +74,7 @@ def parse_frequencies(variant, transcripts):
                 frequencies['thousand_g'] = thousand_g
             if thousandg_max:
                 frequencies['thousand_g_max'] = thousandg_max
+            ## TODO add gnomad from VEP
 
     #These are SV-specific frequencies
     thousand_g_left = parse_frequency(variant, 'left_1000GAF')
