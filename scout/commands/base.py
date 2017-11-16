@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import logging
 
 import click
@@ -53,8 +54,8 @@ log = logging.getLogger(__name__)
 @click.pass_context
 def cli(context, mongodb, username, password, authdb, host, port, loglevel, config, demo):
     """scout: manage interactions with a scout instance."""
-    coloredlogs.install(level=loglevel)
-
+    log_format = "%(message)s" if sys.stdout.isatty() else None
+    coloredlogs.install(level=loglevel, fmt=log_format)
     log.info("Running scout version %s", __version__)
     log.debug("Debug logging enabled.")
 
