@@ -152,6 +152,8 @@
           {{ form.thousand_genomes_frequency(class="form-control") }}
         </div>
         <div class="col-xs-3">
+	  {{ form.clingen_ngi.label(class="control-label") }}
+	  {{ form.clingen_ngi(class="form-control") }}
         </div>
         <div class="col-xs-3">
           {{ form.svtype.label(class="control-label") }}
@@ -177,6 +179,7 @@
                           functional_annotations=severe_so_terms,
                           region_annotations=['exonic', 'splicing'],
                           thousand_genomes_frequency=institute.frequency_cutoff,
+			  clingen_ngi=15,
 			  size=100,
                           gene_panels=form.data.get('gene_panels')) }}"
                  class="btn btn-default form-control">
@@ -258,7 +261,11 @@
         <div>{{ annotation }}</div>
       {% endfor %}
     </td>
-    <td>{{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}</td>
+    <td>
+      {% if variant.thousand_genomes_frequency %}
+        {{ variant.thousand_genomes_frequency|human_decimal }}
+      {% endif %}
+    </td>
     <td>
       <div class="flex">
         <div>

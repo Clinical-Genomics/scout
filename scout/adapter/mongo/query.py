@@ -12,6 +12,7 @@ class QueryHandler(object):
                 'genetic_models': list,
                 'thousand_genomes_frequency': float,
                 'exac_frequency': float,
+                'clingen_ngi': int,
                 'cadd_score': float,
                 'cadd_inclusive": boolean,
                 'genetic_models': list(str),
@@ -24,6 +25,7 @@ class QueryHandler(object):
                 'chrom': str,
                 'start': int,
                 'end': int,
+                'svtype': list,
                 'gene_panels': list(str),
             }
 
@@ -141,6 +143,14 @@ class QueryHandler(object):
                 '$or': [
                     {'local_obs_old': None},
                     {'local_obs_old': {'$lt': query['local_obs'] + 1}},
+                ]
+            })
+
+        if query.get('clingen_ngi') is not None:
+            mongo_query_minor.append({
+                '$or': [
+                    {'clingen_ngi': None},
+                    {'clingen_ngi': {'$lt': query['clingen_ngi'] + 1}},
                 ]
             })
 

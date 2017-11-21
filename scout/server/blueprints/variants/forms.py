@@ -90,3 +90,4 @@ class SvFiltersForm(FlaskForm):
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
+    clingen_ngi = IntegerField('ClinGen NGI obs')
