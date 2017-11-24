@@ -182,7 +182,7 @@ def variants(context, collaborator):
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
 
     if not collaborator:
-        click.echo("Please provide a collaborator to export variants")
+        LOG.warning("Please provide a collaborator to export variants")
         context.abort()
 
     header = [
@@ -207,7 +207,7 @@ def hpo_genes(context, hpo_term):
     header = ["#Gene_id\tCount"]
 
     if not hpo_term:
-        click.echo("Please use at least one hpo term")
+        LOG.warning("Please use at least one hpo term")
         context.abort()
 
     for line in header:
