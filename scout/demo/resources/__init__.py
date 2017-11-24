@@ -25,6 +25,7 @@ madeline_file = 'demo/madeline.xml'
 hgnc_reduced_path = pkg_resources.resource_filename('scout', hgnc_file)
 exac_reduced_path = pkg_resources.resource_filename('scout', exac_file)
 transcripts37_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
+transcripts38_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
 
 # OMIM paths
 mim2gene_reduced_path = pkg_resources.resource_filename('scout', mim2gene_file)
