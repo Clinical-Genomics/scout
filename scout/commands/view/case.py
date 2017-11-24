@@ -1,6 +1,15 @@
+import logging
+
+from pprint import pprint as pp
+
 import click
 
+LOG = logging.getLogger(__name__)
+
 @click.command('cases', short_help='Fetch cases')
+@click.option('--case-id',
+              help='Case id to search for'
+)
 @click.option('-i', '--institute',
               help='institute id of related cases'
 )
@@ -25,24 +34,27 @@ import click
               help='If case is in research mode'
 )
 @click.pass_context
-def cases(context, institute, reruns, finished, causatives, research_requested,
+def cases(context, case_id, institute, reruns, finished, causatives, research_requested,
           is_research):
     """Interact with cases existing in the database."""
     adapter = context.obj['adapter']
 
-    models = adapter.cases(collaborator=institute, reruns=reruns,
+    models = []
+    if case_id:
+        case_obj = adapter.case(case_id=case_id)
+        if case_obj:
+            models.append(case_obj)
+
+    else:
+        models = adapter.cases(collaborator=institute, reruns=reruns,
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
                            is_research=is_research)
-    if models.count() == 0:
-        click.echo("No cases could be found")
+    i = 0
+    for model in models:
+        i += 1
+        pp(model)
     
-    else:
-        click.echo("#case_id\tdisplay_name\towner\tcollaborators")
-        for model in models:
-            click.echo("{0}\t{1}\t{2}\t{3}".format(
-                model['_id'],
-                model['display_name'],
-                model['owner'],
-                ', '.join(model['collaborators']),
-            ))
+    if i == 0:
+        LOG.info("No cases could be found")
+
