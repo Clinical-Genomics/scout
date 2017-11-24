@@ -26,7 +26,7 @@ from scout.resources import transcripts38_path as transcripts38_path
 ### Import demo files ###
 # Resources
 from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path,
-            transcripts37_reduced_path, mim2gene_reduced_path,
+            transcripts37_reduced_path, transcripts38_reduced_path, mim2gene_reduced_path,
             genemap2_reduced_path, hpogenes_reduced_path,
             hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path,
             madeline_path)
