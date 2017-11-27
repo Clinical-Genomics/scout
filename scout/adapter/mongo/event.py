@@ -860,13 +860,13 @@ class EventHandler(object):
             action = '$set'
         else:
             logger.info("Reset manual rank from {0} for variant {1}"
-                        .format(variant['manual_rank'], variant['display_name']))
+                        .format(variant.get('manual_rank', 'NA'), variant['display_name']))
             action = '$unset'
 
         updated_variant = self.variant_collection.find_one_and_update(
             {'_id': variant['_id']},
             {action: {'manual_rank': manual_rank}},
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Variant updated")
         return updated_variant

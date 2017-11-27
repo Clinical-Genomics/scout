@@ -4,18 +4,6 @@
  * You are encouraged to override anything you like.
  */
 
-input[type=text], select {
-    width: initial;
-}
-
-#pileup-viewer {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    top: 10px;
-    bottom: 10px;
-}
-
 .pileup-root {
   display: flex;
   flex-direction: column;
@@ -37,15 +25,25 @@ input[type=text], select {
 }
 .track-label > span {
   padding-right: 5px;
+  width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  right: 0;
 }
+
 /* bottom-justify these track labels */
 .track.reference .track-label > span,
 .track.variants .track-label > span
 {
-  position: absolute;
   bottom: 0;
-  right: 0;
 }
+
+.track-label > span:hover {
+  overflow: visible !important;
+}
+
 .track-content {
   flex: 1;  /* stretch to fill remaining space */
   overflow-y: auto;
@@ -55,10 +53,16 @@ input[type=text], select {
 .track-content > div {
   position: absolute; /* Gets the child of the flex-item to fill height 100% */
 }
+.track-content canvas {
+  display: block;
+}
 
 /* controls */
 .pileup-root > .controls {
   flex: 0 0 30px;  /* fixed height */
+}
+.pileup-root > .controls > .track-content {
+  overflow: visible;
 }
 .pileup-root > .controls form.controls {
   margin-bottom: 0;  /* overrides browser default */
@@ -71,6 +75,56 @@ input[type=text], select {
 }
 .pileup-root > .controls .btn-zoom-in:before {
   content: '+';
+}
+.pileup-root > .controls input,
+.pileup-root > .controls button,
+.pileup-root > .controls select,
+.pileup-root > .controls option {
+  font-size: 0.9em;
+}
+
+.gear {
+  margin-left: 0.5em;
+  font-size: 2em;
+  color: #666;
+}
+.gear:hover {
+  color: black;
+}
+.menu-container {
+  z-index: 1;
+  width: 250px;  /* not really 250px, but clears parent constraint */
+}
+.menu {
+  border: 1px solid black;
+  border-radius: 2px;
+  display: table;
+  background: white;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  text-align: left;
+}
+.menu-header {
+  font-weight: bold;
+  border-bottom: 1px solid #777;
+  padding: 2px 4px;
+}
+.menu-item {
+  padding: 4px;
+}
+.menu-separator {
+  border-top: 1px solid #777;
+  height: 0px;
+}
+.menu-item:hover {
+  background: lightblue;
+}
+
+.check {
+  display: inline-block;
+  width: 1em;
+}
+.check.checked:before {
+  content: '✓';
 }
 
 /* reference track */
@@ -129,6 +183,8 @@ input[type=text], select {
 /* pileup track */
 .pileup-root > .pileup {
   flex: 1;  /* stretch to fill remaining space */
+  flex-basis: auto;
+  min-height: 300px; /* prevent tracks from becoming too small */
 }
 .pileup .alignment .match {
   fill: #c8c8c8;  /* matches IGV */
@@ -152,6 +208,8 @@ input[type=text], select {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  top: 30px;
 }
 .pileup .network-status-message {
   padding: 4px 8px;
@@ -160,6 +218,8 @@ input[type=text], select {
   border-radius: 3px;
   border: 1px solid #ccc;
   font-size: small;
+  position: absolute;
+  text-align: center;
 }
 
 .pileup .mate-connector {
