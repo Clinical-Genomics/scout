@@ -149,7 +149,7 @@ class QueryHandler(object):
         if query.get('clingen_ngi') is not None:
             mongo_query_minor.append({
                 '$or': [
-                    {'clingen_ngi': None},
+                    {'clingen_ngi': {'$exists': False}},
                     {'clingen_ngi': {'$lt': query['clingen_ngi'] + 1}},
                 ]
             })
