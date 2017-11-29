@@ -195,6 +195,22 @@ def test_build_chrom(adapter):
 
     assert mongo_query['chromosome'] == chrom
 
+
+def test_build_ngi_sv(adapter):
+    case_id = 'cust000'
+    count = 1
+    query = {'clingen_ngi': count}
+    
+    mongo_query = adapter.build_query(case_id, query=query)
+    assert  mongo_query['$and'] == [
+        {
+            '$or':[
+                {'clingen_ngi': {'$exists': False}},
+                {'clingen_ngi': {'$lt': query['clingen_ngi'] + 1}}
+            ]
+        }
+    ]
+
 def test_build_range(adapter):
     case_id = 'cust000'
     chrom = '1'
