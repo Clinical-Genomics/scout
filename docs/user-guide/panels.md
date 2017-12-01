@@ -40,3 +40,11 @@ You can also use this example [Excel template](../static/scout-3-panel-file-exam
 
 1. choose **"Save as..."** in Excel and select **"Comma Separated Values (.csv)"** as the format
 2. fill out the form in Scout and upload the "*.csv" file to update your gene panel
+
+### Upload from interface
+
+Choose the menu in top left corner, click `Gene Panel`. Then under 'new panel' the user can point to a csv file and fill in name and display name.
+
+### Upload with CLI
+
+When uploading from CLI there are more options. Use `scout load panel --help` for more information.
