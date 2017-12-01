@@ -124,9 +124,17 @@ def test_get_full_list_panel(panel_info):
             if not line.startswith('#'):
                 nr_genes += 1
 
-    panel = parse_gene_panel(panel_info)
+    panel = parse_gene_panel(
+        path=panel_info['file'], 
+        institute=panel_info['institute'], 
+        panel_id=panel_info['panel_name'], 
+        panel_type=panel_info['type'], 
+        date=panel_info['date'], 
+        version=panel_info['version'], 
+        display_name=panel_info['full_name']
+    )
 
-    assert panel['panel_name'] == panel_info['panel_name']
+    assert panel['panel_id'] == panel_info['panel_name']
     assert len(panel['genes']) == nr_genes
     assert panel['date'] == panel_info['date']
     assert panel['institute'] == panel_info['institute']

@@ -25,7 +25,7 @@ from .variants import variants as variants_command
 
 from scout.load.all import load_region
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 @click.command('region', short_help='Load variants from region')
 @click.option('--hgnc-id', type=int,
@@ -44,22 +44,43 @@ def region(context, hgnc_id, case_id, chromosome, start, end):
 
 
 @click.command('user', short_help='Load a user')
-@click.option('-i', '--institute-id', required=True,)
+@click.option('-i', '--institute-id', 
+    required=True, 
+    multiple=True
+)
 @click.option('-u', '--user-name', required=True)
 @click.option('-m', '--user-mail', required=True)
+@click.option('--admin', 
+    is_flag=True,
+    help="If user should be admin",
+)
 @click.pass_context
-def user(context, institute_id, user_name, user_mail):
+def user(context, institute_id, user_name, user_mail, admin):
     """Add a user to the database."""
     adapter = context.obj['adapter']
+    
+    institutes = []
+    for institute in institute_id:
+        institute_obj = adapter.institute(institute_id=institute)
+        
+        if not institute_obj:
+            LOG.warning("Institute % does not exist", institute)
+            context.abort()
 
-    institute = adapter.institute(institute_id=institute_id)
+        institutes.append(institute)
+    
+    roles = []
+    if admin:
+        LOG.info("User is admin")
+        roles.append('admin')
 
-    if not institute:
-        log.info("Institute {0} does not exist".format(institute_id))
+    user_info = dict(email=user_mail, name=user_name, roles=roles, institutes=institutes)
+    
+    try:
+        adapter.add_user(user_info)
+    except Exception as err:
+        LOG.warning(err)
         context.abort()
-
-    user_info = dict(email=user_mail, name=user_name, roles=['admin'], institutes=[institute_id])
-    adapter.add_user(user_info)
 
 @click.group()
 @click.pass_context

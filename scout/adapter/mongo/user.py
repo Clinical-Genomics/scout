@@ -3,6 +3,9 @@ import logging
 import datetime
 
 import pymongo
+from pymongo.errors import DuplicateKeyError
+
+from scout.exceptions import IntegrityError
 
 log = logging.getLogger(__name__)
 
@@ -18,9 +21,10 @@ class UserHandler(object):
             Returns:
                 updated_user(dict)
         """
-        updated_user = self.user_collection.find_one_and_update(
+        log.info("Updating user %s", user_obj['_id'])
+        updated_user = self.user_collection.find_one_and_replace(
             {'_id': user_obj['_id']},
-            {'$set': user_obj},
+            user_obj,
             return_document=pymongo.ReturnDocument.AFTER
         )
         return updated_user
@@ -39,9 +43,11 @@ class UserHandler(object):
             user_info['_id'] = user_info['email']
     
         user_info['created_at'] = datetime.datetime.now()
-
-        self.user_collection.insert_one(user_info)
-        log.debug("User inserted")
+        try:
+            self.user_collection.insert_one(user_info)
+            log.debug("User inserted")
+        except DuplicateKeyError as err:
+            raise IntegrityError("User {} already exists in database".format(user_info['email']))
 
         return user_info
 

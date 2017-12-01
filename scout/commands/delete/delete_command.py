@@ -4,26 +4,27 @@ import click
 
 log = logging.getLogger(__name__)
 
-# @click.command('panels', short_help='Display gene panels')
-# @click.pass_context
-# def panels(context):
-#     """Show all gene panels in the database"""
-#     log.info("Running scout view panels")
-#     adapter = context.obj['adapter']
-#
-#     panel_objs = adapter.gene_panel()
-#     if panel_objs.count() == 0:
-#         log.info("No panels found")
-#     else:
-#         click.echo("panel_name\tversion\tnr_genes")
-#
-#         for panel_obj in panel_objs:
-#             click.echo("{0}\t{1}\t{2}".format(
-#                 panel_obj['panel_name'],
-#                 str(panel_obj['version']),
-#                 len(panel_obj['genes'])
-#             ))
-#
+@click.command('panel', short_help='Delete a gene panel')
+@click.option('--panel-id', 
+    help="The panel identifier name",
+    required=True
+)
+@click.option('-v', '--version',
+    type=float,
+)
+@click.pass_context
+def panel(context, panel_id, version):
+    """Delete a version of a gene panel or all versions of a gene panel"""
+    log.info("Running scout delete panel")
+    adapter = context.obj['adapter']
+
+    panel_objs = adapter.gene_panels(panel_id=panel_id, version=version)
+    if panel_objs.count() == 0:
+        log.info("No panels found")
+        
+    for panel_obj in panel_objs:
+        adapter.delete_panel(panel_obj)
+
 # @click.command('users', short_help='Display users')
 # @click.pass_context
 # def users(context):
@@ -59,7 +60,7 @@ def index(context):
 
 
 @click.command('user', short_help='Delete a user')
-@click.option('-m', '--mail')
+@click.option('-m', '--mail', required=True)
 @click.pass_context
 def user(context, mail):
     """Delete a user from the database"""
@@ -69,7 +70,7 @@ def user(context, mail):
     if not user_obj:
         log.warning("User {0} could not be found in database".format(mail))
     else:
-        click.echo(adapter.delete_user(mail))
+        adapter.delete_user(mail)
 
 
 @click.command('genes', short_help='Delete genes')
@@ -162,3 +163,4 @@ delete.add_command(genes)
 delete.add_command(case)
 delete.add_command(user)
 delete.add_command(index)
+delete.add_command(panel)

@@ -5,7 +5,7 @@ from datetime import datetime as datetime
 
 from scout.exceptions import IntegrityError
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def build_gene(gene_info, adapter):
     """Build a panel_gene object
@@ -35,18 +35,24 @@ def build_gene(gene_info, adapter):
         )
 
     """
+    symbol = gene_info.get('hgnc_symbol')
     try:
         # A gene has to have a hgnc id
         hgnc_id = gene_info['hgnc_id']
+        if not hgnc_id:
+            raise KeyError()
         gene_obj = dict(hgnc_id=hgnc_id)
     except KeyError as err:
-        raise KeyError("Gene has to have hgnc_id")
+        raise KeyError("Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(symbol))
     
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
     if hgnc_gene is None:
         raise IntegrityError("hgnc_id {0} is not in the gene database!".format(hgnc_id))
     
     gene_obj['symbol'] = hgnc_gene['hgnc_symbol']
+    if symbol != gene_obj['symbol']:
+        LOG.warning("Symbol in database does not correspond to symbol in panel file for gene %s", hgnc_id)
+        LOG.warning("Using symbol %s for gene %s" % (hgnc_gene['hgnc_symbol'], hgnc_id))
 
     if gene_info.get('transcripts'):
         gene_obj['disease_associated_transcripts'] = gene_info['transcripts']
@@ -100,18 +106,19 @@ def build_panel(panel_info, adapter):
     )
 
     """
-    panel_name = panel_info.get('panel_name')
+    panel_name = panel_info.get('panel_id')
     if not panel_name:
         raise KeyError("Panel has to have a name")
     
     panel_obj = dict(panel_name = panel_name)
-    logger.info("Building panel with name: {0}".format(panel_name))
+    LOG.info("Building panel with name: {0}".format(panel_name))
 
     try:
         institute_id = panel_info['institute']
     except KeyError as err:
         raise KeyError("Panel has to have a institute")
 
+    # Check if institute exists in database
     if adapter.institute(institute_id) is None:
         raise IntegrityError("Institute %s could not be found" % institute_id)
     
@@ -125,12 +132,20 @@ def build_panel(panel_info, adapter):
         raise KeyError("Panel has to have a date")
 
 
-    panel_obj['display_name'] = panel_info.get('display_name', panel_info['panel_name'])
+    panel_obj['display_name'] = panel_info.get('display_name', panel_obj['panel_name'])
     
     gene_objs = []
+    fail = False
     for gene_info in panel_info.get('genes', []):
-        gene_obj = build_gene(gene_info, adapter)
-        gene_objs.append(gene_obj)
+        try:
+            gene_obj = build_gene(gene_info, adapter)
+            gene_objs.append(gene_obj)
+        except IntegrityError as err:
+            LOG.warning(err)
+            fail=True
+    
+    if fail:
+        raise IntegrityError("Some genes did not exist in database. Please see log messages.")
 
     panel_obj['genes'] = gene_objs
 
