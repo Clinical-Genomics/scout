@@ -88,6 +88,19 @@ class PanelHandler(object):
         panel_obj = self.panel_collection.find_one({'_id': panel_id})
         return panel_obj
 
+    def delete_panel(self, panel_obj):
+        """Delete a panel by '_id'.
+
+        Args:
+            panel_obj(dict)
+
+        Returns:
+            res(pymongo.DeleteResult)
+        """
+        res = self.panel_collection.delete_one({'_id': panel_obj['_id']})
+        logger.warning("Deleting panel %s, version %s" % (panel_obj['panel_name'], panel_obj['version']))
+        return res
+
     def gene_panel(self, panel_id, version=None):
         """Fetch a gene panel.
 
@@ -116,7 +129,7 @@ class PanelHandler(object):
                 logger.info("No gene panel found")
                 return None
 
-    def gene_panels(self, panel_id=None, institute_id=None):
+    def gene_panels(self, panel_id=None, institute_id=None, version=None):
         """Return all gene panels
 
         If panel_id return all versions of that panel
@@ -130,6 +143,8 @@ class PanelHandler(object):
         query = {}
         if panel_id:
             query['panel_name'] = panel_id
+            if version:
+                query['version'] = version
         if institute_id:
             query['institute'] = institute_id
 

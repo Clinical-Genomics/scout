@@ -69,8 +69,8 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
 
     if existing_panel:
         LOG.debug("found existing panel")
-        display_name = display_name or existing_panel.display_name or panel_id
-        institute = institute or existing_panel.institute
+        display_name = display_name or existing_panel['display_name'] or panel_id
+        institute = institute or existing_panel['institute']
 
     try:
         date = get_date(date)
