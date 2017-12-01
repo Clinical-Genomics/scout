@@ -60,7 +60,7 @@ def index(context):
 
 
 @click.command('user', short_help='Delete a user')
-@click.option('-m', '--mail')
+@click.option('-m', '--mail', required=True)
 @click.pass_context
 def user(context, mail):
     """Delete a user from the database"""
@@ -70,7 +70,7 @@ def user(context, mail):
     if not user_obj:
         log.warning("User {0} could not be found in database".format(mail))
     else:
-        click.echo(adapter.delete_user(mail))
+        adapter.delete_user(mail)
 
 
 @click.command('genes', short_help='Delete genes')
