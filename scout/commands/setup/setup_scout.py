@@ -224,17 +224,15 @@ def demo(context):
         hpo_disease_lines=hpo_disease_handle
     )
 
-    panel_info = {
-            'date': datetime.datetime.now(),
-            'file': panel_path,
-            'type': 'clinical',
-            'institute': 'cust000',
-            'version': '1.0',
-            'panel_name': 'panel1',
-            'full_name': 'Test panel'
-        }
-
-    adapter.load_panel(panel_info=panel_info)
+    adapter.load_panel(
+        path=panel_path, 
+        institute='cust000', 
+        panel_id='panel1', 
+        date=datetime.datetime.now(), 
+        panel_type='clinical', 
+        version=1.0, 
+        display_name='Test panel'
+    )
 
     case_handle = get_file_handle(load_path)
     case_data = yaml.load(case_handle)

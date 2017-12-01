@@ -1,6 +1,8 @@
+import logging
+
+from pprint import pprint as pp
 from copy import deepcopy
 import datetime as dt
-import logging
 
 import pymongo
 from bson import ObjectId
@@ -15,10 +17,21 @@ logger = logging.getLogger(__name__)
 
 class PanelHandler(object):
 
-    def load_panel(self, panel_info):
+    def load_panel(self, path, institute, panel_id, date, panel_type='clinical', version=1.0, 
+                   display_name=None):
         """Load a gene panel based on the info sent
+        
+        The panel info is first parsed, then a panel object is built and integrity checks are made.
+        The panel object is then loaded into the database.
 
         Args:
+            path(str): Path to panel file
+            institute(str): Name of institute that owns the panel
+            panel_id(str): Panel id
+            date(datetime.datetime): Date of creation
+            version(float)
+            full_name(str): Option to have a long name
+        
             panel_info(dict): {
                 'file': <path to panel file>(str),
                 'institute': <institute>(str),
@@ -29,7 +42,15 @@ class PanelHandler(object):
                 'full_name': name,
             }
         """
-        panel_data = parse_gene_panel(panel_info)
+        panel_data = parse_gene_panel(
+            path=path,
+            institute=institute,
+            panel_type=panel_type,
+            date=date,
+            version=version,
+            panel_id=panel_id,
+            display_name=display_name,
+        )
         panel_obj = build_panel(panel_data, self)
 
         self.add_gene_panel(panel_obj)
