@@ -385,8 +385,15 @@ def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
     logger.info("Creating a panel adapter")
+    
     adapter.load_panel(
-        panel_info=panel_info
+        path=panel_info['file'], 
+        institute=panel_info['institute'], 
+        panel_id=panel_info['panel_name'], 
+        date=panel_info['date'], 
+        panel_type=panel_info['type'], 
+        version=panel_info['version'], 
+        display_name=panel_info['full_name']
     )
 
     return adapter
@@ -397,7 +404,13 @@ def real_panel_database(request, real_gene_database, panel_info):
     adapter = real_gene_database
     logger.info("Creating a panel adapter")
     adapter.load_panel(
-        panel_info=panel_info
+        path=panel_info['file'], 
+        institute=panel_info['institute'], 
+        panel_id=panel_info['panel_name'], 
+        date=panel_info['date'], 
+        panel_type=panel_info['type'], 
+        version=panel_info['version'], 
+        display_name=panel_info['full_name']
     )
 
     return adapter
@@ -490,7 +503,15 @@ def panel_info(request):
 @pytest.fixture(scope='function')
 def parsed_panel(request, panel_info):
     """docstring for parsed_panels"""
-    panel = parse_gene_panel(panel_info)
+    panel = parse_gene_panel(
+        path=panel_info['file'], 
+        institute=panel_info['institute'], 
+        panel_id=panel_info['panel_name'], 
+        panel_type=panel_info['type'], 
+        date=panel_info['date'], 
+        version=panel_info['version'], 
+        display_name=panel_info['full_name']
+    )
 
     return panel
 

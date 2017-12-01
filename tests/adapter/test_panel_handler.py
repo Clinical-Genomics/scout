@@ -22,7 +22,6 @@ def test_add_same_panel_twice(gene_database, panel_obj):
     with pytest.raises(IntegrityError):
         adapter.add_gene_panel(panel_obj)
 
-
 def test_get_panel_by_version(panel_database, panel_info):
     adapter = panel_database
     ## GIVEN a adapter with one gene panel
