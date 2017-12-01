@@ -21,9 +21,10 @@ class UserHandler(object):
             Returns:
                 updated_user(dict)
         """
-        updated_user = self.user_collection.find_one_and_update(
+        log.info("Updating user %s", user_obj['_id'])
+        updated_user = self.user_collection.find_one_and_replace(
             {'_id': user_obj['_id']},
-            {'$set': user_obj},
+            user_obj,
             return_document=pymongo.ReturnDocument.AFTER
         )
         return updated_user
