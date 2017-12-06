@@ -855,6 +855,12 @@ def minimal_config(request, scout_config):
     return config
 
 @pytest.fixture
+def panel_handle(request, panel_1_file):
+    """Get a file handle to a gene panel file"""
+    print('')
+    return get_file_handle(panel_1_file)
+
+@pytest.fixture
 def hgnc_handle(request, hgnc_file):
     """Get a file handle to a hgnc file"""
     print('')

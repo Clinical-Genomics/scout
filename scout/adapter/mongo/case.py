@@ -218,7 +218,7 @@ class CaseHandler(object):
         # Check if case exists in database
         existing_case = self.case(case_obj['_id'])
         if existing_case and not update:
-            raise IntegrityError("Case %s already exists in database", case_obj['_id'])
+            raise IntegrityError("Case %s already exists in database" % case_obj['_id'])
 
         files = [
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
