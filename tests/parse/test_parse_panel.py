@@ -1,6 +1,63 @@
 import datetime
-from scout.parse.panel import (parse_gene_panel, parse_genes, parse_gene)
+from scout.parse.panel import (parse_gene_panel, parse_genes, parse_gene, get_panel_info)
 from scout.utils.handle import get_file_handle
+
+def test_parse_panel_info_no_info():
+    ## GIVEN no information at all
+    panel_lines = []
+    ## WHEN parsing the information
+    panel_info = get_panel_info(panel_lines)
+    ## THEN assert that no information except a date is returned
+    for key in panel_info:
+        if key != 'date':
+            assert panel_info[key] == None
+        else:
+            assert type(panel_info[key]) is type(datetime.datetime.now())
+
+def test_parse_panel_info_lines():
+    ## GIVEN a panel with some info
+    panel_lines = [
+        '##panel_id=panel1',
+        '##institute=cust000',
+        '##version=1.0',
+        '##date=2016-12-09',
+        '##display_name=Test panel',
+        '#hgnc_id\thgnc_symbol',
+        '7481\tMT-TF'
+    ]
+    ## WHEN parsing the information
+    panel_info = get_panel_info(panel_lines)
+    ## THEN assert that no information except a date is returned
+    for key in panel_info:
+        if key == 'panel_id':
+            assert panel_info[key] == 'panel1'
+        elif key == 'institute':
+            assert panel_info[key] == 'cust000'
+        elif key == 'version':
+            assert panel_info[key] == '1.0'
+        elif key == 'display_name':
+            assert panel_info[key] == 'Test panel'
+        elif key == 'date':
+            assert type(panel_info[key]) is type(datetime.datetime.now())
+
+def test_parse_panel_file(panel_handle):
+    ## GIVEN a panel with some info
+    panel_lines = panel_handle
+    ## WHEN parsing the information
+    panel_info = get_panel_info(panel_lines)
+    ## THEN assert that no information except a date is returned
+    for key in panel_info:
+        if key == 'panel_id':
+            assert panel_info[key] == 'panel1'
+        elif key == 'institute':
+            assert panel_info[key] == 'cust000'
+        elif key == 'version':
+            assert panel_info[key] == '1.0'
+        elif key == 'display_name':
+            assert panel_info[key] == 'Test panel'
+        elif key == 'date':
+            assert type(panel_info[key]) is type(datetime.datetime.now())
+
 
 def test_parse_minimal_gene():
     ## GIVEN minimal gene line and header
