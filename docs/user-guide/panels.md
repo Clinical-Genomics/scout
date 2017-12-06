@@ -23,6 +23,24 @@ The columns that will be used by scout is the following:
 
 Each gene in a gene panel have to be identified with a hgnc id
 
+### File format 2
+
+There is also an option to include all information about a panel in the header of the file. This could make uploading easier, just a matter of taste. In this case include a header with metadata, each of these lines are key-value separated by `=`. The meta data lines should start with `##`
+
+Example:
+
+```csv
+##panel_id=panel1
+##institute=cust000
+##version=1.0
+##date=2016-12-09
+##display_name=Test panel
+#hgnc_id	hgnc_symbol
+7481	MT-TF
+...
+...
+...
+```
 
 ### Notes on entries
 
