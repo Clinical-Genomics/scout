@@ -3,11 +3,51 @@ import logging
 
 from datetime import datetime
 
+from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 
 LOG = logging.getLogger(__name__)
 
 VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
+
+def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, date=None, 
+                   display_name=None):
+    """Parse metadata for a gene panel
+    
+    For historical reasons it is possible to include all information about a gene panel in the 
+    header of a panel file. This function parses the header.
+    
+    Args:
+        panel_lines(iterable(str))
+    
+    Returns:
+        panel_info(dict): Dictionary with panel information
+    """
+    panel_info = {
+        'panel_id': panel_id,
+        'institute': institute,
+        'version': version,
+        'date': date,
+        'display_name': display_name,
+    }
+
+    for line in panel_lines:
+        line = line.rstrip()
+        if not line.startswith('##'):
+            break
+
+        info = line[2:].split('=')
+        field = info[0]
+        value = info[1]
+
+
+        if not panel_info.get(field):
+            panel_info[field] = value
+
+    panel_info['date'] = get_date(panel_info['date'])
+
+    return panel_info
+
 
 def parse_gene(gene_info):
     """Parse a gene line with information from a panel file

@@ -5,7 +5,7 @@ from pprint import pprint as pp
 
 import click
 
-from scout.utils.date import get_date
+from scout.parse.panel import get_panel_info
 from scout.utils.handle import get_file_handle
 
 from scout.parse.panel import parse_gene_panel
@@ -30,11 +30,7 @@ LOG = logging.getLogger(__name__)
 @click.option('-n', '--display-name', 
     help='display name for the panel, optional'
 )
-@click.option('-v', '--version',
-    type=float,
-    default=1.0,
-    show_default=True,
-)
+@click.option('-v', '--version',type=float,)
 @click.option('-t', '--panel-type', 
     default='clinical', 
     show_default=True,
@@ -44,39 +40,30 @@ LOG = logging.getLogger(__name__)
 def panel(context, date, display_name, version, panel_type, panel_id, path, institute):
     """Add a gene panel to the database."""
     adapter = context.obj['adapter']
-    f = get_file_handle(path)
-    for line in f:
-        line = line.rstrip()
-        if line.startswith('##'):
-            info = line[2:].split('=')
-            field = info[0]
-            value = info[1]
-            if field == 'panel_id':
-                panel_id = value
-            elif field == 'institute':
-                institute = value
-            elif field == 'version':
-                version = float(value)
-            elif field == 'date':
-                date = value
-            elif name == 'display_name':
-                display_name = value
+    panel_lines = get_file_handle(path)
     
-    if version:
-        existing_panel = adapter.gene_panel(panel_id, version)
-    else:
-        existing_panel = adapter.gene_panel(panel_id)
-
-    if existing_panel:
-        LOG.debug("found existing panel")
-        display_name = display_name or existing_panel['display_name'] or panel_id
-        institute = institute or existing_panel['institute']
-
     try:
-        date = get_date(date)
-    except ValueError as error:
-        LOG.warning(error)
+        panel_info = get_panel_info(
+            panel_lines=panel_lines,
+            panel_id=panel_id,
+            institute=institute,
+            version=version,
+            date=date,
+            display_name=display_name
+            )
+    except Exception as err:
+        LOG.warning(err)
         context.abort()
+    
+    
+    version = None
+    if panel_info.get('version'):
+        version = float(panel_info['version'])
+
+    panel_id = panel_info['panel_id']
+    display_name = panel_info['display_name'] or panel_id
+    institute = panel_info['institute']
+    date = panel_info['date']
 
     if not institute:
         LOG.warning("A Panel has to belong to a institute")
@@ -85,8 +72,23 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
     if not panel_id:
         LOG.warning("A Panel has to have a panel id")
         context.abort()
-        
     
+    if version:
+        existing_panel = adapter.gene_panel(panel_id, version)
+    else:
+        existing_panel = adapter.gene_panel(panel_id)
+        ## Assuming version 1.0
+        version = 1.0
+
+    if existing_panel:
+        LOG.info("found existing panel")
+        if version == existing_panel['version']:
+            LOG.warning("Panel with same version exists in database")
+            LOG.info("Reload with updated version")
+            context.abort()
+        display_name = display_name or existing_panel['display_name']
+        institute = institute or existing_panel['institute']
+
     try:
         adapter.load_panel(
             path=path, 
