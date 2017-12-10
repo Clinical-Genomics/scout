@@ -70,3 +70,16 @@ def test_parse_optional_hgnc_annotation():
     for transcript in transcripts:
         assert transcript['functional_annotations'] == ['missense_variant']
         assert transcript['hgnc_id'] == 10001
+
+def test_parse_regular_hgnc_annotation():
+    csq_header = "Allele|Consequence|HGNC_ID"
+    csq_entry = "C|missense_variant|10001"
+    
+    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+                            for entry in csq_entry.split(',')]
+
+    transcripts = parse_transcripts(raw_transcripts)
+    
+    for transcript in transcripts:
+        assert transcript['functional_annotations'] == ['missense_variant']
+        assert transcript['hgnc_id'] == 10001
