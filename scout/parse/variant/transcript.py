@@ -24,6 +24,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         # Add the hgnc gene identifiers
         hgnc_id = entry.get('HGNC_ID')
         if hgnc_id:
+            hgnc_id = hgnc_id.split(':')[-1]
             transcript['hgnc_id'] = int(hgnc_id)
         else:
             transcript['hgnc_id'] = None
