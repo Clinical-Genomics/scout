@@ -12,17 +12,34 @@ ACMG_MAP = OrderedDict([
 
 REV_ACMG_MAP = OrderedDict([(value, key) for key, value in ACMG_MAP.items()])
 
-ACMG_COMPLETE_MAP = OrderedDict(
-    pathogenic=dict(code='pathogenic', short='P', label='Pathogenic', color='danger'),
-    likely_pathogenic=dict(code='likely_pathogenic', short='LP', label='Likely Pathogenic',
-                           color='warning'),
-    uncertain_significance=dict(code='uncertain_significance', short='VUS',
-                                label='Uncertain Significance', color='primary'),
-    likely_benign=dict(code='likely_benign', short='LB', label='Likely Benign', color='info'),
-    benign=dict(code='benign', short='B', label='Benign', color='success'),
-)
+ACMG_OPTIONS = [{
+    'code': 'pathogenic',
+    'short': 'P',
+    'label': 'Pathogenic',
+    'color': 'danger',
+}, {
+    'code': 'likely_pathogenic',
+    'short': 'LP',
+    'label': 'Likely Pathogenic',
+    'color': 'warning',
+}, {
+    'code': 'uncertain_significance',
+    'short': 'VUS',
+    'label': 'Uncertain Significance',
+    'color': 'primary',
+}, {
+    'code': 'likely_benign',
+    'short': 'LB',
+    'label': 'Likely Benign',
+    'color': 'info',
+}, {
+    'code': 'benign',
+    'short': 'B',
+    'label': 'Benign',
+    'color': 'success',
+}]
 
-ACMG_OPTIONS = ACMG_COMPLETE_MAP.values()
+ACMG_COMPLETE_MAP = OrderedDict([(option['code'], option) for option in ACMG_OPTIONS])
 
 ACMG_CRITERIA = OrderedDict()
 
