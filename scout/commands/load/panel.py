@@ -54,8 +54,7 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
     except Exception as err:
         LOG.warning(err)
         context.abort()
-    
-    
+
     version = None
     if panel_info.get('version'):
         version = float(panel_info['version'])
@@ -67,6 +66,11 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
 
     if not institute:
         LOG.warning("A Panel has to belong to a institute")
+        context.abort()
+    
+    #Check if institute exists in database
+    if not adapter.institute(institute):
+        LOG.warning("Institute {0} does not exist in database".format(institute))
         context.abort()
 
     if not panel_id:
