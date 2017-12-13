@@ -12,141 +12,135 @@ Copyright (c) 2016 ScoutTeam__. All rights reserved.
 import logging
 
 import click
-import yaml
+import ruamel.yaml
 from pymongo import MongoClient
+from pymongo.database import Database
 
-from pprint import pprint as pp
-
-from scout.models import Variant
-from scout.models.phenotype_term import PhenotypeTerm
-
-
-logger = logging.getLogger(__name__)
+from scout.adapter import MongoAdapter
+from scout.adapter.mongo.case import get_variantid
 
 
-def update_case(adapter, case_obj, exported_data):
-    """docstring for update_case"""
-    case_id = case_obj.case_id
+LOG = logging.getLogger(__name__)
 
-    # Update the collaborators
-    if exported_data['collaborators']:
-        collaborators = set(
-            [coll for coll in case_obj.collaborators] + exported_data['collaborators'])
-        logger.info("Set collaborators to %s ", ', '.join(collaborators))
-        case_obj.collaborators = list(collaborators)
 
-    # Set assignee
-    if case_obj.assignee is None:
-        if exported_data['assignee']:
-            mail = exported_data['assignee']
-            user_obj = adapter.user(email=mail)
-            if user_obj:
-                logger.info("Assigning user %s", mail)
-                case_obj.assignee = user_obj
-            else:
-                logger.info("Could not find user user %s", mail)
+def archive_info(database: Database, archive_case: dict) -> dict:
+    """Get information about a case from archive."""
+    data = {
+        'collaborators': archive_case['collaborators'],
+        'synopsis': archive_case.get('synopsis'),
+        'assignees': [],
+        'suspects': [],
+        'causatives': [],
+        'phenotype_terms': [],
+        'phenotype_groups': [],
+    }
+    if archive_case.get('assignee'):
+        archive_user = database.user.find_one({'_id': archive_case['assignee']})
+        data['assignee'].append(archive_user['email'])
 
-    # Add the old suspects
-    if exported_data['suspects']:
-        existing_suspects = case_obj.suspects
-        for suspect in exported_data['suspects']:
-            variant_obj = Variant.objects.get(
-                variant_id=suspect, case_id=case_id)
-            if variant_obj:
-                logger.info("Adding suspect %s", variant_obj.display_name)
-                existing_suspects.append(variant_obj)
-            else:
-                logger.info("Could not find suspect %s in database", suspect)
-        case_obj.suspects = existing_suspects
+    for key in ['suspects', 'causatives']:
+        for variant_id in archive_case.get(key, []):
+            archive_variant = database.variant.find_one({'_id': variant_id})
+            data[key].append({
+                'chromosome': archive_variant['chromosome'],
+                'position': archive_variant['position'],
+                'reference': archive_variant['reference'],
+                'alternative': archive_variant['alternative'],
+                'variant_type': archive_variant['variant_type'],
+            })
 
-    # Add the old suspects
-    if exported_data['causatives']:
-        existing_causatives = case_obj.causatives
-        for causative in exported_data['causatives']:
-            variant_obj = Variant.objects.get(
-                variant_id=causative, case_id=case_id)
-            if variant_obj:
-                logger.info("Adding causative %s", variant_obj.display_name)
-                existing_causatives.append(variant_obj)
-            else:
-                logger.info(
-                    "Could not find causative %s in database", causative)
-        case_obj.causatives = existing_causatives
+    for key in ['phenotype_terms', 'phenotype_groups']:
+        for archive_term in archive_case.get(key, []):
+            data[key].append({
+                'phenotype_id': archive_term['phenotype_id'],
+                'feature': archive_term['feature'],
+            })
 
-    # Update the synopsis
-    if exported_data['synopsis']:
-        if not case_obj.synopsis:
-            logger.info("Updating synopsis")
-            case_obj.synopsis = exported_data['synopsis']
+    return data
 
-    # Update the phenotype terms
-    # If the case is phenotyped, skip to add the terms
-    phenotype_terms = exported_data['phenotype_terms']
-    if phenotype_terms:
-        logger.info("Updating phenotype terms")
-        existing_terms = case_obj.phenotype_terms
-        if len(existing_terms) == 0:
-            for term in phenotype_terms:
-                hpo_obj = adapter.hpo_term(term)
-                if hpo_obj:
-                    new_term = PhenotypeTerm(
-                        phenotype_id=term,
-                        feature=hpo_obj.description
-                    )
-                    logger.info("Adding term %s", term)
-                    existing_terms.append(new_term)
-                else:
-                    logger.info("Could not find term %s", term)
-            case_obj.phenotype_terms = existing_terms
+
+def migrate_case(adapter: MongoAdapter, scout_case: dict, archive_data: dict):
+    """Migrate case information from archive."""
+    # update collaborators
+    collaborators = list(set(scout_case['collaborators'] + archive_data['collaborators']))
+    if collaborators != scout_case['collaborators']:
+        LOG.info(f"set collaborators: {', '.join(collaborators)}")
+        scout_case['collaborators'] = collaborators
+
+    # update assignees
+    if len(scout_case.get('assignees', [])) == 0:
+        scout_user = adapter.user(archive_data['assignee'])
+        if scout_user:
+            scout_case['assignees'] = [archive_data['assignee']]
         else:
-            logger.info("Case was already phenotyped")
+            LOG.warning(f"{archive_data['assignee']}: unable to find assigned user")
 
-    # Update the phenotype groups
-    # If the case has a phenotype group, skip to add the groups
-    phenotype_groups = exported_data['phenotype_groups']
-    if phenotype_groups:
-        logger.info("Updating phenotype groups")
-        existing_groups = case_obj.phenotype_groups
-        if len(existing_groups) == 0:
-            for term in phenotype_groups:
-                hpo_obj = adapter.hpo_term(term)
-                if hpo_obj:
-                    new_term = PhenotypeTerm(
-                        phenotype_id=term,
-                        feature=hpo_obj.description
-                    )
-                    logger.info("Adding term %s", term)
-                    existing_groups.append(new_term)
+    # add/update suspected/causative variants
+    for key in ['suspects', 'causatives']:
+        scout_case[key] = scout_case.get(key, [])
+        for archive_variant in archive_data[key]:
+            variant_id = get_variantid(archive_variant, scout_case['_id'])
+            scout_variant = adapter.variant(variant_id)
+            if scout_variant:
+                if scout_variant['_id'] in scout_case[key]:
+                    LOG.info(f"{scout_variant['_id']}: variant already in {key}")
                 else:
-                    logger.info("Could not find term %s", term)
-            case_obj.phenotype_groups = existing_groups
-        else:
-            logger.info("Case already had phenotype groups")
+                    LOG.info(f"{scout_variant['_id']}: add to {key}")
+                    scout_variant[key].append(scout_variant['_id'])
+            else:
+                LOG.warning(f"{scout_variant['_id']}: unable to find variant ({key})")
+                scout_variant[key].append(variant_id)
 
-    logger.info("Saving case")
-    case_obj.save()
+    if not scout_case.get('synopsis'):
+        # update synopsis
+        scout_case['synopsis'] = archive_data['synopsis']
+
+    adapter.case_collection.find_one_and_replace(
+        {'_id': scout_case['_id']},
+        scout_case,
+    )
+
+    # add/update phenotype groups/terms
+    scout_institute = adapter.institute(scout_case['owner'])
+    scout_user = adapter.user('mans.magnusson@scilifelab.se')
+    for key in ['phenotype_terms', 'phenotype_groups']:
+        for archive_term in archive_data[key]:
+            adapter.add_phenotype(
+                institute=scout_institute,
+                case=scout_case,
+                user=scout_user,
+                link=f"/{scout_case['owner']}/{scout_case['display_name']}",
+                hpo_term=archive_term['phenotype_id'],
+                is_group=key == 'phenotype_groups',
+            )
 
 
-@click.command('update_cases', short_help='Update cases')
-@click.argument('exported_cases',
-                type=click.File('r')
-                )
-@click.pass_context
-def update_cases(context, exported_cases):
-    """Update all information that was manually annotated from a old instance
+@click.command()
+@click.option('--uri', required=True)
+@click.option('--archive-uri', required=True)
+@click.option('--dry', is_flag=True)
+@click.argument('case_id')
+def migrate(uri: str, archive_uri: str, case_id: str, dry: bool):
+    """Update all information that was manually annotated from a old instance."""
+    scout_client = MongoClient(uri)
+    scout_database = scout_client[uri.rsplit('/', 1)[-1]]
+    scout_adapter = MongoAdapter(database=scout_database)
+    scout_case = scout_adapter.case(case_id)
 
-        Takes a yaml file
-    """
-    logger.info("Running scout update cases")
+    archive_client = MongoClient(archive_uri)
+    archive_database = archive_client[archive_uri.rsplit('/', 1)[-1]]
+    archive_case = archive_database.case.find_one({
+        'owner': scout_case['owner'],
+        'display_name': scout_case['display_name']
+    })
 
-    exported_data = yaml.load(exported_cases)
+    archive_data = archive_info(archive_database, archive_case)
 
-    adapter = context.obj['adapter']
+    if dry:
+        print(ruamel.yaml.safe_dump(archive_data))
+    else:
+        migrate_case(scout_adapter, scout_case, archive_data)
 
-    for case_obj in adapter.cases():
-        if not case_obj.is_migrated:
-            case_id = case_obj.case_id
-            if case_id in exported_data:
-                logger.info("Updating case: %s" % case_id)
-                exported_info = exported_data[case_id]
-                update_case(adapter, case_obj, exported_info)
+
+if __name__ == '__main__':
+    migrate()
