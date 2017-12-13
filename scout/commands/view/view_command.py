@@ -28,13 +28,16 @@ def index(context, collection_name):
 
 
 @click.command('panels', short_help='Display gene panels')
+@click.option('-i', '--institute',
+              help='institute id'
+)
 @click.pass_context
-def panels(context):
+def panels(context, institute):
     """Show all gene panels in the database"""
     log.info("Running scout view panels")
     adapter = context.obj['adapter']
 
-    panel_objs = adapter.gene_panels()
+    panel_objs = adapter.gene_panels(institute_id = institute)
     if panel_objs.count() == 0:
         log.info("No panels found")
         context.abort()

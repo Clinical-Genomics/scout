@@ -158,8 +158,9 @@ def parse_genes(gene_lines):
     genes = []
     header = []
     hgnc_identifiers = set()
-    # This can be '\t' or ';'
     delimiter = '\t'
+    # This can be '\t' or ';'
+    delimiters = ['\t', ' ', ';']
 
     # There are files that have '#' to indicate headers
     # There are some files that start with a header line without
@@ -170,26 +171,36 @@ def parse_genes(gene_lines):
             continue
         if line.startswith('#'):
             if not line.startswith('##'):
-                if ';' in line:
-                    delimiter = ';'
+                # We need to try delimiters
+                # We prefer ';' or '\t' byt should accept ' '
+                line_length = 0
+                delimiter = None
+                for alt in delimiters:
+                    head_line = line.split(alt)
+                    if len(head_line) > line_length:
+                        line_length = len(head_line)
+                        delimiter = alt
+
                 header = [word.lower() for word in line[1:].split(delimiter)]
         else:
-            # If no header symbol assume first line is header
+            # If no header symbol(#) assume first line is header
             if i == 0:
-                # Check the delimiter
-                if ';' in line:
-                    delimiter = ';'
-                # If first line is a header 'hgnc' should be there
+                line_length = 0
+                for alt in delimiters:
+                    head_line = line.split(alt)
+                    if len(head_line) > line_length:
+                        line_length = len(head_line)
+                        delimiter = alt
+                
                 if ('hgnc' in line or 'HGNC' in line):
                     header = [word.lower() for word in line.split(delimiter)]
                     continue
-                else:
                 # If first line is not a header try to sniff what the first
                 # columns holds
-                    if line.split(delimiter)[0].isdigit():
-                        header = ['hgnc_id']
-                    else:
-                        header = ['hgnc_symbol']
+                if line.split(delimiter)[0].isdigit():
+                    header = ['hgnc_id']
+                else:
+                    header = ['hgnc_symbol']
 
             splitted_line = line.split(delimiter)
             gene_info = dict(zip(header, splitted_line))
