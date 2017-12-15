@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+from pathlib import Path
 
 from flask import abort, Blueprint, render_template, request, make_response
-from path import Path
 
 from .partial import send_file_partial
 from scout.server.utils import public_endpoint
@@ -78,7 +78,7 @@ def igv(variant_id):
     if hgnc_gene_obj:
         vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
         vcf_file = "{}.vcf".format(vcf_path)
-        Path(vcf_path).rename(vcf_path)
+        Path(vcf_path).rename(vcf_file)
         LOG.info("%s: region vcf generated", vcf_file)
 
     else:
