@@ -404,13 +404,19 @@
     <table class="table table-bordered table-fixed">
       <tbody>
         <tr>
+          {% if case.bam_files %}
           <td>
-            {% if case.bam_files %}
-              <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">View alignment</a>
-            {% else %}
-              <span class="text-muted">BAM file(s) missing</span>
-            {% endif %}
+            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">View alignment</a>
           </td>
+          <td>
+            <a class="md-label" href="{{ url_for('pileup.igv', bam=case.bam_files, bai=case.bai_files, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}"
+              target="_blank">IGV</a>
+          </td>
+          {% else %}
+          <td>
+            <span class="text-muted">BAM file(s) missing</span>
+          </td>
+          {% endif %}
           {% if config.SQLALCHEMY_DATABASE_URI %}
             {% for gene in variant.genes %}
               <td>
