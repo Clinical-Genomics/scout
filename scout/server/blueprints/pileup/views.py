@@ -76,7 +76,9 @@ def igv(variant_id):
     hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
     if hgnc_gene_obj:
         vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+        LOG.info("%s: region vcf generated", vcf_path)
     else:
+        LOG.debug('skipping region VCF, variant not connected to genes', vcf_path)
         vcf_path = None
 
     return render_template(
