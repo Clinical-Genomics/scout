@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-import os.path
+import os
 
 from flask import abort, Blueprint, render_template, request, make_response
 
@@ -76,14 +76,16 @@ def igv(variant_id):
     hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
     if hgnc_gene_obj:
         vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
-        LOG.info("%s: region vcf generated", vcf_path)
+        vcf_file = os.rename(vcf_path, "{}.vcf".format(vcf_path))
+        LOG.info("%s: region vcf generated", vcf_file)
+
     else:
-        LOG.debug('skipping region VCF, variant not connected to genes', vcf_path)
-        vcf_path = None
+        LOG.debug('skipping region VCF, variant not connected to genes')
+        vcf_file = None
 
     return render_template(
         'pileup/igv.xml',
         alignments=alignments,
         position=position,
-        vcf_file=vcf_path,
+        vcf_file=vcf_file,
     )
