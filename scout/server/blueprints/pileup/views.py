@@ -66,7 +66,7 @@ def igv(variant_id):
             log.debug("%s: no bam file found", individual['individual_id'])
 
     position = {
-        'contig': variant_obj['chromosome'],
+        'contig': "chr{}".format(variant_obj['chromosome']),
         'start': variant_obj['position'] - 100,
         'stop': variant_obj['position'] + 100,
     }

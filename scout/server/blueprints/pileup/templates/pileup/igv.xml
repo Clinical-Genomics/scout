@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Session genome="hg19" locus="{{ position.contig }}:{{ position.start }}-{{ position.stop }}" version="8">
+<Session genome="hg19" locus="{{ position.contig }}:{{ position.start }}-{{ position.stop }}" version="3">
 	<Resources>
-		<Resource name="VCF" path="{{ url_for('pileup.remote_static', file=vcf_file) }}"/>
+		<Resource name="VCF" path="{{ url_for('pileup.remote_static', file=vcf_file, _external=True) }}"/>
 		{% for alignment in alignments %}
 		<Resource name="{{ alignment.sample }}" path="{{ url_for('pileup.remote_static', file=alignment.bam, _external=True) }}"/>
 		{% endfor %}
