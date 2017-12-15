@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import os.path
 
 from flask import abort, Blueprint, render_template, request, make_response
@@ -9,6 +10,7 @@ from scout.server.extensions import store
 
 pileup_bp = Blueprint('pileup', __name__, template_folder='templates',
                       static_folder='static', static_url_path='/pileup/static')
+LOG = logging.getLogger(__name__)
 
 
 @pileup_bp.route('/remote/static', methods=['OPTIONS', 'GET'])
@@ -60,10 +62,10 @@ def igv(variant_id):
         if bam_path and os.path.exists(bam_path):
             alignments.append({
                 'sample': individual['display_name'],
-                'bam': individual['bam_file']
+                'bam': individual['bam_file'],
             })
         else:
-            log.debug("%s: no bam file found", individual['individual_id'])
+            LOG.debug("%s: no bam file found", individual['individual_id'])
 
     position = {
         'contig': "chr{}".format(variant_obj['chromosome']),
@@ -71,9 +73,15 @@ def igv(variant_id):
         'stop': variant_obj['position'] + 100,
     }
 
+    hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
+    if hgnc_gene_obj:
+        vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
+    else:
+        vcf_path = None
+
     return render_template(
         'pileup/igv.xml',
         alignments=alignments,
         position=position,
-        vcf_file=case_obj['vcf_files']['vcf_snv'],
+        vcf_file=vcf_path,
     )
