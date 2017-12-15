@@ -95,6 +95,7 @@ def migrate_case(adapter: MongoAdapter, scout_case: dict, archive_data: dict):
         # update synopsis
         scout_case['synopsis'] = archive_data['synopsis']
 
+    scout_case['is_migrated'] = True
     adapter.case_collection.find_one_and_replace(
         {'_id': scout_case['_id']},
         scout_case,
@@ -119,13 +120,17 @@ def migrate_case(adapter: MongoAdapter, scout_case: dict, archive_data: dict):
 @click.option('--uri', required=True)
 @click.option('--archive-uri', required=True)
 @click.option('--dry', is_flag=True)
+@click.option('--force', is_flag=True)
 @click.argument('case_id')
-def migrate(uri: str, archive_uri: str, case_id: str, dry: bool):
+def migrate(uri: str, archive_uri: str, case_id: str, dry: bool, force: bool):
     """Update all information that was manually annotated from a old instance."""
     scout_client = MongoClient(uri)
     scout_database = scout_client[uri.rsplit('/', 1)[-1]]
     scout_adapter = MongoAdapter(database=scout_database)
     scout_case = scout_adapter.case(case_id)
+    if not force and scout_case.get('is_migrated'):
+        print("case already migrated")
+        return
 
     archive_client = MongoClient(archive_uri)
     archive_database = archive_client[archive_uri.rsplit('/', 1)[-1]]
@@ -139,7 +144,8 @@ def migrate(uri: str, archive_uri: str, case_id: str, dry: bool):
     if dry:
         print(ruamel.yaml.safe_dump(archive_data))
     else:
-        migrate_case(scout_adapter, scout_case, archive_data)
+        #migrate_case(scout_adapter, scout_case, archive_data)
+        pass
 
 
 if __name__ == '__main__':
