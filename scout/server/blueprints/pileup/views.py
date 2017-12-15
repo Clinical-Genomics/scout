@@ -47,7 +47,7 @@ def viewer():
                            position=position, vcf_file=vcf_file)
 
 
-@pileup_bp.route('<variant_id>/igv.xml')
+@pileup_bp.route('/<variant_id>/igv.xml')
 @public_endpoint
 def igv(variant_id):
     """Start IGV browser for a variant."""
@@ -67,8 +67,13 @@ def igv(variant_id):
 
     position = {
         'contig': variant_obj['chromosome'],
-        'start': variant_obj['start'] - 50,
-        'stop': variant_obj['stop'] + 50,
+        'start': variant_obj['position'] - 100,
+        'stop': variant_obj['position'] + 100,
     }
 
-    return render_template('pileup/igv.xml', alignments=alignments, position=position)
+    return render_template(
+        'pileup/igv.xml',
+        alignments=alignments,
+        position=position,
+        vcf_file=case_obj['vcf_files']['vcf_snv'],
+    )
