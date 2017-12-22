@@ -1,17 +1,17 @@
 from scout.constants import CALLERS
 
 
-def parse_callers(variant):
+def parse_callers(variant, category='snv'):
     """Parse how the different variant callers have performed
 
         Args:
-            variant(dict): A variant dictionary
+            variant (cyvcf2.Variant): A variant object
 
         Returns:
-            callers(dict): A dictionary on the form
+            callers (dict): A dictionary on the format
             {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
     """
-    relevant_callers = CALLERS['sv' if variant.var_type == 'sv' else 'snv']
+    relevant_callers = CALLERS[category]
     callers = {caller['id']: None for caller in relevant_callers}
     raw_info = variant.INFO.get('set')
     if raw_info:

@@ -51,12 +51,19 @@ CALLERS = {
     }, {
         'id': 'samtools',
         'name': 'SAMtools',
-    }, {
+    }],
+    'cancer': [{
         'id': 'mutect',
         'name': 'MuTect',
     }, {
         'id': 'pindel',
         'name': 'Pindel',
+    }, {
+        'id': 'gatk',
+        'name': 'GATK',
+    }, {
+        'id': 'freebayes',
+        'name': 'Freebayes',
     }],
     'sv': [{
         'id': 'cnvnator',

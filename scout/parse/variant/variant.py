@@ -86,7 +86,7 @@ def parse_variant(variant, case, variant_type='clinical',
     ################# General information #################
 
     parsed_variant['reference'] = variant.REF
-    
+
     ### We allways assume splitted and normalized vcfs!!!
     if len(variant.ALT) > 1:
         raise VcfError("Variants are only allowed to have one alternative")
@@ -94,7 +94,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     # cyvcf2 will set QUAL to None if '.' in vcf
     parsed_variant['quality'] = variant.QUAL
-    
+
     if variant.FILTER:
         parsed_variant['filters'] = variant.FILTER.split(';')
     else:
@@ -231,7 +231,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     parsed_variant['conservation'] = parse_conservations(variant)
 
-    parsed_variant['callers'] = parse_callers(variant)
+    parsed_variant['callers'] = parse_callers(variant, category=category)
 
     rank_result = variant.INFO.get('RankResult')
     if rank_result:
