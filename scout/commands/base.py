@@ -28,6 +28,8 @@ from scout.commands.index_command import index as index_command
 
 from scout.adapter.utils import check_connection
 
+from scoutconfig import *
+
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 log = logging.getLogger(__name__)
 
@@ -49,6 +51,7 @@ log = logging.getLogger(__name__)
 def cli(context, mongodb, username, password, authdb, host, port, loglevel, config, demo):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
+    
     log.info("Running scout version %s", __version__)
     log.debug("Debug logging enabled.")
 
@@ -68,6 +71,10 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     mongo_config['username'] = username or cli_config.get('username')
     mongo_config['password'] = password or cli_config.get('password')
     mongo_config['authdb'] = authdb or cli_config.get('authdb') or mongo_config['mongodb']
+    
+    if 'omim_api_key' in cli_config:
+        mongo_config['omim_api_key'] = cli_config['omim_api_key']
+
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 

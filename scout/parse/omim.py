@@ -1,7 +1,8 @@
-import sys
 import re
 import click
 import logging
+
+from pprint import pprint as pp
 
 mimnr_pattern = re.compile("[0-9]{6,6}")
 entry_pattern = re.compile("\([1,2,3,4]\)")
@@ -87,10 +88,14 @@ def parse_genemap2(lines):
         
         # If no approved symbol could be found choose the first of
         # the gene symbols
-        if not hgnc_symbol:
-            if parsed_entry.get('Gene Symbols'):
-                hgnc_symbol = parsed_entry['Gene Symbols'].split(',')[0].strip() 
+        gene_symbols = []
+        if parsed_entry.get('Gene Symbols'):
+            gene_symbols = [symbol.strip() for symbol in parsed_entry['Gene Symbols'].split(',')]
+        parsed_entry['hgnc_symbols'] = gene_symbols
 
+        if not hgnc_symbol and gene_symbols:
+            hgnc_symbol = gene_symbols[0]
+            
         parsed_entry['hgnc_symbol'] = hgnc_symbol
         
         # Gene inheritance is a construct. It is the union of all inheritance
@@ -289,9 +294,11 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
         inheritance = entry['inheritance']
         phenotype_info = entry['phenotypes']
         hgnc_symbol = entry['hgnc_symbol']
+        hgnc_symbols = entry['hgnc_symbols']
         if mim_number in genes:
             genes[mim_number]['inheritance'] = inheritance
             genes[mim_number]['phenotypes'] = phenotype_info
+            genes[mim_number]['hgnc_symbols'] = hgnc_symbols
 
     for mim_nr in genes:
         gene_info = genes[mim_nr]
@@ -351,7 +358,7 @@ def get_mim_phenotypes(genemap_lines):
                 phenotypes_found[mim_nr] = phenotype
 
     return phenotypes_found
-    
+
 
 @click.command()
 @click.option('--morbid', type=click.Path(exists=True))

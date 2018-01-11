@@ -7,9 +7,12 @@ import click
 
 from scout.parse.panel import get_panel_info
 from scout.utils.handle import get_file_handle
+from scout.utils.requests import fetch_mim_files
+from scout.utils.date import get_date
 
-from scout.parse.panel import parse_gene_panel
+from scout.parse.panel import parse_gene_panel, get_omim_panel_genes
 from scout.build import build_panel
+
 
 from scout.exceptions import IntegrityError
 
@@ -49,30 +52,34 @@ LOG = logging.getLogger(__name__)
 @click.pass_context
 def panel(context, date, display_name, version, panel_type, panel_id, path, institute, omim, api_key):
     """Add a gene panel to the database."""
-    
+
     adapter = context.obj['adapter']
     if not path:
         if not omim:
             LOG.warning("Please provide a gene panel file or specify omim")
             context.abort()
-    
+
     if omim:
-        api_key = api_key or context.obj.get('OMIM_API_KEY')
+        api_key = api_key or context.obj.get('omim_api_key')
         if not api_key:
             LOG.warning("Please provide a omim api key to load the omim gene panel")
             context.abort()
         #Check if OMIM-AUTO exists
         if adapter.gene_panel(panel_id='OMIM-AUTO'):
-            LOG.info("OMIM-AUTO already exists in database")
-            LOG.info("To create a new version use scout update panel --omim")
+            LOG.warning("OMIM-AUTO already exists in database")
+            LOG.info("To create a new version use scout update omim")
             return
-        
-        mim_files = get_mim_files(api_key=api_key)
-            
+
+        try:
+            adapter.load_omim_panel(api_key, version=1.0)
+        except Exception as err:
+            LOG.error(err)
+            context.abort()
+
         return
-            
+
     panel_lines = get_file_handle(path)
-    
+
     try:
         panel_info = get_panel_info(
             panel_lines=panel_lines,
@@ -98,7 +105,7 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
     if not institute:
         LOG.warning("A Panel has to belong to a institute")
         context.abort()
-    
+
     #Check if institute exists in database
     if not adapter.institute(institute):
         LOG.warning("Institute {0} does not exist in database".format(institute))
