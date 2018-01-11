@@ -17,7 +17,10 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command('panel', short_help='Load a gene panel')
-@click.argument('path', type=click.Path(exists=True))
+@click.argument('path', 
+    type=click.Path(exists=True), 
+    required=False
+)
 @click.option('--panel-id', 
     help="The panel identifier name",
 )
@@ -36,10 +39,38 @@ LOG = logging.getLogger(__name__)
     show_default=True,
     type=click.Choice(['clinical', 'research'])
 )
+@click.option('--omim',
+    is_flag=True,
+    help="Load the OMIM-AUTO panel into scout. A OMIM api key is required to do this(https://omim.org/api)."
+)
+@click.option('--api-key',
+    help="A OMIM api key, see https://omim.org/api."
+)
 @click.pass_context
-def panel(context, date, display_name, version, panel_type, panel_id, path, institute):
+def panel(context, date, display_name, version, panel_type, panel_id, path, institute, omim, api_key):
     """Add a gene panel to the database."""
+    
     adapter = context.obj['adapter']
+    if not path:
+        if not omim:
+            LOG.warning("Please provide a gene panel file or specify omim")
+            context.abort()
+    
+    if omim:
+        api_key = api_key or context.obj.get('OMIM_API_KEY')
+        if not api_key:
+            LOG.warning("Please provide a omim api key to load the omim gene panel")
+            context.abort()
+        #Check if OMIM-AUTO exists
+        if adapter.gene_panel(panel_id='OMIM-AUTO'):
+            LOG.info("OMIM-AUTO already exists in database")
+            LOG.info("To create a new version use scout update panel --omim")
+            return
+        
+        mim_files = get_mim_files(api_key=api_key)
+            
+        return
+            
     panel_lines = get_file_handle(path)
     
     try:

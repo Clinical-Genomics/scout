@@ -24,7 +24,13 @@ TERMS_MAPPER = {
      'Mitochondrial': 'MT'
    }
 
-log = logging.getLogger(__name__)
+OMIM_STATUS_MAP = {
+    '[':'nondisease',
+    '{':'susceptibility',
+    '?':'provisional',
+}
+
+LOG = logging.getLogger(__name__)
 
 def parse_omim_line(line, header):
     """docstring for parse_omim_2_line"""
@@ -60,7 +66,7 @@ def parse_genemap2(lines):
     Yields:
         parsed_entry(dict)
     """
-    log.info("Parsing the omim genemap2")
+    LOG.info("Parsing the omim genemap2")
     header = []
     for i,line in enumerate(lines):
         line = line.rstrip()
@@ -68,76 +74,88 @@ def parse_genemap2(lines):
             if i < 10:
                 if line.startswith('# Chromosome'):
                     header = line[2:].split('\t')
-        else:
-            parsed_entry = parse_omim_line(line, header)
-            parsed_entry['mim_number'] = int(parsed_entry['Mim Number'])
-            # This is the approved symbol for the entry
-            hgnc_symbol = parsed_entry.get("Approved Symbol")
-            # If no approved symbol could be found choose the first of
-            # the gene symbols
-            if not hgnc_symbol:
-                if parsed_entry.get('Gene Symbols'):
-                    hgnc_symbol = parsed_entry['Gene Symbols'].split(',')[0].strip() 
-            parsed_entry['hgnc_symbol'] = hgnc_symbol
-            # Gene inheritance is a construct. It is the union of all inheritance
-            # patterns found in the associated phenotypes
-            gene_inheritance = set()
-            parsed_phenotypes = []
-            # These information about the related phenotypes
-            if parsed_entry.get('Phenotypes'):
-                # Each related phenotype is separated by ';'
-                for phenotype_info in parsed_entry['Phenotypes'].split(';'):
-                    phenotype_info = phenotype_info.lstrip()
-                    # print(phenotype_info)
-                    # Skip phenotype entries that are to uncertain
-                    if not phenotype_info.startswith('['):
-                        phenotype_status = 'established'
-                        # We will try to save the description
-                        description = ""
-                        if phenotype_info.startswith('{'):
-                            phenotype_status = 'susceptibility'
-                        if phenotype_info.startswith('?'):
-                            phenotype_status = 'provisional'
-                        
-                        splitted_info = phenotype_info.split(',')
-                        for i,text in enumerate(splitted_info):
-                            # Everything before ([1,2,3])
-                            # We check if we are in the part where the mim number exists
-                            match = entry_pattern.search(text)
-                            if not match:
-                                description += text.strip('?\{\}')
-                            else:
-                                # If we find the end of the entry
-                                mimnr_match = mimnr_pattern.search(phenotype_info)
-                                # Then if the entry have a mim number we choose that
-                                if mimnr_match:
-                                    phenotype_mim = int(mimnr_match.group())
-                                else:
-                                    phenotype_mim = parsed_entry['mim_number']
-                                    description += text[:-4]
-                                break
-                        # Find the inheritance
-                        inheritance = set()
-                        inheritance_text = ','.join(splitted_info[i:])
-                        for term in mim_inheritance_terms:
-                            if term in inheritance_text:
-                                
-                                inheritance.add(TERMS_MAPPER[term])
-                                gene_inheritance.add(TERMS_MAPPER[term])
-                        
-                        parsed_phenotypes.append(
-                                            {
-                                                'mim_number':phenotype_mim, 
-                                                'inheritance': inheritance,
-                                                'description': description,
-                                                'status': phenotype_status,
-                                            }
-                                        )
+            continue
+
+        if len(line) < 5:
+            continue
+
+        parsed_entry = parse_omim_line(line, header)
+        parsed_entry['mim_number'] = int(parsed_entry['Mim Number'])
+        
+        # This is the approved symbol for the entry
+        hgnc_symbol = parsed_entry.get("Approved Symbol")
+        
+        # If no approved symbol could be found choose the first of
+        # the gene symbols
+        if not hgnc_symbol:
+            if parsed_entry.get('Gene Symbols'):
+                hgnc_symbol = parsed_entry['Gene Symbols'].split(',')[0].strip() 
+
+        parsed_entry['hgnc_symbol'] = hgnc_symbol
+        
+        # Gene inheritance is a construct. It is the union of all inheritance
+        # patterns found in the associated phenotypes
+        gene_inheritance = set()
+        
+        parsed_phenotypes = []
+        # Information about the related phenotypes
+        # Each related phenotype is separated by ';'
+        for phenotype_info in parsed_entry.get('Phenotypes', '').split(';'):
+            if not phenotype_info:
+                continue
+
+            phenotype_info = phenotype_info.lstrip()
             
-            parsed_entry['phenotypes'] = parsed_phenotypes
-            parsed_entry['inheritance'] = gene_inheritance
+            # First symbol in description indicates phenotype status
+            # If no special symbol is used the phenotype is 'established'
+            phenotype_status = OMIM_STATUS_MAP.get(phenotype_info[0], 'established')
+            
+            # Skip phenotype entries that not associated to disease
+            if phenotype_status == 'nondisease':
+                continue
+            
+            phenotype_description = ""
+
+            # We will try to save the description    
+            splitted_info = phenotype_info.split(',')
+            for i, text in enumerate(splitted_info):
+                # Everything before ([1,2,3])
+                # We check if we are in the part where the mim number exists
+                match = entry_pattern.search(text)
+                if not match:
+                    phenotype_description += text
+                else:
+                    # If we find the end of the entry
+                    mimnr_match = mimnr_pattern.search(phenotype_info)
+                    # Then if the entry have a mim number we choose that
+                    if mimnr_match:
+                        phenotype_mim = int(mimnr_match.group())
+                    else:
+                        phenotype_mim = parsed_entry['mim_number']
+                        phenotype_description += text[:-4]
+                    break
+            # Find the inheritance
+            inheritance = set()
+            inheritance_text = ','.join(splitted_info[i:])
+            for term in mim_inheritance_terms:
+                if term in inheritance_text:
                     
-            yield parsed_entry
+                    inheritance.add(TERMS_MAPPER[term])
+                    gene_inheritance.add(TERMS_MAPPER[term])
+                
+            parsed_phenotypes.append(
+                {
+                    'mim_number':phenotype_mim, 
+                    'inheritance': inheritance,
+                    'description': phenotype_description.strip('?\{\}'),
+                    'status': phenotype_status,
+                }
+            )
+        
+        parsed_entry['phenotypes'] = parsed_phenotypes
+        parsed_entry['inheritance'] = gene_inheritance
+                
+        yield parsed_entry
 
 
 def parse_mim2gene(lines):
@@ -160,35 +178,41 @@ def parse_mim2gene(lines):
         parsed_entry(dict)
     
         {
-        "mim_number": int, 
-        "entry_type": str, 
-        "entrez_gene_id": int, 
-        "hgnc_symbol": str, 
-        "ensembl_gene_id": str,
-        "ensembl_transcript_id": str,
+            "mim_number": int, 
+            "entry_type": str, 
+            "entrez_gene_id": int, 
+            "hgnc_symbol": str, 
+            "ensembl_gene_id": str,
+            "ensembl_transcript_id": str,
         }
     
     """
-    log.info("Parsing mim2gene")
+    LOG.info("Parsing mim2gene")
     header = ["mim_number", "entry_type", "entrez_gene_id", "hgnc_symbol", "ensembl_gene_id"]
     for i, line in enumerate(lines):
+        if line.startswith('#'):
+            continue
+        
+        if not len(line) > 0:
+            continue
+
         line = line.rstrip()
-        if not line.startswith('#'):
-            parsed_entry = parse_omim_line(line, header)
-            parsed_entry['mim_number'] = int(parsed_entry['mim_number'])
-            
-            if 'hgnc_symbol' in parsed_entry:
-                parsed_entry['hgnc_symbol'] = parsed_entry['hgnc_symbol']
-            
-            if parsed_entry.get('entrez_gene_id'):
-                parsed_entry['entrez_gene_id'] = int(parsed_entry['entrez_gene_id'])
-            
-            if parsed_entry.get('ensembl_gene_id'):
-                ensembl_info = parsed_entry['ensembl_gene_id'].split(',')
-                parsed_entry['ensembl_gene_id'] = ensembl_info[0].strip()
+        parsed_entry = parse_omim_line(line, header)
+        parsed_entry['mim_number'] = int(parsed_entry['mim_number'])
+        
+        if 'hgnc_symbol' in parsed_entry:
+            parsed_entry['hgnc_symbol'] = parsed_entry['hgnc_symbol']
+        
+        if parsed_entry.get('entrez_gene_id'):
+            parsed_entry['entrez_gene_id'] = int(parsed_entry['entrez_gene_id'])
+        
+        if parsed_entry.get('ensembl_gene_id'):
+            ensembl_info = parsed_entry['ensembl_gene_id'].split(',')
+            parsed_entry['ensembl_gene_id'] = ensembl_info[0].strip()
+            if len(ensembl_info) > 1:
                 parsed_entry['ensembl_transcript_id'] = ensembl_info[1].strip()
-            
-            yield parsed_entry
+        
+        yield parsed_entry
 
 def parse_omim_morbid(lines):
     """docstring for parse_omim_morbid"""
@@ -241,7 +265,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
         hgnc_genes(dict): A dictionary with hgnc_symbol as keys
     
     """
-    log.info("Get the mim genes")
+    LOG.info("Get the mim genes")
     
     genes = {}
     hgnc_genes = {}
@@ -257,7 +281,8 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
                 no_hgnc += 1
             else:
                 genes[mim_nr] = entry
-    log.info("Numnber of genes without hgnc symbol %s", str(no_hgnc))
+    
+    LOG.info("Numnber of genes without hgnc symbol %s", str(no_hgnc))
     
     for entry in parse_genemap2(genemap_lines):
         mim_number = entry['mim_number']
