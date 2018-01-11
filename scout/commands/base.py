@@ -28,7 +28,10 @@ from scout.commands.index_command import index as index_command
 
 from scout.adapter.utils import check_connection
 
-from scoutconfig import *
+try:
+    from scoutconfig import *
+except ModuleNotFoundError:
+    pass
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 log = logging.getLogger(__name__)
