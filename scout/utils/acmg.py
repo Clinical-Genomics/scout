@@ -1,3 +1,4 @@
+# coding=UTF-8
 def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
     """Check if the criterias for Pathogenic is fullfilled
 
