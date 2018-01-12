@@ -95,8 +95,8 @@ def parse_peddy_ped_check(lines):
             # boolean indicating that this pair is expected to be a parent-child
             # pair according to the ibs0 (< 0.012) calculated from the genotypes.
             pair_info['predicted_parents'] = make_bool(pair_info.get('predicted_parents'))
-            
-            # boolean indicating that the preceding 2 columns don’t match
+
+            # boolean indicating that the preceding 2 columns do not match
             pair_info['parent_error'] = make_bool(pair_info.get('parent_error'))
 
             #  boolean indicating that rel > 0.75 and ibs0 < 0.012

@@ -79,7 +79,7 @@
           {% for panel in panels %}
             <li class="list-group-item">
               <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
-                {{ panel.display_name }} ({{ panel.version }}, {{ panel.date.date() }})
+                {{ panel.display_name }} ({{ panel.version }}, {{ panel.date.date() }}, {{ panel.genes|length }} genes)
               </a>
             </li>
           {% endfor %}
