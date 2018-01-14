@@ -132,7 +132,7 @@ class PanelHandler(object):
     def gene_panels(self, panel_id=None, institute_id=None, version=None):
         """Return all gene panels
 
-        If panel_id return all versions of that panel
+        If panel_id return all versions of panels by that panel name
 
         Args:
             panel_id(str)

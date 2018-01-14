@@ -74,16 +74,31 @@
   <div class="panel-group">
     {% for institute, panels in panel_groups %}
       <div class="panel panel-default">
-        <div class="panel-heading">{{ institute.display_name }} - Panels</div>
-        <ul class="list-group">
+          <div class="panel-heading">{{ institute.display_name }} - Panels</div>	  
           {% for panel in panels %}
-            <li class="list-group-item">
-              <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
-                {{ panel.display_name }} ({{ panel.version }}, {{ panel.date.date() }}, {{ panel.genes|length }} genes)
-              </a>
-            </li>
+            <div class="panel-group" id="accordion-{{ panel.panel_name }}">
+	      <div class="panel panel-default">
+		<a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
+                  {{ panel.display_name }} ({{ panel.version }}, {{ panel.date.date() }}, {{ panel.genes|length }} genes)
+		</a>
+		<span class="label pull-right">
+		  <a data-toggle="collapse" data-parent="#accordion-{{ panel.panel_name }}" href="#collapse{{ panel.panel_name}}">History</a>
+		</span>
+	      </div>
+	      <div id="collapse{{ panel.panel_name }}" class="panel-collapse collapse in">
+		<div id="panel-body">
+		  <Ul>
+	            {% for version in panel_versions[panel.panel_name] %}
+	            <li>
+		      <a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a>
+	            </li>
+	            {% endfor %}
+		  </ul>
+		</div>
+	      </div>
+	    </div>
           {% endfor %}
-        </ul>
+          </div>
       </div>
     {% endfor %}
   </div>
