@@ -49,11 +49,18 @@ def panels():
                    for institute in institutes
                    for name in
                    store.gene_panels(institute_id=institute['_id']).distinct('panel_name')]
+    
+    panel_versions = {}
+    for name in panel_names:
+        panel_versions[name]=store.gene_panels(panel_id=name)
+
     panel_groups = []
     for institute_obj in institutes:
-        institute_panels = store.latest_panels(institute_obj['_id'])
-        panel_groups.append((institute_obj, institute_panels))
-    return dict(panel_groups=panel_groups, panel_names=panel_names, institutes=institutes)
+         institute_panels = store.latest_panels(institute_obj['_id'])
+         panel_groups.append((institute_obj, institute_panels))
+
+    return dict(panel_groups=panel_groups, panel_names=panel_names, 
+                panel_versions=panel_versions, institutes=institutes)
 
 
 @panels_bp.route('/panels/<panel_id>', methods=['GET', 'POST'])
