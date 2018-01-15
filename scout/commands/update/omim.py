@@ -25,10 +25,10 @@ def omim(context, api_key, institute):
         LOG.warning("Please provide a omim api key to load the omim gene panel")
         context.abort()
     
-    # try:
-    adapter.load_omim_panel(api_key, institute=institute)
-    # except Exception as err:
-    #     LOG.error(err)
-    #     context.abort()
+    try:
+        adapter.load_omim_panel(api_key, institute=institute)
+    except Exception as err:
+        LOG.error(err)
+        context.abort()
     
     

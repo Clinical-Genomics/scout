@@ -74,9 +74,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     mongo_config['username'] = username or cli_config.get('username')
     mongo_config['password'] = password or cli_config.get('password')
     mongo_config['authdb'] = authdb or cli_config.get('authdb') or mongo_config['mongodb']
-    
-    if 'omim_api_key' in cli_config:
-        mongo_config['omim_api_key'] = cli_config['omim_api_key']
+    mongo_config['omim_api_key'] = cli_config.get('omim_api_key')
 
     # mongo uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]

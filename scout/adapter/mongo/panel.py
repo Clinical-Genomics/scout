@@ -276,7 +276,7 @@ class PanelHandler(object):
                     gene_dict[hgnc_id] = set([panel['panel_name']])
         LOG.info("Gene to panels done")
 
-        return gene_dict
+        return gene_dic t
 
     def update_panel(self, panel_obj):
         """Replace a existing gene panel with a new one
