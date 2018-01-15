@@ -79,7 +79,7 @@
             <div class="panel-group" id="accordion-{{ panel.panel_name }}">
 	      <div class="panel panel-default">
 		<a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
-                  {{ panel.display_name }} ({{ panel.version }}, {{ panel.date.date() }}, {{ panel.genes|length }} genes)
+                  {{ panel.display_name }}
 		</a>
 		<span class="label pull-right">
 		  <a data-toggle="collapse" data-parent="#accordion-{{ panel.panel_name }}" href="#collapse{{ panel.panel_name}}">History</a>
