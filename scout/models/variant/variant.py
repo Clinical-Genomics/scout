@@ -73,6 +73,7 @@ variant = dict(
     cadd_score = float,
     clnsig = list, # list of <clinsig>
     spidex = float,
+    spidex_human = str,
 
     missing_data = bool, # default False
 

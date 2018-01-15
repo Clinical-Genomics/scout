@@ -100,6 +100,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             cadd_score = float,
             clnsig = list, # list of <clinsig>
             spidex = float,
+            spidex_human = str,
 
             missing_data = bool, # default False
 
@@ -325,12 +326,14 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         variant_obj['decipher'] = frequencies['decipher']
     
     # Add the severity predictors
-
     if variant.get('cadd_score'):
         variant_obj['cadd_score'] = variant['cadd_score']
     
     if variant.get('spidex'):
         variant_obj['spidex'] = variant['spidex']
+
+    if variant.get('spidex_human'):
+        variant_obj['spidex_human'] = variant['spidex_human']
 
     # Add the rank score results
     rank_results = []
