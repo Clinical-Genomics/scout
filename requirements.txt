@@ -16,6 +16,8 @@ Flask-Babel
 livereload
 python-dateutil
 
+pathlib
+
 # unclear
 Flask-Login
 
