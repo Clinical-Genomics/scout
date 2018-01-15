@@ -24,22 +24,11 @@ def omim(context, api_key, institute):
     if not api_key:
         LOG.warning("Please provide a omim api key to load the omim gene panel")
         context.abort()
-    #Check if OMIM-AUTO exists
-    existing_panel = adapter.gene_panel(panel_id='OMIM-AUTO')
-    if not existing_panel:
-        LOG.warning("OMIM-AUTO does not exists in database")
-        LOG.info('Creating a first version')
-        version = 1.0
     
-    if existing_panel:
-        version = existing_panel['version'] + 1
-    
-    LOG.info("Setting version to %s", version)
-    
-    try:
-        adapter.load_omim_panel(api_key, version=version, institute=institute)
-    except Exception as err:
-        LOG.error(err)
-        context.abort()
+    # try:
+    adapter.load_omim_panel(api_key, institute=institute)
+    # except Exception as err:
+    #     LOG.error(err)
+    #     context.abort()
     
     

@@ -57,10 +57,21 @@ class PanelHandler(object):
 
         self.add_gene_panel(panel_obj)
 
-    def load_omim_panel(self, api_key, version=1.0, institute=None):
+    def load_omim_panel(self, api_key, institute=None):
         """Create and load the OMIM-AUTO panel"""
+        existing_panel = self.gene_panel(panel_id='OMIM-AUTO')
+        if not existing_panel:
+            LOG.warning("OMIM-AUTO does not exists in database")
+            LOG.info('Creating a first version')
+            version = 1.0
+    
+        if existing_panel:
+            version = existing_panel['version'] + 1
+    
+        LOG.info("Setting version to %s", version)
+        
         try:
-            mim_files = fetch_mim_files(api_key=api_key)
+            mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
         except Exception as err:
             raise err
         
@@ -71,7 +82,6 @@ class PanelHandler(object):
                 date_string = line.split(':')[-1].lstrip().rstrip()
         date_obj = get_date(date_string)
         
-        existing_panel = self.gene_panel(panel_id='OMIM-AUTO')
         if existing_panel:
             if existing_panel['date'] == date_obj:
                 LOG.warning("There is no new version of OMIM")
@@ -93,7 +103,7 @@ class PanelHandler(object):
         genes = get_omim_panel_genes(
             genemap2_lines = mim_files['genemap2'],
             mim2gene_lines = mim_files['mim2genes'],
-            alias_genes = alias_genes
+            alias_genes = alias_genes,
         )
 
         for gene in genes:
@@ -101,19 +111,58 @@ class PanelHandler(object):
         
         panel_obj = build_panel(panel_data, self)
         
-        if self.compare_mim_panels(existing_panel, panel_obj):
-            self.add_gene_panel(panel_obj)
-        else:
-            LOG.info("The new version of omim does not differ from the old one")
-            LOG.info("No update is added")
-        return
-            
+        if existing_panel:
+
+            new_genes = self.compare_mim_panels(existing_panel, panel_obj)
+            if new_genes:
+                self.update_mim_version(new_genes, panel_obj, old_version=existing_panel['version'])
+            else:
+                LOG.info("The new version of omim does not differ from the old one")
+                LOG.info("No update is added")
+                return
+
+        self.add_gene_panel(panel_obj)
 
     def compare_mim_panels(self, existing_panel, new_panel):
-        """Check if the latest version of OMIM differs from the most recent in database"""
+        """Check if the latest version of OMIM differs from the most recent in database
+           Return all genes that where not in the previous version.
+        
+        Args:
+            existing_panel(dict)
+            new_panel(dict)
+        
+        Returns:
+            new_genes(set(str))
+        """
         existing_genes = set([gene['hgnc_id'] for gene in existing_panel['genes']])
         new_genes = set([gene['hgnc_id'] for gene in new_panel['genes']])
-        return existing_genes.difference(new_genes)
+
+        return new_genes.difference(existing_genes)
+
+    def update_mim_version(self, new_genes, new_panel, old_version):
+        """Set the correct version for each gene
+        Loop over the genes in the new panel
+        
+        Args:
+            new_genes(set(str)): Set with the new gene symbols
+            new_panel(dict)
+        
+        """
+        LOG.info('Updating versions for new genes')
+        version = new_panel['version']
+        for gene in new_panel['genes']:
+            gene_symbol = gene['hgnc_id']
+            # If the gene is new we add the version
+            if gene_symbol in new_genes:
+                gene['database_entry_version'] = version
+                pp(gene)
+                continue
+            # If the gene is old it will have the previous version
+            gene['database_entry_version'] = old_version
+            pp(gene)
+            
+
+        return
 
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database

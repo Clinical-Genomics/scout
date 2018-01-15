@@ -4,7 +4,7 @@ from urllib.error import (HTTPError, URLError)
 
 LOG = logging.getLogger(__name__)
 
-def fetch_mim_files(api_key):
+def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False):
     """Fetch the necessary mim files using a api key
     
     Args:
@@ -13,17 +13,25 @@ def fetch_mim_files(api_key):
     Returns:
         mim_files(dict): A dictionary with the neccesary files
     """
-    LOG.info("Fetching OMIM files from https://omim.org/")
-    
-    mim_files = {}
-    mim_urls = { 
-        'mim2genes': 'https://omim.org/static/omim/data/mim2gene.txt',
-        'mimtitles': 'https://data.omim.org/downloads/{0}/mimTitles.txt'.format(api_key),
-        'morbidmap': 'https://data.omim.org/downloads/{0}/morbidmap.txt'.format(api_key),
-        'genemap2': 'https://data.omim.org/downloads/{0}/genemap2.txt'.format(api_key)
-    }
 
+    LOG.info("Fetching OMIM files from https://omim.org/")
+    mim2genes_url =  'https://omim.org/static/omim/data/mim2gene.txt'
+    mimtitles_url= 'https://data.omim.org/downloads/{0}/mimTitles.txt'.format(api_key)
+    morbidmap_url = 'https://data.omim.org/downloads/{0}/morbidmap.txt'.format(api_key)
+    genemap2_url =  'https://data.omim.org/downloads/{0}/genemap2.txt'.format(api_key)
+        
+    mim_files = {}
+    mim_urls = {}
     
+    if mim2genes is True:
+        mim_urls['mim2genes'] = mim2genes_url
+    if mimtitles is True:
+        mim_urls['mimtitles'] = mimtitles_url
+    if morbidmap is True:
+        mim_urls['morbidmap'] = morbidmap_url
+    if genemap2 is True:
+        mim_urls['genemap2'] = genemap2_url
+
     for file_name in mim_urls:
         url = mim_urls[file_name]
         try:
