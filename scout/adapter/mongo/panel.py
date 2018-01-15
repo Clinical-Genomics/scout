@@ -155,12 +155,9 @@ class PanelHandler(object):
             # If the gene is new we add the version
             if gene_symbol in new_genes:
                 gene['database_entry_version'] = version
-                pp(gene)
                 continue
             # If the gene is old it will have the previous version
             gene['database_entry_version'] = old_version
-            pp(gene)
-            
 
         return
 
