@@ -146,11 +146,9 @@ class QueryHandler(object):
                 ]
             })
 
-        if query.get('spidex_human') is not None:
+        if query.get('spidex_human'):
             spidex_human = query['spidex_human']
-            mongo_query_minor.append({
-                        {'spidex_human': {'$in': spidex_human}}
-                   })
+            mongo_query_minor.append({'spidex_human': {'$in': spidex_human}})
 
         if query.get('clingen_ngi') is not None:
             mongo_query_minor.append({
