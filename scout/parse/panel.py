@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
+
+from pprint import pprint as pp
 from datetime import datetime
 
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
+
+from .omim import get_mim_genes
 
 LOG = logging.getLogger(__name__)
 
@@ -232,7 +236,7 @@ def parse_genes(gene_lines):
 
 
 def parse_gene_panel(path, institute, panel_id, panel_type='clinical', date=datetime.now(), 
-                     version=1.0, display_name=None):
+                     version=1.0, display_name=None, genes = None):
     """Parse the panel info and return a gene panel
 
         Args:
@@ -258,7 +262,58 @@ def parse_gene_panel(path, institute, panel_id, panel_type='clinical', date=date
     gene_panel['version'] = float(version)
     gene_panel['display_name'] = display_name or panel_id
 
-    panel_handle = get_file_handle(gene_panel['path'])
+    if not path:
+        panel_handle = genes
+    else:
+        panel_handle = get_file_handle(gene_panel['path'])
     gene_panel['genes'] = parse_genes(gene_lines=panel_handle)
 
     return gene_panel
+
+def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
+    """Return all genes that should be included in the OMIM-AUTO panel
+    Return the hgnc symbols
+    
+    Genes that have at least one 'established' or 'provisional' phenotype connection
+    are included in the gene panel
+    
+    Args:
+        genemap2_lines(iterable)
+        mim2gene_lines(iterable)
+        alias_genes(dict): A dictionary that maps hgnc_symbol to hgnc_id
+    
+    Yields:
+        hgnc_symbol(str)
+    """
+    parsed_genes = get_mim_genes(genemap2_lines, mim2gene_lines)
+    
+    STATUS_TO_ADD = set(['established', 'provisional'])
+    
+    for hgnc_symbol in parsed_genes:
+        try:
+            gene = parsed_genes[hgnc_symbol]
+            keep = False
+            for phenotype_info in gene.get('phenotypes',[]):
+                if phenotype_info['status'] in STATUS_TO_ADD:
+                    keep = True
+                    break
+            if keep:
+                hgnc_id_info = alias_genes.get(hgnc_symbol)
+                if not hgnc_id_info:
+                    for symbol in gene.get('hgnc_symbols', []):
+                        if symbol in alias_genes:
+                            hgnc_id_info = alias_genes[symbol]
+                            break
+
+                if hgnc_id_info:
+                    yield {
+                    'hgnc_id': hgnc_id_info['true'],
+                    'hgnc_symbol': hgnc_symbol,
+                    }
+                else:
+                    LOG.warning("Gene symbol %s does not exist", hgnc_symbol)
+                    
+        except KeyError:
+            pass
+    
+

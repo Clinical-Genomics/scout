@@ -202,22 +202,28 @@ class GeneHandler(object):
             alias_genes(dict): {<hgnc_alias>: {'true': <hgnc_id>, 'ids': {<hgnc_id_1>, <hgnc_id_2>, ...}}}
         """
         logger.info("Fetching all genes by alias")
+        # Collect one entry for each alias symbol that exists
         alias_genes = {}
+        # Loop over all genes
         for gene in self.hgnc_collection.find({'build':build}):
+            # Collect the hgnc_id
             hgnc_id = gene['hgnc_id']
+            # Collect the true symbol given by hgnc
             hgnc_symbol = gene['hgnc_symbol']
             # Loop aver all aliases
             for alias in gene['aliases']:
                 true_id = None
+                # If the alias is the same as hgnc symbol we know the true id
                 if alias == hgnc_symbol:
                     true_id = hgnc_id
+                # If the alias is already in the list we add the id
                 if alias in alias_genes:
                     alias_genes[alias]['ids'].add(hgnc_id)
                     if true_id:
                         alias_genes[alias]['true'] = hgnc_id
                 else:
                     alias_genes[alias] = {
-                        'true': true_id,
+                        'true': hgnc_id,
                         'ids': set([hgnc_id])
                     }
 
