@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_connection(host='localhost', port=27017, username=None, password=None,
-                   uri=None, mongodb=None, authdb=None, timeout=20):
+                   uri=None, mongodb=None, authdb=None, timeout=20, *args, **kwargs):
     """Get a client to the mongo database
 
         host(str): Host of database

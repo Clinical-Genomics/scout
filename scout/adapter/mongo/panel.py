@@ -1,8 +1,11 @@
 import logging
+import math
 
 from pprint import pprint as pp
 from copy import deepcopy
+
 import datetime as dt
+
 
 import pymongo
 from bson import ObjectId
@@ -66,7 +69,7 @@ class PanelHandler(object):
             version = 1.0
     
         if existing_panel:
-            version = existing_panel['version'] + 1
+            version = float(math.floor(existing_panel['version']) + 1)
     
         LOG.info("Setting version to %s", version)
         
