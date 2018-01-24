@@ -72,7 +72,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
 
-    # Set default rank score treshold to 0
+    config_data['rank_model_version'] = config_data.get('rank_model_version')
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
 
     return config_data
