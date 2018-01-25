@@ -21,6 +21,7 @@ class MissingSangerRecipientError(Exception):
 
 def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
+    print("DEBUG: loading variants wo SPIDEX")
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
@@ -216,7 +217,6 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['beacon_link'] = beacon_link(variant_obj)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj)
     variant_obj['alamut_link'] = alamut_link(variant_obj)
-    variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['callers'] = callers(variant_obj, category='snv')
 
@@ -449,19 +449,6 @@ def alamut_link(variant_obj):
     url_template = ("http://localhost:10000/show?request={this[chromosome]}:"
                     "{this[position]}{this[reference]}>{this[alternative]}")
     return url_template.format(this=variant_obj)
-
-
-def spidex_human(variant_obj):
-    """Translate SPIDEX annotation to human readable string."""
-    if variant_obj.get('spidex') is None:
-        return 'not_reported'
-    elif abs(variant_obj['spidex']) < 1:
-        return 'low'
-    elif abs(variant_obj['spidex']) < 2:
-        return 'medium'
-    else:
-        return 'high'
-
 
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""

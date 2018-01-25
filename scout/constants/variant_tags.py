@@ -27,6 +27,13 @@ FEATURE_TYPES = (
   'intergenic_variant'
 )
 
+SPIDEX_LEVELS = (
+    'not_reported',
+    'low',
+    'medium',
+    'high'
+)
+
 SV_TYPES = (
     'ins',
     'del',
@@ -48,7 +55,6 @@ GENETIC_MODELS = (
   ('XD', 'X Linked Dominant'),
   ('XD_dn', 'X Linked Dominant De Novo'),
 )
-
 
 VARIANT_CALL = (
     'Pass',

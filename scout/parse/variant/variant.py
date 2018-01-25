@@ -15,7 +15,7 @@ from .rank_score import parse_rank_score
 from .coordinates import parse_coordinates
 from .models import parse_genetic_models
 from .transcript import parse_transcripts
-from .deleteriousness import parse_cadd
+from .deleteriousness import (parse_cadd, parse_spidex)
 
 from scout.constants import CHR_PATTERN
 
@@ -223,9 +223,10 @@ def parse_variant(variant, case, variant_type='clinical',
     if cadd:
         parsed_variant['cadd_score'] = cadd
 
-    spidex = variant.INFO.get('SPIDEX')
+    (spidex, spidex_human) = parse_spidex(variant)
     if spidex:
         parsed_variant['spidex'] = float(spidex)
+    parsed_variant['spidex_human'] = str(spidex_human)
 
     ###################### Add conservation ######################
 

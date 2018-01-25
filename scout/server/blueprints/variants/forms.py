@@ -6,13 +6,14 @@ from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipl
                      HiddenField, IntegerField)
 from wtforms.widgets import TextInput
 
-from scout.constants import CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS, SV_TYPES
+from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS, 
+                              SPIDEX_LEVELS, SV_TYPES)
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in FEATURE_TYPES]
 SV_TYPE_CHOICES = [(term, term.replace('_', ' ').upper()) for term in SV_TYPES]
-
+SPIDEX_CHOICES = [(term, term.replace('_', ' ')) for term in SPIDEX_LEVELS]
 
 class TagListField(Field):
     widget = TextInput()
@@ -58,11 +59,13 @@ class FiltersForm(FlaskForm):
     cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
     clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
+    spidex_human = SelectMultipleField('SPIDEX', choices=SPIDEX_CHOICES)
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
     exac_frequency = BetterDecimalField('ExAC', places=2)
     local_obs = IntegerField('Local obs. (archive)')
 
+    
 
 class CancerFiltersForm(FiltersForm):
     """docstring for CancerFiltersForm"""
