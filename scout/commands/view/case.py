@@ -4,6 +4,8 @@ from pprint import pprint as pp
 
 import click
 
+from scout.constants import CASE_STATUSES
+
 LOG = logging.getLogger(__name__)
 
 @click.command('cases', short_help='Fetch cases')
@@ -33,9 +35,13 @@ LOG = logging.getLogger(__name__)
               is_flag=True,
               help='If case is in research mode'
 )
+@click.option('-s', '--status',
+              type=click.Choice(CASE_STATUSES),
+              help='Specify what status to look for'
+)
 @click.pass_context
 def cases(context, case_id, institute, reruns, finished, causatives, research_requested,
-          is_research):
+          is_research, status):
     """Interact with cases existing in the database."""
     adapter = context.obj['adapter']
 
@@ -49,7 +55,7 @@ def cases(context, case_id, institute, reruns, finished, causatives, research_re
         models = adapter.cases(collaborator=institute, reruns=reruns,
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
-                           is_research=is_research)
+                           is_research=is_research, status=status)
     i = 0
     for model in models:
         i += 1
