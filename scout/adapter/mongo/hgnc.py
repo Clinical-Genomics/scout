@@ -368,19 +368,11 @@ class GeneHandler(object):
         """
         genes = {}
         
-        gene_transcripts = self.transcripts_by_gene(build)
-        
         LOG.info("Fetching all genes")
         for gene_obj in self.hgnc_collection.find({'build':build}):
             ensg_id = gene_obj['ensembl_id']
             hgnc_id = gene_obj['hgnc_id']
-            # This is a set with the identifier transcripts for a gene
-            # id transcripts are the transcripts with NM symbols
-            # if no NM symbol check for NR symbols, if not NR go for XM 
-            # If no ref seq identifiers was found use longest transcript
-            if not hgnc_id in gene_transcripts:
-                continue
-            gene_obj['id_transcripts'] = self.get_id_transcripts(gene_transcripts[hgnc_id])
+            
             genes[ensg_id] = gene_obj
         
         LOG.info("Ensembl genes fetched")

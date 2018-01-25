@@ -85,7 +85,7 @@ def parse_hpo_phenotypes(hpo_lines):
     hpo_terms = {}
     LOG.info("Parsing hpo phenotypes...")
     for index, line in enumerate(hpo_lines):
-        if index > 0:
+        if index > 0 and len(line) > 0:
             hpo_info = parse_hpo_phenotype(line)
             hpo_term = hpo_info['hpo_id']
             hgnc_symbol = hpo_info['hgnc_symbol']

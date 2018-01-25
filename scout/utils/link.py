@@ -3,8 +3,11 @@ import logging
 
 from pprint import pprint as pp
 
+from pandas import DataFrame
+
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_exons, parse_ensembl_genes)
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_exons, 
+                                 parse_ensembl_genes, parse_ensembl_gene_request)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import get_incomplete_penetrance_genes
 from scout.parse.omim import get_mim_genes
@@ -63,7 +66,11 @@ def add_ensembl_info(genes, ensembl_lines):
     
     LOG.info("Adding ensembl coordinates")
     # Parse and add the ensembl gene info
-    for ensembl_gene in parse_ensembl_genes(ensembl_lines):
+    if isinstance(ensembl_lines, DataFrame):
+        ensembl_genes = parse_ensembl_gene_request(ensembl_lines)
+    else:
+        ensembl_genes = parse_ensembl_genes(ensembl_lines)
+    for ensembl_gene in ensembl_genes:
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
         if not gene_obj:
             continue

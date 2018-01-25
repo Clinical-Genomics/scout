@@ -24,12 +24,14 @@ from pprint import pprint as pp
 
 from scout.load import (load_hgnc_genes, load_transcripts, load_exons)
 
-from scout.resources import (hgnc_path, exac_path, transcripts37_path,
-                             transcripts38_path, mim2gene_path, genemap2_path,
-                             hpogenes_path)
+from scout.utils.requests import (fetch_ensembl_genes, fetch_hgnc, fetch_mim_files,
+                                 fetch_exac_constraint, fetch_hpo_files, fetch_ensembl_transcripts)
 
+from scout.parse.ensembl import (parse_ensembl_gene_request)
+from scout.parse.exac import (parse_exac_genes)
 
-from scout.utils.handle import get_file_handle
+from pandas import DataFrame
+
 
 LOG = logging.getLogger(__name__)
 
@@ -42,43 +44,37 @@ LOG = logging.getLogger(__name__)
                 type=click.Choice(['37', '38']),
                 help="What genome build should be used. If none is choosen build both."
 )
+@click.option('--api-key', help='Specify the api key')
 @click.pass_context
-def genes(context, update, build):
+def genes(context, update, build, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
     builds = [build] if build else ['37', '38']
     builds = [build] if build else ['37']
-    ensembl_genes_37_path = './local/ensembl/ensembl_genes_37.tsv'
-    ensembl_genes_38_path = './local/ensembl/ensembl_genes_38.tsv'
-    ensembl_transcripts_37_path = './local/ensembl/ensembl_transcripts_37.tsv'
-    ensembl_transcripts_38_path = './local/ensembl/ensembl_transcripts_38.tsv'
-    ensembl_exons_37_path = './local/ensembl/ensembl_exons_37.tsv'
-    
-    files = {
-        '37': {
-            'genes': ensembl_genes_37_path,
-            'transcripts': ensembl_transcripts_37_path,
-            'exons': ensembl_exons_37_path,
-        },
-        '38': {
-            'genes': ensembl_genes_38_path,
-            'transcripts': ensembl_transcripts_38_path
-        },
-    }
+    api_key = api_key or context.obj.get('omim_api_key')
     
     adapter = context.obj['adapter']
     
-    LOG.info("Loading hgnc file from {0}".format(hgnc_path))
-    hgnc_handle = get_file_handle(hgnc_path)
-    LOG.info("Loading omim information from files {0}, {1}".format(
-                mim2gene_path, genemap2_path))
-    mim2gene_handle = get_file_handle(mim2gene_path)
-    genemap_handle = get_file_handle(genemap2_path)
-    hpo_handle = get_file_handle(hpogenes_path)
-    LOG.info("Loading exac gene file from {0}".format(
-                exac_path))
-    exac_handle = get_file_handle(exac_path)
+    try:
+        # Fetch the latest hgnc version
+        hgnc_lines = fetch_hgnc()
+        
+        # Fetch the neccessary omim files 
+        mim_files = fetch_mim_files(api_key, mim2genes=True, genemap2=True)
+        mim2gene_lines = mim_files['mim2genes']
+        genemap_lines = mim_files['genemap2']
+        
+        # Fetch the hpo genes file
+        hpo_files = fetch_hpo_files(hpogenes=True)
+        hpo_lines = hpo_files['hpogenes']
+        
+        # Fetch exac file with pLi scores
+        exac_lines = fetch_exac_constraint()
+    except Exception as err:
+        click.echo(err)
+        context.abort()
+
     # Test if the genes are loaded
     for build in builds:
         nr_present_genes = adapter.nr_genes(build=build)
@@ -87,32 +83,26 @@ def genes(context, update, build):
                 LOG.info("Genes are already loaded")
                 LOG.info("If you wish to update genes use '--update'")
                 context.abort()
-            # LOG.warning("Dropping all genes for build %s", build)
-            # adapter.drop_genes(build=build)
-            # LOG.info("Genes dropped")
-            # LOG.warning("Dropping all transcripts for build %s", build)
-            # adapter.drop_transcripts(build=build)
-            # LOG.info("Transcripts dropped")
-            # LOG.warning("Dropping all exons for build %s", build)
-            # adapter.drop_exons(build=build)
-            # LOG.info("Exons dropped")
+            LOG.warning("Dropping all genes for build %s", build)
+            adapter.drop_genes(build=build)
+            LOG.info("Genes dropped")
+            LOG.warning("Dropping all transcripts for build %s", build)
+            adapter.drop_transcripts(build=build)
+            LOG.info("Transcripts dropped")
+            LOG.warning("Dropping all exons for build %s", build)
+            adapter.drop_exons(build=build)
+            LOG.info("Exons dropped")
 
-        LOG.info('Loading gene coordinates from: %s', files[build]['genes'])
-        ensembl_genes_handle = get_file_handle(files[build]['genes'])
-        LOG.info('Loading transcript coordinates from: %s', files[build]['transcripts'])
-        ensembl_transcripts_handle = get_file_handle(files[build]['transcripts'])
-        LOG.info('Loading exons from: %s', files[build]['exons'])
-        ensembl_exons_handle = get_file_handle(files[build]['exons'])
-
+        ensembl_genes = fetch_ensembl_genes(build=build)
 
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
-            ensembl_lines=ensembl_genes_handle,
-            hgnc_lines=hgnc_handle,
-            exac_lines=exac_handle,
-            mim2gene_lines=mim2gene_handle,
-            genemap_lines=genemap_handle,
-            hpo_lines=hpo_handle,
+            ensembl_lines=ensembl_genes,
+            hgnc_lines=hgnc_lines,
+            exac_lines=exac_lines,
+            mim2gene_lines=mim2gene_lines,
+            genemap_lines=genemap_lines,
+            hpo_lines=hpo_lines,
             build=build,
         )
 
@@ -121,7 +111,9 @@ def genes(context, update, build):
             ensembl_id = gene_obj['ensembl_id']
             ensembl_genes[ensembl_id] = gene_obj
 
-        transcripts = load_transcripts(adapter, ensembl_transcripts_handle, build, ensembl_genes)
+        ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
         adapter.update_indexes()
 
-        load_exons(adapter, ensembl_exons_handle, build)
+        # load_exons(adapter, ensembl_exons_handle, build)

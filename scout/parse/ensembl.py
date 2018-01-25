@@ -1,6 +1,79 @@
 import logging
 
+from pprint import pprint as pp
+
 logger = logging.getLogger(__name__)
+
+def parse_ensembl_gene_request(result):
+    """Parse a dataframe with ensembl gene information
+    
+    Args:
+        res(pandas.DataFrame)
+    
+    Yields:
+        gene_info(dict)
+    """
+    
+    keys = [
+        'chrom',
+        'gene_start',
+        'gene_end',
+        'ensembl_gene_id',
+        'hgnc_symbol',
+        'hgnc_id',
+    ]
+    # for res in result.itertuples():
+    for res in zip(result['Chromosome/scaffold name'], result['Gene start (bp)'], result['Gene end (bp)'],
+                    result['Gene stable ID'], result['HGNC symbol'], result['HGNC ID']):
+        ensembl_info = dict(zip(keys, res))
+        
+        if type(ensembl_info['hgnc_symbol']) is float:
+            # Skip genes without hgnc information
+            continue
+        ensembl_info['gene_start'] = int(ensembl_info['gene_start'])
+        ensembl_info['gene_end'] = int(ensembl_info['gene_end'])
+        
+        if type(ensembl_info['hgnc_id']) is float:
+            ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'])
+        else:
+            ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'].split(':')[-1])
+
+        yield ensembl_info
+
+def parse_ensembl_transcript_request(result):
+    """Parse a dataframe with ensembl transcript information
+    
+    Args:
+        res(pandas.DataFrame)
+    
+    Yields:
+        transcript_info(dict)
+    """
+    keys = [
+        'chrom',
+        'ensembl_gene_id',
+        'ensembl_transcript_id',
+        'transcript_start',
+        'transcript_end',
+        'refseq_mrna',
+        'refseq_mrna_predicted',
+        'refseq_ncrna',
+    ]
+    # for res in result.itertuples():
+    for res in zip(result['Chromosome/scaffold name'], result['Gene stable ID'], 
+                   result['Transcript stable ID'], result['Transcript start (bp)'], 
+                   result['Transcript end (bp)'], result['RefSeq mRNA ID'],
+                   result['RefSeq mRNA predicted ID'], result['RefSeq ncRNA ID']):
+        ensembl_info = dict(zip(keys, res))
+
+        ensembl_info['transcript_start'] = int(ensembl_info['transcript_start'])
+        ensembl_info['transcript_end'] = int(ensembl_info['transcript_end'])
+
+        for key in keys[-3:]:
+            if type(ensembl_info[key]) is float:
+                ensembl_info[key] = None
+
+        yield ensembl_info
 
 def parse_ensembl_line(line, header):
     """Parse an ensembl formated line

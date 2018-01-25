@@ -38,7 +38,7 @@ def parse_exac_genes(lines):
     for index, line in enumerate(lines):
         if index == 0:
             header = line.rstrip().split('\t')
-        else:
+        elif len(line) > 0:
             exac_gene = parse_exac_line(line, header)
             
             yield exac_gene
