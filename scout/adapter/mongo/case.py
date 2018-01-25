@@ -11,7 +11,7 @@ from scout.parse.variant.ids import parse_document_id
 
 from scout.exceptions import IntegrityError, ConfigError
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class CaseHandler(object):
@@ -32,11 +32,11 @@ class CaseHandler(object):
         Yields:
             Cases ordered by date
         """
-        logger.debug("Fetch all cases")
+        LOG.debug("Fetch all cases")
         query = query or {}
 
         if collaborator:
-            logger.debug("Use collaborator {0}".format(collaborator))
+            LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
 
         if skip_assigned:
@@ -50,8 +50,9 @@ class CaseHandler(object):
 
         if status:
             query['status'] = status
+        
         elif finished:
-            query['status'] = ['solved', 'archived']
+            query['status'] = {'$in': ['solved', 'archived']}
 
         if research_requested:
             query['research_requested'] = True
@@ -70,6 +71,7 @@ class CaseHandler(object):
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
 
+        LOG.info("Get cases with query {0}".format(query))
         return self.case_collection.find(query).sort('updated_at', -1)
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
@@ -95,10 +97,10 @@ class CaseHandler(object):
         dynamic_gene_list = []
         res = []
         if hgnc_ids:
-            logger.info("Fetching genes by hgnc id")
+            LOG.info("Fetching genes by hgnc id")
             res = self.hgnc_collection.find({'hgnc_id': {'$in': hgnc_ids}, 'build': build})
         elif hgnc_symbols:
-            logger.info("Fetching genes by hgnc symbols")
+            LOG.info("Fetching genes by hgnc symbols")
             res = []
             for symbol in hgnc_symbols:
                 for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
@@ -113,14 +115,14 @@ class CaseHandler(object):
                 }
             )
 
-        logger.info("Update dynamic gene panel for: %s", case['display_name'])
+        LOG.info("Update dynamic gene panel for: %s", case['display_name'])
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
             {'$set': {'dynamic_gene_list': dynamic_gene_list,
                       'dynamic_panel_phenotypes': phenotype_ids or []}},
             return_document=pymongo.ReturnDocument.AFTER
         )
-        logger.debug("Case updated")
+        LOG.debug("Case updated")
         return updated_case
 
     def case(self, case_id=None, institute_id=None, display_name=None):
@@ -139,11 +141,11 @@ class CaseHandler(object):
         query = {}
         if case_id:
             query['_id'] = case_id
-            logger.info("Fetching case %s", case_id)
+            LOG.info("Fetching case %s", case_id)
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Fetching case %s institute %s", display_name, institute_id)
+            LOG.info("Fetching case %s institute %s", display_name, institute_id)
             query['owner'] = institute_id
             query['display_name'] = display_name
 
@@ -174,11 +176,11 @@ class CaseHandler(object):
         query = {}
         if case_id:
             query['_id'] = case_id
-            logger.info("Deleting case %s", case_id)
+            LOG.info("Deleting case %s", case_id)
         else:
             if not (institute_id and display_name):
                 raise ValueError("Have to provide both institute_id and display_name")
-            logger.info("Deleting case %s institute %s", display_name, institute_id)
+            LOG.info("Deleting case %s institute %s", display_name, institute_id)
             query['owner'] = institute_id
             query['display_name'] = display_name
 
@@ -211,7 +213,7 @@ class CaseHandler(object):
         old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
         old_case = self.case(old_caseid)
         if old_case:
-            logger.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
+            LOG.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
             self.update_caseid(old_case, case_obj['_id'])
             update = True
 
@@ -244,14 +246,14 @@ class CaseHandler(object):
                         rank_threshold=case_obj.get('rank_score_threshold', 0),
                     )
                 else:
-                    logger.debug("didn't find {}, skipping".format(vcf_file['file_name']))
+                    LOG.debug("didn't find {}, skipping".format(vcf_file['file_name']))
             except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-                logger.warning(error)
+                LOG.warning(error)
 
         if existing_case and update:
             self.update_case(case_obj)
         else:
-            logger.info('Loading case %s into database', case_obj['display_name'])
+            LOG.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)
 
         return case_obj
@@ -292,7 +294,7 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
-        logger.info("Updating case {0}".format(case_obj['_id']))
+        LOG.info("Updating case {0}".format(case_obj['_id']))
         old_case = self.case_collection.find_one(
                         {'_id': case_obj['_id']}
                     )
@@ -325,7 +327,7 @@ class CaseHandler(object):
             return_document = pymongo.ReturnDocument.AFTER
         )
 
-        logger.info("Case updated")
+        LOG.info("Case updated")
         return updated_case
         ##TODO Add event for updating case?
 
@@ -345,7 +347,7 @@ class CaseHandler(object):
 
         # update ACMG
         for acmg_obj in self.acmg_collection.find({'case_id': case_obj['_id']}):
-            logger.info("update ACMG classification: %s", acmg_obj['classification'])
+            LOG.info("update ACMG classification: %s", acmg_obj['classification'])
             acmg_variant = self.variant(acmg_obj['variant_specific'])
             new_specific_id = get_variantid(acmg_variant, family_id)
             self.acmg_collection.find_one_and_update(
@@ -356,7 +358,7 @@ class CaseHandler(object):
         # update events
         institute_obj = self.institute(case_obj['owner'])
         for event_obj in self.events(institute_obj, case=case_obj):
-            logger.info("update event: %s", event_obj['verb'])
+            LOG.info("update event: %s", event_obj['verb'])
             self.event_collection.find_one_and_update(
                 {'_id': event_obj['_id']},
                 {'$set': {'case': family_id}},
