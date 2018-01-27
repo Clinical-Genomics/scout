@@ -25,13 +25,8 @@ from pprint import pprint as pp
 from scout.load import (load_hgnc_genes, load_transcripts, load_exons)
 
 from scout.utils.requests import (fetch_ensembl_genes, fetch_hgnc, fetch_mim_files,
-                                 fetch_exac_constraint, fetch_hpo_files, fetch_ensembl_transcripts)
-
-from scout.parse.ensembl import (parse_ensembl_gene_request)
-from scout.parse.exac import (parse_exac_genes)
-
-from pandas import DataFrame
-
+                                 fetch_exac_constraint, fetch_hpo_files, 
+                                 fetch_ensembl_transcripts, fetch_ensembl_exons)
 
 LOG = logging.getLogger(__name__)
 
@@ -51,10 +46,34 @@ def genes(context, update, build, api_key):
     Load the hgnc aliases to the mongo database.
     """
     builds = [build] if build else ['37', '38']
-    builds = [build] if build else ['37']
     api_key = api_key or context.obj.get('omim_api_key')
     
+    if not api_key:
+        LOG.warning("Please provide a api key to access OMIM data")
+        LOG.info("Request a key from https://omim.org/downloads/")
+        context.abort()
+    
     adapter = context.obj['adapter']
+    
+    # Test if the genes are loaded
+    for build in builds:
+        nr_present_genes = adapter.nr_genes(build=build)
+        if nr_present_genes == 0:
+            LOG.info("No genes found for build %s", build)
+            continue
+        if not update:
+            LOG.warning("Genes are already loaded")
+            LOG.info("If you wish to update genes use '--update'")
+            context.abort()
+        LOG.warning("Dropping all genes for build %s", build)
+        adapter.drop_genes(build=build)
+        LOG.info("Genes dropped")
+        LOG.warning("Dropping all transcripts for build %s", build)
+        adapter.drop_transcripts(build=build)
+        LOG.info("Transcripts dropped")
+        LOG.warning("Dropping all exons for build %s", build)
+        adapter.drop_exons(build=build)
+        LOG.info("Exons dropped")
     
     try:
         # Fetch the latest hgnc version
@@ -77,24 +96,10 @@ def genes(context, update, build, api_key):
 
     # Test if the genes are loaded
     for build in builds:
-        nr_present_genes = adapter.nr_genes(build=build)
-        if nr_present_genes > 0:
-            if not update:
-                LOG.info("Genes are already loaded")
-                LOG.info("If you wish to update genes use '--update'")
-                context.abort()
-            LOG.warning("Dropping all genes for build %s", build)
-            adapter.drop_genes(build=build)
-            LOG.info("Genes dropped")
-            LOG.warning("Dropping all transcripts for build %s", build)
-            adapter.drop_transcripts(build=build)
-            LOG.info("Transcripts dropped")
-            LOG.warning("Dropping all exons for build %s", build)
-            adapter.drop_exons(build=build)
-            LOG.info("Exons dropped")
-
+        
         ensembl_genes = fetch_ensembl_genes(build=build)
-
+        
+        # load the genes
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
             ensembl_lines=ensembl_genes,
@@ -105,15 +110,20 @@ def genes(context, update, build, api_key):
             hpo_lines=hpo_lines,
             build=build,
         )
-
+        
         ensembl_genes = {}
         for gene_obj in hgnc_genes:
             ensembl_id = gene_obj['ensembl_id']
             ensembl_genes[ensembl_id] = gene_obj
 
+        # Load the transcripts
         ensembl_transcripts = fetch_ensembl_transcripts(build=build)
-
         transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+        
+        # Load the exons
+        ensembl_exons = fetch_ensembl_exons(build=build)
+        load_exons(adapter, ensembl_exons, build, ensembl_genes)
+    
         adapter.update_indexes()
-
-        # load_exons(adapter, ensembl_exons_handle, build)
+        
+    LOG.info("Genes, transcripts and Exons loaded")

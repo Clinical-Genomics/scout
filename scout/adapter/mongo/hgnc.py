@@ -300,26 +300,30 @@ class GeneHandler(object):
 
         return alias_genes
 
-    def get_id_transcripts(self, transcripts):
+    def get_id_transcripts(self, hgnc_id, build='37'):
         """Return a set with identifier transcript(s)
 
-        Choose all refseq transcripts with NM symbols, if none where found choose one with NR,
-        if no NR choose one with XM. If there are no RefSeq transcripts identifiers choose the 
+        Choose all refseq transcripts with NM symbols, if none where found choose ONE with NR,
+        if no NR choose ONE with XM. If there are no RefSeq transcripts identifiers choose the 
         longest ensembl transcript.
 
         Args:
-            transcripts(list)
+            hgnc_id(int)
+            build(str)
 
         Returns:
             identifier_transcripts(set)
 
         """
+        transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)
+
         identifier_transcripts = set()
         longest = None
         nr = []
         xm = []
         for tx in transcripts:
             enst_id = tx['transcript_id']
+            # Should we not check if it is longest?
             if not longest:
                 longest = enst_id
             refseq_id = tx.get('refseq_id')
@@ -345,7 +349,15 @@ class GeneHandler(object):
         return set([longest])
 
     def transcripts_by_gene(self, build='37'):
-        """Return a dictionary with hgnc_id as keys and a list of transcripts as value"""
+        """Return a dictionary with hgnc_id as keys and a list of transcripts as value
+        
+        Args:
+            build(str)
+        
+        Returns:
+            hgnc_transcripts(dict)
+                
+        """
         hgnc_transcripts = {}
         LOG.info("Fetching all transcripts")
         for transcript in self.transcript_collection.find({'build':build}):
@@ -356,6 +368,24 @@ class GeneHandler(object):
             hgnc_transcripts[hgnc_id].append(transcript)
         
         return hgnc_transcripts
+
+    def id_transcripts_by_gene(self, build='37'):
+        """Return a dictionary with hgnc_id as keys and a set of id transcripts as value
+        
+        Args:
+            build(str)
+        
+        Returns:
+            hgnc_id_transcripts(dict)
+        """
+        hgnc_id_transcripts = {}
+        LOG.info("Fetching all id transcripts")
+        for gene_obj in self.hgnc_collection.find({'build': build}):
+            hgnc_id = gene_obj['hgnc_id']
+            id_transcripts = self.get_id_transcripts(hgnc_id=hgnc_id, build=build)
+            hgnc_id_transcripts[hgnc_id] = id_transcripts
+
+        return hgnc_id_transcripts
 
     def ensembl_genes(self, build='37'):
         """Return a dictionary with ensembl ids as keys and gene objects as value.
@@ -378,6 +408,26 @@ class GeneHandler(object):
         LOG.info("Ensembl genes fetched")
 
         return genes
+    
+    def transcripts(self, build='37', hgnc_id=None):
+        """Return all transcripts.
+        
+            If a gene is specified return all transcripts for the gene
+        
+        Args:
+            build(str)
+            hgnc_id(int)
+        
+        Returns:
+            iterable(transcript)
+        """
+        
+        query = {'build': build}
+        if hgnc_id:
+            query['hgnc_id'] = hgnc_id
+        
+        return self.transcript_collection.find(query)
+    
 
     def to_hgnc(self, hgnc_alias, build='37'):
         """Check if a hgnc symbol is an alias
@@ -482,3 +532,24 @@ class GeneHandler(object):
                 continue
             
             res = self.exon_collection.insert_one(exon_obj)
+
+    def exons(self, hgnc_id=None, transcript_id=None,  build=None):
+        """Return all exons
+        
+        Args:
+            hgnc_id(int)
+            transcript_id(str)
+            build(str)
+        
+        Returns:
+            exons(iterable(dict))
+        """
+        query = {}
+        if build:
+            query['build'] = build
+        if hgnc_id:
+            query['hgnc_id'] = hgnc_id
+        if transcript_id:
+            query['transcript_id'] = transcript_id
+        
+        return self.exon_collection.find(query)

@@ -269,6 +269,75 @@ def parse_ensembl_exons(lines):
         yield data
 
 
+def parse_ensembl_exon_request(result):
+    """Parse a dataframe with ensembl exon information
+    
+    Args:
+        res(pandas.DataFrame)
+    
+    Yields:
+        gene_info(dict)
+    """
+    keys = [
+        'chrom',
+        'gene',
+        'transcript',
+        'exon_id',
+        'exon_chrom_start',
+        'exon_chrom_end',
+        '5_utr_start',
+        '5_utr_end',
+        '3_utr_start',
+        '3_utr_end',
+        'strand',
+        'rank'
+    ]
+
+    # for res in result.itertuples():
+    for res in zip(result['Chromosome/scaffold name'], 
+                   result['Gene stable ID'], 
+                   result['Transcript stable ID'],
+                   result['Exon stable ID'], 
+                   result['Exon region start (bp)'], 
+                   result['Exon region end (bp)'], 
+                   result["5' UTR start"], 
+                   result["5' UTR end"], 
+                   result["3' UTR start"], 
+                   result["3' UTR end"], 
+                   result["Strand"], 
+                   result["Exon rank in transcript"]):
+        ensembl_info = dict(zip(keys, res))
+        
+        # Recalculate start and stop (taking UTR regions into account for end exons)    
+        if ensembl_info['strand'] == 1:
+            # highest position: start of exon or end of 5' UTR
+            # If no 5' UTR make sure exon_start is allways choosen
+            start = max(ensembl_info['exon_chrom_start'], ensembl_info['5_utr_end'] or -1)
+            # lowest position: end of exon or start of 3' UTR
+            end = min(ensembl_info['exon_chrom_end'], ensembl_info['3_utr_start'] or float('inf'))
+        elif ensembl_info['strand'] == -1:
+            # highest position: start of exon or end of 3' UTR
+            start = max(ensembl_info['exon_chrom_start'], ensembl_info['3_utr_end'] or -1)
+            # lowest position: end of exon or start of 5' UTR
+            end = min(ensembl_info['exon_chrom_end'], ensembl_info['5_utr_start'] or float('inf'))
+        
+        ensembl_info['start'] = start
+        ensembl_info['end'] = end
+        
+        yield ensembl_info
+        
+        # if type(ensembl_info['hgnc_symbol']) is float:
+        #     # Skip genes without hgnc information
+        #     continue
+        # ensembl_info['gene_start'] = int(ensembl_info['gene_start'])
+        # ensembl_info['gene_end'] = int(ensembl_info['gene_end'])
+        #
+        # if type(ensembl_info['hgnc_id']) is float:
+        #     ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'])
+        # else:
+        #     ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'].split(':')[-1])
+        #
+        # yield ensembl_info
 
 
 

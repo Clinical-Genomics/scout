@@ -188,6 +188,48 @@ def fetch_ensembl_transcripts(build='37'):
     
     return result
 
+def fetch_ensembl_exons(build='37'):
+    """Fetch the ensembl genes
+    
+    Args:
+        build(str): ['37', '38']
+    """
+    LOG.info("Fetching ensembl exons build %s ...", build)
+    if build == '37':
+        url = 'http://grch37.ensembl.org'
+    else:
+        url = 'http://www.ensembl.org'
+    
+    dataset_name = 'hsapiens_gene_ensembl'
+    
+    dataset = pybiomart.Dataset(name=dataset_name, host=url)
+    
+    attributes = [
+        'chromosome_name',
+        'ensembl_gene_id',
+        'ensembl_transcript_id',
+        'ensembl_exon_id',
+        'exon_chrom_start',
+        'exon_chrom_end',
+        '5_utr_start',
+        '5_utr_end',
+        '3_utr_start',
+        '3_utr_end',
+        'strand',
+        'rank'
+    ]
+    
+    filters = {
+        'chromosome_name': CHROMOSOMES,
+    }
+    
+    result = dataset.query(
+        attributes = attributes,
+        filters = filters
+    )
+    
+    return result
+
 def fetch_hgnc():
     """Fetch the hgnc genes file from 
         ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt
@@ -228,7 +270,7 @@ def fetch_hpo_files(hpogenes=False, hpoterms=False, phenotype_to_terms=False, hp
         mim_files(dict): A dictionary with the neccesary files
     """
 
-    LOG.info("Fetching OMIM files from https://omim.org/")
+    LOG.info("Fetching HPO information from http://compbio.charite.de")
     base_url = ('http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/'
                 'lastStableBuild/artifact/annotation/{}')
     hpogenes_url =  base_url.format('ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt')

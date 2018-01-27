@@ -16,7 +16,6 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
     """Load all the transcripts
     
     Transcript information is from ensembl.
-    We need to collect information 
     
     Args:
         adapter(MongoAdapter)
@@ -31,7 +30,6 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
     # Fetch all genes with ensemblid as keys
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
     LOG.info("Number of genes: {0}".format(len(ensembl_genes)))
-    LOG.info("Number of genes: {0}".format(adapter.all_genes().count()))
     
     if isinstance(transcripts_lines, DataFrame):
         transcripts = parse_ensembl_transcript_request(transcripts_lines)
@@ -107,12 +105,10 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
                 ref_seq_transcripts += 1
             if tx_obj.get('is_primary'):
                 nr_primary_transcripts += 1
-            
-        
-    
+
     LOG.info('Number of transcripts in build {0}: {1}'.format(build, nr_transcripts))
     LOG.info('Number of ref seq: %s' % ref_seq_transcripts)
     LOG.info('Number of primary: %s' % nr_primary_transcripts)
-    
+
     return loaded_transcripts
     
