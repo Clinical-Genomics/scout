@@ -151,10 +151,10 @@ def genes(context):
     header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for gene in export_genes(adapter):
-        print(gene)
+        click.echo(gene)
 
 @click.command('transcripts', short_help='Export transcripts')
 @click.pass_context
@@ -166,10 +166,10 @@ def transcripts(context):
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for transcript in export_transcripts(adapter):
-        print(transcript)
+        click.echo(transcript)
 
 @click.command('variants', short_help='Export variants')
 @click.option('-c', '--collaborator')
@@ -191,10 +191,10 @@ def variants(context, collaborator):
     ]
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for variant in export_causatives(adapter, collaborator):
-        print(variant)
+        click.echo(variant)
 
 @click.command('hpo_genes', short_help='Export hpo gene list')
 @click.argument('hpo_term',nargs=-1)
@@ -211,10 +211,10 @@ def hpo_genes(context, hpo_term):
         context.abort()
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for term in adapter.generate_hpo_gene_list(*hpo_term):
-        print("{0}\t{1}".format(term[0], term[1]))
+        click.echo("{0}\t{1}".format(term[0], term[1]))
 
 
 
