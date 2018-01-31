@@ -19,9 +19,9 @@ import click
 from scout.export.gene import export_genes
 from scout.export.transcript import export_transcripts
 from scout.export.variant import export_causatives
-from scout.export.panel import export_panels
+from scout.export.panel import (export_panels, export_gene_panels)
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 @click.command('omim', short_help='Export a omim gene panel')
@@ -47,7 +47,7 @@ def omim(context, version, build, to_json, outfile):
     """Export the omim gene panel to a .bed like format.
     """
     version = version or 1.0
-    logger.info("Running scout export omim")
+    LOG.info("Running scout export omim")
     adapter = context.obj['adapter']
     
     if not to_json:
@@ -87,9 +87,9 @@ def omim(context, version, build, to_json, outfile):
             print(json.dumps(json_genes, sort_keys=True, indent=4))
         
     
-    logger.info("Nr of genes in total: %s" % nr_genes)
-    logger.info("Nr of omim genes: %s" % nr_omim)
-    logger.info("Nr of genes outside mim panel: %s" % (nr_genes - nr_omim))
+    LOG.info("Nr of genes in total: %s" % nr_genes)
+    LOG.info("Nr of omim genes: %s" % nr_omim)
+    LOG.info("Nr of genes outside mim panel: %s" % (nr_genes - nr_omim))
 
 
 @click.command('panel', short_help='Export gene panels')
@@ -97,58 +97,86 @@ def omim(context, version, build, to_json, outfile):
                 nargs=-1,
                 metavar='<panel_name>'
 )
+@click.option('--version', 
+    type=float,
+    help="Specify panel version, only works if one panel"
+)
 @click.pass_context
-def panel(context, panel):
+def panel(context, panel, version):
     """Export gene panels to .bed like format.
     
         Specify any number of panels on the command line
     """
-    logger.info("Running scout export panel")
+    LOG.info("Running scout export panel")
     adapter = context.obj['adapter']
     
     if not panel:
-        logger.warning("Please provide at least one gene panel")
+        LOG.warning("Please provide at least one gene panel")
         context.abort()
 
-    logger.info("Exporting panels: {}".format(', '.join(panel)))
-    export_panels(adapter, panel)
+    LOG.info("Exporting panels: {}".format(', '.join(panel)))
+    for line in export_gene_panels(adapter, panel, version):
+        click.echo(line)
+
+@click.command('panel_genes', short_help='Export gene panels with coordinates')
+@click.argument('panel',
+                nargs=-1,
+                metavar='<panel_name>'
+)
+@click.pass_context
+def panel_genes(context, panel):
+    """Export gene panels to .bed like format with coordinates.
+    
+        Specify any number of panels on the command line
+    """
+    LOG.info("Running scout export panel")
+    adapter = context.obj['adapter']
+    
+    if not panel:
+        LOG.warning("Please provide at least one gene panel")
+        context.abort()
+
+    LOG.info("Exporting panels: {}".format(', '.join(panel)))
+    for line in export_panels(adapter, panel):
+        click.echo(line)
+
 
 @click.command('genes', short_help='Export genes')
 @click.pass_context
 def genes(context):
     """Export all genes to .bed like format"""
-    logger.info("Running scout export genes")
+    LOG.info("Running scout export genes")
     adapter = context.obj['adapter']
     
     header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for gene in export_genes(adapter):
-        print(gene)
+        click.echo(gene)
 
 @click.command('transcripts', short_help='Export transcripts')
 @click.pass_context
 def transcripts(context):
     """Export all transcripts to .bed like format"""
-    logger.info("Running scout export transcripts")
+    LOG.info("Running scout export transcripts")
     adapter = context.obj['adapter']
     
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for transcript in export_transcripts(adapter):
-        print(transcript)
+        click.echo(transcript)
 
 @click.command('variants', short_help='Export variants')
 @click.option('-c', '--collaborator')
 @click.pass_context
 def variants(context, collaborator):
     """Export causatives for a collaborator in .vcf format"""
-    logger.info("Running scout export variants")
+    LOG.info("Running scout export variants")
     adapter = context.obj['adapter']
     
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
@@ -163,17 +191,17 @@ def variants(context, collaborator):
     ]
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for variant in export_causatives(adapter, collaborator):
-        print(variant)
+        click.echo(variant)
 
 @click.command('hpo_genes', short_help='Export hpo gene list')
 @click.argument('hpo_term',nargs=-1)
 @click.pass_context
 def hpo_genes(context, hpo_term):
     """Export a list of genes base on hpo terms"""
-    logger.info("Running scout export hpo_genes")
+    LOG.info("Running scout export hpo_genes")
     adapter = context.obj['adapter']
     
     header = ["#Gene_id\tCount"]
@@ -183,10 +211,10 @@ def hpo_genes(context, hpo_term):
         context.abort()
 
     for line in header:
-        print(line)
+        click.echo(line)
 
     for term in adapter.generate_hpo_gene_list(*hpo_term):
-        print("{0}\t{1}".format(term[0], term[1]))
+        click.echo("{0}\t{1}".format(term[0], term[1]))
 
 
 
@@ -196,9 +224,10 @@ def export(ctx):
     """
     Export objects from the mongo database.
     """
-    logger.info("Running scout export")
+    LOG.info("Running scout export")
 
 export.add_command(panel)
+export.add_command(panel_genes)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)

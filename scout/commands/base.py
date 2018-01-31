@@ -30,7 +30,7 @@ from scout.adapter.utils import check_connection
 
 try:
     from scoutconfig import *
-except ModuleNotFoundError:
+except ImportError:
     pass
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
