@@ -122,7 +122,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         exac_frequencies = []
         thousandg_frequencies = []
         for key in entry:
-            if key.endswith('MAF'):
+            if key.endswith('AF'):
 
                 maf_allele_entries = entry[key].split('&')
 
@@ -133,8 +133,9 @@ def parse_transcripts(raw_transcripts, allele=None):
                     if splitted_entry[0] == allele:
                         value = float(splitted_entry[1])
                         if value > 0:
-                            if key.startswith('ExAC'):
+                            if key.upper().startswith('EXAC'):
                                 exac_frequencies.append(value)
+                            
                                 # Otherwise we know it is a 1000G frequency
                             else:
                                 thousandg_frequencies.append(value)
@@ -146,7 +147,11 @@ def parse_transcripts(raw_transcripts, allele=None):
         if thousandg_frequencies:
             transcript['thousand_g_maf'] = sum(thousandg_frequencies)/len(thousandg_frequencies)
             transcript['thousandg_max'] = max(thousandg_frequencies)
-
+        
+        gnomad = entry.get('gnomAD_AF')
+        if gnomad:
+            transcript['gnomad_af'] = 
+        
         clinsig = entry.get('CLIN_SIG')
         if clinsig:
             transcript['clinsig'] = clinsig.split('&')
