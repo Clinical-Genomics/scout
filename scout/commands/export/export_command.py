@@ -118,6 +118,29 @@ def panel(context, panel, version):
     for line in export_gene_panels(adapter, panel, version):
         click.echo(line)
 
+@click.command('panel_genes', short_help='Export gene panels with coordinates')
+@click.argument('panel',
+                nargs=-1,
+                metavar='<panel_name>'
+)
+@click.pass_context
+def panel_genes(context, panel):
+    """Export gene panels to .bed like format with coordinates.
+    
+        Specify any number of panels on the command line
+    """
+    LOG.info("Running scout export panel")
+    adapter = context.obj['adapter']
+    
+    if not panel:
+        LOG.warning("Please provide at least one gene panel")
+        context.abort()
+
+    LOG.info("Exporting panels: {}".format(', '.join(panel)))
+    for line in export_panels(adapter, panel):
+        click.echo(line)
+
+
 @click.command('genes', short_help='Export genes')
 @click.pass_context
 def genes(context):
@@ -204,6 +227,7 @@ def export(ctx):
     LOG.info("Running scout export")
 
 export.add_command(panel)
+export.add_command(panel_genes)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)
