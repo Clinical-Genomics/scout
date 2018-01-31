@@ -3,12 +3,14 @@ from scout.parse.case import (parse_case, parse_ped, parse_individuals,
                               parse_individual)
 from scout.exceptions import PedigreeError
 
+
 def test_parse_case(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have a owner
     assert case_data['owner'] == scout_config['owner']
+
 
 def test_parse_case(scout_config):
     # GIVEN you load sample information from a scout config
@@ -17,12 +19,14 @@ def test_parse_case(scout_config):
     # THEN the case a correct case id
     assert case_data['case_id'] == scout_config['family']
 
+
 def test_parse_case_madeline(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
     assert case_data['madeline_info']
+
 
 def test_parse_case_collaborators(scout_config):
     # GIVEN you load sample information from a scout config
@@ -31,12 +35,14 @@ def test_parse_case_collaborators(scout_config):
     # THEN the case should have a list with collaborators
     assert case_data['collaborators'] == [scout_config['owner']]
 
+
 def test_parse_case_gene_panels(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
     assert case_data['gene_panels'] == scout_config['gene_panels']
+
 
 def test_parse_case_default_panels(scout_config):
     # GIVEN you load sample information from a scout config
@@ -45,12 +51,22 @@ def test_parse_case_default_panels(scout_config):
     # THEN the case should have the same panels like the config
     assert case_data['default_panels'] == scout_config['default_gene_panels']
 
+
 def test_parse_case_rank_threshold(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
     assert case_data['rank_score_threshold'] == scout_config['rank_score_threshold']
+
+
+def test_parse_case_rank_model_version(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have the same rank model version like the config
+    assert case_data['rank_model_version'] == scout_config['rank_model_version']
+
 
 def test_parse_case_vcf_files(scout_config):
     # GIVEN you load sample information from a scout config
@@ -62,6 +78,7 @@ def test_parse_case_vcf_files(scout_config):
     assert case_data['vcf_files']['vcf_snv_research'] == scout_config['vcf_snv_research']
     assert case_data['vcf_files']['vcf_sv_research'] == scout_config['vcf_sv_research']
 
+
 def test_parse_ped_file(ped_file):
     # GIVEN a pedigree with three samples
     with open(ped_file, 'r') as case_lines:
@@ -72,12 +89,14 @@ def test_parse_ped_file(ped_file):
     # THEN it should return correct number of individuals
     assert len(samples) == 3
 
+
 def test_parse_case_minimal_config(minimal_config):
     # GIVEN a minimal config
     # WHEN parsing the config
     case_data = parse_case(minimal_config)
     # THEN assert is was parsed correct
     assert case_data
+
 
 def test_parse_ped():
     # GIVEN a pedigree with three samples
@@ -95,6 +114,7 @@ def test_parse_ped():
     # THEN it should return correct number of individuals
     assert len(samples) == 3
 
+
 # ## Test how problems are handeled when parsing a case
 
 def test_parse_case_two_cases_ped():
@@ -108,8 +128,9 @@ def test_parse_case_two_cases_ped():
     ]
     # WHEN parsing case info
     with pytest.raises(PedigreeError):
-    # THEN it should raise since there are multiple families
+        # THEN it should raise since there are multiple families
         parse_ped(case_lines)
+
 
 def test_no_individuals():
     # GIVEN a list with no indioviduals
@@ -119,91 +140,95 @@ def test_no_individuals():
         # THEN error should be raised since a family has to have individuals
         parse_individuals(samples)
 
+
 def test_parse_missing_id():
     # GIVEN a individual without sample_id
     sample_info = {
-        'sex':'male',
-        'phenotype':'affected',
+        'sex': 'male',
+        'phenotype': 'affected',
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
         parse_individual(sample_info)
+
 
 def test_parse_missing_sex():
     # GIVEN a individual without sex
     sample_info = {
-        'sample_id':'1',
-        'phenotype':'affected',
+        'sample_id': '1',
+        'phenotype': 'affected',
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
         parse_individual(sample_info)
+
 
 def test_parse_missing_phenotype():
     # GIVEN a individual without phenotype
     sample_info = {
-        'sample_id':'1',
-        'sex':'male',
+        'sample_id': '1',
+        'sex': 'male',
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
         parse_individual(sample_info)
+
 
 def test_parse_wrong_phenotype():
     # GIVEN a individual with wrong phenotype format
     sample_info = {
-        'sample_id':'1',
-        'sex':'male',
-        'phenotype':'not-affected',
+        'sample_id': '1',
+        'sex': 'male',
+        'phenotype': 'not-affected',
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
         parse_individual(sample_info)
+
 
 def test_parse_wrong_sex():
     # GIVEN a individual with wrong sex format
     sample_info = {
-        'sample_id':'1',
-        'sex':'flale',
-        'phenotype':'affected',
+        'sample_id': '1',
+        'sex': 'flale',
+        'phenotype': 'affected',
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
         parse_individual(sample_info)
-
 
 
 def test_wrong_relations():
     """docstring for test_wrong_relations"""
     # GIVEN a individual with correct family info
     sample_info = {
-        'sample_id':'1',
-        'sex':'male',
-        'phenotype':'affected',
+        'sample_id': '1',
+        'sex': 'male',
+        'phenotype': 'affected',
         'mother': '3',
         'father': '2'
     }
     mother_info = {
-        'sample_id':'3',
-        'sex':'female',
-        'phenotype':'unaffected',
+        'sample_id': '3',
+        'sex': 'female',
+        'phenotype': 'unaffected',
         'mother': '0',
         'father': '0'
     }
     father_info = {
-        'sample_id':'2',
-        'sex':'male',
-        'phenotype':'unaffected',
+        'sample_id': '2',
+        'sex': 'male',
+        'phenotype': 'unaffected',
         'mother': '0',
         'father': '0'
     }
     samples = [sample_info, mother_info, father_info]
-    #Nothong should happend here
+    # Nothong should happend here
     assert parse_individuals(samples)
 
     # WHEN changing mother id in proband
@@ -211,4 +236,3 @@ def test_wrong_relations():
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
         parse_individuals(samples)
-
