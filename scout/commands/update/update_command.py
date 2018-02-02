@@ -3,6 +3,7 @@ import logging
 import click
 
 from scout.utils.date import get_date
+from scout.update.panel import update_panel
 
 from .case import case as case_command
 from .omim import omim as omim_command
@@ -89,6 +90,7 @@ def user(context, user_id, update_role, add_institute, remove_admin, remove_inst
                 required=True
 )
 @click.option('--version',
+                type=float,
                 help="Specify the version of a panel. If no version the latest panel is chosen.",
 )
 @click.option('--update-date', '-d',
@@ -106,8 +108,12 @@ def panel(context, panel, version, update_date, update_version):
     """
     adapter = context.obj['adapter']
     
+    #Check that the panel exists
     panel_obj = adapter.gene_panel(panel, version=version)
-
+    # for panel_obj in adapter.panel_collection.find({'panel_name': 'CAN'}):
+    #     print(panel_obj['panel_name'], panel_obj['version'])
+    #
+    # print(panel_obj)
     if not panel_obj:
         LOG.warning("Panel %s (version %s) could not be found" % (panel, version))
         context.abort()
@@ -119,10 +125,14 @@ def panel(context, panel, version, update_date, update_version):
         except Exception as err:
             LOG.warning(err)
             context.abort()
-    
-    if update_version:
-        panel_obj['version'] = update_version
-    updated_panel = adapter.update_panel(panel_obj, date_obj)
+
+    updated_panel = update_panel(
+        adapter, 
+        panel, 
+        panel_version=panel_obj['version'], 
+        new_version=update_version, 
+        new_date=date_obj
+    )
 
 
 
