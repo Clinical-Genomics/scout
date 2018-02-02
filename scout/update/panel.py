@@ -21,6 +21,6 @@ def update_panel(adapter, panel_name, panel_version, new_version=None, new_date=
     LOG.info('Updating affected cases with {0}'.format(update))
     
     query = {'panels': { '$elemMatch': {'panel_id': panel_id}}}
-    adapter.case_collection.update(query, update)
+    adapter.case_collection.update_many(query, update)
     
     return updated_panel
