@@ -41,13 +41,14 @@ def panels(context, institute):
     if panel_objs.count() == 0:
         log.info("No panels found")
         context.abort()
-    click.echo("#panel_name\tversion\tnr_genes")
+    click.echo("#panel_name\tversion\tnr_genes\tdate")
 
     for panel_obj in panel_objs:
-        click.echo("{0}\t{1}\t{2}".format(
+        click.echo("{0}\t{1}\t{2}\t{3}".format(
             panel_obj['panel_name'],
             str(panel_obj['version']),
-            len(panel_obj['genes'])
+            len(panel_obj['genes']),
+            str(panel_obj['date'].strftime('%Y-%m-%d'))
         ))
 
 @click.command('users', short_help='Display users')

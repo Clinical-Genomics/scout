@@ -224,7 +224,7 @@ class PanelHandler(object):
         """
         query = {'panel_name': panel_id}
         if version:
-            LOG.debug("Fetch gene panel {0}, version {1} from database".format(
+            LOG.info("Fetch gene panel {0}, version {1} from database".format(
                 panel_id, version
             ))
             query['version'] = version
@@ -296,6 +296,7 @@ class PanelHandler(object):
         """
         LOG.info("Updating panel %s", panel_obj['panel_name'])
         # update date of panel to "today"
+        date = panel_obj['date']
         if version:
             LOG.info("Updating version from {0} to version {1}".format(
                 panel_obj['version'], version))
@@ -303,11 +304,9 @@ class PanelHandler(object):
             # Updating version should not update date
             if date_obj:
                 date = date_obj
-            else:
-                date = panel_obj['date']
         else:
             date = date_obj or dt.datetime.now()
-            panel_obj['date'] = date
+        panel_obj['date'] = date
 
         updated_panel = self.panel_collection.find_one_and_replace(
             {'_id': panel_obj['_id']},
