@@ -1,0 +1,1 @@
+Chromosome/scaffold name	Gene stable ID	Transcript stable ID	Transcript start (bp)	Transcript end (bp)	RefSeq mRNA ID	RefSeq mRNA predicted ID	RefSeq ncRNA ID

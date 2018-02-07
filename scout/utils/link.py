@@ -71,6 +71,7 @@ def add_ensembl_info(genes, ensembl_lines):
     else:
         ensembl_genes = parse_ensembl_genes(ensembl_lines)
     for ensembl_gene in ensembl_genes:
+        pp(ensembl_gene)
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
         if not gene_obj:
             continue

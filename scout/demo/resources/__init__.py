@@ -3,13 +3,16 @@ import pkg_resources
 ###### Files ######
 
 # Gene sources:
-hgnc_file = 'demo/resources/hgnc_reduced_set.txt.gz'
-exac_file = 'demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt.gz'
-transcripts37_file = 'demo/resources/ensembl_transcripts_reduced.txt.gz'
+hgnc_file = 'demo/resources/hgnc_reduced_set.txt'
+exac_file = 'demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt'
+transcripts37_file = 'demo/resources/ensembl_transcripts_37_reduced.txt'
+genes37_file = 'demo/resources/ensembl_genes_37_reduced.txt'
+transcripts38_file = 'demo/resources/ensembl_transcripts_38_reduced.txt'
+genes38_file = 'demo/resources/ensembl_genes_38_reduced.txt'
 
 # OMIM resources:
-mim2gene_file = 'demo/resources/mim2gene_reduced.txt.gz'
-genemap2_file = 'demo/resources/genemap2_reduced.txt.gz'
+mim2gene_file = 'demo/resources/mim2gene_reduced.txt'
+genemap2_file = 'demo/resources/genemap2_reduced.txt'
 
 # Hpo resources
 hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt.gz'
@@ -26,7 +29,9 @@ madeline_file = 'demo/madeline.xml'
 hgnc_reduced_path = pkg_resources.resource_filename('scout', hgnc_file)
 exac_reduced_path = pkg_resources.resource_filename('scout', exac_file)
 transcripts37_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
-transcripts38_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
+transcripts38_reduced_path = pkg_resources.resource_filename('scout', transcripts38_file)
+genes37_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
+genes38_reduced_path = pkg_resources.resource_filename('scout', transcripts38_file)
 
 # OMIM paths
 mim2gene_reduced_path = pkg_resources.resource_filename('scout', mim2gene_file)
