@@ -104,7 +104,7 @@ def test_parse_vep_freq_thousand_g():
     
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
-        assert transcript['thousand_g_max'] == freq
+        assert transcript['thousand_g_maf'] == freq
 
 def test_parse_vep_freq_thousand_g_alt():
     ## GIVEN a transcript with the 1000G frequency
@@ -120,7 +120,7 @@ def test_parse_vep_freq_thousand_g_alt():
     
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
-        assert transcript['thousand_g_max'] == freq
+        assert transcript['thousand_g_maf'] == freq
 
 def test_parse_vep_freq_gnomad():
     ## GIVEN a transcript with the 1000G frequency
@@ -136,7 +136,7 @@ def test_parse_vep_freq_gnomad():
     
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
-        assert transcript['gnomad_max'] == freq
+        assert transcript['gnomad_maf'] == freq
 
 def test_parse_vep_freq_exac():
     ## GIVEN a transcript with the 1000G frequency
@@ -154,5 +154,19 @@ def test_parse_vep_freq_exac():
     for transcript in transcripts:
         assert transcript['exac_max'] == freq
 
+def test_parse_vep_freq_thousand_g_max():
+    ## GIVEN a transcript with the 1000G frequency
+    freqs = [0.01, 0.001]
+    csq_header = "Allele|Consequence|AFR_AF|AMR_AF"
+    csq_entry = "C|missense_variant|{0}|{1}".format(freqs[0], freqs[1])
+    
+    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+                            for entry in csq_entry.split(',')]
 
+    ## WHEN parsing the transcripts
+    transcripts = parse_transcripts(raw_transcripts)
+    
+    ## THEN assert that the hgnc annotation is parsed correct
+    for transcript in transcripts:
+        assert transcript['thousandg_max'] == max(freqs)
 

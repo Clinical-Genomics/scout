@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import loggin
+import logging
 
 from scout.constants import SO_TERMS
 from pprint import pprint as pp
@@ -124,26 +124,57 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         # Check frequencies
         # There are different keys for different versions of VEP
-        # We onlu support version 90+
+        # We only support version 90+
+        thousandg_freqs = []
+        gnomad_freqs = []
         try:
-            if 'AF' in entry:
-                transcript['thousand_g_max'] = float(entry['AF'])
+            # The keys for VEP v90+:
+            # 'AF' or '1000GAF' - 1000G all populations combined
+            # 'xxx_AF' - 1000G (or NHLBI-ESP) individual populations
+            # 'gnomAD_AF' - gnomAD exomes, all populations combined
+            # 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
+            # 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
+            # https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
             
-            if '1000GAF' in entry:
-                transcript['thousand_g_max'] = float(entry['1000GAF'])
-            
-            if 'gnomAD_AF' in entry:
-                transcript['gnomad_max'] = float(entry['gnomAD_AF'])
+            for key in entry:
+                big_key = key.upper()
                 
-            if 'EXAC_MAX_AF' in entry:
-                transcript['exac_max'] = float(entry['EXAC_MAX_AF'])
+                #All frequencies endswith AF
+                if not big_key.endswith('AF'):
+                    continue
+                
+                if (big_key == 'AF' or big_key == '1000GAF'):
+                    transcript['thousand_g_maf'] = float(entry[key])
+                    continue
+                
+                if big_key == 'GNOMAD_AF':
+                    transcript['gnomad_maf'] = float(entry[key])
+                    continue
+
+                if big_key == 'EXAC_MAX_AF':
+                    transcript['exac_max'] = float(entry[key])
+                    transcript['exac_maf'] = float(entry[key])
+                    continue
+                
+                if 'GNOMAD' in big_key:
+                    gnomad_freqs.append(float(entry[key]))
+                
+                else:
+                    thousandg_freqs.append(float(entry[key]))
+                
+            if thousandg_freqs:
+                transcript['thousandg_max'] = max(thousandg_freqs)
+
+            if gnomad_freqs:
+                transcript['gnomad_max'] = max(gnomad_freqs)
             
-            clinsig = entry.get('CLIN_SIG')
-            if clinsig:
-                transcript['clinsig'] = clinsig.split('&')
         except Exception as err:
             LOG.debug("Something went wrong when parsing frequencies")
             LOG.debug("Only splitted and normalised VEP v90+ is supported")
+
+        clinsig = entry.get('CLIN_SIG')
+        if clinsig:
+            transcript['clinsig'] = clinsig.split('&')
 
         transcript['dbsnp'] = []
         transcript['cosmic'] = []

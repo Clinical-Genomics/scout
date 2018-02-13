@@ -63,9 +63,13 @@ def parse_frequencies(variant, transcripts):
     if not frequencies:
         for transcript in transcripts:
             exac = transcript.get('exac_maf')
-            thousand_g = transcript.get('thousand_g_maf')
             exac_max = transcript.get('exac_max')
+            
+            thousand_g = transcript.get('thousand_g_maf')
             thousandg_max = transcript.get('thousandg_max')
+            
+            gnomad = transcript.get('exac_max')
+            gnomad_max = transcript.get('thousandg_max')
             if exac:
                 frequencies['exac'] = exac
             if exac_max:
@@ -74,7 +78,10 @@ def parse_frequencies(variant, transcripts):
                 frequencies['thousand_g'] = thousand_g
             if thousandg_max:
                 frequencies['thousand_g_max'] = thousandg_max
-            ## TODO add gnomad from VEP
+            if gnomad:
+                frequencies['gnomad'] = gnomad
+            if gnomad_max:
+                frequencies['gnomad_max'] = gnomad_max
 
     #These are SV-specific frequencies
     thousand_g_left = parse_frequency(variant, 'left_1000GAF')
