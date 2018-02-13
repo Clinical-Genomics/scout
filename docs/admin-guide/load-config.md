@@ -20,6 +20,7 @@ samples:
     phenotype: str(mandatory), [affected, unaffected, unknown]
     sex: str(mandatory), [male, female, unknown]
     expected_coverage: int(mandatory)
+    bam_file: str(optional) # path to bam file
 
 vcf_snv: str(optional)
 vcf_sv: str(optional)
@@ -57,6 +58,7 @@ Let's go through each field:
 	- *phenotype* specifies the affection status of the sample in human readable format
 	- *sex* specifies the sex of the sample in human readable format
 	- *expected_coverage* the level of expected coverage
+	- *bam_file* Path to bam file to view alignments
 - **vcf_snv** path to snv vcf file
 - **vcf_sv** 
 - **vcf_snv_research** path to vcf file with all variants
