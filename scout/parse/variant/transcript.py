@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import loggin
+
 from scout.constants import SO_TERMS
 from pprint import pprint as pp
+
+LOG = logging.getLogger(__name__)
 
 def parse_transcripts(raw_transcripts, allele=None):
     """Parse transcript information from VCF variants
@@ -119,43 +123,28 @@ def parse_transcripts(raw_transcripts, allele=None):
             transcript['cadd'] = float(cadd_phred)
 
         # Check frequencies
-        exac_frequencies = []
-        thousandg_frequencies = []
-        for key in entry:
-            if key.endswith('AF'):
+        # There are different keys for different versions of VEP
+        # We onlu support version 90+
+        try:
+            if 'AF' in entry:
+                transcript['thousand_g_max'] = float(entry['AF'])
+            
+            if '1000GAF' in entry:
+                transcript['thousand_g_max'] = float(entry['1000GAF'])
+            
+            if 'gnomAD_AF' in entry:
+                transcript['gnomad_max'] = float(entry['gnomAD_AF'])
+                
+            if 'EXAC_MAX_AF' in entry:
+                transcript['exac_max'] = float(entry['EXAC_MAX_AF'])
+            
+            clinsig = entry.get('CLIN_SIG')
+            if clinsig:
+                transcript['clinsig'] = clinsig.split('&')
+        except Exception as err:
+            LOG.debug("Something went wrong when parsing frequencies")
+            LOG.debug("Only splitted and normalised VEP v90+ is supported")
 
-                maf_allele_entries = entry[key].split('&')
-
-                for maf_allele in maf_allele_entries:
-                    
-                    # If the frequency starts with 'ExAC' we know it is a exac freq
-                    splitted_entry = maf_allele.split(':')
-                    if splitted_entry[0] == allele:
-                        value = float(splitted_entry[1])
-                        if value > 0:
-                            if key.upper().startswith('EXAC'):
-                                exac_frequencies.append(value)
-                            
-                                # Otherwise we know it is a 1000G frequency
-                            else:
-                                thousandg_frequencies.append(value)
-
-        if exac_frequencies:
-            transcript['exac_maf'] = sum(exac_frequencies)/len(exac_frequencies)
-            transcript['exac_max'] = max(exac_frequencies)
-
-        if thousandg_frequencies:
-            transcript['thousand_g_maf'] = sum(thousandg_frequencies)/len(thousandg_frequencies)
-            transcript['thousandg_max'] = max(thousandg_frequencies)
-        
-        gnomad = entry.get('gnomAD_AF')
-        if gnomad:
-            transcript['gnomad_af'] = 
-        
-        clinsig = entry.get('CLIN_SIG')
-        if clinsig:
-            transcript['clinsig'] = clinsig.split('&')
-        
         transcript['dbsnp'] = []
         transcript['cosmic'] = []
         variant_ids = entry.get('Existing_variation')
