@@ -2,7 +2,7 @@
 from flask import abort, Blueprint, request, jsonify, redirect, url_for
 
 from scout.server.extensions import store
-from scout.server.utils import templated
+from scout.server.utils import templated, public_endpoint
 from . import controllers
 
 genes_bp = Blueprint('genes', __name__, template_folder='templates')
@@ -35,11 +35,12 @@ def gene(hgnc_id=None, hgnc_symbol=None):
         genes = controllers.gene(store, hgnc_id)
     except ValueError as error:
         return abort(404)
-    
+
     return genes
 
 
 @genes_bp.route('/api/v1/genes')
+@public_endpoint
 def api_genes():
     """Return JSON data about genes."""
     query = request.args.get('query')

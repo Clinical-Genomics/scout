@@ -242,18 +242,25 @@ class VariantHandler(object):
                 causatives(iterable(Variant))
         """
         institute_id = case_obj['owner'] if case_obj else institute_obj['_id']
-        unique_ids = self.get_causatives(institute_id)
-        if len(unique_ids) == 0:
+        institute_causative_variant_ids = self.get_causatives(institute_id)
+        if len(institute_causative_variant_ids) == 0:
             return []
 
-        # get (non-unique) variant ids
+        if case_obj:
+            # exclude variants that are marked causative in "case_obj"
+            case_causative_ids = set(case_obj.get('causatives', []))
+            institute_causative_variant_ids = list(
+                set(institute_causative_variant_ids).difference(case_causative_ids)
+            )
+
+        # convert from unique ids to general "variant_id"
         query = self.variant_collection.find(
-            {'_id': {'$in': unique_ids}},
+            {'_id': {'$in': institute_causative_variant_ids}},
             {'variant_id': 1}
         )
-        variant_ids = [item['variant_id'] for item in query]
+        positional_variant_ids = [item['variant_id'] for item in query]
 
-        filters = {'variant_id': {'$in': variant_ids}}
+        filters = {'variant_id': {'$in': positional_variant_ids}}
         if case_obj:
             filters['case_id'] = case_obj['_id']
         else:
@@ -366,12 +373,12 @@ class VariantHandler(object):
         # variant id without "*_[variant_type]"
         variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
 
-        causative_ids = self.get_causatives(variant_obj['institute'])
-        for causative_id in causative_ids:
+        institute_causatives = self.get_causatives(variant_obj['institute'])
+        for causative_id in institute_causatives:
             other_variant = self.variant(causative_id)
             not_same_case = other_variant['case_id'] != case_obj['_id']
             same_variant = other_variant['display_name'].startswith(variant_id)
-            if (not_same_case and same_variant):
+            if not_same_case and same_variant:
                 yield other_variant
 
     def delete_variants(self, case_id, variant_type, category=None):

@@ -149,7 +149,8 @@ def phenotypes_actions(institute_id, case_name):
         for raw_symbols in request.form.getlist('genes'):
             # avoid empty lists
             if raw_symbols:
-                hgnc_symbols.update(raw_symbols.split('|'))
+                hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
+                                    raw_symbols.split('|'))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
 
     elif action == 'GENERATE':

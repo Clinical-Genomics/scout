@@ -14,16 +14,16 @@ LOG = logging.getLogger(__name__)
 
 VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
 
-def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, date=None, 
+def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, date=None,
                    display_name=None):
     """Parse metadata for a gene panel
-    
-    For historical reasons it is possible to include all information about a gene panel in the 
+
+    For historical reasons it is possible to include all information about a gene panel in the
     header of a panel file. This function parses the header.
-    
+
     Args:
         panel_lines(iterable(str))
-    
+
     Returns:
         panel_info(dict): Dictionary with panel information
     """
@@ -224,7 +224,7 @@ def parse_genes(gene_lines):
                 gene = parse_gene(gene_info)
             except Exception as e:
                 LOG.warning(e)
-                raise SyntaxError("Line {0} is malformed".format(i))
+                raise SyntaxError("Line {0} is malformed".format(i + 1))
 
             identifier = gene.pop('identifier')
 
