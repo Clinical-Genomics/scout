@@ -1,5 +1,5 @@
 from scout.constants import PAR_COORDINATES
-from scout.utils.par import is_par
+from scout.utils.coordinates import is_par
 
 def test_par_coordinates():
     ## GIVEN a position that is in the first par region

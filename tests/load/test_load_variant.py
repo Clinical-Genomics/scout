@@ -125,3 +125,36 @@ def test_load_region(populated_database, case_obj, variant_clinical_file):
         assert variant['chromosome'] == chrom
         assert variant['position'] <= end
         assert variant['end'] >= start
+
+def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
+    """Test that all variants from mt are loaded"""
+    adapter = populated_database
+    print(variant_clinical_file)
+    # import gzip
+    # with gzip.open(variant_clinical_file, 'r') as f:
+    #     for line in f:
+    #         print(line)
+    assert False
+    # GIVEN a database without any variants
+    assert adapter.variant_collection.find().count() == 0
+
+    # WHEN loading a variant into the database
+    
+    load_variants(
+            adapter=adapter,
+            variant_file=variant_clinical_file,
+            case_obj=case_obj,
+            variant_type='clinical',
+            category='snv',
+            chrom=chrom,
+            start=start,
+            end=end,
+    )
+    # THEN assert the variant is loaded
+
+    assert adapter.variant_collection.find().count() > 0
+
+    for variant in adapter.variant_collection.find():
+        assert variant['chromosome'] == chrom
+        assert variant['position'] <= end
+        assert variant['end'] >= start
