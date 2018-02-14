@@ -9,6 +9,7 @@ from scout.build import build_variant
 from scout.exceptions import IntegrityError
 from scout.parse.variant.rank_score import parse_rank_score
 from scout.constants import CHR_PATTERN
+from scout.utils.coordinates import check_coordinates
 
 from scout.parse.variant.headers import (parse_rank_results_header, parse_vep_header)
 
