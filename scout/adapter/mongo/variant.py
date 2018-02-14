@@ -21,7 +21,7 @@ from scout.parse.variant.rank_score import parse_rank_score
 from scout.parse.variant import parse_variant
 from scout.build import build_variant
 
-from scout.utils.par import is_par
+from scout.utils.coordinates import is_par
 
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError

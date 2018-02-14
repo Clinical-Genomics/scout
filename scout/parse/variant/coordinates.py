@@ -1,4 +1,4 @@
-from scout.constants import CYTOBANDS, BND_ALT_PATTERN, CHR_PATTERN
+from scout.constants import (CYTOBANDS, BND_ALT_PATTERN, CHR_PATTERN)
 
 def get_cytoband_coordinates(chrom, pos):
     """Get the cytoband coordinate for a position

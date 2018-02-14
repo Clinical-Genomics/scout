@@ -8,10 +8,12 @@ from scout.parse.variant import parse_variant
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
 from scout.parse.variant.rank_score import parse_rank_score
+from scout.constants import CHR_PATTERN
+from scout.utils.coordinates import check_coordinates
 
 from scout.parse.variant.headers import (parse_rank_results_header, parse_vep_header)
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def delete_variants(adapter, case_obj, variant_type='clinical'):
@@ -23,23 +25,8 @@ def delete_variants(adapter, case_obj, variant_type='clinical'):
     """
     adapter.delete_variants(case_id=case_obj['_id'], variant_type=variant_type)
 
-
-def check_coordinates(variant, coordinates):
-    """Check if the variant is in the interval given by the coordinates
-
-        Args:
-            variant(dict)
-            coordinates
-    """
-    if variant['chromosome'] == coordinates['chrom']:
-        pos = variant['position']
-        if (pos >= coordinates['start'] and pos <= coordinates['end']):
-            return True
-    return False
-
-
 def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
-                  category='snv', rank_threshold=5, chrom=None, start=None,
+                  category='snv', rank_threshold=6, chrom=None, start=None,
                   end=None):
     """Load all variant in variants
 
@@ -77,10 +64,11 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
     for i,ind in enumerate(vcf_obj.samples):
         individual_positions[ind] = i
 
-    logger.info("Start inserting variants into database")
+    LOG.info("Start inserting variants into database")
     start_insertion = datetime.now()
     start_five_thousand = datetime.now()
-    nr_variants = 0
+    # To get it right if the file is empty
+    nr_variants = -1
     nr_inserted = 0
     inserted = 1
 
@@ -94,61 +82,88 @@ def load_variants(adapter, variant_file, case_obj, variant_type='clinical',
 
     try:
         for nr_variants, variant in enumerate(vcf_obj):
-            rank_score = parse_rank_score(
-                variant.INFO.get('RankScore'),
-                case_obj['display_name']
-            )
-            variant_obj = None
+            
+            # Get the neccesary coordinates
+            # Parse away any chr CHR prefix
+            chrom_match = CHR_PATTERN.match(variant.CHROM)
+            chrom = chrom_match.group(2)
+            position = variant.POS
+
             add_variant = False
-
-            if coordinates or (rank_score > rank_threshold):
-                parsed_variant = parse_variant(
-                    variant=variant,
-                    case=case_obj,
-                    variant_type=variant_type,
-                    rank_results_header=rank_results_header,
-                    vep_header = vep_header,
-                    individual_positions = individual_positions
-                )
+            
+            # If coordinates are specified we want to upload all variants that 
+            # resides within the specified region
+            if coordinates:
+                if check_coordinates(chrom, position, coordinates):
+                    add_variant = True
+            # If there are no coordinates we allways want to load MT variants
+            elif chrom == 'MT':
                 add_variant = True
-                # If there are coordinates the variant should be loaded
-                if coordinates:
-                    if not check_coordinates(parsed_variant, coordinates):
-                        add_variant = False
+            # Otherwise we need to check is rank score requirement are fulfilled
+            else:
+                rank_score = parse_rank_score(
+                    variant.INFO.get('RankScore'),
+                    case_obj['display_name']
+                )
+                if rank_score >= rank_threshold:
+                    add_variant = True
+            variant_obj = None
 
-                if add_variant:
-                    variant_obj = build_variant(
-                        variant=parsed_variant,
-                        institute_id=institute_obj['_id'],
-                        gene_to_panels=gene_to_panels,
-                        hgncid_to_gene=hgncid_to_gene,
-                    )
-                    try:
-                        load_variant(adapter, variant_obj)
-                        nr_inserted += 1
-                    except IntegrityError as error:
-                        pass
+            # Log the number of variants parsed
+            if (nr_variants != 0 and nr_variants % 5000 == 0):
+                LOG.info("%s variants parsed" % str(nr_variants))
+                LOG.info("Time to parse variants: {} ".format(
+                            datetime.now() - start_five_thousand))
+                start_five_thousand = datetime.now()
+            
+            if not add_variant:
+                continue
+            
+            ####### Here we know that the variant should be loaded #########
+            # We follow the scout paradigm of parse -> build -> load
+            
+            # Parse the variant
+            parsed_variant = parse_variant(
+                variant=variant,
+                case=case_obj,
+                variant_type=variant_type,
+                rank_results_header=rank_results_header,
+                vep_header = vep_header,
+                individual_positions = individual_positions
+            )
 
-                if (nr_variants != 0 and nr_variants % 5000 == 0):
-                    logger.info("%s variants parsed" % str(nr_variants))
-                    logger.info("Time to parse variants: {} ".format(
-                                datetime.now() - start_five_thousand))
-                    start_five_thousand = datetime.now()
+            # Build the variant object
+            variant_obj = build_variant(
+                variant=parsed_variant,
+                institute_id=institute_obj['_id'],
+                gene_to_panels=gene_to_panels,
+                hgncid_to_gene=hgncid_to_gene,
+            )
+            
+            # Load the variant abject
+            # We could get integrity error here since if we want to load all variants of a region
+            # there will likely already be variants from that region loaded
+            try:
+                load_variant(adapter, variant_obj)
+                nr_inserted += 1
+            except IntegrityError as error:
+                pass
 
-                if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
-                    logger.info("%s variants inserted" % nr_inserted)
-                    inserted += 1
+            # Log number of inserted variants
+            if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
+                LOG.info("%s variants inserted" % nr_inserted)
+                inserted += 1
 
     except Exception as error:
         if not coordinates:
-            logger.warning("Deleting inserted variants")
+            LOG.warning("Deleting inserted variants")
             delete_variants(adapter, case_obj, variant_type)
         raise error
 
-    logger.info("All variants inserted.")
-    logger.info("Number of variants in file: {0}".format(nr_variants + 1))
-    logger.info("Number of variants inserted: {0}".format(nr_inserted))
-    logger.info("Time to insert variants:{0}".format(datetime.now() - start_insertion))
+    LOG.info("All variants inserted.")
+    LOG.info("Number of variants in file: {0}".format(nr_variants + 1))
+    LOG.info("Number of variants inserted: {0}".format(nr_inserted))
+    LOG.info("Time to insert variants:{0}".format(datetime.now() - start_insertion))
 
     # This function will add a variant rank and add information on compound objects
     # adapter.update_variants(case_obj, variant_type, category=category)
