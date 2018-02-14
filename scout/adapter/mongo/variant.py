@@ -531,6 +531,8 @@ class VariantHandler(object):
                         hgncid_to_gene=hgncid_to_gene,
                         sample_info=sample_info
                     )
+                    
+                    # Load the variant object
                     try:
                         self.load_variant(variant_obj)
                         nr_inserted += 1

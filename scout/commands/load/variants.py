@@ -3,7 +3,7 @@ from pprint import pprint as pp
 
 import click
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 @click.command(short_help='Upload variants to existing case')
 @click.argument('case-id')
@@ -31,7 +31,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
         Note that the files has to be linked with the case, 
         if they are not use 'scout update case'.
     """
-    log.info("Running scout load variants")
+    LOG.info("Running scout load variants")
     adapter = context.obj['adapter']
     
     if institute:
@@ -40,7 +40,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
         institute = case_id.split('-')[0]
     case_obj = adapter.case(case_id=case_id)
     if case_obj is None:
-        log.info("No matching case found")
+        LOG.info("No matching case found")
         context.abort()
 
     files = [
@@ -60,7 +60,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
             for res in adapter.gene_by_alias(hgnc_symbol):
                 gene_obj = res
         if not gene_obj:
-            log.warning("The gene could not be found")
+            LOG.warning("The gene could not be found")
             context.abort()
         
     i = 0
@@ -72,16 +72,16 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
             i += 1
             if variant_type == 'research':
                 if not (force or case_obj['research_requested']):
-                    log.warn("research not requested, use '--force'")
+                    LOG.warn("research not requested, use '--force'")
                     context.abort()
             
-            log.info("Delete {0} {1} variants for case {2}".format(
+            LOG.info("Delete {0} {1} variants for case {2}".format(
                          variant_type, category, case_id))
             adapter.delete_variants(case_id=case_obj['case_id'], 
                                     variant_type=variant_type,
                                     category=category)
             
-            log.info("Load {0} {1} variants for case {2}".format(
+            LOG.info("Load {0} {1} variants for case {2}".format(
                          variant_type, category, case_id))
             
             try:
@@ -96,7 +96,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
                     gene_obj=gene_obj
                 )
             except Exception as e:
-                log.warning(e)
+                LOG.warning(e)
                 context.abort()
     if i == 0:
-        log.info("No files where specified to upload variants from")
+        LOG.info("No files where specified to upload variants from")

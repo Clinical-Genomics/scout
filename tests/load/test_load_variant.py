@@ -1,13 +1,10 @@
 import pytest
+from pprint import pprint as pp
 
 from scout.load.variant import (load_variant, load_variants)
 
 from scout.exceptions.database import IntegrityError
 from cyvcf2 import VCF
-
-# def test_load_variants(populated_database, variant_objs):
-#     """Test to load variants into a mongo database"""
-#     pass
 
 def test_load_variant(populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
@@ -16,10 +13,7 @@ def test_load_variant(populated_database, variant_obj):
     assert adapter.variant_collection.find().count() == 0
 
     # WHEN loading a variant into the database
-    variant_id = load_variant(
-        adapter=populated_database,
-        variant_obj=variant_obj
-    )
+    variant_id = adapter.load_variant(variant_obj=variant_obj)
     # THEN assert the variant is loaded
 
     assert adapter.variant_collection.find_one({'_id': variant_id})
@@ -31,17 +25,11 @@ def test_load_variant_twice(populated_database, variant_obj):
     assert adapter.variant_collection.find().count() == 0
 
     # WHEN loading a variant into the database twice
-    load_variant(
-        adapter=adapter,
-        variant_obj=variant_obj
-    )
+    adapter.load_variant(variant_obj=variant_obj)
 
     # THEN a IntegrityError should be raised
     with pytest.raises(IntegrityError):
-        load_variant(
-            adapter=adapter,
-            variant_obj=variant_obj
-        )
+        adapter.load_variant(variant_obj=variant_obj)
 
 def test_load_variants(populated_database, case_obj, variant_clinical_file):
     """Test to load a variant into a mongo database"""
@@ -51,9 +39,7 @@ def test_load_variants(populated_database, case_obj, variant_clinical_file):
 
     # WHEN loading a variant into the database
     rank_threshold = 0
-    load_variants(
-            adapter=adapter,
-            variant_file=variant_clinical_file,
+    adapter.load_variants(
             case_obj=case_obj,
             variant_type='clinical',
             category='snv',
@@ -70,6 +56,7 @@ def test_load_variants(populated_database, case_obj, variant_clinical_file):
         if variant['chromosome'] != 'MT':
             assert variant['rank_score'] >= rank_threshold
         assert variant['category'] == 'snv'
+        assert variant['variant_rank']
 
 def test_load_sv_variants(populated_database, case_obj, sv_clinical_file):
     """Test to load a variant into a mongo database"""
@@ -79,16 +66,11 @@ def test_load_sv_variants(populated_database, case_obj, sv_clinical_file):
 
     # WHEN loading a variant into the database
     rank_threshold = 0
-    load_variants(
-            adapter=populated_database,
-            variant_file=sv_clinical_file,
+    adapter.load_variants(
             case_obj=case_obj,
             variant_type='clinical',
             category='sv',
             rank_threshold=rank_threshold,
-            chrom=None,
-            start=None,
-            end=None,
     )
     # THEN assert the variant is loaded
 
@@ -97,6 +79,7 @@ def test_load_sv_variants(populated_database, case_obj, sv_clinical_file):
     for variant in adapter.variant_collection.find():
         assert variant['rank_score'] >= rank_threshold
         assert variant['category'] == 'sv'
+        assert variant['variant_rank']
 
 def test_load_region(populated_database, case_obj, variant_clinical_file):
     """Test to load variants from a region into a mongo database"""
@@ -108,9 +91,7 @@ def test_load_region(populated_database, case_obj, variant_clinical_file):
     chrom = '1'
     start = 7847367
     end = 156126553
-    load_variants(
-            adapter=adapter,
-            variant_file=variant_clinical_file,
+    adapter.load_variants(
             case_obj=case_obj,
             variant_type='clinical',
             category='snv',
@@ -118,7 +99,7 @@ def test_load_region(populated_database, case_obj, variant_clinical_file):
             start=start,
             end=end,
     )
-    # THEN assert the variant is loaded
+    # THEN assert all variants loaded are in the given region
 
     assert adapter.variant_collection.find().count() > 0
 
@@ -130,6 +111,7 @@ def test_load_region(populated_database, case_obj, variant_clinical_file):
 def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
     """Test that all variants from mt are loaded"""
     adapter = populated_database
+    rank_threshold = 3
     
     # Check how many MT variants there are in file
     vcf_obj = VCF(variant_clinical_file)
@@ -146,12 +128,11 @@ def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
 
     # WHEN loading a variant into the database
 
-    load_variants(
-            adapter=adapter,
-            variant_file=variant_clinical_file,
+    adapter.load_variants(
             case_obj=case_obj,
             variant_type='clinical',
             category='snv',
+            rank_threshold = rank_threshold,
     )
     # THEN assert all MT variants is loaded
 
@@ -159,5 +140,7 @@ def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
     for variant in adapter.variant_collection.find():
         if variant['chromosome'] == 'MT':
             mt_variants_found += 1
+        else:
+            assert variant['rank_score'] >= rank_threshold
 
     assert mt_variants == mt_variants_found
