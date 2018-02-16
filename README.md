@@ -75,8 +75,8 @@ for more info, run `scout --help`
 The previous command setup the database with a curated collection of gene definitions with links to OMIM along with HPO phenotype terms. Now we will load some example data. Scout expects the analysis to be accomplished using various gene panels so let's load one and then our first analysis case:
 
 ```bash
-scout load panel tests/fixtures/gene_lists/panel_1.txt
-scout load case tests/fixtures/643594.config.yaml
+scout load panel scout/demo/panel_1.txt
+scout load case scout/demo/643594.config.yaml
 ```
 
 ## Server setup
