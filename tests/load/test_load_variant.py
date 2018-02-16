@@ -1,9 +1,9 @@
 import pytest
 from pprint import pprint as pp
 
-from scout.load.variant import (load_variant, load_variants)
-
 from scout.exceptions.database import IntegrityError
+from scout.server.blueprints.variants.controllers import variants
+
 from cyvcf2 import VCF
 
 def test_load_variant(populated_database, variant_obj):
@@ -144,3 +144,108 @@ def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
             assert variant['rank_score'] >= rank_threshold
 
     assert mt_variants == mt_variants_found
+
+
+def test_load_compounds(populated_database, case_obj, variant_clinical_file):
+    """Test behaviour of compound variants when loaded"""
+    adapter = populated_database
+    ## GIVEN a database without any variants
+    assert adapter.variant_collection.find().count() == 0
+    
+    ## WHEN loading a variant into the database
+    adapter.load_variants(
+            case_obj=case_obj,
+            variant_type='clinical',
+            category='snv',
+    )
+    
+    ## THEN assert all variants loaded are in the given region
+    institute_obj = adapter.institute_collection.find_one()
+    case_obj = adapter.case_collection.find_one()
+    
+    variants_query = adapter.variant_collection.find()
+
+    ## THEN assert there is no additional information on the compounds
+    for variant in adapter.variant_collection.find():
+        for comp in variant.get('compounds',[]):
+            assert 'not_loaded' not in comp
+
+    ## THEN assert that additional informatino is added when they are accessed in the controller
+    res = variants(adapter, institute_obj, case_obj, variants_query, page=1, per_page=50)
+    for variant in res['variants']:
+        for comp in variant.get('compounds',[]):
+            assert 'not_loaded' in comp
+
+def test_compounds_region(real_populated_database, case_obj):
+    """When loading the variants not all variants will be loaded, only the ones that
+       have a rank score above a treshold.
+       This implies that some compounds will have the status 'not_loaded'=True.
+       When loading all variants for a region then all variants should 
+       have status 'not_loaded'=False.
+    """
+    adapter = real_populated_database
+    variant_type = 'clinical'
+    category = 'snv'
+    ## GIVEN a database without any variants
+    assert adapter.variant_collection.find().count() == 0
+    
+    ## WHEN loading a variant into the database
+    adapter.load_variants(
+            case_obj=case_obj,
+            variant_type=variant_type,
+            category=category,
+            rank_threshold=-10
+    )
+    
+    adapter.load_indexes()
+    institute_obj = adapter.institute_collection.find_one()
+    case_obj = adapter.case_collection.find_one()
+    
+    chrom = '1'
+    start = 7847367
+    end = 156147000
+    
+    query = adapter.build_query(
+                case_id=case_obj['_id'],
+                query={
+                    'variant_type': variant_type,
+                    'chrom': chrom,
+                    'start': start,
+                    'end': end,
+                },
+                category=category
+            )
+    ## THEN assert that there are variants with compounds without information
+    variants_query = adapter.variant_collection.find(query)
+    nr_comps = 0
+    nr_variants = 0
+
+    for nr_variants,variant in enumerate(variants_query):
+        for comp in variant.get('compounds',[]):
+            nr_comps += 1
+            assert 'not_loaded' not in comp
+    assert nr_variants > 0
+    assert nr_comps > 0
+
+    ## THEN when loading all variants in the region, assert that ALL the compounds are updated
+
+    adapter.load_variants(
+            case_obj=case_obj,
+            variant_type=variant_type,
+            category=category,
+            chrom=chrom,
+            start=start,
+            end=end
+            )
+
+    variants_query = adapter.variant_collection.find(query)
+    nr_comps = 0
+    nr_variants = 0
+    for nr_variants,variant in enumerate(variants_query):
+        for comp in variant.get('compounds',[]):
+            nr_comps += 1
+            # We know that all ar updated and loaded if this flag is set
+            assert comp['not_loaded'] == False
+    
+    assert nr_variants > 0
+    assert nr_comps > 0

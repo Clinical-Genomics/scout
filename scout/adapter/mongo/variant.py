@@ -26,7 +26,7 @@ from scout.utils.coordinates import is_par
 from pymongo.errors import DuplicateKeyError
 from scout.exceptions import IntegrityError
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class VariantHandler(object):
@@ -154,7 +154,7 @@ class VariantHandler(object):
         Yields:
             result(Iterable[Variant])
         """
-        logger.info("Fetching variants from {0}".format(case_id))
+        LOG.info("Fetching variants from {0}".format(case_id))
 
         if variant_ids:
             nr_of_variants = len(variant_ids)
@@ -300,7 +300,7 @@ class VariantHandler(object):
             'variant_type': variant_type,
         }).sort('rank_score', pymongo.DESCENDING)
 
-        logger.info("Updating variant_rank for all variants")
+        LOG.info("Updating variant_rank for all variants")
 
         # Update the information on all compounds
         for index, variant in enumerate(variants):
@@ -316,28 +316,43 @@ class VariantHandler(object):
                 }
             )
 
-        logger.info("Updating variant_rank done")
+        LOG.info("Updating variant_rank done")
 
-    def update_compounds(self, variant):
-        """Update compounds for a variant."""
+    def update_compounds(self, variant, variant_objs = None):
+        """Update compounds for a variant.
+        
+        This will add all the necessary information of a variant on a compound object.
+        
+        Args:
+            variant(scout.models.Variant)
+            variant_objs(dict): A dictionary with _ids as keys and variant objs as values.
+        
+        Returns:
+            compound_objs(list(dict)): A dictionary with updated compound objects.
+        
+        """
         compound_objs = []
         for compound in variant.get('compounds', []):
             not_loaded = True
             gene_objs = []
             # Check if the compound variant exists
-            variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
+            if variant_objs:
+                variant_obj = variant_objs.get(compound['variant'])
+            else:
+                variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
+            if not variant_obj:
+                continue
             # If the variant exosts we try to collect as much info as possible
-            if variant_obj:
-                not_loaded = False
-                compound['rank_score'] = variant_obj['rank_score']
-                for gene in variant_obj.get('genes', []):
-                    gene_obj = {
-                        'hgnc_id': gene['hgnc_id'],
-                        'hgnc_symbol': gene.get('hgnc_symbol'),
-                        'region_annotation': gene.get('region_annotation'),
-                        'functional_annotation': gene.get('functional_annotation'),
-                    }
-                    gene_objs.append(gene_obj)
+            not_loaded = False
+            compound['rank_score'] = variant_obj['rank_score']
+            for gene in variant_obj.get('genes', []):
+                gene_obj = {
+                    'hgnc_id': gene['hgnc_id'],
+                    'hgnc_symbol': gene.get('hgnc_symbol'),
+                    'region_annotation': gene.get('region_annotation'),
+                    'functional_annotation': gene.get('functional_annotation'),
+                }
+                gene_objs.append(gene_obj)
 
             compound['not_loaded'] = not_loaded
             compound['genes'] = gene_objs
@@ -360,13 +375,13 @@ class VariantHandler(object):
             {'_id':1}
         ).sort('rank_score', pymongo.DESCENDING)
 
-        logger.info("Updating variant_rank for all variants")
+        LOG.info("Updating variant_rank for all variants")
         for index, variant in enumerate(variants):
             self.variant_collection.find_one_and_update(
                 {'_id': variant['_id']},
                 {'$set': {'variant_rank': index + 1}}
             )
-        logger.info("Updating variant_rank done")
+        LOG.info("Updating variant_rank done")
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant in other cases marked causative."""
@@ -390,13 +405,13 @@ class VariantHandler(object):
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
         """
-        logger.info("Deleting old {0} {1} variants for case {1}".format(
+        LOG.info("Deleting old {0} {1} variants for case {1}".format(
                     variant_type, category, case_id))
         query = {'case_id': case_id, 'variant_type': variant_type}
         if category:
             query['category'] = category
         result = self.variant_collection.delete_many(query)
-        logger.info("{0} variants deleted".format(result.deleted_count))
+        LOG.info("{0} variants deleted".format(result.deleted_count))
 
     def load_variant(self, variant_obj):
         """Load a variant object
@@ -407,7 +422,7 @@ class VariantHandler(object):
         Returns:
             inserted_id
         """
-        logger.debug("Loading variant %s", variant_obj['_id'])
+        LOG.debug("Loading variant %s", variant_obj['_id'])
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
@@ -489,14 +504,14 @@ class VariantHandler(object):
             start = max(gene_obj['start'] - 5000, 0)
             end = gene_obj['end'] + 5000
         if chrom:
-            rank_threshold = rank_threshold or -100
+            rank_threshold = rank_threshold or -1000
             if not (start and end):
                 raise SyntaxError("Specify chrom start and end")
             region = "{0}:{1}-{2}".format(chrom, start, end)
         else:
             rank_threshold = rank_threshold or 0
 
-        logger.info("Start inserting variants into database")
+        LOG.info("Start inserting variants into database")
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
         # These are the number of parsed varaints
@@ -540,23 +555,64 @@ class VariantHandler(object):
                         pass
 
                     if (nr_variants != 0 and nr_variants % 5000 == 0):
-                        logger.info("%s variants parsed", str(nr_variants))
-                        logger.info("Time to parse variants: %s",
+                        LOG.info("%s variants parsed", str(nr_variants))
+                        LOG.info("Time to parse variants: %s",
                                     (datetime.now() - start_five_thousand))
                         start_five_thousand = datetime.now()
 
                     if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
-                        logger.info("%s variants inserted", nr_inserted)
+                        LOG.info("%s variants inserted", nr_inserted)
                         inserted += 1
 
         except Exception as error:
-            logger.exception('unexpected error')
-            logger.warning("Deleting inserted variants")
+            LOG.exception('unexpected error')
+            LOG.warning("Deleting inserted variants")
             self.delete_variants(case_obj['_id'], variant_type)
             raise error
 
         self.update_variants(case_obj, variant_type, category=category)
-        logger.info("Nr variants inserted: %s", nr_inserted)
+        
+        ## If all variants of a region are loaded we need to update the compounds of that region
+        if region:
+            LOG.info("Updating compound information for all variants in region")
+            # Get all variants in a region
+            query = self.build_query(
+                        case_id=case_obj['_id'],
+                        query={
+                            'variant_type': variant_type,
+                            'chrom': chrom,
+                            'start': start,
+                            'end': end,
+                        },
+                        category=category
+                    )
+            res = self.variant_collection.find(query)
+            # Store them in a dictionary for faster access
+            # This should not be dangerous since we know there is a limited number of variants for
+            # a region
+            variants = {var['_id']: var for var in res}
+            # Get a iterable with variant objs. This is to avoid to iterate over a dictionary that
+            # will be updated during iteration
+            variant_objs = variants.values()
+            
+            # Now update the compound information for all variants in the region
+            for variant_obj in variant_objs:
+                if not variant_obj.get('compounds'):
+                    continue
+
+                # get a list with updated compounds
+                new_compounds = self.update_compounds(variant_obj, variants)
+                # Update the variant
+                variant_obj['compounds'] = new_compounds
+
+                # sort compounds on combined rank score
+                variant_obj['compounds'] = sorted(variant_obj['compounds'],
+                                              key=lambda compound: -compound['combined_score'])
+                # Store the information in the database
+                self.update_variant(variant_obj)
+
+        LOG.info("Nr variants inserted: %s", nr_inserted)
+
         return nr_inserted
 
     def overlapping(self, variant_obj):
@@ -581,19 +637,21 @@ class VariantHandler(object):
 
         for gene_id in variant_obj['hgnc_ids']:
             gene_obj = self.hgnc_gene(gene_id)
-            if gene_obj:
-                gene_start = gene_obj['start']
-                gene_end = gene_obj['end']
-                if not region_start:
+            if not gene_obj:
+                continue
+            
+            gene_start = gene_obj['start']
+            gene_end = gene_obj['end']
+            if not region_start:
+                region_start = gene_start
+            else:
+                if gene_start < region_start:
                     region_start = gene_start
-                else:
-                    if gene_start < region_start:
-                        region_start = gene_start
-                if not region_end:
+            if not region_end:
+                region_end = gene_end
+            else:
+                if gene_end > region_end:
                     region_end = gene_end
-                else:
-                    if gene_end > region_end:
-                        region_end = gene_end
 
         query = self.build_query(
             case_id=variant_obj['case_id'],
@@ -615,6 +673,7 @@ class VariantHandler(object):
                        gene_obj=None, variant_type='clinical', category='snv',
                        rank_threshold=None):
         """Produce a reduced vcf with variants from the specified coordinates
+           This is used for the alignment viewer.
 
         Args:
             case_obj(dict): A case from the scout database
