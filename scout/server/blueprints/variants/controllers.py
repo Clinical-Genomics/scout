@@ -87,7 +87,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         # Check if we need to add compound information
         # If it is the first time the case is viewed we fill in some compound information
         if 'not_loaded' not in compounds[0]:
-            new_compounds = store.update_compounds(variant_obj)
+            new_compounds = store.update_variant_compounds(variant_obj)
             variant_obj['compounds'] = new_compounds
             has_changed = True
 

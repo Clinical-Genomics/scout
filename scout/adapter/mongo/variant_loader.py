@@ -83,7 +83,7 @@ class VariantLoader(object):
 
         LOG.info("Updating variant_rank done")
 
-    def update_compounds(self, variant, variant_objs = None):
+    def update_variant_compounds(self, variant, variant_objs = None):
         """Update compounds for a variant.
         
         This will add all the necessary information of a variant on a compound object.
@@ -105,37 +105,70 @@ class VariantLoader(object):
                 variant_obj = variant_objs.get(compound['variant'])
             else:
                 variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
-            if not variant_obj:
-                continue
-            # If the variant exosts we try to collect as much info as possible
-            not_loaded = False
-            compound['rank_score'] = variant_obj['rank_score']
-            for gene in variant_obj.get('genes', []):
-                gene_obj = {
-                    'hgnc_id': gene['hgnc_id'],
-                    'hgnc_symbol': gene.get('hgnc_symbol'),
-                    'region_annotation': gene.get('region_annotation'),
-                    'functional_annotation': gene.get('functional_annotation'),
-                }
-                gene_objs.append(gene_obj)
+            if variant_obj:
+                # If the variant exosts we try to collect as much info as possible
+                not_loaded = False
+                compound['rank_score'] = variant_obj['rank_score']
+                for gene in variant_obj.get('genes', []):
+                    gene_obj = {
+                        'hgnc_id': gene['hgnc_id'],
+                        'hgnc_symbol': gene.get('hgnc_symbol'),
+                        'region_annotation': gene.get('region_annotation'),
+                        'functional_annotation': gene.get('functional_annotation'),
+                    }
+                    gene_objs.append(gene_obj)
+                    compound['genes'] = gene_objs
 
             compound['not_loaded'] = not_loaded
-            compound['genes'] = gene_objs
             compound_objs.append(compound)
         
         return compound_objs
-    
-    # def update_compounds(self, case_id, build='37'):
-    #     """Update the compounds for a case
-    #
-    #     Loop over all genes to get coordinates for all potential compound positions.
-    #     Update all variants within a gene with a bulk operation.
-    #     """
-    #     # variants =
-    #     for gene_obj in self.all_genes(build=build):
-    #         chrom = gene_obj['chromosome']
-    #         start = gene_obj['start'] - 5000
-    #         end = gene_obj['end'] + 5000
+
+    def update_compounds(self, variants):
+        """Update the compounds for a set of variants.
+        
+        Args:
+            variants(dict): A dictionary with _ids as keys and variant objs as values
+
+        """
+        LOG.debug("Updating compound objects")
+        for variant_obj in variants.values():
+            if not variant_obj.get('compounds'):
+                continue
+            var_id = variant_obj['simple_id']
+            updated_compounds = self.updated_compounds(variant_obj, variants)
+
+            variants[var_id]['compounds'] = updated_compounds
+
+        LOG.debug("Compounds updated")
+
+        return 
+
+    def update_case_compounds(self, case_id, build='37', variant_type='clinical'):
+        """Update the compounds for a case
+
+        Loop over all coding intervals to get coordinates for all potential compound positions.
+        Update all variants within a gene with a bulk operation.
+        """
+        categories = ['snv', 'sv', 'cancer']
+
+        coding_intervals = self.get_coding_intervals(build=build)
+
+        for chrom in coding_intervals:
+            for iv in coding_intervals[chrom]:
+                for category in categories:
+                    query  = {
+                        'variant_type': variant_type,
+                        'chrom': chrom,
+                        'start': iv.begin,
+                        'end': iv.end,
+                    }
+                    variant_objs = self.variants(
+                        case_id=case_id, 
+                        query=query, 
+                        category='category',
+                        nr_of_variants=-1
+                    )
     
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
@@ -202,7 +235,6 @@ class VariantLoader(object):
         """
         if not len(variants) > 0:
             return
-        print("bulk_len = ", len(variants))
         LOG.debug("Loading variant batch")
         try:
             result = self.variant_collection.insert_many(variants)
@@ -232,15 +264,6 @@ class VariantLoader(object):
         hgncid_to_gene = self.hgncid_to_gene(genes=genes)
         genomic_intervals = self.get_coding_intervals(genes=genes)
         
-        # Dictionary for cancer analysis
-        sample_info = {}
-        if category == 'cancer':
-            for ind in case_obj['individuals']:
-                if ind['phenotype'] == 2:
-                    sample_info[ind['individual_id']] = 'case'
-                else:
-                    sample_info[ind['individual_id']] = 'control'
-        
         LOG.info("Start inserting variants into database")
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
@@ -248,7 +271,7 @@ class VariantLoader(object):
         nr_variants = 0
         # These are the number of variants that meet the criteria and gets inserted
         nr_inserted = 0
-        # This is to keep track of the inserted variants
+        # This is to keep track of blocks of inserted variants
         inserted = 1
         
         nr_bulks = 0
@@ -317,10 +340,11 @@ class VariantLoader(object):
                     if len(bulk) > 10000:
                         load = True
 
-                current_region = new_region
-                
                 # Load the variant object
                 if load:
+                    # If the variant bulk contains coding variants we want to update the compounds
+                    if current_region:
+                        self.update_compounds(bulk)
                     try:
                         # Load the variants
                         self.load_variant_bulk(list(bulk.values()))
@@ -329,6 +353,7 @@ class VariantLoader(object):
                         pass
                     bulk = {}
                 
+                current_region = new_region
                 bulk[var_id] = variant_obj
                 
                 if (nr_variants != 0 and nr_variants % 5000 == 0):
@@ -341,6 +366,7 @@ class VariantLoader(object):
                     LOG.info("%s variants inserted", nr_inserted)
                     inserted += 1
         
+        # Load the final variant bulk
         self.load_variant_bulk(list(bulk.values()))
         nr_bulks += 1
 
