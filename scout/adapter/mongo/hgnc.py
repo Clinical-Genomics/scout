@@ -1,6 +1,8 @@
 import logging
 
-logger = logging.getLogger(__name__)
+import intervaltree
+
+LOG = logging.getLogger(__name__)
 
 
 class GeneHandler(object):
@@ -12,10 +14,10 @@ class GeneHandler(object):
             gene_obj(dict)
 
         """
-        logger.debug("Loading gene %s, build %s into database" %
+        LOG.debug("Loading gene %s, build %s into database" %
                      (gene_obj['hgnc_symbol'], gene_obj['build']))
         res = self.hgnc_collection.insert_one(gene_obj)
-        logger.debug("Gene saved")
+        LOG.debug("Gene saved")
         return res
 
     def hgnc_gene(self, hgnc_identifyer, build='37'):
@@ -37,7 +39,7 @@ class GeneHandler(object):
             query['hgnc_symbol'] = hgnc_identifyer
 
         query['build'] = build
-        logger.debug("Fetching gene %s" % hgnc_identifyer)
+        LOG.debug("Fetching gene %s" % hgnc_identifyer)
         gene_obj = self.hgnc_collection.find_one(query)
         return gene_obj
 
@@ -51,7 +53,7 @@ class GeneHandler(object):
         Returns:
             hgnc_id(int)
         """
-        logger.debug("Fetching gene %s", hgnc_symbol)
+        LOG.debug("Fetching gene %s", hgnc_symbol)
         query = {'hgnc_symbol':hgnc_symbol, 'build':build}
         projection = {'hgnc_id':1, '_id':0}
         res = self.hgnc_collection.find(query, projection)
@@ -74,7 +76,7 @@ class GeneHandler(object):
             Returns:
                 result()
         """
-        logger.debug("Fetching genes with symbol %s" % hgnc_symbol)
+        LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
             # first search for a full match
             full_query = self.hgnc_collection.find({
@@ -100,7 +102,7 @@ class GeneHandler(object):
             Returns:
                 result()
         """
-        logger.info("Fetching all genes")
+        LOG.info("Fetching all genes")
         return self.hgnc_collection.find({'build': build}).sort('chromosome', 1)
 
     def nr_genes(self, build=None):
@@ -112,22 +114,22 @@ class GeneHandler(object):
                 result()
         """
         if build:
-            logger.info("Fetching all genes from build %s",  build)
+            LOG.info("Fetching all genes from build %s",  build)
         else:
-            logger.info("Fetching all genes")
+            LOG.info("Fetching all genes")
 
         return self.hgnc_collection.find({'build':build}).count()
 
     def drop_genes(self, build=None):
         """Delete the genes collection"""
         if build:
-            logger.info("Dropping the hgnc_gene collection, build %s", build)
+            LOG.info("Dropping the hgnc_gene collection, build %s", build)
             self.hgnc_collection.delete_many({'build': build})
         else:
-            logger.info("Dropping the hgnc_gene collection")
+            LOG.info("Dropping the hgnc_gene collection")
             self.hgnc_collection.drop()
 
-    def hgncid_to_gene(self, build='37'):
+    def hgncid_to_gene(self, build='37', genes=None):
         """Return a dictionary with hgnc_id as key and gene_obj as value
 
         The result will have ONE entry for each gene in the database.
@@ -135,19 +137,24 @@ class GeneHandler(object):
 
         Args:
             build(str):
+            genes(iterable(scout.models.HgncGene)):
 
         Returns:
             hgnc_dict(dict): {<hgnc_id(int)>: <gene(dict)>}
 
         """
         hgnc_dict = {}
-        logger.info("Building hgncid_to_gene")
-        for gene_obj in self.hgnc_collection.find({'build':build}):
+        LOG.info("Building hgncid_to_gene")
+        if not genes:
+            genes = self.hgnc_collection.find({'build':build})
+        
+        for gene_obj in genes:
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
-        logger.info("All genes fetched")
+
+        LOG.info("All genes fetched")
         return hgnc_dict
 
-    def hgncsymbol_to_gene(self):
+    def hgncsymbol_to_gene(self, build='37', genes=None):
         """Return a dictionary with hgnc_symbol as key and gene_obj as value
 
         The result will have ONE entry for each gene in the database.
@@ -155,16 +162,20 @@ class GeneHandler(object):
 
         Args:
             build(str)
+            genes(iterable(scout.models.HgncGene)):
 
         Returns:
             hgnc_dict(dict): {<hgnc_symbol(str)>: <gene(dict)>}
 
         """
         hgnc_dict = {}
-        logger.info("Building hgncsymbol_to_gene")
-        for gene_obj in self.hgnc_collection.find():
+        LOG.info("Building hgncsymbol_to_gene")
+        if not genes:
+            genes = self.hgnc_collection.find({'build':build})
+
+        for gene_obj in genes:
             hgnc_dict[gene_obj['hgnc_symbol']] = gene_obj
-        logger.info("All genes fetched")
+        LOG.info("All genes fetched")
         return hgnc_dict
 
     def gene_by_alias(self, symbol, build='37'):
@@ -187,7 +198,7 @@ class GeneHandler(object):
 
         return res
 
-    def genes_by_alias(self, build='37'):
+    def genes_by_alias(self, build='37', genes=None):
         """Return a dictionary with hgnc symbols as keys and a list of hgnc ids
              as value.
 
@@ -197,15 +208,19 @@ class GeneHandler(object):
 
         Args:
             build(str)
+            genes(iterable(scout.models.HgncGene)):
 
         Returns:
             alias_genes(dict): {<hgnc_alias>: {'true': <hgnc_id>, 'ids': {<hgnc_id_1>, <hgnc_id_2>, ...}}}
         """
-        logger.info("Fetching all genes by alias")
+        LOG.info("Fetching all genes by alias")
         # Collect one entry for each alias symbol that exists
         alias_genes = {}
         # Loop over all genes
-        for gene in self.hgnc_collection.find({'build':build}):
+        if not genes:
+            genes = self.hgnc_collection.find({'build':build})
+
+        for gene in genes:
             # Collect the hgnc_id
             hgnc_id = gene['hgnc_id']
             # Collect the true symbol given by hgnc
@@ -259,12 +274,63 @@ class GeneHandler(object):
         for gene in genes:
             id_info = genes_by_alias.get(gene['hgnc_symbol'])
             if not id_info:
-                logger.warning("Gene %s does not exist in scout", gene['hgnc_symbol'])
+                LOG.warning("Gene %s does not exist in scout", gene['hgnc_symbol'])
                 continue
             gene['hgnc_id'] = id_info['true']
             if not id_info['true']:
                 if len(id_info['ids']) > 1:
-                    logger.warning("Gene %s has ambiguous value, please choose one hgnc id in result", gene['hgnc_symbol'])
+                    LOG.warning("Gene %s has ambiguous value, please choose one hgnc id in result", gene['hgnc_symbol'])
                 gene['hgnc_id'] = ','.join([str(hgnc_id) for hgnc_id in id_info['ids']])
 
+    def get_coding_intervals(self, build='37', genes=None):
+        """Return a dictionary with chromosomes as keys and interval trees as values
+        
+        Each interval represents a coding region of overlapping genes.
+        
+        Args:
+            build(str): The genome build
+            genes(iterable(scout.models.HgncGene)):
+        
+        Returns:
+            intervals(dict): A dictionary with chromosomes as keys and overlapping genomic intervals as values
+        """
+        intervals = {}
+        if not genes:
+            genes = self.all_genes(build=build)
+        LOG.info("Building interval trees...")
+        for i,hgnc_obj in enumerate(genes):
+            chrom = hgnc_obj['chromosome']
+            start = max((hgnc_obj['start'] - 5000), 1)
+            end = hgnc_obj['end'] + 5000
+            
+            # If this is the first time a chromosome is seen we create a new 
+            # interval tree with current interval
+            if chrom not in intervals:
+                intervals[chrom] = intervaltree.IntervalTree()
+                intervals[chrom].addi(start, end, i)
+                continue
+            
+            res = intervals[chrom].search(start, end)
+            
+            # If the interval did not overlap any other intervals we insert it and continue
+            if not res:
+                intervals[chrom].addi(start, end, i)
+                continue
+            
+            # Loop over the overlapping intervals
+            for interval in res:
+                # Update the positions to new max and mins
+                if interval.begin < start:
+                    start = interval.begin
+                
+                if interval.end > end:
+                    end = interval.end
+                
+                # Delete the old interval
+                intervals[chrom].remove(interval)
+            
+            # Add the new interval consisting och the overlapping ones
+            intervals[chrom].addi(start, end, i)
+        
+        return intervals
 
