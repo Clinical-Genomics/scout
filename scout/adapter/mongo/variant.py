@@ -12,6 +12,7 @@ from datetime import datetime
 import pymongo
 
 from cyvcf2 import VCF
+from intervaltree import IntervalTree
 
 # Local modules
 from scout.parse.variant.headers import (parse_rank_results_header,
@@ -23,13 +24,15 @@ from scout.build import build_variant
 
 from scout.utils.coordinates import is_par
 
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import (DuplicateKeyError, BulkWriteError)
 from scout.exceptions import IntegrityError
+
+from .variant_loader import VariantLoader
 
 LOG = logging.getLogger(__name__)
 
 
-class VariantHandler(object):
+class VariantHandler(VariantLoader):
 
     """Methods to handle variants in the mongo adapter"""
 
@@ -357,7 +360,21 @@ class VariantHandler(object):
             compound['not_loaded'] = not_loaded
             compound['genes'] = gene_objs
             compound_objs.append(compound)
+        
         return compound_objs
+    
+    # def update_compounds(self, case_id, build='37'):
+    #     """Update the compounds for a case
+    #
+    #     Loop over all genes to get coordinates for all potential compound positions.
+    #     Update all variants within a gene with a bulk operation.
+    #     """
+    #     # variants =
+    #     for gene_obj in self.all_genes(build=build):
+    #         chrom = gene_obj['chromosome']
+    #         start = gene_obj['start'] - 5000
+    #         end = gene_obj['end'] + 5000
+    
 
     def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
         """Add the variant rank for all inserted variants.
@@ -412,208 +429,6 @@ class VariantHandler(object):
             query['category'] = category
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
-
-    def load_variant(self, variant_obj):
-        """Load a variant object
-
-        Args:
-            variant_obj(dict)
-
-        Returns:
-            inserted_id
-        """
-        LOG.debug("Loading variant %s", variant_obj['_id'])
-        try:
-            result = self.variant_collection.insert_one(variant_obj)
-        except DuplicateKeyError as err:
-            raise IntegrityError("Variant %s already exists in database", variant_obj['_id'])
-        return result.inserted_id
-
-    def load_variants(self, case_obj, variant_type='clinical', category='snv',
-                      rank_threshold=None, chrom=None, start=None, end=None,
-                      gene_obj=None):
-        """Load variants for a case into scout.
-
-        Load the variants for a specific analysis type and category into scout.
-        If no region is specified, load all variants above rank score threshold
-        If region or gene is specified, load all variants from that region
-        disregarding variant rank(if not specified)
-
-        Args:
-            case_obj(dict): A case from the scout database
-            variant_type(str): 'clinical' or 'research'. Default: 'clinical'
-            category(str): 'snv' or 'sv'. Default: 'snv'
-            rank_threshold(float): Only load variants above this score. Default: 0
-            chrom(str): Load variants from a certain chromosome
-            start(int): Specify the start position
-            end(int): Specify the end position
-            gene_obj(dict): A gene object from the database
-
-        Returns:
-            nr_inserted(int)
-        """
-        institute_obj = self.institute(institute_id=case_obj['owner'])
-        gene_to_panels = self.gene_to_panels()
-        hgncid_to_gene = self.hgncid_to_gene()
-
-        variant_file = None
-        if variant_type == 'clinical':
-            if category == 'snv':
-                variant_file = case_obj['vcf_files'].get('vcf_snv')
-            elif category == 'sv':
-                variant_file = case_obj['vcf_files'].get('vcf_sv')
-            elif category == 'cancer':
-                # Currently this implies a paired tumor normal
-                variant_file = case_obj['vcf_files'].get('vcf_cancer')
-        elif variant_type == 'research':
-            if category == 'snv':
-                variant_file = case_obj['vcf_files'].get('vcf_snv_research')
-            elif category == 'sv':
-                variant_file = case_obj['vcf_files'].get('vcf_sv_research')
-            elif category == 'cancer':
-                variant_file = case_obj['vcf_files'].get('vcf_cancer_research')
-
-        if not variant_file:
-            raise SyntaxError("Vcf file does not seem to exist")
-
-        vcf_obj = VCF(variant_file)
-
-        # Parse the neccessary headers from vcf file
-        rank_results_header = parse_rank_results_header(vcf_obj)
-        vep_header = parse_vep_header(vcf_obj)
-
-        # Dictionary for cancer analysis
-        sample_info = {}
-        if category == 'cancer':
-            for ind in case_obj['individuals']:
-                if ind['phenotype'] == 2:
-                    sample_info[ind['individual_id']] = 'case'
-                else:
-                    sample_info[ind['individual_id']] = 'control'
-
-        # This is a dictionary to tell where ind are in vcf
-        individual_positions = {}
-        for i, ind in enumerate(vcf_obj.samples):
-            individual_positions[ind] = i
-
-        # Check if a region scould be uploaded
-        region = ""
-        if gene_obj:
-            chrom = gene_obj['chromosome']
-            # Add same padding as VEP
-            start = max(gene_obj['start'] - 5000, 0)
-            end = gene_obj['end'] + 5000
-        if chrom:
-            rank_threshold = rank_threshold or -1000
-            if not (start and end):
-                raise SyntaxError("Specify chrom start and end")
-            region = "{0}:{1}-{2}".format(chrom, start, end)
-        else:
-            rank_threshold = rank_threshold or 0
-
-        LOG.info("Start inserting variants into database")
-        start_insertion = datetime.now()
-        start_five_thousand = datetime.now()
-        # These are the number of parsed varaints
-        nr_variants = 0
-        # These are the number of variants that meet the criteria and gets
-        # inserted
-        nr_inserted = 0
-        # This is to keep track of the inserted variants
-        inserted = 1
-
-        try:
-            for nr_variants, variant in enumerate(vcf_obj(region)):
-                mt_variant = 'MT' in variant.CHROM
-                rank_score = parse_rank_score(variant.INFO.get('RankScore'), case_obj['_id'])
-                if (rank_score is None) or (rank_score > rank_threshold) or mt_variant:
-                    # Parse the vcf variant
-                    parsed_variant = parse_variant(
-                        variant=variant,
-                        case=case_obj,
-                        variant_type=variant_type,
-                        rank_results_header=rank_results_header,
-                        vep_header=vep_header,
-                        individual_positions=individual_positions,
-                        category=category,
-                    )
-
-                    # Build the variant object
-                    variant_obj = build_variant(
-                        variant=parsed_variant,
-                        institute_id=institute_obj['_id'],
-                        gene_to_panels=gene_to_panels,
-                        hgncid_to_gene=hgncid_to_gene,
-                        sample_info=sample_info
-                    )
-                    
-                    # Load the variant object
-                    try:
-                        self.load_variant(variant_obj)
-                        nr_inserted += 1
-                    except IntegrityError as error:
-                        pass
-
-                    if (nr_variants != 0 and nr_variants % 5000 == 0):
-                        LOG.info("%s variants parsed", str(nr_variants))
-                        LOG.info("Time to parse variants: %s",
-                                    (datetime.now() - start_five_thousand))
-                        start_five_thousand = datetime.now()
-
-                    if (nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0):
-                        LOG.info("%s variants inserted", nr_inserted)
-                        inserted += 1
-
-        except Exception as error:
-            LOG.exception('unexpected error')
-            LOG.warning("Deleting inserted variants")
-            self.delete_variants(case_obj['_id'], variant_type)
-            raise error
-
-        self.update_variants(case_obj, variant_type, category=category)
-        
-        ## If all variants of a region are loaded we need to update the compounds of that region
-        if region:
-            LOG.info("Updating compound information for all variants in region")
-            # Get all variants in a region
-            query = self.build_query(
-                        case_id=case_obj['_id'],
-                        query={
-                            'variant_type': variant_type,
-                            'chrom': chrom,
-                            'start': start,
-                            'end': end,
-                        },
-                        category=category
-                    )
-            res = self.variant_collection.find(query)
-            # Store them in a dictionary for faster access
-            # This should not be dangerous since we know there is a limited number of variants for
-            # a region
-            variants = {var['_id']: var for var in res}
-            # Get a iterable with variant objs. This is to avoid to iterate over a dictionary that
-            # will be updated during iteration
-            variant_objs = variants.values()
-            
-            # Now update the compound information for all variants in the region
-            for variant_obj in variant_objs:
-                if not variant_obj.get('compounds'):
-                    continue
-
-                # get a list with updated compounds
-                new_compounds = self.update_compounds(variant_obj, variants)
-                # Update the variant
-                variant_obj['compounds'] = new_compounds
-
-                # sort compounds on combined rank score
-                variant_obj['compounds'] = sorted(variant_obj['compounds'],
-                                              key=lambda compound: -compound['combined_score'])
-                # Store the information in the database
-                self.update_variant(variant_obj)
-
-        LOG.info("Nr variants inserted: %s", nr_inserted)
-
-        return nr_inserted
 
     def overlapping(self, variant_obj):
         """Return ovelapping variants.

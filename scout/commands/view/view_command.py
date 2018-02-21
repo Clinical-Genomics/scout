@@ -4,18 +4,18 @@ import click
 
 from pprint import pprint as pp
 
-from scout.constants import (SEX_MAP, PHENOTYPE_MAP)
+from scout.constants import (SEX_MAP, PHENOTYPE_MAP, BUILDS, CHROMOSOMES)
 
 from .case import cases
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 @click.command('index', short_help='Display all indexes')
 @click.option('-n', '--collection-name')
 @click.pass_context
 def index(context, collection_name):
     """Show all indexes in the database"""
-    log.info("Running scout view index")
+    LOG.info("Running scout view index")
     adapter = context.obj['adapter']
 
     i = 0
@@ -24,7 +24,35 @@ def index(context, collection_name):
         i += 1
 
     if i == 0:
-        log.info("No indexes found")
+        LOG.info("No indexes found")
+
+@click.command('intervals', short_help='Show how many intervals that exists for each chromosome')
+@click.option('-b', '--build',
+    default = '37',
+    type = click.Choice(BUILDS)
+)
+@click.pass_context
+def intervals(context, build):
+    """Show all indexes in the database"""
+    LOG.info("Running scout view index")
+    adapter = context.obj['adapter']
+    
+    intervals = adapter.get_coding_intervals(build)
+    nr_intervals = 0
+    longest = 0
+    for chrom in CHROMOSOMES:
+        for iv in intervals[chrom]:
+            iv_len = iv.end - iv.begin
+            if iv_len > longest:
+                longest = iv_len
+        int_nr = len(intervals.get(chrom, []))
+        click.echo("{0}\t{1}".format(chrom, int_nr))
+        nr_intervals += int_nr
+    
+    LOG.info("Total nr intervals:%s", nr_intervals)
+    LOG.info("Total nr genes:%s", adapter.all_genes(build).count())
+    LOG.info("Longest interval:%s", longest)
+    
 
 
 @click.command('panels', short_help='Display gene panels')
@@ -34,12 +62,12 @@ def index(context, collection_name):
 @click.pass_context
 def panels(context, institute):
     """Show all gene panels in the database"""
-    log.info("Running scout view panels")
+    LOG.info("Running scout view panels")
     adapter = context.obj['adapter']
 
     panel_objs = adapter.gene_panels(institute_id = institute)
     if panel_objs.count() == 0:
-        log.info("No panels found")
+        LOG.info("No panels found")
         context.abort()
     click.echo("#panel_name\tversion\tnr_genes\tdate")
 
@@ -55,12 +83,12 @@ def panels(context, institute):
 @click.pass_context
 def users(context):
     """Show all users in the database"""
-    log.info("Running scout view users")
+    LOG.info("Running scout view users")
     adapter = context.obj['adapter']
 
     user_objs = adapter.users()
     if user_objs.count() == 0:
-        log.info("No users found")
+        LOG.info("No users found")
         context.abort()
 
     click.echo("#name\temail\troles\tinstitutes")
@@ -85,7 +113,7 @@ def users(context):
 @click.pass_context
 def individuals(context, institute, causatives, case_id):
     """Show all individuals from all cases in the database"""
-    log.info("Running scout view individuals")
+    LOG.info("Running scout view individuals")
     adapter = context.obj['adapter']
     individuals = []
 
@@ -94,7 +122,7 @@ def individuals(context, institute, causatives, case_id):
         if case:
             cases = [case]
         else:
-            log.info("Could not find case %s", case_id)
+            LOG.info("Could not find case %s", case_id)
             return
     else:
         cases = [case_obj for case_obj in
@@ -102,7 +130,7 @@ def individuals(context, institute, causatives, case_id):
                      collaborator=institute,
                      has_causatives=causatives)]
         if len(cases) == 0:
-            log.info("Could not find cases that match criteria")
+            LOG.info("Could not find cases that match criteria")
             return
         individuals = (ind_obj for case_obj in cases for ind_obj in case_obj['individuals'])
 
@@ -118,7 +146,7 @@ def individuals(context, institute, causatives, case_id):
                 ]
             click.echo('\t'.join(ind_info))
     # if user_objs.count() == 0:
-    #     log.info("No users found")
+    #     LOG.info("No users found")
     #     context.abort()
     #
     # for user_obj in user_objs:
@@ -134,7 +162,7 @@ def individuals(context, institute, causatives, case_id):
 @click.pass_context
 def whitelist(context):
     """Show all objects in the whitelist collection"""
-    log.info("Running scout view users")
+    LOG.info("Running scout view users")
     adapter = context.obj['adapter']
 
     ## TODO add a User interface to the adapter
@@ -146,7 +174,7 @@ def whitelist(context):
 @click.pass_context
 def institutes(context):
     """Show all institutes in the database"""
-    log.info("Running scout view institutes")
+    LOG.info("Running scout view institutes")
     adapter = context.obj['adapter']
 
     institute_objs = adapter.institutes()
@@ -166,7 +194,7 @@ def institutes(context):
 @click.pass_context
 def aliases(context, build):
     """Show all alias symbols and how they map to ids"""
-    log.info("Running scout view aliases")
+    LOG.info("Running scout view aliases")
     adapter = context.obj['adapter']
 
     alias_genes = adapter.genes_by_alias(build=build)
@@ -187,7 +215,7 @@ def aliases(context, build):
 @click.pass_context
 def genes(context, build):
     """Show all genes in the database"""
-    log.info("Running scout view genes")
+    LOG.info("Running scout view genes")
     adapter = context.obj['adapter']
 
     click.echo("Chromosom\tstart\tend\thgnc_id\thgnc_symbol")
@@ -204,7 +232,7 @@ def genes(context, build):
 @click.pass_context
 def diseases(context):
     """Show all diseases in the database"""
-    log.info("Running scout view diseases")
+    LOG.info("Running scout view diseases")
     adapter = context.obj['adapter']
 
     disease_objs = adapter.disease_terms()
@@ -216,13 +244,13 @@ def diseases(context):
         click.echo("Disease")
         for disease_obj in adapter.disease_terms():
             click.echo("{0}".format(disease_obj['_id']))
-        log.info("{0} diseases found".format(nr_diseases))
+        LOG.info("{0} diseases found".format(nr_diseases))
 
 @click.command('hpo', short_help='Display all hpo terms')
 @click.pass_context
 def hpo(context):
     """Show all hpo terms in the database"""
-    log.info("Running scout view hpo")
+    LOG.info("Running scout view hpo")
     adapter = context.obj['adapter']
 
     click.echo("hpo_id\tdescription")
@@ -252,3 +280,4 @@ view.add_command(whitelist)
 view.add_command(aliases)
 view.add_command(individuals)
 view.add_command(index)
+view.add_command(intervals)

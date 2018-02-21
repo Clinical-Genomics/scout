@@ -61,7 +61,7 @@ def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
     result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='sv')
     assert result.count() == index + 1
 
-def test_load_all_variants(populated_database, variant_objs, case_obj):
+def test_load_all_variants(populated_database, case_obj):
     adapter = populated_database
     case_id = case_obj['_id']
 

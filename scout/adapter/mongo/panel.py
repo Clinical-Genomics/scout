@@ -273,10 +273,11 @@ class PanelHandler(object):
         for panel in self.gene_panels():
             for gene in panel['genes']:
                 hgnc_id = gene['hgnc_id']
-                if hgnc_id in gene_dict:
-                    gene_dict[hgnc_id].add(panel['panel_name'])
-                else:
+                
+                if hgnc_id not in gene_dict:
                     gene_dict[hgnc_id] = set([panel['panel_name']])
+                    continue
+                gene_dict[hgnc_id].add(panel['panel_name'])
         LOG.info("Gene to panels done")
 
         return gene_dict

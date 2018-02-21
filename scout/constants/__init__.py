@@ -21,6 +21,8 @@ from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
 
 cytobands_handle = get_file_handle(cytobands_path)
 
+BUILDS = ['37', '38']
+
 CYTOBANDS = parse_cytoband(cytobands_handle)
 
 CHROMOSOMES = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
