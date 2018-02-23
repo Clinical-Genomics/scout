@@ -49,7 +49,7 @@ def panels():
                    for institute in institutes
                    for name in
                    store.gene_panels(institute_id=institute['_id']).distinct('panel_name')]
-    
+
     panel_versions = {}
     for name in panel_names:
         panel_versions[name]=store.gene_panels(panel_id=name)
@@ -59,7 +59,7 @@ def panels():
          institute_panels = store.latest_panels(institute_obj['_id'])
          panel_groups.append((institute_obj, institute_panels))
 
-    return dict(panel_groups=panel_groups, panel_names=panel_names, 
+    return dict(panel_groups=panel_groups, panel_names=panel_names,
                 panel_versions=panel_versions, institutes=institutes)
 
 
@@ -72,12 +72,17 @@ def panel(panel_id):
         raw_hgnc_id = request.form['hgnc_id']
         if '|' in raw_hgnc_id:
             raw_hgnc_id = raw_hgnc_id.split(' | ', 1)[0]
-        hgnc_id = int(raw_hgnc_id)
+        hgnc_id = 0
+        try:
+            hgnc_id = int(raw_hgnc_id)
+        except:
+            flash("Provided HGNC is not valid : '{}'". format(raw_hgnc_id), 'danger')
+            return redirect(request.referrer)
         action = request.form['action']
         gene_obj = store.hgnc_gene(hgnc_id)
         if gene_obj is None:
-            flash("HGNC id not found: {}".format(hgnc_id))
-            return redirect(request.referer)
+            flash("HGNC id not found: {}".format(hgnc_id), 'warning')
+            return redirect(request.referrer)
 
         if action == 'add':
             panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
