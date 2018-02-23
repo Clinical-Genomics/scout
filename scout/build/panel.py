@@ -107,7 +107,8 @@ def build_panel(panel_info, adapter):
     )
 
     """
-    panel_name = panel_info.get('panel_id')
+    
+    panel_name = panel_info.get('panel_id', panel_info.get('panel_name'))
     if not panel_name:
         raise KeyError("Panel has to have a name")
     

@@ -6,9 +6,9 @@ from scout.server.blueprints.variants.controllers import variants
 
 from cyvcf2 import VCF
 
-def test_load_variant(populated_database, variant_obj):
+def test_load_variant(real_populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
-    adapter = populated_database
+    adapter = real_populated_database
     # GIVEN a database without any variants
     assert adapter.variant_collection.find().count() == 0
 
@@ -18,9 +18,9 @@ def test_load_variant(populated_database, variant_obj):
 
     assert adapter.variant_collection.find_one()
 
-def test_load_variant_twice(populated_database, variant_obj):
+def test_load_variant_twice(real_populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
-    adapter = populated_database
+    adapter = real_populated_database
     # GIVEN a database without any variants
     assert adapter.variant_collection.find().count() == 0
 
@@ -31,9 +31,9 @@ def test_load_variant_twice(populated_database, variant_obj):
     with pytest.raises(IntegrityError):
         adapter.load_variant(variant_obj=variant_obj)
 
-def test_load_variants(populated_database, case_obj, variant_clinical_file):
+def test_load_variants(real_populated_database, case_obj, variant_clinical_file):
     """Test to load a variant into a mongo database"""
-    adapter = populated_database
+    adapter = real_populated_database
     # GIVEN a database without any variants
     assert adapter.variant_collection.find().count() == 0
 
@@ -58,9 +58,9 @@ def test_load_variants(populated_database, case_obj, variant_clinical_file):
         assert variant['category'] == 'snv'
         assert variant['variant_rank']
 
-def test_load_sv_variants(populated_database, case_obj, sv_clinical_file):
+def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     """Test to load a variant into a mongo database"""
-    adapter = populated_database
+    adapter = real_populated_database
     # GIVEN a database without any variants
     assert adapter.variant_collection.find().count() == 0
 
@@ -81,9 +81,9 @@ def test_load_sv_variants(populated_database, case_obj, sv_clinical_file):
         assert variant['category'] == 'sv'
         assert variant['variant_rank']
 
-def test_load_region(populated_database, case_obj, variant_clinical_file):
+def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     """Test to load variants from a region into a mongo database"""
-    adapter = populated_database
+    adapter = real_populated_database
     # GIVEN a database without any variants
     assert adapter.variant_collection.find().count() == 0
 
@@ -108,9 +108,9 @@ def test_load_region(populated_database, case_obj, variant_clinical_file):
         assert variant['position'] <= end
         assert variant['end'] >= start
 
-def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
+def test_load_mitochondrie(real_populated_database, case_obj, variant_clinical_file):
     """Test that all variants from mt are loaded"""
-    adapter = populated_database
+    adapter = real_populated_database
     rank_threshold = 3
     
     # Check how many MT variants there are in file
@@ -144,37 +144,6 @@ def test_load_mitochondrie(populated_database, case_obj, variant_clinical_file):
             assert variant['rank_score'] >= rank_threshold
 
     assert mt_variants == mt_variants_found
-
-
-def test_load_compounds(populated_database, case_obj, variant_clinical_file):
-    """Test behaviour of compound variants when loaded"""
-    adapter = populated_database
-    ## GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
-    
-    ## WHEN loading a variant into the database
-    adapter.load_variants(
-            case_obj=case_obj,
-            variant_type='clinical',
-            category='snv',
-    )
-    
-    ## THEN assert all variants loaded are in the given region
-    institute_obj = adapter.institute_collection.find_one()
-    case_obj = adapter.case_collection.find_one()
-    
-    variants_query = adapter.variant_collection.find()
-
-    ## THEN assert there is no additional information on the compounds
-    for variant in adapter.variant_collection.find():
-        for comp in variant.get('compounds',[]):
-            assert 'not_loaded' not in comp
-
-    ## THEN assert that additional informatino is added when they are accessed in the controller
-    res = variants(adapter, institute_obj, case_obj, variants_query, page=1, per_page=50)
-    for variant in res['variants']:
-        for comp in variant.get('compounds',[]):
-            assert 'not_loaded' in comp
 
 def test_compounds_region(real_populated_database, case_obj):
     """When loading the variants not all variants will be loaded, only the ones that
