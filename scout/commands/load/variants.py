@@ -77,7 +77,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
             
             LOG.info("Delete {0} {1} variants for case {2}".format(
                          variant_type, category, case_id))
-            adapter.delete_variants(case_id=case_obj['case_id'], 
+            adapter.delete_variants(case_id=case_obj['_id'], 
                                     variant_type=variant_type,
                                     category=category)
             

@@ -97,7 +97,7 @@ def build_case(case_data, adapter):
     log.info("build case with id: {0}".format(case_data['case_id']))
     case_obj = {
         '_id': case_data['case_id'],
-        'display_name': case_data['display_name'],
+        'display_name': case_data.get('display_name', case_data['case_id']),
     }
 
     # Check if institute exists in database

@@ -46,23 +46,24 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
 #         assert 'variant_rank' in variant
 
 
-def test_load_sv_variants(populated_database, sv_variant_objs, case_obj):
+def test_load_sv_variants(real_populated_database, sv_variant_objs, case_obj):
     """Test to load variants into a mongo database"""
+    adapter = real_populated_database
     case_id = case_obj['_id']
 
     # GIVEN a populated database without any sv variants
-    assert populated_database.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
 
     # WHEN adding a number of sv variants
     for index, variant_obj in enumerate(sv_variant_objs):
-        populated_database.load_variant(variant_obj)
+        adapter.load_variant(variant_obj)
 
     # THEN the same number of SV variants should have been loaded
-    result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='sv')
+    result = adapter.variants(case_id=case_id, nr_of_variants=-1, category='sv')
     assert result.count() == index + 1
 
-def test_load_all_variants(populated_database, case_obj):
-    adapter = populated_database
+def test_load_all_variants(real_populated_database, case_obj):
+    adapter = real_populated_database
     case_id = case_obj['_id']
 
     ## GIVEN a populated database without any variants
@@ -74,12 +75,12 @@ def test_load_all_variants(populated_database, case_obj):
                           start=None, end=None, gene_obj=None)
 
     # THEN the same number of SV variants should have been loaded
-    result = populated_database.variants(case_id=case_id, nr_of_variants=-1, category='snv')
+    result = adapter.variants(case_id=case_id, nr_of_variants=-1, category='snv')
 
     assert nr_loaded == result.count()
 
-def test_load_whole_gene(populated_database, variant_objs, case_obj):
-    adapter = populated_database
+def test_load_whole_gene(real_populated_database, variant_objs, case_obj):
+    adapter = real_populated_database
     case_id = case_obj['_id']
 
     assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
@@ -103,8 +104,8 @@ def test_load_whole_gene(populated_database, variant_objs, case_obj):
     ## Then assert that the other variants where loaded
     assert new_nr_variants_in_gene > nr_variants_in_gene
 
-def test_load_coordinates(populated_database, variant_objs, case_obj):
-    adapter = populated_database
+def test_load_coordinates(real_populated_database, variant_objs, case_obj):
+    adapter = real_populated_database
     case_id = case_obj['_id']
 
     assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0

@@ -113,7 +113,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))
     for compound_obj in compounds:
-        compound_obj.update(get_predictions(compound_obj['genes']))
+        compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
     if isinstance(variant_obj.get('acmg_classification'), int):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]

@@ -98,7 +98,7 @@ def build_panel(panel_info, adapter):
             panel_obj(dict)
 
     gene_panel = dict(
-        panel_name = str, # required
+        panel_id = str, # required
         institute = str, # institute_id, required
         version = float, # required
         date = datetime, # required

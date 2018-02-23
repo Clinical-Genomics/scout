@@ -270,138 +270,17 @@ class VariantHandler(VariantLoader):
             filters['institute'] = institute_obj['_id']
         return self.variant_collection.find(filters)
 
-    def update_variant(self, variant_obj):
-        """Update one variant document in the database.
-
-        Args:
-            variant_obj(dict)
-
-        Returns:
-            new_variant(dict)
-        """
-        new_variant = self.variant_collection.find_one_and_replace(
-            {'_id': variant_obj['_id']},
-            variant_obj,
-            return_document=pymongo.ReturnDocument.AFTER
-        )
-        return new_variant
-
-    def update_variants(self, case_obj, variant_type='clinical', category='snv'):
-        """Adds extra information on variants.
-
-        Add a variant rank based on the rank score
-        Add extra information on compounds
-
-            Args:
-                case_obj(Case)
-                variant_type(str)
-        """
-        # Get all variants sorted by rank score
-        variants = self.variant_collection.find({
-            'case_id': case_obj['_id'],
-            'category': category,
-            'variant_type': variant_type,
-        }).sort('rank_score', pymongo.DESCENDING)
-
-        LOG.info("Updating variant_rank for all variants")
-
-        # Update the information on all compounds
-        for index, variant in enumerate(variants):
-            # This is a list with the updated compound documents
-            # compound_objs = self.update_compounds(variant)
-            self.variant_collection.find_one_and_update(
-                {'_id': variant['_id']},
-                {
-                    '$set': {
-                        'variant_rank': index + 1,
-                        # 'compounds': compound_objs,
-                    }
-                }
-            )
-
-        LOG.info("Updating variant_rank done")
-
-    def update_compounds(self, variant, variant_objs = None):
-        """Update compounds for a variant.
-        
-        This will add all the necessary information of a variant on a compound object.
-        
-        Args:
-            variant(scout.models.Variant)
-            variant_objs(dict): A dictionary with _ids as keys and variant objs as values.
-        
-        Returns:
-            compound_objs(list(dict)): A dictionary with updated compound objects.
-        
-        """
-        compound_objs = []
-        for compound in variant.get('compounds', []):
-            not_loaded = True
-            gene_objs = []
-            # Check if the compound variant exists
-            if variant_objs:
-                variant_obj = variant_objs.get(compound['variant'])
-            else:
-                variant_obj = self.variant_collection.find_one({'_id': compound['variant']})
-            if not variant_obj:
-                continue
-            # If the variant exosts we try to collect as much info as possible
-            not_loaded = False
-            compound['rank_score'] = variant_obj['rank_score']
-            for gene in variant_obj.get('genes', []):
-                gene_obj = {
-                    'hgnc_id': gene['hgnc_id'],
-                    'hgnc_symbol': gene.get('hgnc_symbol'),
-                    'region_annotation': gene.get('region_annotation'),
-                    'functional_annotation': gene.get('functional_annotation'),
-                }
-                gene_objs.append(gene_obj)
-
-            compound['not_loaded'] = not_loaded
-            compound['genes'] = gene_objs
-            compound_objs.append(compound)
-        
-        return compound_objs
-    
-    # def update_compounds(self, case_id, build='37'):
-    #     """Update the compounds for a case
-    #
-    #     Loop over all genes to get coordinates for all potential compound positions.
-    #     Update all variants within a gene with a bulk operation.
-    #     """
-    #     # variants =
-    #     for gene_obj in self.all_genes(build=build):
-    #         chrom = gene_obj['chromosome']
-    #         start = gene_obj['start'] - 5000
-    #         end = gene_obj['end'] + 5000
-    
-
-    def add_variant_rank(self, case_obj, variant_type='clinical', category='snv'):
-        """Add the variant rank for all inserted variants.
-
-            Args:
-                case_obj(Case)
-                variant_type(str)
-        """
-        variants = self.variant_collection.find(
-            {
-                'case_id': case_obj['_id'],
-                'category': category,
-                'variant_type': variant_type,
-            },
-            {'_id':1}
-        ).sort('rank_score', pymongo.DESCENDING)
-
-        LOG.info("Updating variant_rank for all variants")
-        for index, variant in enumerate(variants):
-            self.variant_collection.find_one_and_update(
-                {'_id': variant['_id']},
-                {'$set': {'variant_rank': index + 1}}
-            )
-        LOG.info("Updating variant_rank done")
 
     def other_causatives(self, case_obj, variant_obj):
-        """Find the same variant in other cases marked causative."""
+        """Find the same variant in other cases marked causative.
+
+        Args:
+            case_obj(dict)
+            variant_obj(dict)
+        
+        Yields:
+            other_variant(dict)
+        """
         # variant id without "*_[variant_type]"
         variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
 

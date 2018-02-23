@@ -13,10 +13,10 @@ def test_load_variant(populated_database, variant_obj):
     assert adapter.variant_collection.find().count() == 0
 
     # WHEN loading a variant into the database
-    variant_id = adapter.load_variant(variant_obj=variant_obj)
+    adapter.load_variant(variant_obj=variant_obj)
     # THEN assert the variant is loaded
 
-    assert adapter.variant_collection.find_one({'_id': variant_id})
+    assert adapter.variant_collection.find_one()
 
 def test_load_variant_twice(populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
@@ -202,8 +202,8 @@ def test_compounds_region(real_populated_database, case_obj):
     case_obj = adapter.case_collection.find_one()
     
     chrom = '1'
-    start = 7847367
-    end = 156147000
+    start = 156112157
+    end = 156152543
     
     query = adapter.build_query(
                 case_id=case_obj['_id'],
@@ -219,16 +219,20 @@ def test_compounds_region(real_populated_database, case_obj):
     variants_query = adapter.variant_collection.find(query)
     nr_comps = 0
     nr_variants = 0
-
+    nr_not_loaded = 0
+    genomic_regions = adapter.get_coding_intervals()
     for nr_variants,variant in enumerate(variants_query):
         for comp in variant.get('compounds',[]):
             nr_comps += 1
-            assert 'not_loaded' not in comp
+            if comp['not_loaded']:
+                nr_not_loaded += 1
+    
+    assert nr_not_loaded > 0
     assert nr_variants > 0
     assert nr_comps > 0
 
     ## THEN when loading all variants in the region, assert that ALL the compounds are updated
-
+    print('')
     adapter.load_variants(
             case_obj=case_obj,
             variant_type=variant_type,
@@ -243,6 +247,9 @@ def test_compounds_region(real_populated_database, case_obj):
     nr_variants = 0
     for nr_variants,variant in enumerate(variants_query):
         for comp in variant.get('compounds',[]):
+            if comp['not_loaded']:
+                print(variant['simple_id'])
+                pp(comp)
             nr_comps += 1
             # We know that all ar updated and loaded if this flag is set
             assert comp['not_loaded'] == False

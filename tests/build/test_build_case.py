@@ -11,9 +11,10 @@ def test_build_case(parsed_case, panel_database):
     #GIVEN a parsed case
     #WHEN bulding a case model
     case_obj = build_case(parsed_case, adapter)
+    # print(case_obj)
+    # assert False
     #THEN make sure it is built in the proper way
     assert case_obj['_id'] == parsed_case['case_id']
-    assert case_obj['case_id'] == parsed_case['case_id']
     assert case_obj['display_name'] == parsed_case['display_name']
     assert case_obj['owner'] == parsed_case['owner']
     assert case_obj['collaborators'] == parsed_case['collaborators']
@@ -56,14 +57,14 @@ def test_build_minimal_case(institute_database):
     ## WHEN case is built
     case_obj = build_case(case_info, institute_database)
     ## THEN assert that it worked
-    assert case_obj['case_id'] == case_info['case_id']
+    assert case_obj['_id'] == case_info['case_id']
 
 def test_build_case_no_case_id(adapter):
     ## GIVEN a case without case id
     case_info ={}
     ## WHEN case is built
     ## THEN a PedigreeError should be raised
-    with pytest.raises(PedigreeError):
+    with pytest.raises(Exception):
         case_obj = build_case(case_info, adapter)
 
 def test_build_case_no_display_name(institute_database):
