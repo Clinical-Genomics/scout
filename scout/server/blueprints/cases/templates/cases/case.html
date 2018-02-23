@@ -373,7 +373,7 @@
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
     <div class="row">
       <div class="col-xs-8">
-        <input class="form-control" name="omim_id" placeholder="OMIM:XXX" pattern="OMIM:[0-9]+">
+        <input class="form-control" name="omim_id" placeholder="OMIM:XXX" required pattern="OMIM:[0-9]+">
       </div>
       <div class="col-xs-4">
         <button class="btn btn-default form-control" type="submit" name="{{ type }}">
@@ -464,7 +464,7 @@
                                case_name=case.display_name) }}">
         <div class="row">
           <div class="col-xs-7">
-            <input name="hpo_term" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+            <input name="hpo_term" class="typeahead form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
           </div>
           <div class="col-xs-5">
             <button class="btn btn-default form-control">Add</button>
