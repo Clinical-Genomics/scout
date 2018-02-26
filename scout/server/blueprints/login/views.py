@@ -66,6 +66,7 @@ def logout():
 @login_bp.route('/authorized')
 @public_endpoint
 def authorized():
+    oauth_response = None
     try:
         oauth_response = google.authorized_response()
     except OAuthException as error:
