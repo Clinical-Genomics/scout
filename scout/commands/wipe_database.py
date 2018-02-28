@@ -13,13 +13,12 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 import logging
 import click
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def abort_if_false(ctx, param, value):
     if not value:
         ctx.abort()
-
 
 @click.command('wipe', short_help="Wipe a scout instance")
 @click.option("--yes",
@@ -31,6 +30,12 @@ def abort_if_false(ctx, param, value):
 @click.pass_context
 def wipe(ctx):
     """Drop the mongo database given."""
-    logger.info("Running wipe_mongo")
-    ctx.obj['adapter'].drop_database()
-    logger.info("Dropped all tables")
+    LOG.info("Running scout wipe")
+    db_name = ctx.obj['mongodb']
+    LOG.info("Dropping database %s", db_name)
+    try:
+        ctx.obj['client'].drop_database(db_name)
+    except Exception as err:
+        LOG.warning(err)
+        ctx.abort()
+    LOG.info("Dropped whole database")
