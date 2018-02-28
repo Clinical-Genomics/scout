@@ -22,8 +22,8 @@ def compounds(context, case_id):
         LOG.warning("Case %s could not be found", case_id)
         context.abort()
     
-    # try:
-    adapter.update_case_compounds(case_obj)
-    # except Exception as err:
-    #     LOG.warning(err)
-    #     context.abort()
+    try:
+        adapter.update_case_compounds(case_obj)
+    except Exception as err:
+        LOG.warning(err)
+        context.abort()

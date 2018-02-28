@@ -240,6 +240,7 @@ class VariantLoader(object):
                     # Initiate a bulk
                     bulk = {}
                     current_region = None
+                    special = False
                     
                     # Loop over the variants and check if they are in a coding region
                     for var_obj in variant_objs:
@@ -253,6 +254,7 @@ class VariantLoader(object):
 
                         # Check if the variant is in a coding region
                         genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).search(var_start, var_end)
+                        
                         
                         # If the variant is in a coding region
                         if genomic_regions:
