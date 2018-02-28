@@ -98,7 +98,7 @@ def build_panel(panel_info, adapter):
             panel_obj(dict)
 
     gene_panel = dict(
-        panel_name = str, # required
+        panel_id = str, # required
         institute = str, # institute_id, required
         version = float, # required
         date = datetime, # required
@@ -107,7 +107,8 @@ def build_panel(panel_info, adapter):
     )
 
     """
-    panel_name = panel_info.get('panel_id')
+    
+    panel_name = panel_info.get('panel_id', panel_info.get('panel_name'))
     if not panel_name:
         raise KeyError("Panel has to have a name")
     

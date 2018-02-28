@@ -30,7 +30,7 @@ def test_build_panel(institute_database, test_gene):
     adapter.load_hgnc_gene(test_gene)
     
     panel_info = {
-        'panel_name': 'panel1',
+        'panel_id': 'panel1',
         'institute': 'cust000',
         'date': datetime.now(),
         'display_name': 'first panel',

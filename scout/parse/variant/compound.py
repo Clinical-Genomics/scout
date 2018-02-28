@@ -2,7 +2,7 @@ import logging
 
 from scout.utils.md5 import generate_md5_key
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def parse_compounds(compound_info, case_id, variant_type):
     """Get a list with compounds objects for this variant.

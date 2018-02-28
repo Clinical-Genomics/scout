@@ -40,7 +40,7 @@ class QueryHandler(object):
         """
         query = query or {}
         mongo_query = {}
-        logger.info("Building a mongo query for %s" % case_id)
+        logger.debug("Building a mongo query for %s" % case_id)
         mongo_query['case_id'] = case_id
         logger.debug("Querying category %s" % category)
         mongo_query['category'] = category

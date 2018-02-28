@@ -18,8 +18,11 @@ from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP,
                         REV_PHENOTYPE_MAP, CASE_STATUSES)
 from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
+from .file_types import FILE_TYPE_MAP
 
 cytobands_handle = get_file_handle(cytobands_path)
+
+BUILDS = ['37', '38']
 
 CYTOBANDS = parse_cytoband(cytobands_handle)
 

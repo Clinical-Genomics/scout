@@ -4,8 +4,6 @@ import logging
 
 import click
 
-from scout.load.variant import delete_variants
-
 LOG = logging.getLogger(__name__)
 
 @click.command(short_help='Upload research variants')
@@ -49,7 +47,7 @@ def research(context, case_id, institute, force):
                                         category='snv')
 
                 LOG.info("Load research SNV for: %s", case_obj['_id'])
-                adapter. load_variants(
+                adapter.load_variants(
                     case_obj=case_obj,
                     variant_type='research',
                     category='snv',
@@ -62,7 +60,7 @@ def research(context, case_id, institute, force):
                                         variant_type='research',
                                         category='sv')
                 LOG.info("Load research SV for: %s", case_obj['_id'])
-                adapter. load_variants(
+                adapter.load_variants(
                     case_obj=case_obj,
                     variant_type='research',
                     category='sv',
@@ -76,7 +74,7 @@ def research(context, case_id, institute, force):
                                         category='cancer')
 
                 LOG.info("Load research cancer for: %s", case_obj['_id'])
-                adapter. load_variants(
+                adapter.load_variants(
                     case_obj=case_obj,
                     variant_type='research',
                     category='cancer',

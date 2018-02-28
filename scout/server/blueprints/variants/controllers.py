@@ -85,8 +85,9 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     compounds = variant_obj.get('compounds', [])
     if compounds:
         # Check if we need to add compound information
+        # If it is the first time the case is viewed we fill in some compound information
         if 'not_loaded' not in compounds[0]:
-            new_compounds = store.update_compounds(variant_obj)
+            new_compounds = store.update_variant_compounds(variant_obj)
             variant_obj['compounds'] = new_compounds
             has_changed = True
 
@@ -112,7 +113,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))
     for compound_obj in compounds:
-        compound_obj.update(get_predictions(compound_obj['genes']))
+        compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
     if isinstance(variant_obj.get('acmg_classification'), int):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]

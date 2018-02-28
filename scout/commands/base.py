@@ -107,6 +107,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
         database = client[mongo_config['mongodb']]
 
         log.info("Setting up a mongo adapter")
+        mongo_config['client'] = client
         mongo_config['adapter'] = MongoAdapter(database)
 
     context.obj = mongo_config
