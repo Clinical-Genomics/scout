@@ -152,12 +152,12 @@ class VariantHandler(VariantLoader):
             category(str): 'sv' or 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-            sort_key: 'variant_rank' or 'rank_score'
+            sort_key: ['variant_rank', 'rank_score', 'position'] 
 
         Yields:
             result(Iterable[Variant])
         """
-        LOG.info("Fetching variants from {0}".format(case_id))
+        LOG.debug("Fetching variants from {0}".format(case_id))
 
         if variant_ids:
             nr_of_variants = len(variant_ids)
@@ -177,6 +177,8 @@ class VariantHandler(VariantLoader):
             sorting = [('variant_rank', pymongo.ASCENDING)]
         if sort_key == 'rank_score':
             sorting = [('rank_score', pymongo.DESCENDING)]
+        if sort_key == 'position':
+            sorting = [('position', pymongo.ASCENDING)]
 
         result = self.variant_collection.find(
             mongo_query,

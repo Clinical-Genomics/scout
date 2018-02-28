@@ -7,6 +7,7 @@ from scout.update.panel import update_panel
 
 from .case import case as case_command
 from .omim import omim as omim_command
+from .compounds import compounds as compound_command
 
 LOG = logging.getLogger(__name__)
 
@@ -149,3 +150,4 @@ update.add_command(user)
 update.add_command(panel)
 update.add_command(case_command)
 update.add_command(omim_command)
+update.add_command(compound_command)
