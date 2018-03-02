@@ -151,7 +151,6 @@ class GeneHandler(object):
         for gene_obj in genes:
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
 
-        LOG.info("All genes fetched")
         return hgnc_dict
 
     def hgncsymbol_to_gene(self, build='37', genes=None):
