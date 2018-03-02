@@ -455,13 +455,18 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
     return adapter
 
 @pytest.fixture(scope='function')
-def real_variant_database(request, real_populated_database, variant_objs, sv_variant_objs):
+def real_variant_database(request, real_populated_database, case_obj):
     """Returns an adapter to a database populated with user, institute, case
        and variants"""
     adapter = real_populated_database
     # Load variants
-    for variant in variant_objs:
-        adapter.load_variant(variant)
+    adapter.load_variants(
+        case_obj, 
+        variant_type='clinical', 
+        category='snv',
+        rank_threshold=-10, 
+        build='37'
+    )
 
     # # Load sv variants
     # for variant in sv_variant_objs:

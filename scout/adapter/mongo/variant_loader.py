@@ -365,7 +365,7 @@ class VariantLoader(object):
         """
         build = build or '37'
         genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        gene_to_panels = self.gene_to_panels()
+        gene_to_panels = self.gene_to_panels(case_obj)
         hgncid_to_gene = self.hgncid_to_gene(genes=genes)
         genomic_intervals = self.get_coding_intervals(genes=genes)
         
