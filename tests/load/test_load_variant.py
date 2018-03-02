@@ -216,12 +216,107 @@ def test_compounds_region(real_populated_database, case_obj):
     nr_variants = 0
     for nr_variants,variant in enumerate(variants_query):
         for comp in variant.get('compounds',[]):
-            if comp['not_loaded']:
-                print(variant['simple_id'])
-                pp(comp)
             nr_comps += 1
             # We know that all ar updated and loaded if this flag is set
             assert comp['not_loaded'] == False
     
     assert nr_variants > 0
     assert nr_comps > 0
+
+def test_updated_panel(real_variant_database, case_obj):
+    """Test if the annotated panels are correct on variant level when a gene is removed 
+    from the panel. Ref #754
+    
+    In this test we need to update a gene panel by removing some genes and check that when loading
+      variants they should not be annotated with the panel.
+    
+    """
+    adapter = real_variant_database
+    
+    ## GIVEN an adapter with variants case and everything
+    
+    # Collect the hgnc_ids for all genes in the panel
+    panel_hgnc_ids = set()
+    # Get the panel object
+    panel_name = case_obj['panels'][0]['panel_name']
+    panel_obj = adapter.gene_panel(panel_name)
+    for gene_obj in panel_obj['genes']:
+        # Add the existing hgnc ids to the panel
+        panel_hgnc_ids.add(gene_obj['hgnc_id'])
+    
+    # Loop over the variants and check that there are variants in
+    # the genes from the panel
+    variants = adapter.variants(case_id=case_obj['_id'])
+    
+    # Collect all present hgnc ids from the variants
+    variant_hgnc_ids = set() 
+    for variant in variants:
+        # print(variant['hgnc_ids'])
+        if variant.get('hgnc_ids'):
+            for hgnc_id in variant['hgnc_ids']:
+                if hgnc_id in panel_hgnc_ids:
+                    # assert that the panel is annotated on the variant
+                    assert panel_name in variant['panels']
+                variant_hgnc_ids.add(hgnc_id)
+    
+    # Assert that there are data
+    assert panel_hgnc_ids
+    assert variant_hgnc_ids
+    
+    intersecting_ids = panel_hgnc_ids.intersection(variant_hgnc_ids)
+    assert intersecting_ids
+    
+    # Create a new case and a new gene panel
+    
+    # Create and insert a new gene panel without the intersecting genes
+    old_panel_genes = panel_obj['genes']
+    panel_obj['genes'] = []
+    for gene in old_panel_genes:
+        if gene['hgnc_id'] not in intersecting_ids:
+            panel_obj['genes'].append(gene)
+    
+    new_version = panel_obj['version'] + 1
+    panel_obj['version'] = new_version
+    panel_obj.pop('_id')
+    
+    adapter.panel_collection.insert_one(panel_obj)
+    
+    new_panel = adapter.panel_collection.find_one({'panel_name': panel_obj['panel_name'], 'version': new_version})
+    new_panel_ids = set()
+    
+    for gene in new_panel['genes']:
+        hgnc_id = gene['hgnc_id']
+        new_panel_ids.add(hgnc_id)
+        assert hgnc_id not in intersecting_ids
+    
+    # Create a new case with the new panel
+    case_obj['_id'] = 'second_case'
+    case_obj['panels'][0]['version'] = new_panel['version']
+    case_obj['panels'][0]['panel_id'] =  new_panel['_id']
+
+    # Insert the new case and the variants
+    adapter._add_case(case_obj)
+    
+    new_caseobj = adapter.case_collection.find_one({'_id': 'second_case'})
+    
+    adapter.load_variants(
+        new_caseobj, 
+        variant_type='clinical', 
+        category='snv',
+        rank_threshold=-10,
+        build='37'
+    )
+    
+    # These are the new variants
+    new_variants = adapter.variant_collection.find({'case_id': case_obj['_id']})
+    
+    nr_variants = 0
+    for variant in new_variants:
+        if variant.get('hgnc_ids'):
+            for hgnc_id in variant['hgnc_ids']:
+                if hgnc_id in intersecting_ids:
+                    # assert that the panel is NOT annotated on the variant
+                    # We removed the gener from the new panel
+                    assert panel_name not in variant.get('panels',[])
+                    nr_variants += 1
+    assert nr_variants > 0

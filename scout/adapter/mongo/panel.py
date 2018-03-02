@@ -259,25 +259,35 @@ class PanelHandler(object):
 
         return self.panel_collection.find(query)
 
-    def gene_to_panels(self):
+    def gene_to_panels(self, case_obj):
         """Fetch all gene panels and group them by gene
 
             Args:
-                adapter(MongoAdapter)
+                case_obj(scout.models.Case)
             Returns:
                 gene_dict(dict): A dictionary with gene as keys and a set of
                                  panel names as value
         """
         LOG.info("Building gene to panels")
         gene_dict = {}
-        for panel in self.gene_panels():
-            for gene in panel['genes']:
+        
+        for panel_info in case_obj.get('panels', []):
+            panel_name = panel_info['panel_name']
+            panel_version = panel_info['version']
+            panel_obj = self.gene_panel(panel_name, version=panel_version)
+            if not panel_obj:
+                ## Raise exception here???
+                LOG.warning("Panel: {0}, version {1} does not exist in database".format(panel_name, panel_version))
+
+            for gene in panel_obj['genes']:
                 hgnc_id = gene['hgnc_id']
                 
                 if hgnc_id not in gene_dict:
-                    gene_dict[hgnc_id] = set([panel['panel_name']])
+                    gene_dict[hgnc_id] = set([panel_name])
                     continue
-                gene_dict[hgnc_id].add(panel['panel_name'])
+                
+                gene_dict[hgnc_id].add(panel_name)
+        
         LOG.info("Gene to panels done")
 
         return gene_dict
