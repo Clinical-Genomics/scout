@@ -202,10 +202,12 @@
     </form>
     <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
     <p>
-      <form method="POST" action="{{ url_for('report.pdf', sample_id=case.individual_ids, level=institute.coverage_cutoff, dl='yes') }}">
+      <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
         <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
-
+        {% for sample_id in case.individual_ids %}
+				    <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
+			  {% endfor %}
         <div class="form-group">
           <button type="submit" class="btn btn-default form-control">Download PDF</button>
         </div>
