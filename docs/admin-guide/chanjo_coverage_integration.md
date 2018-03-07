@@ -19,7 +19,7 @@ To create a new empty database download the empty schema `chanjo4_structure.sql`
 mysql -u admin_user -padmin_password chanjo4_demo < path/to/chanjo4_structure.sql #no space between -p and password
 ```
 
-To create instead a demo database containing coverage data for genes in panel1 for the samples used in the demo version of scout, you might download the schema `chanjo4_demo.sql`. This file is present in the folder `scout/demo`, along with the rest of the demo data The syntax to create the database is the same as above.
+To create instead a demo database containing coverage data for genes in panel1 for the samples used in the demo version of scout, you might download the schema `chanjo4_demo.sql`. This file is present in the folder `scout/demo`, along with the rest of the demo data. The syntax to create the database is the same as above.
 
 Chanjo database consists of 3 tables:
 - **sample**:
@@ -81,7 +81,7 @@ The database URI provided in the line above refers to the MySQL database with th
 If your scout implementation is using another configuration file other than the default `config.py` then the database connection URI must be added to this file instead. 
 
 <br>
-Once all the above steps are executed you should see the option "Coverage report" on the left side bar under the scout case page. The buttons allow to generate HTML and PDF reports for the case samples.
+Once all the above steps are executed you should see the "Coverage report" option on the left side bar under the scout case page. The buttons allow to generate HTML and PDF reports for the case samples.
 
 [chanjo]: https://github.com/Clinical-Genomics/chanjo
 [chanjo-report]: https://github.com/robinandeer/chanjo-report
