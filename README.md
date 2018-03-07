@@ -79,6 +79,10 @@ scout load panel scout/demo/panel_1.txt
 scout load case scout/demo/643594.config.yaml
 ```
 
+## Integration with chanjo for coverage report visualization
+
+Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo]. Instructions on how to enable this feature can be found in the document [chanjo_coverage_integration](docs/admin-guide/chanjo_coverage_integration.md).
+
 ## Server setup
 
 Scout needs a server config to know which databases to connect to etc. Depending on which information you provide you activate different parts of the interface automatically, including user authentication, coverage, and local observations.
@@ -148,6 +152,7 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfi
 
 TODO.
 
+[chanjo]: https://github.com/Clinical-Genomics/chanjo
 [travis-img]: https://img.shields.io/travis/Clinical-Genomics/scout/develop.svg?style=flat-square
 [travis-url]: https://travis-ci.org/Clinical-Genomics/scout
 [pypi-img]: https://img.shields.io/pypi/v/scout-browser.svg?style=flat-square
