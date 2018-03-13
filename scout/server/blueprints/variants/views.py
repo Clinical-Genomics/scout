@@ -130,7 +130,7 @@ def variant_update(institute_id, case_name, variant_id):
         if new_manual_rank:
             flash("updated variant tag: {}".format(new_manual_rank), 'info')
         else:
-            flash("reset variant tag: {}".format(variant_obj['manual_rank']), 'info')
+            flash("reset variant tag: {}".format(variant_obj.get('manual_rank', 'NA')), 'info')
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
         acmg_classification = variant_obj.get('acmg_classification')
