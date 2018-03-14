@@ -12,7 +12,7 @@ from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class MissingSangerRecipientError(Exception):
@@ -158,7 +158,7 @@ def variant_case(store, case_obj, variant_obj):
             case_obj['bai_files'].append(find_bai_file(individual['bam_file']))
             case_obj['sample_names'].append(individual['display_name'])
         else:
-            log.debug("%s: no bam file found", individual['individual_id'])
+            LOG.debug("%s: no bam file found", individual['individual_id'])
 
     try:
         genes = variant_obj.get('genes', [])
@@ -176,7 +176,7 @@ def variant_case(store, case_obj, variant_obj):
             vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
             case_obj['region_vcf_file'] = vcf_path
     except (SyntaxError, Exception):
-        log.warning("skip VCF region for alignment view")
+        LOG.warning("skip VCF region for alignment view")
 
 
 def find_bai_file(bam_file):
@@ -193,7 +193,10 @@ def variant(store, institute_obj, case_obj, variant_id):
     default_panels = [store.panel(panel['panel_id']) for panel in
                       case_obj['panels'] if panel.get('is_default')]
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
-    genome_build = case_obj.get('build', '37')
+    genome_build = case_obj.get('genome_build', '37')
+    
+    LOG.warning("GENOME BUILD: %s", genome_build)
+    
     if variant_obj is None:
         return None
     variant_case(store, case_obj, variant_obj)
@@ -211,19 +214,19 @@ def variant(store, institute_obj, case_obj, variant_id):
     variant_obj['frequency'] = frequency(variant_obj)
     variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
                                     else None)
-    variant_obj['thousandg_link'] = thousandg_link(variant_obj)
+    variant_obj['thousandg_link'] = thousandg_link(variant_obj, genome_build)
     variant_obj['exac_link'] = exac_link(variant_obj)
     variant_obj['gnomad_link'] = gnomad_link(variant_obj)
     variant_obj['swegen_link'] = swegen_link(variant_obj)
-    variant_obj['beacon_link'] = beacon_link(variant_obj)
-    variant_obj['ucsc_link'] = ucsc_link(variant_obj)
+    variant_obj['beacon_link'] = beacon_link(variant_obj, genome_build)
+    variant_obj['ucsc_link'] = ucsc_link(variant_obj, genome_build)
     variant_obj['alamut_link'] = alamut_link(variant_obj)
     variant_obj['spidex_human'] = spidex_human(variant_obj)
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['callers'] = callers(variant_obj, category='snv')
 
     for gene_obj in variant_obj.get('genes', []):
-        parse_gene(gene_obj)
+        parse_gene(gene_obj, genome_build)
 
     individuals = {individual['individual_id']: individual for individual in
                    case_obj['individuals']}
@@ -287,12 +290,19 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
 def parse_gene(gene_obj, build=None):
     """Parse variant genes."""
-    build = build or '37'
+    build = build or 37
+    
     if gene_obj['common']:
         ensembl_id = gene_obj['common']['ensembl_id']
         ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
-                        "db=core;g={}".format(ensembl_id))
-        gene_obj['ensembl_link'] = ensembl_link
+                        "db=core;g={}")
+        
+        if build == 38:
+            ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?"
+                            "db=core;g={}")
+            
+        gene_obj['ensembl_link'] = ensembl_link.format(ensembl_id)
+        
         gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
         gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
                                    "section.pl?identifier={}".format(ensembl_id))
@@ -314,14 +324,22 @@ def parse_gene(gene_obj, build=None):
                                            gene_obj['transcripts'])
 
     for tx_obj in gene_obj['transcripts']:
-        parse_transcript(gene_obj, tx_obj)
+        parse_transcript(gene_obj, tx_obj, build)
 
 
-def parse_transcript(gene_obj, tx_obj):
+def parse_transcript(gene_obj, tx_obj, build=None):
     """Parse variant gene transcript (VEP)."""
+    build = build or 37
     ensembl_tx_id = tx_obj['transcript_id']
-    tx_obj['ensembl_link'] = ("http://grch37.ensembl.org/Homo_sapiens/"
-                              "Gene/Summary?t={}".format(ensembl_tx_id))
+    
+    ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/"
+                    "Gene/Summary?t={}")
+    
+    if build == 38:
+        ensembl_link = ("http://ensembl.org/Homo_sapiens/"
+                        "Gene/Summary?t={}")
+        
+    tx_obj['ensembl_link'] = ensembl_link.format(ensembl_tx_id)
 
     tx_obj['refseq_links'] = [{
         'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
@@ -402,15 +420,22 @@ def clinsig_human(variant_obj):
         yield clinsig_obj
 
 
-def thousandg_link(variant_obj):
+def thousandg_link(variant_obj, build=None):
     """Compose link to 1000G page for detailed information."""
     dbsnp_id = variant_obj.get('dbsnp_id')
-    if dbsnp_id:
-        url_template = ("http://browser.1000genomes.org/Homo_sapiens/"
-                        "Variation/Population?db=core;source=dbSNP;v={}")
-        return url_template.format(dbsnp_id)
-    else:
+    build = build or 37
+    
+    if not dbsnp_id:
         return None
+    
+    if build == 37:
+        url_template = ("http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
+                        "?v={};vdb=variation")
+    else:
+        url_template = ("http://www.ensembl.org/Homo_sapiens/Variation/Explore"
+                        "?v={};vdb=variation")
+    
+    return url_template.format(dbsnp_id)
 
 
 def exac_link(variant_obj):
@@ -435,19 +460,33 @@ def swegen_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def beacon_link(variant_obj):
+def beacon_link(variant_obj, build=None):
     """Compose link to Beacon Network."""
+    build = build or 37
     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
-                    "chrom={this[chromosome]}&allele={this[alternative]}&"
-                    "ref={this[reference]}&rs=GRCh37")
+                        "chrom={this[chromosome]}&allele={this[alternative]}&"
+                        "ref={this[reference]}&rs=GRCh37")
+    # beacon does not support build 38 at the moment
+    # if build == '38':
+    #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
+    #                     "chrom={this[chromosome]}&allele={this[alternative]}&"
+    #                     "ref={this[reference]}&rs=GRCh38")
+        
     return url_template.format(this=variant_obj)
 
 
-def ucsc_link(variant_obj):
+def ucsc_link(variant_obj, build=None):
     """Compose link to UCSC."""
-    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
-                    "position=chr{this[chromosome]}:{this[position]}"
-                    "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
+    build = build or 37
+    if build == 37:
+        url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+                        "position=chr{this[chromosome]}:{this[position]}"
+                        "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
+    else:
+        url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg20&"
+                        "position=chr{this[chromosome]}:{this[position]}"
+                        "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
+
     return url_template.format(this=variant_obj)
 
 
