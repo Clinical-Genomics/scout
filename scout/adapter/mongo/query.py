@@ -2,6 +2,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from scout.constants import (SPIDEX_HUMAN)
+
 class QueryHandler(object):
 
     def build_query(self, case_id, query=None, variant_ids=None, category='snv'):
@@ -153,6 +155,24 @@ class QueryHandler(object):
                     {'clingen_ngi': {'$lt': query['clingen_ngi'] + 1}},
                 ]
             })
+
+        if query.get('spidex_human'):
+            # construct spidex query. Build the or part starting with empty SPIDEX values
+            spidex_human = query['spidex_human']
+
+            spidex_query_or_part = []
+            if ( 'not_reported' in spidex_human):
+                spidex_query_or_part.append({'spidex': {'$exists': False}})
+
+            for spidex_level in SPIDEX_HUMAN:
+                if ( spidex_level in spidex_human ):
+                    spidex_query_or_part.append({'$or': [ 
+                                {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['neg'][0]}},
+                                          {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['neg'][1]}}]},
+                                {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['pos'][0]}},
+                                          {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['pos'][1]}} ]} ]})
+            
+            mongo_query_minor.append({'$or': spidex_query_or_part })
 
         if query.get('cadd_score') is not None:
             cadd = query['cadd_score']

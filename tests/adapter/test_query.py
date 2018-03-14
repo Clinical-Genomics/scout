@@ -163,6 +163,31 @@ def test_build_clinsig_always(adapter):
           }
         ]
 
+def test_build_spidex_not_reported(adapter):
+    case_id = 'cust000'
+    spidex_human = ['not_reported']
+
+    query = { 'spidex_human': spidex_human }
+    
+    mongo_query = adapter.build_query(case_id, query=query)
+    
+    assert mongo_query['$and'] == [{'$or': [{'spidex': {'$exists': False}}] }] 
+
+def test_build_spidex_high(adapter):
+    case_id = 'cust000'
+    spidex_human = ['high']
+
+    query = { 'spidex_human': spidex_human }
+    
+    mongo_query = adapter.build_query(case_id, query=query)
+    
+    assert mongo_query['$and'] == [{'$or': [{'$or': [
+                    {'$and': [
+                            {'spidex': {'$gt': -2}}, {'spidex': {'$lt': -float('inf')}}]}, 
+                    {'$and': [
+                            {'spidex': {'$gt': 2}}, {'spidex': {'$lt': float('inf')}}]}
+                    ]}]}]
+
 def test_build_clinsig_always_only(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
