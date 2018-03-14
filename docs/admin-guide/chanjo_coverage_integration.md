@@ -31,7 +31,7 @@ Chanjo database consists of 3 tables:
 | source     | varchar(256) | YES  |     | NULL    |       |
 | created_at | datetime     | YES  |     | NULL    |       |
 | name       | varchar(128) | YES  |     | NULL    |       |
-| group_name | varchar(128) | YES  |     | NULL    |.      |
+| group_name | varchar(128) | YES  |     | NULL    |&nbsp; |
 
 
 - **transcript**:
@@ -42,7 +42,7 @@ Chanjo database consists of 3 tables:
 | gene_id    | int(11)     | NO   | MUL | NULL    |       |
 | gene_name  | varchar(32) | YES  | MUL | NULL    |       |
 | chromosome | varchar(10) | YES  |     | NULL    |       |
-| length     | int(11)     | YES  |     | NULL    |.      |
+| length     | int(11)     | YES  |     | NULL    |&nbsp; |
 
 
 - **transcript_stat**:
@@ -59,7 +59,7 @@ Chanjo database consists of 3 tables:
 | threshold         | int(11)     | YES  |     | NULL    |                |
 | _incomplete_exons | text        | YES  |     | NULL    |                |
 | sample_id         | varchar(32) | NO   | MUL | NULL    |                |
-| transcript_id     | varchar(32) | NO   | MUL | NULL    |.               |
+| transcript_id     | varchar(32) | NO   | MUL | NULL    |&nbsp;          |
 
 
 ## chanjo-report ##
