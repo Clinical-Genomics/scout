@@ -194,6 +194,10 @@ def parse_individual(sample):
     if bam_file:
         ind_info['bam_file'] = bam_file
 
+    mt_bam = sample.get('mt_bam')
+    if mt_bam:
+        ind_info['mt_bam'] = mt_bam
+
     analysis_type = sample.get('analysis_type')
     if analysis_type:
         ind_info['analysis_type'] = analysis_type
