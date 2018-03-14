@@ -6,7 +6,7 @@ from flask import url_for, flash
 from flask_mail import Message
 
 from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS,
-                             ACMG_COMPLETE_MAP, CALLERS)
+                             ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
@@ -455,13 +455,12 @@ def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
     if variant_obj.get('spidex') is None:
         return 'not_reported'
-    elif abs(variant_obj['spidex']) < 1:
+    elif abs(variant_obj['spidex']) < SPIDEX_HUMAN['low']['pos'][1]:
         return 'low'
-    elif abs(variant_obj['spidex']) < 2:
+    elif abs(variant_obj['spidex']) < SPIDEX_HUMAN['medium']['pos'][1]:
         return 'medium'
     else:
         return 'high'
-
 
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""

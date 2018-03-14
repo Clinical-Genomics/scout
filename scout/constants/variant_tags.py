@@ -57,6 +57,21 @@ VARIANT_CALL = (
     'Not Used',
 )
 
+# Describe conversion between numerical SPIDEX values and human readable.
+# Abs is not tractable in mongo query.
+SPIDEX_HUMAN = {
+    'low': { 'neg': [-1,0], 'pos': [0, 1]},
+    'medium': { 'neg': [-2,-1], 'pos': [1,2]},
+    'high': { 'neg': [-2,-float('inf')], 'pos': [2,float('inf')]}
+}
+
+SPIDEX_LEVELS = (
+    'not_reported',
+    'low',
+    'medium',
+    'high'
+)
+
 MANUAL_RANK_OPTIONS = {
     8: {
         'label': 'known pathogenic',
