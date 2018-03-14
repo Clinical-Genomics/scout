@@ -183,9 +183,9 @@ def test_build_spidex_high(adapter):
     
     assert mongo_query['$and'] == [{'$or': [{'$or': [
                     {'$and': [
-                            {'spidex': {'$gt': -2}}, {'spidex': {'$lt': -inf}}]}, 
+                            {'spidex': {'$gt': -2}}, {'spidex': {'$lt': -float('inf')}}]}, 
                     {'$and': [
-                            {'spidex': {'$gt': 2}}, {'spidex': {'$lt': inf}}]}
+                            {'spidex': {'$gt': 2}}, {'spidex': {'$lt': float('inf')}}]}
                     ]}]}]
 
 def test_build_clinsig_always_only(adapter):
