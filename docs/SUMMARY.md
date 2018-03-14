@@ -26,6 +26,7 @@
   * [Load config](admin-guide/load-config.md)
   * [Annotations](admin-guide/annotations.md)
   * [Server](admin-guide/server.md)
+  * [Chanjo coverage integration](admin-guide/chanjo_coverage_integration.md)
 
 * [Blog](blog/README.md)
   * [What's new in 3.0?](blog/new-3.0.md)
