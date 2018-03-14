@@ -31,7 +31,8 @@ Chanjo database consists of 3 tables:
 | source     | varchar(256) | YES  |     | NULL    |       |
 | created_at | datetime     | YES  |     | NULL    |       |
 | name       | varchar(128) | YES  |     | NULL    |       |
-| group_name | varchar(128) | YES  |     | NULL    |       |
+| group_name | varchar(128) | YES  |     | NULL    |.      |
+
 
 - **transcript**:
 
@@ -41,7 +42,8 @@ Chanjo database consists of 3 tables:
 | gene_id    | int(11)     | NO   | MUL | NULL    |       |
 | gene_name  | varchar(32) | YES  | MUL | NULL    |       |
 | chromosome | varchar(10) | YES  |     | NULL    |       |
-| length     | int(11)     | YES  |     | NULL    |       |
+| length     | int(11)     | YES  |     | NULL    |.      |
+
 
 - **transcript_stat**:
 
@@ -57,8 +59,8 @@ Chanjo database consists of 3 tables:
 | threshold         | int(11)     | YES  |     | NULL    |                |
 | _incomplete_exons | text        | YES  |     | NULL    |                |
 | sample_id         | varchar(32) | NO   | MUL | NULL    |                |
-| transcript_id     | varchar(32) | NO   | MUL | NULL    |                |
-|
+| transcript_id     | varchar(32) | NO   | MUL | NULL    |.               |
+
 
 ## chanjo-report ##
 
@@ -78,7 +80,7 @@ In order to enable the support for the coverage report visualization in scout th
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://username:password@host:port/chanjo4_demo'
 </pre>
 The database URI provided in the line above refers to the MySQL database with the coverage data, so user and password are those used to connect to the database. Default database host and port are `localhost` and `3306` respectively.
-If your scout implementation is using another configuration file other than the default `config.py` then the database connection URI must be added to this file instead. 
+If your scout implementation is using another configuration file other than the default `config.py` then the database connection URI must be added to this file instead.
 
 <br>
 Once all the above steps are executed you should see the "Coverage report" option on the left side bar under the scout case page. The buttons allow to generate HTML and PDF reports for the case samples.
