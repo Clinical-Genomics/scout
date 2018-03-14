@@ -193,6 +193,7 @@ def variant(store, institute_obj, case_obj, variant_id):
     default_panels = [store.panel(panel['panel_id']) for panel in
                       case_obj['panels'] if panel.get('is_default')]
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
+    genome_build = case_obj.get('build', '37')
     if variant_obj is None:
         return None
     variant_case(store, case_obj, variant_obj)
@@ -284,8 +285,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
     return obs_data
 
 
-def parse_gene(gene_obj):
+def parse_gene(gene_obj, build=None):
     """Parse variant genes."""
+    build = build or '37'
     if gene_obj['common']:
         ensembl_id = gene_obj['common']['ensembl_id']
         ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
@@ -296,6 +298,9 @@ def parse_gene(gene_obj):
                                    "section.pl?identifier={}".format(ensembl_id))
         gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
                                    .format(gene_obj['common']['entrez_id']))
+
+        gene_obj['ppaint_link'] = ("https://pecan.stjude.cloud/proteinpaint/{}"
+                                   .format(gene_obj['common']['hgnc_symbol']))
 
         reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
                          "&species=Entries+without+species&cluster=true".format(ensembl_id))
