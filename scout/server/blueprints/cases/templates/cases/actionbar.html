@@ -1,10 +1,11 @@
 {% macro action_bar(institute, case, collaborators) %}
   <ul class="nav nav-sidebar">
     <li class="nav-sidebar-heading">
-      Case
+      Case 
       <h4>{{ case.display_name }}</h4>
     </li>
     <li>{{ analysis_date(case) }}</li>
+    <li>{{ genome_build(case) }}</li>
     <li>{{ status(institute, case) }}</li>
     <li>{{ assign(institute, case) }}</li>
     {% if not (case.is_archived or case.is_research) %}
@@ -32,6 +33,16 @@
     {% if case.is_migrated %}
       <span class="label label-info">migrated</span>
     {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro genome_build(case) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-wrench"></span>
+      Genome build
+    </h5>
+    {{ case.genome_build }}
   </div>
 {% endmacro %}
 
@@ -89,7 +100,7 @@
           action="{{ url_for('cases.assign', institute_id=institute._id,
                              case_name=case.display_name) }}"
           title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-      <button class="btn btn-default form-control">Assign yourself</button>
+      <button class="btn btn-primary form-control">Assign yourself</button>
     </form>
   </div>
 {% endmacro %}
@@ -103,7 +114,7 @@
     {% if case.research_requested %}
       <i>Research pending</i>
     {% else %}
-      <button type="button" class="btn btn-default form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+      <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
     {% endif %}
   </div>
 {% endmacro %}
@@ -138,7 +149,7 @@
     {% if case.rerun_requested %}
       <i>Rerun pending</i>
     {% else %}
-      <button type="button" class="btn btn-default form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+      <button type="button" class="btn btn-warning form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
     {% endif %}
   </div>
 {% endmacro %}
