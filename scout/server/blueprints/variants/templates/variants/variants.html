@@ -89,7 +89,11 @@
       </thead>
       <tbody>
         {% for variant in variants %}
-          <tr>
+          {% if variant.dismiss_variant %}
+          <tr class="info">
+	  {% else %}
+	  <tr>
+	  {% endif %}
             <td>{{ cell_rank(variant) }}</td>
             <td class="text-right">{{ variant.rank_score|int }}</td>
             <td>{{ variant.chromosome }}</td>

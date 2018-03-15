@@ -871,6 +871,57 @@ class EventHandler(object):
         logger.debug("Variant updated")
         return updated_variant
 
+    def update_dismiss_variant(self, institute, case, user, link, variant,
+                           dismiss_variant):
+        """Create an event for updating the manual rank of a variant
+
+          This function will create a event and update the manual rank
+          of the variant.
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            variant (dict): A variant object
+            dismiss_variant (list): The new dismiss variant list
+
+        Return:
+            updated_variant
+
+        """
+        logger.info("Creating event for updating dismiss variant for "
+                    "variant {0}".format(variant['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='dismiss_variant',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        if dismiss_variant:
+            logger.info("Setting dismiss variant to {0} for variant {1}"
+                        .format(dismiss_variant, variant['display_name']))
+            action = '$set'
+        else:
+            logger.info("Reset dismiss variant from {0} for variant {1}"
+                        .format(variant['dismiss_variant'], variant['display_name']))
+            action = '$unset'
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant['_id']},
+            {action: {'dismiss_variant': dismiss_variant}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        logger.debug("Variant updated")
+        return updated_variant
+
+
     def update_acmg(self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str):
         """Create an event for updating the ACMG classification of a variant.
 
