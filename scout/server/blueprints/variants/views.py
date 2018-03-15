@@ -100,6 +100,12 @@ def sv_variants(institute_id, case_name):
     form.gene_panels.choices = panel_choices
     query = form.data
     query['variant_type'] = variant_type
+
+    if form.data['gene_panels'] == ['hpo']:
+        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
+                               case_obj['dynamic_gene_list']))
+        form.hgnc_symbols.data = hpo_symbols
+
     variants_query = store.variants(case_obj['_id'], category='sv', query=form.data)
     data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
