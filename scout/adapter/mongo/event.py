@@ -873,10 +873,10 @@ class EventHandler(object):
 
     def update_dismiss_variant(self, institute, case, user, link, variant,
                            dismiss_variant):
-        """Create an event for updating the manual rank of a variant
+        """Create an event for updating the manual dismiss variant entry
 
-          This function will create a event and update the manual rank
-          of the variant.
+          This function will create a event and update the dismiss variant
+          field of the variant. 
 
         Arguments:
             institute (dict): A Institute object
