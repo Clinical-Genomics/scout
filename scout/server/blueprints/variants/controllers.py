@@ -194,9 +194,9 @@ def variant(store, institute_obj, case_obj, variant_id):
                       case_obj['panels'] if panel.get('is_default')]
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
-    
+
     LOG.warning("GENOME BUILD: %s", genome_build)
-    
+
     if variant_obj is None:
         return None
     variant_case(store, case_obj, variant_obj)
@@ -291,18 +291,18 @@ def observations(store, loqusdb, case_obj, variant_obj):
 def parse_gene(gene_obj, build=None):
     """Parse variant genes."""
     build = build or 37
-    
+
     if gene_obj['common']:
         ensembl_id = gene_obj['common']['ensembl_id']
         ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
                         "db=core;g={}")
-        
+
         if build == 38:
             ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?"
                             "db=core;g={}")
-            
+
         gene_obj['ensembl_link'] = ensembl_link.format(ensembl_id)
-        
+
         gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
         gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
                                    "section.pl?identifier={}".format(ensembl_id))
@@ -331,14 +331,14 @@ def parse_transcript(gene_obj, tx_obj, build=None):
     """Parse variant gene transcript (VEP)."""
     build = build or 37
     ensembl_tx_id = tx_obj['transcript_id']
-    
+
     ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/"
                     "Gene/Summary?t={}")
-    
+
     if build == 38:
         ensembl_link = ("http://ensembl.org/Homo_sapiens/"
                         "Gene/Summary?t={}")
-        
+
     tx_obj['ensembl_link'] = ensembl_link.format(ensembl_tx_id)
 
     tx_obj['refseq_links'] = [{
@@ -424,17 +424,17 @@ def thousandg_link(variant_obj, build=None):
     """Compose link to 1000G page for detailed information."""
     dbsnp_id = variant_obj.get('dbsnp_id')
     build = build or 37
-    
+
     if not dbsnp_id:
         return None
-    
+
     if build == 37:
         url_template = ("http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
                         "?v={};vdb=variation")
     else:
         url_template = ("http://www.ensembl.org/Homo_sapiens/Variation/Explore"
                         "?v={};vdb=variation")
-    
+
     return url_template.format(dbsnp_id)
 
 
@@ -471,7 +471,7 @@ def beacon_link(variant_obj, build=None):
     #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
     #                     "chrom={this[chromosome]}&allele={this[alternative]}&"
     #                     "ref={this[reference]}&rs=GRCh38")
-        
+
     return url_template.format(this=variant_obj)
 
 
@@ -593,6 +593,19 @@ def cancer_variants(store, request_args, institute_id, case_name):
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+def clinvar_export(store, institute_id, case_name, variant_id):
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    causatives = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('causatives', [])]
+    variant_obj = store.variant(variant_id)
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        causatives=causatives
+    )
 
 
 def variant_acmg(store, institute_id, case_name, variant_id):

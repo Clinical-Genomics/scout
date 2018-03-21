@@ -310,6 +310,9 @@
     </div>
     <div class="panel-body">
       <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
+      {% if variant._id in case.causatives %}
+        <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
+      {% endif %}
     </div>
     {% if evaluations %}
       <ul class="list-group">
