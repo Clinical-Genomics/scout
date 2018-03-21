@@ -1,0 +1,798 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
+{% endblock %}
+
+{% block top_nav %}
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li>
+    {% if cancer %}
+      <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} cancer variants
+      </a>
+    {% else %}
+      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} SNV and INDELs
+      </a>
+    {% endif %}
+  </li>
+  <li class="active">
+    <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  {% if variant_header %} <!-- instructions and submission files download -->
+    <header class="jumbotron">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="panel panel-primary">
+              <div class="panel-heading">Start a new clinVar submission</div>
+              <div class="panel-body">
+                <form action="{{ url_for('variants.get_csv') }}" method="POST" id="downloads_form">
+                    <input type="hidden" name="vheader" value="{{ ','.join(variant_header) }}">
+                    <input type="hidden" name="cdheader" value="{{ ','.join(casedata_header) }}">
+                  {% for item in variant_lines %}
+                    <input type="hidden" name="variant" value="{{ ','.join(item) }}">
+                  {% endfor %}
+                  {% for item in casedata_lines %}
+                    <input type="hidden" name="case" value="{{ ','.join(item) }}">
+                  {% endfor %}
+                <p>
+                  <dl class="dl-horizontal">
+                    <dt>Requirements</dt>
+                    <dd>Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">clinVar submission portal.</a><br>
+                        If your organization is not already present in clinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
+                        The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
+                    </dd>
+                    <dt style="margin-top: 20px;">Obtain a submission ID</dt>
+                    <dd style="margin-top: 20px;">If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".<br>
+                        Copy the ID from this field and paste it here: <input type="text" name="subm_id" value="" size=20 pattern="SUB[0-9]+" placeholder="ex: SUB1234567" required><br>
+                    </dd>
+                    <dt style="margin-top: 20px;">Fill in panel 1 and 2</dt>
+                    <dd style="margin-top: 20px;">
+                        Fill in submission forms in panel 1 and 2, respectively named "Submission information" and "Organization". In the "<strong>Submission format</strong>" in panel 1 make sure to select the value "<strong>Comma-separated values</strong>".<br>
+                        <strong>Assemby name</strong> should be set to "<strong>GRCh37</strong>".<br>
+                    </dd>
+                    <dt style="margin-top: 20px;">Download variants file</dt>
+                    <dd style="margin-top: 20px;">
+                      The following variants will be included in the submission files:
+                      <br><br>
+                      {% for var in variant_lines %}
+                      <div class="col-xs-6 col-sm-6 col-md-4">
+                        <div class="panel panel-default">
+                          <div class="panel-heading">Variant description --> #{{var[0]}}</div>
+                          {% for field in variant_header %}
+                            <strong>{{field}}</strong>:{{var[loop.index -1]}}<br>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </dd>
+                    <dt></dt>
+                    <dd>
+                      <button class="btn btn-primary" data-toggle="modal" name="variants_button" value="submit" id="variants_button"><font color="white">Download variants CSV file</font></button>
+                      <a class="btn btn-warning" onclick="goBack()">
+                        <font color="white">Modify submission</font>
+                      </a>
+                    </dd>
+                    <dt style="margin-top: 20px;">Download case data</dt>
+                      {% if casedata_lines %}
+                        <dd style="margin-top: 15px;">The following case data will be included in the submission files:
+
+                          <br><br>
+                        <!--preview casedata if it was provided-->
+                            {% for cdata in casedata_lines %}
+                              {% if cdata[1] %} <!--user means to submit this case-->
+                                <div class="col-xs-6 col-sm-6 col-md-4">
+                                  <div class="panel panel-success">
+                                    <div class="panel-heading">Casedata description --> #{{cdata[0]}}</div>
+                                    {% for field in casedata_header %}
+                                      <strong>{{field}}</strong>:{{cdata[loop.index -1]}}<br>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              {% endif %}
+                            {% endfor %}
+                        </dd>
+                        <dt></dt>
+                        <dd>
+                          <button class="btn btn-primary" data-toggle="modal" name="cdata_button" value="submit" id="variants_button"><font color="white">Download case data CSV file</font></button>
+                          <a class="btn btn-warning" onclick="goBack()">
+                            <font color="white">Modify submission</font>
+                          </a>
+                        </dd>
+                      {% else %}
+                        <dd style="margin-top: 20px;"> No casedata was included in this submission.</dd>
+                        <dt></dt>
+                        <dd>
+                          <!--<a class="btn btn-warning">
+                            <font color="white">Modify submission</font>
+                          </a>-->
+                        </dd>
+
+                      {% endif %}
+                    <dt style="margin-top: 20px;">Upload files</dt>
+                    <dd style="margin-top: 20px;">Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
+                    The field named "Assertion Criteria File" should be left blank, since it is intended for assertion criteria supported by functional studies, such as animal models or in vitro cellular assays.
+                  </dl>
+                </p>
+                </form>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-6 col-sm-6 col-md-12">
+        <div class="form-group text-center">
+            <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+              Back to case
+            </a>
+        </div>
+      </div>
+    </header>
+
+  {% else %} <!-- clinvar form -->
+
+    <div class="container">
+      <h3>Clinvar submission page</h3><br>
+      <form action="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
+        <input type="hidden" name="main_var" value="{{ variant._id }}">
+        {% if 'phenotype_groups' in case %}
+          <div class="d-flex justify-content-between">
+            <div>
+              <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
+              <label for="submit_all">Submit all causative variants for this case</label>
+            </div>
+            <br>
+          </div>
+          <div class="row">
+            {{ panel_variant('main_var') }}
+          </div>
+          <div class="row" id="other_vars" style="display: none">
+            {{ panel_variant('other_vars') }}
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-12">
+            <div class="form-group text-center">
+              <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Generate clinvar submission form</button>
+            </div>
+          </div>
+      </form>
+    {% else %}
+      Can't submit to clinvar without specifying at least a phenotype for this case! <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+        Back to case
+      </a>
+    {% endif %}
+  {% endif %}
+  </div>
+
+
+{% endblock %}
+
+<!--This panel returns one table for each causative vat to include in the submission.-->
+{% macro panel_variant(var_type) %}
+  {% for causative in causatives %}
+    {% if var_type=='main_var' and causative._id == variant._id or var_type=='other_vars' and not causative._id == variant._id and causative.category != 'sv' %} <!--avoid SVs for now, fix the code later!-->
+    <input type="hidden" name="local" value="{{ causative._id }}">
+    <input type ="hidden" name="##Local ID_{{causative._id}}" value="{{causative._id}}">
+    <input type ="hidden" name="Linking ID_{{causative._id}}" value="{{causative._id}}">
+    <input type="hidden" name="Chromosome_{{causative._id}}" value="{{ causative.chromosome }}">
+    <input type="hidden" name="Start_{{causative._id}}" value="{{ causative.position }}">
+    <input type="hidden" name="Stop_{{causative._id}}" value="{{ causative.position }}">
+    <input type="hidden" name="Reference allele_{{causative._id}}" value="{{ causative.reference }}">
+    <input type="hidden" name="Alternate allele_{{causative._id}}" value="{{ causative.alternative }}">
+    <input type="hidden" name="Condition ID type_{{causative._id}}" value="HPO">
+    <br><br>
+      <div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {% if causative.category == 'snv' %}
+              <span class="label label-success pull-left">snv</span>
+            {% else %}
+              <span class="label label-warning pull-left">sv</span>
+            {% endif %}
+            {% if causative.simple_id|length > 50 %}
+              #Variant --> {{ causative.sub_category+"("+causative.chromosome+causative.cytoband_start+"-"+causative.end_chrom+causative.cytoband_end+")" }}
+            {% else %}
+              #Variant --> {{ causative.simple_id }}
+            {% endif %}
+          </div>
+          <table class="table table-bordered table-fixed">
+            <tbody>
+              <tr>
+                <td>
+                  <table class="table table-fixed">
+                    <tr>
+                      <td style="width:30%">
+                        Gene symbol(s):
+                      </td>
+                      <td>
+                        {% for gene in causative.genes %}
+                          <input type="hidden" name="Gene symbol_{{causative._id}}" value="{{ gene.hgnc_symbol }}">
+                          {% if causative.genes|length == 1 %}
+                            <strong>{{ causative.genes[0].hgnc_symbol }}</strong><br>
+                          {% else %}
+                            {% for gene in causative.genes %}
+                            <strong>{{ gene.hgnc_symbol+";" }}</strong>
+                            {% endfor %}
+                          {% endif %}
+                        {% endfor %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Coordinates:</td>
+                      {% if causative.simple_id|length > 50 %}
+                        <td><strong>{{ causative.sub_category + "(" + causative.chromosome+causative.cytoband_start+"-"+causative.end_chrom+causative.cytoband_end +"), lenght:"+ causative.length|string  }}</strong></td>
+                      {% else %}
+                        <td><strong>chr{{ causative.chromosome }}:{{causative.position}} ({{ causative.reference }} -> {{ causative.alternative }})</strong></td>
+                      {% endif %}
+                    </tr>
+                    <tr>
+                      <td>Transcripts & HGVS:</td>
+                      <td>
+                        {% for gene in causative.genes %}
+                          {% for transcript in gene.transcripts %}
+                            {% for refseq_id in transcript.refseq_ids %}
+                              {% if refseq_id %}
+                                <input type="radio" id="{{causative._id+"_"+refseq_id}}" name="Reference sequence_{{causative._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}">
+                                <label for="{{causative._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
+                              {% endif %}
+                            {% endfor %} <!--end of refseq-->
+                          {% endfor %} <!--end of transcript-->
+                        {% endfor %} <!--end of gene-->
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Variant model of inheritance <br>
+                        {% for model in causative.genetic_models|sort %}
+                          <span class="label label-info">{{ model }}</span>
+                        {% endfor %}
+                      </td>
+                      <td>
+                        <select id="Mode of inheritance_{{causative._id}}" name="Mode of inheritance_{{causative._id}}">
+                          {% if 'AR_hom' in causative.genetic_models or 'AR_hom_dn' in causative.genetic_models or 'AR_comp' in causative.genetic_models or 'AR_comp_d' in causative.genetic_models %}
+                            <option value="Autosomal recessive inheritance" selected>Autosomal recessive inheritance</option>
+                            <option value="X-linked inheritance">X-linked inheritance</option>
+                            <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
+                            <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
+                            <option value="Y-linked inheritance">Y-linked inheritance</option>
+                          {% elif 'XR' in causative.genetic_models or 'XR_dn' in causative.genetic_models %}
+                            <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="X-linked inheritance" selected>X-linked inheritance</option>
+                            <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
+                            <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
+                            <option value="Y-linked inheritance">Y-linked inheritance</option>
+                          {% elif 'XD' in causative.genetic_models or 'XD_dn' in causative.genetic_models %}
+                            <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="X-linked inheritance">X-linked inheritance</option>
+                            <option value="Sex-limited autosomal dominant" selected>Sex-limited autosomal dominant</option>
+                            <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
+                            <option value="Y-linked inheritance">Y-linked inheritance</option>
+                          {% elif causative.chromosome == 'MT' %}
+                            <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="X-linked inheritance">X-linked inheritance</option>
+                            <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
+                            <option value="Mitochondrial inheritance" selected>Mitochondrial inheritance</option>
+                            <option value="Y-linked inheritance">Y-linked inheritance</option>
+                          {% elif causative.chromosome == 'Y' %}
+                            <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="X-linked inheritance">X-linked inheritance</option>
+                            <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
+                            <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
+                            <option value="Y-linked inheritance" selected>Y-linked inheritance</option>
+                          {% else %}
+                            <option value="Autosomal recessive inheritance" selected>Autosomal recessive inheritance</option>
+                            <option value="X-linked inheritance">X-linked inheritance</option>
+                            <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
+                            <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
+                            <option value="Y-linked inheritance">Y-linked inheritance</option>
+                          {% endif %}
+                          <option value="Autosomal unknown">Autosomal unknown</option>
+                          <option value="Codominant">Codominant</option>
+                          <option value="Genetic anticipation">Genetic anticipation</option>
+                          <option value="Oligogenic">Oligogenic</option>
+                          <option value="Somatic mutation">Somatic mutation</option>
+                          <option value="Sporadic">Sporadic</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </td>
+                    </tr>
+                    {% if causative.dbsnp_id and causative.category == 'snv'%}
+                      <tr>
+                        <td>var. identifier</td>
+                        <td><input type="text" id="Variation identifiers_{{causative._id}}" name="Variation identifiers_{{causative._id}}" value="{{causative.dbsnp_id}}" size=14 pattern="rs[0-9]+"></td>
+                      </tr>
+                    {% endif %}
+                    <tr>
+                      <td style="width:40%">Clinical significance:</td>
+                      <td>
+                        <select id="Clinical significance_{{causative._id}}" name="Clinical significance_{{causative._id}}">
+                          {% if causative.acmg_classification == 0 %}
+                            <option value="Uncertain significance">Uncertain significance</option>
+                          {% elif causative.acmg_classification == 1 %}
+                            <option value="Benign">Benign</option>
+                          {% elif causative.acmg_classification == 2 %}
+                            <option value="Likely benign">Likely benign</option>
+                          {% elif causative.acmg_classification == 3 %}
+                            <option value="Likely Pathogenic">Likely Pathogenic</option>
+                          {% else %}
+                            <option value="Pathogenic">Pathogenic</option>
+                          {% endif %}
+                        </select>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Date last evaluated</td>
+                      <td><input type="text" id="Date last evaluated_{{causative._id}}" name="Date last evaluated_{{causative._id}}" placeholder="yyyy-mm-dd" value="{{ case.updated_at.date() }}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"></td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table class="table table-fixed">
+                    <tr>
+                      <td>Functional consequence:<br>(based on experimental evidence, leave blank if unsure)</td>
+                      <td>
+                        <select name="Functional consequence_{{causative._id}}">
+                            <option value="-" selected> - </option>
+                          {% if causative.category == 'snv' %}
+                            <option value="Dominant negative variant">Dominant negative variant</option>
+                            <option value="Gain of funtion variant">Gain of funtion variant</option>
+                            <option value="Lethal variant">Lethal variant</option>
+                            <option value="Loss of function variant">Loss of function variant</option>
+                            <option value="Null mutation">Null mutation</option>
+                            <option value="Level of transcript variant">Affecting transcript level</option>
+                            <option value="Transcript processing variant">Affecting transcript processing</option>
+                            <option value="Transcript stability variant">Affecting transcript stability</option>
+                            <option value="Decreased transcription rate variant">Dicreasing transcr. rate</option>
+                            <option value="Increased transcription rate variant">Increasing transcr. rate</option>
+                          {% elif causative.category == 'sv' %}
+                            <option value="Copy number decrease">Copy number decrease</option>
+                            <option value="Copy number increase">Copy number increase</option>
+                            <option value="Regulatory region translocation">Regulatory region translocation</option>
+                            <option value="Transctipt translocation">Transctipt translocation</option>
+                            <option value="Short tandem repeat change">Short tandem repeat change</option>
+                            <option value="Feature elongation">Feature elongation</option>
+                            <option value="Feature truncation">Feature truncation</option>
+                            <option value="Gene variant">Gene fusion, transcr. or transl. variant</option>
+                            <option value="Regulatory region variant">Regulatory region variant</option>
+                            <option value="Intergenic variant">Intergenic variant</option>
+                          {% endif %}
+                          <option value="Regulatory region ablation">Regulatory region ablation</option>
+                          <option value="Regulatory region amplification">Regulatory region amplification</option>
+                          <option value="Transcript ablation">Transcript ablation</option>
+                          <option value="Transcript amplification">Transcript amplification</option>
+                        </select>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Additional comments on functional consequence(s)</td>
+                      <td>
+                        <textarea name="Comment on functional consequence_{{causative._id}}" placeholder="(optional) " rows="3" cols="30"></textarea>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="width:30%">Condition HPO term(s):</td>
+                      <td>
+                        {% for hpo_term in case.phenotype_groups %}
+                          <strong>{{ hpo_term.phenotype_id + "("+ hpo_term.feature +")" }}</strong>
+                          <input type="hidden" name="Condition ID value_{{causative._id}}" value="{{ hpo_term.phenotype_id }}">
+                        {% endfor %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="width:30%">Additional comments describing condition:</td>
+                      <td>
+                        <textarea name="Condition comment_{{causative._id}}" placeholder="(optional)" rows="3" cols="30"></textarea>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!--SV-related fields-->
+          {% if causative.category == 'sv' %}
+          <table class="table table-fixed">
+            <tbody class="border-top">
+              <tr>
+                <td style="width:30%">
+                  <table class="table table-fixed">
+                    <tr>
+                      <td style="width:30%">Type of structural variant:</td>
+                      <td>
+                        <select id="sv_type" length>
+                        {% if causative.sub_category == 'del' %}
+                          <option value="duplication">duplication</option>
+                          <option value="deletion" selected>deletion</option>
+                          <option value="insertion">insertion</option>
+                          <option value="inversion">inversion</option>
+                          <option value="translocation">translocation</option>
+                          <option value="translocation">complex</option>
+                        {% elif causative.sub_category == 'ins' %}
+                          <option value="duplication">duplication</option>
+                          <option value="deletion">deletion</option>
+                          <option value="insertion" selected>insertion</option>
+                          <option value="inversion">inversion</option>
+                          <option value="translocation">translocation</option>
+                          <option value="translocation">complex</option>
+                        {% else %}
+                          <option value="duplication">duplication</option>
+                          <option value="deletion">deletion</option>
+                          <option value="insertion">insertion</option>
+                          <option value="inversion">inversion</option>
+                          <option value="translocation">translocation</option>
+                          <option value="translocation">complex</option>
+                        {% endif %}
+                        </select>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Outer start</td>
+                      <td><input type="text" name="out_start" value="" size=20></td>
+                    </tr>
+                    <tr>
+                      <td>Inner start</td>
+                      <td><input type="text" name="in_start" value="" size=20></td>
+                    </tr>
+                    <tr>
+                      <td>Inner stop</td>
+                      <td><input type="text" name="in_stop" value="" size=20></td>
+                    </tr>
+                    <tr>
+                      <td>Outer stop</td>
+                      <td><input type="text" name="out_stop" value="" size=20></td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table class="table table-fixed">
+                    <tr colspan=2>
+                      <td style="width:30%">Reference copy number:<input type="text" name="ref_copies" value="2" size=3></td>
+                      <td>Breakpoint 1<input type="text" name="bkp1" value="" size=20></td>
+                      <td>Breakpoint 2<input type="text" name="bkp2" value="" size=20></td>
+                    </tr>
+                    <tr colspan=3>
+                      <td>Comments on this variant</td>
+                      <td><textarea name="sv_comment" placeholder="(optional)" rows="4" cols="60"></textarea></td>
+                    </tr>
+                    <tr colspan=3>
+                      <td>Trace or probe data</td>
+                      <td><textarea name="trace_probe" placeholder="(optional)" rows="4" cols="60"></textarea></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {% endif %}
+          <!--end of SV fields-->
+
+          <a href="#more_variant_{{causative._id}}" data-toggle="collapse">More optional fields</a>
+          <div id="more_variant_{{causative._id}}" class="collapse">
+            <table class="table table-fixed">
+              <tbody>
+                <tr>
+                  <td>
+                    <table>
+                      <tr>
+                        <td>Assertion method:</td>
+                        <td><input type="text" name="Assertion method_{{causative._id}}" placeholder="optional (Submitter's or other publication)" size="40"></td>
+                      </tr>
+                      <tr>
+                        <td>Assertion citation</td>
+                        <td>
+                          <textarea name="Assertion method citation_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width:30%">Clinical significance citations<br>(with identifier)</td>
+                        <td>
+                          <textarea name="Clinical significance citations_{{causative._id}}" placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955" rows="3" cols="40"></textarea>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td>
+                    <table>
+                      <tr>
+                        <td>Other citations or URLs<br>(without identifier)</td>
+                        <td>
+                          <textarea name="Citations or URLs for clinical significance without database identifiers_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width:30%">Comments on clinical significance</td>
+                        <td>
+                          <textarea name="Comment on clinical significance_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Drug response condition(s)</td>
+                        <td>
+                          <textarea name="Drug response condition_{{causative._id}}" placeholder="(optional) The condition for which the drug response is relevant. Separate multiple conditions by a semicolon." rows="3" cols="40"></textarea>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {% for individual in case.individuals %}
+        {% if individual.phenotype == 2 %}
+          {% for sample in causative.samples %}
+            {% if sample.display_name == individual.display_name and sample.genotype_call != '0/0' and sample.genotype_call != './.' %}
+              <div class="form-group" id="cdata_checkbox_{{causative._id}}" >
+                <div class="checkbox">
+                  <label data-toggle="collapse" data-target="#casedata_{{causative._id}}" aria-expanded="false" aria-controls="collapseOne">
+                    <input type="checkbox" name="casedata_{{causative._id}}"/>Submit case data for this variant
+                  </label>
+                </div>
+              </div>
+              <div id="casedata_{{causative._id}}" class="collapse">
+                <input type="hidden" name="Individual ID_{{causative._id}}" value="{{ individual.display_name }}">
+                <input type="hidden" name="Linking ID_{{ causative._id }}" value="{{ causative._id }}">
+                {% if individual.analysis_type == 'wes' %}
+                    <input type="hidden" name="Platform name_{{causative._id}}" value="Whole exome sequencing, {{individual.capture_kits[0]}}">
+                {% else %}
+                    <input type="hidden" name="Platform name_{{causative._id}}" value="Whole genome sequencing">
+                {% endif %}
+                <div class="col-xs-6 col-sm-6 col-md-12">
+                  <div class="panel panel-success">
+                    {% if causative.simple_id|length > 50 %}
+                      <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ causative.sub_category+"("+causative.chromosome+causative.cytoband_start+"-"+causative.end_chrom+causative.cytoband_end+")" }}</div>
+                    {% else %}
+                      <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ causative.simple_id }}</div>
+                    {% endif %}
+                    <table class="table table-bordered table-fixed">
+                      <tbody class="border-top">
+                        <tr>
+                          <td>
+                            <table class="table table-fixed">
+                              <tr>
+                                <td>Affected?
+                                  <select name="Affected status_{{ causative._id }}" id="affected_status">
+                                    <option value="yes" selected>yes</option>
+                                    <option value="no">no</option>
+                                    <option value="unknown">unknown</option>
+                                  </select>
+                                </td>
+                                <td style="width:60%">Ethnicity
+                                  <select name="Population Group/Ethnicity_{{causative._id}}" id="ethnicity">
+                                    <option value="" selected>unspecified</option>
+                                    <option value="Causasians">Causasian</option>
+                                    <option value="African American">African American</option>
+                                    <option value="European Caucasoid">European Caucasoid</option>
+                                    <option value="American Indian or Alaska Native">American Indian / Alaska</option>
+                                    <option value="Ashkenazi Jew">Ashkenazi Jew</option>
+                                    <option value="Chinese">Chinese</option>
+                                    <option value="Hawaii">Hawaii or pacific island</option>
+                                    <option value="Hispanic Americans">Hispanic Americans</option>
+                                    <option value="SE Asia">South East Asian</option>
+                                    <option value="mixed">mixed ethnic group</option>
+                                    <option value="none">none</option>
+                                  </select>
+                                </td>
+                              </tr>
+                            </table>
+                            <table class="table table-fixed">
+                              <tr>
+                                <td>sex:
+                                  {% if individual.sex == "1" %}
+                                    <input type="hidden" name="Sex_{{causative._id}}" value="male">
+                                    <strong>male</strong>
+                                  {% else %}
+                                    <input type="hidden" name="Sex_{{causative._id}}" value="female">
+                                    <strong>female</strong>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  Age:<input type="text" name="Age_{{causative._id}}" value="" size=3>
+                                </td>
+                                <td>Allele origin
+                                  <select name="Allele origin_{{ causative._id }}" id="allele_origin">
+                                    <option value="germline">germline</option>
+                                    <option value="de novo">de novo</option>
+                                    <option value="somatic">somatic</option>
+                                    <option value="maternal">maternal</option>
+                                    <option value="paternal">paternal</option>
+                                    <option value="inherited">inherited</option>
+                                    <option value="unknown">unknown</option>
+                                    <option value="uniparental">uniparental</option>
+                                    <option value="biparental">biparental</option>
+                                  </select>
+                                </td>
+                                <td style="width:40%">Zygosity
+                                  {% for sample in causative.samples %}
+                                    {% if sample.display_name == individual.display_name %}
+                                      <strong>({{ sample.genotype_call }})</strong><br>
+                                      <select name="Zygosity_{{causative._id}}" id="zygosity">
+                                        {% if sample.genotype_call == '1/1' %}
+                                          <option value="homozygote" selected>homozygote</option>
+                                          <option value="single heterozygote">single heterozygote</option>
+                                        {% else %}
+                                          <option value="single heterozygote" selected>single heterozygote</option>
+                                          <option value="compound heterozygote">compound heterozygote</option>
+                                          <option value="hemizygote">hemizygote</option>
+                                          <option value="homozygote">homozygote</option>
+                                        {% endif %}
+                                      </select>
+                                    {% endif %}
+                                  {% endfor %}
+                                </td>
+                              </tr>
+                            </table>
+                            {% if causative.category == 'sv' %}
+                              <table class="table table-fixed">
+                                <tr>
+                                  <td colspan=2>Structural variant analysis:</td>
+                                  <td colspan=2>
+                                    <select name="sv_method" id="sv_method">
+                                      <option value="Paired-end mapping" selected>Paired-end mapping</option>
+                                      <option value="Read depth">Read depth</option>
+                                      <option value="One end anchored assembly">One end anchored assembly</option>
+                                      <option value="Sequence alignment,">Sequence alignment</option>
+                                      <option value="Curated">Curated</option>
+                                    </select>
+                                  </td>
+                                </tr>
+                              </table>
+                            {% endif %}
+                            <table class="table table-fixed">
+                              <tr>
+                                <td>Was {{individual.display_name}} a proband?<br>
+                                  <select name="Proband_{{causative._id}}" id="proband">
+                                    <option value="yes" selected>yes</option>
+                                    <option value="no">no</option>
+                                  </select>
+                                </td>
+                                <td>Family history?<br>
+                                  <select name="Family history_{{causative._id}}" id="f_history">
+                                    <option value="yes" >yes</option>
+                                    <option value="no" selected>no</option>
+                                  </select>
+                                </td>
+                                <td>Was this a secondary finding?<br>
+                                  <select name="Secondary finding_{{causative._id}}" id="secondary">
+                                    <option value="yes" >yes</option>
+                                    <option value="no" selected>no</option>
+                                  </select>
+                                </td>
+                                <td>Mosaicism observed?<br>
+                                  <select name="Mosaicism_{{causative._id}}" id="mosaicism">
+                                    <option value="yes" >yes</option>
+                                    <option value="no" selected>no</option>
+                                  </select>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <table class="table table-fixed">
+                              <tr>
+                                <td >Co-occurrences same gene<br>
+                                  <textarea name="Co-occurrences, same gene_{{causative._id}}" placeholder="Full HGVS expressions" rows="3" cols="30"></textarea>
+                                </td>
+                                <td >Co-occurrences other genes<br>
+                                  <textarea name="Co-occurrences, other genes_{{causative._id}}" placeholder="Full HGVS expressions" rows="3" cols="30"></textarea>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Date variant was reported to submitter:</td>
+                                <td><input type="text" name="Date variant was reported to submitter_{{causative._id}}" placeholder="yyyy-mm-dd" value="{{ case.analysis_date.date() }}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"></td>
+                              </tr>
+                              <tr>
+                                <td>Tissue where genetic material was extracted from:</td>
+                                <td><input type="text" name="Tissue_{{causative._id}}" placeholder="(optional)" value=""></td>
+                              </tr>
+                            </table>
+                          </td>
+                          <td>
+                            <table class="table table-fixed">
+                              <tr>
+                                <td style="width:30%">Clinical features<br>(relative to the subject)</td>
+                                <td>
+                                  <textarea id="clin_features" name="Clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40">
+                                    {%if individual.phenotype_groups%}
+                                      {%for hpo in individual.phenotype_groups%}
+                                        {{hpo + ";"}}
+                                      {%endfor%}
+                                    {%else%}
+                                      {%for hpo in case.phenotype_groups%}
+                                        {{-hpo.phenotype_id|string + ";"-}}
+                                      {%endfor%}
+                                    {%endif%}
+                                  </textarea>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Comments on clinical features</td>
+                                <td>
+                                  <textarea name="Comment on clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Evidence citations</td>
+                                <td>
+                                  <textarea name="Evidence citations_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Citations or URLs that cannot be represented in evidence citations column</td>
+                                <td>
+                                  <textarea name="Citations or URLs that cannot be represented in evidence citations column_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Comment on evidence</td>
+                                <td>
+                                  <textarea name="Comment on evidence_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            {% elif sample.display_name == individual.display_name %}
+              No case data harboring this allelic variant!<br>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+
+{% endmacro %}
+
+{% block scripts %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+    /*$(function () {
+        $("#condition_id").change(function () {
+            $('[id=condition_name]').val($(this).val());
+        });
+    });*/
+
+    $('#all_vars').change(function() {
+      if(this.checked) {
+          $('#other_vars').show()
+      }
+      else{
+          $('#other_vars').hide()
+      }
+    });
+
+    $('textarea#clin_features').html($('textarea#clin_features').html().trim());
+
+    function goBack() {
+      window.history.back();
+    }
+
+    $(document).ready(function(){
+      $('#clivar_form input[type=checkbox]').prop('checked',false);
+    });
+
+</script>
+
+{% endblock %}

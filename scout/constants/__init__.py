@@ -20,6 +20,7 @@ from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP,
 from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
 from .file_types import FILE_TYPE_MAP
+from .clinvar import (CLIVAR_HEADER, CLINVAR_OPTIONAL, CASEDATA_HEADER, CASEDATA_OPTIONAL)
 
 cytobands_handle = get_file_handle(cytobands_path)
 

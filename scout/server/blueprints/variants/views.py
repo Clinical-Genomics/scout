@@ -2,7 +2,8 @@
 import io
 import logging
 
-from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify
+from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response
+from werkzeug.datastructures import Headers
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
@@ -11,6 +12,7 @@ from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
+from scout.utils.parse_clinvar_form import get_variant_lines, get_casedata_lines
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm
 
@@ -173,6 +175,39 @@ def sanger(institute_id, case_name, variant_id):
     except controllers.MissingSangerRecipientError:
         flash('No sanger recipients added to institute.', 'danger')
     return redirect(request.referrer)
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
+@templated('variants/clinvar.html')
+def clinvar(institute_id, case_name, variant_id):
+    """Build a clinVar submission form for a variant."""
+    data = controllers.clinvar_export(store, institute_id, case_name, variant_id)
+    if request.method == 'GET':
+        return data
+    else:
+        form_dict = request.form.to_dict(flat=False)
+        variant_header, variant_lines = get_variant_lines(form_dict)
+        casedata_header, casedata_lines = get_casedata_lines(form_dict)
+        data.update({'variant_header':variant_header, 'variant_lines':variant_lines, 'casedata_header':casedata_header, 'casedata_lines':casedata_lines, })
+        return data
+
+@variants_bp.route('/get_csv/', methods=['POST','GET'])
+def get_csv():
+    def generate(header, lines):
+        yield header + '\n'
+        for line in lines:
+            yield line + '\n'
+    if request.form.get('variants_button'):
+        header = request.form['vheader']
+        lines = request.form.getlist('variant')
+        filename = str(request.form.get('subm_id')) + '.Variant.csv'
+    else:
+        header = request.form['cdheader']
+        lines = request.form.getlist('case')
+        filename = str(request.form.get('subm_id')) + 'CaseData.csv'
+
+    headers = Headers()
+    headers.add('Content-Disposition','attachment', filename=filename)
+    return Response(generate(header, lines), mimetype='text/csv', headers=headers)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/cancel_sanger', methods=['POST'])

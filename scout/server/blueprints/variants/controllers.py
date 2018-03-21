@@ -732,6 +732,19 @@ def cancer_variants(store, request_args, institute_id, case_name):
     )
     return data
 
+def clinvar_export(store, institute_id, case_name, variant_id):
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    causatives = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('causatives', [])]
+    variant_obj = store.variant(variant_id)
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        causatives=causatives
+    )
+
 
 def variant_acmg(store, institute_id, case_name, variant_id):
     """Collect data relevant for rendering ACMG classification form."""
