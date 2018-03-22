@@ -113,14 +113,13 @@
                           </a>
                         </dd>
                       {% else %}
-                        <dd style="margin-top: 20px;"> No casedata was included in this submission.</dd>
+                        <dd style="margin-top: 20px;"> No case data was included in this submission.</dd>
                         <dt></dt>
                         <dd>
-                          <!--<a class="btn btn-warning">
+                          <a class="btn btn-warning" onclick="goBack()">
                             <font color="white">Modify submission</font>
-                          </a>-->
+                          </a>
                         </dd>
-
                       {% endif %}
                     <dt style="margin-top: 20px;">Upload files</dt>
                     <dd style="margin-top: 20px;">Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
@@ -384,7 +383,7 @@
                       <td style="width:30%">Condition HPO term(s):</td>
                       <td>
                         {% for hpo_term in case.phenotype_groups %}
-                          <strong>{{ hpo_term.phenotype_id + "("+ hpo_term.feature +")" }}</strong>
+                          <strong>{{ hpo_term.phenotype_id + " ("+ hpo_term.feature +")" }}</strong><br>
                           <input type="hidden" name="Condition ID value_{{causative._id}}" value="{{ hpo_term.phenotype_id }}">
                         {% endfor %}
                       </td>
@@ -706,15 +705,23 @@
                                 <td style="width:30%">Clinical features<br>(relative to the subject)</td>
                                 <td>
                                   <textarea id="clin_features" name="Clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40">
-                                    {%if individual.phenotype_groups%}
-                                      {%for hpo in individual.phenotype_groups%}
-                                        {{hpo + ";"}}
-                                      {%endfor%}
-                                    {%else%}
-                                      {%for hpo in case.phenotype_groups%}
-                                        {{-hpo.phenotype_id|string + ";"-}}
-                                      {%endfor%}
-                                    {%endif%}
+                                    {%- if individual.phenotype_groups -%}
+                                      {%- for hpo in individual.phenotype_groups -%}
+                                        {%- if loop.last -%}
+                                          {{- hpo -}}
+                                        {%- else -%}
+                                          {{- hpo + ";" -}}
+                                        {%- endif -%}
+                                      {%- endfor -%}
+                                    {%- else -%}
+                                      {%- for hpo in case.phenotype_groups -%}
+                                        {%- if loop.last -%}
+                                          {{- hpo.phenotype_id|string -}}
+                                        {%- else -%}
+                                          {{- hpo.phenotype_id|string + ";" -}}
+                                        {%- endif -%}
+                                      {%- endfor -%}
+                                    {%- endif -%}
                                   </textarea>
                                 </td>
                               </tr>
@@ -786,7 +793,10 @@
     $('textarea#clin_features').html($('textarea#clin_features').html().trim());
 
     function goBack() {
-      window.history.back();
+      check = window.confirm("Are you sure you want to edit this submission?");
+      if(check == true){
+        window.history.back();
+      }
     }
 
     $(document).ready(function(){
