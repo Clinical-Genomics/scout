@@ -101,5 +101,5 @@ CASEDATA_OPTIONAL = {
     'Method citations' : 'PMID:25495354;PMID:26250718',
     'Software name and version' : False,
     'Software purpose' : 'Next generation sequencing and pathogenic variants discovery pipeline',
-    'Testing laboratory' : 'Clinical Genomics, SciLifeLab, Solna, Sweden',
+    'Testing laboratory' : 'Clinical Genomics - SciLifeLab Solna (Sweden)',
 }

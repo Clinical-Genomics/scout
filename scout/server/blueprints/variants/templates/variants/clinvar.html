@@ -124,6 +124,7 @@
                     <dt style="margin-top: 20px;">Upload files</dt>
                     <dd style="margin-top: 20px;">Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
                     The field named "Assertion Criteria File" should be left blank, since it is intended for assertion criteria supported by functional studies, such as animal models or in vitro cellular assays.
+                    </dd>
                   </dl>
                 </p>
                 </form>
@@ -192,7 +193,6 @@
     <input type="hidden" name="Alternate allele_{{causative._id}}" value="{{ causative.alternative }}">
     <input type="hidden" name="Condition ID type_{{causative._id}}" value="HPO">
     <br><br>
-      <div>
         <div class="panel panel-default">
           <div class="panel-heading">
             {% if causative.category == 'snv' %}
@@ -316,17 +316,11 @@
                       <td style="width:40%">Clinical significance:</td>
                       <td>
                         <select id="Clinical significance_{{causative._id}}" name="Clinical significance_{{causative._id}}">
-                          {% if causative.acmg_classification == 0 %}
-                            <option value="Uncertain significance">Uncertain significance</option>
-                          {% elif causative.acmg_classification == 1 %}
-                            <option value="Benign">Benign</option>
-                          {% elif causative.acmg_classification == 2 %}
-                            <option value="Likely benign">Likely benign</option>
-                          {% elif causative.acmg_classification == 3 %}
-                            <option value="Likely Pathogenic">Likely Pathogenic</option>
-                          {% else %}
-                            <option value="Pathogenic">Pathogenic</option>
-                          {% endif %}
+                            <option value="Pathogenic" {% if causative.acmg_classification == 4 %} selected {% endif %}>Pathogenic</option>
+                            <option value="Likely Pathogenic" {% if causative.acmg_classification == 3 %} selected {% endif %} >Likely Pathogenic</option>
+                            <option value="Likely benign" {% if causative.acmg_classification == 2 %} selected {% endif %} >Likely benign</option>
+                            <option value="Benign" {% if causative.acmg_classification == 1 %} selected {% endif %} >Benign</option>
+                            <option value="Uncertain significance" {% if causative.acmg_classification == 0 %} selected {% endif %} >Uncertain significance</option>
                         </select>
                       </td>
                     </tr>
@@ -526,10 +520,10 @@
                     </table>
                   </td>
                 </tr>
+              </tbody>
             </table>
           </div>
         </div>
-      </div>
 
       {% for individual in case.individuals %}
         {% if individual.phenotype == 2 %}
@@ -546,215 +540,213 @@
                 <input type="hidden" name="Individual ID_{{causative._id}}" value="{{ individual.display_name }}">
                 <input type="hidden" name="Linking ID_{{ causative._id }}" value="{{ causative._id }}">
                 {% if individual.analysis_type == 'wes' %}
-                    <input type="hidden" name="Platform name_{{causative._id}}" value="Whole exome sequencing, {{individual.capture_kits[0]}}">
+                    <input type="hidden" name="Platform name_{{causative._id}}" value="Whole exome sequencing: {{individual.capture_kits[0]}}">
                 {% else %}
                     <input type="hidden" name="Platform name_{{causative._id}}" value="Whole genome sequencing">
                 {% endif %}
-                <div class="col-xs-6 col-sm-6 col-md-12">
-                  <div class="panel panel-success">
-                    {% if causative.simple_id|length > 50 %}
-                      <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ causative.sub_category+"("+causative.chromosome+causative.cytoband_start+"-"+causative.end_chrom+causative.cytoband_end+")" }}</div>
-                    {% else %}
-                      <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ causative.simple_id }}</div>
-                    {% endif %}
-                    <table class="table table-bordered table-fixed">
-                      <tbody class="border-top">
-                        <tr>
-                          <td>
-                            <table class="table table-fixed">
-                              <tr>
-                                <td>Affected?
-                                  <select name="Affected status_{{ causative._id }}" id="affected_status">
-                                    <option value="yes" selected>yes</option>
-                                    <option value="no">no</option>
-                                    <option value="unknown">unknown</option>
-                                  </select>
-                                </td>
-                                <td style="width:60%">Ethnicity
-                                  <select name="Population Group/Ethnicity_{{causative._id}}" id="ethnicity">
-                                    <option value="" selected>unspecified</option>
-                                    <option value="Causasians">Causasian</option>
-                                    <option value="African American">African American</option>
-                                    <option value="European Caucasoid">European Caucasoid</option>
-                                    <option value="American Indian or Alaska Native">American Indian / Alaska</option>
-                                    <option value="Ashkenazi Jew">Ashkenazi Jew</option>
-                                    <option value="Chinese">Chinese</option>
-                                    <option value="Hawaii">Hawaii or pacific island</option>
-                                    <option value="Hispanic Americans">Hispanic Americans</option>
-                                    <option value="SE Asia">South East Asian</option>
-                                    <option value="mixed">mixed ethnic group</option>
-                                    <option value="none">none</option>
-                                  </select>
-                                </td>
-                              </tr>
-                            </table>
-                            <table class="table table-fixed">
-                              <tr>
-                                <td>sex:
-                                  {% if individual.sex == "1" %}
-                                    <input type="hidden" name="Sex_{{causative._id}}" value="male">
-                                    <strong>male</strong>
-                                  {% else %}
-                                    <input type="hidden" name="Sex_{{causative._id}}" value="female">
-                                    <strong>female</strong>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  Age:<input type="text" name="Age_{{causative._id}}" value="" size=3>
-                                </td>
-                                <td>Allele origin
-                                  <select name="Allele origin_{{ causative._id }}" id="allele_origin">
-                                    <option value="germline">germline</option>
-                                    <option value="de novo">de novo</option>
-                                    <option value="somatic">somatic</option>
-                                    <option value="maternal">maternal</option>
-                                    <option value="paternal">paternal</option>
-                                    <option value="inherited">inherited</option>
-                                    <option value="unknown">unknown</option>
-                                    <option value="uniparental">uniparental</option>
-                                    <option value="biparental">biparental</option>
-                                  </select>
-                                </td>
-                                <td style="width:40%">Zygosity
-                                  {% for sample in causative.samples %}
-                                    {% if sample.display_name == individual.display_name %}
-                                      <strong>({{ sample.genotype_call }})</strong><br>
-                                      <select name="Zygosity_{{causative._id}}" id="zygosity">
-                                        {% if sample.genotype_call == '1/1' %}
-                                          <option value="homozygote" selected>homozygote</option>
-                                          <option value="single heterozygote">single heterozygote</option>
-                                        {% else %}
-                                          <option value="single heterozygote" selected>single heterozygote</option>
-                                          <option value="compound heterozygote">compound heterozygote</option>
-                                          <option value="hemizygote">hemizygote</option>
-                                          <option value="homozygote">homozygote</option>
-                                        {% endif %}
-                                      </select>
-                                    {% endif %}
-                                  {% endfor %}
-                                </td>
-                              </tr>
-                            </table>
-                            {% if causative.category == 'sv' %}
-                              <table class="table table-fixed">
-                                <tr>
-                                  <td colspan=2>Structural variant analysis:</td>
-                                  <td colspan=2>
-                                    <select name="sv_method" id="sv_method">
-                                      <option value="Paired-end mapping" selected>Paired-end mapping</option>
-                                      <option value="Read depth">Read depth</option>
-                                      <option value="One end anchored assembly">One end anchored assembly</option>
-                                      <option value="Sequence alignment,">Sequence alignment</option>
-                                      <option value="Curated">Curated</option>
+                <div class="panel panel-success">
+                  {% if causative.simple_id|length > 50 %}
+                    <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ causative.sub_category+"("+causative.chromosome+causative.cytoband_start+"-"+causative.end_chrom+causative.cytoband_end+")" }}</div>
+                  {% else %}
+                    <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ causative.simple_id }}</div>
+                  {% endif %}
+                  <table class="table table-bordered table-fixed">
+                    <tbody class="border-top">
+                      <tr>
+                        <td>
+                          <table class="table table-fixed">
+                            <tr>
+                              <td>Affected?
+                                <select name="Affected status_{{ causative._id }}" id="affected_status">
+                                  <option value="yes" selected>yes</option>
+                                  <option value="no">no</option>
+                                  <option value="unknown">unknown</option>
+                                </select>
+                              </td>
+                              <td style="width:60%">Ethnicity
+                                <select name="Population Group/Ethnicity_{{causative._id}}" id="ethnicity">
+                                  <option value="" selected>unspecified</option>
+                                  <option value="Causasians">Causasian</option>
+                                  <option value="African American">African American</option>
+                                  <option value="European Caucasoid">European Caucasoid</option>
+                                  <option value="American Indian or Alaska Native">American Indian / Alaska</option>
+                                  <option value="Ashkenazi Jew">Ashkenazi Jew</option>
+                                  <option value="Chinese">Chinese</option>
+                                  <option value="Hawaii">Hawaii or pacific island</option>
+                                  <option value="Hispanic Americans">Hispanic Americans</option>
+                                  <option value="SE Asia">South East Asian</option>
+                                  <option value="mixed">mixed ethnic group</option>
+                                  <option value="none">none</option>
+                                </select>
+                              </td>
+                            </tr>
+                          </table>
+                          <table class="table table-fixed">
+                            <tr>
+                              <td>sex:
+                                {% if individual.sex == "1" %}
+                                  <input type="hidden" name="Sex_{{causative._id}}" value="male">
+                                  <strong>male</strong>
+                                {% else %}
+                                  <input type="hidden" name="Sex_{{causative._id}}" value="female">
+                                  <strong>female</strong>
+                                {% endif %}
+                              </td>
+                              <td>
+                                Age:<input type="text" name="Age_{{causative._id}}" value="" size=3>
+                              </td>
+                              <td>Allele origin
+                                <select name="Allele origin_{{ causative._id }}" id="allele_origin">
+                                  <option value="germline">germline</option>
+                                  <option value="de novo">de novo</option>
+                                  <option value="somatic">somatic</option>
+                                  <option value="maternal">maternal</option>
+                                  <option value="paternal">paternal</option>
+                                  <option value="inherited">inherited</option>
+                                  <option value="unknown">unknown</option>
+                                  <option value="uniparental">uniparental</option>
+                                  <option value="biparental">biparental</option>
+                                </select>
+                              </td>
+                              <td style="width:40%">Zygosity
+                                {% for sample in causative.samples %}
+                                  {% if sample.display_name == individual.display_name %}
+                                    <strong>({{ sample.genotype_call }})</strong><br>
+                                    <select name="Zygosity_{{causative._id}}" id="zygosity">
+                                      {% if sample.genotype_call == '1/1' %}
+                                        <option value="homozygote" selected>homozygote</option>
+                                        <option value="single heterozygote">single heterozygote</option>
+                                      {% else %}
+                                        <option value="single heterozygote" selected>single heterozygote</option>
+                                        <option value="compound heterozygote">compound heterozygote</option>
+                                        <option value="hemizygote">hemizygote</option>
+                                        <option value="homozygote">homozygote</option>
+                                      {% endif %}
                                     </select>
-                                  </td>
-                                </tr>
-                              </table>
-                            {% endif %}
+                                  {% endif %}
+                                {% endfor %}
+                              </td>
+                            </tr>
+                          </table>
+                          {% if causative.category == 'sv' %}
                             <table class="table table-fixed">
                               <tr>
-                                <td>Was {{individual.display_name}} a proband?<br>
-                                  <select name="Proband_{{causative._id}}" id="proband">
-                                    <option value="yes" selected>yes</option>
-                                    <option value="no">no</option>
-                                  </select>
-                                </td>
-                                <td>Family history?<br>
-                                  <select name="Family history_{{causative._id}}" id="f_history">
-                                    <option value="yes" >yes</option>
-                                    <option value="no" selected>no</option>
-                                  </select>
-                                </td>
-                                <td>Was this a secondary finding?<br>
-                                  <select name="Secondary finding_{{causative._id}}" id="secondary">
-                                    <option value="yes" >yes</option>
-                                    <option value="no" selected>no</option>
-                                  </select>
-                                </td>
-                                <td>Mosaicism observed?<br>
-                                  <select name="Mosaicism_{{causative._id}}" id="mosaicism">
-                                    <option value="yes" >yes</option>
-                                    <option value="no" selected>no</option>
+                                <td colspan=2>Structural variant analysis:</td>
+                                <td colspan=2>
+                                  <select name="sv_method" id="sv_method">
+                                    <option value="Paired-end mapping" selected>Paired-end mapping</option>
+                                    <option value="Read depth">Read depth</option>
+                                    <option value="One end anchored assembly">One end anchored assembly</option>
+                                    <option value="Sequence alignment,">Sequence alignment</option>
+                                    <option value="Curated">Curated</option>
                                   </select>
                                 </td>
                               </tr>
                             </table>
+                          {% endif %}
+                          <table class="table table-fixed">
+                            <tr>
+                              <td>Was {{individual.display_name}} a proband?<br>
+                                <select name="Proband_{{causative._id}}" id="proband">
+                                  <option value="yes" selected>yes</option>
+                                  <option value="no">no</option>
+                                </select>
+                              </td>
+                              <td>Family history?<br>
+                                <select name="Family history_{{causative._id}}" id="f_history">
+                                  <option value="yes" >yes</option>
+                                  <option value="no" selected>no</option>
+                                </select>
+                              </td>
+                              <td>Was this a secondary finding?<br>
+                                <select name="Secondary finding_{{causative._id}}" id="secondary">
+                                  <option value="yes" >yes</option>
+                                  <option value="no" selected>no</option>
+                                </select>
+                              </td>
+                              <td>Mosaicism observed?<br>
+                                <select name="Mosaicism_{{causative._id}}" id="mosaicism">
+                                  <option value="yes" >yes</option>
+                                  <option value="no" selected>no</option>
+                                </select>
+                              </td>
+                            </tr>
+                          </table>
 
-                            <table class="table table-fixed">
-                              <tr>
-                                <td >Co-occurrences same gene<br>
-                                  <textarea name="Co-occurrences, same gene_{{causative._id}}" placeholder="Full HGVS expressions" rows="3" cols="30"></textarea>
-                                </td>
-                                <td >Co-occurrences other genes<br>
-                                  <textarea name="Co-occurrences, other genes_{{causative._id}}" placeholder="Full HGVS expressions" rows="3" cols="30"></textarea>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Date variant was reported to submitter:</td>
-                                <td><input type="text" name="Date variant was reported to submitter_{{causative._id}}" placeholder="yyyy-mm-dd" value="{{ case.analysis_date.date() }}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"></td>
-                              </tr>
-                              <tr>
-                                <td>Tissue where genetic material was extracted from:</td>
-                                <td><input type="text" name="Tissue_{{causative._id}}" placeholder="(optional)" value=""></td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td>
-                            <table class="table table-fixed">
-                              <tr>
-                                <td style="width:30%">Clinical features<br>(relative to the subject)</td>
-                                <td>
-                                  <textarea id="clin_features" name="Clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40">
-                                    {%- if individual.phenotype_groups -%}
-                                      {%- for hpo in individual.phenotype_groups -%}
-                                        {%- if loop.last -%}
-                                          {{- hpo -}}
-                                        {%- else -%}
-                                          {{- hpo + ";" -}}
-                                        {%- endif -%}
-                                      {%- endfor -%}
-                                    {%- else -%}
-                                      {%- for hpo in case.phenotype_groups -%}
-                                        {%- if loop.last -%}
-                                          {{- hpo.phenotype_id|string -}}
-                                        {%- else -%}
-                                          {{- hpo.phenotype_id|string + ";" -}}
-                                        {%- endif -%}
-                                      {%- endfor -%}
-                                    {%- endif -%}
-                                  </textarea>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Comments on clinical features</td>
-                                <td>
-                                  <textarea name="Comment on clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Evidence citations</td>
-                                <td>
-                                  <textarea name="Evidence citations_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Citations or URLs that cannot be represented in evidence citations column</td>
-                                <td>
-                                  <textarea name="Citations or URLs that cannot be represented in evidence citations column_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Comment on evidence</td>
-                                <td>
-                                  <textarea name="Comment on evidence_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                          <table class="table table-fixed">
+                            <tr>
+                              <td >Co-occurrences same gene<br>
+                                <textarea name="Co-occurrences, same gene_{{causative._id}}" placeholder="Full HGVS expressions" rows="3" cols="30"></textarea>
+                              </td>
+                              <td >Co-occurrences other genes<br>
+                                <textarea name="Co-occurrences, other genes_{{causative._id}}" placeholder="Full HGVS expressions" rows="3" cols="30"></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Date variant was reported to submitter:</td>
+                              <td><input type="text" name="Date variant was reported to submitter_{{causative._id}}" placeholder="yyyy-mm-dd" value="{{ case.analysis_date.date() }}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"></td>
+                            </tr>
+                            <tr>
+                              <td>Tissue where genetic material was extracted from:</td>
+                              <td><input type="text" name="Tissue_{{causative._id}}" placeholder="(optional)" value=""></td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td>
+                          <table class="table table-fixed">
+                            <tr>
+                              <td style="width:30%">Clinical features<br>(relative to the subject)</td>
+                              <td>
+                                <textarea id="clin_features" name="Clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40">
+                                  {%- if individual.phenotype_groups -%}
+                                    {%- for hpo in individual.phenotype_groups -%}
+                                      {%- if loop.last -%}
+                                        {{- hpo -}}
+                                      {%- else -%}
+                                        {{- hpo + ";" -}}
+                                      {%- endif -%}
+                                    {%- endfor -%}
+                                  {%- else -%}
+                                    {%- for hpo in case.phenotype_groups -%}
+                                      {%- if loop.last -%}
+                                        {{- hpo.phenotype_id|string -}}
+                                      {%- else -%}
+                                        {{- hpo.phenotype_id|string + ";" -}}
+                                      {%- endif -%}
+                                    {%- endfor -%}
+                                  {%- endif -%}
+                                </textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Comments on clinical features</td>
+                              <td>
+                                <textarea name="Comment on clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Evidence citations</td>
+                              <td>
+                                <textarea name="Evidence citations_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Citations or URLs that cannot be represented in evidence citations column</td>
+                              <td>
+                                <textarea name="Citations or URLs that cannot be represented in evidence citations column_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Comment on evidence</td>
+                              <td>
+                                <textarea name="Comment on evidence_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             {% elif sample.display_name == individual.display_name %}
