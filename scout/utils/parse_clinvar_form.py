@@ -83,10 +83,7 @@ def get_casedata_lines(form_fields):
                 if field+'_'+clinvar in form_fields: #filled in field
                     field_value = form_fields[field+'_'+clinvar][0]
                     if len(field_value) > 0:
-                        if field == 'Clinical features': #these fields could contain multiple values
-                            subj_dict[field] = form_fields[field+'_'+clinvar][0][:-1]
-                        else:
-                            subj_dict[field] = form_fields[field+'_'+clinvar][0]
+                        subj_dict[field] = form_fields[field+'_'+clinvar][0]
                         if field in casedata_optional:
                             casedata_optional[field] = True
                 # else it might be either an empty option or a constant:
