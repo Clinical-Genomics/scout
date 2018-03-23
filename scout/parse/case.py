@@ -2,6 +2,8 @@ import copy
 import logging
 import datetime
 
+from pprint import pprint as pp
+
 from path import Path
 from ped_parser import FamilyParser
 
@@ -76,7 +78,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
 
     config_data['rank_model_version'] = config_data.get('rank_model_version')
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
-
+    
     return config_data
 
 

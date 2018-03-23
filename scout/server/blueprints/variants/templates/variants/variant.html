@@ -438,10 +438,11 @@
         <tr>
           <td>
             {% if variant.chromosome == "MT" %}
-              {% if case.mt_bam %}
+              {% if case.mt_bams %}
+                {{ case.mt_bams,case.region_vcf_file }}
                 <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">View alignment</a>
               {% else %}
-                <span class="text-muted">BAM file(s) missing</span>
+                <span class="text-muted">MT BAM file(s) missing</span>
               {% endif %}
               
             {% elif case.bam_files %}
