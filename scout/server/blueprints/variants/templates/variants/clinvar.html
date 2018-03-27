@@ -4,6 +4,9 @@
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
 {% endblock %}
 
+{% set pheno_hpos = [] %}
+{% set pheno_features = [] %}
+
 {% block top_nav %}
   <li>
     <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
@@ -132,14 +135,13 @@
           </div>
         </div>
       </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-12">
-        <div class="form-group text-center">
-            <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-              Back to case
-            </a>
+      <form action="{{ url_for('variants.save_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+        <div class="col-xs-6 col-sm-6 col-md-12">
+          <div class="form-group text-center">
+            <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Save this clinvar submission to database</button>
+          </div>
         </div>
-      </div>
+    </form>
     </header>
 
   {% else %} <!-- clinvar form -->
@@ -148,7 +150,15 @@
       <h3>Clinvar submission page</h3><br>
       <form action="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
         <input type="hidden" name="main_var" value="{{ variant._id }}">
-        {% if 'phenotype_groups' in case %}
+        {% if 'phenotype_groups' in case and case.phenotype_groups|length >0 or 'phenotype_terms' in case and case.phenotype_terms|length >0 %}
+          {% for pheno in case.phenotype_terms if not pheno.phenotype_id in pheno_hpos %}
+            {% do pheno_hpos.append(pheno.phenotype_id) %}
+            {% do pheno_features.append(pheno.feature) %}
+          {% endfor %}
+          {% for pheno in case.phenotype_groups if not pheno.phenotype_id in pheno_hpos %}
+            {% do pheno_hpos.append(pheno.phenotype_id) %}
+            {% do pheno_features.append(pheno.feature) %}
+          {% endfor %}
           <div class="d-flex justify-content-between">
             <div>
               <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
@@ -335,7 +345,7 @@
                     <tr>
                       <td>Functional consequence:<br>(based on experimental evidence, leave blank if unsure)</td>
                       <td>
-                        <select name="Functional consequence_{{causative._id}}">
+                        <select id="_{{causative._id}}" name="Functional consequence_{{causative._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, this.id);">
                             <option value="-" selected> - </option>
                           {% if causative.category == 'snv' %}
                             <option value="Dominant negative variant">Dominant negative variant</option>
@@ -367,19 +377,19 @@
                         </select>
                       </td>
                     </tr>
-                    <tr>
+                    <tr style="display:none" id="line_{{causative._id}}">
                       <td>Additional comments on functional consequence(s)</td>
                       <td>
-                        <textarea name="Comment on functional consequence_{{causative._id}}" placeholder="(optional) " rows="3" cols="30"></textarea>
+                        <textarea id="Comment on functional consequence_{{causative._id}}" name="Comment on functional consequence_{{causative._id}}" placeholder="(optional) " rows="3" cols="30" disabled="true"></textarea>
                       </td>
                     </tr>
                     <tr>
-                      <td style="width:30%">Condition HPO term(s):</td>
+                      <td style="width:30%">Condition HPO term(s):<br>(associated with the variant)</td>
                       <td>
-                        {% for hpo_term in case.phenotype_groups %}
-                          <strong>{{ hpo_term.phenotype_id + " ("+ hpo_term.feature +")" }}</strong><br>
-                          <input type="hidden" name="Condition ID value_{{causative._id}}" value="{{ hpo_term.phenotype_id }}">
+                        {% for hpo in pheno_hpos %}
+                          {{hpo}}-{{pheno_features[loop.index -1]}}<br>
                         {% endfor %}
+                        <input type="hidden" name="Condition ID value_{{causative._id}}" value="{{pheno_hpos|join(';')}}">
                       </td>
                     </tr>
                     <tr>
@@ -698,23 +708,7 @@
                               <td style="width:30%">Clinical features<br>(relative to the subject)</td>
                               <td>
                                 <textarea id="clin_features" name="Clinical features_{{causative._id}}" placeholder="(optional)" rows="3" cols="40">
-                                  {%- if individual.phenotype_groups -%}
-                                    {%- for hpo in individual.phenotype_groups -%}
-                                      {%- if loop.last -%}
-                                        {{- hpo -}}
-                                      {%- else -%}
-                                        {{- hpo + ";" -}}
-                                      {%- endif -%}
-                                    {%- endfor -%}
-                                  {%- else -%}
-                                    {%- for hpo in case.phenotype_groups -%}
-                                      {%- if loop.last -%}
-                                        {{- hpo.phenotype_id|string -}}
-                                      {%- else -%}
-                                        {{- hpo.phenotype_id|string + ";" -}}
-                                      {%- endif -%}
-                                    {%- endfor -%}
-                                  {%- endif -%}
+                                  {{pheno_hpos|join(';')}}
                                 </textarea>
                               </td>
                             </tr>
@@ -767,12 +761,8 @@
 
 <script type="text/javascript">
 
-    /*$(function () {
-        $("#condition_id").change(function () {
-            $('[id=condition_name]').val($(this).val());
-        });
-    });*/
-
+    $('textarea#clin_features').html($('textarea#clin_features').html().trim());
+    
     $('#all_vars').change(function() {
       if(this.checked) {
           $('#other_vars').show()
@@ -781,8 +771,6 @@
           $('#other_vars').hide()
       }
     });
-
-    $('textarea#clin_features').html($('textarea#clin_features').html().trim());
 
     function goBack() {
       check = window.confirm("Are you sure you want to edit this submission?");
@@ -794,6 +782,20 @@
     $(document).ready(function(){
       $('#clivar_form input[type=checkbox]').prop('checked',false);
     });
+
+    function changeTextBox(selected_option,causativeid)
+    {
+        if(selected_option=="-")
+        {
+          document.getElementById("line"+causativeid).style.display = 'none'
+          document.getElementById("Comment on functional consequence"+causativeid).value='';
+          document.getElementById("Comment on functional consequence"+causativeid).disabled='true';
+        }
+        else{
+          document.getElementById("Comment on functional consequence"+causativeid).disabled='';
+          document.getElementById("line"+causativeid).style.display = ''
+        }
+    }
 
 </script>
 
