@@ -12,7 +12,7 @@ from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
-from scout.utils.parse_clinvar_form import get_variant_lines, get_casedata_lines
+from scout.parse.parse_clinvar_form import get_variant_lines, get_casedata_lines
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm
 
@@ -162,6 +162,7 @@ def sanger(institute_id, case_name, variant_id):
         flash('No sanger recipients added to institute.', 'danger')
     return redirect(request.referrer)
 
+
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
 @templated('variants/clinvar.html')
 def clinvar(institute_id, case_name, variant_id):
@@ -173,11 +174,13 @@ def clinvar(institute_id, case_name, variant_id):
         form_dict = request.form.to_dict(flat=False)
         variant_header, variant_lines = get_variant_lines(form_dict)
         casedata_header, casedata_lines = get_casedata_lines(form_dict)
-        data.update({'variant_header':variant_header, 'variant_lines':variant_lines, 'casedata_header':casedata_header, 'casedata_lines':casedata_lines, })
+        data.update({'variant_header':variant_header, 'variant_lines':variant_lines, 'casedata_header':casedata_header, 'casedata_lines':casedata_lines, 'evaluation':request.form,})
         return data
+
 
 @variants_bp.route('/get_csv/', methods=['POST','GET'])
 def get_csv():
+    """Creates csv files (.Variant.csv or .CaseData.csv) to be used for submitting variants to clinVar."""
     def generate(header, lines):
         yield header + '\n'
         for line in lines:
@@ -189,11 +192,19 @@ def get_csv():
     else:
         header = request.form['cdheader']
         lines = request.form.getlist('case')
-        filename = str(request.form.get('subm_id')) + 'CaseData.csv'
+        filename = str(request.form.get('subm_id')) + '.CaseData.csv'
 
     headers = Headers()
     headers.add('Content-Disposition','attachment', filename=filename)
     return Response(generate(header, lines), mimetype='text/csv', headers=headers)
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>', methods=['POST'])
+def save_clinvar_submission(institute_id, case_name, variant_id):
+    """Saves variants submitted to clinVar to database and redirects to variants page"""
+    flash('This is when I save clinvar form to db!', 'danger')
+    return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                            variant_id=variant_id))
 
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants')

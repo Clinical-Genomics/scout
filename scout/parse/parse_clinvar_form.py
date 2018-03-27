@@ -3,6 +3,9 @@ import sys
 from scout.constants import CLIVAR_HEADER, CLINVAR_OPTIONAL, CASEDATA_HEADER, CASEDATA_OPTIONAL
 
 def get_variant_lines(form_fields):
+    """Parses the form from blueprints/variants/clinvar.html
+    and creates the lines for the .Variant.csv clinvar submission file.
+    """
 
     clinvar_header  = list(CLIVAR_HEADER)
     optional_fields = dict(CLINVAR_OPTIONAL)
@@ -17,7 +20,7 @@ def get_variant_lines(form_fields):
         clinvar_dict = {}
         for field in clinvar_header:
             clinvar_dict[field] = ''
-            if field == 'Gene symbol' or field == 'Condition ID value': #these fields could contain multiple values
+            if field == 'Gene symbol': # field could contain multiple values
                 clinvar_dict[field] = ';'.join(form_fields[field+'_'+clinvar])
             elif field == 'Reference sequence' or field == 'HGVS':
                 if 'Reference sequence_'+clinvar in form_fields: #value is provided on the form
@@ -66,6 +69,9 @@ def get_variant_lines(form_fields):
 
 
 def get_casedata_lines(form_fields):
+    """Parses the form from blueprints/variants/clinvar.html
+    and creates the lines for the .CaseData.csv clinvar submission file.
+    """
 
     casedata_header = list(CASEDATA_HEADER)
     casedata_optional = dict(CASEDATA_OPTIONAL)
@@ -110,3 +116,9 @@ def get_casedata_lines(form_fields):
             casedata_lines.append(casedata_line)
 
     return casedata_header,casedata_lines
+
+def parse_clinvar_submission():
+    """Parses the form from blueprints/variants/clinvar.html
+    and returns a dictionary with the fields in save to the database
+    """
+    print("blablabla")
