@@ -13,7 +13,7 @@ genemap2_file = 'demo/resources/genemap2_reduced.txt.gz'
 
 # Hpo resources
 hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt.gz'
-hpoterms_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt.gz'
+hpoterms_file = 'demo/resources/reduced.hpo.obo'
 hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt.gz'
 
 # Additional resources

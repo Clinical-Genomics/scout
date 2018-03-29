@@ -48,3 +48,28 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
             raise err
 
     return mim_files
+
+def fetch_hpo_terms():
+    """Fetch the latest version of the hpo terms"""
+    url = "http://purl.obolibrary.org/obo/hp.obo"
+    
+    LOG.info("Requesting %s", url)
+    response = urllib.request.urlopen(url)
+    data = response.read()      # a `bytes` object
+    lines = data.decode('utf-8').split('\n')
+    
+    return lines
+
+def fetch_hpo_to_genes():
+    """Fetch the latest version of the map from genes to hpo terms"""
+    url = ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
+           "lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIE"
+           "S_phenotype_to_genes.txt")
+    
+    LOG.info("Requesting %s", url)
+    response = urllib.request.urlopen(url)
+    data = response.read()      # a `bytes` object
+    lines = data.decode('utf-8').split('\n')
+    
+    return lines
+    
