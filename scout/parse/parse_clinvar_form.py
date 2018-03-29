@@ -61,7 +61,7 @@ def get_variant_lines(form_fields):
         variant_line = []
         clinvar_dict = clinvars_dict[clinvar]
         for field in clinvar_header:
-            variant_line.append(clinvar_dict[field])
+            variant_line.append('"'+clinvar_dict[field]+'"')
         variants.append(variant_line)
 
     #returning a list and a list of lists
@@ -110,15 +110,15 @@ def get_casedata_lines(form_fields):
             casedata_line = []
             for field in casedata_header:
                 if field in subj_dict:
-                    casedata_line.append(subj_dict[field])
+                    casedata_line.append('"'+subj_dict[field]+'"')
                 else:
-                    casedata_line.append('')
+                    casedata_line.append('""')
             casedata_lines.append(casedata_line)
 
     return casedata_header,casedata_lines
 
 def parse_clinvar_submission():
     """Parses the form from blueprints/variants/clinvar.html
-    and returns a dictionary with the fields in save to the database
+    and returns a dictionary with the fields to save to scout database
     """
     print("blablabla")

@@ -91,7 +91,7 @@
                     </dd>
                     <dt style="margin-top: 20px;">Download case data</dt>
                       {% if casedata_lines %}
-                        <dd style="margin-top: 15px;">The following case data will be included in the submission files:
+                        <dd style="margin-top: 20px;">The following case data will be included in the submission files:
 
                           <br><br>
                         <!--preview casedata if it was provided-->
@@ -116,7 +116,7 @@
                           </a>
                         </dd>
                       {% else %}
-                        <dd style="margin-top: 20px;"> No case data was included in this submission.</dd>
+                        <dd style="margin-top: 20px;"> No case data was included in this submission.<br></dd>
                         <dt></dt>
                         <dd>
                           <a class="btn btn-warning" onclick="goBack()">
@@ -126,7 +126,7 @@
                       {% endif %}
                     <dt style="margin-top: 20px;">Upload files</dt>
                     <dd style="margin-top: 20px;">Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
-                    The field named "Assertion Criteria File" should be left blank, since it is intended for assertion criteria supported by functional studies, such as animal models or in vitro cellular assays.
+                    The field named <strong>"Assertion Criteria File" should be left blank</strong>, since the default information is already provided in the "Variant sheet" <strong>(ACMG Guidelines, 2018)</strong>.
                     </dd>
                   </dl>
                 </p>
@@ -138,7 +138,7 @@
       <form action="{{ url_for('variants.save_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <div class="col-xs-6 col-sm-6 col-md-12">
           <div class="form-group text-center">
-            <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Save this clinvar submission to database</button>
+            <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Save this clinvar submission to scout database</button>
           </div>
         </div>
     </form>
@@ -146,7 +146,7 @@
 
   {% else %} <!-- clinvar form -->
 
-    <div class="container">
+    <div class="container" id="main">
       <h3>Clinvar submission page</h3><br>
       <form action="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
         <input type="hidden" name="main_var" value="{{ variant._id }}">
@@ -247,7 +247,8 @@
                       {% endif %}
                     </tr>
                     <tr>
-                      <td>Transcripts & HGVS:</td>
+                      <td>Transcripts & HGVS:<br>(optional)
+                      </td>
                       <td>
                         {% for gene in causative.genes %}
                           {% for transcript in gene.transcripts %}
@@ -491,12 +492,12 @@
                     <table>
                       <tr>
                         <td>Assertion method:</td>
-                        <td><input type="text" name="Assertion method_{{causative._id}}" placeholder="optional (Submitter's or other publication)" size="40"></td>
+                        <td><input type="text" name="Assertion method_{{causative._id}}" placeholder="optional (Submitter's or other publication)" size="40" value="ACMG Guidelines, 2018"></td>
                       </tr>
                       <tr>
                         <td>Assertion citation</td>
                         <td>
-                          <textarea name="Assertion method citation_{{causative._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                          <textarea name="Assertion method citation_{{causative._id}}" placeholder="(optional)" rows="3" cols="40">doi:10.1038/gim.2017.242</textarea>
                         </td>
                       </tr>
                       <tr>
@@ -542,7 +543,7 @@
               <div class="form-group" id="cdata_checkbox_{{causative._id}}" >
                 <div class="checkbox">
                   <label data-toggle="collapse" data-target="#casedata_{{causative._id}}" aria-expanded="false" aria-controls="collapseOne">
-                    <input type="checkbox" name="casedata_{{causative._id}}"/>Submit case data for this variant
+                    <input type="checkbox" name="casedata_{{causative._id}}" id="_{{causative._id}}"/>Submit case data for this variant
                   </label>
                 </div>
               </div>
@@ -761,8 +762,23 @@
 
 <script type="text/javascript">
 
+    var div = document.getElementById("main");
+    var inputs = div.getElementsByTagName("input");
+    for (var i = 0, len = inputs.length; i < len; ++i) {
+        if (inputs[i].type == "checkbox" & inputs[i].checked) {
+          if(inputs[i].id == 'all_vars'){
+            $('#other_vars').show()
+          }
+          else{
+            //simulate a new click:
+            inputs[i].click();
+            inputs[i].checked = true;
+          }
+        }
+    }
+
     $('textarea#clin_features').html($('textarea#clin_features').html().trim());
-    
+
     $('#all_vars').change(function() {
       if(this.checked) {
           $('#other_vars').show()
@@ -779,9 +795,17 @@
       }
     }
 
-    $(document).ready(function(){
+
+
+
+
+
+
+
+
+    /*$(document).ready(function(){
       $('#clivar_form input[type=checkbox]').prop('checked',false);
-    });
+    });*/
 
     function changeTextBox(selected_option,causativeid)
     {
