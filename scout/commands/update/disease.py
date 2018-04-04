@@ -16,7 +16,7 @@ import click
 from scout.load.hpo import load_disease_terms
 from scout.utils.handle import get_file_handle
 
-from scout.utils.requests import 
+from scout.utils.requests import fetch_mim_files
 LOG = logging.getLogger(__name__)
 
 @click.command('diseases', short_help='Update disease terms')

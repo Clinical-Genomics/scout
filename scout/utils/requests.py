@@ -23,7 +23,6 @@ def fetch_resource(url, file_name=None):
         response = urllib.request.urlopen(url)
         data = response.read()      # a `bytes` object
         lines = data.decode('utf-8').split('\n')
-        mim_files[file_name] = lines
     except HTTPError as err:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
         raise err

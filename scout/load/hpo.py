@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases, parse_hpo_obo, parse_hpo_to_genes)
-from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes, fetch_hpo_phenotype_to_terms, fetch)
+from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes, fetch_hpo_phenotype_to_terms)
 
 from scout.parse.omim import get_mim_phenotypes
 from scout.build.hpo import build_hpo_term

@@ -10,7 +10,7 @@ from .omim import omim as omim_command
 from .compounds import compounds as compound_command
 from .hpo import hpo as hpo_command
 from .genes import genes as gene_command
-from .disease import disease as disease_command
+from .disease import diseases as disease_command
 
 LOG = logging.getLogger(__name__)
 
