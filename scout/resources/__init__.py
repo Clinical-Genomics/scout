@@ -9,12 +9,6 @@ exac_file = 'resources/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz'
 transcripts37_file = 'resources/ensembl_transcripts_37.txt.gz'
 transcripts38_file = 'resources/ensembl_transcripts_38.txt.gz'
 
-# Hpo resources
-hpogenes_file = 'resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt.gz'
-hpoterms_file = 'resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt.gz'
-hpo_phenotype_to_terms = 'resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt.gz'
-hpodisease_file = 'resources/diseases_to_genes.txt.gz'
-
 # Cytoband
 
 cytobands_file = 'resources/cytoBand.txt.gz'
@@ -27,11 +21,6 @@ exac_path = pkg_resources.resource_filename('scout', exac_file)
 transcripts37_path = pkg_resources.resource_filename('scout', transcripts37_file)
 transcripts38_path = pkg_resources.resource_filename('scout', transcripts38_file)
 
-# Hpo paths
-hpogenes_path = pkg_resources.resource_filename('scout', hpogenes_file)
-hpoterms_path = pkg_resources.resource_filename('scout', hpoterms_file)
-hpodisease_path = pkg_resources.resource_filename('scout', hpodisease_file)
-hpo_phenotype_to_terms_path = pkg_resources.resource_filename('scout', hpo_phenotype_to_terms)
 
 # Cytoband path
 

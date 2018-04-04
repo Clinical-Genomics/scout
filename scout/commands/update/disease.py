@@ -15,8 +15,8 @@ import click
 
 from scout.load.hpo import load_disease_terms
 from scout.utils.handle import get_file_handle
-from scout.resources import (hpo_phenotype_to_terms_path)
 
+from scout.utils.requests import 
 LOG = logging.getLogger(__name__)
 
 @click.command('diseases', short_help='Update disease terms')
@@ -43,17 +43,10 @@ def diseases(ctx, api_key):
     LOG.info("Dropping DiseaseTerms")
     adapter.disease_term_collection.drop()
     LOG.debug("DiseaseTerms dropped")
-    
-    LOG.info("Loading hpo info from file {0}".format(hpo_phenotype_to_terms_path))
-    hpo_handle = get_file_handle(hpo_phenotype_to_terms_path)
 
-    alias_genes = adapter.genes_by_alias()
-    
     load_disease_terms(
         adapter=adapter,
         genemap_lines=mim_files['genemap2'], 
-        genes=alias_genes,
-        hpo_disease_lines=hpo_handle,
     )
 
-    LOG.info("Successfully loaded all hpo terms")
+    LOG.info("Successfully loaded all disease terms")

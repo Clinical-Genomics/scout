@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases, parse_hpo_obo, parse_hpo_to_genes)
-from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes)
+from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes, fetch_hpo_phenotype_to_terms, fetch)
 
 from scout.parse.omim import get_mim_phenotypes
 from scout.build.hpo import build_hpo_term
@@ -14,7 +14,7 @@ from pprint import pprint as pp
 LOG = logging.getLogger(__name__)
 
 
-def load_hpo(adapter, disease_lines, hpo_disease_lines, hpo_lines=None, hpo_gene_lines=None):
+def load_hpo(adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo_gene_lines=None):
     """Load the hpo terms and hpo diseases into database
     
     Args:
@@ -31,6 +31,10 @@ def load_hpo(adapter, disease_lines, hpo_disease_lines, hpo_lines=None, hpo_gene
     # Fetch the hpo gene information if no file
     if not hpo_gene_lines:
         hpo_gene_lines = fetch_hpo_to_genes()
+    
+    # Fetch the hpo phenotype information if no file
+    if not hpo_disease_lines:
+        hpo_disease_lines = fetch_hpo_phenotype_to_terms()
     
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
     
@@ -103,7 +107,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     LOG.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
-def load_disease_terms(adapter, genemap_lines, genes, hpo_disease_lines):
+def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=None):
     """Load the omim phenotypes into the database
     
     Parse the phenotypes from genemap2.txt and find the associated hpo terms
@@ -116,8 +120,14 @@ def load_disease_terms(adapter, genemap_lines, genes, hpo_disease_lines):
         hpo_disease_lines(iterable(str))
 
     """
+    # Get a map with hgnc symbols to hgnc ids from scout
+    if not genes:
+        genes = adapter.genes_by_alias()
 
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
+    if not hpo_disease_lines:
+        hpo_disease_lines = fetch_hpo_phenotype_to_terms()
+
     hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()
@@ -134,7 +144,7 @@ def load_disease_terms(adapter, genemap_lines, genes, hpo_disease_lines):
         disease_obj = build_disease_term(disease_info, genes)
 
         adapter.load_disease_term(disease_obj)
-    
+
     LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
     LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
     

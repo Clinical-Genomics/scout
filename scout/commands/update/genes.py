@@ -23,12 +23,13 @@ import click
 from pprint import pprint as pp
 
 from scout.load import load_hgnc_genes
-from scout.resources import (hgnc_path, exac_path, transcripts37_path,
-                             transcripts38_path, hpogenes_path)
+from scout.resources import (hgnc_path, exac_path, transcripts37_path, transcripts38_path)
 
 
 from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
+
+from scout.utils.requests import fetch_hpo_genes
 
 LOG = logging.getLogger(__name__)
 
@@ -61,6 +62,8 @@ def genes(ctx, build, api_key):
     adapter.drop_genes(build)
     LOG.info("Genes dropped")
 
+    hpo_genes = fetch_hpo_genes()
+    
     if build:
         builds = [build]
     else:
@@ -80,15 +83,13 @@ def genes(ctx, build, api_key):
         LOG.info("Loading exac gene file from {0}".format(exac_path))
         exac_handle = get_file_handle(exac_path)
 
-        hpo_handle = get_file_handle(hpogenes_path)
-        
         genes = link_genes(
             ensembl_lines=ensembl_handle,
             hgnc_lines=hgnc_handle,
             exac_lines=exac_handle,
             mim2gene_lines=mim_files['mim2gene'],
             genemap_lines=mim_files['genemap'],
-            hpo_lines=hpo_handle
+            hpo_lines=hpo_genes
         )
         
         load_hgnc_genes(adapter=adapter, genes=genes, build=build)

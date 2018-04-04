@@ -16,8 +16,7 @@ from scout.adapter.client import get_connection
 from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 
 # Import the resources to setup scout
-from scout.resources import (hgnc_path, exac_path, hpogenes_path,
-                             hpodisease_path, hpo_phenotype_to_terms_path)
+from scout.resources import (hgnc_path, exac_path)
 
 from scout.resources import transcripts37_path as transcripts37_path
 from scout.resources import transcripts38_path as transcripts38_path
@@ -28,8 +27,6 @@ from scout.demo.resources import (
     hgnc_reduced_path, exac_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path, 
     mim2gene_reduced_path, genemap2_reduced_path, hpogenes_reduced_path, hpo_to_genes_reduced_path,
     hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path, madeline_path)
-
-from scout.utils.requests import (fetch_mim_files)
 
 # Gene panel
 from scout.demo import (panel_path, clinical_snv_path, clinical_sv_path,
@@ -48,6 +45,8 @@ from scout.load import (load_hgnc_genes, load_hpo, load_scout)
 from scout.utils.handle import get_file_handle
 
 from scout.utils.link import link_genes
+
+from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes)
 
 LOG = logging.getLogger(__name__)
 
@@ -123,6 +122,9 @@ def database(context, institute_name, user_name, user_mail, api_key):
 
     adapter.add_user(user_obj)
     
+    # Fetch the genes to hpo information
+    hpo_genes = fetch_hpo_genes()
+    
     # Load the genes and transcripts
     genes37 = link_genes(
         ensembl_lines=get_file_handle(transcripts37_path),
@@ -130,7 +132,7 @@ def database(context, institute_name, user_name, user_mail, api_key):
         exac_lines=get_file_handle(exac_path),
         mim2gene_lines=mim_files['mim2genes'],
         genemap_lines=mim_files['genemap2'],
-        hpo_lines=get_file_handle(hpogenes_path),
+        hpo_lines=hpo_genes,
     )
 
     load_hgnc_genes(adapter, genes37, build='37')
@@ -141,7 +143,7 @@ def database(context, institute_name, user_name, user_mail, api_key):
         exac_lines=get_file_handle(exac_path),
         mim2gene_lines=mim_files['mim2genes'],
         genemap_lines=mim_files['genemap2'],
-        hpo_lines=get_file_handle(hpogenes_path),
+        hpo_lines=hpo_genes,
     )
 
     load_hgnc_genes(adapter, genes38, build='38')
@@ -149,7 +151,6 @@ def database(context, institute_name, user_name, user_mail, api_key):
     load_hpo(
         adapter=adapter,
         disease_lines=mim_files['genemap2'],
-        hpo_disease_lines=get_file_handle(hpo_phenotype_to_terms_path),
     )
 
     LOG.info("Creating indexes")
