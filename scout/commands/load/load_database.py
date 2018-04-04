@@ -17,7 +17,6 @@ from .case import case as case_command
 
 from .institute import institute as institute_command
 from .hpo import hpo as hpo_command
-from .genes import genes as genes_command
 from .panel import panel as panel_command
 from .research import research as research_command
 from .disease import diseases as disease_command
@@ -108,9 +107,7 @@ def report(context, case_id, report_path):
 
 load.add_command(case_command)
 load.add_command(institute_command)
-load.add_command(genes_command)
 load.add_command(region)
-load.add_command(hpo_command)
 load.add_command(panel_command)
 load.add_command(user)
 load.add_command(research_command)
