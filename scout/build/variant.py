@@ -115,6 +115,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             # Database options:
             gene_lists = list,
             manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
+            dismiss_variant = list,
 
             acmg_evaluation = str, # choices=ACMG_TERMS
         )
