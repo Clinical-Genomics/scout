@@ -16,8 +16,7 @@ from scout.adapter.client import get_connection
 from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
 
 # Import the resources to setup scout
-from scout.resources import (hgnc_path, exac_path, mim2gene_path,
-                             genemap2_path, hpogenes_path,
+from scout.resources import (hgnc_path, exac_path, hpogenes_path,
                              hpodisease_path, hpo_phenotype_to_terms_path)
 
 from scout.resources import transcripts37_path as transcripts37_path
@@ -25,13 +24,13 @@ from scout.resources import transcripts38_path as transcripts38_path
 
 ### Import demo files ###
 # Resources
-from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path,
-            transcripts37_reduced_path, transcripts38_reduced_path, mim2gene_reduced_path,
-            genemap2_reduced_path, hpogenes_reduced_path, hpo_to_genes_reduced_path, 
-            hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path,
-            madeline_path)
+from scout.demo.resources import (
+    hgnc_reduced_path, exac_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path, 
+    mim2gene_reduced_path, genemap2_reduced_path, hpogenes_reduced_path, hpo_to_genes_reduced_path,
+    hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path, madeline_path)
 
-from scout.utils.requests import fetch_mim_files
+from scout.utils.requests import (fetch_mim_files)
+
 # Gene panel
 from scout.demo import (panel_path, clinical_snv_path, clinical_sv_path,
                         research_snv_path, research_sv_path)
@@ -47,15 +46,25 @@ from scout.build import (build_institute, build_case, build_panel, build_variant
 from scout.load import (load_hgnc_genes, load_hpo, load_scout)
 
 from scout.utils.handle import get_file_handle
+
 from scout.utils.link import link_genes
 
 LOG = logging.getLogger(__name__)
+
+def abort_if_false(ctx, param, value):
+    if not value:
+        ctx.abort()
 
 @click.command('database', short_help='Setup a basic scout instance')
 @click.option('-i', '--institute-name', type=str)
 @click.option('-u', '--user-name', type=str)
 @click.option('-m', '--user-mail', type=str)
 @click.option('--api-key', help='Specify the api key')
+@click.option('--yes', 
+    is_flag=True, 
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='This will delete existing database, do you wish to continue?')
 @click.pass_context
 def database(context, institute_name, user_name, user_mail, api_key):
     """Setup a scout database"""
@@ -84,13 +93,14 @@ def database(context, institute_name, user_name, user_mail, api_key):
 
     adapter = context.obj['adapter']
 
-    LOG.info("Setting up database %s", context.obj['mongodb'])
     LOG.info("Deleting previous database")
     for collection_name in adapter.db.collection_names():
         if not collection_name.startswith('system'):
             LOG.info("Deleting collection %s", collection_name)
             adapter.db.drop_collection(collection_name)
     LOG.info("Database deleted")
+
+    LOG.info("Setting up database %s", context.obj['mongodb'])
 
     # Build a institute with id institute_name
     institute_obj = build_institute(
