@@ -31,6 +31,7 @@ from scout.demo.resources import (hgnc_reduced_path, exac_reduced_path,
             hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path,
             madeline_path)
 
+from scout.utils.requests import fetch_mim_files
 # Gene panel
 from scout.demo import (panel_path, clinical_snv_path, clinical_sv_path,
                         research_snv_path, research_sv_path)
@@ -54,11 +55,29 @@ LOG = logging.getLogger(__name__)
 @click.option('-i', '--institute-name', type=str)
 @click.option('-u', '--user-name', type=str)
 @click.option('-m', '--user-mail', type=str)
+@click.option('--api-key', help='Specify the api key')
 @click.pass_context
-def database(context, institute_name, user_name, user_mail):
+def database(context, institute_name, user_name, user_mail, api_key):
     """Setup a scout database"""
     LOG.info("Running scout setup database")
 
+    # Fetch the omim information
+    api_key = api_key or context.obj.get('omim_api_key')
+    if not api_key:
+        LOG.warning("Please provide a omim api key to load the omim gene panel")
+        context.abort()
+
+    try:
+        mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
+    except Exception as err:
+        LOG.warning(err)
+        context.abort()
+    
+    # for fn in mim_files:
+    #     click.echo("{0}: {1}".format(fn, type(mim_files[fn])))
+    #
+    # context.abort()
+    
     institute_name = institute_name or context.obj['institute_name']
     user_name = user_name or context.obj['user_name']
     user_mail = user_mail or context.obj['user_mail']
@@ -93,14 +112,14 @@ def database(context, institute_name, user_name, user_mail):
             )
 
     adapter.add_user(user_obj)
-
+    
     # Load the genes and transcripts
     genes37 = link_genes(
         ensembl_lines=get_file_handle(transcripts37_path),
         hgnc_lines=get_file_handle(hgnc_path),
         exac_lines=get_file_handle(exac_path),
-        mim2gene_lines=get_file_handle(mim2gene_path),
-        genemap_lines=get_file_handle(genemap2_path),
+        mim2gene_lines=mim_files['mim2genes'],
+        genemap_lines=mim_files['genemap2'],
         hpo_lines=get_file_handle(hpogenes_path),
     )
 
@@ -110,8 +129,8 @@ def database(context, institute_name, user_name, user_mail):
         ensembl_lines=get_file_handle(transcripts38_path),
         hgnc_lines=get_file_handle(hgnc_path),
         exac_lines=get_file_handle(exac_path),
-        mim2gene_lines=get_file_handle(mim2gene_path),
-        genemap_lines=get_file_handle(genemap2_path),
+        mim2gene_lines=mim_files['mim2genes'],
+        genemap_lines=mim_files['genemap2'],
         hpo_lines=get_file_handle(hpogenes_path),
     )
 
@@ -119,7 +138,7 @@ def database(context, institute_name, user_name, user_mail):
 
     load_hpo(
         adapter=adapter,
-        disease_lines=get_file_handle(genemap2_path),
+        disease_lines=mim_files['genemap2'],
         hpo_disease_lines=get_file_handle(hpo_phenotype_to_terms_path),
     )
 
