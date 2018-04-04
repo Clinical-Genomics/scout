@@ -14,7 +14,7 @@ from pprint import pprint as pp
 LOG = logging.getLogger(__name__)
 
 
-def load_hpo(adapter, hpo_lines, disease_lines, hpo_disease_lines):
+def load_hpo(adapter, disease_lines, hpo_disease_lines, hpo_lines=None, hpo_gene_lines=None):
     """Load the hpo terms and hpo diseases into database
     
     Args:
@@ -24,7 +24,15 @@ def load_hpo(adapter, hpo_lines, disease_lines, hpo_disease_lines):
     """
     alias_genes = adapter.genes_by_alias()
     
-    load_hpo_terms(adapter, hpo_lines, alias_genes)
+    # Fetch the hpo terms if no file
+    if not hpo_lines:
+        hpo_lines = fetch_hpo_terms()
+
+    # Fetch the hpo gene information if no file
+    if not hpo_gene_lines:
+        hpo_gene_lines = fetch_hpo_to_genes()
+    
+    load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
     
     load_disease_terms(adapter, disease_lines, alias_genes, hpo_disease_lines)
 
@@ -42,9 +50,11 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     # Store the hpo terms
     hpo_terms = {}
     
+    # Fetch the hpo terms if no file
     if not hpo_lines:
         hpo_lines = fetch_hpo_terms()
     
+    # Fetch the hpo gene information if no file
     if not hpo_gene_lines:
         hpo_gene_lines = fetch_hpo_to_genes()
 
@@ -70,6 +80,9 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
 
         hgnc_id = gene_info['true']
 
+        if hpo_id not in hpo_terms:
+            continue
+
         hpo_term = hpo_terms[hpo_id]
 
         if not 'genes' in hpo_term:
@@ -82,7 +95,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     LOG.info("Loading the hpo terms...")
     for nr_terms, hpo_id in enumerate(hpo_terms):
         hpo_info = hpo_terms[hpo_id]
-        hpo_obj = build_hpo_term(hpo_info, genes)
+        hpo_obj = build_hpo_term(hpo_info)
         
         adapter.load_hpo_term(hpo_obj)
     
