@@ -43,7 +43,7 @@ class IndexHandler(object):
             for index in indexes:
                 index_name = index.document.get('name')
                 if index_name in existing_indexes:
-                    log.info("Deleting old index: %s" % index_name)
+                    LOG.info("Deleting old index: %s" % index_name)
                     self.db[collection_name].drop_index(index_name)
             LOG.info("creating indexes for {0} collection: {1}".format(
                 collection_name,
