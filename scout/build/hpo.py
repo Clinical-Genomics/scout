@@ -1,8 +1,8 @@
 import logging
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
-def build_hpo_term(hpo_info, alias_genes={}):
+def build_hpo_term(hpo_info):
     """Build a hpo_term object
     
     Check that the information is correct and add the correct hgnc ids to the 
@@ -10,15 +10,11 @@ def build_hpo_term(hpo_info, alias_genes={}):
     
         Args:
             hpo_info(dict)
-            alias_genes(dict): {
-                    <alias_symbol>: {
-                                        'true': hgnc_id or None,
-                                        'ids': [<hgnc_id>, ...]}}
-    
+        
         Returns:
             hpo_obj(dict)
     
-        hpo_term = dict(
+        hpo_obj = dict(
             _id = str, # Same as hpo_id
            hpo_id = str, # Required
            description = str,
@@ -37,24 +33,16 @@ def build_hpo_term(hpo_info, alias_genes={}):
     # Set the id to be the hpo terms id
     hpo_obj['_id'] = hpo_obj['hpo_id'] = hpo_id
 
-    log.debug("Building hpo term %s", hpo_id)
+    LOG.debug("Building hpo term %s", hpo_id)
 
+    # Add description to HPO term
     hpo_obj['description'] = hpo_info.get('description')
 
-    hgnc_ids = set()
-    for hgnc_symbol in hpo_info.get('hgnc_symbols', []):
-        ## TODO need to consider genome build here?
-        if hgnc_symbol in alias_genes:
-            # If the symbol identifies a unique gene we add that
-            if alias_genes[hgnc_symbol]['true']:
-                hgnc_ids.add(alias_genes[hgnc_symbol]['true'])
-            else:
-                for hgnc_id in alias_genes[hgnc_symbol]['ids']:
-                    hgnc_ids.add(hgnc_id)
-        else:
-            log.debug("Gene symbol %s could not be found in database", hgnc_symbol)
+    hgnc_ids = hpo_info.get('genes', set())
     
-    hpo_obj['genes'] = list(hgnc_ids)
+    # Add links to hgnc genes if any
+    if hgnc_ids:
+        hpo_obj['genes'] = list(hgnc_ids)
     
     return hpo_obj
 

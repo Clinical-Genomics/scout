@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def parse_hpo_phenotype(hpo_line):
@@ -81,7 +81,7 @@ def parse_hpo_phenotypes(hpo_lines):
         }
     """
     hpo_terms = {}
-    logger.info("Parsing hpo phenotypes...")
+    LOG.info("Parsing hpo phenotypes...")
     for index, line in enumerate(hpo_lines):
         if index > 0:
             hpo_info = parse_hpo_phenotype(line)
@@ -95,7 +95,7 @@ def parse_hpo_phenotypes(hpo_lines):
                     'description': hpo_info['description'],
                     'hgnc_symbols': [hgnc_symbol]
                 }
-    logger.info("Parsing done.")
+    LOG.info("Parsing done.")
     return hpo_terms
 
 def parse_hpo_diseases(hpo_lines):
@@ -108,7 +108,7 @@ def parse_hpo_diseases(hpo_lines):
             diseases(dict): A dictionary with mim numbers as keys
     """
     diseases = {}
-    logger.info("Parsing hpo diseases...")
+    LOG.info("Parsing hpo diseases...")
     for index, line in enumerate(hpo_lines):
         if index > 0:
             disease_info = parse_hpo_disease(line)
@@ -141,8 +141,31 @@ def parse_hpo_diseases(hpo_lines):
                         'hpo_terms': hpo_terms,
                     }
 
-    logger.info("Parsing done.")
+    LOG.info("Parsing done.")
     return diseases
+    
+
+def parse_hpo_to_genes(hpo_lines):
+    """Parse the map from hpo term to hgnc symbol
+    
+    Args:
+        lines(iterable(str)):
+    
+    Yields:
+        hpo_to_gene(dict): A dictionary with information on how a term map to a hgnc symbol
+    """
+    for line in hpo_lines:
+        if line.startswith('#') or len(line) < 1:
+            continue
+        line = line.rstrip().split('\t')
+        hpo_id = line[0]
+        hgnc_symbol = line[3]
+        
+        yield {
+            'hpo_id': hpo_id,
+            'hgnc_symbol': hgnc_symbol
+        }
+    
     
 
 def parse_hpo_genes(hpo_lines):
@@ -154,7 +177,7 @@ def parse_hpo_genes(hpo_lines):
         Returns:
             diseases(dict): A dictionary with hgnc symbols as keys
     """
-    logger.info("Parsing HPO genes ...")
+    LOG.info("Parsing HPO genes ...")
     genes = {}
     for index, line in enumerate(hpo_lines):
         if index > 0:
@@ -182,7 +205,7 @@ def parse_hpo_genes(hpo_lines):
                 gene['x'] = True
             if description == 'X-linked inheritance':
                 gene['y'] = True
-    logger.info("Parsing done.")
+    LOG.info("Parsing done.")
     return genes
     
 
@@ -203,6 +226,39 @@ def get_incomplete_penetrance_genes(hpo_lines):
         if genes[hgnc_symbol].get('incomplete_penetrance'):
             incomplete_penetrance_genes.add(hgnc_symbol)
     return incomplete_penetrance_genes
+
+def parse_hpo_obo(hpo_lines):
+    """Parse a .obo formated hpo line"""
+    term = {}
+    for line in hpo_lines:
+        if len(line) == 0:
+            continue
+        line = line.rstrip()
+        # New term starts with [Term]
+        if line == '[Term]':
+            if term:
+                yield term
+            term = {}
+        
+        elif line.startswith('id'):
+            term['hpo_id'] = line[4:]
+
+        elif line.startswith('name'):
+            term['description'] = line[6:]
+
+        elif line.startswith('alt_id'):
+            if 'aliases' not in term:
+                term['aliases'] = []
+            term['aliases'].append(line[8:])
+        
+        elif line.startswith('is_a'):
+            if 'ancestors' not in term:
+                term['ancestors'] = []
+            term['ancestors'].append(line[6:16])
+
+    if term:
+        yield term
+        
 
 if __name__ == "__main__":
     import sys
