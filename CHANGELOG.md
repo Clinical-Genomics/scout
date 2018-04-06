@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Filter for spidex scores
+- All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
+- New command `scout update hpo`
+
+### Removed
+
+- All source files for HPO information, this is instead fetched directly from source
+
 ## [3.0.0]
 ### Fixed
 - hide pedigree panel unless it exists
