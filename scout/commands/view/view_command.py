@@ -256,8 +256,8 @@ def hpo(context):
     click.echo("hpo_id\tdescription")
     for hpo_obj in adapter.hpo_terms():
         click.echo("{0}\t{1}".format(
-            hpo_obj.hpo_id,
-            hpo_obj.description,
+            hpo_obj['hpo_id'],
+            hpo_obj['description'],
         ))
 
 

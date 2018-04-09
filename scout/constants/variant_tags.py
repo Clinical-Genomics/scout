@@ -112,3 +112,74 @@ MANUAL_RANK_OPTIONS = {
         'description': 'Phenotype not related to disease',
     },
 }
+
+DISMISS_VARIANT_OPTIONS = {
+    2: {
+        'label': 'common public',
+        'description': 'Too common in public databases.',
+        'evidence': ['freq']
+        },
+    3: {
+        'label': 'common local',
+        'description': 'Too common in local databases.',
+        'evidence': ['freq']
+        },
+    5: {
+        'label': 'irrelevant phenotype',
+        'description': 'Phenotype not relevant.',
+        'evidence': ['OMIM']
+        },
+    7: {
+        'label': 'inconsistent inheritance pattern',
+        'description': 'Inheritance pattern not relevant.',
+        'evidence': ['OMIM', 'GT', 'inheritance_model']
+        },
+    11: {
+        'label': 'no plausible compound',
+        'description': 'No plausible compound - AR disease.',
+        'evidence': ['Compounds']
+        },
+    13: {
+        'label': 'not in disease transcript',
+        'description': 'Not in transcript relevant to disease.',
+        'evidence': ['transcript']
+        },
+    17: {
+        'label': 'not in refseq transcript',
+        'description':
+            'Not in a RefSeq transcript - could not be determined relevant.',
+        'evidence': ['transcript']
+        },
+    19: {
+        'label': 'splicing unaffected',
+        'description': 'Does not appear to affect splicing.',
+        'evidence': ['spidex']
+        },
+    23: {
+        'label': 'inherited from unaffected',
+        'description': 'Inherited from an unaffected individual.',
+        'evidence': ['GT', 'pedigree']
+        },
+    29: {
+        'label': 'technical issues',
+        'description': 'Technical issues - likely false positive.',
+        'evidence': ['GT', 'pileup']
+        },
+    31: {
+        'label': 'no protein function',
+        'description': 
+        'Not likely to alter protein function - eg benign polyQ expansion.',
+        'evidence': ['CADD', 'conservation']
+        },
+    37: {
+        'label': 'reputation benign',
+        'description': 'Reputable source classified benign.',
+        'evidence': ['clinvar']
+        },
+    41: {
+        'label': 'common variation type',
+        'description': 
+        'Found in a gene with much benign such (e.g. missense) variation.',
+        'evidence': ['type']
+        }
+}

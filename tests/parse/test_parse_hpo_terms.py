@@ -1,4 +1,4 @@
-from scout.parse.hpo import (parse_hpo_phenotype, parse_hpo_phenotypes)
+from scout.parse.hpo import (parse_hpo_phenotype, parse_hpo_phenotypes, parse_hpo_obo)
 
 def test_parse_hpo_line():
     ## GIVEN a line that describes a hpo term
@@ -24,17 +24,32 @@ def test_parse_hpo_lines():
     assert "HP:0000878" in hpo_dict
     assert set(hpo_dict['HP:0000878']['hgnc_symbols']) == set(['B3GALT6', 'RBBP8'])
 
-def test_parse_hpo_term(hpo_terms_handle):
-    header = next(hpo_terms_handle)
-    first_term = next(hpo_terms_handle)
-    hpo_info = parse_hpo_phenotype(first_term)
+def test_parse_hpo_obo():
+    hpo_info = [
+        "[Term]",
+        "id: HP:0000003",
+        "name: Multicystic kidney dysplasia",
+        "alt_id: HP:0004715",
+        "def: Multicystic dysplasia of the kidney is characterized by multiple cysts of varying size in the kidney and the absence of a normal pelvicaliceal system. The condition is associated with ureteral or ureteropelvic atresia, and the affected kidney is nonfunctional. [HPO:curators]",
+        "comment: Multicystic kidney dysplasia is the result of abnormal fetal renal development in which the affected kidney is replaced by multiple cysts and has little or no residual function. The vast majority of multicystic kidneys are unilateral. Multicystic kidney can be diagnosed on prenatal ultrasound.",
+        'synonym: "Multicystic dysplastic kidney" EXACT []',
+        'synonym: "Multicystic kidneys" EXACT []',
+        'synonym: "Multicystic renal dysplasia" EXACT []',
+        "xref: MSH:D021782",
+        "xref: SNOMEDCT_US:204962002",
+        "xref: SNOMEDCT_US:82525005",
+        "xref: UMLS:C3714581",
+        "is_a: HP:0000107 ! Renal cyst",
+        
+    ]
+    hpo_terms = parse_hpo_obo(hpo_info)
     
-    assert hpo_info['hpo_id'] == first_term.rstrip().split('\t')[0]
-    assert hpo_info['description'] == first_term.rstrip().split('\t')[1]
-    assert hpo_info['hgnc_symbol'] == first_term.rstrip().split('\t')[3]
+    for hpo_term in hpo_terms:
+        assert hpo_term['hpo_id'] == "HP:0000003"
+        assert hpo_term['description'] == "Multicystic kidney dysplasia"
 
 def test_parse_hpo_terms(hpo_terms_handle):
-    hpo_terms = parse_hpo_phenotypes(hpo_terms_handle)
+    hpo_terms = parse_hpo_obo(hpo_terms_handle)
     
-    for hpo_id in hpo_terms:
-        assert hpo_terms[hpo_id]['hpo_id'] == hpo_id
+    for hpo_term in hpo_terms:
+        assert hpo_term['hpo_id']

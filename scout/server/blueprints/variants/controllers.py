@@ -5,7 +5,8 @@ import os.path
 from flask import url_for, flash
 from flask_mail import Message
 
-from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS,
+from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
+                             ACMG_OPTIONS,DISMISS_VARIANT_OPTIONS,
                              ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
@@ -76,6 +77,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
         'variant': variant_obj,
         'overlapping_snvs': overlapping_snvs,
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
     }
 
 
@@ -265,6 +267,7 @@ def variant(store, institute_obj, case_obj, variant_id):
         'overlapping_svs': (parse_variant(store, institute_obj, case_obj, variant_obj) for
                             variant_obj in store.overlapping(variant_obj)),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
         'ACMG_OPTIONS': ACMG_OPTIONS,
         'evaluations': evaluations,
     }

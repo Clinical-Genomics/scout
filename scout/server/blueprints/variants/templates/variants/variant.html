@@ -290,10 +290,29 @@
         <label>Variant tag</label>
         <div class="row">
           <div class="col-xs-8">
-            <select name="manual_rank"class="form-control">
+            <select name="manual_rank" class="form-control">
               <option value="-1">Select a tag...</option>
               {% for rank, data in manual_rank_options.items() %}
                 <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
+                  {{ data.label }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button type="submit" class="btn btn-default form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-body">
+      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+        <label>Dismiss variant</label>
+        <div class="row">
+          <div class="col-xs-8">
+            <select multiple name="dismiss_variant" class="form-control">
+              {% for rank, data in dismiss_variant_options.items() %}
+                <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                   {{ data.label }}
                 </option>
               {% endfor %}
@@ -1144,10 +1163,15 @@
 {% block scripts %}
   {{ super() }}
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
       $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
+      });
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
       });
     })
   </script>

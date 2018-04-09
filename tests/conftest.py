@@ -30,7 +30,7 @@ from scout.load.hpo import load_hpo
 
 # These are the reduced data files
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path,
-exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path,
+exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path)
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path)
@@ -791,6 +791,12 @@ def hpo_genes_file(request):
     return hpogenes_reduced_path
 
 @pytest.fixture
+def hpo_to_genes_file(request):
+    """Get the path to the hpo to genes file"""
+    print('')
+    return hpo_to_genes_reduced_path
+
+@pytest.fixture
 def hpo_terms_file(request):
     """Get the path to the hpo terms file"""
     print('')
@@ -906,6 +912,12 @@ def hpo_genes_handle(request, hpo_genes_file):
     """Get a file handle to a hpo gene file"""
     print('')
     return get_file_handle(hpo_genes_file)
+
+@pytest.fixture
+def hpo_to_genes_handle(request, hpo_to_genes_file):
+    """Get a file handle to a hpo to gene file"""
+    print('')
+    return get_file_handle(hpo_to_genes_file)
 
 @pytest.fixture
 def hpo_disease_handle(request, hpo_disease_file):

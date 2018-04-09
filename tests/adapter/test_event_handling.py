@@ -191,6 +191,43 @@ def test_unmark_causative(variant_database, institute_obj, case_obj, user_obj):
     # THEN two new events should have been created, one for the case and one for the variant
     assert adapter.event_collection.find().count() == 4
 
+def test_dismiss_variant(variant_database, institute_obj, case_obj, user_obj):
+    adapter = variant_database
+    logger.info("Test dismiss variant")
+
+    # GIVEN a variant db with at least one variant, and no events
+    assert adapter.variant_collection.find().count() > 0 
+    assert adapter.event_collection.find().count() == 0
+
+    variant = adapter.variant_collection.find_one()
+
+    assert variant.get('dismiss_variant') == None
+
+    # WHEN dismissing a variant
+    institute = adapter.institute(
+        institute_id = institute_obj['internal_id']
+        )
+    case = adapter.case(
+        case_id = case_obj['_id']
+        )
+    user = adapter.user(
+        email = user_obj['email']
+        )
+
+    link = 'testDismissMyVariant'
+    
+    dismiss_reason = [3, 5, 7]
+
+    updated_variant = adapter.update_dismiss_variant(institute, case, user,
+                          link, variant, dismiss_reason)
+        
+    # THEN a dismiss event should be created
+    event_obj = adapter.event_collection.find_one()
+    assert event_obj['verb'] == 'dismiss_variant'
+
+    # THEN the variant should be dismissed
+    assert updated_variant.get('dismiss_variant') == dismiss_reason
+
 def test_update_synopsis(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     synopsis = "The updated synopsis"

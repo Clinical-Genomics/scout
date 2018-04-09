@@ -4,6 +4,7 @@
 hpo_term = dict(
     _id = str, # Same as hpo_id
    hpo_id = str, # Required
+   aliases = list, # List of aliases
    description = str,
    genes = list, # List with integers that are hgnc_ids 
 )
