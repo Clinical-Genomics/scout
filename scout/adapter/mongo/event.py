@@ -659,6 +659,54 @@ class EventHandler(object):
         )
         return updated_variant
 
+    def order_unsanger(self, institute, case, user, link, variant):
+        """Create an event for cancellation of an order sanger for a variant
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            variant (dict): A variant object
+
+        Returns:
+            updated_variant(dict)
+        """
+        logger.info("Creating event for cancellation of ordering sanger for variant"\
+                    " {0}".format(variant['display_name']))
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id':variant['_id']},
+            {'$set': {'sanger_ordered': False}},
+            return_document = pymongo.ReturnDocument.AFTER
+        )
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='unsanger',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        logger.info("Creating event for cancellation of ordering sanger for case"\
+                    " {0}".format(case['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='unsanger',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+        return updated_variant
+
     def validate(self, institute, case, user, link, variant, validate_type):
         """Mark validation status for a variant.
 
@@ -876,7 +924,7 @@ class EventHandler(object):
         """Create an event for updating the manual dismiss variant entry
 
           This function will create a event and update the dismiss variant
-          field of the variant. 
+          field of the variant.
 
         Arguments:
             institute (dict): A Institute object
