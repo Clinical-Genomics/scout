@@ -272,36 +272,42 @@
                         <select id="Mode of inheritance_{{causative._id}}" name="Mode of inheritance_{{causative._id}}">
                           {% if 'AR_hom' in causative.genetic_models or 'AR_hom_dn' in causative.genetic_models or 'AR_comp' in causative.genetic_models or 'AR_comp_d' in causative.genetic_models %}
                             <option value="Autosomal recessive inheritance" selected>Autosomal recessive inheritance</option>
+                            <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance">X-linked inheritance</option>
                             <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
                             <option value="Y-linked inheritance">Y-linked inheritance</option>
                           {% elif 'XR' in causative.genetic_models or 'XR_dn' in causative.genetic_models %}
                             <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance" selected>X-linked inheritance</option>
                             <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
                             <option value="Y-linked inheritance">Y-linked inheritance</option>
                           {% elif 'XD' in causative.genetic_models or 'XD_dn' in causative.genetic_models %}
                             <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance">X-linked inheritance</option>
                             <option value="Sex-limited autosomal dominant" selected>Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
                             <option value="Y-linked inheritance">Y-linked inheritance</option>
                           {% elif causative.chromosome == 'MT' %}
                             <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance">X-linked inheritance</option>
                             <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance" selected>Mitochondrial inheritance</option>
                             <option value="Y-linked inheritance">Y-linked inheritance</option>
                           {% elif causative.chromosome == 'Y' %}
                             <option value="Autosomal recessive inheritance">Autosomal recessive inheritance</option>
+                            <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance">X-linked inheritance</option>
                             <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
                             <option value="Y-linked inheritance" selected>Y-linked inheritance</option>
                           {% else %}
                             <option value="Autosomal recessive inheritance" selected>Autosomal recessive inheritance</option>
+                            <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance">X-linked inheritance</option>
                             <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
