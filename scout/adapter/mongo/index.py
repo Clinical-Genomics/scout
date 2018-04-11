@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 from scout.constants import INDEXES
 
@@ -21,7 +21,7 @@ class IndexHandler(object):
         
         indexes = []
 
-        for collection_name in self.db.collection_names():
+        for collection_name in self.collections():
             if collection and collection != collection_name:
                 continue
             for index_name in self.db[collection_name].index_information():
@@ -30,10 +30,11 @@ class IndexHandler(object):
         return indexes
 
     def load_indexes(self):
-        """Add a hpo object
-
-        Arguments:
-            hpo_obj(dict)
+        """Add the proper indexes to the scout instance.
+        
+        All indexes are specified in scout/constants/indexes.py
+        
+        If this method is utilised when new indexes are defined those should be added
 
         """
         for collection_name in INDEXES:
@@ -42,11 +43,12 @@ class IndexHandler(object):
             for index in indexes:
                 index_name = index.document.get('name')
                 if index_name in existing_indexes:
-                    log.info("Deleting old index: %s" % index_name)
+                    LOG.info("Deleting old index: %s" % index_name)
                     self.db[collection_name].drop_index(index_name)
-            log.info("creating indexes: %s" % ', '.join([
-                index.document.get('name') for index in indexes
-            ]))
+            LOG.info("creating indexes for {0} collection: {1}".format(
+                collection_name,
+                ', '.join([index.document.get('name') for index in indexes])
+                ))
             self.db[collection_name].create_indexes(indexes)
         
 

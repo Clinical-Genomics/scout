@@ -1,7 +1,7 @@
 from pymongo import (IndexModel, ASCENDING, DESCENDING)
 
 INDEXES = {
-    'hgnc_collection': [
+    'hgnc_gene': [
         IndexModel([
             ('build', ASCENDING),
             ('chromosome', ASCENDING)],
@@ -15,7 +15,7 @@ INDEXES = {
             ('aliases', ASCENDING)],
             name="build_aliases"),
     ],
-    'variant_collection': [
+    'variant': [
         IndexModel([
             ('case_id', ASCENDING),
             ('category', ASCENDING),
@@ -54,5 +54,10 @@ INDEXES = {
             ('end', ASCENDING),
         ],
             name="caseid_category_chromosome_start_end"),
+    ],
+    'hpo_term': [
+        IndexModel([
+            ('description', ASCENDING)],
+            name="description"),
     ],
 }

@@ -23,6 +23,20 @@ from .file_types import FILE_TYPE_MAP
 
 cytobands_handle = get_file_handle(cytobands_path)
 
+COLLECTIONS = [
+    'hgnc_gene',
+    'user',
+    'whitelist',
+    'institute',
+    'event',
+    'case',
+    'gene_panel',
+    'hpo_term',
+    'disease_term',
+    'variant',
+    'acmg',
+]
+
 BUILDS = ['37', '38']
 
 CYTOBANDS = parse_cytoband(cytobands_handle)

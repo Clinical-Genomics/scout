@@ -28,8 +28,9 @@ from scout.resources import (hgnc_path, exac_path, transcripts37_path, transcrip
 
 from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
+from scout.utils.requests import fetch_mim_files
 
-from scout.utils.requests import fetch_hpo_genes
+from scout.utils.requests import (fetch_hpo_genes, fetch_hpo_genes)
 
 LOG = logging.getLogger(__name__)
 
@@ -40,11 +41,11 @@ LOG = logging.getLogger(__name__)
 )
 @click.option('--api-key', help='Specify the api key')
 @click.pass_context
-def genes(ctx, build, api_key):
+def genes(context, build, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
-    adapter = ctx.obj['adapter']
+    adapter = context.obj['adapter']
 
     # Fetch the omim information
     api_key = api_key or context.obj.get('omim_api_key')
@@ -87,8 +88,8 @@ def genes(ctx, build, api_key):
             ensembl_lines=ensembl_handle,
             hgnc_lines=hgnc_handle,
             exac_lines=exac_handle,
-            mim2gene_lines=mim_files['mim2gene'],
-            genemap_lines=mim_files['genemap'],
+            mim2gene_lines=mim_files['mim2genes'],
+            genemap_lines=mim_files['genemap2'],
             hpo_lines=hpo_genes
         )
         

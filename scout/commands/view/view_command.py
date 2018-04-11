@@ -10,6 +10,18 @@ from .case import cases
 
 LOG = logging.getLogger(__name__)
 
+@click.command('collections', short_help='Display all collections')
+@click.pass_context
+def collections(context):
+    """Show all collections in the database"""
+    LOG.info("Running scout view collections")
+    
+    adapter = context.obj['adapter']
+    
+    for collection_name in adapter.collections():
+        click.echo(collection_name)
+
+
 @click.command('index', short_help='Display all indexes')
 @click.option('-n', '--collection-name')
 @click.pass_context
@@ -19,9 +31,11 @@ def index(context, collection_name):
     adapter = context.obj['adapter']
 
     i = 0
-    for index in adapter.indexes(collection_name):
-        click.echo(index)
-        i += 1
+    click.echo("collection\tindex")
+    for collection_name in adapter.collections():
+        for index in adapter.indexes(collection_name):
+            click.echo("{0}\t{1}".format(collection_name, index))
+            i += 1
 
     if i == 0:
         LOG.info("No indexes found")
@@ -281,3 +295,4 @@ view.add_command(aliases)
 view.add_command(individuals)
 view.add_command(index)
 view.add_command(intervals)
+view.add_command(collections)
