@@ -24,6 +24,20 @@ from .clinvar import (CLIVAR_HEADER, CLINVAR_OPTIONAL, CASEDATA_HEADER, CASEDATA
 
 cytobands_handle = get_file_handle(cytobands_path)
 
+COLLECTIONS = [
+    'hgnc_gene',
+    'user',
+    'whitelist',
+    'institute',
+    'event',
+    'case',
+    'gene_panel',
+    'hpo_term',
+    'disease_term',
+    'variant',
+    'acmg',
+]
+
 BUILDS = ['37', '38']
 
 CYTOBANDS = parse_cytoband(cytobands_handle)
