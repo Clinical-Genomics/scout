@@ -29,6 +29,8 @@ def parse_hpo_gene(hpo_line):
         Yields:
             hpo_info(dict)
     """
+    if not len(hpo_line) > 3:
+        return {}
     hpo_line = hpo_line.rstrip().split('\t')
     hpo_info = {}
     hpo_info['hgnc_symbol'] = hpo_line[1]
@@ -110,36 +112,35 @@ def parse_hpo_diseases(hpo_lines):
     diseases = {}
     LOG.info("Parsing hpo diseases...")
     for index, line in enumerate(hpo_lines):
-        if index > 0:
-            disease_info = parse_hpo_disease(line)
-            if disease_info:
-                disease_nr = disease_info['disease_nr']
-                hgnc_symbol = disease_info['hgnc_symbol']
-                hpo_term = disease_info['hpo_term']
-                source = disease_info['source']
-                disease_id = "{0}:{1}".format(source, disease_nr)
-                
-                if disease_id in diseases:
-                    if hgnc_symbol:
-                        diseases[disease_id]['hgnc_symbols'].add(hgnc_symbol)
-                    if hpo_term:
-                        diseases[disease_id]['hpo_terms'].add(hpo_term)
-                        
-                else:
-                    if hgnc_symbol:
-                        hgnc_symbols = set([hgnc_symbol])
-                    else:
-                        hgnc_symbols = set()
-                    if hpo_term:
-                        hpo_terms = set([hpo_term])
-                    else:
-                        hpo_terms = set()
-                    diseases[disease_id] = {
-                        'disease_nr': disease_nr,
-                        'source': source,
-                        'hgnc_symbols': hgnc_symbols,
-                        'hpo_terms': hpo_terms,
-                    }
+        # First line is a header
+        if index == 0:
+            continue
+        # Skip empty lines
+        if not len(line) > 3:
+            continue
+        # Parse the info
+        disease_info = parse_hpo_disease(line)
+        # Skip the line if there where no info
+        if not disease_info:
+            continue
+        disease_nr = disease_info['disease_nr']
+        hgnc_symbol = disease_info['hgnc_symbol']
+        hpo_term = disease_info['hpo_term']
+        source = disease_info['source']
+        disease_id = "{0}:{1}".format(source, disease_nr)
+        
+        if disease_id not in diseases:
+            diseases[disease_id] = {
+                'disease_nr': disease_nr,
+                'source': source,
+                'hgnc_symbols': set(),
+                'hpo_terms': set(),
+            }
+
+        if hgnc_symbol:
+            diseases[disease_id]['hgnc_symbols'].add(hgnc_symbol)
+        if hpo_term:
+            diseases[disease_id]['hpo_terms'].add(hpo_term)
 
     LOG.info("Parsing done.")
     return diseases

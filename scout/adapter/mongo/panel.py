@@ -89,8 +89,7 @@ class PanelHandler(object):
             if existing_panel['date'] == date_obj:
                 LOG.warning("There is no new version of OMIM")
                 return
-                
-        
+
         panel_data = {}
         panel_data['path'] = None
         panel_data['type'] = 'clinical'
