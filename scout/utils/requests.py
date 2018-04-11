@@ -237,10 +237,11 @@ def fetch_hgnc():
     Returns:
         hgnc_gene_lines(list(str))
     """
-    url = 'ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt'
+    file_name = "hgnc_complete_set.txt"
+    url = 'ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}'.format(file_name)
     LOG.info("Fetching HGNC genes")
     
-    hgnc_lines = request_file(url)
+    hgnc_lines = fetch_resource(url, file_name)
     
     return hgnc_lines
 
@@ -250,13 +251,13 @@ def fetch_exac_constraint():
     Returns:
         exac_lines(iterable(str))
     """
-
+    file_name = 'fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt' 
     url = ('ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint'
-           '/fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt')
+           '/{0}').format(file_name)
     
     LOG.info("Fetching ExAC genes")
     
-    exac_lines = request_file(url)
+    exac_lines = fetch_resource(url, file_name)
     
     return exac_lines
 

@@ -280,8 +280,8 @@ from scout.demo import panel_path
 
 from scout.parse.panel import parse_gene_panel
 
-# @click.group()
-@click.command()
+@click.group()
+# @click.command()
 @click.pass_context
 def setup(context):
     """

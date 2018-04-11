@@ -289,7 +289,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
             else:
                 genes[mim_nr] = entry
     
-    LOG.info("Numnber of genes without hgnc symbol %s", str(no_hgnc))
+    LOG.info("Number of genes without hgnc symbol %s", str(no_hgnc))
     
     for entry in parse_genemap2(genemap_lines):
         mim_number = entry['mim_number']

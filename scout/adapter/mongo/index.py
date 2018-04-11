@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-<<<<<<< HEAD
-LOG = logging.getLogger(__name__)
-
-=======
->>>>>>> New structure for transcripts and exons
 from scout.constants import INDEXES
 
 LOG = logging.getLogger(__name__)
