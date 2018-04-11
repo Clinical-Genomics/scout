@@ -180,31 +180,37 @@ def parse_hpo_genes(hpo_lines):
     LOG.info("Parsing HPO genes ...")
     genes = {}
     for index, line in enumerate(hpo_lines):
-        if index > 0:
-            gene_info = parse_hpo_gene(line)
-            hgnc_symbol = gene_info['hgnc_symbol']
-            description = gene_info['description']
-            if hgnc_symbol not in genes:
-                genes[hgnc_symbol] = {
-                    'hgnc_symbol': hgnc_symbol
-                }
-            gene = genes[hgnc_symbol]
-            if description == 'Incomplete penetrance':
-                gene['incomplete_penetrance'] = True
-            if description == 'Autosomal dominant inheritance':
-                gene['ad'] = True
-            if description == 'Autosomal recessive inheritance':
-                gene['ar'] = True
-            if description == 'Mithochondrial inheritance':
-                gene['mt'] = True
-            if description == 'X-linked dominant inheritance':
-                gene['xd'] = True
-            if description == 'X-linked recessive inheritance':
-                gene['xr'] = True
-            if description == 'Y-linked inheritance':
-                gene['x'] = True
-            if description == 'X-linked inheritance':
-                gene['y'] = True
+        # First line is header
+        if index == 0:
+            continue
+        if len(line) < 5:
+            continue
+        gene_info = parse_hpo_gene(line)
+        hgnc_symbol = gene_info['hgnc_symbol']
+        description = gene_info['description']
+        
+        if hgnc_symbol not in genes:
+            genes[hgnc_symbol] = {
+                'hgnc_symbol': hgnc_symbol
+            }
+        
+        gene = genes[hgnc_symbol]
+        if description == 'Incomplete penetrance':
+            gene['incomplete_penetrance'] = True
+        if description == 'Autosomal dominant inheritance':
+            gene['ad'] = True
+        if description == 'Autosomal recessive inheritance':
+            gene['ar'] = True
+        if description == 'Mithochondrial inheritance':
+            gene['mt'] = True
+        if description == 'X-linked dominant inheritance':
+            gene['xd'] = True
+        if description == 'X-linked recessive inheritance':
+            gene['xr'] = True
+        if description == 'Y-linked inheritance':
+            gene['x'] = True
+        if description == 'X-linked inheritance':
+            gene['y'] = True
     LOG.info("Parsing done.")
     return genes
     
