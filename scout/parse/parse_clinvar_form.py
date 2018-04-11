@@ -117,8 +117,67 @@ def get_casedata_lines(form_fields):
 
     return casedata_header,casedata_lines
 
-def parse_clinvar_submission():
-    """Parses the form from blueprints/variants/clinvar.html
-    and returns a dictionary with the fields to save to scout database
+def create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines):
     """
-    print("blablabla")
+    Creates a list of variants used for a clinvar submission. The returned list has the following format:
+    [
+        {
+            _id : "variant_1",
+            variant_id : "variant_1",
+            case_id : "case_id",
+            ..
+            form fields for variant 1
+            casedata: [
+                {
+                    form fields for casedata 1
+                },
+                {
+                    form fields for casedata 2
+                }
+                ..
+            ]
+        },
+        {
+            _id : "variant_2",
+            variant_id : "variant_2",
+            case_id : "case_id",
+            ..
+            form fields for variant 2
+            casedata: [
+                {
+                    form fields for casedata 1
+                },
+                {
+                    form fields for casedata 2
+                }
+                ..
+            ]
+        },
+    ]
+    """
+    submitted_vars= []
+    # variant header items become dictionary keys and variant lines dictionary values
+    for item in variant_lines: #each line is a variant
+
+        var_dictionary = {}
+        var_dictionary['_id']= item[0] #variant_id
+        field_counter = 0
+        for column in variant_header:
+            var_dictionary[column] = item[field_counter].strip('"')
+            field_counter += 1
+
+        # add casedata info to the submission object:
+        casedata = []
+        for line in casedata_lines: #for each subject in casedata:
+            if line[0] == item[0]:
+                casedata_obj = {}
+                field_counter=0
+                for column in casedata_header:
+                    casedata_obj[column] = line[field_counter].strip('"')
+                    field_counter += 1
+                casedata.append(casedata_obj)
+        if len(casedata) > 0:
+            var_dictionary['casedata'] = casedata
+        submitted_vars.append(var_dictionary)
+
+    return submitted_vars
