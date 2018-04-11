@@ -2,6 +2,7 @@
 import logging
 import os.path
 
+from datetime import date
 from flask import url_for, flash
 from flask_mail import Message
 
@@ -735,14 +736,15 @@ def cancer_variants(store, request_args, institute_id, case_name):
 def clinvar_export(store, institute_id, case_name, variant_id):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    causatives = [store.variant(variant_id) or variant_id for variant_id in
-                  case_obj.get('causatives', [])]
+    pinned = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('suspects', [])]
     variant_obj = store.variant(variant_id)
     return dict(
+        today = str(date.today()),
         institute=institute_obj,
         case=case_obj,
         variant=variant_obj,
-        causatives=causatives
+        pinned_vars=pinned
     )
 
 

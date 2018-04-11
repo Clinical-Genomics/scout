@@ -2,7 +2,7 @@
 import io
 import logging
 
-from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response
+from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response, session
 from werkzeug.datastructures import Headers
 from flask_login import current_user
 
@@ -12,12 +12,13 @@ from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
-from scout.parse.parse_clinvar_form import get_variant_lines, get_casedata_lines
+from scout.parse.parse_clinvar_form import get_variant_lines, get_casedata_lines, create_clinvar_submission_dict
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm
 
 log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
+
 
 
 @variants_bp.route('/<institute_id>/<case_name>/variants')
@@ -175,7 +176,7 @@ def sanger(institute_id, case_name, variant_id):
     except controllers.MissingSangerRecipientError:
         flash('No sanger recipients added to institute.', 'danger')
     return redirect(request.referrer)
-    
+
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/cancel_sanger', methods=['POST'])
 def cancel_sanger(institute_id, case_name, variant_id):
@@ -200,11 +201,15 @@ def clinvar(institute_id, case_name, variant_id):
         return data
     else:
         form_dict = request.form.to_dict(flat=False)
+
         variant_header, variant_lines = get_variant_lines(form_dict)
         casedata_header, casedata_lines = get_casedata_lines(form_dict)
-        data.update({'variant_header':variant_header, 'variant_lines':variant_lines, 'casedata_header':casedata_header, 'casedata_lines':casedata_lines, 'evaluation':request.form,})
-        return data
 
+        # create clinvar submission session object:
+        session['clinvar_submission'] = create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines)
+
+        data.update({'variant_header':variant_header, 'variant_lines':variant_lines, 'casedata_header':casedata_header, 'casedata_lines':casedata_lines, 'form':request.form,})
+        return data
 
 @variants_bp.route('/get_csv/', methods=['POST','GET'])
 def get_csv():
