@@ -36,7 +36,7 @@ def create_app(config_file=None, config=None):
     if config_file:
         app.config.from_pyfile(config_file)
 
-    current_log_level=logger.getEffectiveLevel()
+    current_log_level = logger.getEffectiveLevel()
     coloredlogs.install(level='DEBUG' if app.debug else current_log_level)
     configure_extensions(app)
     register_blueprints(app)
@@ -97,7 +97,6 @@ def register_blueprints(app):
 
 
 def register_filters(app):
-
     @app.template_filter()
     def human_decimal(number, ndigits=4):
         """Return a standard representation of a decimal number.
@@ -109,7 +108,7 @@ def register_filters(app):
         Return:
             str: humanized string of the decimal number
         """
-        min_number = 10**-ndigits
+        min_number = 10 ** -ndigits
 
         if number is None:
             # NaN

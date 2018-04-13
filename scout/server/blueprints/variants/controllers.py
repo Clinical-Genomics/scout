@@ -616,7 +616,7 @@ def unsanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender
         {gtcalls}
         <li><strong>Amino acid changes</strong></li>
         {tx_changes}
-        <li><strong>Order canceled by</strong>: {name}</li>
+        <li><strong>Order cancelled by</strong>: {name}</li>
       </ul>
     """.format(case_name=case_obj['display_name'],
                url=variant_link,
