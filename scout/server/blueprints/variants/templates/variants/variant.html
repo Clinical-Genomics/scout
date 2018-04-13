@@ -109,6 +109,12 @@
     {# Email setting must be setup #}
     {{ modal_sanger() }}
   {% endif %}
+
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    {{ modal_unsanger() }}
+  {% endif %}
+
 {% endblock %}
 
 {% macro sanger_button() %}
@@ -1072,7 +1078,7 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="submit" class="btn btn-primary">Send sanger order request</button>
           </div>
         </div>
       </div>
@@ -1096,7 +1102,7 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send</button>
+            <button type="submit" class="btn btn-primary">Send sanger cancellation request</button>
           </div>
         </div>
       </div>
