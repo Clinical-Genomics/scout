@@ -160,7 +160,7 @@ def create_clinvar_submission_dict(variant_header, variant_lines, casedata_heade
     for item in variant_lines: #each line is a variant
 
         var_dictionary = {}
-        var_dictionary['_id']= item[0] #variant_id
+        var_dictionary['_id']= item[0].strip('"') #variant_id
         field_counter = 0
         for column in variant_header:
             var_dictionary[column] = item[field_counter].strip('"')

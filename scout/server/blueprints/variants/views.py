@@ -12,7 +12,7 @@ from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
-from scout.parse.parse_clinvar_form import get_variant_lines, get_casedata_lines, create_clinvar_submission_dict
+from scout.parse.clinvar import get_variant_lines, get_casedata_lines, create_clinvar_submission_dict
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm
 
@@ -201,13 +201,11 @@ def clinvar(institute_id, case_name, variant_id):
         return data
     else:
         form_dict = request.form.to_dict(flat=False)
-
         variant_header, variant_lines = get_variant_lines(form_dict)
         casedata_header, casedata_lines = get_casedata_lines(form_dict)
 
         # create clinvar submission session object:
         session['clinvar_submission'] = create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines)
-
         data.update({'variant_header':variant_header, 'variant_lines':variant_lines, 'casedata_header':casedata_header, 'casedata_lines':casedata_lines, 'form':request.form,})
         return data
 

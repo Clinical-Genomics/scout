@@ -66,8 +66,9 @@
   <table class="table table-hover table-special">
     <thead>
       <tr>
-        <th class="col-xs-4">{{ group_name|capitalize }} cases</th>
+        <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
         <th class="col-xs-2">Status</th>
+        <th class="col-xs-2">Clinvar</th>
         <th class="col-xs-2">Analysis date</th>
         <th class="col-xs-2">Link</th>
         <th class="col-xs-2">Sequencing</th>
@@ -107,6 +108,12 @@
       {% if case.is_migrated %}
         <span class="label label-info">migrated</span>
       {% endif %}
+    </td>
+    <td>
+      {% if case.clinvar_id %}
+      <span class="label label-info">submitted</span>
+      {%else%}
+      {%endif%}
     </td>
     <td>
       {{ case.analysis_date.date() }}

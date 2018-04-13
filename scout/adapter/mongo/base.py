@@ -41,12 +41,13 @@ from .variant import VariantHandler
 from .user import UserHandler
 from .acmg import ACMGHandler
 from .index import IndexHandler
+from .clinvar import ClinVarHandler
 
 log = logging.getLogger(__name__)
 
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
                    HpoHandler, PanelHandler, QueryHandler, VariantHandler,
-                   UserHandler, ACMGHandler, IndexHandler):
+                   UserHandler, ACMGHandler, IndexHandler, ClinVarHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -76,15 +77,16 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.disease_term_collection = database.disease_term
         self.variant_collection = database.variant
         self.acmg_collection = database.acmg
-    
+        self.clinvar_collection = database.clinvar
+
     def collections(self):
         """Return all collection names
-        
+
         Returns:
             collection_names(list(str))
         """
         return self.db.collection_names(include_system_collections=False)
-    
-    
+
+
     def __str__(self):
         return "MongoAdapter(db={0})".format(self.db)

@@ -75,7 +75,6 @@ CASEDATA_HEADER = [
     'Method purpose',
     'Method citations',
     'Software name and version',
-    'Software purpose',
     'Testing laboratory',
     'Date variant was reported to submitter'
 ]
@@ -100,6 +99,5 @@ CASEDATA_OPTIONAL = {
     'Method purpose' : False,
     'Method citations' : False,
     'Software name and version' : False,
-    'Software purpose' : 'Next generation sequencing and pathogenic variants discovery pipeline',
-    'Testing laboratory' : 'Clinical Genomics - SciLifeLab Solna (Sweden)',
+    'Testing laboratory' : 'Clinical Genomics - SciLifeLab Solna, Sweden.',
 }
