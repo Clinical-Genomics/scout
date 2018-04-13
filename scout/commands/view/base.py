@@ -14,6 +14,7 @@ from .aliases import aliases
 from .individuals import individuals
 from .index import index
 from .intervals import intervals
+from .collections import collections
 
 
 LOG = logging.getLogger(__name__)
@@ -40,3 +41,4 @@ view.add_command(aliases)
 view.add_command(individuals)
 view.add_command(index)
 view.add_command(intervals)
+view.add_command(collections)
