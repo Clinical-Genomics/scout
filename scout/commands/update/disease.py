@@ -22,11 +22,11 @@ LOG = logging.getLogger(__name__)
 @click.command('diseases', short_help='Update disease terms')
 @click.option('--api-key', help='Specify the api key')
 @click.pass_context
-def diseases(ctx, api_key):
+def diseases(context, api_key):
     """
     Update disease terms in mongo database.
     """
-    adapter = ctx.obj['adapter']
+    adapter = context.obj['adapter']
     
     # Fetch the omim information
     api_key = api_key or context.obj.get('omim_api_key')
