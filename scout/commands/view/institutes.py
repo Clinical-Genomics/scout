@@ -16,9 +16,16 @@ def institutes(context):
         click.echo("No institutes found")
         context.abort()
 
-    click.echo("#institute_id\tdisplay_name")
+    header = ''
+    for key in institute_objs[0].keys():
+        header = header + "{0}\t".format(key)
+
+    click.echo(header)
+
     for institute_obj in institute_objs:
-        click.echo("{0}\t{1}".format(
-            institute_obj['_id'],
-            institute_obj['display_name']
-        ))
+
+        row = ''
+        for value in institute_obj.values():
+            row = row + "{0}\t".format(value)
+
+        click.echo(row)
