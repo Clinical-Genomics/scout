@@ -34,7 +34,7 @@ class ClinVarHandler(object):
             subm_variant['created_at'] = datetime.now()
             ids.append(subm_variant['_id'])
 
-        if self.clinvars_from_clinvarid(clinvar_id=submission_obj[0]['clinvar_submission']):
+        if self.clinvars_from_clinvarid(submission_id=submission_obj[0]['clinvar_submission']):
             return "clinvar submission id "+submission_obj[0]['clinvar_submission']+" already exists in database!","danger"
         elif self.clinvars_from_variantids(ids):
             return "One of more variants your are trying to save is already present in a clinvar submission!","danger"
@@ -54,36 +54,34 @@ class ClinVarHandler(object):
                 list of any submission found for these variants
         """
         logger.debug("Fetch clinvar submissions with variant _id {}".format(variant_ids))
-        submission_objs = self.clinvar_collection.find({
-            "_id" : { "$in" : variant_ids }
-        })
+        submission_objs = [ subm for subm in self.clinvar_collection.find( { "_id" : { "$in" : variant_ids }} ).sort('clinvar_submission',pymongo.DESCENDING)]
 
-        if submission_objs.count() == 0:
+        if len(submission_objs) == 0:
             logger.debug("Could not find clinvar submissions for variants {0}".format(variant_ids))
             return None
         else:
             return submission_objs
 
 
-    def clinvarid_from_case(self, case):
-        """Fetch a clinvar submission id for a given case id
+    def clinvars_from_case(self, case):
+        """Fetch a clinvar submission (all variants submitted) for a given case id
 
             Args:
                 case id(str)
 
             Returns:
-                submission id(str)
+                list of submitted variants with submission id
         """
         logger.debug("Fetch clinvar submission id for case {}".format(case))
-        submission = self.clinvar_collection.find_one({ 'case' : case })
+        submissions = [ subm for subm in self.clinvar_collection.find({ 'case' : case }).sort('clinvar_submission',pymongo.DESCENDING)]
 
-        if submission:
-            return submission['clinvar_submission']
+        if submissions:
+            return submissions
         else:
             return None
 
 
-    def clinvars_from_clinvarid(self, clinvar_id):
+    def clinvars_from_clinvarid(self, submission_id):
         """Fetch a list of submissions by clinvar submission id from the backend
 
             Args:
@@ -92,13 +90,38 @@ class ClinVarHandler(object):
             Returns:
                 list of submission objects
         """
-        logger.debug("Fetch clinvar submissions with clinvar id {}".format(clinvar_id))
-        submission_objs = self.clinvar_collection.find({
-            'clinvar_submission': clinvar_id
-        })
+        logger.debug("Fetch clinvar submissions with clinvar id {}".format(submission_id))
+        submission_objs = [ subm for subm in self.clinvar_collection.find( {'clinvar_submission': submission_id} ).sort('clinvar_submission',pymongo.DESCENDING)]
 
-        if submission_objs.count() == 0:
-            logger.debug("Could not find clinvar submission id {0}".format(clinvar_id))
+        if len(submission_objs) == 0:
+            logger.debug("Could not find clinvar submission id {0}".format(submission_id))
             return None
         else:
             return submission_objs
+
+    def add_clinvar_accession(self, variant_id, clinvar_accession):
+        """Introduces the field 'clinvar accession' to a variant submitted to clinvar
+
+            Args:
+                variant_ids(str)
+
+            Returns: the number of updated documents
+
+        """
+        logger.debug("introducing a clinvar accession for clinvar variant {}".format(variant_id))
+        new_doc = self.clinvar_collection.find_one_and_update( {"_id": variant_id}, {"$set": {"clinvar_accession": clinvar_accession}}, return_document=pymongo.ReturnDocument.AFTER )
+        return new_doc
+
+
+    def delete_clinvar_submission(self, submission_id):
+        """Delete a series of variants submitted to clinvar matching a submission id
+
+            Args:
+                clinvar_id(str)
+
+            Returns: the number of deleted variants
+
+        """
+        logger.debug("Delete clinvar variants with clinvar submissoon id {}".format(submission_id))
+        result = self.clinvar_collection.delete_many( {'clinvar_submission': submission_id} )
+        return result.deleted_count

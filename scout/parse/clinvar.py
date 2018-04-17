@@ -117,6 +117,36 @@ def get_casedata_lines(form_fields):
 
     return casedata_header,casedata_lines
 
+def extract_submission_csv_lines(clinvars_dictlist):
+    """Parses a list of clinvar submission object (variants) and creates the lines for printing
+    .Variant.csv and .CaseData.csv clinvar submission files.
+    """
+    variants_header = []
+    clinvar_lines = []
+    cdata_header = []
+    casedata_lines = []
+
+    variants_header = clinvars_dictlist[0]['variant_header']
+    casedata_header = clinvars_dictlist[0]['casedata_header']
+
+    for clinvar in clinvars_dictlist:
+        temp_var_fields = []
+        for v_field in variants_header:
+            temp_var_fields.append('"'+clinvar[v_field.replace(' ','_')]+'"')
+        clinvar_lines.append(','.join(temp_var_fields))
+
+        #collect casedata info:
+        if 'casedata' in clinvar:
+            cdata_objs = clinvar['casedata']
+            for case in cdata_objs:
+                temp_cd_fields = []
+                for cd_field in casedata_header:
+                    temp_cd_fields.append('"'+case[cd_field.replace(' ','_')]+'"')
+                casedata_lines.append(','.join(temp_cd_fields))
+
+    return '"'+'","'.join(variants_header)+'"', '"'+'","'.join(casedata_header)+'"', clinvar_lines, casedata_lines
+
+
 def create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines):
     """
     Creates a list of variants used for a clinvar submission. The returned list has the following format:
@@ -163,7 +193,7 @@ def create_clinvar_submission_dict(variant_header, variant_lines, casedata_heade
         var_dictionary['_id']= item[0].strip('"') #variant_id
         field_counter = 0
         for column in variant_header:
-            var_dictionary[column] = item[field_counter].strip('"')
+            var_dictionary[column.replace(' ','_')] = item[field_counter].strip('"')
             field_counter += 1
 
         # add casedata info to the submission object:
@@ -173,11 +203,14 @@ def create_clinvar_submission_dict(variant_header, variant_lines, casedata_heade
                 casedata_obj = {}
                 field_counter=0
                 for column in casedata_header:
-                    casedata_obj[column] = line[field_counter].strip('"')
+                    casedata_obj[column.replace(' ','_')] = line[field_counter].strip('"')
                     field_counter += 1
                 casedata.append(casedata_obj)
         if len(casedata) > 0:
             var_dictionary['casedata'] = casedata
+        var_dictionary['variant_header'] = variant_header
+        var_dictionary['casedata_header'] = casedata_header
+
         submitted_vars.append(var_dictionary)
 
     return submitted_vars
