@@ -72,8 +72,12 @@
           <div class="col-md-6">{{ hpo_genelist_panel() }}</div>
         </div>
 
+
         <div class="row">
-          <div class="col-md-12">{{ activity_panel(events) }}</div>
+          <div class="col-md-6">{{ activity_panel(events) }}</div>
+          {% if case.clinvar_submissions %}
+            <div class="col-md-6">{{ clinvar_panel() }}</div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -420,6 +424,43 @@
         </div>
       </form>
     </div>
+  </div>
+{% endmacro %}
+
+{% macro clinvar_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Variants submitted to clinvar</div>
+      <form method="POST">
+        <ul class="list-group">
+          {% for subm_obj in case.clinvar_submissions %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('variants.variant',
+                                institute_id=subm_obj['institute'],
+                                case_name=subm_obj['case'],
+                                variant_id=subm_obj['_id']) }}">{{subm_obj['Gene_symbol']}}
+                              </a>
+            {% if subm_obj['Clinical_significance'] == 'Pathogenic' %}
+              <span class="label label-danger">P</span>
+            {% elif subm_obj['Clinical_significance'] == 'Likely Pathogenic' %}
+              <span class="label label-warning">LP</span>
+            {% elif subm_obj['Clinical_significance'] == 'Likely benign' %}
+              <span class="label label-info">LB/span>
+            {% elif subm_obj['Clinical_significance'] == 'Uncertain significance' %}
+              <span class="label label-primary">VUS</span>
+            {% else %}
+              <span class="label label-success">B</span>
+            {% endif %}
+            <span class="label label-primary">casedata:{{subm_obj['casedata']|length}}</span>
+            {% if subm_obj['clinvar_accession']%}
+              <a href="https://www.ncbi.nlm.nih.gov/clinvar/variation/{{subm_obj['clinvar_accession']}}" target="_blank"><span class="label label-success">{{subm_obj['clinvar_submission'] + " ("+subm_obj['created_at'].strftime('%Y-%m-%d')+")"}} </span></a>
+            {% else %}
+              <span class="label label-info">{{subm_obj['clinvar_submission'] + " ("+subm_obj['created_at'].strftime('%Y-%m-%d')+")"}} </span>
+            {% endif %}
+
+          </li>
+          {% endfor %}
+        </ul>
+      </form>
   </div>
 {% endmacro %}
 

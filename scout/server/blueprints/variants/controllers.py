@@ -303,6 +303,10 @@ def variant(store, institute_obj, case_obj, variant_id=None):
         variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
         variant_obj['is_matching_inheritance'] = variant_models & gene_models
 
+    clinvar_submission = store.clinvars_from_variantids([variant_obj['_id']])
+    if clinvar_submission:
+        variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
+
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
         evaluation(store, evaluation_obj)
@@ -745,6 +749,21 @@ def clinvar_export(store, institute_id, case_name, variant_id):
         case=case_obj,
         variant=variant_obj,
         pinned_vars=pinned
+    )
+
+def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    pinned = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('suspects', [])]
+    variant_obj = store.variant(variant_id)
+    clinvar_submission_objs = store.clinvars_from_clinvarid(submission_id)
+    return dict(
+        today = str(date.today()),
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        pinned_vars=pinned,
+        clinvars = clinvar_submission_objs
     )
 
 

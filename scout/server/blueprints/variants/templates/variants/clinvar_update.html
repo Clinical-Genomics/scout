@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
+{% endblock %}
+
+{% block top_nav %}
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li>
+    {% if cancer %}
+      <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} cancer variants
+      </a>
+    {% else %}
+      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} SNV and INDELs
+      </a>
+    {% endif %}
+  </li>
+  <li class="active">
+    <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container" id="main">
+  <h3>Clinvar submission {{clinvars[0].clinvar_submission}} [{{clinvars[0].created_at.strftime('%Y-%m-%d')}}]</h3>
+  <form action="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=clinvars[0].clinvar_submission) }}" method="POST" id="update_clinvar_submission" name="update_clinvar_submission">
+  {% for clinvar in clinvars %}
+  <div class="panel panel-default">
+      <div class="panel-heading">
+        {{clinvar.Gene_symbol}} - chr{{clinvar.Chromosome}}:{{clinvar.Start}} {{clinvar.Reference_allele}} -> {{clinvar.Alternate_allele}}
+      </div>
+        <table class="table table-fixed">
+          <tbody>
+              <tr>
+                <td width="20%">
+                  Clinvar submission id:
+                </td>
+                <td width="20%">
+                  <strong>{{clinvar.clinvar_submission}}</strong>
+                </td>
+                <td width="30%">
+                  Clinvar variation ID:<br>(once variant has been published)
+                </td>
+                <td>
+                  <input type="text" name="clinvar_accession_{{clinvar._id}}" value="{{clinvar.clinvar_accession}}" size=30 pattern="[0-9]+" placeholder="ex. 12345"/>&nbsp&nbsp
+                </td>
+              </tr>
+              <tr>
+                <td>Clinical significance:</td>
+                <td>{{clinvar.Clinical_significance}}</td>
+                <td>Associated case data:</td>
+                {% if clinvar.casedata|length > 0%}
+                  <td>
+                    {{clinvar.casedata|length}} cases
+                  </td>
+                {% else %}
+                  <td>no assiciated cases</td>
+                {% endif %}
+          </tbody>
+        </table>
+        <br>
+        <a href="#submitted_info_{{clinvar._id}}" data-toggle="collapse">Submitted info</a>
+        <div id="submitted_info_{{clinvar._id}}" class="collapse">
+          <br>
+          <table class="table table-fixed">
+            <tbody>
+              {% for column in clinvar.variant_header %}
+              <tr>
+                <td>{{column}}</td>
+                <td><strong>{{clinvar[column|replace(' ','_')]}}</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% if clinvar.casedata|length > 0 %}
+              {% for case in clinvar.casedata %}
+                <table class="table">
+                  <tr>
+                    <td width="20%">Case <strong>{{case.Individual_ID}}</strong></td>
+                    <td>
+                      <table class="table table-fixed">
+                        <tbody>
+                        {% for column in clinvar['casedata_header'] %}
+                          <tr>
+                            <td>{{column}}</td>
+                            <td><strong>{{case[column|replace(' ','_')]}}</strong></td>
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              {% endfor %}
+          {% endif %}
+        </div>
+    </div>
+  {% endfor %}
+    <div class="text-center">
+      <button class="btn btn-primary" data-toggle="modal" name="variants_button" value="submit" id="variants_button"><font color="white">Download variants CSV file</font></button>
+      <button class="btn btn-primary" data-toggle="modal" name="cdata_button" value="submit" id="variants_button"><font color="white">Download case data CSV file</font></button>
+      <button class="btn btn-warning" data-toggle="modal" name="add_accession" value="submit" id="add_accession"><font color="white">Update clinvar variation IDs</font></button>
+      <button class="btn btn-danger" data-toggle="modal" name="delete_submission" value="submit" id="delete_submission" onclick="return confirm_delete()"><font color="white">Delete this clinvar submission</font></button>
+    </div>
+  </form>
+</div>
+
+{% endblock%}
+
+{% block scripts %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+
+    function confirm_delete() {
+      check = window.confirm("Are you sure you want to delete this submission?");
+      if(check == true){
+        window.history.back();
+      }
+    }
+</script>
+
+{% endblock %}

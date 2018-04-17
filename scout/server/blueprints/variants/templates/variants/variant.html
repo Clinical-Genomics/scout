@@ -337,7 +337,9 @@
     </div>
     <div class="panel-body">
       <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
-      {% if variant._id in case.suspects %}
+      {% if variant._id in case.suspects and variant.clinvar_submission_id %}
+        <a href="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=variant.clinvar_submission_id) }}" class="btn btn-default form-control">View/Modify clinvar submission {{variant.clinvar_submission_id}}</a>
+      {% elif variant._id in case.suspects %}
         <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
       {% endif %}
     </div>
