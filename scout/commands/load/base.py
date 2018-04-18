@@ -36,11 +36,11 @@ def report(context, case_id, report_path):
     customer, family = case_id.split('-', 1)
     existing_case = adapter.case(customer, family)
     if existing_case is None:
-        click.echo("ERROR: no case found!")
+        LOG.warning("no case found")
         context.abort()
     existing_case.delivery_report = report_path
     existing_case.save()
-    click.echo("saved report to case!")
+    LOG.info("saved report to case!")
 
 
 load.add_command(case_command)
