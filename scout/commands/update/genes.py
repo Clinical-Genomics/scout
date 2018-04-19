@@ -31,7 +31,7 @@ from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
 
 from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes, fetch_hgnc, fetch_ensembl_genes,
-                                  fetch_exac_constraint,)
+                                  fetch_exac_constraint, fetch_ensembl_transcripts)
 
 LOG = logging.getLogger(__name__)
 
@@ -90,18 +90,15 @@ def genes(context, build, api_key):
             build=build,
         )
 
-        # ensembl_genes = {}
-        # for gene_obj in hgnc_genes:
-        #     ensembl_id = gene_obj['ensembl_id']
-        #     ensembl_genes[ensembl_id] = gene_obj
-        #
-        # genes = link_genes(
-        #     ensembl_lines=ensembl_handle,
-        #     hgnc_lines=hgnc_lines,
-        #     exac_lines=exac_lines,
-        #     mim2gene_lines=mim_files['mim2genes'],
-        #     genemap_lines=mim_files['genemap2'],
-        #     hpo_lines=hpo_genes
-        # )
-        #
-        # load_hgnc_genes(adapter=adapter, genes=genes, build=build)
+        ensembl_genes = {}
+        for gene_obj in hgnc_genes:
+            ensembl_id = gene_obj['ensembl_id']
+            ensembl_genes[ensembl_id] = gene_obj
+
+        # Load the transcripts
+        ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+
+    adapter.update_indexes()
+        
+    LOG.info("Genes, transcripts and Exons loaded")

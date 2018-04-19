@@ -13,10 +13,8 @@ hgnc_transcript = {
 
 hgnc_gene = {
                 '_id': ObjectId(),
-                # This is the hgnc id, required:
-                'hgnc_id': int, 
-                # The primary symbol, required 
-                'hgnc_symbol': str,
+                'hgnc_id': int, # This is the hgnc id, required:
+                'hgnc_symbol': str, # The primary symbol, required 
                 'ensembl_id': str, # required
                 'build': str, # '37' or '38', defaults to '37', required
                 
@@ -33,7 +31,6 @@ hgnc_gene = {
                 'ucsc_id': str,
                 'uniprot_ids': list(), # List of str
                 'vega_id': str,
-                'transcripts': list(), # List of hgnc_transcript
                 
                 # Inheritance information
                 'inheritance_models': list(), # List of model names

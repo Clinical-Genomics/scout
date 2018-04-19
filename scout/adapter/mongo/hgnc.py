@@ -2,9 +2,12 @@ import logging
 
 import intervaltree
 
-LOG = logging.getLogger(__name__)
-
 from scout.build.hgnc_gene import build_exon
+from pymongo.errors import (DuplicateKeyError, BulkWriteError)
+
+from scout.exceptions import IntegrityError
+
+LOG = logging.getLogger(__name__)
 
 class GeneHandler(object):
 
@@ -21,6 +24,26 @@ class GeneHandler(object):
         #LOG.debug("Gene saved")
         return res
 
+    def load_hgnc_bulk(self, gene_objs):
+        """Load a bulk of hgnc gene objects
+        
+        Raises IntegrityError if there are any write concerns
+
+        Args:
+            gene_objs(iterable(scout.models.hgnc_gene))
+
+        Returns:
+            result (pymongo.results.InsertManyResult)
+        """
+
+        LOG.debug("Loading gene bulk")
+        try:
+            result = self.hgnc_collection.insert_many(gene_objs)
+        except (DuplicateKeyError, BulkWriteError) as err:
+            raise IntegrityError(err)
+
+        return result
+    
     def load_hgnc_transcript(self, transcript_obj):
         """Add a transcript object to the database
 
@@ -31,6 +54,20 @@ class GeneHandler(object):
         res = self.transcript_collection.insert_one(transcript_obj)
         return res
 
+    def load_transcript_bulk(self, transcript_objs):
+        """Load a bulk of transcript objects to the database
+
+        Arguments:
+            transcript_objs(iterable(scout.models.hgnc_transcript))
+
+        """
+        try:
+            result = self.transcript_collection.insert_many(transcript_objs)
+        except (DuplicateKeyError, BulkWriteError) as err:
+            raise IntegrityError(err)
+        
+        return result
+
     def load_exon(self, exon_obj):
         """Add a exon object to the database
 
@@ -40,6 +77,20 @@ class GeneHandler(object):
         """
         res = self.exon_collection.insert_one(exon_obj)
         return res
+
+    def load_exon_bulk(self, exon_objs):
+        """Load a bulk of exon objects to the database
+
+        Arguments:
+            exon_objs(iterable(scout.models.hgnc_exon))
+
+        """
+        try:
+            result = self.exon_collection.insert_many(transcript_objs)
+        except (DuplicateKeyError, BulkWriteError) as err:
+            raise IntegrityError(err)
+        
+        return result
 
     def hgnc_gene(self, hgnc_identifyer, build='37'):
         """Fetch a hgnc gene

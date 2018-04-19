@@ -1,3 +1,8 @@
+import pytest
+
+from scout.exceptions import IntegrityError
+
+#################### HGNC gene tests ####################
 def test_insert_gene(adapter):
     ##GIVEN a empty adapter
     assert adapter.all_genes().count() == 0
@@ -14,6 +19,49 @@ def test_insert_gene(adapter):
     assert adapter.all_genes().count() == 1
     ##THEN assert that no genes are in the '38' build
     assert adapter.all_genes(build='38').count() == 0
+
+def test_insert_many_genes(adapter):
+    adapter = adapter
+    ##GIVEN a empty adapter
+    assert adapter.all_genes().count() == 0
+
+    gene_objs = []
+    ##WHEN inserting a bulk of genes
+    for i in range(300):
+        gene_objs.append({
+            'hgnc_id': i,
+            'hgnc_symbol': 'AAA',
+            'build': '37'
+        })
+
+    result = adapter.load_hgnc_bulk(gene_objs)
+
+    ##THEN assert that the genes are loaded
+    assert adapter.all_genes().count() == 300
+    ##THEN assert that no genes are in the '38' build
+    assert adapter.all_genes(build='38').count() == 0
+
+def test_insert_many_genes_duplicate(adapter):
+    adapter = adapter
+    ##GIVEN a empty adapter
+    assert adapter.all_genes().count() == 0
+
+    gene_objs = []
+    gene_obj = {
+        '_id': 1,
+        'hgnc_id': 1,
+        'hgnc_symbol': 'AAA',
+        'build': '37'
+    }
+
+    ##WHEN inserting a bulk of genes with same _id
+    for i in range(300):
+        gene_objs.append(gene_obj)
+
+    ##THEN assert that IntegrityError is raised
+    with pytest.raises(IntegrityError):
+        result = adapter.load_hgnc_bulk(gene_objs)
+
 
 def test_get_gene(adapter):
     # adapter = real_adapter
@@ -283,3 +331,72 @@ def test_hgnc_symbol_to_gene(adapter):
     assert gene_obj['hgnc_symbol'] in res
     assert gene_obj2['hgnc_symbol'] in res
 
+
+#################### HGNC transcript tests ####################
+
+def test_insert_transcript(adapter):
+    ##GIVEN a empty adapter
+    assert adapter.transcripts().count() == 0
+
+    ##WHEN inserting a transcript
+    transcript_obj = {
+        'ensembl_transcript_id': 'ENST01', # required
+        'refseq_id': 'NM_1',
+        'start': 1, # required
+        'end': 10, # required
+        'is_primary': False,
+        'build': '37',
+    }
+    obj_id = adapter.load_hgnc_transcript(transcript_obj)
+
+    ##THEN assert that the transcript is there
+    assert adapter.transcripts().count() == 1
+    ##THEN assert that no transcripts are in the '38' build
+    assert adapter.transcripts(build='38').count() == 0
+
+def test_insert_many_transcripts(adapter):
+    adapter = adapter
+    ##GIVEN a empty adapter
+    assert adapter.transcripts().count() == 0
+
+    transcript_objs = []
+    ##WHEN inserting a bulk of transcripts
+    for i in range(300):
+        transcript_objs.append({
+            'ensembl_transcript_id': 'ENST01', # required
+            'refseq_id': 'NM_1',
+            'start': 1, # required
+            'end': 10, # required
+            'is_primary': False,
+            'build': '37',
+        })
+
+    result = adapter.load_transcript_bulk(transcript_objs)
+
+    ##THEN assert that the transcripts are loaded
+    assert adapter.transcripts().count() == 300
+    ##THEN assert that no transcripts are in the '38' build
+    assert adapter.transcripts(build='38').count() == 0
+
+def test_insert_many_genes_duplicate(adapter):
+    adapter = adapter
+    ##GIVEN a empty adapter
+
+    transcript_objs = []
+    transcript_obj = {
+        '_id': 1,
+        'ensembl_transcript_id': 'ENST01', # required
+        'refseq_id': 'NM_1',
+        'start': 1, # required
+        'end': 10, # required
+        'is_primary': False,
+        'build': '37',
+    }
+
+    ##WHEN inserting a bulk of transcripts with same _id
+    for i in range(300):
+        transcript_objs.append(transcript_obj)
+
+    ##THEN assert that IntegrityError is raised
+    with pytest.raises(IntegrityError):
+        result = adapter.load_transcript_bulk(transcript_objs)
