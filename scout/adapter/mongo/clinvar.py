@@ -70,11 +70,11 @@ class ClinVarHandler(object):
         submission_objs = [ subm for subm in self.clinvar_collection.find( query ).sort('clinvar_submission',pymongo.DESCENDING)]
 
         if len(submission_objs) == 0:
-            LOG.debug("Could not find ant clinvar submission for the specified parameters!")
+            LOG.debug("Could not find any clinvar submission for the specified parameters!")
             return None
         else:
             return submission_objs
-            
+
 
     def add_clinvar_accession(self, variant_id, clinvar_accession):
         """Introduces the field 'clinvar accession' to a variant submitted to clinvar
