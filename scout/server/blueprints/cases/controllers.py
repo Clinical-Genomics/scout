@@ -26,7 +26,7 @@ def cases(store, case_query):
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-        case_obj['clinvar_id'] = store.clinvars_from_case(case_obj['display_name'])
+        case_obj['clinvar_id'] = store.clinvars(case_id=case_obj['display_name'])
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
@@ -85,7 +85,7 @@ def case(store, institute_obj, case_obj):
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
 
-    case_obj['clinvar_submissions'] = store.clinvars_from_case(case_obj['display_name'])
+    case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
 
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),

@@ -1,13 +1,22 @@
 import urllib.request
 import sys
-from scout.constants import CLIVAR_HEADER, CLINVAR_OPTIONAL, CASEDATA_HEADER, CASEDATA_OPTIONAL
+from scout.constants import CLINVAR_HEADER, CLINVAR_OPTIONAL, CASEDATA_HEADER, CASEDATA_OPTIONAL
 
 def get_variant_lines(form_fields):
-    """Parses the form from blueprints/variants/clinvar.html
-    and creates the lines for the .Variant.csv clinvar submission file.
+    """Parses the form from blueprints/variants/clinvar.html (creation of a new clinvar submission).
+       According to what the uses has inserted in the form, the function evaluates which fields are to
+       be included in the .Variant.csv clinvar submission file (both header and lines).
+       Mandatory fields are defined in CLINVAR_HEADER, optional fields in CLINVAR_OPTIONAL.
+
+       Args:
+            form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CLINVAR_OPTIONAL
+
+       Returns:
+            clinvar_header(list) # the header of the .Variant.csv CSV file
+            clinvar_lines(list of lists) each inner list is a variant line
     """
 
-    clinvar_header  = list(CLIVAR_HEADER)
+    clinvar_header  = list(CLINVAR_HEADER)
     optional_fields = dict(CLINVAR_OPTIONAL)
     clinvars_dict = {}
 
@@ -69,8 +78,17 @@ def get_variant_lines(form_fields):
 
 
 def get_casedata_lines(form_fields):
-    """Parses the form from blueprints/variants/clinvar.html
-    and creates the lines for the .CaseData.csv clinvar submission file.
+    """Parses the form from blueprints/variants/clinvar.html (creation of a new clinvar submission).
+       According to what the used has inserted in the form, the function evaluates which fields are to
+       be included in the .CaseData.csv clinvar submission file (both header and lines).
+       Mandatory fields are defined in CASEDATA_HEADER, optional (or pre-filled) fields in CASEDATA_OPTIONAL.
+
+       Args:
+            form_fields(dict) # it's the submission form dictionary. Keys have the same names as CASEDATA_HEADER and CASEDATA_OPTIONAL
+
+       Returns:
+            casedata_header(list) # the header of the .CaseData.csv CSV file
+            casedata_lines(list of lists) each inner list is a case data line
     """
 
     casedata_header = list(CASEDATA_HEADER)

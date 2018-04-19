@@ -303,7 +303,7 @@ def variant(store, institute_obj, case_obj, variant_id=None):
         variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
         variant_obj['is_matching_inheritance'] = variant_models & gene_models
 
-    clinvar_submission = store.clinvars_from_variantids([variant_obj['_id']])
+    clinvar_submission = store.clinvars(variant_ids=[variant_obj['_id']])
     if clinvar_submission:
         variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
 
@@ -756,7 +756,7 @@ def get_clinvar_submission(store, institute_id, case_name, variant_id, submissio
     pinned = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('suspects', [])]
     variant_obj = store.variant(variant_id)
-    clinvar_submission_objs = store.clinvars_from_clinvarid(submission_id)
+    clinvar_submission_objs = store.clinvars(submission_id=submission_id)
     return dict(
         today = str(date.today()),
         institute=institute_obj,
