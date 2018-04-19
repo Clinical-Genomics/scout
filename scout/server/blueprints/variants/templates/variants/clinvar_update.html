@@ -58,14 +58,24 @@
               </tr>
               <tr>
                 <td>Clinical significance:</td>
-                <td>{{clinvar.Clinical_significance}}</td>
+                {% if clinvar.Clinical_significance == 'Pathogenic' %}
+                  <td><span class="label label-danger">Pathogenic</span></td>
+                {% elif clinvar.Clinical_significance == 'Likely Pathogenic' %}
+                  <td><span class="label label-warning">Likely Pathogenic</span></td>
+                {% elif clinvar.Clinical_significance == 'Likely benign' %}
+                  <td><span class="label label-info">Likely benign</span></td>
+                {% elif clinvar.Clinical_significance == 'Uncertain significance' %}
+                  <td><span class="label label-primary">Uncertain significance</span></td>
+                {% else %}
+                  <td><span class="label label-success">Benign</span></td>
+                {% endif %}
                 <td>Associated case data:</td>
                 {% if clinvar.casedata|length > 0%}
                   <td>
                     {{clinvar.casedata|length}} cases
                   </td>
                 {% else %}
-                  <td>no assiciated cases</td>
+                  <td>no associated cases</td>
                 {% endif %}
           </tbody>
         </table>
@@ -111,8 +121,9 @@
       <button class="btn btn-primary" data-toggle="modal" name="variants_button" value="submit" id="variants_button"><font color="white">Download variants CSV file</font></button>
       <button class="btn btn-primary" data-toggle="modal" name="cdata_button" value="submit" id="variants_button"><font color="white">Download case data CSV file</font></button>
       <button class="btn btn-warning" data-toggle="modal" name="add_accession" value="submit" id="add_accession"><font color="white">Update clinvar variation IDs</font></button>
-      <button class="btn btn-danger" data-toggle="modal" name="delete_submission" value="submit" id="delete_submission" onclick="return confirm_delete()"><font color="white">Delete this clinvar submission</font></button>
+      <button class="btn btn-danger" data-toggle="modal" name="delete_submission" value="submit" id="delete_submission" onclick="return confirm_delete()"><font color="white">Delete submission from scout database</font></button>
     </div>
+    <br>
   </form>
 </div>
 

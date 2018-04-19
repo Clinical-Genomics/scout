@@ -1,5 +1,5 @@
 # clinvar Variant sheet
-CLIVAR_HEADER = [
+CLINVAR_HEADER = [
     '##Local ID',
     'Linking ID',
     'Gene symbol',
