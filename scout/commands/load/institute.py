@@ -11,7 +11,7 @@ from scout.load import load_institute
 @click.option('-i', '--internal-id',
               required=True)
 @click.option('-d', '--display-name')
-@click.option('-s', '--sanger-recipients', )
+@click.option('-s', '--sanger-recipients', multiple=True)
 @click.pass_context
 def institute(ctx, internal_id, display_name, sanger_recipients):
     """
@@ -26,6 +26,9 @@ def institute(ctx, internal_id, display_name, sanger_recipients):
 
     if not display_name:
         display_name = internal_id
+
+    if sanger_recipients:
+        sanger_recipients = list(sanger_recipients)
 
     try:
         load_institute(

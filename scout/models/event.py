@@ -47,7 +47,7 @@ VERBS_MAP = {
     "pin": "pinned variant",
     "unpin": "removed pinned variant",
     "sanger": "ordered sanger sequencing for",
-    "unsanger": "cancelled sanger order for",
+    "cancel_sanger": "cancelled sanger order for",
     "archive": "archived",
     "open_research": "opened research mode for",
     "mark_causative": "marked causative for",

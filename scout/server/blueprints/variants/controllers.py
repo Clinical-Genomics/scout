@@ -6,7 +6,7 @@ from flask import url_for, flash
 from flask_mail import Message
 
 from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
-                             ACMG_OPTIONS,DISMISS_VARIANT_OPTIONS,
+                             ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
                              ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
@@ -467,8 +467,8 @@ def beacon_link(variant_obj, build=None):
     """Compose link to Beacon Network."""
     build = build or 37
     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
-                        "chrom={this[chromosome]}&allele={this[alternative]}&"
-                        "ref={this[reference]}&rs=GRCh37")
+                    "chrom={this[chromosome]}&allele={this[alternative]}&"
+                    "ref={this[reference]}&rs=GRCh37")
     # beacon does not support build 38 at the moment
     # if build == '38':
     #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
@@ -510,6 +510,7 @@ def spidex_human(variant_obj):
     else:
         return 'high'
 
+
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
     manual_models = set()
@@ -525,11 +526,12 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
+def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
+url_for):
     """Send Sanger email."""
-    variant_link = url_for('variants.variant', institute_id=institute_obj['_id'],
-                           case_name=case_obj['display_name'],
-                           variant_id=variant_obj['_id'])
+    variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
+                               case_name=case_obj['display_name'],
+                               variant_id=variant_obj['_id'])
     if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
         store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
@@ -582,9 +584,10 @@ def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
     store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
 
-def unsanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
+def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
+url_for):
     """Send Sanger cancellation email."""
-    variant_link = url_for('variants.variant', institute_id=institute_obj['_id'],
+    variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
     # if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
@@ -636,7 +639,7 @@ def unsanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender
     message = Message(**kwargs)
     mail.send(message)
 
-    store.order_unsanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+    store.cancel_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
 
 def cancer_variants(store, request_args, institute_id, case_name):

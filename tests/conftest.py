@@ -30,8 +30,10 @@ from scout.load.hpo import load_hpo
 
 # These are the reduced data files
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path,
-exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
-hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path)
+                                  exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path,
+                                  hpo_to_genes_reduced_path,
+                                  hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path,
+                                  genemap2_reduced_path)
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path)
 
@@ -42,18 +44,20 @@ root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)
 
+
 ##################### Gene fixtures #####################
 
 @pytest.fixture
 def test_transcript(request):
     transcript = {
-        'ensembl_transcript_id': 'enst1', # required
+        'ensembl_transcript_id': 'enst1',  # required
         'refseq_id': 'NM1',
-        'start': 10, # required
-        'end': 100, # required
+        'start': 10,  # required
+        'end': 100,  # required
         'is_primary': True,
     }
     return transcript
+
 
 @pytest.fixture
 def test_gene(request, test_transcript):
@@ -62,23 +66,23 @@ def test_gene(request, test_transcript):
         'hgnc_id': 1,
         # The primary symbol, required
         'hgnc_symbol': 'test',
-        'ensembl_id': 'ensembl1', # required
-        'build': '37', # '37' or '38', defaults to '37', required
+        'ensembl_id': 'ensembl1',  # required
+        'build': '37',  # '37' or '38', defaults to '37', required
 
-        'chromosome': 1, # required
-        'start': 10, # required
-        'end': 100, # required
+        'chromosome': 1,  # required
+        'start': 10,  # required
+        'end': 100,  # required
 
-        'description': 'A gene', # Gene description
-        'aliases': ['test'], # Gene symbol aliases, includes hgnc_symbol, str
+        'description': 'A gene',  # Gene description
+        'aliases': ['test'],  # Gene symbol aliases, includes hgnc_symbol, str
         'entrez_id': 1,
         'omim_id': 1,
         'pli_score': 1.0,
-        'primary_transcripts': ['NM1'], # List of refseq transcripts (str)
+        'primary_transcripts': ['NM1'],  # List of refseq transcripts (str)
         'ucsc_id': '1',
-        'uniprot_ids': ['1'], # List of str
+        'uniprot_ids': ['1'],  # List of str
         'vega_id': '1',
-        'transcripts': [test_transcript], # List of hgnc_transcript
+        'transcripts': [test_transcript],  # List of hgnc_transcript
     }
     return gene
 
@@ -93,7 +97,7 @@ def genes(request, transcripts_file, hgnc_file, exac_file,
     exac_handle = get_file_handle(exac_file)
     mim2gene_handle = get_file_handle(mim2gene_file)
     genemap_handle = get_file_handle(genemap_file)
-    hpo_genes_handle =  get_file_handle(hpo_genes_file)
+    hpo_genes_handle = get_file_handle(hpo_genes_file)
 
     gene_dict = link_genes(
         ensembl_lines=transcripts_handle,
@@ -106,6 +110,7 @@ def genes(request, transcripts_file, hgnc_file, exac_file,
 
     return gene_dict
 
+
 #############################################################
 ################# Hpo terms fixtures ########################
 #############################################################
@@ -116,6 +121,7 @@ def hpo_terms_handle(request, hpo_terms_file):
     hpo_lines = get_file_handle(hpo_terms_file)
     return hpo_lines
 
+
 @pytest.fixture
 def hpo_terms(request, hpo_terms_file):
     """Get a dictionary with the hpo terms"""
@@ -123,11 +129,13 @@ def hpo_terms(request, hpo_terms_file):
     hpo_terms_handle = get_file_handle(hpo_terms_file)
     return parse_hpo_phenotypes(hpo_terms_handle)
 
+
 @pytest.fixture
 def hpo_disease_handle(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
     return get_file_handle(hpo_disease_file)
+
 
 @pytest.fixture
 def hpo_diseases(request, hpo_disease_file):
@@ -136,6 +144,7 @@ def hpo_diseases(request, hpo_disease_file):
     hpo_disease_handle = get_file_handle(hpo_disease_file)
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
+
 
 #############################################################
 ##################### Case fixtures #########################
@@ -148,7 +157,7 @@ def ped_lines(request, scout_config):
         "643594	ADM1059A1	0	0	1	1",
         "643594	ADM1059A2	ADM1059A1	ADM1059A3	1	2",
         "643594	ADM1059A3	0	0	2	1",
-        ]
+    ]
     return case_lines
 
 
@@ -164,6 +173,7 @@ def parsed_case(request, scout_config):
     """Get the lines for a case"""
     case = parse_case(scout_config)
     return case
+
 
 @pytest.fixture(scope='function')
 def case_obj(request, parsed_case, panel_database):
@@ -182,7 +192,7 @@ def parsed_institute(request):
     institute = {
         'institute_id': 'cust000',
         'display_name': 'test_institute',
-        'sanger_recipients': ['john@doe.com']
+        'sanger_recipients': ['john@doe.com', 'jane@doe.com']
     }
 
     return institute
@@ -198,6 +208,7 @@ def institute_obj(request, parsed_institute):
         sanger_recipients=parsed_institute['sanger_recipients'],
     )
     return institute
+
 
 #############################################################
 ##################### User fixtures #########################
@@ -239,6 +250,7 @@ def database_name(request):
     """Get the name of the test database"""
     return DATABASE
 
+
 @pytest.fixture(scope='function')
 def pymongo_client(request):
     """Get a client to the mongo database"""
@@ -252,11 +264,12 @@ def pymongo_client(request):
         logger.info("Deleting database")
         mock_client.drop_database(DATABASE)
         logger.info("Database deleted")
-        logger.info("Time to run test:{}".format(datetime.datetime.now()-start_time))
+        logger.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
 
     request.addfinalizer(teardown)
 
     return mock_client
+
 
 @pytest.fixture(scope='function')
 def real_pymongo_client(request):
@@ -271,11 +284,12 @@ def real_pymongo_client(request):
         logger.info("Deleting database")
         mongo_client.drop_database(REAL_DATABASE)
         logger.info("Database deleted")
-        logger.info("Time to run test:{}".format(datetime.datetime.now()-start_time))
+        logger.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
 
     request.addfinalizer(teardown)
 
     return mongo_client
+
 
 @pytest.fixture(scope='function')
 def real_adapter(request, real_pymongo_client):
@@ -304,6 +318,7 @@ def adapter(request, pymongo_client):
 
     return mongo_adapter
 
+
 @pytest.fixture(scope='function')
 def institute_database(request, adapter, institute_obj, user_obj):
     "Returns an adapter to a database populated with institute"
@@ -311,6 +326,7 @@ def institute_database(request, adapter, institute_obj, user_obj):
     adapter.add_user(user_obj)
 
     return adapter
+
 
 @pytest.fixture(scope='function')
 def real_institute_database(request, real_adapter, institute_obj, user_obj):
@@ -333,8 +349,8 @@ def gene_database(request, institute_database, genes):
                                           ('hgnc_symbol', pymongo.ASCENDING)])
     logger.info("Index done")
 
-
     return adapter
+
 
 @pytest.fixture(scope='function')
 def real_gene_database(request, real_institute_database, genes):
@@ -346,7 +362,6 @@ def real_gene_database(request, real_institute_database, genes):
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
     logger.info("Index done")
-
 
     return adapter
 
@@ -364,6 +379,7 @@ def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle, hpo_d
     )
 
     return adapter
+
 
 @pytest.fixture(scope='function')
 def real_hpo_database(request, real_gene_database, hpo_terms_handle, genemap_handle):
@@ -385,18 +401,19 @@ def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
     logger.info("Creating a panel adapter")
-    
+
     adapter.load_panel(
-        path=panel_info['file'], 
-        institute=panel_info['institute'], 
-        panel_id=panel_info['panel_name'], 
-        date=panel_info['date'], 
-        panel_type=panel_info['type'], 
-        version=panel_info['version'], 
+        path=panel_info['file'],
+        institute=panel_info['institute'],
+        panel_id=panel_info['panel_name'],
+        date=panel_info['date'],
+        panel_type=panel_info['type'],
+        version=panel_info['version'],
         display_name=panel_info['full_name']
     )
 
     return adapter
+
 
 @pytest.fixture(scope='function')
 def real_panel_database(request, real_gene_database, panel_info):
@@ -404,12 +421,12 @@ def real_panel_database(request, real_gene_database, panel_info):
     adapter = real_gene_database
     logger.info("Creating a panel adapter")
     adapter.load_panel(
-        path=panel_info['file'], 
-        institute=panel_info['institute'], 
-        panel_id=panel_info['panel_name'], 
-        date=panel_info['date'], 
-        panel_type=panel_info['type'], 
-        version=panel_info['version'], 
+        path=panel_info['file'],
+        institute=panel_info['institute'],
+        panel_id=panel_info['panel_name'],
+        date=panel_info['date'],
+        panel_type=panel_info['type'],
+        version=panel_info['version'],
         display_name=panel_info['full_name']
     )
 
@@ -425,6 +442,7 @@ def case_database(request, institute_database, case_obj):
 
     return adapter
 
+
 @pytest.fixture(scope='function')
 def populated_database(request, panel_database, institute_obj, parsed_user, case_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
@@ -432,12 +450,14 @@ def populated_database(request, panel_database, institute_obj, parsed_user, case
     adapter._add_case(case_obj)
     return adapter
 
+
 @pytest.fixture(scope='function')
 def real_populated_database(request, real_panel_database, institute_obj, parsed_user, case_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
     adapter._add_case(case_obj)
     return adapter
+
 
 @pytest.fixture(scope='function')
 def variant_database(request, populated_database, variant_objs, sv_variant_objs):
@@ -454,6 +474,7 @@ def variant_database(request, populated_database, variant_objs, sv_variant_objs)
 
     return adapter
 
+
 @pytest.fixture(scope='function')
 def real_variant_database(request, real_populated_database, case_obj):
     """Returns an adapter to a database populated with user, institute, case
@@ -461,10 +482,10 @@ def real_variant_database(request, real_populated_database, case_obj):
     adapter = real_populated_database
     # Load variants
     adapter.load_variants(
-        case_obj, 
-        variant_type='clinical', 
+        case_obj,
+        variant_type='clinical',
         category='snv',
-        rank_threshold=-10, 
+        rank_threshold=-10,
         build='37'
     )
 
@@ -473,6 +494,7 @@ def real_variant_database(request, real_populated_database, case_obj):
     #     adapter.load_variant(variant)
 
     return adapter
+
 
 @pytest.fixture(scope='function')
 def sv_database(request, populated_database, variant_objs, sv_variant_objs):
@@ -494,14 +516,14 @@ def sv_database(request, populated_database, variant_objs, sv_variant_objs):
 def panel_info(request):
     "Return one panel info as specified in tests/fixtures/config1.ini"
     panel = {
-            'date': datetime.datetime.now(),
-            'file': panel_path,
-            'type': 'clinical',
-            'institute': 'cust000',
-            'version': '1.0',
-            'panel_name': 'panel1',
-            'full_name': 'Test panel'
-        }
+        'date': datetime.datetime.now(),
+        'file': panel_path,
+        'type': 'clinical',
+        'institute': 'cust000',
+        'version': '1.0',
+        'panel_name': 'panel1',
+        'full_name': 'Test panel'
+    }
     return panel
 
 
@@ -509,12 +531,12 @@ def panel_info(request):
 def parsed_panel(request, panel_info):
     """docstring for parsed_panels"""
     panel = parse_gene_panel(
-        path=panel_info['file'], 
-        institute=panel_info['institute'], 
-        panel_id=panel_info['panel_name'], 
-        panel_type=panel_info['type'], 
-        date=panel_info['date'], 
-        version=panel_info['version'], 
+        path=panel_info['file'],
+        institute=panel_info['institute'],
+        panel_id=panel_info['panel_name'],
+        panel_type=panel_info['type'],
+        date=panel_info['date'],
+        version=panel_info['version'],
         display_name=panel_info['full_name']
     )
 
@@ -528,6 +550,7 @@ def panel_obj(request, parsed_panel, gene_database):
 
     return panel
 
+
 @pytest.fixture(scope='function')
 def gene_panels(request, parsed_case):
     """Return a list with the gene panels of parsed case"""
@@ -535,12 +558,14 @@ def gene_panels(request, parsed_case):
 
     return panels
 
+
 @pytest.fixture(scope='function')
 def default_panels(request, parsed_case):
     """Return a list with the gene panels of parsed case"""
     panels = parsed_case['default_panels']
 
     return panels
+
 
 #############################################################
 ##################### Variant fixtures #####################
@@ -558,9 +583,10 @@ def basic_variant_dict(request):
         'FILTER': 'PASS',
         'FORMAT': 'GT',
         'INFO': '.',
-        'info_dict':{},
+        'info_dict': {},
     }
     return variant
+
 
 @pytest.fixture(scope='function')
 def one_variant(request, variant_clinical_file):
@@ -572,6 +598,7 @@ def one_variant(request, variant_clinical_file):
 
     return variant
 
+
 @pytest.fixture(scope='function')
 def one_sv_variant(request, sv_clinical_file):
     logger.info("Return one parsed SV variant")
@@ -582,6 +609,7 @@ def one_sv_variant(request, sv_clinical_file):
 
     return variant
 
+
 @pytest.fixture(scope='function')
 def rank_results_header(request, variant_clinical_file):
     logger.info("Return a VCF parser with one variant")
@@ -590,11 +618,13 @@ def rank_results_header(request, variant_clinical_file):
 
     return rank_results
 
+
 @pytest.fixture(scope='function')
 def sv_variants(request, sv_clinical_file):
     logger.info("Return a VCF parser many svs")
     variants = VCF(sv_clinical_file)
     return variants
+
 
 @pytest.fixture(scope='function')
 def variants(request, variant_clinical_file):
@@ -602,12 +632,14 @@ def variants(request, variant_clinical_file):
     variants = VCF(variant_clinical_file)
     return variants
 
+
 @pytest.fixture(scope='function')
 def parsed_variant(request, one_variant, case_obj):
     """Return a parsed variant"""
     print('')
     variant_dict = parse_variant(one_variant, case_obj)
     return variant_dict
+
 
 @pytest.fixture(scope='function')
 def variant_obj(request, parsed_variant, populated_database):
@@ -618,10 +650,12 @@ def variant_obj(request, parsed_variant, populated_database):
     variant = build_variant(parsed_variant, institute_id=institute_obj['internal_id'])
     return variant
 
+
 @pytest.fixture(scope='function')
 def cyvcf2_variant():
     """Return a variant object"""
     print('')
+
     class Cyvcf2Variant(object):
         def __init__(self):
             self.CHROM = '1'
@@ -633,7 +667,7 @@ def cyvcf2_variant():
             self.ID = '.'
             self.QUAL = None
             self.var_type = 'snp'
-            self.INFO = {'RankScore':"123:10"}
+            self.INFO = {'RankScore': "123:10"}
 
     variant = Cyvcf2Variant()
     return variant
@@ -643,66 +677,67 @@ def cyvcf2_variant():
 def parsed_variant():
     """Return variant information for a parsed variant with minimal information"""
     variant = {'alternative': 'C',
-            'callers': {
-                'freebayes': None,
-                'gatk': None,
-                'samtools': None
-            },
-            'case_id': 'cust000-643594',
-            'category': 'snv',
-            'chromosome': '2',
-            'clnsig': [],
-            'compounds': [],
-            'conservation': {'gerp': [], 'phast': [], 'phylop': []},
-            'dbsnp_id': None,
-            'end': 176968945,
-            'filters': ['PASS'],
-            'frequencies': {
-                'exac': None,
-                'exac_max': None,
-                'thousand_g': None,
-                'thousand_g_left': None,
-                'thousand_g_max': None,
-                'thousand_g_right': None},
-            'genes': [],
-            'genetic_models': [],
-            'hgnc_ids': [],
-            'ids': {'display_name': '1_10_A_C_clinical',
-                    'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
-                    'simple_id': '1_10_A_C',
-                    'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
-            'length': 1,
-            'local_obs_hom_old': None,
-            'local_obs_old': None,
-            'mate_id': None,
-            'position': 176968944,
-            'quality': 10.0,
-            'rank_score': 0.0,
-            'reference': 'A',
-            'samples': [{'alt_depth': -1,
-                         'display_name': 'NA12882',
-                         'genotype_call': None,
-                         'genotype_quality': None,
-                         'individual_id': 'ADM1059A2',
-                         'read_depth': None,
-                         'ref_depth': -1},
-                        {'alt_depth': -1,
-                         'display_name': 'NA12877',
-                         'genotype_call': None,
-                         'genotype_quality': None,
-                         'individual_id': 'ADM1059A1',
-                         'read_depth': None,
-                         'ref_depth': -1},
-                        {'alt_depth': -1,
-                         'display_name': 'NA12878',
-                         'genotype_call': None,
-                         'genotype_quality': None,
-                         'individual_id': 'ADM1059A3',
-                         'read_depth': None,
-                         'ref_depth': -1}],
-            'sub_category': 'snv',
-            'variant_type': 'clinical'}
+               'callers': {
+                   'freebayes': None,
+                   'gatk': None,
+                   'samtools': None
+               },
+               'case_id': 'cust000-643594',
+               'category': 'snv',
+               'chromosome': '2',
+               'clnsig': [],
+               'compounds': [],
+               'conservation': {'gerp': [], 'phast': [], 'phylop': []},
+               'dbsnp_id': None,
+               'end': 176968945,
+               'filters': ['PASS'],
+               'frequencies': {
+                   'exac': None,
+                   'exac_max': None,
+                   'thousand_g': None,
+                   'thousand_g_left': None,
+                   'thousand_g_max': None,
+                   'thousand_g_right': None},
+               'genes': [],
+               'genetic_models': [],
+               'hgnc_ids': [],
+               'ids': {'display_name': '1_10_A_C_clinical',
+                       'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
+                       'simple_id': '1_10_A_C',
+                       'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
+               'length': 1,
+               'local_obs_hom_old': None,
+               'local_obs_old': None,
+               'mate_id': None,
+               'position': 176968944,
+               'quality': 10.0,
+               'rank_score': 0.0,
+               'reference': 'A',
+               'samples': [{'alt_depth': -1,
+                            'display_name': 'NA12882',
+                            'genotype_call': None,
+                            'genotype_quality': None,
+                            'individual_id': 'ADM1059A2',
+                            'read_depth': None,
+                            'ref_depth': -1},
+                           {'alt_depth': -1,
+                            'display_name': 'NA12877',
+                            'genotype_call': None,
+                            'genotype_quality': None,
+                            'individual_id': 'ADM1059A1',
+                            'read_depth': None,
+                            'ref_depth': -1},
+                           {'alt_depth': -1,
+                            'display_name': 'NA12878',
+                            'genotype_call': None,
+                            'genotype_quality': None,
+                            'individual_id': 'ADM1059A3',
+                            'read_depth': None,
+                            'ref_depth': -1}],
+               'sub_category': 'snv',
+               'variant_type': 'clinical'}
     return variant
+
 
 @pytest.fixture(scope='function')
 def parsed_sv_variant(request, one_sv_variant, case_obj):
@@ -711,28 +746,30 @@ def parsed_sv_variant(request, one_sv_variant, case_obj):
     variant_dict = parse_variant(one_sv_variant, case_obj)
     return variant_dict
 
+
 @pytest.fixture(scope='function')
 def parsed_variants(request, variants, case_obj):
     """Get a generator with parsed variants"""
     print('')
     individual_positions = {}
-    for i,ind in enumerate(variants.samples):
+    for i, ind in enumerate(variants.samples):
         individual_positions[ind] = i
 
     return (parse_variant(variant, case_obj,
-            individual_positions=individual_positions)
+                          individual_positions=individual_positions)
             for variant in variants)
+
 
 @pytest.fixture(scope='function')
 def parsed_sv_variants(request, sv_variants, case_obj):
     """Get a generator with parsed variants"""
     print('')
     individual_positions = {}
-    for i,ind in enumerate(sv_variants.samples):
+    for i, ind in enumerate(sv_variants.samples):
         individual_positions[ind] = i
 
     return (parse_variant(variant, case_obj,
-            individual_positions=individual_positions)
+                          individual_positions=individual_positions)
             for variant in sv_variants)
 
 
@@ -743,12 +780,14 @@ def variant_objs(request, parsed_variants, institute_obj):
     return (build_variant(variant, institute_obj)
             for variant in parsed_variants)
 
+
 @pytest.fixture(scope='function')
 def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     """Get a generator with parsed variants"""
     print('')
     return (build_variant(variant, institute_obj)
             for variant in parsed_sv_variants)
+
 
 #############################################################
 ##################### File fixtures #####################
@@ -760,11 +799,13 @@ def config_file(request):
     print('')
     return load_path
 
+
 @pytest.fixture
 def panel_1_file(request):
     """Get the path to a config file"""
     print('')
     return panel_path
+
 
 @pytest.fixture
 def hgnc_file(request):
@@ -772,11 +813,13 @@ def hgnc_file(request):
     print('')
     return hgnc_reduced_path
 
+
 @pytest.fixture
 def transcripts_file(request):
     """Get the path to a ensembl transcripts file"""
     print('')
     return transcripts37_reduced_path
+
 
 @pytest.fixture
 def exac_file(request):
@@ -784,11 +827,13 @@ def exac_file(request):
     print('')
     return exac_reduced_path
 
+
 @pytest.fixture
 def hpo_genes_file(request):
     """Get the path to the hpo genes file"""
     print('')
     return hpogenes_reduced_path
+
 
 @pytest.fixture
 def hpo_to_genes_file(request):
@@ -796,11 +841,13 @@ def hpo_to_genes_file(request):
     print('')
     return hpo_to_genes_reduced_path
 
+
 @pytest.fixture
 def hpo_terms_file(request):
     """Get the path to the hpo terms file"""
     print('')
     return hpoterms_reduced_path
+
 
 @pytest.fixture
 def hpo_disease_file(request):
@@ -815,17 +862,20 @@ def mim2gene_file(request):
     print('')
     return mim2gene_reduced_path
 
+
 @pytest.fixture
 def genemap_file(request):
     """Get the path to the mim2genes file"""
     print('')
     return genemap2_reduced_path
 
+
 @pytest.fixture(scope='function')
 def variant_clinical_file(request):
     """Get the path to a variant file"""
     print('')
     return clinical_snv_path
+
 
 @pytest.fixture(scope='function')
 def sv_clinical_file(request):
@@ -849,6 +899,7 @@ def scout_config(request, config_file):
     data = yaml.load(in_handle)
     return data
 
+
 @pytest.fixture(scope='function')
 def minimal_config(request, scout_config):
     """Return a minimal config"""
@@ -865,11 +916,13 @@ def minimal_config(request, scout_config):
 
     return config
 
+
 @pytest.fixture
 def panel_handle(request, panel_1_file):
     """Get a file handle to a gene panel file"""
     print('')
     return get_file_handle(panel_1_file)
+
 
 @pytest.fixture
 def hgnc_handle(request, hgnc_file):
@@ -877,11 +930,13 @@ def hgnc_handle(request, hgnc_file):
     print('')
     return get_file_handle(hgnc_file)
 
+
 @pytest.fixture
 def hgnc_genes(request, hgnc_handle):
     """Get a dictionary with hgnc genes"""
     print('')
     return parse_hgnc_genes(hgnc_handle)
+
 
 @pytest.fixture
 def transcripts_handle(request, transcripts_file):
@@ -889,11 +944,13 @@ def transcripts_handle(request, transcripts_file):
     print('')
     return get_file_handle(transcripts_file)
 
+
 @pytest.fixture
 def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_transcripts(transcripts_handle)
+
 
 @pytest.fixture
 def exac_handle(request, exac_file):
@@ -901,11 +958,13 @@ def exac_handle(request, exac_file):
     print('')
     return get_file_handle(exac_file)
 
+
 @pytest.fixture
 def exac_genes(request, exac_handle):
     """Get the parsed exac genes"""
     print('')
     return parse_exac_genes(exac_handle)
+
 
 @pytest.fixture
 def hpo_genes_handle(request, hpo_genes_file):
@@ -913,11 +972,13 @@ def hpo_genes_handle(request, hpo_genes_file):
     print('')
     return get_file_handle(hpo_genes_file)
 
+
 @pytest.fixture
 def hpo_to_genes_handle(request, hpo_to_genes_file):
     """Get a file handle to a hpo to gene file"""
     print('')
     return get_file_handle(hpo_to_genes_file)
+
 
 @pytest.fixture
 def hpo_disease_handle(request, hpo_disease_file):
@@ -925,11 +986,13 @@ def hpo_disease_handle(request, hpo_disease_file):
     print('')
     return get_file_handle(hpo_disease_file)
 
+
 @pytest.fixture
 def mim2gene_handle(request, mim2gene_file):
     """Get a file handle to a mim2genes file"""
     print('')
     return get_file_handle(mim2gene_file)
+
 
 @pytest.fixture
 def genemap_handle(request, genemap_file):

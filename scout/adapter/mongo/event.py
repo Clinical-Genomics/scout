@@ -64,7 +64,7 @@ class EventHandler(object):
         logger.debug("Event Saved")
 
     def events(self, institute, case=None, variant_id=None, level=None,
-                comments=False, panel=None):
+               comments=False, panel=None):
         """Fetch events from the database.
 
           Args:
@@ -161,7 +161,7 @@ class EventHandler(object):
             updated_case (dict): The updated case
         """
         logger.info("Creating event for unassigning {0} from {1}".format(
-                    user['name'], case['display_name']))
+            user['name'], case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -174,7 +174,7 @@ class EventHandler(object):
         )
 
         logger.info("Updating {0} to be unassigned with {1}".format(
-                    case['display_name'], user['name']))
+            case['display_name'], user['name']))
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
@@ -208,7 +208,7 @@ class EventHandler(object):
             return None
 
         logger.info("Creating event for updating status of {0} to {1}".format(
-                    case['display_name'], status))
+            case['display_name'], status))
 
         self.create_event(
             institute=institute,
@@ -222,9 +222,9 @@ class EventHandler(object):
 
         logger.info("Updating {0} to status {1}".format(case['display_name'], status))
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
-            {'$set': {'status':status}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'_id': case['_id']},
+            {'$set': {'status': status}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -245,7 +245,7 @@ class EventHandler(object):
         Returns:
             updated_case
         """
-        logger.info("Creating event for updating the synopsis for case"\
+        logger.info("Creating event for updating the synopsis for case" \
                     " {0}".format(case['display_name']))
 
         self.create_event(
@@ -260,11 +260,11 @@ class EventHandler(object):
         )
 
         logger.info("Updating the synopsis for case {0}".format(
-                    case['display_name']))
+            case['display_name']))
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
-            {'$set': {'synopsis':content}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'_id': case['_id']},
+            {'$set': {'synopsis': content}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -282,7 +282,7 @@ class EventHandler(object):
             updated_case (dict)
         """
         logger.info("Creating event for archiving case {0}".format(
-                    case['display_name']))
+            case['display_name']))
 
         self.create_event(
             institute=institute,
@@ -295,12 +295,12 @@ class EventHandler(object):
         )
 
         logger.info("Change status for case {0} to 'archived'".format(
-                    case['display_name']))
+            case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
-            {'$set': {'status':'archived'}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'_id': case['_id']},
+            {'$set': {'status': 'archived'}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -331,12 +331,12 @@ class EventHandler(object):
         )
 
         logger.info("Set research_requested for case {0} to True".format(
-                    case['display_name']))
+            case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
-            {'$set': {'research_requested':True}},
-            return_document = pymongo.ReturnDocument.AFTER
+            {'_id': case['_id']},
+            {'$set': {'research_requested': True}},
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -454,7 +454,7 @@ class EventHandler(object):
                         'phenotype_groups': {'phenotype_id': phenotype_id},
                     },
                 },
-                return_document = pymongo.ReturnDocument.AFTER
+                return_document=pymongo.ReturnDocument.AFTER
             )
 
         else:
@@ -465,10 +465,10 @@ class EventHandler(object):
                         'phenotype_terms': {'phenotype_id': phenotype_id},
                     },
                 },
-                return_document = pymongo.ReturnDocument.AFTER
+                return_document=pymongo.ReturnDocument.AFTER
             )
 
-        logger.info("Creating event for removing phenotype term {0}"\
+        logger.info("Creating event for removing phenotype term {0}" \
                     " from case {1}".format(phenotype_id, case['display_name']))
 
         self.create_event(
@@ -506,7 +506,7 @@ class EventHandler(object):
         """
         if variant:
             logger.info("Creating event for a {0} comment on variant {1}".format(
-                        comment_level, variant['display_name']))
+                comment_level, variant['display_name']))
 
             self.create_event(
                 institute=institute,
@@ -523,7 +523,7 @@ class EventHandler(object):
 
         else:
             logger.info("Creating event for a comment on case {0}".format(
-                        case['display_name']))
+                case['display_name']))
 
             self.create_event(
                 institute=institute,
@@ -550,13 +550,13 @@ class EventHandler(object):
             updated_case
         """
         logger.info("Creating event for pinning variant {0}".format(
-                    variant['display_name']))
+            variant['display_name']))
 
         # add variant to list of pinned references in the case model
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {'$push': {'suspects': variant['_id']}},
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         kwargs = dict(
@@ -587,15 +587,15 @@ class EventHandler(object):
             updated_case(dict)
         """
         logger.info("Creating event for unpinning variant {0}".format(
-                    variant['display_name']))
+            variant['display_name']))
 
-        logger.info("Remove variant from list of references in the case"\
+        logger.info("Remove variant from list of references in the case" \
                     " model")
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {'$pull': {'suspects': variant['_id']}},
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         self.create_event(
@@ -613,6 +613,7 @@ class EventHandler(object):
 
     def order_sanger(self, institute, case, user, link, variant):
         """Create an event for order sanger for a variant
+        and an event for order sanger for a case
 
         Arguments:
             institute (dict): A Institute object
@@ -624,13 +625,13 @@ class EventHandler(object):
         Returns:
             updated_variant(dict)
         """
-        logger.info("Creating event for ordering sanger for variant"\
+        logger.info("Creating event for ordering sanger for variant" \
                     " {0}".format(variant['display_name']))
 
         updated_variant = self.variant_collection.find_one_and_update(
-            {'_id':variant['_id']},
+            {'_id': variant['_id']},
             {'$set': {'sanger_ordered': True}},
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         self.create_event(
@@ -644,7 +645,7 @@ class EventHandler(object):
             subject=variant['display_name'],
         )
 
-        logger.info("Creating event for ordering sanger for case"\
+        logger.info("Creating event for ordering sanger for case" \
                     " {0}".format(case['display_name']))
 
         self.create_event(
@@ -659,7 +660,7 @@ class EventHandler(object):
         )
         return updated_variant
 
-    def order_unsanger(self, institute, case, user, link, variant):
+    def cancel_sanger(self, institute, case, user, link, variant):
         """Create an event for cancellation of an order sanger for a variant
 
         Arguments:
@@ -672,13 +673,13 @@ class EventHandler(object):
         Returns:
             updated_variant(dict)
         """
-        logger.info("Creating event for cancellation of ordering sanger for variant"\
+        logger.info("Creating event for cancellation of ordering sanger for variant" \
                     " {0}".format(variant['display_name']))
 
         updated_variant = self.variant_collection.find_one_and_update(
-            {'_id':variant['_id']},
+            {'_id': variant['_id']},
             {'$set': {'sanger_ordered': False}},
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         self.create_event(
@@ -687,12 +688,12 @@ class EventHandler(object):
             user=user,
             link=link,
             category='variant',
-            verb='unsanger',
+            verb='cancel_sanger',
             variant=variant,
             subject=variant['display_name'],
         )
 
-        logger.info("Creating event for cancellation of ordering sanger for case"\
+        logger.info("Creating event for cancellation of ordering sanger for case" \
                     " {0}".format(case['display_name']))
 
         self.create_event(
@@ -701,7 +702,7 @@ class EventHandler(object):
             user=user,
             link=link,
             category='case',
-            verb='unsanger',
+            verb='cancel_sanger',
             variant=variant,
             subject=variant['display_name'],
         )
@@ -727,9 +728,9 @@ class EventHandler(object):
             return
 
         updated_variant = self.variant_collection.find_one_and_update(
-            {'_id':variant['_id']},
+            {'_id': variant['_id']},
             {'$set': {'validation': validate_type}},
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         self.create_event(
@@ -759,13 +760,13 @@ class EventHandler(object):
         """
         display_name = variant['display_name']
         logger.info("Mark variant {0} as causative in the case {1}".format(
-                    display_name, case['display_name']))
+            display_name, case['display_name']))
 
         logger.info("Adding variant to causatives in case {0}".format(
-                    case['display_name']))
+            case['display_name']))
 
         logger.info("Marking case {0} as solved".format(
-                    case['display_name']))
+            case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
@@ -773,10 +774,10 @@ class EventHandler(object):
                 '$push': {'causatives': variant['_id']},
                 '$set': {'status': 'solved'}
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
-        logger.info("Creating case event for marking {0}"\
+        logger.info("Creating case event for marking {0}" \
                     " causative".format(variant['display_name']))
 
         self.create_event(
@@ -790,7 +791,7 @@ class EventHandler(object):
             subject=variant['display_name'],
         )
 
-        logger.info("Creating variant event for marking {0}"\
+        logger.info("Creating variant event for marking {0}" \
                     " causative".format(case['display_name']))
 
         self.create_event(
@@ -821,28 +822,28 @@ class EventHandler(object):
         """
         display_name = variant['display_name']
         logger.info("Remove variant {0} as causative in case {1}".format(
-                    display_name, case['display_name']))
+            display_name, case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$pull': {'causatives': variant['_id']},
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         # mark the case as active again
         if len(updated_case.get('causatives', [])) == 0:
             logger.info("Marking case as 'active'")
             updated_case = self.case_collection.find_one_and_update(
-                {'_id':case['_id']},
+                {'_id': case['_id']},
                 {
                     '$set': {'status': 'active'}
                 },
-                return_document = pymongo.ReturnDocument.AFTER
+                return_document=pymongo.ReturnDocument.AFTER
             )
 
-        logger.info("Creating events for unmarking variant {0} "\
+        logger.info("Creating events for unmarking variant {0} " \
                     "causative".format(display_name))
 
         self.create_event(
@@ -920,7 +921,7 @@ class EventHandler(object):
         return updated_variant
 
     def update_dismiss_variant(self, institute, case, user, link, variant,
-                           dismiss_variant):
+                               dismiss_variant):
         """Create an event for updating the manual dismiss variant entry
 
           This function will create a event and update the dismiss variant
@@ -968,7 +969,6 @@ class EventHandler(object):
         )
         logger.debug("Variant updated")
         return updated_variant
-
 
     def update_acmg(self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str):
         """Create an event for updating the ACMG classification of a variant.
@@ -1045,11 +1045,11 @@ class EventHandler(object):
                     .format(case['display_name'], status))
         analysis_checked = False if unmark else True
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$set': {'analysis_checked': analysis_checked}
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -1080,11 +1080,11 @@ class EventHandler(object):
         )
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$set': {'rerun_requested': True}
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -1116,11 +1116,11 @@ class EventHandler(object):
         )
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$push': {'collaborators': collaborator_id}
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -1153,11 +1153,11 @@ class EventHandler(object):
         )
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$pull': {'collaborators': collaborator_id}
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -1242,11 +1242,11 @@ class EventHandler(object):
                     .format(tag, case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$addToSet': {'cohorts': tag},
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
@@ -1278,11 +1278,11 @@ class EventHandler(object):
                     .format(tag, case['display_name']))
 
         updated_case = self.case_collection.find_one_and_update(
-            {'_id':case['_id']},
+            {'_id': case['_id']},
             {
                 '$pull': {'cohorts': tag},
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
         logger.debug("Case updated")
         return updated_case
