@@ -31,21 +31,25 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
     LOG.info("Number of genes: {0}".format(len(ensembl_genes)))
     
+    # Parse the transcripts, we need to check if it is a request or a file handle
     if isinstance(transcripts_lines, DataFrame):
         transcripts = parse_ensembl_transcript_request(transcripts_lines)
     else:
         transcripts = parse_ensembl_transcripts(transcripts_lines)
     
+    # We need to store the transcripts
     transcripts_dict = {}
     genes = set()
+    # Loop over the parsed transcripts
     for tx in transcripts:
         tx_id = tx['ensembl_transcript_id']
         ens_gene_id = tx['ensembl_gene_id']
         gene_obj = ensembl_genes.get(ens_gene_id)
         if not gene_obj:
-            LOG.debug("Gene %s does not exist in build %s" % (ens_gene_id, build))
+            LOG.debug("Gene %s does not exist in build %s", ens_gene_id, build)
             continue
 
+        # Check if the transcript has been added
         if not tx_id in transcripts_dict:
             transcripts_dict[tx_id] = {
                 'chrom': tx['chrom'],
@@ -72,6 +76,8 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
     nr_primary_transcripts = 0
     nr_transcripts = len(transcripts_dict)
     
+    transcript_objs = []
+    
     with progressbar(transcripts_dict.values(), label="Loading transcripts", length=nr_transcripts) as bar:
         for tx_data in bar:
             # We need to decide one refseq identifier for each transcript, if there are any to choose 
@@ -96,8 +102,11 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
             tx_data['refseq_id'] = refseq_identifier
             
             tx_obj = build_hgnc_transcript(tx_data, build)
+            transcript_objs.append(tx_obj)
             
-            adapter.load_hgnc_transcript(tx_obj)
+            if len(transcript_objs) == 1000:
+                adapter.load_transcript_bulk(transcript_objs)
+                transcript_objs = []
             
             loaded_transcripts.append(tx_obj)
             
@@ -105,6 +114,10 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
                 ref_seq_transcripts += 1
             if tx_obj.get('is_primary'):
                 nr_primary_transcripts += 1
+
+    # Load the final bulk
+    if len(transcript_objs) > 0:
+        adapter.load_transcript_bulk(transcript_objs)
 
     LOG.info('Number of transcripts in build {0}: {1}'.format(build, nr_transcripts))
     LOG.info('Number of ref seq: %s' % ref_seq_transcripts)

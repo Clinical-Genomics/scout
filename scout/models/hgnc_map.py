@@ -8,6 +8,7 @@ hgnc_transcript = {
                 'start': int, # required
                 'end': int, # required
                 'is_primary': bool,
+                'build': str, # '37' or '38', defaults to '37', required
     }
 
 
