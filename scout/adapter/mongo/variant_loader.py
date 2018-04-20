@@ -36,7 +36,7 @@ class VariantLoader(object):
 
     def update_variant(self, variant_obj):
         """Update one variant document in the database.
-        
+
         This means that the variant in the database will be replaced by variant_obj.
 
         Args:
@@ -72,9 +72,9 @@ class VariantLoader(object):
         }).sort('rank_score', pymongo.DESCENDING)
 
         LOG.info("Updating variant_rank for all variants")
-        
+
         requests = []
-        
+
         for index, var_obj in enumerate(variants):
             if len(requests) > 5000:
                 try:
@@ -92,7 +92,7 @@ class VariantLoader(object):
                     }
                 })
             requests.append(operation)
-        
+
         #Update the final bulk
         try:
             self.variant_collection.bulk_write(requests, ordered=False)
@@ -104,16 +104,16 @@ class VariantLoader(object):
 
     def update_variant_compounds(self, variant, variant_objs = None):
         """Update compounds for a variant.
-        
+
         This will add all the necessary information of a variant on a compound object.
-        
+
         Args:
             variant(scout.models.Variant)
             variant_objs(dict): A dictionary with _ids as keys and variant objs as values.
-        
+
         Returns:
             compound_objs(list(dict)): A dictionary with updated compound objects.
-        
+
         """
         compound_objs = []
         for compound in variant.get('compounds', []):
@@ -140,36 +140,36 @@ class VariantLoader(object):
 
             compound['not_loaded'] = not_loaded
             compound_objs.append(compound)
-        
+
         return compound_objs
 
     def update_compounds(self, variants):
         """Update the compounds for a set of variants.
-        
+
         Args:
             variants(dict): A dictionary with _ids as keys and variant objs as values
 
         """
         LOG.debug("Updating compound objects")
-        
+
         for var_id in variants:
             variant_obj = variants[var_id]
             if not variant_obj.get('compounds'):
                 continue
-                            
+
             updated_compounds = self.update_variant_compounds(variant_obj, variants)
             variant_obj['compounds'] = updated_compounds
 
         LOG.debug("Compounds updated")
 
         return variants
-    
+
     def update_mongo_compound_variants(self, bulk):
         """Update the compound information for a bulk of variants in the database
-        
+
             Args:
                 bulk(dict): {'_id': scout.models.Variant}
-        
+
         """
         requests = []
         for var_id in bulk:
@@ -185,23 +185,23 @@ class VariantLoader(object):
                     }
                 })
             requests.append(operation)
-        
+
         if not requests:
             return
-        
+
         try:
             self.variant_collection.bulk_write(requests, ordered=False)
         except BulkWriteError as err:
             LOG.warning("Updating compounds failed")
             raise err
-    
+
     def update_case_compounds(self, case_obj, build='37'):
         """Update the compounds for a case
 
         Loop over all coding intervals to get coordinates for all potential compound positions.
         Update all variants within a gene with a bulk operation.
         """
-        
+
         case_id = case_obj['_id']
         # Possible categories 'snv', 'sv', 'cancer':
         categories = set()
@@ -230,51 +230,51 @@ class VariantLoader(object):
 
                     # Get all variants from the database of the specific type
                     variant_objs = self.variants(
-                        case_id=case_id, 
-                        query=query, 
+                        case_id=case_id,
+                        query=query,
                         category=category,
                         nr_of_variants=-1,
                         sort_key='position'
                     )
-                    
+
                     # Initiate a bulk
                     bulk = {}
                     current_region = None
                     special = False
-                    
+
                     # Loop over the variants and check if they are in a coding region
                     for var_obj in variant_objs:
                         var_id = var_obj['_id']
                         var_chrom = var_obj['chromosome']
                         var_start = var_obj['position']
-                        var_end = var_obj['end'] + 1 
-                        
+                        var_end = var_obj['end'] + 1
+
                         update_bulk = True
                         new_region = None
 
                         # Check if the variant is in a coding region
                         genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).search(var_start, var_end)
-                        
-                        
+
+
                         # If the variant is in a coding region
                         if genomic_regions:
                             # We know there is data here so get the interval id
                             new_region = genomic_regions.pop().data
-                        
+
                         if new_region and (new_region == current_region):
                             # If the variant is in the same region as previous
                             # we add it to the same bulk
                             update_bulk = False
 
                         current_region = new_region
-                        
+
                         # If the variant is not in a current region we update the compounds
                         # from the previous region, if any. Otherwise continue
                         if update_bulk and bulk:
                             self.update_compounds(bulk)
                             self.update_mongo_compound_variants(bulk)
                             bulk = {}
-                        
+
                         if new_region:
                             bulk[var_id] = var_obj
 
@@ -296,7 +296,7 @@ class VariantLoader(object):
         Returns:
             inserted_id
         """
-        LOG.debug("Loading variant %s", variant_obj['_id'])
+        # LOG.debug("Loading variant %s", variant_obj['_id'])
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
@@ -339,7 +339,7 @@ class VariantLoader(object):
         """
         if not len(variants) > 0:
             return
-        
+
         LOG.debug("Loading variant bulk")
         try:
             result = self.variant_collection.insert_many(variants)
@@ -355,20 +355,20 @@ class VariantLoader(object):
         return
 
     def _load_variants(self, variants, variant_type, case_obj, individual_positions, rank_threshold,
-                       institute_id, build=None, rank_results_header=None, vep_header=None, 
+                       institute_id, build=None, rank_results_header=None, vep_header=None,
                        category='snv', sample_info = None):
         """Perform the loading of variants
-            
-        This is the function that loops over the variants, parse them and build the variant 
+
+        This is the function that loops over the variants, parse them and build the variant
         objects so they are ready to be inserted into the database.
-                       
+
         """
         build = build or '37'
         genes = [gene_obj for gene_obj in self.all_genes(build=build)]
         gene_to_panels = self.gene_to_panels(case_obj)
         hgncid_to_gene = self.hgncid_to_gene(genes=genes)
         genomic_intervals = self.get_coding_intervals(genes=genes)
-        
+
         LOG.info("Start inserting variants into database")
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
@@ -378,18 +378,18 @@ class VariantLoader(object):
         nr_inserted = 0
         # This is to keep track of blocks of inserted variants
         inserted = 1
-        
+
         nr_bulks = 0
-        
+
         # We want to load batches of variants to reduce the number of network round trips
         bulk = {}
         current_region = None
-        
+
         for nr_variants, variant in enumerate(variants):
             # All MT variants are loaded
             mt_variant = 'MT' in variant.CHROM
             rank_score = parse_rank_score(variant.INFO.get('RankScore'), case_obj['_id'])
-            
+
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
             # Otherwise we load all variants above a rank score treshold
@@ -427,7 +427,7 @@ class VariantLoader(object):
                 new_region = None
 
                 genomic_regions = genomic_intervals.get(var_chrom, IntervalTree()).search(var_start, var_end)
-                
+
                 # If the variant is in a coding region
                 if genomic_regions:
                     # We know there is data here so get the interval id
@@ -436,7 +436,7 @@ class VariantLoader(object):
                     # we add it to the same bulk
                     if new_region == current_region:
                         load = False
-                
+
                 # This is the case where the variant is intergenic
                 else:
                     # If the previous variant was also intergenic we add the variant to the bulk
@@ -457,10 +457,10 @@ class VariantLoader(object):
                     except IntegrityError as error:
                         pass
                     bulk = {}
-                
+
                 current_region = new_region
                 bulk[var_id] = variant_obj
-                
+
                 if (nr_variants != 0 and nr_variants % 5000 == 0):
                     LOG.info("%s variants parsed", str(nr_variants))
                     LOG.info("Time to parse variants: %s",
@@ -473,13 +473,13 @@ class VariantLoader(object):
         # If the variants are in a coding region we update the compounds
         if current_region:
             self.update_compounds(bulk)
-        
+
         # Load the final variant bulk
         self.load_variant_bulk(list(bulk.values()))
         nr_bulks += 1
         LOG.info("All variants inserted, time to insert variants: {0}".format(
             datetime.now() - start_insertion))
-        
+
         if nr_variants:
             nr_variants += 1
         LOG.info("Nr variants parsed: %s", nr_variants)
@@ -569,21 +569,21 @@ class VariantLoader(object):
             region = "{0}:{1}-{2}".format(chrom, start, end)
         else:
             rank_threshold = rank_threshold or 0
-        
+
         variants = vcf_obj(region)
-        
+
         try:
             nr_inserted = self._load_variants(
-                variants=variants, 
-                variant_type=variant_type, 
-                case_obj=case_obj, 
-                individual_positions=individual_positions, 
+                variants=variants,
+                variant_type=variant_type,
+                case_obj=case_obj,
+                individual_positions=individual_positions,
                 rank_threshold=rank_threshold,
-                institute_id=institute_id, 
-                build=build, 
-                rank_results_header=rank_results_header, 
-                vep_header=vep_header, 
-                category=category, 
+                institute_id=institute_id,
+                build=build,
+                rank_results_header=rank_results_header,
+                vep_header=vep_header,
+                category=category,
                 sample_info = sample_info
             )
         except Exception as error:

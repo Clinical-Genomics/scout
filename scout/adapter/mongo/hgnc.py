@@ -14,10 +14,10 @@ class GeneHandler(object):
             gene_obj(dict)
 
         """
-        LOG.debug("Loading gene %s, build %s into database" %
-                     (gene_obj['hgnc_symbol'], gene_obj['build']))
+        #LOG.debug("Loading gene %s, build %s into database" %
+        #             (gene_obj['hgnc_symbol'], gene_obj['build']))
         res = self.hgnc_collection.insert_one(gene_obj)
-        LOG.debug("Gene saved")
+        #LOG.debug("Gene saved")
         return res
 
     def hgnc_gene(self, hgnc_identifyer, build='37'):
@@ -39,7 +39,7 @@ class GeneHandler(object):
             query['hgnc_symbol'] = hgnc_identifyer
 
         query['build'] = build
-        LOG.debug("Fetching gene %s" % hgnc_identifyer)
+        #LOG.debug("Fetching gene %s" % hgnc_identifyer)
         gene_obj = self.hgnc_collection.find_one(query)
         return gene_obj
 
@@ -53,7 +53,7 @@ class GeneHandler(object):
         Returns:
             hgnc_id(int)
         """
-        LOG.debug("Fetching gene %s", hgnc_symbol)
+        #LOG.debug("Fetching gene %s", hgnc_symbol)
         query = {'hgnc_symbol':hgnc_symbol, 'build':build}
         projection = {'hgnc_id':1, '_id':0}
         res = self.hgnc_collection.find(query, projection)
@@ -147,7 +147,7 @@ class GeneHandler(object):
         LOG.info("Building hgncid_to_gene")
         if not genes:
             genes = self.hgnc_collection.find({'build':build})
-        
+
         for gene_obj in genes:
             hgnc_dict[gene_obj['hgnc_id']] = gene_obj
 
@@ -283,13 +283,13 @@ class GeneHandler(object):
 
     def get_coding_intervals(self, build='37', genes=None):
         """Return a dictionary with chromosomes as keys and interval trees as values
-        
+
         Each interval represents a coding region of overlapping genes.
-        
+
         Args:
             build(str): The genome build
             genes(iterable(scout.models.HgncGene)):
-        
+
         Returns:
             intervals(dict): A dictionary with chromosomes as keys and overlapping genomic intervals as values
         """
@@ -301,35 +301,35 @@ class GeneHandler(object):
             chrom = hgnc_obj['chromosome']
             start = max((hgnc_obj['start'] - 5000), 1)
             end = hgnc_obj['end'] + 5000
-            
-            # If this is the first time a chromosome is seen we create a new 
+
+            # If this is the first time a chromosome is seen we create a new
             # interval tree with current interval
             if chrom not in intervals:
                 intervals[chrom] = intervaltree.IntervalTree()
                 intervals[chrom].addi(start, end, i)
                 continue
-            
+
             res = intervals[chrom].search(start, end)
-            
+
             # If the interval did not overlap any other intervals we insert it and continue
             if not res:
                 intervals[chrom].addi(start, end, i)
                 continue
-            
+
             # Loop over the overlapping intervals
             for interval in res:
                 # Update the positions to new max and mins
                 if interval.begin < start:
                     start = interval.begin
-                
+
                 if interval.end > end:
                     end = interval.end
-                
+
                 # Delete the old interval
                 intervals[chrom].remove(interval)
-            
+
             # Add the new interval consisting och the overlapping ones
             intervals[chrom].addi(start, end, i)
-        
+
         return intervals
 

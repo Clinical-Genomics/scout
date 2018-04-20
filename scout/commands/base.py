@@ -54,7 +54,7 @@ log = logging.getLogger(__name__)
 def cli(context, mongodb, username, password, authdb, host, port, loglevel, config, demo):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
-    
+
     log.info("Running scout version %s", __version__)
     log.debug("Debug logging enabled.")
 
@@ -68,6 +68,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     mongo_config['mongodb'] = (mongodb or cli_config.get('mongodb') or 'scout')
     if demo:
         mongo_config['mongodb'] = 'scout-demo'
+
 
     mongo_config['host'] = (host or cli_config.get('host') or 'localhost')
     mongo_config['port'] = (port or cli_config.get('port') or 27017)

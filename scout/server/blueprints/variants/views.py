@@ -175,6 +175,20 @@ def sanger(institute_id, case_name, variant_id):
     return redirect(request.referrer)
 
 
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/cancel_sanger', methods=['POST'])
+def cancel_sanger(institute_id, case_name, variant_id):
+    """Send Sanger cancelation email for confirming a variant."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(current_user.email)
+    try:
+        controllers.cancel_sanger(store, mail, institute_obj, case_obj, user_obj,
+                           variant_obj, current_app.config['MAIL_USERNAME'])
+    except controllers.MissingSangerRecipientError:
+        flash('No sanger recipients added to institute.', 'danger')
+    return redirect(request.referrer)
+
+
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):

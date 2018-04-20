@@ -7,29 +7,29 @@ from scout.models.event import VERBS_MAP
 
 logger = logging.getLogger(__name__)
 
-def test_create_event(adapter, institute_obj, case_obj, user_obj):    
+def test_create_event(adapter, institute_obj, case_obj, user_obj):
     ## GIVEN a database without any events
-    
+
     assert adapter.event_collection.find().count() == 0
-    
+
     ## WHEN inserting a event
     verb = "status"
     adapter.create_event(
-        institute=institute_obj, 
-        case=case_obj, 
-        user=user_obj, 
-        link='a link', 
-        category='case', 
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='a link',
+        category='case',
         verb=verb,
-        subject='a subject', 
+        subject='a subject',
         level='specific'
     )
-    
+
     # THEN assert that the event was added to the database
-    
+
     adapter.event_collection.find().count() == 1
     res = adapter.event_collection.find_one()
-    
+
     assert res['verb'] == verb
 
 def test_assign(case_database, institute_obj, case_obj, user_obj):
@@ -46,7 +46,7 @@ def test_assign(case_database, institute_obj, case_obj, user_obj):
         case_id=case_obj['_id']
     )
     assert case
-    
+
     user = adapter.user(
         email = user_obj['email']
     )
@@ -64,14 +64,14 @@ def test_assign(case_database, institute_obj, case_obj, user_obj):
     assert updated_case['assignees'] == [user['_id']]
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 1
-    
+
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
 
 def test_unassign(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     print('')
-    
+
     updated_case = adapter.assign(
         institute=institute_obj,
         case=case_obj,
@@ -92,7 +92,7 @@ def test_unassign(case_database, institute_obj, case_obj, user_obj):
 
     # THEN the two events should have been created
     assert adapter.event_collection.find().count() == 2
-    
+
     # THEN the case should not be assigned
     assert updated_case.get('assignees') == []
     # THEN a unassign event should be created
@@ -105,9 +105,9 @@ def test_mark_causative(variant_database, institute_obj, case_obj, user_obj):
     # GIVEN a populated database with variants
     assert adapter.variant_collection.find().count() > 0
     assert adapter.event_collection.find().count() == 0
-    
+
     variant = adapter.variant_collection.find_one()
-    # GIVEN a populated databas
+    # GIVEN a populated database
     institute = adapter.institute(
         institute_id=institute_obj['internal_id']
     )
@@ -118,7 +118,7 @@ def test_mark_causative(variant_database, institute_obj, case_obj, user_obj):
     )
     assert case
     assert len(case.get('causatives', [])) == 0
-    
+
     user = adapter.user(
         email = user_obj['email']
     )
@@ -140,14 +140,14 @@ def test_mark_causative(variant_database, institute_obj, case_obj, user_obj):
 
     # THEN assert that case status is updated to solved
     assert updated_case['status'] == 'solved'
-    
+
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
 
 def test_unmark_causative(variant_database, institute_obj, case_obj, user_obj):
     adapter = variant_database
     logger.info("Testing mark a variant causative")
-    
+
     variant = adapter.variant_collection.find_one()
     institute = adapter.institute(
         institute_id=institute_obj['internal_id']
@@ -181,22 +181,127 @@ def test_unmark_causative(variant_database, institute_obj, case_obj, user_obj):
         link=link,
         variant=variant
     )
-    
+
     ## THEN assert that the cusative variant is removed
     assert len(updated_case['causatives']) == 0
 
     ## THEN assert that the status is changed to 'active'
     assert updated_case['status'] == 'active'
-    
+
     # THEN two new events should have been created, one for the case and one for the variant
     assert adapter.event_collection.find().count() == 4
+
+
+def test_order_sanger(variant_database, institute_obj, case_obj, user_obj):
+    adapter = variant_database
+    logger.info("Testing ordering sanger for a variant")
+    # GIVEN a populated database with variants
+    assert adapter.variant_collection.find().count() > 0
+    assert adapter.event_collection.find().count() == 0
+
+    variant = adapter.variant_collection.find_one()
+    assert variant.get('sanger_ordered') is not True
+
+    # GIVEN a populated database
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
+    )
+    assert institute
+
+    case = adapter.case(
+        case_id=case_obj['_id']
+    )
+    assert case
+
+    user = adapter.user(
+        email=user_obj['email']
+    )
+    assert user
+
+    link = 'orderSangerlink'
+
+    # WHEN ordering sanger for a variant
+    updated_variant = adapter.order_sanger(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        variant=variant
+    )
+
+    # THEN one events should have been created, one for the variant
+    assert adapter.event_collection.find().count() == 2
+
+    # THEN updated variant should have same id as original variant
+    assert variant.get('_id') == updated_variant.get('_id')
+
+    # THEN the variant should be marked for sanger analysis
+    assert updated_variant.get('sanger_ordered') is True
+
+    for event_obj in adapter.event_collection.find():
+        assert event_obj['link'] == link
+        assert event_obj['verb'] == 'sanger'
+        assert event_obj['category'] in ['case', 'variant']
+
+
+def test_cancel_sanger(variant_database, institute_obj, case_obj, user_obj):
+    adapter = variant_database
+    logger.info("Testing ordering sanger for a variant")
+    # GIVEN a populated database with variants
+    assert adapter.variant_collection.find().count() > 0
+    assert adapter.event_collection.find().count() == 0
+
+    variant = adapter.variant_collection.find_one()
+    assert variant.get('sanger_ordered') is not False
+
+    # GIVEN a populated database
+    institute = adapter.institute(
+        institute_id=institute_obj['internal_id']
+    )
+    assert institute
+
+    case = adapter.case(
+        case_id=case_obj['_id']
+    )
+    assert case
+
+    user = adapter.user(
+        email=user_obj['email']
+    )
+    assert user
+
+    link = 'cancelSangerlink'
+
+    # WHEN ordering sanger for a variant
+    updated_variant = adapter.cancel_sanger(
+        institute=institute,
+        case=case,
+        user=user,
+        link=link,
+        variant=variant
+    )
+
+    # THEN one events should have been created, one for the variant
+    assert adapter.event_collection.find().count() == 2
+
+    # THEN updated variant should have same id as original variant
+    assert variant.get('_id') == updated_variant.get('_id')
+
+    # THEN the variant should be marked for sanger analysis
+    assert updated_variant.get('sanger_ordered') is False
+
+    for event_obj in adapter.event_collection.find():
+        assert event_obj['link'] == link
+        assert event_obj['verb'] == 'cancel_sanger'
+        assert event_obj['category'] in ['case', 'variant']
+
 
 def test_dismiss_variant(variant_database, institute_obj, case_obj, user_obj):
     adapter = variant_database
     logger.info("Test dismiss variant")
 
     # GIVEN a variant db with at least one variant, and no events
-    assert adapter.variant_collection.find().count() > 0 
+    assert adapter.variant_collection.find().count() > 0
     assert adapter.event_collection.find().count() == 0
 
     variant = adapter.variant_collection.find_one()
@@ -215,12 +320,12 @@ def test_dismiss_variant(variant_database, institute_obj, case_obj, user_obj):
         )
 
     link = 'testDismissMyVariant'
-    
+
     dismiss_reason = [3, 5, 7]
 
     updated_variant = adapter.update_dismiss_variant(institute, case, user,
                           link, variant, dismiss_reason)
-        
+
     # THEN a dismiss event should be created
     event_obj = adapter.event_collection.find_one()
     assert event_obj['verb'] == 'dismiss_variant'
@@ -255,7 +360,7 @@ def test_archive_case(case_database, institute_obj, case_obj, user_obj):
     logger.info("Set a case to archive status")
     # GIVEN a populated database without events
     assert adapter.event_collection.find().count() == 0
-    
+
     # WHEN setting a case in archive status
     link = 'archivelink'
     updated_case = adapter.archive_case(
@@ -275,9 +380,9 @@ def test_open_research(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     # GIVEN a populated database without events
     assert adapter.event_collection.find().count() == 0
-    assert adapter.case_collection.find_one({'_id': case_obj['_id']}).get('research_requested', False) == False 
-    
-    
+    assert adapter.case_collection.find_one({'_id': case_obj['_id']}).get('research_requested', False) == False
+
+
     # WHEN setting opening research for a case
     link = 'openresearchlink'
     updated_case = adapter.open_research(
@@ -321,7 +426,7 @@ def test_add_hpo(case_database, institute_obj, case_obj, user_obj):
 
     # WHEN adding a hpo term for a case
     link = 'addhpolink'
-    
+
     updated_case = adapter.add_phenotype(
         institute=institute_obj,
         case=case_obj,
@@ -343,7 +448,7 @@ def test_add_phenotype_group(hpo_database, institute_obj, case_obj, user_obj):
     adapter._add_case(case_obj)
 
     hpo_term = 'HP:0000878'
-    
+
     #Existing mim phenotype
     # GIVEN a populated database with no events
     assert adapter.hpo_term_collection.find().count() > 0
@@ -400,7 +505,7 @@ def test_add_non_existing_mim(populated_database, institute_obj, case_obj, user_
     #Non existing mim phenotype
     mim_term = 'MIM:0000002'
     # GIVEN a populated database
-    
+
     # WHEN adding a non existing phenotype term
     updated_case = adapter.add_phenotype(
         institute=institute_obj,
@@ -419,11 +524,11 @@ def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add OMIM term for a case")
     adapter._add_case(case_obj)
-    
+
     #Existing mim phenotype
     mim_obj = adapter.disease_term_collection.find_one()
     mim_term = mim_obj['_id']
-    
+
     assert adapter.hpo_term_collection.find().count() > 0
     # GIVEN a populated database
     assert adapter.event_collection.find().count() == 0
@@ -465,7 +570,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
 
     #Check that the event exists
     assert adapter.event_collection.find().count() == 1
-    
+
     # WHEN removing the phenotype term
     updated_case = adapter.remove_phenotype(
         institute=institute_obj,
@@ -487,9 +592,9 @@ def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
     # GIVEN a populated database with variants
     assert adapter.variant_collection.find().count() > 0
     assert adapter.event_collection.find().count() == 0
-    
+
     variant = adapter.variant_collection.find_one()
-    
+
     # WHEN commenting on a variant
     updated_variant = variant_database.comment(
         institute=institute_obj,
@@ -519,14 +624,14 @@ def test_add_cohort(case_database, institute_obj, case_obj, user_obj):
     )
     assert case
     assert case.get('cohorts') == None
-    
+
     user = adapter.user(
         email = user_obj['email']
     )
     assert user
 
     cohort_name = 'cohort'
-    
+
     link = 'cohortlink'
     ## WHEN adding a cohort to a case
     updated_case = adapter.add_cohort(
@@ -569,12 +674,12 @@ def test_remove_cohort(case_database, institute_obj, case_obj, user_obj):
         tag=cohort_name
     )
     assert adapter.event_collection.find().count() == 1
-    
+
     case = adapter.case(
         case_id=case_obj['_id']
     )
     assert case.get('cohorts')
-    
+
     ## WHEN removing a cohort from a case
     updated_case = adapter.remove_cohort(
         institute=institute,
@@ -593,20 +698,20 @@ def test_update_default_panels(case_database, institute_obj, case_obj, user_obj)
     print('')
     # GIVEN a case with one gene panel
     assert len(case_obj['panels']) == 1
-    
+
     for panel in case_obj['panels']:
         if panel['panel_name'] == 'panel1':
             assert panel['is_default'] == True
             print(panel)
-    
+
     new_panel = {
-        '_id': 'an_id', 
-        'panel_id': 'an_id', 
-        'panel_name': 'panel2', 
-        'display_name': 'Test panel2', 
-        'version': 1.0, 
-        'updated_at': datetime.datetime.now(), 
-        'nr_genes': 263, 
+        '_id': 'an_id',
+        'panel_id': 'an_id',
+        'panel_name': 'panel2',
+        'display_name': 'Test panel2',
+        'version': 1.0,
+        'updated_at': datetime.datetime.now(),
+        'nr_genes': 263,
         'is_default': False
     }
     case_obj = adapter.case_collection.find_one_and_update(
@@ -616,11 +721,11 @@ def test_update_default_panels(case_database, institute_obj, case_obj, user_obj)
         },
         return_document = pymongo.ReturnDocument.AFTER
     )
-    
+
     assert len(case_obj['panels']) == 2
-    
+
     # WHEN updating the default panels
-    
+
     updated_case = adapter.update_default_panels(
          institute_obj=institute_obj,
          case_obj=case_obj,
@@ -629,14 +734,14 @@ def test_update_default_panels(case_database, institute_obj, case_obj, user_obj)
          panel_objs = [new_panel]
     )
 
-    # THEN the the updated case should have panel1 as not default and panel2 
+    # THEN the the updated case should have panel1 as not default and panel2
     # as default
     for panel in updated_case['panels']:
         if panel['panel_name'] == 'panel1':
             assert panel['is_default'] == False
         elif panel['panel_name'] == 'panel2':
             assert panel['is_default'] == True
-        
+
     # assert adapter.event_collection.find().count() == 2
     #
     # # THEN the case should not be assigned

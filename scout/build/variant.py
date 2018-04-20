@@ -5,7 +5,7 @@ from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
 log = logging.getLogger(__name__)
 
-def build_variant(variant, institute_id, gene_to_panels = None, 
+def build_variant(variant, institute_id, gene_to_panels = None,
                   hgncid_to_gene=None, sample_info=None):
     """Build a variant object based on parsed information
 
@@ -125,7 +125,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     hgncid_to_gene = hgncid_to_gene or {}
     sample_info = sample_info or {}
 
-    log.debug("Building variant %s", variant['ids']['document_id'])
+    #log.debug("Building variant %s", variant['ids']['document_id'])
     variant_obj = dict(
         _id = variant['ids']['document_id'],
         document_id=variant['ids']['document_id'],
@@ -164,13 +164,13 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if 'mate_id' in variant:
         variant_obj['mate_id'] = variant['mate_id']
-    
+
     if 'cytoband_start' in variant:
         variant_obj['cytoband_start'] = variant['cytoband_start']
 
     if 'cytoband_end' in variant:
         variant_obj['cytoband_end'] = variant['cytoband_end']
-    
+
     if 'end_chrom' in variant:
         variant_obj['end_chrom'] = variant['end_chrom']
 
@@ -178,7 +178,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     for sample in variant.get('samples', []):
         gt_call = build_genotype(sample)
         gt_types.append(gt_call)
-        
+
         if sample_info:
             sample_id = sample['individual_id']
             if sample_info[sample_id] == 'case':
@@ -192,7 +192,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
                     'alt_freq': sample['alt_frequency'],
                     'ind_id': sample_id
                 }
-        
+
 
     variant_obj['samples'] = gt_types
 
@@ -204,7 +204,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     for compound in variant.get('compounds', []):
         compound_obj = build_compound(compound)
         compounds.append(compound_obj)
-    
+
     if compounds:
         variant_obj['compounds'] = compounds
 
@@ -253,13 +253,13 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     for entry in variant.get('clnsig', []):
         clnsig_obj = build_clnsig(entry)
         clnsig_objects.append(clnsig_obj)
-    
+
     if clnsig_objects:
         variant_obj['clnsig'] = clnsig_objects
 
     # Add the callers
     call_info = variant.get('callers', {})
-    
+
     for caller in call_info:
         if call_info[caller]:
             variant_obj[caller] = call_info[caller]
@@ -268,10 +268,10 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     conservation_info = variant.get('conservation', {})
     if conservation_info.get('phast'):
         variant_obj['phast_conservation'] = conservation_info['phast']
-    
+
     if conservation_info.get('gerp'):
         variant_obj['gerp_conservation'] = conservation_info['gerp']
-    
+
     if conservation_info.get('phylop'):
         variant_obj['phylop_conservation'] = conservation_info['phylop']
 
@@ -289,7 +289,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if frequencies.get('thousand_g_max'):
         variant_obj['max_thousand_genomes_frequency'] = float(frequencies['thousand_g_max'])
-    
+
     if frequencies.get('exac'):
         variant_obj['exac_frequency'] = float(frequencies['exac'])
 
@@ -301,17 +301,17 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if frequencies.get('gnomad_max'):
         variant_obj['max_gnomad_frequency'] = float(frequencies['gnomad_max'])
-    
+
     if frequencies.get('thousand_g_left'):
         variant_obj['thousand_genomes_frequency_left'] = float(frequencies['thousand_g_left'])
-    
+
     if frequencies.get('thousand_g_right'):
         variant_obj['thousand_genomes_frequency_right'] = float(frequencies['thousand_g_right'])
 
     # add the local observation counts from the old archive
     if variant.get('local_obs_old'):
         variant_obj['local_obs_old'] =  variant['local_obs_old']
-    
+
     if variant.get('local_obs_hom_old'):
         variant_obj['local_obs_hom_old'] = variant['local_obs_hom_old']
 
@@ -324,12 +324,12 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         variant_obj['clingen_ngi'] = frequencies['clingen_ngi']
     if frequencies.get('decipher'):
         variant_obj['decipher'] = frequencies['decipher']
-    
+
     # Add the severity predictors
 
     if variant.get('cadd_score'):
         variant_obj['cadd_score'] = variant['cadd_score']
-    
+
     if variant.get('spidex'):
         variant_obj['spidex'] = variant['spidex']
 
