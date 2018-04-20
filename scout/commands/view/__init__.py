@@ -1,1 +1,1 @@
-from .view_command import view
+from .base import view

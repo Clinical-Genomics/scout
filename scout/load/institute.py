@@ -3,9 +3,10 @@ from scout.build import build_institute
 
 log = logging.getLogger(__name__)
 
+
 def load_institute(adapter, internal_id, display_name, sanger_recipients=None):
     """Load a institute into the database
-    
+
         Args:
             adapter(MongoAdapter)
             internal_id(str)
@@ -14,11 +15,11 @@ def load_institute(adapter, internal_id, display_name, sanger_recipients=None):
     """
 
     institute_obj = build_institute(
-        internal_id = internal_id,
-        display_name = display_name,
-        sanger_recipients = sanger_recipients
+        internal_id=internal_id,
+        display_name=display_name,
+        sanger_recipients=sanger_recipients
     )
-    log.info("Loading institute {0} with display name {1}"\
+    log.info("Loading institute {0} with display name {1}" \
              " into database".format(internal_id, display_name))
 
     adapter.add_institute(institute_obj)

@@ -9,7 +9,7 @@ When a variant is marked causative, Scout will remember the variant so when when
 
 
 # Sending Sanger email
-It's possible to send an email to a user defined email address with information regarding a variant for Sanger validation. You can access this functionality through the variant detail view in the upper right ahnd corner.
+It's possible to send an email to a user defined email address with information regarding a variant for Sanger validation. You can access this functionality through the variant detail view in the upper right hand corner.
 
 # Local Frequency Database
 This is not really a local *frequency* database but rather an indication if we have seen a variant before and in what form. It should work as a guide to exclude variants that exists due to artifacts in the sequencing process or if it as been observed in any of the earlier cases.

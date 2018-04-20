@@ -1,1 +1,1 @@
-from .load_database import load
+from .base import load

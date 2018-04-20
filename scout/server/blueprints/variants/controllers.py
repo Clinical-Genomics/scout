@@ -7,7 +7,7 @@ from flask import url_for, flash
 from flask_mail import Message
 
 from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
-                             ACMG_OPTIONS,DISMISS_VARIANT_OPTIONS,
+                             ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
                              ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
@@ -472,8 +472,8 @@ def beacon_link(variant_obj, build=None):
     """Compose link to Beacon Network."""
     build = build or 37
     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
-                        "chrom={this[chromosome]}&allele={this[alternative]}&"
-                        "ref={this[reference]}&rs=GRCh37")
+                    "chrom={this[chromosome]}&allele={this[alternative]}&"
+                    "ref={this[reference]}&rs=GRCh37")
     # beacon does not support build 38 at the moment
     # if build == '38':
     #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
@@ -515,6 +515,7 @@ def spidex_human(variant_obj):
     else:
         return 'high'
 
+
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
     manual_models = set()
@@ -530,11 +531,12 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
+def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
+url_for):
     """Send Sanger email."""
-    variant_link = url_for('variants.variant', institute_id=institute_obj['_id'],
-                           case_name=case_obj['display_name'],
-                           variant_id=variant_obj['_id'])
+    variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
+                               case_name=case_obj['display_name'],
+                               variant_id=variant_obj['_id'])
     if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
         store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
@@ -585,6 +587,64 @@ def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender):
     mail.send(message)
 
     store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+
+
+def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
+url_for):
+    """Send Sanger cancellation email."""
+    variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
+                           case_name=case_obj['display_name'],
+                           variant_id=variant_obj['_id'])
+    # if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
+    #     store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+
+    recipients = institute_obj['sanger_recipients']
+    if len(recipients) == 0:
+        raise MissingSangerRecipientError()
+
+    hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
+    gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
+                                        sample_obj['genotype_call'])
+               for sample_obj in variant_obj['samples']]
+    tx_changes = []
+    for gene_obj in variant_obj.get('genes', []):
+        for transcript_obj in gene_obj['transcripts']:
+            parse_transcript(gene_obj, transcript_obj)
+            if transcript_obj.get('change_str'):
+                tx_changes.append("<li>{}</li>".format(transcript_obj['change_str']))
+
+    html = """
+      <ul">
+        <li>
+          <strong>Case {case_name}</strong>: <a href="{url}">{variant_id}</a>
+        </li>
+        <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
+        <li><strong>Gene panels</strong>: {panels}</li>
+        <li><strong>GT call</strong></li>
+        {gtcalls}
+        <li><strong>Amino acid changes</strong></li>
+        {tx_changes}
+        <li><strong>Order cancelled by</strong>: {name}</li>
+      </ul>
+    """.format(case_name=case_obj['display_name'],
+               url=variant_link,
+               variant_id=variant_obj['display_name'],
+               hgnc_symbol=hgnc_symbol,
+               panels=', '.format(variant_obj['panels']),
+               gtcalls=''.join(gtcalls),
+               tx_changes=''.join(tx_changes),
+               name=user_obj['name'].encode('utf-8'))
+
+    kwargs = dict(subject="SCOUT: Sanger sequencing of {} CANCELLED!".format(hgnc_symbol),
+                  html=html, sender=sender, recipients=recipients,
+                  # cc the sender of the email for confirmation
+                  cc=[user_obj['email']])
+
+    # compose and send the email message
+    message = Message(**kwargs)
+    mail.send(message)
+
+    store.cancel_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
 
 def cancer_variants(store, request_args, institute_id, case_name):

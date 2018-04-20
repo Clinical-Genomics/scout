@@ -1,1 +1,1 @@
-from .update_command import update
+from .base import update

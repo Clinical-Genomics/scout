@@ -250,7 +250,6 @@ def update_clinvar_submission(institute_id, case_name, variant_id, submission_id
     if request.method == 'GET':
         return data
     elif request.form.get('variants_button') or request.form.get('cdata_button'):
-
         variants_header, casedata_header, clinvar_lines, casedata_lines = extract_submission_csv_lines(data['clinvars'])
 
         if request.form.get('variants_button'):
@@ -277,7 +276,6 @@ def update_clinvar_submission(institute_id, case_name, variant_id, submission_id
                 flash('no updates done', 'info')
             else:
                 flash('Clinvar variation ID has been updated', 'success')
-
             return redirect(url_for('.update_clinvar_submission', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id, submission_id=submission_id))
 
