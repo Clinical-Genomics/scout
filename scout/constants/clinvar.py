@@ -94,10 +94,11 @@ CASEDATA_OPTIONAL = {
     'Evidence citations' : False,
     'Citations or URLs that cannot be represented in evidence citations column' : False,
     'Comment on evidence' : False,
-    'Platform type' : 'next-gen sequencing',
+    'Platform type' : False,
+    'Platform name' : False,
     'Method' : False,
     'Method purpose' : False,
     'Method citations' : False,
     'Software name and version' : False,
-    'Testing laboratory' : 'Clinical Genomics - SciLifeLab Solna, Sweden.',
+    'Testing laboratory' : False,
 }
