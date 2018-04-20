@@ -34,7 +34,6 @@
 {% block content_main %}
 <div class="container" id="main">
   <h3>Clinvar submission {{clinvars[0].clinvar_submission}} [{{clinvars[0].created_at.strftime('%Y-%m-%d')}}]</h3>
-  <form action="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=clinvars[0].clinvar_submission) }}" method="POST" id="update_clinvar_submission" name="update_clinvar_submission">
   {% for clinvar in clinvars %}
   <div class="panel panel-default">
       <div class="panel-heading">
@@ -49,11 +48,14 @@
                 <td width="20%">
                   <strong>{{clinvar.clinvar_submission}}</strong>
                 </td>
-                <td width="30%">
+                <td width="20%">
                   Clinvar variation ID:<br>(once variant has been published)
                 </td>
                 <td>
-                  <input type="text" name="clinvar_accession_{{clinvar._id}}" value="{{clinvar.clinvar_accession}}" size=30 pattern="[0-9]+" placeholder="ex. 12345"/>&nbsp&nbsp
+                  <form action="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=clinvars[0].clinvar_submission) }}" method="POST" id="update_clinvar_submission" name="update_clinvar_submission">
+                    <input type="text" name="clinvar_accession_{{clinvar._id}}" value="{{clinvar.clinvar_accession}}" size=18 pattern="[0-9]+" placeholder="ex. 12345"/>&nbsp&nbsp
+                    <button class="btn btn-warning" data-toggle="modal" name="add_accession" value="submit" id="add_accession"><font color="white">Save variation ID</font></button>
+                  </form>
                 </td>
               </tr>
               <tr>
@@ -117,10 +119,10 @@
         </div>
     </div>
   {% endfor %}
+  <form action="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=clinvars[0].clinvar_submission) }}" method="POST" id="update_clinvar_submission" name="update_clinvar_submission">
     <div class="text-center">
       <button class="btn btn-primary" data-toggle="modal" name="variants_button" value="submit" id="variants_button"><font color="white">Download variants CSV file</font></button>
       <button class="btn btn-primary" data-toggle="modal" name="cdata_button" value="submit" id="variants_button"><font color="white">Download case data CSV file</font></button>
-      <button class="btn btn-warning" data-toggle="modal" name="add_accession" value="submit" id="add_accession"><font color="white">Update clinvar variation IDs</font></button>
       <button class="btn btn-danger" data-toggle="modal" name="delete_submission" value="submit" id="delete_submission" onclick="return confirm_delete()"><font color="white">Delete submission from scout database</font></button>
     </div>
     <br>

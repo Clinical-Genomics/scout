@@ -297,7 +297,7 @@ def update_clinvar_submission(institute_id, case_name, variant_id, submission_id
             if len(updates) == 0:
                 flash('no updates done', 'info')
             else:
-                flash('clinvar submission has been updated with clinvar variation ID', 'success')
+                flash('Clinvar variation ID has been updated', 'success')
 
             return redirect(url_for('.update_clinvar_submission', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id, submission_id=submission_id))
