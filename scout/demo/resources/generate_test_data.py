@@ -6,7 +6,7 @@ from pprint import pprint as pp
 import click
 
 from scout.utils.requests import (fetch_hgnc, fetch_mim_files, fetch_exac_constraint, 
-fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_hpo_files)
+fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_hpo_files, fetch_hpo_genes, fetch_hpo_terms,)
 from scout.parse.hgnc import parse_hgnc_line
 from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.parse.exac import parse_exac_genes
@@ -18,6 +18,55 @@ hpogenes_reduced_path, hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_pat
 
 
 LOG = logging.getLogger(__name__)
+
+def get_reduced_hpo_terms(hpo_terms):
+    """Return a reduced version of the hpo terms
+    
+    Args:
+        hpo_terms(set(str)): Set of choosen terms that should be included
+
+    Yields:
+        hpo_line: A line with hpo information
+    """
+    hpo_lines = fetch_hpo_terms()
+    
+    begining = True
+    
+    term_lines = []
+    # We want to keep the header lines
+    keep = True
+    
+    nr_terms = 0
+    nr_kept = 0
+
+    for line in hpo_lines:
+        
+        # When we encounter a new term we yield all lines of the previous term
+        if line.startswith('[Term]'):
+            nr_terms += 1
+            if keep:
+                nr_kept += 1
+                for hpo_line in term_lines:
+                    yield hpo_line
+
+            keep = False
+            term_lines = []
+        
+        elif line.startswith('id'):
+            hpo_id = line[4:]
+            if hpo_id in hpo_terms:
+                keep = True
+        
+        term_lines.append(line)
+        
+
+    if keep:
+        for hpo_line in term_lines:
+            yield hpo_line
+    
+    LOG.info("Nr of terms in file %s", nr_terms)
+    LOG.info("Nr of terms kept: %s", nr_kept)
+        
 
 def remove_file(path):
     """Check if a file exists and remove it if so
@@ -240,8 +289,7 @@ def generate_hpo_genes(genes):
     Yields:
         line(str): Lines from hpo with connection to genes
     """
-    hpo_files = fetch_hpo_files(hpogenes=True, hpoterms=False, phenotype_to_terms=False, hpodisease=False)
-    hpo_lines = hpo_files['hpogenes']
+    hpo_lines = fetch_hpo_genes()
     nr_terms = 0
     
     for i,line in enumerate(hpo_lines):
@@ -259,6 +307,35 @@ def generate_hpo_genes(genes):
         if hgnc_symbol in genes:
             nr_terms
             yield line
+
+def generate_hpo_terms(genes):
+    """Generate the lines from a reduced hpo terms file
+    
+    Args:
+        genes(dict): A map from hgnc_symbol to hgnc_id
+    
+    Yields:
+        line(str): Lines from hpo with connection to genes
+    """
+    hpo_lines = fetch_hpo_genes()
+    nr_terms = 0
+    
+    for i,line in enumerate(hpo_lines):
+        line = line.rstrip()
+        if not len(line) > 1:
+            continue
+        #Header line
+        if i == 0:
+            yield line
+            continue
+
+        splitted_line = line.split('\t')
+        hgnc_symbol = splitted_line[1]
+        
+        if hgnc_symbol in genes:
+            nr_terms
+            yield line
+
 
 def generate_hpo_files(genes):
     """Generate files with hpo reduced information"""
