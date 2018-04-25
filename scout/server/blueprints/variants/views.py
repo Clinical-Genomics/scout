@@ -187,7 +187,7 @@ def clinvar(institute_id, case_name, variant_id):
     if request.method == 'GET':
         return data
     else:
-        form_dict = request.form.to_dict(flat=False)
+        form_dict = request.form.to_dict()
         variant_header, variant_lines = get_variant_lines(form_dict)
         casedata_header, casedata_lines = get_casedata_lines(form_dict)
 
