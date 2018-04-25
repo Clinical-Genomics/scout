@@ -19,26 +19,27 @@ def get_variant_lines(form_fields):
     clinvar_header  = list(CLINVAR_HEADER)
     optional_fields = dict(CLINVAR_OPTIONAL)
     clinvars_dict = {}
+    clinvars = []
 
     if 'all_vars' in form_fields:
-        clinvars = form_fields['local'] #this is a list
+        for field, value in form_fields.items():
+            if field.startswith('##Local ID_'):
+                clinvars.append(form_fields[field].replace('##Local ID_',''))
     else:
-        clinvars = [form_fields['main_var'][0]] #also a list, but has one element
+        clinvars = [form_fields['main_var']] #also a list, but has one element
 
     for clinvar in clinvars:
         clinvar_dict = {}
         for field in clinvar_header:
             clinvar_dict[field] = ''
-            if field == 'Gene symbol': # field could contain multiple values
-                clinvar_dict[field] = ';'.join(form_fields[field+'_'+clinvar])
-            elif field == 'Reference sequence' or field == 'HGVS':
+            if field == 'Reference sequence' or field == 'HGVS':
                 if 'Reference sequence_'+clinvar in form_fields: #value is provided on the form
                     ref_HGVS = form_fields['Reference sequence_'+clinvar] # this is a list
                     if field == 'Reference sequence':
-                        refseq = ref_HGVS[0].split('|')
+                        refseq = ref_HGVS.split('|')
                         clinvar_dict[field] = refseq[0]
                     else:
-                        hgvs = ref_HGVS[0].split('|')
+                        hgvs = ref_HGVS.split('|')
                         clinvar_dict[field] = hgvs[1]
                     optional_fields[field] = True
                 else:
@@ -46,7 +47,7 @@ def get_variant_lines(form_fields):
                         clinvar_dict[field] = ''
             else: #optional fields
                 if field+"_"+clinvar in form_fields: # optional field is provided
-                    field_value = form_fields[field+'_'+clinvar][0]
+                    field_value = form_fields[field+'_'+clinvar]
                     if len(field_value) > 0 and field_value != '-': #it's filled in field
                         clinvar_dict[field] = field_value
                         if field in optional_fields: # if it's an optional field but it is provided:
@@ -94,20 +95,23 @@ def get_casedata_lines(form_fields):
     casedata_header = list(CASEDATA_HEADER)
     casedata_optional = dict(CASEDATA_OPTIONAL)
     subjs_dict={}
+    clinvars = []
 
     if 'all_vars' in form_fields:
-        clinvars = form_fields['local'] #this is a list
+        for field, value in form_fields.items():
+            if field.startswith('##Local ID_'):
+                clinvars.append(form_fields[field].replace('##Local ID_',''))
     else:
-        clinvars = [form_fields['main_var'][0]] #also a list, but has one element
+        clinvars = [form_fields['main_var']] #also a list, but has one element
 
     for clinvar in clinvars:
         if 'casedata_'+clinvar in form_fields: #if the user has chosen to add this case using the relative checkbox
             subj_dict = {}
             for field in casedata_header: # If the field is in the dynamic form
                 if field+'_'+clinvar in form_fields: #filled in field
-                    field_value = form_fields[field+'_'+clinvar][0]
+                    field_value = form_fields[field+'_'+clinvar]
                     if len(field_value) > 0:
-                        subj_dict[field] = form_fields[field+'_'+clinvar][0]
+                        subj_dict[field] = form_fields[field+'_'+clinvar]
                         if field in casedata_optional:
                             casedata_optional[field] = True
                 # else it might be either an empty option or a constant:
@@ -136,7 +140,7 @@ def get_casedata_lines(form_fields):
     return casedata_header,casedata_lines
 
 def extract_submission_csv_lines(clinvars_dictlist):
-    """Parses a list of clinvar submission object (variants) and creates the lines for printing
+    """Parses a list of clinvar submission objects (variants) and creates the lines for printing
     .Variant.csv and .CaseData.csv clinvar submission files.
     """
     variants_header = []
