@@ -29,11 +29,11 @@ from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 
 # These are the reduced data files
-from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path,
-                                  exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path,
-                                  hpo_to_genes_reduced_path,
-                                  hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path,
-                                  genemap2_reduced_path)
+from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
+exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
+hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path,
+transcripts38_reduced_path, genes38_reduced_path,)
+
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path)
 
@@ -88,19 +88,13 @@ def test_gene(request, test_transcript):
 
 
 @pytest.fixture
-def genes(request, transcripts_file, hgnc_file, exac_file,
-          mim2gene_file, genemap_file, hpo_genes_file):
+def genes(request, genes37_handle, hgnc_handle, exac_handle,
+          mim2gene_handle, genemap_handle, hpo_genes_handle):
     """Get a dictionary with the linked genes"""
     print('')
-    transcripts_handle = get_file_handle(transcripts_file)
-    hgnc_handle = get_file_handle(hgnc_file)
-    exac_handle = get_file_handle(exac_file)
-    mim2gene_handle = get_file_handle(mim2gene_file)
-    genemap_handle = get_file_handle(genemap_file)
-    hpo_genes_handle = get_file_handle(hpo_genes_file)
 
     gene_dict = link_genes(
-        ensembl_lines=transcripts_handle,
+        ensembl_lines=genes37_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
@@ -856,6 +850,12 @@ def transcripts_file(request):
 
 
 @pytest.fixture
+def genes37_file(request):
+    """Get the path to a ensembl genes file"""
+    print('')
+    return genes37_reduced_path
+
+@pytest.fixture
 def exac_file(request):
     """Get the path to a exac genes file"""
     print('')
@@ -971,6 +971,12 @@ def hgnc_genes(request, hgnc_handle):
     print('')
     return parse_hgnc_genes(hgnc_handle)
 
+
+@pytest.fixture
+def genes37_handle(request, genes37_file):
+    """Get a file handle to a ensembl gene file"""
+    print('')
+    return get_file_handle(genes37_file)
 
 @pytest.fixture
 def transcripts_handle(request, transcripts_file):

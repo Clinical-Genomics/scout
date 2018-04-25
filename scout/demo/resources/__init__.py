@@ -15,10 +15,10 @@ mim2gene_file = 'demo/resources/mim2gene_reduced.txt'
 genemap2_file = 'demo/resources/genemap2_reduced.txt'
 
 # Hpo resources
-hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt.gz'
+hpogenes_file = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt'
 hpoterms_file = 'demo/resources/reduced.hpo.obo'
-hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt.gz'
-hpo_to_genes = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt.gz'
+hpo_phenotype_to_terms = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt'
+hpo_to_genes = 'demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt'
 
 # Additional resources
 madeline_file = 'demo/madeline.xml'
@@ -30,8 +30,8 @@ hgnc_reduced_path = pkg_resources.resource_filename('scout', hgnc_file)
 exac_reduced_path = pkg_resources.resource_filename('scout', exac_file)
 transcripts37_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
 transcripts38_reduced_path = pkg_resources.resource_filename('scout', transcripts38_file)
-genes37_reduced_path = pkg_resources.resource_filename('scout', transcripts37_file)
-genes38_reduced_path = pkg_resources.resource_filename('scout', transcripts38_file)
+genes37_reduced_path = pkg_resources.resource_filename('scout', genes37_file)
+genes38_reduced_path = pkg_resources.resource_filename('scout', genes38_file)
 
 # OMIM paths
 mim2gene_reduced_path = pkg_resources.resource_filename('scout', mim2gene_file)

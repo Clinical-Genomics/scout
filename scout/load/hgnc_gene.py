@@ -8,20 +8,23 @@ from click import progressbar
 from scout.build import build_hgnc_gene
 from scout.utils.link import link_genes
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def load_hgnc_genes(adapter, ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
                     genemap_lines, hpo_lines, build='37'):
-    """Load genes with transcripts into the database
-
-        Args:
-            adapter(MongoAdapter)
+    """Load genes into the database
         
-        Returns:
-            loaded_genes(list): A list with all gene_objects that was loaded into database
+    link_genes will collect information from all the different sources and 
+    merge it into a dictionary with hgnc_id as key and gene information as values.
+
+    Args:
+        adapter(MongoAdapter)
+    
+    Returns:
+        gene_objects(list): A list with all gene_objects that was loaded into database
     """
-    loaded_genes = list()
+    gene_objects = list()
     # Link the resources
     genes = link_genes(
         ensembl_lines=ensembl_lines,
@@ -32,22 +35,23 @@ def load_hgnc_genes(adapter, ensembl_lines, hgnc_lines, exac_lines, mim2gene_lin
         hpo_lines=hpo_lines
     )
 
-    logger.info("Loading the genes build %s", build)
     non_existing = 0
     nr_genes = len(genes)
     
-    with progressbar(genes.values(), label="Loading genes", length=nr_genes) as bar:
+    with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
             if not gene_data.get('chromosome'):
-                logger.debug("skipping gene: %s. No coordinates found", gene_data['hgnc_symbol'])
+                LOG.debug("skipping gene: %s. No coordinates found", gene_data['hgnc_symbol'])
                 non_existing += 1
                 continue
         
             gene_obj = build_hgnc_gene(gene_data, build=build)
-            adapter.load_hgnc_gene(gene_obj)
-            loaded_genes.append(gene_obj)
+            gene_objects.append(gene_obj)
 
-    logger.info("Loading done. {0} genes loaded".format(len(loaded_genes)))
-    logger.info("Nr of genes without coordinates in build {0}: {1}".format(build, non_existing))
+    LOG.info("Loading genes build %s", build)
+    adapter.load_hgnc_bulk(gene_objects)
+
+    LOG.info("Loading done. %s genes loaded", len(loaded_genes))
+    LOG.info("Nr of genes without coordinates in build %s: %s", build,non_existing)
     
     return loaded_genes

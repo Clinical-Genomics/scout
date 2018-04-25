@@ -126,6 +126,7 @@ def fetch_ensembl_genes(build='37'):
     else:
         url = 'http://www.ensembl.org'
     
+    LOG.info("Fetching ensembl genes from %s", url)
     dataset_name = 'hsapiens_gene_ensembl'
     
     dataset = pybiomart.Dataset(name=dataset_name, host=url)
@@ -145,7 +146,8 @@ def fetch_ensembl_genes(build='37'):
     
     result = dataset.query(
         attributes = attributes,
-        filters = filters
+        filters = filters,
+        use_attr_names=True,
     )
     
     return result
@@ -183,7 +185,8 @@ def fetch_ensembl_transcripts(build='37'):
     
     result = dataset.query(
         attributes = attributes,
-        filters = filters
+        filters = filters,
+        use_attr_names=True,
     )
     
     return result

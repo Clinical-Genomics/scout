@@ -66,12 +66,19 @@ def add_ensembl_info(genes, ensembl_lines):
     
     LOG.info("Adding ensembl coordinates")
     # Parse and add the ensembl gene info
+    print(ensembl_lines.__dict__)
     if isinstance(ensembl_lines, DataFrame):
         ensembl_genes = parse_ensembl_gene_request(ensembl_lines)
     else:
+        print('hej')
         ensembl_genes = parse_ensembl_genes(ensembl_lines)
+        for line in ensembl_genes:
+            print(line)
+
     for ensembl_gene in ensembl_genes:
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
+        pp(ensembl_gene)
+        pp(gene_obj)
         if not gene_obj:
             continue
         gene_obj['chromosome'] = ensembl_gene['chrom']

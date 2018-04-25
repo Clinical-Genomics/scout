@@ -14,29 +14,29 @@ def parse_ensembl_gene_request(result):
         gene_info(dict)
     """
     
-    keys = [
-        'chrom',
-        'gene_start',
-        'gene_end',
-        'ensembl_gene_id',
-        'hgnc_symbol',
-        'hgnc_id',
-    ]
-    # for res in result.itertuples():
-    for res in zip(result['Chromosome/scaffold name'], result['Gene start (bp)'], result['Gene end (bp)'],
-                    result['Gene stable ID'], result['HGNC symbol'], result['HGNC ID']):
-        ensembl_info = dict(zip(keys, res))
+    for index, row in result.iterrows():
+        # print(index, row)
+        ensembl_info = {}
         
-        if type(ensembl_info['hgnc_symbol']) is float:
+        # Pandas represents missing data with nan which is a float
+        if type(row['hgnc_symbol']) is float:
             # Skip genes without hgnc information
             continue
-        ensembl_info['gene_start'] = int(ensembl_info['gene_start'])
-        ensembl_info['gene_end'] = int(ensembl_info['gene_end'])
+
+        ensembl_info['chrom'] = row['chromosome_name']
+        ensembl_info['gene_start'] = int(row['start_position'])
+        ensembl_info['gene_end'] = int(row['end_position'])
+        ensembl_info['ensembl_gene_id'] = row['ensembl_gene_id']
+        ensembl_info['hgnc_symbol'] = row['hgnc_symbol']
         
-        if type(ensembl_info['hgnc_id']) is float:
-            ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'])
+        hgnc_id = row['hgnc_id']
+
+        if type(hgnc_id) is float:
+            hgnc_id = int(hgnc_id)
         else:
-            ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'].split(':')[-1])
+            hgnc_id = int(hgnc_id.split(':')[-1])
+        
+        ensembl_info['hgnc_id'] = hgnc_id
 
         yield ensembl_info
 
@@ -49,6 +49,7 @@ def parse_ensembl_transcript_request(result):
     Yields:
         transcript_info(dict)
     """
+
     keys = [
         'chrom',
         'ensembl_gene_id',
@@ -60,18 +61,24 @@ def parse_ensembl_transcript_request(result):
         'refseq_ncrna',
     ]
     # for res in result.itertuples():
-    for res in zip(result['Chromosome/scaffold name'], result['Gene stable ID'], 
-                   result['Transcript stable ID'], result['Transcript start (bp)'], 
-                   result['Transcript end (bp)'], result['RefSeq mRNA ID'],
-                   result['RefSeq mRNA predicted ID'], result['RefSeq ncRNA ID']):
-        ensembl_info = dict(zip(keys, res))
+    for index, row in result.iterrows():
+        
+        ensembl_info = {}
+        
+        ensembl_info['chrom'] = str(row['chromosome_name'])
+        ensembl_info['ensembl_gene_id'] = row['ensembl_gene_id']
+        ensembl_info['ensembl_transcript_id'] = row['ensembl_transcript_id']
 
-        ensembl_info['transcript_start'] = int(ensembl_info['transcript_start'])
-        ensembl_info['transcript_end'] = int(ensembl_info['transcript_end'])
+        ensembl_info['transcript_start'] = int(row['transcript_start'])
+        ensembl_info['transcript_end'] = int(row['transcript_end'])
 
+        # Check if refseq data is annotated
+        # Pandas represent missing data with nan
         for key in keys[-3:]:
-            if type(ensembl_info[key]) is float:
+            if type(row[key]) is float:
                 ensembl_info[key] = None
+            else:
+                ensembl_info[key] = row[key]
 
         yield ensembl_info
 

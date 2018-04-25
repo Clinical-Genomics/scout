@@ -1,3 +1,5 @@
+from pprint import pprint as pp
+
 from scout.build.hgnc_gene import build_hgnc_gene
 import pytest
 
@@ -5,8 +7,10 @@ def test_build_hgnc_genes(genes):
     # GIVEN a dictionary with hgnc genes
     
     # WHEN building hgnc gene objecs
-    for hgnc_symbol in genes:
-        gene_info = genes[hgnc_symbol]
+    for hgnc_id in genes:
+        print(hgnc_id)
+        gene_info = genes[hgnc_id]
+        pp(gene_info)
         gene_obj = build_hgnc_gene(gene_info)
 
         # THEN check that the gene models have a hgnc id
