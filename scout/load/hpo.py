@@ -124,13 +124,15 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     if not genes:
         genes = adapter.genes_by_alias()
 
+    # Fetch the disease terms from omim
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
+
     if not hpo_disease_lines:
         hpo_disease_lines = fetch_hpo_phenotype_to_terms()
-
     hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()
+    nr_diseases = None
 
     LOG.info("Loading the hpo disease...")
     for nr_diseases, disease_number in enumerate(disease_terms):

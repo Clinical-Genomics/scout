@@ -51,7 +51,7 @@ def load_hgnc_genes(adapter, ensembl_lines, hgnc_lines, exac_lines, mim2gene_lin
     LOG.info("Loading genes build %s", build)
     adapter.load_hgnc_bulk(gene_objects)
 
-    LOG.info("Loading done. %s genes loaded", len(loaded_genes))
+    LOG.info("Loading done. %s genes loaded", len(gene_objects))
     LOG.info("Nr of genes without coordinates in build %s: %s", build,non_existing)
     
-    return loaded_genes
+    return gene_objects

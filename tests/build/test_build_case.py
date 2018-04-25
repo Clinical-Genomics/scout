@@ -11,8 +11,7 @@ def test_build_case(parsed_case, panel_database):
     #GIVEN a parsed case
     #WHEN bulding a case model
     case_obj = build_case(parsed_case, adapter)
-    # print(case_obj)
-    # assert False
+    
     #THEN make sure it is built in the proper way
     assert case_obj['_id'] == parsed_case['case_id']
     assert case_obj['display_name'] == parsed_case['display_name']
