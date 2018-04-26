@@ -1,4 +1,3 @@
-from scout.constants import CLINVAR_HEADER
 from scout.parse.clinvar import get_variant_lines, get_casedata_lines, create_clinvar_submission_dict
 
 def get_submission_dict():
