@@ -37,7 +37,17 @@
   {% for clinvar in clinvars %}
   <div class="panel panel-default">
       <div class="panel-heading">
-        {{clinvar.Gene_symbol}} - chr{{clinvar.Chromosome}}:{{clinvar.Start}} {{clinvar.Reference_allele}} -> {{clinvar.Alternate_allele}}
+        {{clinvar.Gene_symbol}} - chr{{clinvar.Chromosome}}:{{clinvar.Start}}
+        {% if clinvar.Reference_allele|length > 30 %}
+          {{clinvar.Reference_allele[:30]}}... ->
+        {% else %}
+          {{clinvar.Reference_allele}} ->
+        {% endif %}
+        {% if clinvar.Alternate_allele|length > 30 %}
+          {{clinvar.Alternate_allele[:30]}}...
+        {% else %}
+          {{clinvar.Alternate_allele}}
+        {% endif %}
       </div>
         <table class="table table-fixed">
           <tbody>

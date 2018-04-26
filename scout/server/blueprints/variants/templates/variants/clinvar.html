@@ -76,7 +76,11 @@
                         <div class="panel panel-default">
                           <div class="panel-heading">Variant description --> #{{var[0]}}</div>
                           {% for field in variant_header %}
-                            <strong>{{field}}</strong>:{{var[loop.index -1]}}<br>
+                            {% if var[loop.index -1]|length > 30%}
+                              <strong>{{field}}</strong>:{{var[loop.index -1][:30]}}...<br>
+                            {% else %}
+                              <strong>{{field}}</strong>:{{var[loop.index -1]}}<br>
+                            {% endif%}
                           {% endfor %}
                         </div>
                       </div>
@@ -101,7 +105,11 @@
                                   <div class="panel panel-success">
                                     <div class="panel-heading">Casedata description --> #{{cdata[0]}}</div>
                                     {% for field in casedata_header %}
-                                      <strong>{{field}}</strong>:{{cdata[loop.index -1]}}<br>
+                                      {% if cdata[loop.index -1]|length > 30%}
+                                        <strong>{{field}}</strong>:{{cdata[loop.index -1][:30]}}<br>
+                                      {% else %}
+                                        <strong>{{field}}</strong>:{{cdata[loop.index -1]}}<br>
+                                      {% endif %}
                                     {% endfor %}
                                   </div>
                                 </div>
@@ -199,12 +207,14 @@
 <!--This panel returns one table for each pinned vat to include in the submission.-->
 {% macro panel_variant(var_type) %}
   {% for pinned in pinned_vars %}
-    {% if var_type=='main_var' and pinned._id == variant._id or var_type=='other_vars' and not pinned._id == variant._id and pinned.category != 'sv' %} <!--avoid SVs for now, fix the code later!-->
+    {% if var_type=='main_var' and pinned._id == variant._id or var_type=='other_vars' and not pinned._id == variant._id %}
     <input type ="hidden" name="##Local ID_{{pinned._id}}" value="{{pinned._id}}">
     <input type ="hidden" name="Linking ID_{{pinned._id}}" value="{{pinned._id}}">
     <input type="hidden" name="Chromosome_{{pinned._id}}" value="{{ pinned.chromosome }}">
-    <input type="hidden" name="Start_{{pinned._id}}" value="{{ pinned.position }}">
-    <input type="hidden" name="Stop_{{pinned._id}}" value="{{ pinned.position }}">
+    {% if pinned.category != 'sv' %}
+      <input type="hidden" name="Start_{{pinned._id}}" value="{{ pinned.position }}">
+      <input type="hidden" name="Stop_{{pinned._id}}" value="{{ pinned.position }}">
+    {% endif %}
     <input type="hidden" name="Reference allele_{{pinned._id}}" value="{{ pinned.reference }}">
     <input type="hidden" name="Alternate allele_{{pinned._id}}" value="{{ pinned.alternative }}">
     <input type="hidden" name="Condition ID type_{{pinned._id}}" value="HPO">
@@ -227,25 +237,27 @@
               <tr>
                 <td>
                   <table class="table table-fixed">
-                    <tr>
-                      <td style="width:30%">
-                        Gene symbol(s):
-                      </td>
-                      <td>
-                        {% set gene_symbols = [] %}
-                        {% for gene in pinned.genes %}
-                          {% do gene_symbols.append(gene.hgnc_symbol) %}
-                          {% if pinned.genes|length == 1 %}
-                            <strong>{{ pinned.genes[0].hgnc_symbol }}</strong><br>
-                          {% else %}
-                            {% for gene in pinned.genes %}
-                            <strong>{{ gene.hgnc_symbol+";" }}</strong>
-                            {% endfor %}
-                          {% endif %}
-                        {% endfor %}
-                          <input type="hidden" name="Gene symbol_{{pinned._id}}" value="{{ ';'.join(gene_symbols) }}">
-                      </td>
-                    </tr>
+                    {% if pinned.category == 'snv' %}
+                      <tr>
+                        <td style="width:30%">
+                          Gene symbol(s):
+                        </td>
+                        <td>
+                          {% set gene_symbols = [] %}
+                          {% for gene in pinned.genes %}
+                            {% do gene_symbols.append(gene.hgnc_symbol) %}
+                            {% if pinned.genes|length == 1 %}
+                              <strong>{{ pinned.genes[0].hgnc_symbol }}</strong><br>
+                            {% else %}
+                              {% for gene in pinned.genes %}
+                              <strong>{{ gene.hgnc_symbol+";" }}</strong>
+                              {% endfor %}
+                            {% endif %}
+                          {% endfor %}
+                            <input type="hidden" name="Gene symbol_{{pinned._id}}" value="{{ ';'.join(gene_symbols) }}">
+                        </td>
+                      </tr>
+                    {% endif %}
                     <tr>
                       <td>Coordinates:</td>
                       {% if pinned.simple_id|length > 50 %}
@@ -254,32 +266,34 @@
                         <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} ({{ pinned.reference }} -> {{ pinned.alternative }})</strong></td>
                       {% endif %}
                     </tr>
-                    <tr>
-                      <td>Transcripts & HGVS:<br>(optional)
-                      </td>
-                      <td>
-                        {% for gene in pinned.genes %}
-                          {% for transcript in gene.primary_transcripts %}
-                            {% for refseq_id in transcript.refseq_ids %}
-                              {% if refseq_id and transcript.coding_sequence_name %}
-                                <input type="radio" id="{{pinned._id+"_"+refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}" selected>
-                                <label for="{{pinned._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
-                              {% endif %}
-                            {% endfor %} <!--end of refseq-->
-                          {% endfor %} <!--end of transcript-->
-                        {% endfor %} <!--end of gene-->
-                        {% for gene in pinned.genes %}
-                          {% for transcript in gene.transcripts %}
-                            {% for refseq_id in transcript.refseq_ids %}
-                              {% if refseq_id and  transcript.coding_sequence_name %}
-                                <input type="radio" id="{{pinned._id+"_"+refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}">
-                                <label for="{{pinned._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
-                              {% endif %}
-                            {% endfor %} <!--end of refseq-->
-                          {% endfor %} <!--end of transcript-->
-                        {% endfor %} <!--end of gene-->
-                      </td>
-                    </tr>
+                    {% if pinned.category == 'snv' %}
+                      <tr>
+                        <td>Transcripts & HGVS:<br>(optional)
+                        </td>
+                        <td>
+                          {% for gene in pinned.genes %}
+                            {% for transcript in gene.primary_transcripts %}
+                              {% for refseq_id in transcript.refseq_ids %}
+                                {% if refseq_id and transcript.coding_sequence_name %}
+                                  <input type="radio" id="{{pinned._id+"_"+refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}" selected>
+                                  <label for="{{pinned._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
+                                {% endif %}
+                              {% endfor %} <!--end of refseq-->
+                            {% endfor %} <!--end of transcript-->
+                          {% endfor %} <!--end of gene-->
+                          {% for gene in pinned.genes %}
+                            {% for transcript in gene.transcripts %}
+                              {% for refseq_id in transcript.refseq_ids %}
+                                {% if refseq_id and  transcript.coding_sequence_name %}
+                                  <input type="radio" id="{{pinned._id+"_"+refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}">
+                                  <label for="{{pinned._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
+                                {% endif %}
+                              {% endfor %} <!--end of refseq-->
+                            {% endfor %} <!--end of transcript-->
+                          {% endfor %} <!--end of gene-->
+                        </td>
+                      </tr>
+                    {% endif %}
                     <tr>
                       <td>Variant model of inheritance <br>
                         {% for model in pinned.genetic_models|sort %}
@@ -371,7 +385,7 @@
                     <tr>
                       <td>Functional consequence:<br>(based on experimental evidence, leave blank if unsure)</td>
                       <td>
-                        <select id="_{{pinned._id}}" name="Functional consequence_{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, this.id);">
+                        <select id="_{{pinned._id}}" name="Functional consequence_{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, 'funct_cons', this.id);">
                             <option value="-" selected> - </option>
                           {% if pinned.category == 'snv' %}
                             <option value="Dominant negative variant">Dominant negative variant</option>
@@ -433,15 +447,14 @@
 
           <!--SV-related fields-->
           {% if pinned.category == 'sv' %}
-          <table class="table table-fixed">
-            <tbody class="border-top">
+          <table class="table table-bordered table-fixed">
               <tr>
-                <td style="width:30%">
+                <td style="width:33%">
                   <table class="table table-fixed">
                     <tr>
-                      <td style="width:30%">Type of structural variant:</td>
+                      <td>Type of structural variant:</td>
                       <td>
-                        <select id="sv_type" length>
+                        <select name="Variant type_{{pinned._id}}" id="_{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, 'sv_type', this.id);">
                         {% if pinned.sub_category == 'del' %}
                           <option value="duplication">duplication</option>
                           <option value="deletion" selected>deletion</option>
@@ -467,43 +480,60 @@
                         </select>
                       </td>
                     </tr>
-                    <tr>
-                      <td>Outer start</td>
-                      <td><input type="text" name="out_start" value="" size=20></td>
+                    {% if pinned.sub_category == 'del'%}
+                      <tr style="display:''" id="copies_{{pinned._id}}">
+                    {%else%}
+                      <tr style="display:none" id="copies_{{pinned._id}}">
+                    {% endif %}
+                      <td>Copy number</td>
+                      <td><input type="text" name="Copy number_{{pinned._id}}" value="" size=5 pattern="[0-9]+"></td>
                     </tr>
                     <tr>
-                      <td>Inner start</td>
-                      <td><input type="text" name="in_start" value="" size=20></td>
+                      <td>Reference copy number</td>
+                      <td><input type="text" name="Reference copy number_{{pinned._id}}" value="2" size=5 pattern="[0-9]+"></td>
                     </tr>
                     <tr>
-                      <td>Inner stop</td>
-                      <td><input type="text" name="in_stop" value="" size=20></td>
+                      <td>Breakpoint 1</td>
+                      <td><input type="text" name="Breakpoint 1_{{pinned._id}}" value="{{pinned.position}}" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                     <tr>
-                      <td>Outer stop</td>
-                      <td><input type="text" name="out_stop" value="" size=20></td>
+                      <td>Breakpoint 2</td>
+                      <td><input type="text" name="Breakpoint 2_{{pinned._id}}" value="{{pinned.end}}" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                   </table>
                 </td>
-                <td>
+                <td style="width:33%">
+                  <br><br>
                   <table class="table table-fixed">
-                    <tr colspan=2>
-                      <td style="width:30%">Reference copy number:<input type="text" name="ref_copies" value="2" size=3></td>
-                      <td>Breakpoint 1<input type="text" name="bkp1" value="" size=20></td>
-                      <td>Breakpoint 2<input type="text" name="bkp2" value="" size=20></td>
+                    <tr>
+                      <td>Outer start*</td>
+                      <td><input type="text" name="Outer start_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
-                    <tr colspan=3>
-                      <td>Comments on this variant</td>
-                      <td><textarea name="sv_comment" placeholder="(optional)" rows="4" cols="60"></textarea></td>
+                    <tr>
+                      <td>Inner start*</td>
+                      <td><input type="text" name="Inner start_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
-                    <tr colspan=3>
-                      <td>Trace or probe data</td>
-                      <td><textarea name="trace_probe" placeholder="(optional)" rows="4" cols="60"></textarea></td>
+                    <tr>
+                      <td>Inner stop*</td>
+                      <td><input type="text" name="Inner stop_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                    </tr>
+                    <tr>
+                      <td>Outer stop*</td>
+                      <td><input type="text" name="Outer stop_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                    </tr>
+                  </table>
+                  <a href="https://www.ncbi.nlm.nih.gov/dbvar/content/overview/#representation" target="_blank">* How to display uncertainty of breakpoint locations</a>
+                </td>
+                <td style="width:40%">
+                  <table class="table table-fixed">
+                    <tr>
+                      <td>Comments on this variant<br>
+                        <textarea name="Comment on variant_{{pinned._id}}" placeholder="(optional)" rows="10" cols="40"></textarea>
+                      </td>
                     </tr>
                   </table>
                 </td>
               </tr>
-            </tbody>
           </table>
 
           {% endif %}
@@ -851,17 +881,29 @@
       }
     }
 
-    function changeTextBox(selected_option,pinnedid)
+    function changeTextBox(selected_option, box, pinnedid)
     {
-        if(selected_option=="-")
+        if(box=='funct_cons')
         {
-          document.getElementById("line"+pinnedid).style.display = 'none'
-          document.getElementById("Comment on functional consequence"+pinnedid).value='';
-          document.getElementById("Comment on functional consequence"+pinnedid).disabled='true';
+            if(selected_option == '-'){
+              document.getElementById("line"+pinnedid).style.display = 'none'
+              document.getElementById("Comment on functional consequence"+pinnedid).value='';
+              document.getElementById("Comment on functional consequence"+pinnedid).disabled='true';
+            }
+            else{
+              document.getElementById("Comment on functional consequence"+pinnedid).disabled='';
+              document.getElementById("line"+pinnedid).style.display = ''
+            }
         }
-        else{
-          document.getElementById("Comment on functional consequence"+pinnedid).disabled='';
-          document.getElementById("line"+pinnedid).style.display = ''
+        else
+        {
+            if(selected_option == 'deletion' || selected_option == 'duplication'){
+              document.getElementById("copies"+pinnedid).style.display = ''
+            }
+            else{
+              document.getElementById("copies"+pinnedid).style.display = 'none'
+              document.getElementById("Copy number"+pinnedid).value='';
+            }
         }
     }
 

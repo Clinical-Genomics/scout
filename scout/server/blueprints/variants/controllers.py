@@ -72,6 +72,10 @@ def sv_variant(store, institute_id, case_name, variant_id):
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
 
+    clinvar_submission = store.clinvars(variant_ids=[variant_id])
+    if clinvar_submission:
+        variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
+
     return {
         'institute': institute_obj,
         'case': case_obj,
