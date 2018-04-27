@@ -24,7 +24,8 @@ from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_di
 
 from scout.utils.link import link_genes
 from scout.log import init_log
-from scout.build import (build_institute, build_case, build_panel, build_variant)
+from scout.build import (build_institute, build_case, build_panel)
+from scout.build.variant import build_variant
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 

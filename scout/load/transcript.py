@@ -6,7 +6,7 @@ from click import progressbar
 from pandas import DataFrame
 
 from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_transcript_request)
-from scout.build.hgnc_gene import build_hgnc_transcript
+from scout.build.genes.transcript import build_transcript
 
 LOG = logging.getLogger(__name__)
 
@@ -115,7 +115,7 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
             ####################  ####################  ####################
 
             # Build the transcript object
-            tx_obj = build_hgnc_transcript(tx_data, build)
+            tx_obj = build_transcript(tx_data, build)
             transcript_objs.append(tx_obj)
 
     # Load all transcripts

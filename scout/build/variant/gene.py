@@ -1,6 +1,6 @@
 import logging
 
-from . import (build_transcript)
+from .transcript import build_transcript
 
 from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 

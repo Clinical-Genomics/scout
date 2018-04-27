@@ -7,7 +7,7 @@ from click import progressbar
 from pandas import DataFrame
 
 from scout.parse.ensembl import (parse_ensembl_exons, parse_ensembl_exon_request)
-from scout.build.hgnc_gene import build_exon
+from scout.build.genes.exon import build_exon
 
 LOG = logging.getLogger(__name__)
 

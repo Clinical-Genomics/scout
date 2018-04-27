@@ -2,7 +2,7 @@ import logging
 
 import intervaltree
 
-from scout.build.hgnc_gene import build_exon
+from scout.build.genes.exon import build_exon
 from pymongo.errors import (DuplicateKeyError, BulkWriteError)
 
 from scout.exceptions import IntegrityError
