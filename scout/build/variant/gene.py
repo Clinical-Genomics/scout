@@ -4,15 +4,16 @@ from . import (build_transcript)
 
 from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
-def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
+def build_gene(gene, hgncid_to_gene=None):
     """Build a gene object
         
         Has to build the transcripts for the genes to
     
     Args:
-        gene(dict)
+        gene(dict): Parsed information from the VCF
+        hgncid_to_gene(dict): A map from hgnc_id  -> hgnc_gene objects 
 
     Returns:
         gene_obj(dict)
@@ -35,18 +36,21 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
     )
     
     """
-    gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
     gene_obj = dict()
  
+    # This id is collected from the VCF
+    # Typically annotated by VEP or snpEFF
     hgnc_id = int(gene['hgnc_id'])
     gene_obj['hgnc_id'] = hgnc_id
 
+    # Get the gene information from database
     hgnc_gene = hgncid_to_gene.get(hgnc_id)
     
     inheritance = set()
     hgnc_transcripts = []
     if hgnc_gene:
+        # Set the hgnc symbol etc to the one internally in Scout
         gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
         gene_obj['ensembl_id'] = hgnc_gene['ensembl_id']
         gene_obj['description'] = hgnc_gene['description']
@@ -63,7 +67,6 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
             inheritance.add('X')
         if hgnc_gene.get('y'):
             inheritance.add('Y')
-        hgnc_transcripts = hgnc_gene['transcripts']
     
     gene_obj['inheritance'] = list(inheritance)
     
@@ -76,28 +79,28 @@ def build_gene(gene, gene_to_panels=None, hgncid_to_gene=None):
     functional_annotation = gene.get('most_severe_consequence')
     if functional_annotation:
         if not functional_annotation in SO_TERM_KEYS:
-            log.warning("Invalid functional annotation %s", functional_annotation)
+            LOG.warning("Invalid functional annotation %s", functional_annotation)
         else:
             gene_obj['functional_annotation'] = functional_annotation
     
     region_annotation = gene.get('region_annotation')
     if region_annotation:
         if not region_annotation in FEATURE_TYPES:
-            log.warning("Invalid region annotation %s", region_annotation)
+            LOG.warning("Invalid region annotation %s", region_annotation)
         else:
             gene_obj['region_annotation'] = region_annotation
  
     sift_prediction = gene.get('most_severe_sift')
     if sift_prediction:
         if not sift_prediction in CONSEQUENCE:
-            log.warning("Invalid sift prediction %s", sift_prediction)
+            LOG.warning("Invalid sift prediction %s", sift_prediction)
         else:
             gene_obj['sift_prediction'] = sift_prediction
 
     polyphen_prediction = gene.get('most_severe_polyphen')
     if polyphen_prediction:
         if not polyphen_prediction in CONSEQUENCE:
-            log.warning("Invalid polyphen prediction %s", polyphen_prediction)
+            LOG.warning("Invalid polyphen prediction %s", polyphen_prediction)
         else:
             gene_obj['polyphen_prediction'] = polyphen_prediction
  
