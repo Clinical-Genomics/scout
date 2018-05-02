@@ -1,5 +1,7 @@
 import logging
 
+from scout.models.phenotype_term import HpoTerm
+
 LOG = logging.getLogger(__name__)
 
 def build_hpo_term(hpo_info):
@@ -12,35 +14,30 @@ def build_hpo_term(hpo_info):
             hpo_info(dict)
         
         Returns:
-            hpo_obj(dict)
+            hpo_obj(scout.models.HpoTerm): A dictionary with hpo information
     
-        hpo_obj = dict(
-            _id = str, # Same as hpo_id
-           hpo_id = str, # Required
-           description = str,
-           genes = list, # List with integers that are hgnc_ids 
-        )
-        
     """
-    
-    hpo_obj = {}
     
     try:
         hpo_id = hpo_info['hpo_id']
     except KeyError:
         raise KeyError("Hpo terms has to have a hpo_id")
 
-    # Set the id to be the hpo terms id
-    hpo_obj['_id'] = hpo_obj['hpo_id'] = hpo_id
-
     LOG.debug("Building hpo term %s", hpo_id)
 
     # Add description to HPO term
-    hpo_obj['description'] = hpo_info.get('description')
+    try:
+        description = hpo_info['description']
+    except KeyError:
+        raise KeyError("Hpo terms has to have a description")
 
-    hgnc_ids = hpo_info.get('genes', set())
+    hpo_obj = HpoTerm(
+        hpo_id = hpo_id,
+        description = description
+    )
     
     # Add links to hgnc genes if any
+    hgnc_ids = hpo_info.get('genes', set())
     if hgnc_ids:
         hpo_obj['genes'] = list(hgnc_ids)
     

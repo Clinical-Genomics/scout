@@ -6,21 +6,16 @@ class HpoTerm(dict):
     
     _id = str, # Same as hpo_id
    hpo_id = str, # Required
-   aliases = list, # List of aliases
    description = str,
    genes = list, # List with integers that are hgnc_ids 
     
     """
-    def __init__(self, hpo_id, aliases, description, genes=None):
-        super(DiseaseTerm, self).__init__()
-        self['disease_id'] = disease_id
-        self['_id'] = disease_id
-        self['disease_nr'] = int(disease_nr)
+    def __init__(self, hpo_id, description, genes=None):
+        super(HpoTerm, self).__init__()
+        self['hpo_id'] = hpo_id
+        self['_id'] = hpo_id
         self['description'] = description
-        self['source'] = source
         self['genes'] = genes or []
-        self['inheritance'] = inheritance or []
-        self['hpo_terms'] = hpo_terms or []
 
 # Disease terms represent diseases collected from omim, orphanet and decipher.
 # Collected from OMIM

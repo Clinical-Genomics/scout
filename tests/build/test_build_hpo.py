@@ -1,6 +1,6 @@
 from scout.build.hpo import build_hpo_term
 
-def test_build_hpo_term_non_existing_genes(adapter):
+def test_build_hpo_term(adapter):
     ## GIVEN a hpo term
     hpo_info = {
         'hpo_id':"HP:0000878",
