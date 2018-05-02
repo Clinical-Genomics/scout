@@ -1,4 +1,4 @@
-from scout.build.clnsig import build_clnsig
+from scout.build.variant.clnsig import build_clnsig
 
 def test_build_clnsig():
     clnsig_info = {

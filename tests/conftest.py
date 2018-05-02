@@ -484,7 +484,7 @@ def hpo_database(request, gene_database, hpo_terms_handle, hpo_to_genes_handle, 
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
 
-    
+
     load_hpo(
         adapter=gene_database,
         hpo_lines=get_file_handle(hpoterms_reduced_path),

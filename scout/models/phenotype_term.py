@@ -1,24 +1,54 @@
 # -*- coding: utf-8 -*-
 
 # Hpo terms represents data from the hpo web
-hpo_term = dict(
+class HpoTerm(dict):
+    """Represents a hpo term
+    
     _id = str, # Same as hpo_id
    hpo_id = str, # Required
    aliases = list, # List of aliases
    description = str,
    genes = list, # List with integers that are hgnc_ids 
-)
+    
+    """
+    def __init__(self, hpo_id, aliases, description, genes=None):
+        super(DiseaseTerm, self).__init__()
+        self['disease_id'] = disease_id
+        self['_id'] = disease_id
+        self['disease_nr'] = int(disease_nr)
+        self['description'] = description
+        self['source'] = source
+        self['genes'] = genes or []
+        self['inheritance'] = inheritance or []
+        self['hpo_terms'] = hpo_terms or []
 
 # Disease terms represent diseases collected from omim, orphanet and decipher.
 # Collected from OMIM
-disease_term = dict(
-    _id = str, # Same as disease_id
-    disease_id = str, # required, like OMIM:600233
-    disase_nr = int, # The disease nr
-    description = str, # required
-    source = str, # required
-    genes = list, # List with integers that are hgnc_ids 
-)
+class DiseaseTerm(dict):
+    """Represents a disease term
+    
+        _id = str, # Same as disease_id
+        disease_id = str, # required, like OMIM:600233
+        disease_nr = int, # The disease nr
+        description = str, # required
+        source = str, # required
+        genes = list, # List with integers that are hgnc_ids 
+        inheritance = list, # List of inheritance models connected to the disease
+        hpo_terms = list, # List of hpo terms associated with the disease
+    
+    """
+    def __init__(self, disease_id, disease_nr, description, source, genes=None, inheritance=None, 
+                 hpo_terms=None):
+        super(DiseaseTerm, self).__init__()
+        self['disease_id'] = disease_id
+        self['_id'] = disease_id
+        self['disease_nr'] = int(disease_nr)
+        self['description'] = description
+        self['source'] = source
+        self['genes'] = genes or []
+        self['inheritance'] = inheritance or []
+        self['hpo_terms'] = hpo_terms or []
+        
 
 # phenotype_term is a special object to hold information on case level
 # This one might be deprecated when we skip mongoengine
