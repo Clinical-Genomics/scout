@@ -91,7 +91,7 @@ class HgncGene(dict):
         self['hgnc_symbol'] = hgnc_symbol
         self['ensembl_id'] = hgnc_symbol
 
-        self['chrom'] = chrom
+        self['chromosome'] = chrom
         self['start'] = int(start)
         self['end'] = int(end)
         self['length'] = self['end'] - self['start']

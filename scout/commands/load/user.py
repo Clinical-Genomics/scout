@@ -4,6 +4,8 @@ import logging
 
 import click
 
+from scout.build.user import build_user
+
 LOG = logging.getLogger(__name__)
 
 
@@ -40,8 +42,10 @@ def user(context, institute_id, user_name, user_mail, admin):
 
     user_info = dict(email=user_mail, name=user_name, roles=roles, institutes=institutes)
 
+    user_obj = build_user(user_info)
+
     try:
-        adapter.add_user(user_info)
+        adapter.add_user(user_obj)
     except Exception as err:
         LOG.warning(err)
         context.abort()

@@ -26,6 +26,8 @@ from scout.utils.link import link_genes
 from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel)
 from scout.build.variant import build_variant
+from scout.build.genes.hgnc_gene import build_hgnc_gene
+from scout.build.user import build_user
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 
@@ -37,6 +39,8 @@ transcripts38_reduced_path, genes38_reduced_path,)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path)
+
+from scout.models.hgnc_map import HgncGene
 
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
@@ -87,6 +91,19 @@ def test_gene(request, test_transcript):
     }
     return gene
 
+@pytest.fixture
+def parsed_gene(request):
+    gene_info = {
+        'hgnc_id': 1,
+        'hgnc_symbol': 'AAA',
+        'ensembl_id': 'ENSG1',
+        'chrom': '1',
+        'start': 10,
+        'end': 100,
+        'build': '37'
+    }
+    return gene_info
+
 
 @pytest.fixture
 def genes(request, genes37_handle, hgnc_handle, exac_handle,
@@ -105,6 +122,14 @@ def genes(request, genes37_handle, hgnc_handle, exac_handle,
 
     return gene_dict
 
+@pytest.fixture
+def gene_bulk(genes):
+    """Return a list with HgncGene objects"""
+    bulk = []
+    for gene_key in genes:
+        bulk.append(build_hgnc_gene(genes[gene_key]))
+    
+    return bulk
 
 #############################################################
 ################# Hpo terms fixtures ########################
@@ -129,7 +154,8 @@ def hpo_terms(request, hpo_terms_file):
 def hpo_disease_handle(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
-    return get_file_handle(hpo_disease_file)
+    handle = get_file_handle(hpo_disease_file)
+    return handle
 
 
 @pytest.fixture
@@ -266,7 +292,7 @@ def parsed_user(request, institute_obj):
     user_info = {
         'email': 'john@doe.com',
         'name': 'John Doe',
-        'location': None,
+        'location': 'here',
         'institutes': [institute_obj['internal_id']],
         'roles': ['admin']
     }
@@ -276,7 +302,8 @@ def parsed_user(request, institute_obj):
 @pytest.fixture(scope='function')
 def user_obj(request, parsed_user):
     """Return a User object"""
-    return parsed_user
+    _user_obj = build_user(parsed_user)
+    return _user_obj
 
 
 #############################################################
@@ -453,30 +480,34 @@ def real_gene_database(request, real_institute_database, genes37_handle, hgnc_ha
 
 
 @pytest.fixture(scope='function')
-def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle, hpo_disease_handle):
+def hpo_database(request, gene_database, hpo_terms_handle, hpo_to_genes_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
 
+    
     load_hpo(
         adapter=gene_database,
-        hpo_lines=hpo_terms_handle,
-        disease_lines=genemap_handle,
-        hpo_disease_lines=hpo_disease_handle,
+        hpo_lines=get_file_handle(hpoterms_reduced_path),
+        hpo_gene_lines=get_file_handle(hpo_to_genes_reduced_path),
+        disease_lines=get_file_handle(genemap2_reduced_path),
+        hpo_disease_lines=get_file_handle(hpo_phenotype_to_terms_reduced_path),
     )
 
     return adapter
 
 
 @pytest.fixture(scope='function')
-def real_hpo_database(request, real_gene_database, hpo_terms_handle, genemap_handle):
+def real_hpo_database(request, real_gene_database, hpo_terms_handle, hpo_to_genes_handle, 
+                      genemap_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = real_gene_database
 
     load_hpo(
         adapter=gene_database,
         hpo_lines=hpo_terms_handle,
+        hpo_gene_lines=hpo_to_genes_handle,
         disease_lines=genemap_handle,
-        hpo_disease_lines=hpo_disease_handle
+        hpo_disease_lines=hpo_disease_handle,
     )
 
     return adapter
@@ -520,9 +551,9 @@ def real_panel_database(request, real_gene_database, panel_info):
 
 
 @pytest.fixture(scope='function')
-def case_database(request, institute_database, parsed_case):
+def case_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with institute, user and case"
-    adapter = institute_database
+    adapter = panel_database
     
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)

@@ -1,8 +1,5 @@
 import logging
 
-from .exon import build_exon
-from .transcript import build_transcript
-
 from scout.models.hgnc_map import HgncGene
 
 LOG = logging.getLogger(__name__)

@@ -1,18 +1,18 @@
 import pytest
 
+from scout.models.hgnc_map import HgncGene
+
 from scout.exceptions import IntegrityError
 
 #################### HGNC gene tests ####################
-def test_insert_gene(adapter):
+def test_insert_gene(adapter, parsed_gene):
     ##GIVEN a empty adapter
     assert adapter.all_genes().count() == 0
 
     ##WHEN inserting a gene
-    gene_obj = {
-        'hgnc_id': 1,
-        'hgnc_symbol': 'AAA',
-        'build': '37'
-    }
+    
+    gene_obj = HgncGene(**parsed_gene)
+    
     obj_id = adapter.load_hgnc_gene(gene_obj)
 
     ##THEN assert that the gene is there
@@ -20,19 +20,16 @@ def test_insert_gene(adapter):
     ##THEN assert that no genes are in the '38' build
     assert adapter.all_genes(build='38').count() == 0
 
-def test_insert_many_genes(adapter):
+def test_insert_many_genes(adapter, parsed_gene):
     adapter = adapter
+    gene_objs = []
     ##GIVEN a empty adapter
     assert adapter.all_genes().count() == 0
-
-    gene_objs = []
+    
     ##WHEN inserting a bulk of genes
     for i in range(300):
-        gene_objs.append({
-            'hgnc_id': i,
-            'hgnc_symbol': 'AAA',
-            'build': '37'
-        })
+        parsed_gene['hgnc_id'] = i
+        gene_objs.append(HgncGene(**parsed_gene))
 
     result = adapter.load_hgnc_bulk(gene_objs)
 
@@ -41,6 +38,20 @@ def test_insert_many_genes(adapter):
     ##THEN assert that no genes are in the '38' build
     assert adapter.all_genes(build='38').count() == 0
 
+def test_insert_bulk(adapter, gene_bulk):
+    ## GIVEN an empty adapter and a bulk of genes
+    adapter = adapter
+    
+    assert adapter.all_genes().count() == 0
+    assert len(gene_bulk) > 0
+    
+    ## WHEN inserting the gene objects
+    result = adapter.load_hgnc_bulk(gene_bulk)
+    
+    ##THEN assert that the genes are loaded
+    assert adapter.all_genes().count() == len(gene_bulk)
+    
+    
 def test_insert_many_genes_duplicate(adapter):
     adapter = adapter
     ##GIVEN a empty adapter
@@ -378,7 +389,7 @@ def test_insert_many_transcripts(adapter):
     ##THEN assert that no transcripts are in the '38' build
     assert adapter.transcripts(build='38').count() == 0
 
-def test_insert_many_genes_duplicate(adapter):
+def test_insert_many_transcripts_duplicate(adapter):
     adapter = adapter
     ##GIVEN a empty adapter
 
