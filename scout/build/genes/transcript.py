@@ -66,7 +66,7 @@ def build_transcript(transcript_info, build='37'):
         build=build
     )
     # Remove unnessesary keys
-    for key in transcript_obj:
+    for key in list(transcript_obj):
         if transcript_obj[key] is None:
             transcript_obj.pop(key)
 

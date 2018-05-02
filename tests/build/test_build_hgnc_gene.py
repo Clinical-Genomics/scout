@@ -1,6 +1,6 @@
 from pprint import pprint as pp
 
-from scout.build.hgnc_gene import build_hgnc_gene
+from scout.build.genes.hgnc_gene import build_hgnc_gene
 import pytest
 
 def test_build_hgnc_genes(genes):
@@ -15,10 +15,6 @@ def test_build_hgnc_genes(genes):
 
         # THEN check that the gene models have a hgnc id
         assert gene_obj['hgnc_id']
-        for transcript in gene_obj['transcripts']:
-            assert transcript['ensembl_transcript_id']
-            if 'refseq_id' in transcript:
-                assert isinstance(transcript['refseq_id'], list)
 
 def test_build_hgnc_gene():
     gene_info = {
@@ -32,6 +28,7 @@ def test_build_hgnc_gene():
     gene_obj = build_hgnc_gene(gene_info)
     
     assert gene_obj['hgnc_id'] == gene_info['hgnc_id']
+    assert gene_obj['length'] == gene_info['end'] - gene_info['start']
 
 def test_build_hgnc_gene_no_id():
     gene_info = {
