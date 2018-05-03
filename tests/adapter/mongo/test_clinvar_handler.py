@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import logging
+
+LOG = logging.getLogger(__name__)
 
 def get_test_submission_object():
     """Returns a test clinvar variant submission object"""
@@ -31,6 +35,7 @@ def test_add_clinvar_submission(adapter, user_obj, institute_obj, case_obj):
 
     ## Test adding a clinvar submission object, it should return a list of inserted ids (one in this case)
     res = adapter.add_clinvar_submission(test_sub_obj, user, institute, case)
+    LOG.info('insert result is %s', res)
     assert type(res) == list
 
     # assert that one variant was actually inserted into the clinvar database collection
