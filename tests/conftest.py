@@ -184,6 +184,27 @@ def case_obj(request, parsed_case, panel_database):
 
 
 #############################################################
+##################### Clinvar fixtures ######################
+#############################################################
+@pytest.fixture(scope='function')
+def clinvar_variant(request):
+    clivar_variant = {
+        '_id' : '3eecfca5efea445eec6c19a53299043b',
+        '##Local_ID' : '3eecfca5efea445eec6c19a53299043b',
+        'Reference_allele' : 'C',
+        'Alternate_allele' : 'A',
+        'Chromosome' : '7',
+        'Start' : '124491972',
+        'Stop' : '124491972',
+        'Clinical_significance' : 'Likely Pathogenic',
+        'Condition_ID_value' : 'HP:0001298;HP:0002121',
+        'clinvar_submission' : 'SUB666',
+    }
+
+    return clivar_variant
+
+
+#############################################################
 ##################### Institute fixtures ####################
 #############################################################
 @pytest.fixture(scope='function')
@@ -317,6 +338,19 @@ def adapter(request, pymongo_client):
     logger.info("Connected to database")
 
     return mongo_adapter
+
+
+@pytest.fixture(scope='function')
+def clinvar_database(request, adapter, clinvar_variant, user_obj, institute_obj, case_obj):
+    "Returns an adapter to a database populated with one variant"
+
+    user_id = user_obj['_id']
+    institute_id = institute_obj['internal_id']
+    case_id = case_obj['_id']
+
+    adapter.add_clinvar_submission([clinvar_variant], user_id, institute_id, case_id)
+
+    return adapter
 
 
 @pytest.fixture(scope='function')
