@@ -104,7 +104,6 @@ CASEDATA_HEADER = [
 # clinvar CaseData sheet, optional fields for clinvar but some are pre-determined for clinvar scout form.
 CASEDATA_OPTIONAL = {
     'Structural variant method/analysis type' : False,
-    'Collection method' : 'clinical testing',
     'Comment on clinical features' : False,
     'Date phenotype was evaluated' : False,
     'Tissue' : False,

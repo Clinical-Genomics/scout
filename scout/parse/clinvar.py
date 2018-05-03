@@ -1,26 +1,16 @@
-import urllib.request
-import sys
 from scout.constants import CLINVAR_HEADER, CLINVAR_OPTIONAL, CASEDATA_HEADER, CASEDATA_OPTIONAL
 
-def get_variant_lines(form_fields):
-    """Parses the form from blueprints/variants/clinvar.html (creation of a new clinvar submission).
-       According to what the uses has inserted in the form, the function evaluates which fields are to
-       be included in the .Variant.csv clinvar submission file (both header and lines).
-       Mandatory fields are defined in CLINVAR_HEADER, optional fields in CLINVAR_OPTIONAL.
+def get_submission_variants(form_fields):
+    """Extracts a list of variant ids from the clinvar submission form in blueprints/variants/clinvar.html (creation of a new clinvar submission).
 
-       Args:
-            form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CLINVAR_OPTIONAL
+        Args:
+             form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
 
-       Returns:
-            clinvar_header(list) # the header of the .Variant.csv CSV file
-            clinvar_lines(list of lists) each inner list is a variant line
+        Returns:
+             clinvars # A list of variant IDs
     """
 
-    clinvar_header  = list(CLINVAR_HEADER)
-    optional_fields = dict(CLINVAR_OPTIONAL)
-    clinvars_dict = {}
     clinvars = []
-
     if 'all_vars' in form_fields:
         for field, value in form_fields.items():
             if field.startswith('##Local ID_'):
@@ -28,116 +18,87 @@ def get_variant_lines(form_fields):
     else:
         clinvars = [form_fields['main_var']] #also a list, but has one element
 
+    return clinvars
+
+
+def get_submission_header(form_fields, clinvars, csv_type):
+    """Extracts a valid header for a csv clinvar submission file (blueprints/variants/clinvar.html). This file can be either the .Variant.csv file or the .Casedata.csv file according to the csv_type parameter passed.
+
+        Args:
+             form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+             clinvars # it's a list of variant ids to be used in the clinvar siubmission
+             csv_type # either 'variants' or 'casedata'
+
+        Returns:
+             submission_header # a list of header fields for either the .Variant.csv or .Casedata.csv file
+    """
+    complete_header = []
+    optional_fields = {}
+
+    if csv_type == 'variants':
+        complete_header  = list(CLINVAR_HEADER)
+        optional_fields = dict(CLINVAR_OPTIONAL)
+    else: # csv_type == casedata
+        complete_header  = list(CASEDATA_HEADER)
+        optional_fields = dict(CASEDATA_OPTIONAL)
+
+    clinvars = get_submission_variants(form_fields)
+    submission_header = []
+
+    # loop over the header items and see if the field was filled in in each variant/casedata item in the form
+    for field in complete_header: #for each field
+        for clinvar in clinvars: #for each variant
+            if field+"_"+clinvar in form_fields: # might be a mandatory or an optional field
+                field_value = form_fields[field+'_'+clinvar] #get the value of that field in the form
+                if len(field_value) > 0 and field_value != '-': # if the field is filled in with some value
+                    if field not in submission_header: # collect the value in the file header
+                        submission_header.append(field)
+            elif field in optional_fields and optional_fields[field]:
+                if field not in submission_header: # collect the value in the file header
+                    submission_header.append(field)
+
+    return submission_header
+
+
+def get_submission_lines(form_fields, clinvars, file_header):
+    """Extracts the lines for a csv clinvar submission file (blueprints/variants/clinvar.html). This file can be either the .Variant.csv file or the .Casedata.csv file according to the header passed (form_fields)
+
+        Args:
+             form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+             clinvars # it's a list of variant ids to be used in the clinvar siubmission
+             file_header # it's the file header
+
+        Returns:
+             csv_lines # a list of lists. Each inner list is a line for the .Variant.csv or .Casedata.csv file.
+    """
+
+    clinvars = get_submission_variants(form_fields)
+    csv_lines = [] #the list containing all the lines (one line for each variant/casedata)
+    csv_line = []
+
     for clinvar in clinvars:
-        clinvar_dict = {}
-        for field in clinvar_header:
-            clinvar_dict[field] = ''
-            if field == 'Reference sequence' or field == 'HGVS':
-                if 'Reference sequence_'+clinvar in form_fields: #value is provided on the form
-                    ref_HGVS = form_fields['Reference sequence_'+clinvar] # this is a list
-                    if field == 'Reference sequence':
-                        refseq = ref_HGVS.split('|')
-                        clinvar_dict[field] = refseq[0]
+        if '##Local ID' in file_header or 'Individual ID' in file_header and 'casedata_'+clinvar in form_fields: # either the lines for a variant or the casedata lines for a variant with casedata filled in in the form
+            csv_line = [] # a line object for a single variant/casedata
+            for field in file_header:
+                if field+"_"+clinvar in form_fields: # field is provided for this variant
+                    if field == 'Reference sequence' or field == 'HGVS':
+                        ref_HGVS = form_fields['Reference sequence_'+clinvar] # capture both refseq and hgvs
+                        if field == 'Reference sequence':
+                            refseq = ref_HGVS.split('|')
+                            csv_line.append('"'+refseq[0]+'"')
+                        else:
+                            hgvs = ref_HGVS.split('|')
+                            csv_line.append('"'+hgvs[1]+'"')
                     else:
-                        hgvs = ref_HGVS.split('|')
-                        clinvar_dict[field] = hgvs[1]
-                    optional_fields[field] = True
-                else:
-                    if optional_fields[field] == True:
-                        clinvar_dict[field] = ''
-            else: #optional fields
-                if field+"_"+clinvar in form_fields: # optional field is provided
-                    field_value = form_fields[field+'_'+clinvar]
-                    if len(field_value) > 0 and field_value != '-': #it's filled in field
-                        clinvar_dict[field] = field_value
-                        if field in optional_fields: # if it's an optional field but it is provided:
-                            optional_fields[field] = True
-                    else: #not filled in, but was filled in for any other variant in this submission
-                        if field in optional_fields and optional_fields[field] == True:
-                            clinvar_dict[field] = ''
-                else: #not provided, but was provided for another variant in this submission form
-                    if field in optional_fields and optional_fields[field] == True:
-                        clinvar_dict[field] = ''
-        # Add variant line to the dictionary of variants to submit
-        clinvars_dict[clinvar] = clinvar_dict
+                        csv_line.append('"'+form_fields[field+"_"+clinvar]+'"') # capture the provided value
+                else: #field is not provided but it is provided for some other variant. Adding a blank cell for this one
+                    csv_line.append('""') # empty cell
 
-    # remove empty fields from header:
-    for field, used in optional_fields.items():
-        if used == False: #field is not used, remove it from header:
-            clinvar_header.remove(field)
+        if csv_line not in csv_lines and len(csv_line)>0:
+            csv_lines.append(csv_line)
 
-    variants = [] #one line for each variant
-    for clinvar in clinvars:
-        variant_line = []
-        clinvar_dict = clinvars_dict[clinvar]
-        for field in clinvar_header:
-            variant_line.append('"'+clinvar_dict[field]+'"')
-        variants.append(variant_line)
+    return csv_lines
 
-    #returning a list and a list of lists
-    return clinvar_header, variants
-
-
-def get_casedata_lines(form_fields):
-    """Parses the form from blueprints/variants/clinvar.html (creation of a new clinvar submission).
-       According to what the used has inserted in the form, the function evaluates which fields are to
-       be included in the .CaseData.csv clinvar submission file (both header and lines).
-       Mandatory fields are defined in CASEDATA_HEADER, optional (or pre-filled) fields in CASEDATA_OPTIONAL.
-
-       Args:
-            form_fields(dict) # it's the submission form dictionary. Keys have the same names as CASEDATA_HEADER and CASEDATA_OPTIONAL
-
-       Returns:
-            casedata_header(list) # the header of the .CaseData.csv CSV file
-            casedata_lines(list of lists) each inner list is a case data line
-    """
-
-    casedata_header = list(CASEDATA_HEADER)
-    casedata_optional = dict(CASEDATA_OPTIONAL)
-    subjs_dict={}
-    clinvars = []
-
-    if 'all_vars' in form_fields:
-        for field, value in form_fields.items():
-            if field.startswith('##Local ID_'):
-                clinvars.append(form_fields[field].replace('##Local ID_',''))
-    else:
-        clinvars = [form_fields['main_var']] #also a list, but has one element
-
-    for clinvar in clinvars:
-        if 'casedata_'+clinvar in form_fields: #if the user has chosen to add this case using the relative checkbox
-            subj_dict = {}
-            for field in casedata_header: # If the field is in the dynamic form
-                if field+'_'+clinvar in form_fields: #filled in field
-                    field_value = form_fields[field+'_'+clinvar]
-                    if len(field_value) > 0:
-                        subj_dict[field] = form_fields[field+'_'+clinvar]
-                        if field in casedata_optional:
-                            casedata_optional[field] = True
-                # else it might be either an empty option or a constant:
-                elif field in casedata_optional: # it's a constant
-                    subj_dict[field] = casedata_optional[field]
-            subjs_dict[clinvar] = subj_dict
-
-    # remove empty fields from header:
-    for field, used in casedata_optional.items():
-        if used is False: # Remove it from the header and from the fields to be printed in the file:
-            casedata_header.remove(field)
-
-    casedata_lines = []
-    #key is variant, value the subject data
-    for clinvar in clinvars: # for each variant to submit (1 line in the document)
-        if clinvar in subjs_dict:
-            subj_dict = subjs_dict[clinvar]
-            casedata_line = []
-            for field in casedata_header:
-                if field in subj_dict:
-                    casedata_line.append('"'+subj_dict[field]+'"')
-                else:
-                    casedata_line.append('""')
-            casedata_lines.append(casedata_line)
-
-    return casedata_header,casedata_lines
 
 def extract_submission_csv_lines(clinvars_dictlist):
     """Parses a list of clinvar submission objects (variants) and creates the lines for printing
@@ -169,7 +130,7 @@ def extract_submission_csv_lines(clinvars_dictlist):
     return '"'+'","'.join(variants_header)+'"', '"'+'","'.join(casedata_header)+'"', clinvar_lines, casedata_lines
 
 
-def create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines):
+def create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines, variant_types):
     """
     Creates a list of variants used for a clinvar submission. The returned list has the following format:
     [
@@ -210,9 +171,9 @@ def create_clinvar_submission_dict(variant_header, variant_lines, casedata_heade
     submitted_vars= []
     # variant header items become dictionary keys and variant lines dictionary values
     for item in variant_lines: #each line is a variant
-
         var_dictionary = {}
         var_dictionary['_id']= item[0].strip('"') #variant_id
+        var_dictionary['variant_type'] = variant_types[var_dictionary['_id']]
         field_counter = 0
         for column in variant_header:
             var_dictionary[column.replace(' ','_')] = item[field_counter].strip('"')
@@ -221,7 +182,7 @@ def create_clinvar_submission_dict(variant_header, variant_lines, casedata_heade
         # add casedata info to the submission object:
         casedata = []
         for line in casedata_lines: #for each subject in casedata:
-            if line[0] == item[0]:
+            if line and line[0] == item[0]:
                 casedata_obj = {}
                 field_counter=0
                 for column in casedata_header:

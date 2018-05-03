@@ -435,11 +435,31 @@
           <tbody>
             {% for subm_obj in case.clinvar_submissions %}
               <tr>
-                <td><a href="{{ url_for('variants.variant',
+                <td>
+                  {% if subm_obj['variant_type'] == 'snv' %}
+                    <a href="{{ url_for('variants.variant',
+                                      institute_id=subm_obj['institute'],
+                                      case_name=subm_obj['case'],
+                                        variant_id=subm_obj['_id']) }}">
+                                        {% if subm_obj['Gene_symbol'] %}
+                                          {{subm_obj['Gene_symbol']}}
+                                        {% else %}
+                                          {{subm_obj['_id']}}
+                                        {% endif %}
+                      </a>
+                  {% else %}
+                  <a href="{{ url_for('variants.sv_variant',
                                     institute_id=subm_obj['institute'],
                                     case_name=subm_obj['case'],
-                                    variant_id=subm_obj['_id']) }}">{{subm_obj['Gene_symbol']}}
+                                      variant_id=subm_obj['_id']) }}">
+                                      chr{{subm_obj['Chromosome']}} - {{subm_obj['variant_type']}}
                     </a>
+
+
+
+                  {% endif %}
+
+
                 </td>
                 <td>
                   {% if subm_obj['Clinical_significance'] == 'Pathogenic' %}

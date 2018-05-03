@@ -37,7 +37,12 @@
   {% for clinvar in clinvars %}
   <div class="panel panel-default">
       <div class="panel-heading">
-        {{clinvar.Gene_symbol}} - chr{{clinvar.Chromosome}}:{{clinvar.Start}}
+        {% if clinvar.variant_type == 'snv' %}
+          <span class="label label-success pull-left">snv</span>&nbsp&nbsp{{clinvar.Gene_symbol}} -
+        {% else %}
+          <span class="label label-warning pull-left">sv</span>&nbsp&nbsp{{clinvar.Variant_type}}
+        {% endif %}
+          chr{{clinvar.Chromosome}}:{{clinvar.Start}}
         {% if clinvar.Reference_allele|length > 30 %}
           {{clinvar.Reference_allele[:30]}}... ->
         {% else %}
