@@ -43,8 +43,8 @@
               <div class="panel-heading">Start a new clinVar submission</div>
               <div class="panel-body">
                 <form action="{{ url_for('variants.get_csv') }}" method="POST" id="downloads_form" name="downloads_form">
-                    <input type="hidden" name="vheader" value="{{ ','.join(variant_header) }}">
-                    <input type="hidden" name="cdheader" value="{{ ','.join(casedata_header) }}">
+                    <input type="hidden" name="vheader" value="{{ '","'.join(variant_header) }}">
+                    <input type="hidden" name="cdheader" value="{{ '","'.join(casedata_header) }}">
                   {% for item in variant_lines %}
                     <input type="hidden" name="variant" value="{{ ','.join(item) }}">
                   {% endfor %}
@@ -208,6 +208,7 @@
 {% macro panel_variant(var_type) %}
   {% for pinned in pinned_vars %}
     {% if var_type=='main_var' and pinned._id == variant._id or var_type=='other_vars' and not pinned._id == variant._id %}
+    <input type="hidden" name="variant-type_{{pinned._id}}" value={{pinned.category}}>
     <input type ="hidden" name="##Local ID_{{pinned._id}}" value="{{pinned._id}}">
     <input type ="hidden" name="Linking ID_{{pinned._id}}" value="{{pinned._id}}">
     <input type="hidden" name="Chromosome_{{pinned._id}}" value="{{ pinned.chromosome }}">
@@ -604,6 +605,7 @@
                 </div>
               </div>
               <div id="casedata_{{pinned._id}}" class="collapse">
+                <input type="hidden" name="Collection method_{{pinned._id}}" value="clinical testing">
                 <input type="hidden" name="Individual ID_{{pinned._id}}" value="{{ individual.display_name }}">
                 <input type="hidden" name="Linking ID_{{ pinned._id }}" value="{{ pinned._id }}">
                 <div class="panel panel-success">

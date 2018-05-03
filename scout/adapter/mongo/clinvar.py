@@ -36,14 +36,14 @@ class ClinVarHandler(object):
 
         #if there is any variant with the same submssion id (SUBXXX) in the clinvar collection
         if self.clinvars(submission_id=submission_obj[0]['clinvar_submission']):
-            return "clinvar submission id "+submission_obj[0]['clinvar_submission']+" already exists in database!","danger"
+            result = 0
         elif self.clinvars(variant_ids=ids): #if the variant is already present in the clinvar collection
-            return "One of more variants your are trying to save is already present in a clinvar submission!","danger"
+            result = -1
         else:
             LOG.info("Adding clinvar submission id: {0}".format(submission_obj[0]['clinvar_submission']))
             result = self.clinvar_collection.insert_many(submission_obj)
-            return "variants with ids {0} were saved into clinvar submission collection".format(result.inserted_ids), "success"
 
+        return result
 
     def clinvars(self, variant_ids=None, case_id=None, submission_id=None):
         """Fetch a list of clinvar submissions by providing either a list of variants_ids, a case_id or a submission_id.
