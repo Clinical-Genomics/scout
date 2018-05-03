@@ -26,7 +26,7 @@ def test_add_clinvar_submission(adapter, user_obj, institute_obj, case_obj):
     # prepare a test list with one submission get_test_submission_object
     test_sub_obj = [get_test_submission_object()]
     user = user_obj['email']
-    institute = institute_obj['_id']
+    institute = institute_obj['internal_id']
     case = case_obj['_id']
 
     ## Test adding a clinvar submission object, it should return a list of inserted ids (one in this case)
