@@ -89,7 +89,7 @@ class HgncGene(dict):
         super(HgncGene, self).__init__()
         self['hgnc_id'] = int(hgnc_id)
         self['hgnc_symbol'] = hgnc_symbol
-        self['ensembl_id'] = hgnc_symbol
+        self['ensembl_id'] = ensembl_id
 
         self['chromosome'] = chrom
         self['start'] = int(start)

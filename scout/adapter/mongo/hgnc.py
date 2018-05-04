@@ -36,7 +36,7 @@ class GeneHandler(object):
             result (pymongo.results.InsertManyResult)
         """
 
-        LOG.debug("Loading gene bulk")
+        LOG.info("Loading gene bulk with length %s", len(gene_objs))
         try:
             result = self.hgnc_collection.insert_many(gene_objs)
         except (DuplicateKeyError, BulkWriteError) as err:
@@ -61,6 +61,7 @@ class GeneHandler(object):
             transcript_objs(iterable(scout.models.hgnc_transcript))
 
         """
+        LOG.info("Loading transcript bulk")
         try:
             result = self.transcript_collection.insert_many(transcript_objs)
         except (DuplicateKeyError, BulkWriteError) as err:

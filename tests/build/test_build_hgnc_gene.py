@@ -8,11 +8,8 @@ def test_build_hgnc_genes(genes):
     
     # WHEN building hgnc gene objecs
     for hgnc_id in genes:
-        print(hgnc_id)
         gene_info = genes[hgnc_id]
-        pp(gene_info)
         gene_obj = build_hgnc_gene(gene_info)
-
         # THEN check that the gene models have a hgnc id
         assert gene_obj['hgnc_id']
 
@@ -28,7 +25,9 @@ def test_build_hgnc_gene():
     gene_obj = build_hgnc_gene(gene_info)
     
     assert gene_obj['hgnc_id'] == gene_info['hgnc_id']
+    assert gene_obj['hgnc_symbol'] == gene_info['hgnc_symbol']
     assert gene_obj['length'] == gene_info['end'] - gene_info['start']
+    assert gene_obj['ensembl_id'] == gene_info['ensembl_gene_id']
 
 def test_build_hgnc_gene_no_id():
     gene_info = {

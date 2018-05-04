@@ -28,20 +28,22 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
     """
     # Fetch all genes with ensemblid as keys
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
-    LOG.info("Number of genes: {0}".format(len(ensembl_genes)))
 
-    if not transcripts_lines:
+    if transcripts_lines is None:
         transcripts_lines = fetch_ensembl_transcripts(build=build)
-
-    transcripts_dict = parse_transcripts(transcripts_lines)
     
-    for ens_gene_id in list(transcripts_dict):
-        parsed_tx = transcripts_dict[ens_gene_id]
+    # Map with all transcripts enstid -> parsed transcript
+    transcripts_dict = parse_transcripts(transcripts_lines)
+    for ens_tx_id in list(transcripts_dict):
+        parsed_tx = transcripts_dict[ens_tx_id]
+        # Get the ens gene id
+        ens_gene_id = parsed_tx['ensembl_gene_id']
+        # pp(ens_gene_id)
         # Fetch the internal gene object to find out the correct hgnc id
         gene_obj = ensembl_genes.get(ens_gene_id)
         # If the gene is non existing in scout we skip the transcript
         if not gene_obj:
-            transcripts_dict.pop(ens_gene_id)
+            transcripts_dict.pop(ens_tx_id)
             LOG.debug("Gene %s does not exist in build %s", ens_gene_id, build)
             continue
         
@@ -49,6 +51,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
         parsed_tx['hgnc_id'] = gene_obj['hgnc_id']
         # Primary transcript information is collected from HGNC
         parsed_tx['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
+
 
     ref_seq_transcripts = 0
     nr_primary_transcripts = 0

@@ -19,3 +19,5 @@ def test_link_genes(genes37_handle, hgnc_handle, exac_handle,
         assert gene_obj['chromosome']
         assert gene_obj['start']
         assert gene_obj['end']
+
+        assert gene_obj['hgnc_symbol'] in gene_obj['previous_symbols']

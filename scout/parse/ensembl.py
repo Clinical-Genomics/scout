@@ -19,7 +19,7 @@ def parse_transcripts(transcript_lines):
     Returns:
         parsed_transcripts(dict): Map from enstid -> transcript info
     """
-    
+    LOG.info("Parsing transcripts")
     # Parse the transcripts, we need to check if it is a request or a file handle
     if isinstance(transcript_lines, DataFrame):
         transcripts = parse_ensembl_transcript_request(transcript_lines)
@@ -68,6 +68,7 @@ def parse_ensembl_gene_request(result):
     Yields:
         gene_info(dict)
     """
+    LOG.info("Parsing genes from request")
     
     for index, row in result.iterrows():
         # print(index, row)
@@ -104,6 +105,7 @@ def parse_ensembl_transcript_request(result):
     Yields:
         transcript_info(dict)
     """
+    LOG.info("Parsing transcripts from request")
 
     keys = [
         'chrom',
@@ -146,6 +148,7 @@ def parse_ensembl_line(line, header):
         Returns:
             ensembl_info(dict): A dictionary with the relevant info
     """
+    LOG.debug("Parsing ensembl line")
     line = line.rstrip().split('\t')
     header = [head.lower() for head in header]
     raw_info = dict(zip(header, line))
@@ -235,6 +238,7 @@ def parse_ensembl_genes(lines):
         Yields:
             ensembl_gene(dict): A dictionary with the relevant information
     """
+    LOG.info("Parsing ensembl genes from file")
     header = []
     for index,line in enumerate(lines):
         
@@ -259,7 +263,7 @@ def parse_ensembl_transcripts(lines):
             ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    LOG.debug("Parsing ensembl transcripts...")
+    LOG.info("Parsing ensembl genes from file")
     for index,line in enumerate(lines):
         
         #File allways start with a header line
