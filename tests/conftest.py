@@ -9,6 +9,8 @@ from cyvcf2 import VCF
 import yaml
 import pymongo
 
+
+from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
@@ -27,9 +29,11 @@ from scout.log import init_log
 from scout.build import (build_institute, build_case, build_panel)
 from scout.build.variant import build_variant
 from scout.build.genes.hgnc_gene import build_hgnc_gene
+from scout.build.genes.transcript import build_transcript
 from scout.build.user import build_user
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
+from scout.load.transcript import load_transcripts
 
 # These are the reduced data files
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
@@ -53,14 +57,18 @@ logger = logging.getLogger(__name__)
 ##################### Gene fixtures #####################
 
 @pytest.fixture
-def test_transcript(request):
-    transcript = {
-        'ensembl_transcript_id': 'enst1',  # required
-        'refseq_id': 'NM1',
-        'start': 10,  # required
-        'end': 100,  # required
-        'is_primary': True,
-    }
+def transcript_info(request):
+    transcript = dict(
+        chrom = '1',
+        ens_gene_id = 'ENSG00000176022',
+        ens_transcript_id = 'ENST00000379198',
+        start = 1167629,
+        end = 1170421,
+        refseq_mrna = 'NM_080605',
+        refseq_mrna_pred = '',
+        refseq_ncrna = '',
+    )
+    
     return transcript
 
 
@@ -87,7 +95,6 @@ def test_gene(request, test_transcript):
         'ucsc_id': '1',
         'uniprot_ids': ['1'],  # List of str
         'vega_id': '1',
-        'transcripts': [test_transcript],  # List of hgnc_transcript
     }
     return gene
 
@@ -130,6 +137,47 @@ def gene_bulk(genes):
         bulk.append(build_hgnc_gene(genes[gene_key]))
     
     return bulk
+
+@pytest.fixture
+def transcript_objs(request, transcripts):
+    """Return a list with transcript objs"""
+    print('')
+    
+    _transcripts = []
+    for tx_info in transcripts:
+        _transcripts.append(build_transcript(tx_info))
+
+    return _transcripts
+
+@pytest.fixture
+def transcripts_df(request, transcripts):
+    """Return a list with transcript objs"""
+    print('')
+    df_info = dict(
+        chromosome_name = [],
+        ensembl_gene_id = [],
+        ensembl_transcript_id = [],
+        transcript_start = [],
+        transcript_end = [],
+        refseq_mrna = [],
+        refseq_mrna_predicted = [],
+        refseq_ncrna = [],
+    )
+
+    for tx_info in transcripts:
+        df_info['chromosome_name'].append(tx_info['chrom'])
+        df_info['ensembl_gene_id'].append(tx_info['ensembl_gene_id'])
+        df_info['ensembl_transcript_id'].append(tx_info['ensembl_transcript_id'])
+        df_info['transcript_start'].append(tx_info['transcript_start'])
+        df_info['transcript_end'].append(tx_info['transcript_end'])
+        df_info['refseq_mrna'].append(tx_info.get('refseq_mrna', ''))
+        df_info['refseq_mrna_predicted'].append(tx_info.get('refseq_mrna_predicted', ''))
+        df_info['refseq_ncrna'].append(tx_info.get('refseq_ncrna', ''))
+
+    df = DataFrame(df_info)
+
+    return df
+
 
 #############################################################
 ################# Hpo terms fixtures ########################
@@ -428,26 +476,30 @@ def real_institute_database(request, real_adapter, institute_obj, user_obj):
 
 
 @pytest.fixture(scope='function')
-def gene_database(request, institute_database, genes37_handle, hgnc_handle, exac_handle,
-                  mim2gene_handle, genemap_handle, hpo_genes_handle):
+def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute, case and genes"
     adapter = institute_database
     
-    load_hgnc_genes(
+    gene_objs = load_hgnc_genes(
         adapter=adapter,
-        ensembl_lines=genes37_handle, 
-        hgnc_lines=hgnc_handle, 
-        exac_lines=exac_handle, 
-        mim2gene_lines=mim2gene_handle,
-        genemap_lines=genemap_handle, 
-        hpo_lines=hpo_genes_handle, 
+        genes=genes,
         build='37'
-        
     )
 
     logger.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
+
+    ensembl_genes = {}
+    for gene_obj in gene_objs:
+        ensembl_genes[gene_obj['ensembl_id']] = gene_obj
+
+    transcripts_handle = get_file_handle(transcripts37_reduced_path)
+    load_transcripts(adapter, transcripts_handle, build='37', ensembl_genes=ensembl_genes)
+
+    adapter.transcript_collection.create_index([('build', pymongo.ASCENDING),
+                                                ('hgnc_id', pymongo.ASCENDING)])
+
     logger.info("Index done")
 
     return adapter

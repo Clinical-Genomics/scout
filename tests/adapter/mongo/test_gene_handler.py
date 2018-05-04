@@ -411,3 +411,39 @@ def test_insert_many_transcripts_duplicate(adapter):
     ##THEN assert that IntegrityError is raised
     with pytest.raises(IntegrityError):
         result = adapter.load_transcript_bulk(transcript_objs)
+
+def test_insert_transcripts(adapter, transcript_objs):
+    adapter = adapter
+    ##GIVEN a empty adapter
+    assert adapter.transcripts().count() == 0
+
+    ##WHEN inserting a bulk of transcripts
+    result = adapter.load_transcript_bulk(transcript_objs)
+
+    ##THEN assert that the transcripts are loaded
+    assert adapter.transcripts().count() == len(transcript_objs)
+    ##THEN assert that no transcripts are in the '38' build
+    assert adapter.transcripts(build='38').count() == 0
+
+#################### Combined transcript/gene tests ####################
+
+# def test_insert_transcript(adapter):
+#     ##GIVEN a empty adapter
+#     assert adapter.transcripts().count() == 0
+#
+#     ##WHEN inserting a transcript
+#     transcript_obj = {
+#         'ensembl_transcript_id': 'ENST01', # required
+#         'refseq_id': 'NM_1',
+#         'start': 1, # required
+#         'end': 10, # required
+#         'is_primary': False,
+#         'build': '37',
+#     }
+#     obj_id = adapter.load_hgnc_transcript(transcript_obj)
+#
+#     ##THEN assert that the transcript is there
+#     assert adapter.transcripts().count() == 1
+#     ##THEN assert that no transcripts are in the '38' build
+#     assert adapter.transcripts(build='38').count() == 0
+#

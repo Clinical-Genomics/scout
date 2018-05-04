@@ -15,8 +15,8 @@ def gene(store, hgnc_id):
             res['ensembl_id'] = record['ensembl_id']
             
             for transcript in record['transcripts']:
-                transcript['position'] = ("{chrom}:{this[start]}-{this[end]}"
-                                          .format(chrom=record['chromosome'], this=transcript))
+                transcript['position'] = ("{this[chrom]}:{this[start]}-{this[end]}"
+                                          .format(this=transcript))
     
     # If none of the genes where found
     if not any(res.values()):
