@@ -147,12 +147,13 @@ def gene_bulk(genes):
     return bulk
 
 @pytest.fixture
-def transcript_objs(request, transcripts):
+def transcript_objs(request, parsed_transcripts):
     """Return a list with transcript objs"""
     print('')
     
     _transcripts = []
-    for tx_info in transcripts:
+    for tx_id in parsed_transcripts:
+        tx_info = parsed_transcripts[tx_id]
         _transcripts.append(build_transcript(tx_info))
 
     return _transcripts
@@ -498,12 +499,8 @@ def gene_database(request, institute_database, genes):
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
 
-    ensembl_genes = {}
-    for gene_obj in gene_objs:
-        ensembl_genes[gene_obj['ensembl_id']] = gene_obj
-
     transcripts_handle = get_file_handle(transcripts37_reduced_path)
-    load_transcripts(adapter, transcripts_handle, build='37', ensembl_genes=ensembl_genes)
+    load_transcripts(adapter, transcripts_handle, build='37')
 
     adapter.transcript_collection.create_index([('build', pymongo.ASCENDING),
                                                 ('hgnc_id', pymongo.ASCENDING)])
@@ -1169,7 +1166,7 @@ def parsed_transcripts(request, transcripts_handle, ensembl_genes):
         tx_info['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
         
         
-    return parse_transcripts(transcripts_handle)
+    return transcripts
 
 
 @pytest.fixture

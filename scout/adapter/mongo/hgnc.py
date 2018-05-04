@@ -1,5 +1,5 @@
 import logging
-
+from pprint import pprint as pp
 import intervaltree
 
 from scout.build.genes.exon import build_exon
@@ -114,13 +114,15 @@ class GeneHandler(object):
         query['build'] = build
         #LOG.debug("Fetching gene %s" % hgnc_identifyer)
         gene_obj = self.hgnc_collection.find_one(query)
+        if not gene_obj:
+            return None
         
         # Add the transcripts:
         transcripts = []
         tx_objs = self.transcripts(build='37', hgnc_id=gene_obj['hgnc_id'])
-        print(tx_objs, tx_objs.count())
-        for tx in tx_objs:
-            transcripts.append(tx)
+        if tx_objs.count() > 0:
+            for tx in tx_objs:
+                transcripts.append(tx)
         gene_obj['transcripts'] = transcripts
         
         return gene_obj
