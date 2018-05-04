@@ -35,7 +35,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
 
     transcripts_dict = parse_transcripts(transcripts_lines)
     
-    for ens_gene_id in transcripts_dict:
+    for ens_gene_id in list(transcripts_dict):
         parsed_tx = transcripts_dict[ens_gene_id]
         # Fetch the internal gene object to find out the correct hgnc id
         gene_obj = ensembl_genes.get(ens_gene_id)

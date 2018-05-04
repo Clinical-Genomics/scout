@@ -73,7 +73,7 @@ def transcript_info(request):
 
 
 @pytest.fixture
-def test_gene(request, test_transcript):
+def test_gene(request):
     gene = {
         # This is the hgnc id, required:
         'hgnc_id': 1,
