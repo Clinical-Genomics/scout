@@ -20,7 +20,7 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import parse_ensembl_transcripts
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases)
 
@@ -128,6 +128,14 @@ def genes(request, genes37_handle, hgnc_handle, exac_handle,
     )
 
     return gene_dict
+
+@pytest.fixture
+def ensembl_genes(request, gene_bulk):
+    """Return a dictionary that maps ensembl ids on genes"""
+    _ensembl_genes = {}
+    for gene_obj in gene_bulk:
+        _ensembl_genes[gene_obj['ensembl_id']] = gene_obj
+    return _ensembl_genes
 
 @pytest.fixture
 def gene_bulk(genes):
@@ -1145,6 +1153,23 @@ def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def parsed_transcripts(request, transcripts_handle, ensembl_genes):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    transcripts = parse_transcripts(transcripts_handle)
+    for tx_id in transcripts:
+        tx_info = transcripts[tx_id]
+        ens_gene_id = tx_info['ensembl_gene_id']
+        gene_obj = ensembl_genes.get(ens_gene_id)
+        if not gene_obj:
+            continue
+        tx_info['hgnc_id'] = gene_obj['hgnc_id']
+        tx_info['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
+        
+        
+    return parse_transcripts(transcripts_handle)
 
 
 @pytest.fixture

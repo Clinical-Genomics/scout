@@ -20,7 +20,7 @@ def build_transcript(transcript_info, build='37'):
             }
     """
     try:
-        transcript_id = transcript_info['ens_transcript_id']
+        transcript_id = transcript_info['ensembl_transcript_id']
     except KeyError:
         raise KeyError("Transcript has to have ensembl id")
     
