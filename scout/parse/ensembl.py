@@ -2,7 +2,62 @@ import logging
 
 from pprint import pprint as pp
 
-logger = logging.getLogger(__name__)
+from pandas import DataFrame
+
+LOG = logging.getLogger(__name__)
+
+def parse_transcripts(transcript_lines):
+    """Parse and massage the transcript information
+    
+    There could be multiple lines with information about the same transcript.
+    This is why it is necessary to parse the transcripts first and then return a dictionary
+    where all information has been merged.
+    
+    Args:
+        transcript_lines(): This could be an iterable with strings or a pandas.DataFrame
+    
+    Returns:
+        parsed_transcripts(dict): Map from enstid -> transcript info
+    """
+    
+    # Parse the transcripts, we need to check if it is a request or a file handle
+    if isinstance(transcript_lines, DataFrame):
+        transcripts = parse_ensembl_transcript_request(transcript_lines)
+    else:
+        transcripts = parse_ensembl_transcripts(transcript_lines)
+
+    # Since there can be multiple lines with information about the same transcript
+    # we store transcript information in a dictionary for now
+    parsed_transcripts = {}
+    # Loop over the parsed transcripts
+    for tx in transcripts:
+        tx_id = tx['ensembl_transcript_id']
+        ens_gene_id = tx['ensembl_gene_id']
+
+        # Check if the transcript has been added
+        # If not, create a new transcript
+        if not tx_id in parsed_transcripts:
+            tx_info = {
+                'chrom': tx['chrom'],
+                'transcript_start': tx['transcript_start'],
+                'transcript_end': tx['transcript_end'],
+                'mrna': set(),
+                'mrna_predicted': set(),
+                'nc_rna': set(),
+                'ensembl_gene_id': ens_gene_id,
+                'ensembl_transcript_id': tx_id,
+            }
+            parsed_transcripts[tx_id] = tx_info
+
+        # Add the ref seq information
+        if tx.get('refseq_mrna_predicted'):
+            tx_info['mrna_predicted'].add(tx['refseq_mrna_predicted'])
+        if tx.get('refseq_mrna'):
+            tx_info['mrna'].add(tx['refseq_mrna'])
+        if tx.get('refseq_ncrna'):
+            tx_info['nc_rna'].add(tx['refseq_ncrna'])
+    
+    return parsed_transcripts
 
 def parse_ensembl_gene_request(result):
     """Parse a dataframe with ensembl gene information
@@ -62,7 +117,6 @@ def parse_ensembl_transcript_request(result):
     ]
     # for res in result.itertuples():
     for index, row in result.iterrows():
-        
         ensembl_info = {}
         
         ensembl_info['chrom'] = str(row['chromosome_name'])
@@ -205,7 +259,7 @@ def parse_ensembl_transcripts(lines):
             ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    logger.debug("Parsing ensembl transcripts...")
+    LOG.debug("Parsing ensembl transcripts...")
     for index,line in enumerate(lines):
         
         #File allways start with a header line
@@ -227,7 +281,7 @@ def parse_ensembl_exons(lines):
             ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    logger.debug("Parsing ensembl exons...")
+    LOG.debug("Parsing ensembl exons...")
     for index,line in enumerate(lines):
         
         #File allways start with a header line

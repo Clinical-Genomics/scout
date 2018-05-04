@@ -20,7 +20,7 @@ def build_transcript(transcript_info, build='37'):
             }
     """
     try:
-        transcript_id = transcript_info['transcript']
+        transcript_id = transcript_info['ens_transcript_id']
     except KeyError:
         raise KeyError("Transcript has to have ensembl id")
     
@@ -35,14 +35,14 @@ def build_transcript(transcript_info, build='37'):
         raise KeyError("Transcript has to have a chromosome")
     
     try:
-        start = int(transcript_info['start'])
+        start = int(transcript_info['transcript_start'])
     except KeyError:
         raise KeyError("Transcript has to have start")
     except TypeError:
         raise TypeError("Transcript start has to be integer")
 
     try:
-        end = int(transcript_info['end'])
+        end = int(transcript_info['transcript_end'])
     except KeyError:
         raise KeyError("Transcript has to have end")
     except TypeError:

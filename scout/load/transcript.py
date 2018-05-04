@@ -3,26 +3,26 @@ import logging
 from pprint import pprint as pp
 
 from click import progressbar
-from pandas import DataFrame
 
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_transcript_request)
+from scout.utils.requests import fetch_ensembl_transcripts
+from scout.parse.ensembl import parse_transcripts
 from scout.build.genes.transcript import build_transcript
 
 LOG = logging.getLogger(__name__)
 
 TRANSCRIPT_CATEGORIES = ['mrna', 'nc_rna', 'mrna_predicted']
 
-def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None):
+def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=None):
     """Load all the transcripts
-    
+
     Transcript information is from ensembl.
-    
+
     Args:
         adapter(MongoAdapter)
         transcripts_lines(iterable): iterable with ensembl transcript lines
         build(str)
-        ensembl_genes(dict): Existing ensembl genes
-    
+        ensembl_genes(dict): Map from ensembl_id -> HgncGene
+
     Returns:
         transcript_objs(list): A list with all transcript objects
     """
@@ -30,60 +30,35 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
     LOG.info("Number of genes: {0}".format(len(ensembl_genes)))
 
-    # Parse the transcripts, we need to check if it is a request or a file handle
-    if isinstance(transcripts_lines, DataFrame):
-        transcripts = parse_ensembl_transcript_request(transcripts_lines)
-    else:
-        transcripts = parse_ensembl_transcripts(transcripts_lines)
+    if not transcripts_lines:
+        transcripts_lines = fetch_ensembl_transcripts(build=build)
 
-    # Since there can be multiple lines with information about the same transcript
-    # we store transcript information in a dictionary for now
-    transcripts_dict = {}
-    # Loop over the parsed transcripts
-    for tx in transcripts:
-        tx_id = tx['ensembl_transcript_id']
-        ens_gene_id = tx['ensembl_gene_id']
+    transcripts_dict = parse_transcripts(transcripts_lines)
+    
+    for ens_gene_id in transcripts_dict:
+        parsed_tx = transcripts_dict[ens_gene_id]
+        # Fetch the internal gene object to find out the correct hgnc id
         gene_obj = ensembl_genes.get(ens_gene_id)
         # If the gene is non existing in scout we skip the transcript
         if not gene_obj:
+            transcripts_dict.pop(ens_gene_id)
             LOG.debug("Gene %s does not exist in build %s", ens_gene_id, build)
             continue
+        
+        # Add the correct hgnc id
+        parsed_tx['hgnc_id'] = gene_obj['hgnc_id']
+        # Primary transcript information is collected from HGNC
+        parsed_tx['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
 
-        # Check if the transcript has been added
-        # If not, create a new transcript
-        if not tx_id in transcripts_dict:
-            tx_info = {
-                'chrom': tx['chrom'],
-                'start': tx['transcript_start'],
-                'end': tx['transcript_end'],
-                'mrna': set(),
-                'mrna_predicted': set(),
-                'nc_rna': set(),
-                'ensg_id': ens_gene_id,
-                'transcript': tx_id,
-                'hgnc_id': gene_obj['hgnc_id'],
-                # Primary transcript information is collected from HGNC
-                'primary_transcripts': set(gene_obj.get('primary_transcripts', [])),
-            }
-            transcripts_dict[tx_id] = tx_info
-
-        # Add the ref seq information
-        if tx.get('refseq_mrna_predicted'):
-            tx_info['mrna_predicted'].add(tx['refseq_mrna_predicted'])
-        if tx.get('refseq_mrna'):
-            tx_info['mrna'].add(tx['refseq_mrna'])
-        if tx.get('refseq_ncrna'):
-            tx_info['nc_rna'].add(tx['refseq_ncrna'])
-    
     ref_seq_transcripts = 0
     nr_primary_transcripts = 0
     nr_transcripts = len(transcripts_dict)
-    
+
     transcript_objs = []
-    
+
     with progressbar(transcripts_dict.values(), label="Building transcripts", length=nr_transcripts) as bar:
         for tx_data in bar:
-            
+
             #################### Get the correct refseq identifier ####################
             # We need to decide one refseq identifier for each transcript, if there are any to choose 
             # from. The algorithm is as follows:
@@ -98,7 +73,7 @@ def load_transcripts(adapter, transcripts_lines, build='37', ensembl_genes=None)
                 identifiers = tx_data[category]
                 if not identifiers:
                     continue
-                
+
                 intersection = identifiers.intersection(primary_transcripts)
                 ref_seq_transcripts += 1
                 if intersection:
