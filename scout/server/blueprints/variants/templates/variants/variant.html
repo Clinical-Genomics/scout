@@ -153,7 +153,7 @@
     <li class="list-group-item disabled"><strong>Amino acid changes</strong></li>
     {% for gene in variant.genes %}
       {% for transcript in gene.transcripts %}
-        {% if transcript.refseq_ids %}
+        {% if transcript.refseq_id %}
           <li class="list-group-item">{{ transcript.change_str }}</li>
         {% endif %}
       {% endfor %}
@@ -490,11 +490,7 @@
                 {% endif %}
               </td>
               <td>
-                {% for refseq_id in transcript.refseq_ids %}
-                  <div>{{ refseq_id }}</div>
-                {% else %}
-                  {{ transcript.transcript_id }}
-                {% endfor %}
+                <div>{{ transcript.refseq_id or transcript.transcript_id}}</div>
               </td>
               <td title="{{ transcript.coding_sequence_name or '' }}">
                 {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}

@@ -42,7 +42,7 @@ class HgncTranscript(dict):
     def __init__(self, transcript_id, hgnc_id, chrom, start, end, is_primary=False, 
                  refseq_id=None, build='37'):
         super(HgncTranscript, self).__init__()
-        self['transcript_id'] = transcript_id
+        self['ensembl_transcript_id'] = transcript_id
         self['hgnc_id'] = int(hgnc_id)
         self['chrom'] = chrom
         self['start'] = int(start)

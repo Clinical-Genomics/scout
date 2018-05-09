@@ -19,9 +19,12 @@ def load_hpo(adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo
     
     Args:
         adapter(MongoAdapter)
+        disease_lines(iterable(str)): These are the omim genemap2 information
         hpo_lines(iterable(str))
         disease_lines(iterable(str))
+        hpo_gene_lines(iterable(str))
     """
+    # Create a map from gene aliases to gene objects
     alias_genes = adapter.genes_by_alias()
     
     # Fetch the hpo terms if no file
@@ -149,4 +152,3 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
 
     LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
     LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
-    

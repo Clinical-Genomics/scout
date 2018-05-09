@@ -299,8 +299,8 @@ def variant(store, institute_obj, case_obj, variant_id=None):
             if transcript_obj.get('is_disease_associated'):
                 hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
                                gene_obj['hgnc_id'])
-                refseq_ids = ', '.join(transcript_obj['refseq_ids'])
-                transcript_str = "{}:{}".format(hgnc_symbol, refseq_ids)
+                refseq_id = transcript_obj['refseq_id']
+                transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
                 variant_obj['disease_associated_transcripts'].append(transcript_str)
         gene_models = gene_models | omim_models
 
@@ -406,7 +406,7 @@ def parse_gene(gene_obj, build=None):
         gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
 
         refseq_transcripts = [transcript for transcript in gene_obj['transcripts'] if
-                              transcript.get('refseq_ids')]
+                              transcript.get('refseq_id')]
         # select refseq transcripts as "primary" or use all Ensembl transcripts
         gene_obj['primary_transcripts'] = (refseq_transcripts if len(refseq_transcripts) > 0 else
                                            gene_obj['transcripts'])
@@ -429,10 +429,16 @@ def parse_transcript(gene_obj, tx_obj, build=None):
 
     tx_obj['ensembl_link'] = ensembl_link.format(ensembl_tx_id)
 
-    tx_obj['refseq_links'] = [{
-        'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
-        'id': refseq_id,
-    } for refseq_id in tx_obj.get('refseq_ids', [])]
+    refseq_links = []
+    if tx_obj.get('refseq_id'):
+        refseq_id = tx_obj['refseq_id']
+        refseq_links.append(
+            {
+                'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
+                'id': refseq_id,
+            }
+        )
+    tx_obj['refseq_links'] = refseq_links
 
     tx_obj['swiss_prot_link'] = ("http://www.uniprot.org/uniprot/{}"
                                  .format(tx_obj['swiss_prot']))
@@ -447,7 +453,7 @@ def parse_transcript(gene_obj, tx_obj, build=None):
     tx_obj['smart_domain_link'] = ("http://smart.embl.de/smart/search.cgi?keywords={}"
                                    .format(tx_obj.get('smart_domain')))
 
-    if tx_obj.get('refseq_ids'):
+    if tx_obj.get('refseq_id'):
         gene_name = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
                      gene_obj['hgnc_id'])
         tx_obj['change_str'] = transcript_str(tx_obj, gene_name)
@@ -465,7 +471,7 @@ def transcript_str(transcript_obj, gene_name=None):
 
     part_count = part_count_raw.rpartition('/')[0]
     change_str = "{}:{}{}:{}:{}".format(
-        ','.join(transcript_obj['refseq_ids']),
+        transcript_obj.get('refseq_id', ''),
         gene_part,
         part_count,
         transcript_obj.get('coding_sequence_name', 'NA'),

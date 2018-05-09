@@ -1,5 +1,15 @@
 """
 Cli functions to setup scout
+
+There are two options. 
+`scout setup demo` will setup a database that are loaded with more example 
+data but the gene definitions etc are reduced.
+
+`scout setup database` will create a full scale instance of scout. There will not be any cases 
+and one admin user is added.
+
+
+
 """
 import logging
 import datetime
@@ -40,13 +50,14 @@ from scout.parse.panel import parse_gene_panel
 
 from scout.build import (build_institute, build_case, build_panel, build_variant)
 
-from scout.load import (load_hgnc_genes, load_hpo, load_scout)
+from scout.load import (load_hgnc_genes, load_hpo, load_scout, load_transcripts)
 
 from scout.utils.handle import get_file_handle
 
 from scout.utils.link import link_genes
 
-from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes)
+from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes, fetch_ensembl_genes, 
+                                  fetch_ensembl_transcripts, fetch_hgnc, fetch_exac_constraint)
 
 LOG = logging.getLogger(__name__)
 
@@ -66,7 +77,7 @@ def abort_if_false(ctx, param, value):
     prompt='This will delete existing database, do you wish to continue?')
 @click.pass_context
 def database(context, institute_name, user_name, user_mail, api_key):
-    """Setup a scout database"""
+    """Setup a scout database."""
     LOG.info("Running scout setup database")
 
     # Fetch the omim information
@@ -75,17 +86,6 @@ def database(context, institute_name, user_name, user_mail, api_key):
         LOG.warning("Please provide a omim api key to load the omim gene panel")
         context.abort()
 
-    try:
-        mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
-    except Exception as err:
-        LOG.warning(err)
-        context.abort()
-    
-    # for fn in mim_files:
-    #     click.echo("{0}: {1}".format(fn, type(mim_files[fn])))
-    #
-    # context.abort()
-    
     institute_name = institute_name or context.obj['institute_name']
     user_name = user_name or context.obj['user_name']
     user_mail = user_mail or context.obj['user_mail']
@@ -121,33 +121,50 @@ def database(context, institute_name, user_name, user_mail, api_key):
             )
 
     adapter.add_user(user_obj)
+
+    # Fetch the mim files
+    try:
+        mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
+    except Exception as err:
+        LOG.warning(err)
+        context.abort()
     
     # Fetch the genes to hpo information
     hpo_genes = fetch_hpo_genes()
+    # Fetch the latest version of the hgnc information
+    hgnc_lines = fetch_hgnc()
+    # Fetch the latest exac pli score information
+    exac_lines = fetch_exac_constraint()
     
+    builds = ['37', '38']
     # Load the genes and transcripts
-    genes37 = link_genes(
-        ensembl_lines=get_file_handle(transcripts37_path),
-        hgnc_lines=get_file_handle(hgnc_path),
-        exac_lines=get_file_handle(exac_path),
-        mim2gene_lines=mim_files['mim2genes'],
-        genemap_lines=mim_files['genemap2'],
-        hpo_lines=hpo_genes,
-    )
+    for build in builds:
+        # Fetch the ensembl information
+        ensembl_genes = fetch_ensembl_genes(build=build)
+        # load the genes
+        hgnc_genes = load_hgnc_genes(
+            adapter=adapter,
+            ensembl_lines=ensembl_genes,
+            hgnc_lines=hgnc_lines,
+            exac_lines=exac_lines,
+            mim2gene_lines=mim_files['mim2genes'],
+            genemap_lines=mim_files['genemap2'],
+            hpo_lines=hpo_genes,
+            build=build,
+        )
 
-    load_hgnc_genes(adapter, genes37, build='37')
+        # Create a map from ensembl ids to gene objects
+        ensembl_genes = {}
+        for gene_obj in hgnc_genes:
+            ensembl_id = gene_obj['ensembl_id']
+            ensembl_genes[ensembl_id] = gene_obj
 
-    genes38 = link_genes(
-        ensembl_lines=get_file_handle(transcripts38_path),
-        hgnc_lines=get_file_handle(hgnc_path),
-        exac_lines=get_file_handle(exac_path),
-        mim2gene_lines=mim_files['mim2genes'],
-        genemap_lines=mim_files['genemap2'],
-        hpo_lines=hpo_genes,
-    )
+        # Fetch the transcripts from ensembl
+        ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+        # Load the transcripts for a certain build
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
-    load_hgnc_genes(adapter, genes38, build='38')
-
+    # Load hpo terms and diseases
     load_hpo(
         adapter=adapter,
         disease_lines=mim_files['genemap2'],
@@ -233,7 +250,7 @@ def demo(context):
     transcripts37_handle = get_file_handle(transcripts37_reduced_path)
     transcripts38_handle = get_file_handle(transcripts38_reduced_path)
     
-
+    builds = ['37', '38']
     genes37 = link_genes(
         ensembl_lines=transcripts37_handle,
         hgnc_lines=hgnc_handle,
