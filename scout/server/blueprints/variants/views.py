@@ -9,7 +9,6 @@ from flask_login import current_user
 from scout.constants import SEVERE_SO_TERMS
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants import ACMG_MAP
-from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
