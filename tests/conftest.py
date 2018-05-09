@@ -277,7 +277,7 @@ def case_obj(request, parsed_case):
                 'display_name': 'Test panel',
                 'is_default': True,
                 'nr_genes': 263,
-                'panel_id': 'test',
+                'panel_id': 'panel1',
                 'panel_name': 'panel1',
                 'updated_at': datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
                 'version': 1.0
