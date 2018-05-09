@@ -16,9 +16,11 @@ from scout.load.transcript import load_transcripts
 
 LOG = logging.getLogger(__name__)
 
-def load_hgnc(adapter, genes = None, ensembl_lines=None, hgnc_lines=None, exac_lines=None, mim2gene_lines=None,
+def load_hgnc(adapter, genes=None, ensembl_lines=None, hgnc_lines=None, exac_lines=None, mim2gene_lines=None,
               genemap_lines=None, hpo_lines=None, transcripts_lines=None, build='37', omim_api_key=''):
     """Load Genes and transcripts into the database
+              
+    If no resources are provided the correct ones will be fetched.
     
     Args:
         adapter(scout.adapter.MongoAdapter)
@@ -81,7 +83,8 @@ def load_hgnc_genes(adapter, genes = None, ensembl_lines=None, hgnc_lines=None, 
     
     if not genes:
         # Fetch the resources if not provided
-        ensembl_lines = ensembl_lines or fetch_ensembl_genes(build=build)
+        if ensembl_lines is None:
+            ensembl_lines = fetch_ensembl_genes(build=build)
         hgnc_lines = hgnc_lines or fetch_hgnc()
         exac_lines = exac_lines or fetch_exac_constraint()
         if not (mim2gene_lines and genemap_lines):

@@ -22,9 +22,6 @@ import click
 
 from pprint import pprint as pp
 
-from scout.load import load_hgnc_genes
-from scout.resources import (hgnc_path, exac_path, transcripts37_path, transcripts38_path)
-
 from scout.load import (load_hgnc_genes, load_transcripts, load_exons)
 
 from scout.utils.link import link_genes
@@ -46,6 +43,7 @@ def genes(context, build, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
+    LOG.info("Running scout update genes")
     adapter = context.obj['adapter']
 
     # Fetch the omim information
@@ -63,6 +61,9 @@ def genes(context, build, api_key):
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
     LOG.info("Genes dropped")
+    LOG.warning("Dropping all transcript information")
+    adapter.drop_transcripts(build)
+    LOG.info("transcripts dropped")
 
     hpo_genes = fetch_hpo_genes()
     
@@ -95,8 +96,9 @@ def genes(context, build, api_key):
             ensembl_id = gene_obj['ensembl_id']
             ensembl_genes[ensembl_id] = gene_obj
 
-        # Load the transcripts
+        # Fetch the transcripts from ensembl
         ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+        
         transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
     adapter.update_indexes()
