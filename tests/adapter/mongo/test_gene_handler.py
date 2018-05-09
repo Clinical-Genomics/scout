@@ -427,23 +427,48 @@ def test_insert_transcripts(adapter, transcript_objs):
 
 #################### Combined transcript/gene tests ####################
 
-# def test_insert_transcript(adapter):
-#     ##GIVEN a empty adapter
-#     assert adapter.transcripts().count() == 0
-#
-#     ##WHEN inserting a transcript
-#     transcript_obj = {
-#         'ensembl_transcript_id': 'ENST01', # required
-#         'refseq_id': 'NM_1',
-#         'start': 1, # required
-#         'end': 10, # required
-#         'is_primary': False,
-#         'build': '37',
-#     }
-#     obj_id = adapter.load_hgnc_transcript(transcript_obj)
-#
-#     ##THEN assert that the transcript is there
-#     assert adapter.transcripts().count() == 1
-#     ##THEN assert that no transcripts are in the '38' build
-#     assert adapter.transcripts(build='38').count() == 0
-#
+def test_insert_transcript(adapter):
+    ##GIVEN a empty adapter
+    assert adapter.transcripts().count() == 0
+    assert adapter.all_genes().count() == 0
+
+    ##WHEN inserting a gene and some transcripts
+    hgnc_id = 257
+    hgnc_symbol = 'ADK'
+    ens_gene_id = 'ENSG00000156110'
+    chrom = '10'
+    build = '37'
+    
+    
+    gene_obj  = dict(
+        hgnc_id = hgnc_id,
+        hgnc_symbol = hgnc_symbol,
+        ensembl_id = ens_gene_id,
+        chromosome = chrom,
+        start = 74151185,
+        end = 74709303,
+        build = '37'
+    )
+    
+    refseq_id = 'NM_006721'
+    transcript_obj = {
+        'hgnc_id': hgnc_id,
+        'ensembl_transcript_id': 'ENST01', # required
+        'refseq_id': refseq_id,
+        'start': 74151185, # required
+        'end': 74709303, # required
+        'is_primary': True,
+        'build': build,
+    }
+    gene_res = adapter.load_hgnc_gene(gene_obj)
+    obj_id = adapter.load_hgnc_transcript(transcript_obj)
+
+    ##THEN assert that when fetching the gene the transcript is added
+    
+    gene_res = adapter.hgnc_gene(hgnc_id, build=build)
+    
+    assert gene_res['hgnc_id'] == hgnc_id
+    assert len(gene_res['transcripts']) == 1
+    assert gene_res['transcripts'][0]['refseq_id'] == refseq_id
+    
+
