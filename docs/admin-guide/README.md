@@ -1,3 +1,13 @@
 # Admin Guide
 
 This includes instructions for bioinformaticians to install, manage and update a scout instance
+
+* [Admin Guide](./README.md)
+  * [Setup](./setup-scout.md)
+  * [Loading](./loading.md)
+  * [Load config](./load-config.md)
+  * [Gene definitions](./genes.md)
+  * [Annotations](./annotations.md)
+  * [Server](./server.md)
+  * [Chanjo coverage integration](./chanjo_coverage_integration.md)
+  * [Indexes](./indexes.md)
