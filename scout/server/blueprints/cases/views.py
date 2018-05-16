@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import os.path
-
+import logging
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify)
+                   request, url_for, send_from_directory, jsonify, flash)
 from flask_login import current_user
+from flask_weasyprint import HTML, render_pdf
 from dateutil.parser import parse as parse_date
 
 from scout.server.extensions import store, mail
@@ -12,6 +13,9 @@ from . import controllers
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
+
+LOG = logging.getLogger(__name__)
+
 
 
 @cases_bp.route('/institutes')
@@ -88,6 +92,28 @@ def case_diagnosis(institute_id, case_name):
     store.diagnose(institute_obj, case_obj, user_obj, link, level=level,
                    omim_id=omim_id, remove=remove)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET','POST'])
+@templated('cases/case_report.html')
+def case_report(institute_id, case_name):
+    """Visualize case report"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.build_case_report(store, institute_id, case_name)
+
+    return dict(institute=institute_obj, case=case_obj, **data)
+    #return render_pdf('cases/case_report.html', institute=institute_obj, case=case_obj, **data)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET','POST'])
+def pdf_case_report(institute_id, case_name):
+    """Download a pdf report for a case"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.build_case_report(store, institute_id, case_name)
+
+    html = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, **data)
+    return render_pdf(HTML(string=html))
 
 
 @cases_bp.route('/<institute_id>/<case_name>/phenotypes', methods=['POST'])

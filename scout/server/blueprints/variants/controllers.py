@@ -148,6 +148,57 @@ def get_predictions(genes):
     return data
 
 
+def variants_filter_by_field(store, variants_list, field, case_obj = None, institute_obj= None):
+    """Given a list of variant objects return only those that have a key specified by "field" and a value of this field not empty."""
+
+    filtered_ids = []
+    for variant in variants_list:
+        if field in variant:
+            filtered_ids.append(variant['_id'])
+
+    # if case_obj and institute obj are provided it returns the detailed variant objects
+    if case_obj and institute_obj:
+        return variants_description(store, filtered_ids, case_obj, institute_obj)
+    else: #otherwise returns a list of variant ids for variants that pass the filter.
+        return filtered_ids
+
+
+def variants_description(store, variant_ids, case_obj, institute_obj):
+    """For a given case, get all detailed variant objects (either SNVs or SVs) from a list of of ids. This routine is used for creating a case reports.
+
+    Args:
+        variant_ids (list): list of variant ids or list of variant objects
+        institute_obj (dict): an institute object
+
+    Returns:
+        A list of variant objects (SNVs and/or SVs)
+
+    """
+    variants_to_report = [] # a list of variant objects
+    for var in variant_ids:
+        simple_variant = {}
+        detailed_variant = {}
+
+        if type(var) is str:
+            simple_variant = store.variant(document_id=var)
+        else:
+            simple_variant = store.variant(document_id=var['_id'])
+
+        if simple_variant['category'] == 'snv':
+            snv_object = variant(store, institute_obj, case_obj, simple_variant['_id'])
+            detailed_variant = snv_object['variant']
+        else:
+            sv_object = sv_variant( store, institute_obj['_id'], case_obj['display_name'], simple_variant['_id'])
+            detailed_variant = sv_object['variant']
+
+            # capturing overlapping sn variants as well:
+            detailed_variant['overlapping_snvs'] = sv_object['overlapping_snvs']
+
+        variants_to_report.append(detailed_variant)
+
+    return variants_to_report
+
+
 def variant_case(store, case_obj, variant_obj):
     """Pre-process case for the variant view."""
     case_obj['bam_files'] = []
@@ -192,8 +243,10 @@ def find_bai_file(bam_file):
 
 def variant(store, institute_obj, case_obj, variant_id):
     """Pre-process a single variant."""
+    LOG.info("Getting variant with ID {0} ####################".format(variant_id))
     default_panels = [store.panel(panel['panel_id']) for panel in
                       case_obj['panels'] if panel.get('is_default')]
+    LOG.info("default_panels={0}".format(default_panels))
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
 
