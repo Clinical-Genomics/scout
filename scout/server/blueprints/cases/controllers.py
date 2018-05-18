@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 import itertools
-import logging
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer

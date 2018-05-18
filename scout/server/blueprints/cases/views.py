@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os.path
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, flash, after_this_request)
+                   request, url_for, send_from_directory, jsonify, flash)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from dateutil.parser import parse as parse_date
