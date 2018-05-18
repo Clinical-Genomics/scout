@@ -94,10 +94,9 @@ def case(store, institute_obj, case_obj):
     return data
 
 
-def build_case_report(store, institute_id, case_name):
+def build_case_report(store, institute_obj, case_obj):
     """Gather contents to be visualized in a case report"""
 
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = case(store, institute_obj, case_obj)
 
     data.update({'manual_rank_options': MANUAL_RANK_OPTIONS})
@@ -113,8 +112,8 @@ def build_case_report(store, institute_id, case_name):
     data.update({'pinned_detailed': pinned})
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
-    all_variants = list(store.variants(case_id=case_name, nr_of_variants=-1)) #all snv variants
-    all_variants = all_variants + list(store.variants(case_id=case_name, nr_of_variants=-1, category='sv')) # add structural variants to the list
+    all_variants = list(store.variants(case_id=case_obj['_id'], nr_of_variants=-1)) #all snv variants
+    all_variants = all_variants + list(store.variants(case_id=case_obj['_id'], nr_of_variants=-1, category='sv')) # add structural variants to the list
 
     # get complete info for the acmg classified variants
     classified_detailed = variants_filter_by_field(store, all_variants, 'acmg_classification', case_obj, institute_obj)

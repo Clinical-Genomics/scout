@@ -94,7 +94,7 @@ def case_diagnosis(institute_id, case_name):
 def case_report(institute_id, case_name):
     """Visualize case report"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.build_case_report(store, institute_id, case_name)
+    data = controllers.build_case_report(store, institute_obj, case_obj)
 
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
@@ -104,7 +104,7 @@ def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.build_case_report(store, institute_id, case_name)
+    data = controllers.build_case_report(store, institute_obj, case_obj)
 
     # workaround to be able to print the case pedigree to pdf
     with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:

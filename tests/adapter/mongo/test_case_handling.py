@@ -2,6 +2,7 @@
 import pytest
 import logging
 import datetime
+from scout.server.blueprints.variants.controllers import variants_filter_by_field, variants_description
 from pprint import pprint as pp
 
 from scout.exceptions import (IntegrityError)
@@ -216,3 +217,36 @@ def test_update_case_rerun_status(panel_database, case_obj):
 
     ## THEN assert that 'rerun_requested' is set to False
     assert res['rerun_requested'] is False
+
+def test_case_report(case_obj, institute_obj, real_populated_database, variant_objs, parsed_variant, user_obj):
+    """Test to create a dictionary similar to that used for creating a sample report"""
+    adapter = real_populated_database
+
+    # GIVEN a populated database without any variants
+    assert adapter.variants(case_id=case_obj['_id'], nr_of_variants=-1).count() == 0
+
+    # Add all variants from variant_objs
+    for index, variant_obj in enumerate(variant_objs):
+        adapter.load_variant(variant_obj)
+
+    # Assert that the collections has variant documents inside
+    n_documents = adapter.variant_collection.find().count()
+    assert n_documents > 0
+
+    # add a 'dismissed' key and value to a parsed variant
+    parsed_variant['dismiss_variant'] = ['7']
+    assert 'dismiss_variant' in parsed_variant
+
+    # Load the parsed variant to the database
+    adapter.load_variant(parsed_variant)
+
+    # Make sure that it was inserted
+    assert adapter.variant_collection.find().count() == n_documents + 1
+
+    # Retrieve all variants in the variant collection
+    all_variants = adapter.variants(case_id=case_obj['_id'], nr_of_variants=-1)
+    assert all_variants.count() > 0
+
+    # Assert that there is at lest a dismissed variant to include in case report for this case
+    dismissed_variants = variants_filter_by_field(adapter, list(all_variants), 'dismiss_variant')
+    assert len(dismissed_variants) > 0

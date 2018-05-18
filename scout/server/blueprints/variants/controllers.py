@@ -153,6 +153,7 @@ def variants_filter_by_field(store, variants_list, field, case_obj = None, insti
 
     filtered_ids = []
     for variant in variants_list:
+
         if field in variant:
             filtered_ids.append(variant['_id'])
 
@@ -176,6 +177,7 @@ def variants_description(store, variant_ids, case_obj, institute_obj):
     """
     variants_to_report = [] # a list of variant objects
     for var in variant_ids:
+        LOG.info(var)
         simple_variant = {}
         detailed_variant = {}
 
