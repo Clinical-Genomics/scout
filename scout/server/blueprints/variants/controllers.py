@@ -243,10 +243,8 @@ def find_bai_file(bam_file):
 
 def variant(store, institute_obj, case_obj, variant_id):
     """Pre-process a single variant."""
-    LOG.info("Getting variant with ID {0} ####################".format(variant_id))
     default_panels = [store.panel(panel['panel_id']) for panel in
                       case_obj['panels'] if panel.get('is_default')]
-    LOG.info("default_panels={0}".format(default_panels))
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
 

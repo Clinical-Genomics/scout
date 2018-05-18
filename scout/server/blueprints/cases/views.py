@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import os.path
-import logging
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, flash)
+                   request, url_for, send_from_directory, jsonify, flash, after_this_request)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from dateutil.parser import parse as parse_date
@@ -13,10 +12,6 @@ from . import controllers
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
-
-LOG = logging.getLogger(__name__)
-
-
 
 @cases_bp.route('/institutes')
 @templated('cases/index.html')
@@ -101,8 +96,7 @@ def case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.build_case_report(store, institute_id, case_name)
 
-    return dict(institute=institute_obj, case=case_obj, **data)
-    #return render_pdf('cases/case_report.html', institute=institute_obj, case=case_obj, **data)
+    return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET','POST'])
@@ -112,8 +106,12 @@ def pdf_case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.build_case_report(store, institute_id, case_name)
 
-    html = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, **data)
-    return render_pdf(HTML(string=html))
+    # workaround to be able to print the case pedigree to pdf
+    with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:
+        temp_madeline.write(case_obj['madeline_info'])
+
+    html_report = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, format='pdf', **data)
+    return render_pdf(HTML(string=html_report))
 
 
 @cases_bp.route('/<institute_id>/<case_name>/phenotypes', methods=['POST'])
