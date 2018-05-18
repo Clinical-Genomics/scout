@@ -39,7 +39,7 @@ class HpoHandler(object):
 
         return self.hpo_term_collection.find_one({'_id': hpo_id})
 
-    def hpo_terms(self, query=None):
+    def hpo_terms(self, query=None, hpo_term=None):
         """Return all HPO terms
 
         If a query is sent hpo_terms will try to match with regex on term or
@@ -47,10 +47,12 @@ class HpoHandler(object):
 
         Args:
             query(str): Part of a hpoterm or description
+            hpo_term(str): Search for a specific hpo term
 
         Returns:
             result(pymongo.Cursor): A cursor with hpo terms
         """
+        query_dict = {}
         if query:
             query_dict = {'$or':
                 [
@@ -58,8 +60,8 @@ class HpoHandler(object):
                     {'description': {'$regex': query, '$options':'i'}},
                 ]
             }
-        else:
-            query_dict = {}
+        elif hpo_term:
+            query_dict['_id'] = hpo_term
 
         return self.hpo_term_collection.find(query_dict)
 

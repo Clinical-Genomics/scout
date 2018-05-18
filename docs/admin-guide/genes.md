@@ -16,9 +16,6 @@ scout update genes
 
 When running this command the latest version of all the above described sources is fetched and that database gets updated.
 
-
-
-
 [hgnc]: www.genenames.org
 [biomart]: http://www.ensembl.org/biomart/martview/63a1d476e23a0672e6c89d0e80fb62b5
 [omim]: https://omim.org
