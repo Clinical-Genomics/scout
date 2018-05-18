@@ -6,14 +6,16 @@ class HpoTerm(dict):
     
     _id = str, # Same as hpo_id
    hpo_id = str, # Required
+   hpo_number = int, # Required
    description = str,
    genes = list, # List with integers that are hgnc_ids 
     
     """
     def __init__(self, hpo_id, description, genes=None):
         super(HpoTerm, self).__init__()
-        self['hpo_id'] = hpo_id
         self['_id'] = hpo_id
+        self['hpo_id'] = hpo_id
+        self['hpo_number'] = int(hpo_id.split(':')[-1])
         self['description'] = description
         self['genes'] = genes or []
 

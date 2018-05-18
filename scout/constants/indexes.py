@@ -73,5 +73,10 @@ INDEXES = {
             ('hgnc_id', ASCENDING)],
             name="build_hgncid"),
     ],
+    'hpo_term': [
+        IndexModel([
+            ('hpo_number', ASCENDING)],
+            name="number"),
+    ],
     
 }

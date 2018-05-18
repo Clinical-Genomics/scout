@@ -2,6 +2,8 @@
 import os.path
 import datetime
 
+from operator import itemgetter
+
 from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, send_from_directory, jsonify)
 from flask_login import current_user
@@ -11,6 +13,7 @@ from dateutil.parser import parse as parse_date
 from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case, user_institutes
 from . import controllers
+
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
@@ -260,9 +263,12 @@ def hpoterms():
     query = request.args.get('query')
     if query is None:
         return abort(500)
-    terms = store.hpo_terms(query=query).limit(8)
-    json_terms = [{'name': '{} | {}'.format(term['_id'], term['description']),
-                   'id': term['_id']} for term in terms]
+    terms = sorted(store.hpo_terms(query=query), key=itemgetter('hpo_number'))
+    json_terms = [
+        {'name': '{} | {}'.format(term['_id'], term['description']),
+         'id': term['_id']
+        } for term in terms]
+    
     return jsonify(json_terms)
 
 
