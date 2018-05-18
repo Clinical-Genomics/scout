@@ -2,7 +2,7 @@
 import pytest
 import logging
 import datetime
-from scout.server.blueprints.variants.controllers import variants_filter_by_field
+from scout.server.blueprints.variants.controllers import variants_filter_by_field, variants_description
 from pprint import pprint as pp
 
 from scout.exceptions import (IntegrityError)
@@ -220,6 +220,7 @@ def test_update_case_rerun_status(panel_database, case_obj):
 
 def test_case_report(case_obj, institute_obj, real_populated_database, variant_objs, parsed_variant, user_obj):
     """Test to create a dictionary similar to that used for creating a sample report"""
+
     adapter = real_populated_database
 
     # GIVEN a populated database without any variants
@@ -233,20 +234,26 @@ def test_case_report(case_obj, institute_obj, real_populated_database, variant_o
     n_documents = adapter.variant_collection.find().count()
     assert n_documents > 0
 
-    # add a 'dismissed' key and value to a parsed variant
+    # add useful fields to a parsed variant
+    parsed_variant['display_name'] = '1_10_A_C_clinical'
+    parsed_variant['case_id'] = '643594' # otherwise it won't be found later
+    parsed_variant['category'] = 'snv' # used by variants_description
+
+    # add a 'dismissed' key and value
     parsed_variant['dismiss_variant'] = ['7']
     assert 'dismiss_variant' in parsed_variant
 
-    # Load the parsed variant to the database
+    # upload parsed variant to database
     adapter.load_variant(parsed_variant)
 
-    # Make sure that it was inserted
+    # assert that it was inserted
     assert adapter.variant_collection.find().count() == n_documents + 1
 
-    # Retrieve all variants in the variant collection
+    # get all variants
     all_variants = adapter.variants(case_id=case_obj['_id'], nr_of_variants=-1)
     assert all_variants.count() > 0
 
-    # Assert that there is at lest a dismissed variant to include in case report for this case
+    # Test that there is at least one dismissed variant to upload to the case report for this case.
+    # Retrieving variants for the categories 'classified', 'commented' and 'tagged' work exactly in the same way.
     dismissed_variants = variants_filter_by_field(adapter, list(all_variants), 'dismiss_variant')
     assert len(dismissed_variants) > 0
