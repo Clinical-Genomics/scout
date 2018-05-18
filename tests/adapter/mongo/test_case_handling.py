@@ -2,7 +2,7 @@
 import pytest
 import logging
 import datetime
-from scout.server.blueprints.variants.controllers import variants_filter_by_field, variants_description
+from scout.server.blueprints.variants.controllers import variants_filter_by_field
 from pprint import pprint as pp
 
 from scout.exceptions import (IntegrityError)
