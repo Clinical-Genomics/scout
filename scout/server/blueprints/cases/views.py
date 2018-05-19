@@ -2,7 +2,7 @@
 import datetime
 import os.path
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, g)
+                   request, url_for, send_from_directory, jsonify)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from dateutil.parser import parse as parse_date
