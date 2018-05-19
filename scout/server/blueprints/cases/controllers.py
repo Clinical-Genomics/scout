@@ -6,7 +6,7 @@ from flask_mail import Message
 import query_phenomizer
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS)
-from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS
+from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from scout.server.blueprints.variants.controllers import variants_description, variants_filter_by_field
@@ -101,6 +101,7 @@ def build_case_report(store, institute_obj, case_obj):
 
     data.update({'manual_rank_options': MANUAL_RANK_OPTIONS})
     data.update({'dismissed_options': DISMISS_VARIANT_OPTIONS})
+    data.update({'genetic_models': dict(GENETIC_MODELS)})
     data.update({'report_created_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
 
     #get detailed info for the causatives:

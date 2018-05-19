@@ -153,7 +153,7 @@ def variants_filter_by_field(store, variants_list, field, case_obj = None, insti
 
     filtered_ids = []
     for variant in variants_list:
-
+        LOG.info(variant)
         if field in variant:
             filtered_ids.append(variant['_id'])
 

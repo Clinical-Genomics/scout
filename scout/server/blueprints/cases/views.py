@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import datetime
 import os.path
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, flash)
+                   request, url_for, send_from_directory, jsonify, g)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from dateutil.parser import parse as parse_date
@@ -107,11 +108,12 @@ def pdf_case_report(institute_id, case_name):
     data = controllers.build_case_report(store, institute_obj, case_obj)
 
     # workaround to be able to print the case pedigree to pdf
-    with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:
-        temp_madeline.write(case_obj['madeline_info'])
+    if case_obj['madeline_info'] is not None:
+        with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:
+            temp_madeline.write(case_obj['madeline_info'])
 
     html_report = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, format='pdf', **data)
-    return render_pdf(HTML(string=html_report))
+    return render_pdf(HTML(string=html_report), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')
 
 
 @cases_bp.route('/<institute_id>/<case_name>/phenotypes', methods=['POST'])

@@ -40,11 +40,11 @@
         <a class="nav-link" href="#commented_variants">Commented variants</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#dismiss_variants">Dismissed variants</a>
+        <a class="nav-link" href="#dismissed_variants">Dismissed variants</a>
       </li>
     </ul>
     <span class="navbar-text">
-      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}">Download PDF</a>
+      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-outline-secondary" type="button">Download PDF</button></a>
     </span>
   </div>
 </nav>
@@ -359,9 +359,9 @@
       <thead>
         <tr>
             <td></td>
-            <td>Variant name</td>
-            <td>Dismissed description</td>
-            <td>Additional info</td>
+            <td><strong>Variant name</strong></td>
+            <td><strong>Dismissed description</strong></td>
+            <td><strong>Additional info</strong></td>
         </tr>
       </thead>
       {% for variant in dismissed_detailed %}
@@ -372,7 +372,7 @@
           {% else %}
             <td><a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
           {% endif %}
-          <td colspan=3>
+          <td colspan=2>
             <table class="table-borderless table-sm">
               {% for reason in variant.dismiss_variant %}
               <tr style="background-color: transparent">
@@ -447,7 +447,7 @@
                   {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
                     <span class="pull-left">
                     {% for model in variant.genetic_models|sort %}
-                      <span class="badge badge-info">{{ model }}</span>
+                      <span class="badge badge-info" title="{{genetic_models[model]}}"> {{model}}</span>
                     {% else %}
                       <span class="badge badge-warning">No models followed</span>
                     {% endfor %}
@@ -485,8 +485,6 @@
                         {% endfor %}
                       </tbody>
                     </table>
-                  {% else %}
-                  -
                   {% endif %}
                 </td>
               </tr>
@@ -710,7 +708,7 @@
                 <td>
                   <span class="pull-left">
                     {% for model in variant.genetic_models|sort %}
-                      <span class="badge badge-info">{{ model }}</span>
+                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
                     {% else %}
                       <span class="badge badge-warning">No models followed</span>
                     {% endfor %}
@@ -930,7 +928,7 @@
                 <td>
                   <span class="pull-left">
                     {% for model in variant.genetic_models|sort %}
-                      <span class="badge badge-info">{{ model }}</span>
+                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
                     {% else %}
                       <span class="badge badge-warning">No models followed</span>
                     {% endfor %}

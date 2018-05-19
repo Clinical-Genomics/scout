@@ -218,7 +218,7 @@ def test_update_case_rerun_status(panel_database, case_obj):
     ## THEN assert that 'rerun_requested' is set to False
     assert res['rerun_requested'] is False
 
-def test_case_report(case_obj, institute_obj, real_populated_database, variant_objs, parsed_variant, user_obj):
+def test_collect_variants_for_case_report(case_obj, institute_obj, real_populated_database, variant_objs, parsed_variant, user_obj):
     """Test to create a dictionary similar to that used for creating a sample report"""
 
     adapter = real_populated_database
