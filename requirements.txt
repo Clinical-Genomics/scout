@@ -16,6 +16,8 @@ Flask-Babel
 livereload
 python-dateutil
 pymongo>=3.6.0
+flask_weasyprint
+
 
 pathlib
 
