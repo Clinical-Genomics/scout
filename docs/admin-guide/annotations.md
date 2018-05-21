@@ -12,11 +12,23 @@ In this section all the different annotation keys and suggestions of tools that 
 
 ### Frequencies 
 
+#### Gnomad ####
+
+The frequency from the [1000G][1000g] population database.
+
+- Key: `GNOMADAF`
+- Value: `Float`
+- Tools: [VEP][vep], [SnpEff][snpeff], [vcfanno][vcfanno]
+
+- Key: `GNOMADAF_POPMAX`
+- Value: `Float`
+- Tools: [VEP][vep], [SnpEff][snpeff], [vcfanno][vcfanno]
+
 #### 1000G ####
 
 The frequency from the [1000G][1000g] population database.
 
-- Key: `1000G`
+- Key: `1000GAF`
 - Value: `Float`
 - Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
 
@@ -45,6 +57,54 @@ The maximum allele frequency of all populations [ExAC][exac] population database
 - Value: `Float`
 - Tools: custom made, we have modified the exac file and use [genmod][genmod]
 
+#### SWEREF ####
+
+The frequency from the [SWEREF][SWEREF] population database.
+
+- Key: `SWEREFAF`
+- Value: `Float`
+- Tools: [SnpEff][snpeff]
+
+#### MTAF ####
+
+The frequency for the Mitochondria from MitoMap.
+
+- Key: `MTAF`
+- Value: `Float`
+- Tools: [SnpEff][snpeff]
+
+### Clinvar ###
+
+- Key: `CLNREVSTAT`
+- Value: `String`
+- Tools: [VEP][vep], [SnpEff][snpeff]
+
+- Key: `CLNSIG`
+- Value: `String`
+- Tools: [VEP][vep], [SnpEff][snpeff]
+
+- Key: `CLNVID`
+- Value: `Integer`
+- Tools: [VEP][vep], [SnpEff][snpeff]
+- Comment: MIP preprocessed file
+
+### VEP ###
+
+- Key: `CSQ`
+- Sub_key: `Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|LoFtool|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref`
+- Value: `String`
+- Tools: [VEP][vep]
+
+### VT ###
+
+- Key: `OLD_MULTIALLELIC`
+- Value: `String`
+- Tools: [vt][vt]
+
+- Key: `OLD_VARIANT`
+- Value: `String`
+- Tools: [vt][vt]
+
 ### Severity ###
 
 #### CADD score ####
@@ -71,15 +131,29 @@ The [PolyPhen][polyphen]) prediction for how a variation affects the protein.
 - Value: `String`
 - Tools: [VEP][vep]
 
+#### Spidex ####
+
+Splicing annotation
+
+- Key: `SPIDEX`
+- Value: `Float`
+- Tools: [SnpEff][snpeff]
 
 #### Rank score ####
 
 The combined rank score for a variant
 
-- Key: `RankScore`
+- Key: `ModelScore`
 - Value: `Float`
 - Tools: [genmod][genmod]
 
+- Key: `RankResult`
+- Value: `String`
+- Tools: [genmod][genmod]
+
+- Key: `RankScore`
+- Value: `Float`
+- Tools: [genmod][genmod]
 
 ### Conservation ###
 
@@ -87,7 +161,11 @@ The combined rank score for a variant
 
 The Genomic Evolutionary Rate Profiling([GERP][gerp]) conservation string. An estimation of how conserved this position is.
 
-- Key: `GERP++_RS_prediction_term`
+- Key: `dbNSFP_GERP___NR`
+- Value: `String`
+- Tools: [SnpSift][snpsift]
+
+- Key: `dbNSFP_GERP___RS`
 - Value: `String`
 - Tools: [SnpSift][snpsift]
 
@@ -95,7 +173,7 @@ The Genomic Evolutionary Rate Profiling([GERP][gerp]) conservation string. An es
 
 The [PHASTcons][phastcons] conservation string.
 
-- Key: `phastCons100way_vertebrate_prediction_term`
+- Key: `dbNSFP_phastCons100way_vertebrate`
 - Value: `String`
 - Tools: [SnpSift][snpsift]
 
@@ -103,7 +181,7 @@ The [PHASTcons][phastcons] conservation string.
 
 The [phylop][phylop] 100 way predicted conservation string.
 
-- Key: `phyloP100way_vertebrate_prediction_term`
+- Key: `dbNSFP_phyloP100way_vertebrate`
 - Value: `String`
 - Tools: [SnpSift][snpsift]
 
@@ -123,6 +201,32 @@ What variants is this variant in Autosomal Recessive Compound with?
 - Value: list of `String`
 - Tools: [genmod][genmod]
 
+### Autozygosity ###
+
+#### Rhocall ####
+
+- Key: `AZ`
+- Value: Flag
+- Tools: [rhocall][rhocall]
+
+- Key: `AZLENGTH`
+- Value: String
+- Tools: [rhocall][rhocall]
+
+- Key: `AZQUAL`
+- Value: String
+- Tools: [rhocall][rhocall]
+
+- Key: `AZTYPE`
+- Value: String
+- Tools: [rhocall][rhocall]
+
+#### GATK ####
+
+Source vcf for the merged vcf record 
+- Key: `set`
+- Value: String
+- Tools: [gatk][gatk]
 
 [vep]: http://www.ensembl.org/info/docs/tools/vep/index.html
 [snpeff]: http://snpeff.sourceforge.net/about.html
@@ -132,9 +236,13 @@ What variants is this variant in Autosomal Recessive Compound with?
 
 [1000g]: http://www.1000genomes.org/
 [exac]: http://exac.broadinstitute.org
+[SWEREF]: https://swefreq.nbis.se/
+[vt]: https://github.com/atks/vt
 [cadd]: http://cadd.gs.washington.edu
 [gerp]: http://mendel.stanford.edu/SidowLab/downloads/gerp/index.html
 [phastcons]: http://compgen.cshl.edu/phast/
 [phylop]: http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg19&g=cons100way
 [sift]: http://sift.jcvi.org
 [polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
+[rhocall]: https://github.com/dnil/rhocall
+[gatk]: https://software.broadinstitute.org/gatk/
