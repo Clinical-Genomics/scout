@@ -11,6 +11,9 @@ def get_submission_variants(form_fields):
     """
 
     clinvars = []
+
+    # if the html checkbox named 'all_vars' is checked in the html form, then all pinned variants from a case should be included in the clinvar submission file,
+    # otherwise just the selected one.
     if 'all_vars' in form_fields:
         for field, value in form_fields.items():
             if field.startswith('##Local ID_'):
