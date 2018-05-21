@@ -1,7 +1,7 @@
 {% macro action_bar(institute, case, collaborators) %}
   <ul class="nav nav-sidebar">
     <li class="nav-sidebar-heading">
-      Case 
+      Case
       <h4>{{ case.display_name }}</h4>
     </li>
     <li>{{ analysis_date(case) }}</li>
@@ -21,6 +21,15 @@
     <li>{{ rank_model(case) }}</li>
     <li>{{ share_case(institute, case, collaborators) }}</li>
   </ul>
+{% endmacro %}
+
+{% macro report(institute, case) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-file"></span>
+      <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}">Visualize report</a>
+    </h5>
+  </div>
 {% endmacro %}
 
 {% macro analysis_date(case) %}
