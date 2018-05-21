@@ -20,6 +20,10 @@ The frequency from the [1000G][1000g] population database.
 - Value: `Float`
 - Tools: [VEP][vep], [SnpEff][snpeff], [vcfanno][vcfanno]
 
+#### GNOMADAF_POPMAX ####
+
+Maximum Allele Frequency across populations
+
 - Key: `GNOMADAF_POPMAX`
 - Value: `Float`
 - Tools: [VEP][vep], [SnpEff][snpeff], [vcfanno][vcfanno]
@@ -75,13 +79,25 @@ The frequency for the Mitochondria from MitoMap.
 
 ### Clinvar ###
 
+#### CLNREVSTAT ####
+
+ClinVar review status for the Variation ID.
+
 - Key: `CLNREVSTAT`
 - Value: `String`
 - Tools: [VEP][vep], [SnpEff][snpeff]
 
+#### CLNSIG ####
+
+Clinical significance for this single variant.
+
 - Key: `CLNSIG`
 - Value: `String`
 - Tools: [VEP][vep], [SnpEff][snpeff]
+
+#### CLNVID ####
+
+ClinVar Variation ID.
 
 - Key: `CLNVID`
 - Value: `Integer`
@@ -90,6 +106,8 @@ The frequency for the Mitochondria from MitoMap.
 
 ### VEP ###
 
+VEP description of vcf annotations.
+
 - Key: `CSQ`
 - Sub_key: `Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|LoFtool|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref`
 - Value: `String`
@@ -97,9 +115,17 @@ The frequency for the Mitochondria from MitoMap.
 
 ### VT ###
 
+#### OLD_MULTIALLELIC ####
+
+Decompose key with original inforamtion.
+
 - Key: `OLD_MULTIALLELIC`
 - Value: `String`
 - Tools: [vt][vt]
+
+#### OLD_VARIANT ####
+
+Normalize key with original information.
 
 - Key: `OLD_VARIANT`
 - Value: `String`
@@ -141,15 +167,25 @@ Splicing annotation
 
 #### Rank score ####
 
-The combined rank score for a variant
+##### ModelScore #####
+
+PHRED score for genotype models.
 
 - Key: `ModelScore`
 - Value: `Float`
 - Tools: [genmod][genmod]
 
+##### RankResult #####
+
+Genmod description of rank score results.
+
 - Key: `RankResult`
 - Value: `String`
 - Tools: [genmod][genmod]
+
+##### RankScore #####
+
+The combined rank score for a variant
 
 - Key: `RankScore`
 - Value: `Float`
@@ -161,9 +197,13 @@ The combined rank score for a variant
 
 The Genomic Evolutionary Rate Profiling([GERP][gerp]) conservation string. An estimation of how conserved this position is.
 
+#### GERP++_NR ####
+
 - Key: `dbNSFP_GERP___NR`
 - Value: `String`
 - Tools: [SnpSift][snpsift]
+
+#### GERP++_RS ####
 
 - Key: `dbNSFP_GERP___RS`
 - Value: `String`
@@ -205,17 +245,33 @@ What variants is this variant in Autosomal Recessive Compound with?
 
 #### Rhocall ####
 
+#### AZ #####
+
+Autozygous positon call.
+
 - Key: `AZ`
 - Value: Flag
 - Tools: [rhocall][rhocall]
+
+#### AZLENGTH ####
+
+Autozygous region length.
 
 - Key: `AZLENGTH`
 - Value: String
 - Tools: [rhocall][rhocall]
 
+#### AZQUAL ####
+
+Autozygous positon call quality.
+
 - Key: `AZQUAL`
 - Value: String
 - Tools: [rhocall][rhocall]
+
+#### AZTYPE ####
+
+Autozygous region type.
 
 - Key: `AZTYPE`
 - Value: String
@@ -223,7 +279,8 @@ What variants is this variant in Autosomal Recessive Compound with?
 
 #### GATK ####
 
-Source vcf for the merged vcf record 
+Source vcf for the merged vcf record.
+
 - Key: `set`
 - Value: String
 - Tools: [gatk][gatk]
