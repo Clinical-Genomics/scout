@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 import itertools
+import datetime
 
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, ACMG_OPTIONS)
+from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
+from scout.server.blueprints.variants.controllers import variants_description, variants_filter_by_field
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 SEX_MAP = {'1': 'male', '2': 'female'}
@@ -91,6 +94,54 @@ def case(store, institute_obj, case_obj):
         'cohort_tags': COHORT_TAGS,
     }
     return data
+
+
+def case_report_content(store, institute_obj, case_obj):
+    """Gather contents to be visualized in a case report"""
+
+    data = case(store, institute_obj, case_obj)
+
+    data.update({'manual_rank_options': MANUAL_RANK_OPTIONS})
+    data.update({'dismissed_options': DISMISS_VARIANT_OPTIONS})
+    data.update({'genetic_models': dict(GENETIC_MODELS)})
+    data.update({'report_created_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
+
+    #get detailed info for the causatives:
+    causatives = variants_description(store, data['causatives'], case_obj, institute_obj)
+    data.update({'causatives_detailed': causatives})
+
+    #get detailed info for the pinned:
+    pinned = variants_description(store, data['suspects'], case_obj, institute_obj)
+    data.update({'pinned_detailed': pinned})
+
+    ## get variants for this case that are either classified, commented, tagged or dismissed.
+    all_variants = list(store.variants(case_id=case_obj['_id'], nr_of_variants=-1)) #all snv variants
+    all_variants = all_variants + list(store.variants(case_id=case_obj['_id'], nr_of_variants=-1, category='sv')) # add structural variants to the list
+
+    # get complete info for the acmg classified variants
+    classified_detailed = variants_filter_by_field(store, all_variants, 'acmg_classification', case_obj, institute_obj)
+    data.update({'classified_detailed': classified_detailed})
+
+    # get complete info for tagged variants
+    tagged_detailed = variants_filter_by_field(store, all_variants, 'manual_rank', case_obj, institute_obj)
+    data.update({'tagged_detailed': tagged_detailed})
+
+    # get complete info for dismissed variants
+    dismissed_detailed = variants_filter_by_field(store, all_variants, 'dismiss_variant', case_obj, institute_obj)
+    data.update({'dismissed_detailed': dismissed_detailed})
+
+    # get variants with any comment
+    commented_ids=[]
+    for variant in all_variants:
+        events = list(store.events(institute_obj, case=case_obj, variant_id=variant['variant_id'], comments=True))
+        if len(events) > 0:
+            commented_ids.append(variant['_id'])
+
+    commented_detailed = variants_description(store, commented_ids, case_obj, institute_obj)
+    data.update({'commented_detailed': commented_detailed})
+
+    return data
+
 
 
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
