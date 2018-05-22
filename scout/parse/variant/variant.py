@@ -127,6 +127,13 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
 
+#    ################# Add Cosmic info #################
+#    # The COSMIC tag in INFO is added via VEP and/or bcftools annotate
+#
+#    COSMIC_tag = variant.INFO.get('COSMIC')
+#    if COSMIC_tag:
+#        parsed_variant['COSMIC'] = COSMIC_tag[4:]
+
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
         parsed_variant['samples'] = parse_genotypes(variant, case['individuals'],
