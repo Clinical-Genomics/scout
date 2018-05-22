@@ -4,6 +4,7 @@
       Case
       <h4>{{ case.display_name }}</h4>
     </li>
+    <li>{{ report(institute, case) }}</li>
     <li>{{ analysis_date(case) }}</li>
     <li>{{ genome_build(case) }}</li>
     <li>{{ status(institute, case) }}</li>

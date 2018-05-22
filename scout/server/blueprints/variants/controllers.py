@@ -278,7 +278,6 @@ def variants_filter_by_field(store, variants_list, field, case_obj = None, insti
 
     filtered_ids = []
     for variant in variants_list:
-        LOG.info(variant)
         if field in variant:
             filtered_ids.append(variant['_id'])
 
@@ -302,7 +301,6 @@ def variants_description(store, variant_ids, case_obj, institute_obj):
     """
     variants_to_report = [] # a list of variant objects
     for var in variant_ids:
-        LOG.info(var)
         simple_variant = {}
         detailed_variant = {}
 
@@ -320,8 +318,10 @@ def variants_description(store, variant_ids, case_obj, institute_obj):
 
             # capturing overlapping sn variants as well:
             detailed_variant['overlapping_snvs'] = sv_object['overlapping_snvs']
-
+            
         variants_to_report.append(detailed_variant)
+
+    return variants_to_report
 
 
 def observations(store, loqusdb, case_obj, variant_obj):
