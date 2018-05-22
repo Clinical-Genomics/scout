@@ -19,7 +19,6 @@ def get_test_submission_object():
         'Condition_ID_value' : 'HP:0001298;HP:0002121',
         'clinvar_submission' : 'SUB777',
     }
-
     return clivar_subm_obj
 
 def test_add_clinvar_submission(adapter, user_obj, institute_obj, case_obj):
