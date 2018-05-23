@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+- Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
 ### Added
 
