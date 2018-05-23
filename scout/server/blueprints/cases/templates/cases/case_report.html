@@ -114,6 +114,8 @@
                   {% if ind.phenotype==2 %} <!--for later use-->
                     {% do affected.append(ind.display_name) %}
                     <td><span class="badge badge-pill badge-danger" title="Affected">A</span>
+                  {% else %}
+                  <td></td>
                   {% endif %}
                   <td>
                     {{ ind.sex_human }}
@@ -263,7 +265,6 @@
         <br>
       {% endfor %}
     {% else %}
-
       No causative variants available for this case
     {% endif %}
   </div>
@@ -277,6 +278,7 @@
     <strong>Pinned Variants</strong>
   </div>
   <div class="card-body">
+    {% set duplicated_variants = [] %}
     {% if pinned_detailed %}
       {% for pinned in pinned_detailed %}
         {% if pinned['_id'] not in causatives_detailed | map(attribute='_id') %}
@@ -285,11 +287,16 @@
           {% else %}
             {{ sv_variant_content(pinned, loop.index) }}
           {% endif %}
+        {% else %}
+          {% do duplicated_variants.append(pinned['_id']) %}
         {% endif %}
         <br>
       {% endfor %}
     {% else %}
       No pinned variants available for this case
+    {% endif %}
+    {% if pinned_detailed and duplicated_variants|length == pinned_detailed|length %}
+      All pinned variants are described among the causative variants
     {% endif %}
   </div>
 </div>
@@ -302,6 +309,7 @@
     <strong>Other ACMG-classified Variants</strong>
   </div>
   <div class="card-body">
+    {% set duplicated_variants = [] %}
     {% if classified_detailed %}
       {% for variant in classified_detailed %}
         {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in pinned_detailed | map(attribute='_id') %}
@@ -310,11 +318,16 @@
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
+        {% else %}
+          {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
         <br>
       {% endfor %}
     {% else %}
       No ACMG-classified variants available for this case
+    {% endif %}
+    {% if classified_detailed and duplicated_variants|length == classified_detailed|length %}
+      All ACMG-classified variants are already described in the previous views
     {% endif %}
   </div>
 </div>
@@ -327,7 +340,8 @@
     <strong>Other Manual Ranked (Tagged) Variants</strong>
   </div>
   <div class="card-body">
-    {% if tagged_detailed%}
+    {% set duplicated_variants = [] %}
+    {% if tagged_detailed %}
       {% for variant in tagged_detailed %}
         {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in pinned_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
@@ -335,11 +349,16 @@
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
+        {% else %}
+          {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
         <br>
       {% endfor %}
     {% else %}
       No tagged variants for this case
+    {% endif %}
+    {% if tagged_detailed and duplicated_variants|length == tagged_detailed|length %}
+      All tagged variants are already described in the previous views
     {% endif %}
   </div>
 </div>
@@ -352,6 +371,7 @@
     <strong>Other Commented Variants</strong>
   </div>
   <div class="card-body">
+    {% set duplicated_variants = [] %}
     {% if commented_detailed %}
       {% for variant in commented_detailed %}
         {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in pinned_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') and variant['_id'] not in tagged_detailed | map(attribute='_id') %}
@@ -360,11 +380,16 @@
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
+        {% else %}
+          {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
         <br>
       {% endfor %}
     {% else %}
       No commented variants for this case
+    {% endif %}
+    {% if commented_detailed and duplicated_variants|length == commented_detailed|length %}
+      All commented variants are already described in the previous views
     {% endif %}
   </div>
 </div>

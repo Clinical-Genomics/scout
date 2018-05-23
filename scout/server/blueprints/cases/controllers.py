@@ -6,7 +6,7 @@ from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, ACMG_OPTIONS)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
