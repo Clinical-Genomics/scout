@@ -6,15 +6,13 @@ from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
-from scout.server.blueprints.variants.controllers import variants_description, variants_filter_by_field
+from scout.server.blueprints.variants.controllers import variants_filter_by_field
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
-SEX_MAP = {'1': 'male', '2': 'female'}
-PHENOTYPE_MAP = {-9: 'missing', 0: 'missing', 1: 'unaffected', 2: 'affected'}
 
 
 def cases(store, case_query):
@@ -41,7 +39,11 @@ def case(store, institute_obj, case_obj):
     """Preprocess a single case."""
     case_obj['individual_ids'] = []
     for individual in case_obj['individuals']:
-        individual['sex_human'] = SEX_MAP.get(individual['sex'], 'unknown')
+        try:
+            sex = int(individual.get('sex', 0))
+        except ValueError as err:
+            sex = 0
+        individual['sex_human'] = SEX_MAP[sex]
         individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
         case_obj['individual_ids'].append(individual['individual_id'])
 
@@ -107,37 +109,29 @@ def case_report_content(store, institute_obj, case_obj):
     data.update({'report_created_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
 
     #get detailed info for the causatives:
-    causatives = variants_description(store, data['causatives'], case_obj, institute_obj)
+    causatives = variants_filter_by_field(store, data['causatives'], '_id', case_obj, institute_obj)
     data.update({'causatives_detailed': causatives})
 
     #get detailed info for the pinned:
-    pinned = variants_description(store, data['suspects'], case_obj, institute_obj)
+    pinned = variants_filter_by_field(store, data['suspects'], '_id', case_obj, institute_obj)
     data.update({'pinned_detailed': pinned})
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
-    all_variants = list(store.variants(case_id=case_obj['_id'], nr_of_variants=-1)) #all snv variants
-    all_variants = all_variants + list(store.variants(case_id=case_obj['_id'], nr_of_variants=-1, category='sv')) # add structural variants to the list
+    evaluated_variants = store.evaluated_variants(case_id=case_obj['_id'])
 
     # get complete info for the acmg classified variants
-    classified_detailed = variants_filter_by_field(store, all_variants, 'acmg_classification', case_obj, institute_obj)
+    classified_detailed = variants_filter_by_field(store, evaluated_variants, 'acmg_classification', case_obj, institute_obj)
     data.update({'classified_detailed': classified_detailed})
 
     # get complete info for tagged variants
-    tagged_detailed = variants_filter_by_field(store, all_variants, 'manual_rank', case_obj, institute_obj)
+    tagged_detailed = variants_filter_by_field(store, evaluated_variants, 'manual_rank', case_obj, institute_obj)
     data.update({'tagged_detailed': tagged_detailed})
 
     # get complete info for dismissed variants
-    dismissed_detailed = variants_filter_by_field(store, all_variants, 'dismiss_variant', case_obj, institute_obj)
+    dismissed_detailed = variants_filter_by_field(store, evaluated_variants, 'dismiss_variant', case_obj, institute_obj)
     data.update({'dismissed_detailed': dismissed_detailed})
 
-    # get variants with any comment
-    commented_ids=[]
-    for variant in all_variants:
-        events = list(store.events(institute_obj, case=case_obj, variant_id=variant['variant_id'], comments=True))
-        if len(events) > 0:
-            commented_ids.append(variant['_id'])
-
-    commented_detailed = variants_description(store, commented_ids, case_obj, institute_obj)
+    commented_detailed = variants_filter_by_field(store, evaluated_variants, 'is_commented', case_obj, institute_obj)
     data.update({'commented_detailed': commented_detailed})
 
     return data

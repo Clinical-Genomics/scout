@@ -152,7 +152,7 @@ class VariantHandler(VariantLoader):
             category(str): 'sv' or 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-            sort_key: ['variant_rank', 'rank_score', 'position'] 
+            sort_key: ['variant_rank', 'rank_score', 'position']
 
         Yields:
             result(Iterable[Variant])
@@ -279,7 +279,7 @@ class VariantHandler(VariantLoader):
         Args:
             case_obj(dict)
             variant_obj(dict)
-        
+
         Yields:
             other_variant(dict)
         """
@@ -335,7 +335,7 @@ class VariantHandler(VariantLoader):
             gene_obj = self.hgnc_gene(gene_id)
             if not gene_obj:
                 continue
-            
+
             gene_start = gene_obj['start']
             gene_end = gene_obj['end']
             if not region_start:
@@ -362,6 +362,54 @@ class VariantHandler(VariantLoader):
 
         sort_key = [('rank_score', pymongo.DESCENDING)]
         variants = self.variant_collection.find(query).sort(sort_key)
+
+        return variants
+
+    def evaluated_variants(self, case_id):
+        """Returns variants that has been evaluated
+
+        Return all variants, snvs/indels and svs from case case_id
+        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant'
+        or if they are commented.
+
+        Args:
+            case_id(str)
+
+        Returns:
+            variants(iterable(Variant))
+        """
+        query = {
+            'case_id': case_id,
+            '$or': [
+                {'acmg_classification': {'$exists': True}},
+                {'manual_rank': {'$exists': True}},
+                {'dismiss_variant': {'$exists': True}},
+            ],
+        }
+        variants = []
+
+        for var in self.variant_collection.find(query):
+            variants.append(var)
+
+        # Get all variants that have a comment on them
+        event_query = {
+            'case': case_id,
+            'category': 'variant',
+            'verb': 'comment',
+        }
+        # Check that we dont add variants multiple times if they have multiple comments
+        variant_ids = set()
+
+        for event in self.event_collection.find(event_query):
+            var_id = event['variant_id']
+
+            # Skip if we already added the variant
+            if var_id in variant_ids:
+                continue
+            variant_ids.add(var_id)
+            variant_obj = self.variant(var_id, case_id=case_id)
+            variant_obj['is_commented'] = True
+            variants.append(variant_obj)
 
         return variants
 
