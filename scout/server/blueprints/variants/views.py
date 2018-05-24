@@ -2,7 +2,8 @@
 import io
 import logging
 
-from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify
+from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response, session
+from werkzeug.datastructures import Headers
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
@@ -11,6 +12,7 @@ from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
+from scout.parse.clinvar import get_submission_variants, get_submission_header, get_submission_lines, create_clinvar_submission_dict, extract_submission_csv_lines
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm
 
@@ -175,18 +177,131 @@ def sanger(institute_id, case_name, variant_id):
     return redirect(request.referrer)
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/cancel_sanger', methods=['POST'])
-def cancel_sanger(institute_id, case_name, variant_id):
-    """Send Sanger cancelation email for confirming a variant."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
-    user_obj = store.user(current_user.email)
-    try:
-        controllers.cancel_sanger(store, mail, institute_obj, case_obj, user_obj,
-                           variant_obj, current_app.config['MAIL_USERNAME'])
-    except controllers.MissingSangerRecipientError:
-        flash('No sanger recipients added to institute.', 'danger')
-    return redirect(request.referrer)
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
+@templated('variants/clinvar.html')
+def clinvar(institute_id, case_name, variant_id):
+    """Build a clinVar submission form for a variant."""
+    data = controllers.clinvar_export(store, institute_id, case_name, variant_id)
+    if request.method == 'GET':
+        return data
+    else:
+        form_dict = request.form.to_dict()
+        variants_to_submit = get_submission_variants(form_dict) # list of variants to be submitted
+        variant_header = get_submission_header(form_dict, variants_to_submit, 'variants')
+        variant_lines = get_submission_lines(form_dict, variants_to_submit, variant_header)
+        casedata_header = get_submission_header(form_dict, variants_to_submit, 'casedata')
+        casedata_lines = get_submission_lines(form_dict, variants_to_submit, casedata_header)
+        variant_types = {}
+        for var in variants_to_submit:
+            variant_types[var] = form_dict['variant-type_'+str(var)]
+
+        # create clinvar submission session object:
+        session['clinvar_submission'] = create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines, variant_types)
+        data.update({'variant_header': variant_header, 'variant_lines': variant_lines, 'casedata_header': casedata_header, 'casedata_lines': casedata_lines, 'form':request.form,})
+        return data
+
+
+@variants_bp.route('/get_csv/', methods=['POST','GET'])
+def get_csv():
+    """Creates csv files (.Variant.csv or .CaseData.csv) to be used for submitting variants to clinVar."""
+    def generate(header, lines):
+        yield '"'+header+'"' + '\n'
+        for line in lines: # lines have already quoted fields
+            yield line + '\n'
+    if request.form.get('variants_button'):
+        header = request.form['vheader']
+        lines = request.form.getlist('variant')
+        filename = str(request.form.get('subm_id')) + '.Variant.csv'
+    else:
+        header = request.form['cdheader']
+        lines = request.form.getlist('case')
+        filename = str(request.form.get('subm_id')) + '.CaseData.csv'
+
+    headers = Headers()
+    headers.add('Content-Disposition','attachment', filename=filename)
+    return Response(generate(header, lines), mimetype='text/csv', headers=headers)
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>', methods=['POST'])
+def save_clinvar_submission(institute_id, case_name, variant_id):
+    """Saves variants submitted to clinVar to database and redirects to variants page"""
+    # clinvar submission form exists in this session, save it to mongo db:
+    if session.get('clinvar_submission') and request.form.get('subm_id'):
+        for variant_submission in session.get('clinvar_submission'):
+            variant_submission['clinvar_submission'] = request.form.get('subm_id')
+        inserted = store.add_clinvar_submission(session.get('clinvar_submission'),current_user.email, institute_id, case_name)
+
+        if inserted == 0:
+            flash('Clinvar submission id '+str(request.form.get('subm_id'))+' already exists in database!', 'danger' )
+        elif inserted == -1:
+            flash('One of more variants your are trying to save is already present in a previous clinvar submission!', 'danger')
+        else:
+            flash('variants with ids '+str(inserted)+ ' were saved into clinvar submissions database collection')
+
+        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                            variant_id=variant_id))
+
+    else: # redirect to variant's page with error message:
+        if session.get('clinvar_submission'):
+            flash("didn't receive a valid clinvar submission id from the previous form", 'danger')
+        else:
+            flash('a session object named "clinvar_submission" could not be found!', 'danger')
+        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                            variant_id=variant_id))
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update_clinvar/<submission_id>', methods=['POST', 'GET'])
+@templated('variants/clinvar_update.html')
+def update_clinvar_submission(institute_id, case_name, variant_id, submission_id):
+    """Update/Removes a clinvar submission for a variant or a group of variants"""
+    def generate(header, lines):
+        yield header + '\n'
+        for line in lines:
+            yield line + '\n'
+
+    data = controllers.get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id)
+    if request.method == 'GET':
+        return data
+    elif request.form.get('variants_button') or request.form.get('cdata_button'):
+        variants_header, casedata_header, clinvar_lines, casedata_lines = extract_submission_csv_lines(data['clinvars'])
+
+        if request.form.get('variants_button'):
+            filename = str(submission_id) + '.Variant.csv'
+            header = variants_header
+            lines = clinvar_lines
+
+        elif request.form.get('cdata_button'):
+            filename = str(submission_id) + '.CaseData.csv'
+            header = casedata_header
+            lines = casedata_lines
+
+        headers = Headers()
+        headers.add('Content-Disposition','attachment', filename=filename)
+        return Response(generate(header, lines), mimetype='text/csv', headers=headers)
+
+    else:
+        if request.form.get('add_accession'):
+            updates=[] #a list of tuples
+            for fieldname, value in request.form.items():
+                if not value == 'submit':
+                    updates.append(store.add_clinvar_accession(fieldname.replace('clinvar_accession_',''), value))
+            if len(updates) == 0:
+                flash('no updates done', 'info')
+            else:
+                flash('Clinvar variation ID has been updated', 'success')
+            return redirect(url_for('.update_clinvar_submission', institute_id=institute_id, case_name=case_name,
+                                variant_id=variant_id, submission_id=submission_id))
+
+        elif request.form.get('delete_submission'):
+            deleted = store.delete_clinvar_submission(submission_id)
+
+            if deleted:
+                flash('{} variants submitted to clinvar with submission id {} deleted from the database!'.format(deleted, submission_id), 'success')
+            else:
+                flash("Couldn't find any clinvar variant with submission id to remove {}.".format(submission_id), 'info')
+
+            return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
+                                variant_id=variant_id))
 
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
