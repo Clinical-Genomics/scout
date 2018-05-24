@@ -48,11 +48,19 @@ The [PHASTcons][phastcons] conservation string.
 
 The [phylop][phylop] 100 way predicted conservation string.
 
+## External ID
+
+### COSMIC
+
+A matching exact CHROM, POS, REF, ALT from vcf with Catalogue Of Somatic Mutations In Cancer ([COSMIC][cosmic]). A link
+to COSMIC if _a_ matching COSMIC variant is found.
+
 [1000g]: http://www.1000genomes.org/
-[exac]: http://exac.broadinstitute.org
 [cadd]: http://cadd.gs.washington.edu
+[cosmic]: https://cancer.sanger.ac.uk/cosmic
+[exac]: http://exac.broadinstitute.org
 [gerp]: http://mendel.stanford.edu/SidowLab/downloads/gerp/index.html
 [phastcons]: http://compgen.cshl.edu/phast/
 [phylop]: http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg19&g=cons100way
-[sift]: http://sift.jcvi.org
 [polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
+[sift]: http://sift.jcvi.org
