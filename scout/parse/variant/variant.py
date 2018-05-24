@@ -127,12 +127,6 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
 
-#    ################# Add Cosmic info #################
-#    # The COSMIC tag in INFO is added via VEP and/or bcftools annotate
-#
-#    COSMIC_tag = variant.INFO.get('COSMIC')
-#    if COSMIC_tag:
-#        parsed_variant['COSMIC'] = COSMIC_tag[4:]
 
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
@@ -182,6 +176,12 @@ def parse_variant(variant, case, variant_type='clinical',
             dbsnp_ids.add(dbsnp)
         for cosmic in parsed_transcript.get('cosmic', []):
             cosmic_ids.add(cosmic)
+    
+    # The COSMIC tag in INFO is added via VEP and/or bcftools annotate
+
+    COSMIC_tag = variant.INFO.get('COSMIC')
+    if COSMIC_tag:
+        cosmic_ids.add(COSMIC_tag[4:])
 
     if (dbsnp_ids and not parsed_variant['dbsnp_id']):
         parsed_variant['dbsnp_id'] = ';'.join(dbsnp_ids)
