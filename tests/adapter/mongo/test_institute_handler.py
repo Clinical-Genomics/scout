@@ -99,6 +99,26 @@ def test_update_institute_sanger(adapter, institute_obj, user_obj):
     
     assert res['updated_at'] > institute_obj['created_at']
 
+def test_update_display_name(adapter, institute_obj):
+    ## GIVEN an adapter without any institutes
+    assert adapter.institutes().count() == 0
+    
+    ## WHEN adding a institute and updating it
+    adapter.add_institute(institute_obj)
+    display_name = 'Test'
+    
+    assert institute_obj['display_name'] != display_name
+    
+    updated_institute = adapter.update_institute(
+        internal_id=institute_obj['internal_id'],
+        display_name=display_name
+    )
+    
+    ## THEN assert that the institute has been updated
+
+    assert updated_institute['display_name'] == display_name
+
+
 def test_update_institute_coverage_cutoff(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
     assert adapter.institutes().count() == 0
