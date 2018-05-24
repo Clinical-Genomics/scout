@@ -1,5 +1,4 @@
-from scout.server.blueprints.variants.controllers import sanger, cancel_sanger, variants_filter_by_field
-
+from scout.server.blueprints.variants.controllers import sanger, cancel_sanger
 
 
 def url_for(param, institute_id, case_name, variant_id):
