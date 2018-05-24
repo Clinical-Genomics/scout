@@ -75,17 +75,18 @@ def test_fetch_non_existing_institute(adapter, institute_obj):
     
     assert institute_obj is None
 
-def test_update_institute_sanger(adapter, institute_obj):
+def test_update_institute_sanger(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
     assert adapter.institutes().count() == 0
     
     ## WHEN adding a institute and updating it
     
     adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
     
     adapter.update_institute(
         internal_id=institute_obj['internal_id'],
-        sanger_recipient='calrk.kent@mail.com'
+        sanger_recipient=user_obj['email']
     )
     
     ## THEN assert that the institute has been updated
@@ -122,16 +123,17 @@ def test_update_institute_coverage_cutoff(adapter, institute_obj):
     
     assert res['updated_at'] > institute_obj['created_at']
 
-def test_update_institute_sanger_and_cutoff(adapter, institute_obj):
+def test_update_institute_sanger_and_cutoff(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
     assert adapter.institutes().count() == 0
     
     ## WHEN adding a institute and updating it
     
     adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
 
     new_cutoff = 12.0
-    new_mail = 'clark.kent@mail.com'
+    new_mail = user_obj['email']
     
     adapter.update_institute(
         internal_id=institute_obj['internal_id'],
@@ -164,10 +166,10 @@ def test_updating_non_existing_institute(adapter, institute_obj):
     ## THEN assert that the update did not add any institutes to the database
     assert adapter.institutes().count() == 1
     
-    adapter.update_institute(
-        internal_id='nom existing',
-        sanger_recipient='john.doe@mail.com',
-    )
+    with pytest.raises(IntegrityError):
+        adapter.update_institute(
+            internal_id='nom existing',
+            sanger_recipient='john.doe@mail.com',
+        )
 
-    assert adapter.institutes().count() == 1
 
