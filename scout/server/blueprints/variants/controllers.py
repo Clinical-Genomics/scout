@@ -466,17 +466,14 @@ def swegen_link(variant_obj):
 def cosmic_link(variant_obj):
     """Compose link to COSMIC Database."""
 
-    snp_id = variant_obj.get('COSMIC')
-    print(variant_obj)
+    cosmic_ids = variant_obj.get('cosmic_ids')
 
-
-    if not snp_id:
+    if not cosmic_ids:
         return None
-    elif snp_id[:4] == "COSM":
-        cosmic_id = dbsnp_id[4:]
-        url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
     else:
-        return None
+        cosmic_id = cosmic_ids[0]
+   
+    url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
 
     return url_template.format(cosmic_id)
 
