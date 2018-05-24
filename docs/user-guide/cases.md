@@ -10,7 +10,10 @@ Your name will be tagged for each case that is assigned to you. For cases that a
 ----------
 
 ## Case
-This is the detailed view of one individual case. The intended use is to give a consise overview of the family under investigation and show recent activity related to the case.
+This is the detailed view of one individual case. The intended use is to give a concise overview of the family under investigation and show recent activity related to the case.
+
+## Case report page
+It can be visualized by clicking on the 'Visualize report' link on the left sidebar present on the case view. The case report contains a phenotype info panel as well as an overview of the gene panels used for the analysis. This page is showing also any variant users have been interacting with when working with the case: causative variants, variants pinned as candidates, ACMG or otherwise manually classified variants, as well as variants with any comment field. At the bottom of the report page the 'Dismissed variants' panel lists all variants that have been dismissed, with the reason(s) why they were rejected as candidates. By clicking on the top right button the case report can be exported and saved into a PDF file.
 
 ### Pinned variants
 There's a list of "Strong candidates" on the page. This list is curated by the collaborators and consists of "pinned" variants from the variants list. This feature can be used to mark variants of particular interest that you might want to highlight to other users (See more under "Variant".)

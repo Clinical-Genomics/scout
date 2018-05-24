@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import os.path
+import datetime
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, send_from_directory, jsonify)
 from flask_login import current_user
+from flask_weasyprint import HTML, render_pdf
 from dateutil.parser import parse as parse_date
 
 from scout.server.extensions import store, mail
@@ -74,6 +76,32 @@ def case_synopsis(institute_id, case_name):
     new_synopsis = request.form.get('synopsis')
     controllers.update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET','POST'])
+@templated('cases/case_report.html')
+def case_report(institute_id, case_name):
+    """Visualize case report"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case_report_content(store, institute_obj, case_obj)
+
+    return dict(institute=institute_obj, case=case_obj, format='html', **data)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET','POST'])
+def pdf_case_report(institute_id, case_name):
+    """Download a pdf report for a case"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case_report_content(store, institute_obj, case_obj)
+
+    # workaround to be able to print the case pedigree to pdf
+    if case_obj['madeline_info'] is not None:
+        with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:
+            temp_madeline.write(case_obj['madeline_info'])
+
+    html_report = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, format='pdf', **data)
+    return render_pdf(HTML(string=html_report), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')
 
 
 @cases_bp.route('/<institute_id>/<case_name>/diagnose', methods=['POST'])
