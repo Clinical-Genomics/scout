@@ -181,7 +181,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     cosmic_tag = variant.INFO.get('COSMIC')
     if cosmic_tag:
-        cosmic_ids.add(COSMIC_tag[4:])
+        cosmic_ids.add(cosmic_tag[4:])
 
     if (dbsnp_ids and not parsed_variant['dbsnp_id']):
         parsed_variant['dbsnp_id'] = ';'.join(dbsnp_ids)
