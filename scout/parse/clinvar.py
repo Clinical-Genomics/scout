@@ -4,10 +4,10 @@ def get_submission_variants(form_fields):
     """Extracts a list of variant ids from the clinvar submission form in blueprints/variants/clinvar.html (creation of a new clinvar submission).
 
         Args:
-             form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+             form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
 
         Returns:
-             clinvars # A list of variant IDs
+             clinvars: A list of variant IDs
     """
 
     clinvars = []
@@ -28,9 +28,9 @@ def get_submission_header(form_fields, clinvars, csv_type):
     """Extracts a valid header for a csv clinvar submission file (blueprints/variants/clinvar.html). This file can be either the .Variant.csv file or the .Casedata.csv file according to the csv_type parameter passed.
 
         Args:
-             form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
-             clinvars # it's a list of variant ids to be used in the clinvar siubmission
-             csv_type # either 'variants' or 'casedata'
+             form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+             clinvars: it's a list of variant ids to be used in the clinvar siubmission
+             csv_type: either 'variants' or 'casedata'
 
         Returns:
              submission_header # a list of header fields for either the .Variant.csv or .Casedata.csv file
@@ -67,9 +67,9 @@ def get_submission_lines(form_fields, clinvars, file_header):
     """Extracts the lines for a csv clinvar submission file (blueprints/variants/clinvar.html). This file can be either the .Variant.csv file or the .Casedata.csv file according to the header passed (form_fields)
 
         Args:
-             form_fields(dict) # it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
-             clinvars # it's a list of variant ids to be used in the clinvar siubmission
-             file_header # it's the file header
+             form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+             clinvars: it's a list of variant ids to be used in the clinvar siubmission
+             file_header: it's the file header
 
         Returns:
              csv_lines # a list of lists. Each inner list is a line for the .Variant.csv or .Casedata.csv file.
@@ -104,8 +104,14 @@ def get_submission_lines(form_fields, clinvars, file_header):
 
 
 def extract_submission_csv_lines(clinvars_dictlist):
-    """Parses a list of clinvar submission objects (variants) and creates the lines for printing
-    .Variant.csv and .CaseData.csv clinvar submission files.
+    """Parses a list of clinvar submission objects (variants) already in the database and creates the lines for printing .Variant.csv and .CaseData.csv clinvar submission files.
+
+        Args:
+            clinvars_dictlist(list of objects): list of clinvar submission objects from the clinvar database collection
+
+        Returns:
+            The strings used to produce the comma separated files .Variant.csv or .Casedata.csv to be downloaded for a clinvar submission
+
     """
     variants_header = []
     clinvar_lines = []
@@ -134,42 +140,51 @@ def extract_submission_csv_lines(clinvars_dictlist):
 
 
 def create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines, variant_types):
-    """
-    Creates a list of variants used for a clinvar submission. The returned list has the following format:
-    [
-        {
-            _id : "variant_1",
-            variant_id : "variant_1",
-            case_id : "case_id",
-            ..
-            form fields for variant 1
-            casedata: [
+    """Creates a list of variants used for a clinvar submission.
+
+        Args:
+            variant_header(list): A list of strings representing the fields for the header of the .Variant.csv file
+            variant_lines: A list of strings representing the lines of the .Variant.csv file
+            casedata_header: A list of strings representing the fields for the header of the .Casedata.csv file
+            casedata_lines: A list of strings representing the lines of the .Casedata.csv file
+            variant_types(dict) : a dictionary where the key is the variant ID and the value is the type of variant (snv or sv)
+
+        Returns:
+         A list of clinvar variant submission objects. This list has the following format:
+            [
                 {
-                    form fields for casedata 1
+                    _id : "variant_1",
+                    variant_id : "variant_1",
+                    case_id : "case_id",
+                    ..
+                    form fields for variant 1
+                    casedata: [
+                        {
+                            form fields for casedata 1
+                        },
+                        {
+                            form fields for casedata 2
+                        }
+                        ..
+                    ]
                 },
                 {
-                    form fields for casedata 2
-                }
-                ..
-            ]
-        },
-        {
-            _id : "variant_2",
-            variant_id : "variant_2",
-            case_id : "case_id",
-            ..
-            form fields for variant 2
-            casedata: [
-                {
-                    form fields for casedata 1
+                    _id : "variant_2",
+                    variant_id : "variant_2",
+                    case_id : "case_id",
+                    ..
+                    form fields for variant 2
+                    casedata: [
+                        {
+                            form fields for casedata 1
+                        },
+                        {
+                            form fields for casedata 2
+                        }
+                        ..
+                    ]
                 },
-                {
-                    form fields for casedata 2
-                }
-                ..
             ]
-        },
-    ]
     """
     submitted_vars= []
     # variant header items become dictionary keys and variant lines dictionary values
