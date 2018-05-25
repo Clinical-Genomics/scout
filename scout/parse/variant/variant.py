@@ -179,8 +179,8 @@ def parse_variant(variant, case, variant_type='clinical',
     
     # The COSMIC tag in INFO is added via VEP and/or bcftools annotate
 
-    COSMIC_tag = variant.INFO.get('COSMIC')
-    if COSMIC_tag:
+    cosmic_tag = variant.INFO.get('COSMIC')
+    if cosmic_tag:
         cosmic_ids.add(COSMIC_tag[4:])
 
     if (dbsnp_ids and not parsed_variant['dbsnp_id']):
