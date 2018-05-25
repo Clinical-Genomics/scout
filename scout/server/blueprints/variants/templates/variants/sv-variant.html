@@ -116,6 +116,11 @@
 	      <li class="list-group-item">
 	        Type <div class="pull-right">{{ variant.sub_category|upper }}</div>
 	      </li>
+        {% if variant.clinvar_submission_id %}
+          <a href="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=variant.clinvar_submission_id) }}" class="btn btn-default form-control">View/Modify clinvar submission {{variant.clinvar_submission_id}}</a>
+        {% elif variant._id in case.suspects %}
+          <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar (BETA)</a>
+        {% endif %}
       </ul>
     </div>
   </div>

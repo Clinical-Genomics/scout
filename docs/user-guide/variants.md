@@ -42,6 +42,10 @@ see [Annotations](annotations.md)
 
 This is the worst functional impact of all transcripts
 
+### Clinvar submission of pinned variants ###
+
+Single nucleotide variants, indels, insertions, as well as larger structural variants can be used to create submissions to [Clinvar][clinvar], a free public database of phenotype-genotype associations. One of more pinned variants for a case with assigned phenotype might be used from the Clinvar submission page to create comma separated file to be used in the submission process. The Scout submission form mirrors the fields on the Clinvar submission spreadsheets. Optional case data for one or more pinned variants can also be generated and uploaded together with the variants during the file submission. Prior registration of a user and a submitting organization to the Clinvar portal is required to submit data to the Clinvar database.
+
 ### Region Annotation ###
 
 This is the region of the most severe functional impact
@@ -51,4 +55,5 @@ This is the region of the most severe functional impact
 ### Compounds
 Only interesting when the compound inheritance pattern is required, the list can be very long - best to put it far down the page.
 
+[clinvar]: https://www.ncbi.nlm.nih.gov/clinvar/
 [markdown]: https://help.github.com/articles/markdown-basics/

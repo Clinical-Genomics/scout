@@ -2,6 +2,7 @@
 import logging
 import os.path
 
+from datetime import date
 from flask import url_for, flash
 from flask_mail import Message
 
@@ -90,6 +91,10 @@ def sv_variant(store, institute_id, case_name, variant_id):
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
+
+    clinvar_submission = store.clinvars(variant_ids=[variant_id])
+    if clinvar_submission:
+        variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
 
     return {
         'institute': institute_obj,
@@ -302,6 +307,10 @@ def variant(store, institute_obj, case_obj, variant_id=None):
     if variant_obj.get('genetic_models'):
         variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
         variant_obj['is_matching_inheritance'] = variant_models & gene_models
+
+    clinvar_submission = store.clinvars(variant_ids=[variant_obj['_id']])
+    if clinvar_submission:
+        variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
 
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
@@ -752,6 +761,60 @@ def cancer_variants(store, request_args, institute_id, case_name):
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+def clinvar_export(store, institute_id, case_name, variant_id):
+    """Gather the required data for creating the clinvar submission form
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str): Institute ID
+            case_name(str): case ID
+            variant_id(str): variant._id
+
+        Returns:
+            a dictionary with all the required data (case and variant level) to pre-fill in fields in the clinvar submission form
+
+    """
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    pinned = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('suspects', [])]
+    variant_obj = store.variant(variant_id)
+    return dict(
+        today = str(date.today()),
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        pinned_vars=pinned
+    )
+
+def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
+    """Collects all variants from the clinvar submission collection with a specific submission_id
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str): Institute ID
+            case_name(str): case ID
+            variant_id(str): variant._id
+            submission_id(str): clinvar submission id, i.e. SUB76578
+
+        Returns:
+            A dictionary with all the data to display the clinvar_update.html template page
+    """
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    pinned = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('suspects', [])]
+    variant_obj = store.variant(variant_id)
+    clinvar_submission_objs = store.clinvars(submission_id=submission_id)
+    return dict(
+        today = str(date.today()),
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        pinned_vars=pinned,
+        clinvars = clinvar_submission_objs
+    )
 
 
 def variant_acmg(store, institute_id, case_name, variant_id):
