@@ -266,6 +266,7 @@ def variant(store, institute_obj, case_obj, variant_id=None):
     variant_obj['exac_link'] = exac_link(variant_obj)
     variant_obj['gnomad_link'] = gnomad_link(variant_obj)
     variant_obj['swegen_link'] = swegen_link(variant_obj)
+    variant_obj['cosmic_link'] = cosmic_link(variant_obj)
     variant_obj['beacon_link'] = beacon_link(variant_obj, genome_build)
     variant_obj['ucsc_link'] = ucsc_link(variant_obj, genome_build)
     variant_obj['alamut_link'] = alamut_link(variant_obj)
@@ -537,6 +538,26 @@ def swegen_link(variant_obj):
                     "{this[position]}-{this[reference]}-{this[alternative]}")
     return url_template.format(this=variant_obj)
 
+def cosmic_link(variant_obj):
+    """Compose link to COSMIC Database.
+
+    Args:
+        variant_obj(scout.models.Variant)
+
+    Returns:
+        url_template(str): Link to COSMIIC database if cosmic id is present
+    """
+
+    cosmic_ids = variant_obj.get('cosmic_ids')
+
+    if not cosmic_ids:
+        return None
+    else:
+        cosmic_id = cosmic_ids[0]
+        url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
+   
+
+    return url_template.format(cosmic_id)
 
 def beacon_link(variant_obj, build=None):
     """Compose link to Beacon Network."""
