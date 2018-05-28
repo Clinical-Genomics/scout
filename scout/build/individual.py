@@ -42,9 +42,15 @@ def build_individual(ind):
     sex = ind.get('sex', 'unknown')
     # Convert sex to .ped
     try:
-        ind_obj['sex'] = str(REV_SEX_MAP[sex])
-    except KeyError as err:
-        raise(PedigreeError("Unknown sex: %s" % sex))
+        # Check if sex is coded as an integer
+        int(sex)
+        ind_obj['sex'] = str(sex)
+    except ValueError as err:
+        try:
+            # Sex are numbers in the database
+            ind_obj['sex'] = REV_SEX_MAP[sex]
+        except KeyError as err:
+            raise(PedigreeError("Unknown sex: %s" % sex))
 
     phenotype = ind.get('phenotype', 'unknown')
     # Make the phenotype integers

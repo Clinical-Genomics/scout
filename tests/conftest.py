@@ -3,7 +3,7 @@ import pytest
 import logging
 import datetime
 
-from scout.utils.handle import get_file_handle
+from pprint import pprint as pp
 
 from cyvcf2 import VCF
 import yaml
@@ -14,6 +14,8 @@ from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
+
+from scout.utils.handle import get_file_handle
 
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
