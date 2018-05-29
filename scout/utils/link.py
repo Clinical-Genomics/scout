@@ -183,9 +183,12 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
 
 
         Args:
-            ensembl_lines(iterable(str))
-            hgnc_lines(iterable(str))
-            exac_lines(iterable(str))
+            ensembl_lines(iterable(str)): Strings with ensembl gene information
+            hgnc_lines(iterable(str)): Strings with hgnc gene information
+            exac_lines(iterable(str)): Strings with exac PLi score info
+            mim2gene_lines(iterable(str))
+            genemap_lines(iterable(str))
+            hpo_lines(iterable(str)): Strings with hpo gene information
 
         Yields:
             gene(dict): A dictionary with gene information

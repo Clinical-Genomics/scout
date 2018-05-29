@@ -613,7 +613,7 @@ def real_panel_database(request, real_gene_database, panel_info):
 def case_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with institute, user and case"
     adapter = panel_database
-    
+
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
 
@@ -624,7 +624,7 @@ def case_database(request, panel_database, parsed_case):
 def populated_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
-    
+
     logger.info("Adding case to adapter")
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
@@ -635,13 +635,12 @@ def populated_database(request, panel_database, parsed_case):
 def real_populated_database(request, real_panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
-    
+
     logger.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
-    
-    return adapter
 
+    return adapter
 
 @pytest.fixture(scope='function')
 def variant_database(request, populated_database):
