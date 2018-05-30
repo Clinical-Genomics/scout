@@ -89,6 +89,6 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
 
     try:
         case_obj = adapter.load_case(config_data, update)
-    except IntegrityError as err:
+    except Exception as err:
         LOG.warning(err)
         context.abort()
