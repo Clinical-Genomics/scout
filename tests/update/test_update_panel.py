@@ -25,16 +25,23 @@ def test_update_panel_version(panel_database, case_obj):
     
     ## WHEN updating the panel version
     
-    updated_panel = update_panel(adapter, panel_name, panel_version, new_panel_version)
+    update_panel(adapter, panel_name, panel_version, new_panel_version)
+
     
-    ## THEN assert that the panel version was updated both in panel and case
+    ## THEN assert that the panel version was updated for the panel object
     
-    panel_obj = adapter.panel_collection.find_one({'_id': panel_id})
+    updated_panel_obj = adapter.panel_collection.find_one(
+        {
+            'panel_name': panel_name,
+            'version': new_panel_version
+        })
     
-    assert panel_obj['version'] == new_panel_version
     
+    assert updated_panel_obj['version'] == new_panel_version
+    
+
     case_obj = adapter.case_collection.find_one({'_id': case_id})
-    
+
     for panel in case_obj['panels']:
         assert panel['version'] == new_panel_version
     
@@ -53,23 +60,25 @@ def test_update_panel_date(panel_database, case_obj):
     
     # There is infirmation about a panel both in the panel collection
     # and on the case object. This is fine until one starts to manipulate the objects
-    panel = case_obj['panels'][0]
+    case_panel = case_obj['panels'][0]
     
-    panel_version = panel['version']
-    panel_name = panel['panel_name']
-    panel_id = panel['panel_id']
+    panel_version = case_panel['version']
+    panel_name = case_panel['panel_name']
+    panel_id = case_panel['panel_id']
 
-    new_panel_version = panel_version + 1
-    
     ## WHEN updating the panel version
     
-    updated_panel = update_panel(adapter, panel_name, panel_version, new_date=new_date_obj)
+    update_panel(adapter, panel_name, panel_version=None, new_date=new_date_obj)
     
     ## THEN assert that the panel version was updated both in panel and case
     
-    panel_obj = adapter.panel_collection.find_one({'_id': panel_id})
+    updated_panel_obj = adapter.panel_collection.find_one(
+        {
+            'panel_name': panel_name,
+            'version': panel_version
+        })
     
-    assert panel_obj['date'] == new_date_obj
+    assert updated_panel_obj['date'] == new_date_obj
     
     case_obj = adapter.case_collection.find_one({'_id': case_id})
     
@@ -100,13 +109,17 @@ def test_update_panel_version_multiple(panel_database, case_obj):
     
     ## WHEN updating the panel version
     
-    updated_panel = update_panel(adapter, panel_name, panel_version, new_panel_version)
+    update_panel(adapter, panel_name, panel_version, new_panel_version)
     
     ## THEN assert that the panel version was updated both in panel and case
     
-    panel_obj = adapter.panel_collection.find_one({'_id': panel_id})
+    updated_panel_obj = adapter.panel_collection.find_one(
+        {
+            'panel_name': panel_name,
+            'version': new_panel_version
+        })
     
-    assert panel_obj['version'] == new_panel_version
+    assert updated_panel_obj['version'] == new_panel_version
     
     for case_obj in adapter.case_collection.find(): 
     

@@ -60,4 +60,23 @@ INDEXES = {
             ('description', ASCENDING)],
             name="description"),
     ],
+    'transcript': [
+        IndexModel([
+            ('build', ASCENDING),
+            ('hgnc_id', ASCENDING),
+            ('length', DESCENDING)],
+            name="hgncid_length"),
+    ],
+    'exon': [
+        IndexModel([
+            ('build', ASCENDING),
+            ('hgnc_id', ASCENDING)],
+            name="build_hgncid"),
+    ],
+    'hpo_term': [
+        IndexModel([
+            ('hpo_number', ASCENDING)],
+            name="number"),
+    ],
+    
 }

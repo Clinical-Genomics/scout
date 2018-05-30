@@ -120,14 +120,13 @@ class VariantHandler(VariantLoader):
                     hgnc_transcript = transcripts_dict[tx_id]
                     # If the transcript has a ref seq identifier we add that
                     # to the variants transcript
-                    if 'refseq_ids' in hgnc_transcript:
-                        refseq_ids = hgnc_transcript['refseq_ids']
-                        transcript['refseq_ids'] = refseq_ids
+                    if hgnc_transcript.get('refseq_id'):
+                        refseq_id = hgnc_transcript['refseq_id']
+                        transcript['refseq_id'] = refseq_id
 
-                        # Check if any of the refseq ids are disease associated
-                        for refseq_id in refseq_ids:
-                            if refseq_id in disease_associated_no_version:
-                                transcript['is_disease_associated'] = True
+                        # Check if the refseq id are disease associated
+                        if refseq_id in disease_associated_no_version:
+                            transcript['is_disease_associated'] = True
 
                     if hgnc_transcript.get('is_primary'):
                         transcript['is_primary'] = True

@@ -1,4 +1,10 @@
-from scout.build.gene import build_gene
+"""tests/build/test_build_gene.py
+
+Tests for genes that are built on the variants
+
+"""
+
+from scout.build.variant.gene import build_gene
 
 def test_build_gene():
     ## GIVEN information about a gene and a transcripts

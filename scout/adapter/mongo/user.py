@@ -7,7 +7,7 @@ from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 class UserHandler(object):
 
@@ -21,7 +21,7 @@ class UserHandler(object):
             Returns:
                 updated_user(dict)
         """
-        log.info("Updating user %s", user_obj['_id'])
+        LOG.info("Updating user %s", user_obj['_id'])
         updated_user = self.user_collection.find_one_and_replace(
             {'_id': user_obj['_id']},
             user_obj,
@@ -29,27 +29,26 @@ class UserHandler(object):
         )
         return updated_user
 
-    def add_user(self, user_info):
+    def add_user(self, user_obj):
         """Add a user object to the database
 
             Args:
-                user_info(dict): A dictionary with user information
+                user_obj(scout.models.User): A dictionary with user information
         
             Returns:
                 user_info(dict): a copy of what was inserted
         """
-        log.info("Adding user %s to the database", user_info['email'])
-        if not '_id' in user_info:
-            user_info['_id'] = user_info['email']
+        LOG.info("Adding user %s to the database", user_obj['email'])
+        if not '_id' in user_obj:
+            user_obj['_id'] = user_obj['email']
     
-        user_info['created_at'] = datetime.datetime.now()
         try:
-            self.user_collection.insert_one(user_info)
-            log.debug("User inserted")
+            self.user_collection.insert_one(user_obj)
+            LOG.debug("User inserted")
         except DuplicateKeyError as err:
-            raise IntegrityError("User {} already exists in database".format(user_info['email']))
+            raise IntegrityError("User {} already exists in database".format(user_obj['email']))
 
-        return user_info
+        return user_obj
 
     def users(self, institute=None):
         """Return all users from the database
@@ -62,10 +61,10 @@ class UserHandler(object):
         """
         query = {}
         if institute:
-            log.info("Fetching all users from institute %s", institute)
+            LOG.info("Fetching all users from institute %s", institute)
             query = {'institutes': {'$in': [institute]}}
         else:
-            log.info("Fetching all users")
+            LOG.info("Fetching all users")
             
         res = self.user_collection.find(query)
         return res
@@ -79,7 +78,7 @@ class UserHandler(object):
             Returns:
                 user_obj(dict)
         """
-        log.info("Fetching user %s", email)
+        LOG.info("Fetching user %s", email)
         user_obj = self.user_collection.find_one({'_id': email})
 
         return user_obj
@@ -94,7 +93,7 @@ class UserHandler(object):
             user_obj(dict)
         
         """
-        log.info("Deleting user %s", email)
+        LOG.info("Deleting user %s", email)
         user_obj = self.user_collection.delete_one({'_id': email})
         
         return user_obj

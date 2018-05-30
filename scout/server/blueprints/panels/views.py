@@ -124,9 +124,8 @@ def gene_edit(panel_id, hgnc_id):
     form = PanelGeneForm()
     transcript_choices = []
     for transcript in hgnc_gene['transcripts']:
-        if transcript.get('refseq_ids'):
-            for refseq_id in transcript['refseq_ids']:
-                transcript_choices.append((refseq_id, refseq_id))
+        if transcript.get('refseq_id'):
+            transcript_choices.append((refseq_id, refseq_id))
     form.disease_associated_transcripts.choices = transcript_choices
 
     if form.validate_on_submit():

@@ -99,8 +99,8 @@ def test_unassign(case_database, institute_obj, case_obj, user_obj):
     event = adapter.event_collection.find_one({'verb': 'unassign'})
     assert event['link'] == 'unassignlink'
 
-def test_mark_causative(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
+def test_mark_causative(real_variant_database, institute_obj, case_obj, user_obj):
+    adapter = real_variant_database
     logger.info("Testing mark a variant causative")
     # GIVEN a populated database with variants
     assert adapter.variant_collection.find().count() > 0
@@ -144,8 +144,8 @@ def test_mark_causative(variant_database, institute_obj, case_obj, user_obj):
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
 
-def test_unmark_causative(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
+def test_unmark_causative(real_variant_database, institute_obj, case_obj, user_obj):
+    adapter = real_variant_database
     logger.info("Testing mark a variant causative")
 
     variant = adapter.variant_collection.find_one()
@@ -192,8 +192,8 @@ def test_unmark_causative(variant_database, institute_obj, case_obj, user_obj):
     assert adapter.event_collection.find().count() == 4
 
 
-def test_order_sanger(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
+def test_order_sanger(real_variant_database, institute_obj, case_obj, user_obj):
+    adapter = real_variant_database
     logger.info("Testing ordering sanger for a variant")
     # GIVEN a populated database with variants
     assert adapter.variant_collection.find().count() > 0
@@ -244,8 +244,8 @@ def test_order_sanger(variant_database, institute_obj, case_obj, user_obj):
         assert event_obj['category'] in ['case', 'variant']
 
 
-def test_cancel_sanger(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
+def test_cancel_sanger(real_variant_database, institute_obj, case_obj, user_obj):
+    adapter = real_variant_database
     logger.info("Testing ordering sanger for a variant")
     # GIVEN a populated database with variants
     assert adapter.variant_collection.find().count() > 0
@@ -296,8 +296,8 @@ def test_cancel_sanger(variant_database, institute_obj, case_obj, user_obj):
         assert event_obj['category'] in ['case', 'variant']
 
 
-def test_dismiss_variant(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
+def test_dismiss_variant(real_variant_database, institute_obj, case_obj, user_obj):
+    adapter = real_variant_database
     logger.info("Test dismiss variant")
 
     # GIVEN a variant db with at least one variant, and no events
@@ -524,7 +524,6 @@ def test_add_mim(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add OMIM term for a case")
     adapter._add_case(case_obj)
-
     #Existing mim phenotype
     mim_obj = adapter.disease_term_collection.find_one()
     mim_term = mim_obj['_id']
@@ -585,8 +584,8 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 2
 
-def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
-    adapter = variant_database
+def test_specific_comment(real_variant_database, institute_obj, case_obj, user_obj):
+    adapter = real_variant_database
     logger.info("Add specific comment for a variant")
     content = "hello"
     # GIVEN a populated database with variants
@@ -596,7 +595,7 @@ def test_specific_comment(variant_database, institute_obj, case_obj, user_obj):
     variant = adapter.variant_collection.find_one()
 
     # WHEN commenting on a variant
-    updated_variant = variant_database.comment(
+    updated_variant = adapter.comment(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,

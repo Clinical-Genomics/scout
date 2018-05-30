@@ -1,43 +1,8 @@
+import logging
 
-def build_hgnc_transcript(transcript_info):
-    """Build a hgnc_transcript object
+from scout.models.hgnc_map import HgncGene
 
-        Args:
-            transcript_info(dict): Transcript information
-
-        Returns:
-            transcript_obj(HgncTranscript)
-            {
-                ensembl_transcript_id: str, required
-                refseq_id: str,
-                start: int, required
-                end: int, required
-                is_primary: bool
-            }
-    """
-    try:
-        transcript_obj = {'ensembl_transcript_id':transcript_info['enst_id']}
-    except KeyError:
-        raise KeyError("Transcript has to have ensembl id")
-    transcript_obj['is_primary'] = transcript_info.get('is_primary', False)
-    
-    transcript_obj['refseq_ids'] = transcript_info['refseq']
-    
-    try:
-        transcript_obj['start'] = int(transcript_info['start'])
-    except KeyError:
-        raise KeyError("Transcript has to have start")
-    except TypeError:
-        raise TypeError("Transcript start has to be integer")
-
-    try:
-        transcript_obj['end'] = int(transcript_info['end'])
-    except KeyError:
-        raise KeyError("Transcript has to have end")
-    except TypeError:
-        raise TypeError("Transcript end has to be integer")
-
-    return transcript_obj
+LOG = logging.getLogger(__name__)
 
 def build_phenotype(phenotype_info):
     phenotype_obj = {}
@@ -90,71 +55,94 @@ def build_hgnc_gene(gene_info, build='37'):
             }
     """
     try:
-        gene_obj = {'hgnc_id':int(gene_info['hgnc_id'])}
+        hgnc_id = int(gene_info['hgnc_id'])
     except KeyError as err:
         raise KeyError("Gene has to have a hgnc_id")
     except ValueError as err:
         raise ValueError("hgnc_id has to be integer")
     
     try:
-        gene_obj['hgnc_symbol'] = gene_info['hgnc_symbol']
+        hgnc_symbol = gene_info['hgnc_symbol']
     except KeyError as err:
         raise KeyError("Gene has to have a hgnc_symbol")
 
     try:
-        gene_obj['ensembl_id'] = gene_info['ensembl_gene_id']
+        ensembl_id = gene_info['ensembl_gene_id']
     except KeyError as err:
         raise KeyError("Gene has to have a ensembl_id")
 
     try:
-        gene_obj['chromosome'] = gene_info['chromosome']
+        chromosome = gene_info['chromosome']
     except KeyError as err:
         raise KeyError("Gene has to have a chromosome")
     
     try:
-        gene_obj['start'] = int(gene_info['start'])
+        start = int(gene_info['start'])
     except KeyError as err:
         raise KeyError("Gene has to have a start position")
     except TypeError as err:
         raise TypeError("Gene start has to be a integer")
 
     try:
-        gene_obj['end'] = int(gene_info['end'])
+        end = int(gene_info['end'])
     except KeyError as err:
         raise KeyError("Gene has to have a end position")
     except TypeError as err:
         raise TypeError("Gene end has to be a integer")
 
-    gene_obj['build'] = build
-    gene_obj['description'] = gene_info.get('description')
-    gene_obj['aliases'] = gene_info.get('previous_symbols', [])
-    gene_obj['entrez_id'] = gene_info.get('entrez_id')
-    gene_obj['omim_id'] = gene_info.get('omim_id')
-    try:
-        gene_obj['pli_score'] = float(gene_info.get('pli_score'))
-    except TypeError as err:
-        gene_obj['pli_score'] = None
+    gene_obj = HgncGene(
+        hgnc_id=hgnc_id, 
+        hgnc_symbol=hgnc_symbol, 
+        ensembl_id=ensembl_id, 
+        chrom=chromosome, 
+        start=start, 
+        end=end,
+        build=build,
+    )
     
-    primary_transcripts = gene_info.get('ref_seq', [])
-    gene_obj['primary_transcripts'] = primary_transcripts
-    gene_obj['ucsc_id'] = gene_info.get('ucsc_id')
-    gene_obj['uniprot_ids'] = gene_info.get('uniprot_ids', [])
-    gene_obj['vega_id'] = gene_info.get('vega_id')
-
-    transcript_objs = []
-    for transcript_info in gene_info.get('transcripts',[]):
-        transcript_objs.append(
-            build_hgnc_transcript(transcript_info))
-
-    gene_obj['transcripts'] = transcript_objs
-
-    gene_obj['incomplete_penetrance'] = gene_info.get('incomplete_penetrance', False)
-    gene_obj['inheritance_models'] = gene_info.get('inheritance_models', [])
+    if gene_info.get('description'):
+        gene_obj['description'] = gene_info['description']
+        # LOG.debug("Adding info %s", gene_info['description'])
     
+    if gene_info.get('previous_symbols'):
+        gene_obj['aliases'] = gene_info['previous_symbols']
+
+    if gene_info.get('entrez_id'):
+        gene_obj['entrez_id'] = int(gene_info['entrez_id'])
+    
+    if gene_info.get('omim_id'):
+        gene_obj['omim_id'] = int(gene_info['omim_id'])
+
+    if gene_info.get('pli_score'):
+        gene_obj['pli_score'] = float(gene_info['pli_score'])
+    
+    if gene_info.get('ref_seq'):
+        gene_obj['primary_transcripts'] = gene_info['ref_seq']
+    
+    if gene_info.get('ucsc_id'):
+        gene_obj['ucsc_id'] = gene_info['ucsc_id']
+    
+    if gene_info.get('uniprot_ids'):
+        gene_obj['uniprot_ids'] = gene_info['uniprot_ids']
+
+    if gene_info.get('vega_id'):
+        gene_obj['vega_id'] = gene_info['vega_id']
+    
+    if gene_info.get('incomplete_penetrance'):
+        gene_obj['incomplete_penetrance'] = True
+
+    if gene_info.get('inheritance_models'):
+        gene_obj['inheritance_models'] = gene_info['inheritance_models']
+
     phenotype_objs = []
     for phenotype_info in gene_info.get('phenotypes', []):
         phenotype_objs.append(build_phenotype(phenotype_info))
     
-    gene_obj['phenotypes'] = phenotype_objs
+    if phenotype_objs:
+        gene_obj['phenotypes'] = phenotype_objs
+
+    for key in list(gene_obj):
+        if gene_obj[key] is None:
+            gene_obj.pop(key)
 
     return gene_obj

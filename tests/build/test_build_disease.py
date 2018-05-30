@@ -1,4 +1,5 @@
 from scout.build.disease import build_disease_term
+from scout.models.phenotype_term import DiseaseTerm
 
 def test_build_disease_term(adapter):
     ## GIVEN some disease info and a adapter with a gene
@@ -22,3 +23,6 @@ def test_build_disease_term(adapter):
     assert disease_obj['_id'] == disease_obj['disease_id'] == "OMIM:615349"
     assert disease_obj['inheritance'] == ['AR']
     assert disease_obj['genes'] == [17978]
+    assert disease_obj['source'] == 'OMIM'
+    
+    assert isinstance(disease_obj, DiseaseTerm)

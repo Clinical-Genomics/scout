@@ -1,8 +1,10 @@
 import pytest
-from scout.parse.case import (parse_case, parse_ped, parse_individuals,
-                              parse_individual)
-from scout.exceptions import PedigreeError
 
+from pprint import pprint as pp
+from scout.parse.case import (parse_case, parse_ped, parse_individuals,
+                              parse_individual, parse_case_data)
+from scout.exceptions import PedigreeError
+from scout.constants import REV_SEX_MAP
 
 def test_parse_case(scout_config):
     # GIVEN you load sample information from a scout config
@@ -88,6 +90,19 @@ def test_parse_ped_file(ped_file):
     assert family_id == '643594'
     # THEN it should return correct number of individuals
     assert len(samples) == 3
+    # THEN assert the sex has been converted
+    for sample in samples:
+        assert sample['sex'] in REV_SEX_MAP
+
+def test_parse_case_ped_file(ped_file):
+    # GIVEN a pedigree with three samples
+    with open(ped_file, 'r') as case_lines:
+        # WHEN parsing out relevant sample info
+        config_data = parse_case_data(ped=case_lines, owner='cust000')
+    # THEN it should return correct family id
+    assert config_data['family'] == '643594'
+    # THEN it should return correct number of individuals
+    assert len(config_data['samples']) == 3
 
 
 def test_parse_case_minimal_config(minimal_config):

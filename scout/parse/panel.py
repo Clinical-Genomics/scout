@@ -235,7 +235,7 @@ def parse_genes(gene_lines):
     return genes
 
 
-def parse_gene_panel(path, institute, panel_id, panel_type='clinical', date=datetime.now(), 
+def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='clinical', date=datetime.now(), 
                      version=1.0, display_name=None, genes = None):
     """Parse the panel info and return a gene panel
 

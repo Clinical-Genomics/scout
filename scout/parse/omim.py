@@ -82,6 +82,7 @@ def parse_genemap2(lines):
 
         parsed_entry = parse_omim_line(line, header)
         parsed_entry['mim_number'] = int(parsed_entry['Mim Number'])
+        parsed_entry['raw'] = line
         
         # This is the approved symbol for the entry
         hgnc_symbol = parsed_entry.get("Approved Symbol")
@@ -204,6 +205,7 @@ def parse_mim2gene(lines):
         line = line.rstrip()
         parsed_entry = parse_omim_line(line, header)
         parsed_entry['mim_number'] = int(parsed_entry['mim_number'])
+        parsed_entry['raw'] = line
         
         if 'hgnc_symbol' in parsed_entry:
             parsed_entry['hgnc_symbol'] = parsed_entry['hgnc_symbol']
@@ -287,7 +289,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
             else:
                 genes[mim_nr] = entry
     
-    LOG.info("Numnber of genes without hgnc symbol %s", str(no_hgnc))
+    LOG.info("Number of genes without hgnc symbol %s", str(no_hgnc))
     
     for entry in parse_genemap2(genemap_lines):
         mim_number = entry['mim_number']

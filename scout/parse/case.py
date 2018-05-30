@@ -21,11 +21,11 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     """Parse all data necessary for loading a case into scout
 
     This can be done either by providing a VCF file and other information
-    on the command line. Or all the information can be specifed in a config file.
+    on the command line. Or all the information can be specified in a config file.
     Please see Scout documentation for further instructions.
 
     Args:
-        config(iterable(str)): A yaml formatted config file
+        config(dict): A yaml formatted config file
         ped(iterable(str)): A ped formatted family file
         owner(str): The institute that owns a case
         vcf_snv(str): Path to a vcf file
@@ -37,17 +37,19 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
-    config_data = copy.deepcopy(config)
+    config_data = copy.deepcopy(config) or {}
     # Default the analysis date to now if not specified in load config
     if 'analysis_date' not in config_data:
         config_data['analysis_date'] = datetime.datetime.now()
 
+    # If the family information is in a ped file we nned to parse that
     if ped:
-        with open(ped, 'r') as f:
-            family_id, samples = parse_ped(f)
-            config_data['family'] = family_id
-            config_data['samples'] = samples
-
+        family_id, samples = parse_ped(ped)
+        config_data['family'] = family_id
+        config_data['samples'] = samples
+    
+    # Each case has to have a owner. If not provided in config file it needs to be given as a
+    # argument
     if 'owner' not in config_data:
         if not owner:
             raise SyntaxError("Case has no owner")
@@ -131,7 +133,6 @@ def add_peddy_information(config_data):
                             if 'confirmed_parent' not in analysis_inds[ind[parent]]:
                                 # Set confirmatio to True
                                 analysis_inds[ind[parent]]['confirmed_parent'] = True
-
 
 def parse_individual(sample):
     """Parse individual information
@@ -313,6 +314,7 @@ def parse_ped(ped_stream, family_type='ped'):
         'sample_id': ind_id,
         'father': individual.father,
         'mother': individual.mother,
+        # Convert sex to human readable
         'sex': SEX_MAP[individual.sex],
         'phenotype': PHENOTYPE_MAP[int(individual.phenotype)],
     } for ind_id, individual in family.individuals.items()]

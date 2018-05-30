@@ -22,15 +22,13 @@ import click
 
 from pprint import pprint as pp
 
-from scout.load import load_hgnc_genes
-from scout.resources import (hgnc_path, exac_path, transcripts37_path, transcripts38_path)
-
+from scout.load import (load_hgnc_genes, load_transcripts, load_exons)
 
 from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
-from scout.utils.requests import fetch_mim_files
 
-from scout.utils.requests import (fetch_hpo_genes, fetch_hpo_genes)
+from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes, fetch_hgnc, fetch_ensembl_genes,
+                                  fetch_exac_constraint, fetch_ensembl_transcripts)
 
 LOG = logging.getLogger(__name__)
 
@@ -45,6 +43,7 @@ def genes(context, build, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
+    LOG.info("Running scout update genes")
     adapter = context.obj['adapter']
 
     # Fetch the omim information
@@ -62,6 +61,9 @@ def genes(context, build, api_key):
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
     LOG.info("Genes dropped")
+    LOG.warning("Dropping all transcript information")
+    adapter.drop_transcripts(build)
+    LOG.info("transcripts dropped")
 
     hpo_genes = fetch_hpo_genes()
     
@@ -70,27 +72,35 @@ def genes(context, build, api_key):
     else:
         builds = ['37', '38']
     
+    hgnc_lines = fetch_hgnc()
+    exac_lines = fetch_exac_constraint()
+    
+    
     for build in builds:
-        LOG.info("Loading hgnc file from {0}".format(hgnc_path))
-        hgnc_handle = get_file_handle(hgnc_path)
+        ensembl_genes = fetch_ensembl_genes(build=build)
         
-        ensembl_handle = None
-        if build == '37':
-            ensembl_handle = get_file_handle(transcripts37_path)
-
-        elif build == '38':
-            ensembl_handle = get_file_handle(transcripts38_path)
-
-        LOG.info("Loading exac gene file from {0}".format(exac_path))
-        exac_handle = get_file_handle(exac_path)
-
-        genes = link_genes(
-            ensembl_lines=ensembl_handle,
-            hgnc_lines=hgnc_handle,
-            exac_lines=exac_handle,
+        # load the genes
+        hgnc_genes = load_hgnc_genes(
+            adapter=adapter,
+            ensembl_lines=ensembl_genes,
+            hgnc_lines=hgnc_lines,
+            exac_lines=exac_lines,
             mim2gene_lines=mim_files['mim2genes'],
             genemap_lines=mim_files['genemap2'],
-            hpo_lines=hpo_genes
+            hpo_lines=hpo_genes,
+            build=build,
         )
+
+        ensembl_genes = {}
+        for gene_obj in hgnc_genes:
+            ensembl_id = gene_obj['ensembl_id']
+            ensembl_genes[ensembl_id] = gene_obj
+
+        # Fetch the transcripts from ensembl
+        ensembl_transcripts = fetch_ensembl_transcripts(build=build)
         
-        load_hgnc_genes(adapter=adapter, genes=genes, build=build)
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+
+    adapter.update_indexes()
+        
+    LOG.info("Genes, transcripts and Exons loaded")

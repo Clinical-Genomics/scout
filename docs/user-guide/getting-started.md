@@ -3,7 +3,7 @@ Scout is a web-based visualizer for VCF-files. It helps to manage multiple patie
 
 
 ## Institutes, Cases, Variants
-Scout has a few levels of abstraction to deal with the data it presents. [*Institutes*](institutes.md) contain multiple [cases](cases.md) and group [users](users.md) into teams. Cases are a unit that is analysed together, usually the same as a family or a tumor/normal sample - they all share a subset of called variants. Variants are individual genotype calls across a single case.
+Scout has a few levels of abstraction to deal with the data it presents. [Institutes](institutes.md) contain multiple [cases](cases.md) and group [users](users.md) into teams. Cases are a unit that is analysed together, usually the same as a family or a tumor/normal sample - they all share a subset of called variants. Variants are individual genotype calls across a single case.
 
 > [insert screenshot here]
 

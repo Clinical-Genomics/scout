@@ -3,7 +3,7 @@ import logging
 
 from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def build_variant(variant, institute_id, gene_to_panels = None,
                   hgncid_to_gene=None, sample_info=None):
@@ -125,7 +125,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     hgncid_to_gene = hgncid_to_gene or {}
     sample_info = sample_info or {}
 
-    #log.debug("Building variant %s", variant['ids']['document_id'])
+    #LOG.debug("Building variant %s", variant['ids']['document_id'])
     variant_obj = dict(
         _id = variant['ids']['document_id'],
         document_id=variant['ids']['document_id'],
@@ -212,7 +212,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     genes = []
     for index, gene in enumerate(variant.get('genes', [])):
         if gene.get('hgnc_id'):
-            gene_obj = build_gene(gene, gene_to_panels, hgncid_to_gene)
+            gene_obj = build_gene(gene, hgncid_to_gene)
             genes.append(gene_obj)
             if index > 30:
                 # avoid uploading too much data (specifically for SV variants)
@@ -234,7 +234,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         if gene_obj:
             hgnc_symbols.append(gene_obj['hgnc_symbol'])
         # else:
-            # log.warn("missing HGNC symbol for: %s", hgnc_id)
+            # LOG.warn("missing HGNC symbol for: %s", hgnc_id)
 
     if hgnc_symbols:
         variant_obj['hgnc_symbols'] = hgnc_symbols

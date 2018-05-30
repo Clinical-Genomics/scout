@@ -3,11 +3,11 @@ import logging
 
 import operator
 
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import (DuplicateKeyError, BulkWriteError)
 
 from scout.exceptions import IntegrityError
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class HpoHandler(object):
@@ -19,12 +19,30 @@ class HpoHandler(object):
             hpo_obj(dict)
 
         """
-        log.debug("Loading hpo term %s into database", hpo_obj['_id'])
+        LOG.debug("Loading hpo term %s into database", hpo_obj['_id'])
         try:
             self.hpo_term_collection.insert_one(hpo_obj)
         except DuplicateKeyError as err:
             raise IntegrityError("Hpo term %s already exists in database".format(hpo_obj['_id']))
-        log.debug("Hpo term saved")
+        LOG.debug("Hpo term saved")
+
+    def load_hpo_bulk(self, hpo_bulk):
+        """Add a hpo object
+
+        Arguments:
+            hpo_bulk(list(scout.models.HpoTerm))
+        
+        Returns:
+            result: pymongo bulkwrite result
+
+        """
+        LOG.debug("Loading hpo bulk")
+
+        try:
+            result = self.hpo_term_collection.insert_many(hpo_bulk)
+        except (DuplicateKeyError, BulkWriteError) as err:
+            raise IntegrityError(err)
+        return result
 
     def hpo_term(self, hpo_id):
         """Fetch a hpo term
@@ -35,11 +53,11 @@ class HpoHandler(object):
         Returns:
             hpo_obj(dict)
         """
-        log.debug("Fetching hpo term %s", hpo_id)
+        LOG.debug("Fetching hpo term %s", hpo_id)
 
         return self.hpo_term_collection.find_one({'_id': hpo_id})
 
-    def hpo_terms(self, query=None):
+    def hpo_terms(self, query=None, hpo_term=None):
         """Return all HPO terms
 
         If a query is sent hpo_terms will try to match with regex on term or
@@ -47,21 +65,25 @@ class HpoHandler(object):
 
         Args:
             query(str): Part of a hpoterm or description
+            hpo_term(str): Search for a specific hpo term
 
         Returns:
             result(pymongo.Cursor): A cursor with hpo terms
         """
+        query_dict = {}
         if query:
             query_dict = {'$or':
                 [
-                    {'_id': {'$regex': query, '$options':'i'}},
+                    {'hpo_id': {'$regex': query, '$options':'i'}},
                     {'description': {'$regex': query, '$options':'i'}},
                 ]
             }
-        else:
-            query_dict = {}
-
-        return self.hpo_term_collection.find(query_dict)
+        elif hpo_term:
+            query_dict['hpo_id'] = hpo_term
+        
+        res = self.hpo_term_collection.find(query_dict)
+        LOG.info("Found {0} terms with search word {1}".format(res.count(), query))
+        return res
 
     def disease_term(self, disease_identifier):
         """Return a disease term
@@ -96,10 +118,10 @@ class HpoHandler(object):
         """
         query = {}
         if hgnc_id:
-            log.info("Fetching all diseases for gene %s", hgnc_id)
+            LOG.info("Fetching all diseases for gene %s", hgnc_id)
             query['genes'] = hgnc_id
         else:
-            log.info("Fetching all disease terms")
+            LOG.info("Fetching all disease terms")
 
         return list(self.disease_term_collection.find(query))
 
@@ -109,13 +131,13 @@ class HpoHandler(object):
         Args:
             disease_obj(dict)
         """
-        log.debug("Loading disease term %s into database", disease_obj['_id'])
+        LOG.debug("Loading disease term %s into database", disease_obj['_id'])
         try:
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError as err:
             raise IntegrityError("Disease term %s already exists in database".format(disease_obj['_id']))
 
-        log.debug("Disease term saved")
+        LOG.debug("Disease term saved")
 
     def generate_hpo_gene_list(self, *hpo_terms):
         """Generate a sorted list with namedtuples of hpogenes
@@ -138,7 +160,7 @@ class HpoHandler(object):
                     else:
                         genes[hgnc_id] = 1
             else:
-                log.warning("Term %s could not be found", term)
+                LOG.warning("Term %s could not be found", term)
 
         sorted_genes = sorted(genes.items(), key=operator.itemgetter(1), reverse=True)
         return sorted_genes

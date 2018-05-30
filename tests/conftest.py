@@ -3,39 +3,50 @@ import pytest
 import logging
 import datetime
 
-from scout.utils.handle import get_file_handle
+from pprint import pprint as pp
 
 from cyvcf2 import VCF
 import yaml
 import pymongo
 
+
+from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
+
+from scout.utils.handle import get_file_handle
 
 from scout.parse.case import parse_case
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import parse_ensembl_transcripts
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases)
 
 from scout.utils.link import link_genes
 from scout.log import init_log
-from scout.build import (build_institute, build_case, build_panel, build_variant)
+from scout.build import (build_institute, build_case, build_panel)
+from scout.build.variant import build_variant
+from scout.build.genes.hgnc_gene import build_hgnc_gene
+from scout.build.genes.transcript import build_transcript
+from scout.build.user import build_user
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
+from scout.load.transcript import load_transcripts
 
 # These are the reduced data files
-from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path,
-                                  exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path,
-                                  hpo_to_genes_reduced_path,
-                                  hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path,
-                                  genemap2_reduced_path)
+from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
+exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
+hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path,
+transcripts38_reduced_path, genes38_reduced_path,)
+
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path)
+
+from scout.models.hgnc_map import HgncGene
 
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
@@ -48,19 +59,23 @@ logger = logging.getLogger(__name__)
 ##################### Gene fixtures #####################
 
 @pytest.fixture
-def test_transcript(request):
-    transcript = {
-        'ensembl_transcript_id': 'enst1',  # required
-        'refseq_id': 'NM1',
-        'start': 10,  # required
-        'end': 100,  # required
-        'is_primary': True,
-    }
+def transcript_info(request):
+    transcript = dict(
+        chrom = '1',
+        ens_gene_id = 'ENSG00000176022',
+        ens_transcript_id = 'ENST00000379198',
+        start = 1167629,
+        end = 1170421,
+        refseq_mrna = 'NM_080605',
+        refseq_mrna_pred = '',
+        refseq_ncrna = '',
+    )
+    
     return transcript
 
 
 @pytest.fixture
-def test_gene(request, test_transcript):
+def test_gene(request):
     gene = {
         # This is the hgnc id, required:
         'hgnc_id': 1,
@@ -82,25 +97,31 @@ def test_gene(request, test_transcript):
         'ucsc_id': '1',
         'uniprot_ids': ['1'],  # List of str
         'vega_id': '1',
-        'transcripts': [test_transcript],  # List of hgnc_transcript
     }
     return gene
 
+@pytest.fixture
+def parsed_gene(request):
+    gene_info = {
+        'hgnc_id': 1,
+        'hgnc_symbol': 'AAA',
+        'ensembl_id': 'ENSG1',
+        'chrom': '1',
+        'start': 10,
+        'end': 100,
+        'build': '37'
+    }
+    return gene_info
+
 
 @pytest.fixture
-def genes(request, transcripts_file, hgnc_file, exac_file,
-          mim2gene_file, genemap_file, hpo_genes_file):
+def genes(request, genes37_handle, hgnc_handle, exac_handle,
+          mim2gene_handle, genemap_handle, hpo_genes_handle):
     """Get a dictionary with the linked genes"""
     print('')
-    transcripts_handle = get_file_handle(transcripts_file)
-    hgnc_handle = get_file_handle(hgnc_file)
-    exac_handle = get_file_handle(exac_file)
-    mim2gene_handle = get_file_handle(mim2gene_file)
-    genemap_handle = get_file_handle(genemap_file)
-    hpo_genes_handle = get_file_handle(hpo_genes_file)
 
     gene_dict = link_genes(
-        ensembl_lines=transcripts_handle,
+        ensembl_lines=genes37_handle,
         hgnc_lines=hgnc_handle,
         exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
@@ -109,6 +130,64 @@ def genes(request, transcripts_file, hgnc_file, exac_file,
     )
 
     return gene_dict
+
+@pytest.fixture
+def ensembl_genes(request, gene_bulk):
+    """Return a dictionary that maps ensembl ids on genes"""
+    _ensembl_genes = {}
+    for gene_obj in gene_bulk:
+        _ensembl_genes[gene_obj['ensembl_id']] = gene_obj
+    return _ensembl_genes
+
+@pytest.fixture
+def gene_bulk(genes):
+    """Return a list with HgncGene objects"""
+    bulk = []
+    for gene_key in genes:
+        bulk.append(build_hgnc_gene(genes[gene_key]))
+    
+    return bulk
+
+@pytest.fixture
+def transcript_objs(request, parsed_transcripts):
+    """Return a list with transcript objs"""
+    print('')
+    
+    _transcripts = []
+    for tx_id in parsed_transcripts:
+        tx_info = parsed_transcripts[tx_id]
+        _transcripts.append(build_transcript(tx_info))
+
+    return _transcripts
+
+@pytest.fixture
+def transcripts_df(request, transcripts):
+    """Return a list with transcript objs"""
+    print('')
+    df_info = dict(
+        chromosome_name = [],
+        ensembl_gene_id = [],
+        ensembl_transcript_id = [],
+        transcript_start = [],
+        transcript_end = [],
+        refseq_mrna = [],
+        refseq_mrna_predicted = [],
+        refseq_ncrna = [],
+    )
+
+    for tx_info in transcripts:
+        df_info['chromosome_name'].append(tx_info['chrom'])
+        df_info['ensembl_gene_id'].append(tx_info['ensembl_gene_id'])
+        df_info['ensembl_transcript_id'].append(tx_info['ensembl_transcript_id'])
+        df_info['transcript_start'].append(tx_info['transcript_start'])
+        df_info['transcript_end'].append(tx_info['transcript_end'])
+        df_info['refseq_mrna'].append(tx_info.get('refseq_mrna', ''))
+        df_info['refseq_mrna_predicted'].append(tx_info.get('refseq_mrna_predicted', ''))
+        df_info['refseq_ncrna'].append(tx_info.get('refseq_ncrna', ''))
+
+    df = DataFrame(df_info)
+
+    return df
 
 
 #############################################################
@@ -134,7 +213,8 @@ def hpo_terms(request, hpo_terms_file):
 def hpo_disease_handle(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
-    return get_file_handle(hpo_disease_file)
+    handle = get_file_handle(hpo_disease_file)
+    return handle
 
 
 @pytest.fixture
@@ -176,10 +256,41 @@ def parsed_case(request, scout_config):
 
 
 @pytest.fixture(scope='function')
-def case_obj(request, parsed_case, panel_database):
+def case_obj(request, parsed_case):
     adapter = panel_database
+    
     logger.info("Create a case obj")
-    case = build_case(parsed_case, adapter)
+    case = parsed_case
+    case['_id'] = parsed_case['display_name']
+    case['created_at'] = parsed_case['analysis_date']
+    case['dynamic_gene_list'] = {}
+    case['genome_version'] = None
+    case['has_svvariants'] = True
+    
+    case['individuals'][0]['sex'] = '1'
+    case['individuals'][1]['sex'] = '1'
+    case['individuals'][2]['sex'] = '2'
+
+    case['is_migrated'] = False
+    case['is_research'] = False
+
+    case['panels'] = [
+        {
+                'display_name': 'Test panel',
+                'is_default': True,
+                'nr_genes': 263,
+                'panel_id': 'panel1',
+                'panel_name': 'panel1',
+                'updated_at': datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
+                'version': 1.0
+        }
+    ]
+    case['rerun_requested']= False
+    case['research_requested'] = False
+    case['status'] = 'inactive'
+    case['synopsis'] = ''
+    case['updated_at'] = parsed_case['analysis_date']
+
     return case
 
 
@@ -240,7 +351,7 @@ def parsed_user(request, institute_obj):
     user_info = {
         'email': 'john@doe.com',
         'name': 'John Doe',
-        'location': None,
+        'location': 'here',
         'institutes': [institute_obj['internal_id']],
         'roles': ['admin']
     }
@@ -250,7 +361,8 @@ def parsed_user(request, institute_obj):
 @pytest.fixture(scope='function')
 def user_obj(request, parsed_user):
     """Return a User object"""
-    return parsed_user
+    _user_obj = build_user(parsed_user)
+    return _user_obj
 
 
 #############################################################
@@ -296,7 +408,7 @@ def pymongo_client(request):
 def real_pymongo_client(request):
     """Get a client to the mongo database"""
 
-    logger.info("Get a mongomock client")
+    logger.info("Get a real pymongo client")
     start_time = datetime.datetime.now()
     mongo_client = pymongo.MongoClient()
 
@@ -318,6 +430,8 @@ def real_adapter(request, real_pymongo_client):
     logger.info("Connecting to database...")
     mongo_client = real_pymongo_client
 
+    logger.info("Connecting to database %s", REAL_DATABASE)
+    
     database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
@@ -374,23 +488,47 @@ def real_institute_database(request, real_adapter, institute_obj, user_obj):
 
 @pytest.fixture(scope='function')
 def gene_database(request, institute_database, genes):
-    "Returns an adapter to a database populated with user, institute and case"
+    "Returns an adapter to a database populated with user, institute, case and genes"
     adapter = institute_database
-    load_hgnc_genes(adapter, genes)
+    
+    gene_objs = load_hgnc_genes(
+        adapter=adapter,
+        genes=genes,
+        build='37'
+    )
 
     logger.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
+
+    transcripts_handle = get_file_handle(transcripts37_reduced_path)
+    load_transcripts(adapter, transcripts_handle, build='37')
+
+    adapter.transcript_collection.create_index([('build', pymongo.ASCENDING),
+                                                ('hgnc_id', pymongo.ASCENDING)])
+
     logger.info("Index done")
 
     return adapter
 
 
 @pytest.fixture(scope='function')
-def real_gene_database(request, real_institute_database, genes):
-    "Returns an adapter to a database populated with user, institute and case"
+def real_gene_database(request, real_institute_database, genes37_handle, hgnc_handle, exac_handle,
+                  mim2gene_handle, genemap_handle, hpo_genes_handle):
+    "Returns an adapter to a database populated with user, institute, case and genes"
     adapter = real_institute_database
-    load_hgnc_genes(adapter, genes)
+    
+    load_hgnc_genes(
+        adapter=adapter,
+        ensembl_lines=genes37_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=exac_handle, 
+        mim2gene_lines=mim2gene_handle,
+        genemap_lines=genemap_handle, 
+        hpo_lines=hpo_genes_handle, 
+        build='37'
+        
+    )
 
     logger.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
@@ -401,30 +539,34 @@ def real_gene_database(request, real_institute_database, genes):
 
 
 @pytest.fixture(scope='function')
-def hpo_database(request, gene_database, hpo_terms_handle, genemap_handle, hpo_disease_handle):
+def hpo_database(request, gene_database, hpo_terms_handle, hpo_to_genes_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
 
+
     load_hpo(
         adapter=gene_database,
-        hpo_lines=hpo_terms_handle,
-        disease_lines=genemap_handle,
-        hpo_disease_lines=hpo_disease_handle,
+        hpo_lines=get_file_handle(hpoterms_reduced_path),
+        hpo_gene_lines=get_file_handle(hpo_to_genes_reduced_path),
+        disease_lines=get_file_handle(genemap2_reduced_path),
+        hpo_disease_lines=get_file_handle(hpo_phenotype_to_terms_reduced_path),
     )
 
     return adapter
 
 
 @pytest.fixture(scope='function')
-def real_hpo_database(request, real_gene_database, hpo_terms_handle, genemap_handle):
+def real_hpo_database(request, real_gene_database, hpo_terms_handle, hpo_to_genes_handle, 
+                      genemap_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = real_gene_database
 
     load_hpo(
         adapter=gene_database,
         hpo_lines=hpo_terms_handle,
+        hpo_gene_lines=hpo_to_genes_handle,
         disease_lines=genemap_handle,
-        hpo_disease_lines=hpo_disease_handle
+        hpo_disease_lines=hpo_disease_handle,
     )
 
     return adapter
@@ -434,7 +576,7 @@ def real_hpo_database(request, real_gene_database, hpo_terms_handle, genemap_han
 def panel_database(request, gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
-    logger.info("Creating a panel adapter")
+    logger.info("Adding panel to adapter")
 
     adapter.load_panel(
         path=panel_info['file'],
@@ -453,7 +595,7 @@ def panel_database(request, gene_database, panel_info):
 def real_panel_database(request, real_gene_database, panel_info):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = real_gene_database
-    logger.info("Creating a panel adapter")
+    logger.info("Adding panel to real adapter")
     adapter.load_panel(
         path=panel_info['file'],
         institute=panel_info['institute'],
@@ -468,53 +610,46 @@ def real_panel_database(request, real_gene_database, panel_info):
 
 
 @pytest.fixture(scope='function')
-def case_database(request, institute_database, case_obj):
+def case_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with institute, user and case"
-    adapter = institute_database
+    adapter = panel_database
 
+    case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
 
     return adapter
 
 
 @pytest.fixture(scope='function')
-def populated_database(request, panel_database, institute_obj, parsed_user, case_obj):
+def populated_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
+
+    logger.info("Adding case to adapter")
+    case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
     return adapter
 
 
 @pytest.fixture(scope='function')
-def real_populated_database(request, real_panel_database, institute_obj, parsed_user, case_obj):
+def real_populated_database(request, real_panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
+
+    logger.info("Adding case to real adapter")
+    case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
+
     return adapter
 
-
 @pytest.fixture(scope='function')
-def variant_database(request, populated_database, variant_objs, sv_variant_objs):
+def variant_database(request, populated_database):
     """Returns an adapter to a database populated with user, institute, case
        and variants"""
     adapter = populated_database
     # Load variants
-    for variant in variant_objs:
-        adapter.load_variant(variant)
+    case_obj = adapter.case_collection.find_one()
 
-    # # Load sv variants
-    # for variant in sv_variant_objs:
-    #     adapter.load_variant(variant)
-
-    return adapter
-
-
-@pytest.fixture(scope='function')
-def real_variant_database(request, real_populated_database, case_obj):
-    """Returns an adapter to a database populated with user, institute, case
-       and variants"""
-    adapter = real_populated_database
-    # Load variants
     adapter.load_variants(
         case_obj,
         variant_type='clinical',
@@ -523,9 +658,24 @@ def real_variant_database(request, real_populated_database, case_obj):
         build='37'
     )
 
-    # # Load sv variants
-    # for variant in sv_variant_objs:
-    #     adapter.load_variant(variant)
+    return adapter
+
+
+@pytest.fixture(scope='function')
+def real_variant_database(request, real_populated_database):
+    """Returns an adapter to a database populated with user, institute, case
+       and variants"""
+    adapter = real_populated_database
+    
+    case_obj = adapter.case_collection.find_one()
+    # Load variants
+    adapter.load_variants(
+        case_obj,
+        variant_type='clinical',
+        category='snv',
+        rank_threshold=-10,
+        build='37'
+    )
 
     return adapter
 
@@ -536,9 +686,15 @@ def sv_database(request, populated_database, variant_objs, sv_variant_objs):
        and variants"""
     adapter = populated_database
 
+    case_obj = adapter.case_collection.find_one()
     # Load sv variants
-    for variant in sv_variant_objs:
-        adapter.load_variant(variant)
+    adapter.load_variants(
+        case_obj,
+        variant_type='clinical',
+        category='sv',
+        rank_threshold=-10,
+        build='37'
+    )
 
     return adapter
 
@@ -676,12 +832,11 @@ def parsed_variant(request, one_variant, case_obj):
 
 
 @pytest.fixture(scope='function')
-def variant_obj(request, parsed_variant, populated_database):
+def variant_obj(request, parsed_variant):
     """Return a variant object"""
     print('')
     institute_id = 'cust000'
-    institute_obj = populated_database.institute(institute_id=institute_id)
-    variant = build_variant(parsed_variant, institute_id=institute_obj['internal_id'])
+    variant = build_variant(parsed_variant, institute_id=institute_id)
     return variant
 
 
@@ -707,70 +862,70 @@ def cyvcf2_variant():
     return variant
 
 
-@pytest.fixture(scope='function')
-def parsed_variant():
-    """Return variant information for a parsed variant with minimal information"""
-    variant = {'alternative': 'C',
-               'callers': {
-                   'freebayes': None,
-                   'gatk': None,
-                   'samtools': None
-               },
-               'case_id': 'cust000-643594',
-               'category': 'snv',
-               'chromosome': '2',
-               'clnsig': [],
-               'compounds': [],
-               'conservation': {'gerp': [], 'phast': [], 'phylop': []},
-               'dbsnp_id': None,
-               'end': 176968945,
-               'filters': ['PASS'],
-               'frequencies': {
-                   'exac': None,
-                   'exac_max': None,
-                   'thousand_g': None,
-                   'thousand_g_left': None,
-                   'thousand_g_max': None,
-                   'thousand_g_right': None},
-               'genes': [],
-               'genetic_models': [],
-               'hgnc_ids': [],
-               'ids': {'display_name': '1_10_A_C_clinical',
-                       'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
-                       'simple_id': '1_10_A_C',
-                       'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
-               'length': 1,
-               'local_obs_hom_old': None,
-               'local_obs_old': None,
-               'mate_id': None,
-               'position': 176968944,
-               'quality': 10.0,
-               'rank_score': 0.0,
-               'reference': 'A',
-               'samples': [{'alt_depth': -1,
-                            'display_name': 'NA12882',
-                            'genotype_call': None,
-                            'genotype_quality': None,
-                            'individual_id': 'ADM1059A2',
-                            'read_depth': None,
-                            'ref_depth': -1},
-                           {'alt_depth': -1,
-                            'display_name': 'NA12877',
-                            'genotype_call': None,
-                            'genotype_quality': None,
-                            'individual_id': 'ADM1059A1',
-                            'read_depth': None,
-                            'ref_depth': -1},
-                           {'alt_depth': -1,
-                            'display_name': 'NA12878',
-                            'genotype_call': None,
-                            'genotype_quality': None,
-                            'individual_id': 'ADM1059A3',
-                            'read_depth': None,
-                            'ref_depth': -1}],
-               'sub_category': 'snv',
-               'variant_type': 'clinical'}
-    return variant
+# @pytest.fixture(scope='function')
+# def parsed_variant():
+#     """Return variant information for a parsed variant with minimal information"""
+#     variant = {'alternative': 'C',
+#                'callers': {
+#                    'freebayes': None,
+#                    'gatk': None,
+#                    'samtools': None
+#                },
+#                'case_id': 'cust000-643594',
+#                'category': 'snv',
+#                'chromosome': '2',
+#                'clnsig': [],
+#                'compounds': [],
+#                'conservation': {'gerp': [], 'phast': [], 'phylop': []},
+#                'dbsnp_id': None,
+#                'end': 176968945,
+#                'filters': ['PASS'],
+#                'frequencies': {
+#                    'exac': None,
+#                    'exac_max': None,
+#                    'thousand_g': None,
+#                    'thousand_g_left': None,
+#                    'thousand_g_max': None,
+#                    'thousand_g_right': None},
+#                'genes': [],
+#                'genetic_models': [],
+#                'hgnc_ids': [],
+#                'ids': {'display_name': '1_10_A_C_clinical',
+#                        'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
+#                        'simple_id': '1_10_A_C',
+#                        'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
+#                'length': 1,
+#                'local_obs_hom_old': None,
+#                'local_obs_old': None,
+#                'mate_id': None,
+#                'position': 176968944,
+#                'quality': 10.0,
+#                'rank_score': 0.0,
+#                'reference': 'A',
+#                'samples': [{'alt_depth': -1,
+#                             'display_name': 'NA12882',
+#                             'genotype_call': None,
+#                             'genotype_quality': None,
+#                             'individual_id': 'ADM1059A2',
+#                             'read_depth': None,
+#                             'ref_depth': -1},
+#                            {'alt_depth': -1,
+#                             'display_name': 'NA12877',
+#                             'genotype_call': None,
+#                             'genotype_quality': None,
+#                             'individual_id': 'ADM1059A1',
+#                             'read_depth': None,
+#                             'ref_depth': -1},
+#                            {'alt_depth': -1,
+#                             'display_name': 'NA12878',
+#                             'genotype_call': None,
+#                             'genotype_quality': None,
+#                             'individual_id': 'ADM1059A3',
+#                             'read_depth': None,
+#                             'ref_depth': -1}],
+#                'sub_category': 'snv',
+#                'variant_type': 'clinical'}
+#     return variant
 
 
 @pytest.fixture(scope='function')
@@ -854,6 +1009,12 @@ def transcripts_file(request):
     print('')
     return transcripts37_reduced_path
 
+
+@pytest.fixture
+def genes37_file(request):
+    """Get the path to a ensembl genes file"""
+    print('')
+    return genes37_reduced_path
 
 @pytest.fixture
 def exac_file(request):
@@ -973,6 +1134,12 @@ def hgnc_genes(request, hgnc_handle):
 
 
 @pytest.fixture
+def genes37_handle(request, genes37_file):
+    """Get a file handle to a ensembl gene file"""
+    print('')
+    return get_file_handle(genes37_file)
+
+@pytest.fixture
 def transcripts_handle(request, transcripts_file):
     """Get a file handle to a ensembl transcripts file"""
     print('')
@@ -984,6 +1151,23 @@ def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def parsed_transcripts(request, transcripts_handle, ensembl_genes):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    transcripts = parse_transcripts(transcripts_handle)
+    for tx_id in transcripts:
+        tx_info = transcripts[tx_id]
+        ens_gene_id = tx_info['ensembl_gene_id']
+        gene_obj = ensembl_genes.get(ens_gene_id)
+        if not gene_obj:
+            continue
+        tx_info['hgnc_id'] = gene_obj['hgnc_id']
+        tx_info['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
+        
+        
+    return transcripts
 
 
 @pytest.fixture

@@ -82,7 +82,7 @@
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-          {{ transcript.ensembl_transcript_id }} / {{ transcript.refseq_ids|join(', ') or '-' }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
+          {{ transcript.ensembl_transcript_id }} / {{ transcript.refseq_id or '-' }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
 		  <span class="pull-right">{{ transcript['position'] }}</span>
         </li>
       {% endfor %}

@@ -1,6 +1,8 @@
 import logging
 
-log = logging.getLogger(__name__)
+from scout.models.phenotype_term import DiseaseTerm
+
+LOG = logging.getLogger(__name__)
 
 def build_disease_term(disease_info, alias_genes={}):
     """Build a disease phenotype object
@@ -27,21 +29,31 @@ def build_disease_term(disease_info, alias_genes={}):
         )
         
     """
-    disease_obj = {}
     
     try:
         disease_nr = int(disease_info['mim_number'])
     except KeyError:
         raise KeyError("Diseases has to have a disease number")
-    
+    except ValueError:
+        raise KeyError("Diseases nr has to be integer")
+
     disease_id = "{0}:{1}".format('OMIM', disease_nr)
 
-    disease_obj['_id'] = disease_obj['disease_id'] = disease_id
+    LOG.debug("Building disease term %s", disease_id)
 
-    log.debug("Building disease term %s", disease_id)
-
-    disease_obj['description'] = disease_info['description']
+    try:
+        description = disease_info['description']
+    except KeyError:
+        raise KeyError("Diseases has to have a description")
     
+    disease_obj = DiseaseTerm(
+        disease_id=disease_id, 
+        disease_nr=disease_nr, 
+        description=description, 
+        source='OMIM'
+    )
+
+    # Check if there where any inheritance information
     inheritance_models = disease_info.get('inheritance')
     if inheritance_models:
         disease_obj['inheritance'] = list(inheritance_models)
@@ -57,7 +69,7 @@ def build_disease_term(disease_info, alias_genes={}):
                 for hgnc_id in alias_genes[hgnc_symbol]['ids']:
                     hgnc_ids.add(hgnc_id)
         else:
-            log.debug("Gene symbol %s could not be found in database", hgnc_symbol)
+            LOG.debug("Gene symbol %s could not be found in database", hgnc_symbol)
 
     disease_obj['genes'] = list(hgnc_ids)
     

@@ -15,6 +15,7 @@ from .individuals import individuals
 from .index import index
 from .intervals import intervals
 from .collections import collections
+from .transcripts import transcripts
 
 
 LOG = logging.getLogger(__name__)
@@ -42,3 +43,4 @@ view.add_command(individuals)
 view.add_command(index)
 view.add_command(intervals)
 view.add_command(collections)
+view.add_command(transcripts)

@@ -35,7 +35,8 @@ def create_app(config_file=None, config=None):
         app.config.update(config)
     if config_file:
         app.config.from_pyfile(config_file)
-
+    
+    app.config["JSON_SORT_KEYS"] = False
     current_log_level = logger.getEffectiveLevel()
     coloredlogs.install(level='DEBUG' if app.debug else current_log_level)
     configure_extensions(app)

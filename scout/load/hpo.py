@@ -2,6 +2,8 @@ import logging
 
 from datetime import datetime
 
+from click import progressbar
+
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases, parse_hpo_obo, parse_hpo_to_genes)
 from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes, fetch_hpo_phenotype_to_terms)
 
@@ -19,9 +21,12 @@ def load_hpo(adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo
     
     Args:
         adapter(MongoAdapter)
+        disease_lines(iterable(str)): These are the omim genemap2 information
         hpo_lines(iterable(str))
         disease_lines(iterable(str))
+        hpo_gene_lines(iterable(str))
     """
+    # Create a map from gene aliases to gene objects
     alias_genes = adapter.genes_by_alias()
     
     # Fetch the hpo terms if no file
@@ -97,11 +102,19 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     start_time = datetime.now()
 
     LOG.info("Loading the hpo terms...")
-    for nr_terms, hpo_id in enumerate(hpo_terms):
-        hpo_info = hpo_terms[hpo_id]
-        hpo_obj = build_hpo_term(hpo_info)
+    nr_terms = len(hpo_terms)
+    hpo_bulk = []
+    with progressbar(hpo_terms.values(), label="Loading hpo terms", length=nr_terms) as bar:
         
-        adapter.load_hpo_term(hpo_obj)
+        for hpo_info in bar:
+            hpo_bulk.append(build_hpo_term(hpo_info))
+        
+        if len(hpo_bulk) > 10000:
+            adapter.load_hpo_bulk(hpo_bulk)
+            hpo_bulk = []
+    
+    if hpo_bulk:
+        adapter.load_hpo_bulk(hpo_bulk)
     
     LOG.info("Loading done. Nr of terms loaded {0}".format(nr_terms))
     LOG.info("Time to load terms: {0}".format(datetime.now() - start_time))
@@ -124,13 +137,15 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     if not genes:
         genes = adapter.genes_by_alias()
 
+    # Fetch the disease terms from omim
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
+
     if not hpo_disease_lines:
         hpo_disease_lines = fetch_hpo_phenotype_to_terms()
-
     hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()
+    nr_diseases = None
 
     LOG.info("Loading the hpo disease...")
     for nr_diseases, disease_number in enumerate(disease_terms):
@@ -147,4 +162,3 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
 
     LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
     LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
-    

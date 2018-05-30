@@ -78,7 +78,9 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.variant_collection = database.variant
         self.acmg_collection = database.acmg
         self.clinvar_collection = database.clinvar
-
+        self.exon_collection = database.exon
+        self.transcript_collection = database.transcript
+    
     def collections(self):
         """Return all collection names
 
@@ -86,7 +88,6 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
             collection_names(list(str))
         """
         return self.db.collection_names(include_system_collections=False)
-
 
     def __str__(self):
         return "MongoAdapter(db={0})".format(self.db)

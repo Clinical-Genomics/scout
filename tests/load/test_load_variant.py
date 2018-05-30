@@ -7,7 +7,7 @@ from scout.server.blueprints.variants.controllers import variants
 from cyvcf2 import VCF
 
 def test_load_variant(real_populated_database, variant_obj):
-    """Test to load a variant into a mongo database"""
+    """Test to load a variant into a real mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
     assert adapter.variant_collection.find().count() == 0
