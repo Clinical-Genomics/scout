@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+### WARNING ###
+
+```
+This version will require that the backend of pre releases are updated
+Run commands:
+
+$scout update genes
+$scout update hpo
+```
+
 - Created a Clinvar submission tool, to speed up Clinvar submission of SNVs and SVs
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
@@ -11,10 +22,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Filter for spidex scores
 - All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
 - New command `scout update hpo`
+- New command `scout update genes` will fetch all the latest information about genes and update them
 
 ### Removed
 
 - All source files for HPO information, this is instead fetched directly from source
+- All source files for gene information, this is instead fetched directly from source
 
 ## [3.0.0]
 ### Fixed
