@@ -17,12 +17,17 @@ $scout update hpo
 - Created a Clinvar submission tool, to speed up Clinvar submission of SNVs and SVs
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
+### Fixed
+
+- Adapts clinvar parsing to new format
+
 ### Added
 
 - Filter for spidex scores
 - All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
 - New command `scout update hpo`
 - New command `scout update genes` will fetch all the latest information about genes and update them
+- Load **all** variants found on chromosome **MT** 
 
 ### Removed
 

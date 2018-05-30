@@ -172,15 +172,14 @@ class PanelHandler(object):
         panel_name = panel_obj['panel_name']
         panel_version = panel_obj['version']
 
-        LOG.info("loading panel {0}, version {1} to database".format(
-            panel_name, panel_version
-        ))
         if self.gene_panel(panel_name, panel_version):
             raise IntegrityError("Panel {0} with version {1} already"
                                  " exist in database".format(panel_name, panel_version))
-        LOG.debug("Panel saved")
-
+        LOG.info("loading panel {0}, version {1} to database".format(
+            panel_name, panel_version
+        ))
         self.panel_collection.insert_one(panel_obj)
+        LOG.debug("Panel saved")
 
     def panel(self, panel_id):
         """Fetch a gene panel by '_id'.
