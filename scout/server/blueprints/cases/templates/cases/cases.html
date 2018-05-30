@@ -40,7 +40,7 @@
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
     <div class="row">
-      <div class="col-md-8 col-xs-8">
+      <div class="col-md-6 col-xs-6">
         <div class="input-group">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
@@ -48,10 +48,17 @@
           <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"></input>
         </div>
       </div>
-      <div class="col-md-2 col-xs-4">
+      <div class="col-md-2 col-xs-2">
         <button type="submit" class="form-control">Search</input>
       </div>
-      <div class="col-md-2 col-xs-12">
+      <div class="col-md-2 col-xs-2">
+        <div class="number">
+          <label>
+              <input name="limit" type="number" step="100" class="form-control" placeholder="Limit" value={{limit}}>
+          </label>
+        </div>
+      </div>
+      <div class="col-md-2 col-xs-2">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned

@@ -15,9 +15,9 @@ from scout.server.blueprints.variants.controllers import variants_filter_by_fiel
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
 
-def cases(store, case_query):
+def cases(store, case_query, limit=100):
     """Preprocess case objects."""
-    limit = 100
+    
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
