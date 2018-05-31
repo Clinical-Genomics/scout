@@ -1,26 +1,38 @@
+from pprint import pprint as pp
 
+from scout.constants import (CHROMOSOMES, CHROMOSOME_INTEGERS)
 
 def export_causatives(adapter, collaborator):
-    """docstring for export_causatives"""
-    #put variants in a dict to get unique ones
-    variants = {}
+    """Export causative variants for a collaborator
     
-    for variant in adapter.get_causatives(institute_id=collaborator):
-        variant_id = '_'.join(variant.variant_id.split('_')[:-1])
-        variants[variant_id] = variant
+    Args:
+        adapter(MongoAdapter)
+        collaborator(str)
     
-    variant_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}")
+    Yields:
+        variant_obj(scout.Models.Variant): Variants marked as causative ordered by position. 
+    """
     
-    for variant_id in variants:
-        variant = variants[variant_id]
-        yield variant_string.format(
-            variant.chromosome,
-            str(variant.position),
-            ';'.join(variant.db_snp_ids),
-            variant.reference,
-            variant.alternative,
-            str(variant.quality),
-            ';'.join(variant.filters),
-            '.',
-            )
+    # Store the variants in a list for sorting
+    variants = []
+    ##TODO add check so that same variant is not included more than once
+    for document_id in adapter.get_causatives(institute_id=collaborator):
+        variant_obj = adapter.variant(document_id)
+        
+        chrom = variant_obj['chromosome']
+        # Convert chromosome to integer for sorting
+        chrom_int = CHROMOSOME_INTEGERS.get(chrom)
+        if not chrom_int:
+            LOG.info("Unknown chromosome %s", chrom)
+            continue
+        
+        # Add chromosome and position to prepare for sorting
+        variants.append((chrom_int, variant_obj['position'], variant_obj))
+    
+    # Sort varants based on position
+    variants.sort(key=lambda x: (x[0], x[1]))
+    
+    for variant in variants:
+        variant_obj = variant[2]
+        yield variant_obj
     

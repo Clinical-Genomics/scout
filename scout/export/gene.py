@@ -1,19 +1,11 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def export_genes(adapter, build='37'):
     """Export all genes from the database"""
-    logger.info("Exporting all genes to .bed format")
+    LOG.info("Exporting all genes to .bed format")
     
-    for gene in adapter.all_genes(build=build):
-        gene_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
-        
-        yield gene_string.format(
-            gene['chromosome'],
-            gene['start'],
-            gene['end'],
-            gene['hgnc_symbol'],
-            gene['hgnc_id']
-        )
+    for gene_obj in adapter.all_genes(build=build):
+        yield gene_obj
     
