@@ -45,6 +45,11 @@ CYTOBANDS = parse_cytoband(cytobands_handle)
 CHROMOSOMES = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
                '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', 'X',
                'Y', 'MT')
+
+# Maps chromosomes to integers
+CHROMOSOME_INTEGERS = {chrom: i+1 for i,chrom in enumerate(CHROMOSOMES)}
+
+
 PAR_COORDINATES = {
     '37': {
         'X': IntervalTree([Interval(60001, 2699521, 'par1'),

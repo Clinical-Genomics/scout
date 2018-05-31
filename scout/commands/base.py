@@ -35,7 +35,7 @@ except ImportError:
     pass
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 @click.group()
@@ -54,15 +54,16 @@ log = logging.getLogger(__name__)
 @click.pass_context
 def cli(context, mongodb, username, password, authdb, host, port, loglevel, config, demo):
     """scout: manage interactions with a scout instance."""
-    log_format = "%(message)s" if sys.stdout.isatty() else None
+    # log_format = "%(message)s" if sys.stdout.isatty() else None
+    log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
-    log.info("Running scout version %s", __version__)
-    log.debug("Debug logging enabled.")
+    LOG.info("Running scout version %s", __version__)
+    LOG.debug("Debug logging enabled.")
 
     mongo_config = {}
     cli_config = {}
     if config:
-        log.debug("Use config file %s", config)
+        LOG.debug("Use config file %s", config)
         with open(config, 'r') as in_handle:
             cli_config = yaml.load(in_handle)
 
@@ -84,9 +85,9 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     if context.invoked_subcommand in ('setup', 'serve'):
         mongo_config['adapter'] = None
     else:
-        log.info("Setting database name to %s", mongo_config['mongodb'])
-        log.debug("Setting host to %s", mongo_config['host'])
-        log.debug("Setting port to %s", mongo_config['port'])
+        LOG.info("Setting database name to %s", mongo_config['mongodb'])
+        LOG.debug("Setting host to %s", mongo_config['host'])
+        LOG.debug("Setting port to %s", mongo_config['port'])
 
         valid_connection = check_connection(
             host=mongo_config['host'],
@@ -96,9 +97,9 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
             authdb=mongo_config['authdb'],
         )
 
-        log.info("Test if mongod is running")
+        LOG.info("Test if mongod is running")
         if not valid_connection:
-            log.warning("Connection could not be established")
+            LOG.warning("Connection could not be established")
             context.abort()
 
         try:
@@ -108,7 +109,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
 
         database = client[mongo_config['mongodb']]
 
-        log.info("Setting up a mongo adapter")
+        LOG.info("Setting up a mongo adapter")
         mongo_config['client'] = client
         mongo_config['adapter'] = MongoAdapter(database)
 

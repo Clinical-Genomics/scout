@@ -14,6 +14,8 @@ import logging
 import json
 import datetime
 
+from pprint import pprint as pp
+
 import click
 
 from scout.export.gene import export_genes
@@ -131,7 +133,6 @@ def panel_genes(context, panel):
     """
     LOG.info("Running scout export panel")
     adapter = context.obj['adapter']
-    
     if not panel:
         LOG.warning("Please provide at least one gene panel")
         context.abort()

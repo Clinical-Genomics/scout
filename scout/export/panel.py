@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants import CHROMOSOMES
+from scout.constants import (CHROMOSOMES, CHROMOSOME_INTEGERS)
 LOG = logging.getLogger(__name__)
 
 
-def export_panels(adapter, panels, versions=None):
+def export_panels(adapter, panels, versions=None, build='37'):
     """Export all genes in gene panels
     
     Exports the union of genes in one or several gene panels to a bed like format with coordinates.
     
     Args:
+        adapter(scout.adapter.MongoAdapter)
+        panels(iterable(str)): Iterable with panel ids
     """
     if versions and (len(versions) != len(panels)):
         raise SyntaxError("If version specify for each panel")
@@ -20,33 +22,54 @@ def export_panels(adapter, panels, versions=None):
     contig_string = ("##contig={0}")
     bed_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
 
+    # Save all gene ids found in the collection if panels
     panel_geneids = set()
+    # Save all chromosomes found in the collection if panels
     chromosomes_found = set()
+    # Store all hgnc geneobjs
     hgnc_geneobjs = []
 
+    # Loop over the panels
     for i,panel_id in enumerate(panels):
         version = None
         if versions:
             version = versions[i]
             
         panel_obj = adapter.gene_panel(panel_id, version=version)
+        if not panel_obj:
+            LOG.warning("Panel {0} version {1} could not be found".format(panel_id, version))
+            continue
+
         headers.append(header_string.format(
             panel_obj['panel_name'],
             panel_obj['version'],
             panel_obj['date'].date(),
             panel_obj['display_name'],
         ))
+        # Collect the hgnc ids from all genes found
         for gene_obj in panel_obj['genes']:
             panel_geneids.add(gene_obj['hgnc_id'])
 
+    
+    gene_objs = adapter.hgncid_to_gene(build=build)
+    
     for hgnc_id in panel_geneids:
-        hgnc_geneobj = adapter.hgnc_gene(hgnc_id)
+        hgnc_geneobj = gene_objs.get(hgnc_id)
         if hgnc_geneobj is None:
             LOG.warn("missing HGNC gene: %s", hgnc_id)
             continue
-        hgnc_geneobjs.append(hgnc_geneobj)
-        chromosomes_found.add(hgnc_geneobj['chromosome'])
-
+        chrom = hgnc_geneobj['chromosome']
+        chrom_int = CHROMOSOME_INTEGERS.get(chrom)
+        if not chrom_int:
+            LOG.warn("Chromosome %s out of scope", chrom)
+            continue
+            
+        hgnc_geneobjs.append((chrom_int, hgnc_geneobj))
+        chromosomes_found.add(chrom)
+    
+    # Sort the genes:
+    hgnc_geneobjs.sort(key=lambda tup: tup[0])
+    
     for chrom in CHROMOSOMES:
         if chrom in chromosomes_found:
             headers.append(contig_string.format(chrom))
@@ -57,9 +80,10 @@ def export_panels(adapter, panels, versions=None):
         yield header
 
     for hgnc_gene in hgnc_geneobjs:
-        gene_line = bed_string.format(hgnc_gene['chromosome'], hgnc_gene['start'],
-                                      hgnc_gene['end'], hgnc_gene['hgnc_id'],
-                                      hgnc_gene['hgnc_symbol'])
+        gene_obj = hgnc_gene[1]
+        gene_line = bed_string.format(gene_obj['chromosome'], gene_obj['start'],
+                                      gene_obj['end'], gene_obj['hgnc_id'],
+                                      gene_obj['hgnc_symbol'])
         yield gene_line
 
 def export_gene_panels(adapter, panels, version=None):
