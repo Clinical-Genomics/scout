@@ -8,7 +8,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro frequency_cell(variant, exac=False) %}
+{% macro frequency_cell(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       {% if 'gnomad_frequency' in variant %}
@@ -38,11 +38,7 @@
       </div>
     </div>
   ">
-    {% if exac %}
-      {{ variant.exac_frequency|human_decimal if variant.exac_frequency else '~' }}
-    {% else %}
-      {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency else '~' }}
-    {% endif %}
+    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   </div>
 {% endmacro %}
 
