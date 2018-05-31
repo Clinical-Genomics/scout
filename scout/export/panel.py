@@ -19,6 +19,9 @@ def export_panels(adapter, panels, versions=None, build='37'):
         raise SyntaxError("If version specify for each panel")
 
     headers = []
+    build_string = ("##genome_build={}")
+    
+    headers.append(build_string.format(build))
     header_string = ("##gene_panel={0},version={1},updated_at={2},display_name={3}")
     contig_string = ("##contig={0}")
     bed_string = ("{0}\t{1}\t{2}\t{3}\t{4}")
