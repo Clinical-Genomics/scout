@@ -24,5 +24,18 @@ def variants(context, collaborator):
     for line in header:
         click.echo(line)
 
-    for variant in export_causatives(adapter, collaborator):
-        click.echo(variant)
+    #put variants in a dict to get unique ones
+    variant_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}")
+
+    ##TODO add option to give output in json format
+    for variant_obj in export_causatives(adapter, collaborator):
+        click.echo(variant_string.format(
+            variant_obj['chromosome'],
+            variant_obj['position'],
+            variant_obj['dbsnp_id'],
+            variant_obj['reference'],
+            variant_obj['alternative'],
+            variant_obj['quality'],
+            ';'.join(variant_obj['filters']),
+            '.'
+        ))

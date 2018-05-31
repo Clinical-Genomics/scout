@@ -19,13 +19,14 @@ from pprint import pprint as pp
 import click
 
 from scout.export.gene import export_genes
-from scout.export.transcript import export_transcripts
 from scout.export.variant import export_causatives
 from scout.export.panel import (export_panels, export_gene_panels)
 
 LOG = logging.getLogger(__name__)
 
 from .variant import variants
+from .hpo import hpo_genes
+from .transcript import transcripts
 
 @click.command('omim', short_help='Export a omim gene panel')
 @click.option('-v', '--version',
@@ -157,41 +158,6 @@ def genes(context):
 
     for gene in export_genes(adapter):
         click.echo(gene)
-
-@click.command('transcripts', short_help='Export transcripts')
-@click.pass_context
-def transcripts(context):
-    """Export all transcripts to .bed like format"""
-    LOG.info("Running scout export transcripts")
-    adapter = context.obj['adapter']
-    
-    header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
-
-    for line in header:
-        click.echo(line)
-
-    for transcript in export_transcripts(adapter):
-        click.echo(transcript)
-
-@click.command('hpo_genes', short_help='Export hpo gene list')
-@click.argument('hpo_term',nargs=-1)
-@click.pass_context
-def hpo_genes(context, hpo_term):
-    """Export a list of genes base on hpo terms"""
-    LOG.info("Running scout export hpo_genes")
-    adapter = context.obj['adapter']
-    
-    header = ["#Gene_id\tCount"]
-
-    if not hpo_term:
-        LOG.warning("Please use at least one hpo term")
-        context.abort()
-
-    for line in header:
-        click.echo(line)
-
-    for term in adapter.generate_hpo_gene_list(*hpo_term):
-        click.echo("{0}\t{1}".format(term[0], term[1]))
 
 
 

@@ -1,21 +1,19 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
-def export_transcripts(adapter):
-    """Export all genes from the database"""
-    logger.info("Exporting all transcripts to .bed format")
+def export_transcripts(adapter, build='37'):
+    """Export all transcripts from the database
+    
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+        build(str)
+    
+    Yields:
+        transcript(scout.models.Transcript)
+    """
+    LOG.info("Exporting all transcripts")
 
-    for gene in adapter.all_genes():
-        for transcript in gene.transcripts:
-            transcript_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}")
-            yield transcript_string.format(
-                    gene.chromosome,
-                    transcript.start,
-                    transcript.end,
-                    transcript.ensembl_transcript_id,
-                    transcript.refseq_id,
-                    gene.hgnc_symbol,
-                    gene.hgnc_id
-                )
+    for tx_obj in adapter.transcripts(build=build):
+        yield tx_obj
     

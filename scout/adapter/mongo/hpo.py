@@ -118,7 +118,7 @@ class HpoHandler(object):
         """
         query = {}
         if hgnc_id:
-            LOG.info("Fetching all diseases for gene %s", hgnc_id)
+            LOG.debug("Fetching all diseases for gene %s", hgnc_id)
             query['genes'] = hgnc_id
         else:
             LOG.info("Fetching all disease terms")
