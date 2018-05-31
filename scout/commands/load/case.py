@@ -10,7 +10,7 @@ from scout.load import load_scout
 from scout.parse.case import (parse_case_data)
 from scout.exceptions import IntegrityError, ConfigError
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 @click.command('case', short_help='Load a case')
 @click.option('--vcf', 
@@ -63,7 +63,7 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
     adapter = context.obj['adapter']
 
     if config is None and ped is None:
-        click.echo("You have to provide either config or ped file")
+        LOG.warning("Please provide either scout config or ped file")
         context.abort()
 
     # Scout needs a config object with the neccessary information
@@ -82,13 +82,13 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
             peddy_check=peddy_check
         )
     except SyntaxError as err:
-        log.warning(err)
+        LOG.warning(err)
         context.abort()
 
-    log.info("Use family %s" % config_data['family'])
+    LOG.info("Use family %s" % config_data['family'])
 
     try:
         case_obj = adapter.load_case(config_data, update)
     except IntegrityError as err:
-        log.warning(err)
+        LOG.warning(err)
         context.abort()

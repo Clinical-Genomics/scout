@@ -66,6 +66,7 @@ def build_individual(ind):
     ind_obj['mother'] = ind.get('mother')
     ind_obj['capture_kits'] = ind.get('capture_kits', [])
     ind_obj['bam_file'] = ind.get('bam_file')
+    ind_obj['mt_bam'] = ind.get('mt_bam')
     ind_obj['confirmed_sex'] = ind.get('confirmed_sex')
     ind_obj['confirmed_parent'] = ind.get('confirmed_parent')
     ind_obj['predicted_ancestry'] = ind.get('predicted_ancestry')

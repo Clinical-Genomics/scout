@@ -2,6 +2,8 @@ import copy
 import logging
 import datetime
 
+from pprint import pprint as pp
+
 from path import Path
 from ped_parser import FamilyParser
 
@@ -76,7 +78,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
 
     config_data['rank_model_version'] = config_data.get('rank_model_version')
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
-
+    
     return config_data
 
 
@@ -193,6 +195,10 @@ def parse_individual(sample):
     bam_file = sample.get('bam_path')
     if bam_file:
         ind_info['bam_file'] = bam_file
+
+    mt_bam = sample.get('mt_bam')
+    if mt_bam:
+        ind_info['mt_bam'] = mt_bam
 
     analysis_type = sample.get('analysis_type')
     if analysis_type:

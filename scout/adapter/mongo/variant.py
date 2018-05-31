@@ -302,7 +302,8 @@ class VariantHandler(VariantLoader):
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
         """
-        LOG.info("Deleting old {0} {1} variants for case {1}".format(
+        category = category or ''
+        LOG.info("Deleting old {0} {1} variants for case {2}".format(
                     variant_type, category, case_id))
         query = {'case_id': case_id, 'variant_type': variant_type}
         if category:

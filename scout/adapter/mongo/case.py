@@ -3,6 +3,8 @@ from copy import deepcopy
 import logging
 import datetime
 
+from pprint import pprint as pp
+
 import pymongo
 
 from scout.parse.case import parse_case
@@ -208,7 +210,6 @@ class CaseHandler(object):
         parsed_case = parse_case(config=config_data)
         # Build the case object
         case_obj = build_case(parsed_case, self)
-
         # Check if case exists with old case id
         old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
         old_case = self.case(old_caseid)
