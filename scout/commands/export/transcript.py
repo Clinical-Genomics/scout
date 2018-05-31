@@ -2,7 +2,7 @@ import logging
 
 import click
 
-from scout.constants import BUILDS
+from scout.commands.utils import builds_option
 
 from scout.export.transcript import export_transcripts
 
@@ -10,11 +10,7 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command('transcripts', short_help='Export transcripts')
-@click.option('-b', '--build',
-    default='37',
-    show_default=True,
-    type=click.Choice(BUILDS),
-)
+@builds_option
 @click.pass_context
 def transcripts(context, build):
     """Export all transcripts to .bed like format"""

@@ -13,6 +13,7 @@ def export_panels(adapter, panels, versions=None, build='37'):
     Args:
         adapter(scout.adapter.MongoAdapter)
         panels(iterable(str)): Iterable with panel ids
+        bed(bool): If lines should be bed formated
     """
     if versions and (len(versions) != len(panels)):
         raise SyntaxError("If version specify for each panel")
@@ -59,16 +60,17 @@ def export_panels(adapter, panels, versions=None, build='37'):
             LOG.warn("missing HGNC gene: %s", hgnc_id)
             continue
         chrom = hgnc_geneobj['chromosome']
+        start = hgnc_geneobj['start']
         chrom_int = CHROMOSOME_INTEGERS.get(chrom)
         if not chrom_int:
             LOG.warn("Chromosome %s out of scope", chrom)
             continue
             
-        hgnc_geneobjs.append((chrom_int, hgnc_geneobj))
+        hgnc_geneobjs.append((chrom_int, start, hgnc_geneobj))
         chromosomes_found.add(chrom)
     
     # Sort the genes:
-    hgnc_geneobjs.sort(key=lambda tup: tup[0])
+    hgnc_geneobjs.sort(key=lambda tup: (tup[0], tup[1]))
     
     for chrom in CHROMOSOMES:
         if chrom in chromosomes_found:
@@ -80,7 +82,7 @@ def export_panels(adapter, panels, versions=None, build='37'):
         yield header
 
     for hgnc_gene in hgnc_geneobjs:
-        gene_obj = hgnc_gene[1]
+        gene_obj = hgnc_gene[-1]
         gene_line = bed_string.format(gene_obj['chromosome'], gene_obj['start'],
                                       gene_obj['end'], gene_obj['hgnc_id'],
                                       gene_obj['hgnc_symbol'])

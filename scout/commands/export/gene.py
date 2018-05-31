@@ -2,18 +2,14 @@ import logging
 
 import click
 
-from scout.constants import BUILDS
+from scout.commands.utils import builds_option
 
 from scout.export.gene import export_genes
 
 LOG = logging.getLogger(__name__)
 
 @click.command('genes', short_help='Export genes')
-@click.option('-b', '--build',
-    default='37',
-    show_default=True,
-    type=click.Choice(BUILDS),
-)
+@builds_option
 @click.pass_context
 def genes(context, build):
     """Export all genes to .bed like format"""

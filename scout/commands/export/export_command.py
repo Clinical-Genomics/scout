@@ -27,6 +27,7 @@ from .variant import variants
 from .hpo import hpo_genes
 from .transcript import transcripts
 from .gene import genes
+from .panel import panel
 
 @click.command('omim', short_help='Export a omim gene panel')
 @click.option('-v', '--version',
@@ -95,32 +96,6 @@ def omim(context, version, build, to_json, outfile):
     LOG.info("Nr of omim genes: %s" % nr_omim)
     LOG.info("Nr of genes outside mim panel: %s" % (nr_genes - nr_omim))
 
-
-@click.command('panel', short_help='Export gene panels')
-@click.argument('panel',
-                nargs=-1,
-                metavar='<panel_name>'
-)
-@click.option('--version', 
-    type=float,
-    help="Specify panel version, only works if one panel"
-)
-@click.pass_context
-def panel(context, panel, version):
-    """Export gene panels to .bed like format.
-    
-        Specify any number of panels on the command line
-    """
-    LOG.info("Running scout export panel")
-    adapter = context.obj['adapter']
-    
-    if not panel:
-        LOG.warning("Please provide at least one gene panel")
-        context.abort()
-
-    LOG.info("Exporting panels: {}".format(', '.join(panel)))
-    for line in export_gene_panels(adapter, panel, version):
-        click.echo(line)
 
 @click.command('panel_genes', short_help='Export gene panels with coordinates')
 @click.argument('panel',
