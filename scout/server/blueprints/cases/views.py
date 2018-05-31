@@ -35,9 +35,14 @@ def cases(institute_id):
     """Display a list of cases for an institute."""
     institute_obj = institute_and_case(store, institute_id)
     query = request.args.get('query')
+
+    limit = 100
+    if request.args.get('limit'):
+        limit = int(request.args.get('limit'))
+
     skip_assigned = request.args.get('skip_assigned')
     all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
-    data = controllers.cases(store, all_cases)
+    data = controllers.cases(store, all_cases, limit)
     return dict(institute=institute_obj, skip_assigned=skip_assigned, query=query, **data)
 
 
