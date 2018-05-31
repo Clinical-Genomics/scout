@@ -18,7 +18,6 @@ from pprint import pprint as pp
 
 import click
 
-from scout.export.gene import export_genes
 from scout.export.variant import export_causatives
 from scout.export.panel import (export_panels, export_gene_panels)
 
@@ -27,6 +26,7 @@ LOG = logging.getLogger(__name__)
 from .variant import variants
 from .hpo import hpo_genes
 from .transcript import transcripts
+from .gene import genes
 
 @click.command('omim', short_help='Export a omim gene panel')
 @click.option('-v', '--version',
@@ -142,22 +142,6 @@ def panel_genes(context, panel):
     LOG.info("Exporting panels: {}".format(', '.join(panel)))
     for line in export_panels(adapter, panel):
         click.echo(line)
-
-
-@click.command('genes', short_help='Export genes')
-@click.pass_context
-def genes(context):
-    """Export all genes to .bed like format"""
-    LOG.info("Running scout export genes")
-    adapter = context.obj['adapter']
-    
-    header = ["#Chrom\tStart\tEnd\tHgncSymbol\tHgncID"]
-
-    for line in header:
-        click.echo(line)
-
-    for gene in export_genes(adapter):
-        click.echo(gene)
 
 
 
