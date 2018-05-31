@@ -25,6 +25,7 @@ from scout.export.panel import (export_panels, export_gene_panels)
 
 LOG = logging.getLogger(__name__)
 
+from .variant import variants
 
 @click.command('omim', short_help='Export a omim gene panel')
 @click.option('-v', '--version',
@@ -171,31 +172,6 @@ def transcripts(context):
 
     for transcript in export_transcripts(adapter):
         click.echo(transcript)
-
-@click.command('variants', short_help='Export variants')
-@click.option('-c', '--collaborator')
-@click.pass_context
-def variants(context, collaborator):
-    """Export causatives for a collaborator in .vcf format"""
-    LOG.info("Running scout export variants")
-    adapter = context.obj['adapter']
-    
-    header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncSymbol\tHgncID"]
-
-    if not collaborator:
-        LOG.warning("Please provide a collaborator to export variants")
-        context.abort()
-
-    header = [
-        "##fileformat=VCFv4.2",
-        "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
-    ]
-
-    for line in header:
-        click.echo(line)
-
-    for variant in export_causatives(adapter, collaborator):
-        click.echo(variant)
 
 @click.command('hpo_genes', short_help='Export hpo gene list')
 @click.argument('hpo_term',nargs=-1)
