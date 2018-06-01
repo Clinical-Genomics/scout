@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import abort, Blueprint, render_template, request
+from flask import (abort, Blueprint, render_template, request)
 
 from .partial import send_file_partial
 
@@ -37,4 +37,5 @@ def viewer():
     }
 
     return render_template('pileup/pileup.html', alignments=alignments,
-                           position=position, vcf_file=vcf_file)
+                           position=position, vcf_file=vcf_file, genome=pileup_genome_path,
+                           exons=pileup_exons_path)

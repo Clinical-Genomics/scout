@@ -63,6 +63,7 @@ class FiltersForm(FlaskForm):
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
     exac_frequency = BetterDecimalField('ExAC', places=2)
+    chrom = TextField('Chromosome')
     local_obs = IntegerField('Local obs. (archive)')
 
 

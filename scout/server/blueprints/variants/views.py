@@ -65,7 +65,7 @@ def variants(institute_id, case_name):
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
         form.hgnc_symbols.data = hpo_symbols
-
+    
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
 

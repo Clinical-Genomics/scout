@@ -6,7 +6,7 @@ import pathlib
 import tempfile
 
 from datetime import datetime
-
+from pprint import pprint as pp
 
 # Third party modules
 import pymongo
@@ -157,7 +157,7 @@ class VariantHandler(VariantLoader):
             result(Iterable[Variant])
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
-
+        
         if variant_ids:
             nr_of_variants = len(variant_ids)
 

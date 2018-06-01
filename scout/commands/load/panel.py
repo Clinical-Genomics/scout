@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
     help="The panel identifier name",
 )
 @click.option('--institute',
-    help="Specify the owner of the panel"
+    help="Specify the owner of the panel. Defaults to cust000."
 )
 @click.option('-d', '--date', 
     help='date of gene panel on format 2017-12-24, default is today.'
@@ -54,6 +54,7 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
     """Add a gene panel to the database."""
 
     adapter = context.obj['adapter']
+    institute = institute or 'cust000'
     if not path:
         if not omim:
             LOG.warning("Please provide a gene panel file or specify omim")
@@ -70,8 +71,9 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
             LOG.info("To create a new version use scout update omim")
             return
 
+        # Here we know that there is no panel loaded
         try:
-            adapter.load_omim_panel(api_key, version=1.0)
+            adapter.load_omim_panel(api_key, institute=institute)
         except Exception as err:
             LOG.error(err)
             context.abort()

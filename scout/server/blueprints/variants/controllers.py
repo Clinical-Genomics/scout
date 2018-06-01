@@ -511,10 +511,27 @@ def frequency(variant_obj):
 def clinsig_human(variant_obj):
     """Convert to human readable version of CLINSIG evaluation."""
     for clinsig_obj in variant_obj['clnsig']:
-        human_str = CLINSIG_MAP.get(clinsig_obj['value'], 'not provided')
+        # The clinsig objects allways have a accession
+        if isinstance(clinsig_obj['accession'], int):
+            # New version
+            link = "https://www.ncbi.nlm.nih.gov/clinvar/variation/{}"
+        else:
+            # Old version
+            link = "https://www.ncbi.nlm.nih.gov/clinvar/{}"
+
+        human_str = 'not provided'
+        if clinsig_obj.get('value'):
+            try:
+                # Old version
+                int(clinsig_obj['value'])
+                human_str = CLINSIG_MAP.get(clinsig_obj['value'], 'not provided')
+            except ValueError:
+                # New version
+                human_str = clinsig_obj['value']
+        
         clinsig_obj['human'] = human_str
-        clinsig_obj['link'] = ("https://www.ncbi.nlm.nih.gov/clinvar/{}"
-                               .format(clinsig_obj['accession']))
+        clinsig_obj['link'] = link.format(clinsig_obj['accession'])
+        
         yield clinsig_obj
 
 

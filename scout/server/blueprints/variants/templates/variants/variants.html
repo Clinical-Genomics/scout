@@ -80,7 +80,7 @@
           <th title="Rank score">Score</th>
           <th title="Chromosome">Chr.</th>
           <th title="HGNC symbols" class="col-xs-2">Gene</th>
-          <th title="1000 Genomes">1000G</th>
+          <th title="1000 Genomes">PopFreq</th>
           <th title="CADD score">CADD</th>
           <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
           <th class="col-xs-3" title="Functional annotation">Func. annotation</th>
@@ -255,9 +255,13 @@
           {{ form.exac_frequency.label(class="control-label") }}
           {{ form.exac_frequency(class="form-control") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col-xs-1">
           {{ form.local_obs.label(class="control-label") }}
           {{ form.local_obs(class="form-control") }}
+        </div>
+        <div class="col-xs-1">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="form-control") }}
         </div>
         <div class="col-xs-6">
           <label class="control-label">Submit</label>
