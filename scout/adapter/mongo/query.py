@@ -12,6 +12,7 @@ class QueryHandler(object):
         These are the different query options:
             {
                 'genetic_models': list,
+                'chrom': str,
                 'thousand_genomes_frequency': float,
                 'exac_frequency': float,
                 'clingen_ngi': int,
