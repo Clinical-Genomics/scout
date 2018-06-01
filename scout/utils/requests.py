@@ -9,6 +9,7 @@ LOG = logging.getLogger(__name__)
 
 HPO_URL = ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
            "lastStableBuild/artifact/annotation/{0}")
+    
 
 def fetch_resource(url, file_name=None):
     """Fetch a resource and return the resulting lines in a list
