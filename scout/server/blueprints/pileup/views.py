@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import (abort, Blueprint, render_template, request)
 
-from scout.resources import (pileup_exons_path, pileup_genome_path)
-
 from .partial import send_file_partial
 
 pileup_bp = Blueprint('pileup', __name__, template_folder='templates',
