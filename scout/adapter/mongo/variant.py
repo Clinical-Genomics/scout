@@ -312,12 +312,13 @@ class VariantHandler(VariantLoader):
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
     def overlapping(self, variant_obj):
-        """Return ovelapping variants.
+        """Return overlapping variants.
 
-        Look at the genes that a variant overlapps to get coordinates.
+        Look at the genes that a variant overlaps to get coordinates.
         Then return all variants that overlap these coordinates.
 
         If variant_obj is sv it will return the overlapping snvs and oposite
+        There is a problem when SVs are huge since there are to many overlapping variants.
 
         Args:
             variant_obj(dict)
@@ -325,12 +326,14 @@ class VariantHandler(VariantLoader):
         Returns:
             variants(iterable(dict))
         """
+        #This is the category of the variants that we want to collect
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
 
         region_start = None
         region_end = None
         chromosome = variant_obj['chromosome']
 
+        #This is the place where there might be to large regions
         for gene_id in variant_obj['hgnc_ids']:
             gene_obj = self.hgnc_gene(gene_id)
             if not gene_obj:
@@ -338,16 +341,17 @@ class VariantHandler(VariantLoader):
 
             gene_start = gene_obj['start']
             gene_end = gene_obj['end']
+            
+            #Get the coordinates for a region
             if not region_start:
                 region_start = gene_start
-            else:
-                if gene_start < region_start:
-                    region_start = gene_start
+            if gene_start < region_start:
+                region_start = gene_start
+            
             if not region_end:
                 region_end = gene_end
-            else:
-                if gene_end > region_end:
-                    region_end = gene_end
+            if gene_end > region_end:
+                region_end = gene_end
 
         query = self.build_query(
             case_id=variant_obj['case_id'],
@@ -361,7 +365,8 @@ class VariantHandler(VariantLoader):
         )
 
         sort_key = [('rank_score', pymongo.DESCENDING)]
-        variants = self.variant_collection.find(query).sort(sort_key)
+        # We collect the 30 most severe overlapping variants
+        variants = self.variant_collection.find(query).sort(sort_key).limit(30)
 
         return variants
 
