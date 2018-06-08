@@ -261,11 +261,44 @@ def parse_hpo_obo(hpo_lines):
         elif line.startswith('is_a'):
             if 'ancestors' not in term:
                 term['ancestors'] = []
-            term['ancestors'].append(line[6:16])
+            ancestor = line[6:16]
+            if ancestor.startswith('HP:'):
+                term['ancestors'].append(ancestor)
+            else:
+                print(ancestor)
+                print(line)
 
     if term:
         yield term
         
+
+def build_hpo_tree(hpo_lines):
+    """Build a tree with all hpo terms
+    
+    A tree is a dictionary where all entries have children and parents
+    
+    """
+    hpo_tree = {}
+    hpo_tree = {term['hpo_id']: term for term in parse_hpo_obo(hpo_lines)}
+    for hpo_id in hpo_tree:
+        term = hpo_tree[hpo_id]
+        
+        # Loop over all ancestors
+        for ancestor_id in term.get('ancestors',[]):
+            if ancestor_id not in hpo_tree:
+                print("Term %s does not exist!", ancestor_id)
+                continue
+            # If there is a ancestor we collect that term
+            ancestor_term = hpo_tree[ancestor_id]
+            
+            # Add a new 'children' field
+            if 'children' not in ancestor_term:
+                ancestor_term['children'] = set()
+            
+            ancestor_term['children'].add(hpo_id)
+    return hpo_tree
+            
+    
 
 if __name__ == "__main__":
     import sys
