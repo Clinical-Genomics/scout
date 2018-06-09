@@ -65,7 +65,7 @@ def variants(institute_id, case_name):
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
         form.hgnc_symbols.data = hpo_symbols
-    
+
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
 
@@ -250,7 +250,7 @@ def save_clinvar_submission(institute_id, case_name, variant_id):
         elif inserted == -1:
             flash('One of more variants your are trying to save is already present in a previous clinvar submission!', 'danger')
         else:
-            flash('variants with ids '+str(inserted)+ ' were saved into clinvar submissions database collection')
+            flash('variants were saved into clinvar submissions database collection', 'success')
 
         return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
                             variant_id=variant_id))
