@@ -75,10 +75,10 @@
       <tr>
         <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
         <th class="col-xs-2">Status</th>
-        <th class="col-xs-2">Clinvar submission</th>
         <th class="col-xs-2">Analysis date</th>
         <th class="col-xs-2">Link</th>
         <th class="col-xs-2">Sequencing</th>
+        <th class="col-xs-2">Clinvar submission</th>
       </tr>
     </thead>
     <tbody>
@@ -117,12 +117,6 @@
       {% endif %}
     </td>
     <td>
-      {% if case.clinvar_id %}
-      <span class="label label-info">created</span>
-      {%else%}
-      {%endif%}
-    </td>
-    <td>
       {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
         <span class="badge pull-right">rerun</span>
@@ -159,6 +153,11 @@
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
+    </td>
+    <td>
+      {% if case.clinvar_id %}
+      <span class="label label-info">created</span>
+      {%endif%}
     </td>
   </tr>
 {% endmacro %}

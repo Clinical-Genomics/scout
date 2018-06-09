@@ -273,24 +273,12 @@
                         </td>
                         <td>
                           {% for gene in pinned.genes %}
-                            {% for transcript in gene.primary_transcripts %}
-                              {% for refseq_id in transcript.refseq_ids %}
-                                {% if refseq_id and transcript.coding_sequence_name %}
-                                  <input type="radio" id="{{pinned._id+"_"+refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}" selected>
-                                  <label for="{{pinned._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
-                                {% endif %}
-                              {% endfor %} <!--end of refseq-->
-                            {% endfor %} <!--end of transcript-->
-                          {% endfor %} <!--end of gene-->
-                          {% for gene in pinned.genes %}
                             {% for transcript in gene.transcripts %}
-                              {% for refseq_id in transcript.refseq_ids %}
-                                {% if refseq_id and  transcript.coding_sequence_name %}
-                                  <input type="radio" id="{{pinned._id+"_"+refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{refseq_id+"|"+transcript.coding_sequence_name}}">
-                                  <label for="{{pinned._id+"_"+refseq_id}}">{{refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
-                                {% endif %}
-                              {% endfor %} <!--end of refseq-->
-                            {% endfor %} <!--end of transcript-->
+                              {% if transcript.refseq_id and transcript.coding_sequence_name %}
+                                <input type="radio" id="{{pinned._id+"_"+transcript.refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{transcript.refseq_id+"|"+transcript.coding_sequence_name}}" {% if transcript.is_primary == True %} checked {% endif %}>
+                                <label for="{{pinned._id+"_"+transcript.refseq_id}}">{{transcript.refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
+                              {% endif %}
+                            {% endfor %}
                           {% endfor %} <!--end of gene-->
                         </td>
                       </tr>
