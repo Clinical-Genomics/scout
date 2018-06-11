@@ -89,6 +89,16 @@ def sv_variant(store, institute_id, case_name, variant_id):
     overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
 
+    # parse_gene function is not called for SVs, but a link to ensembl gene is required
+    ensembl_link = ''
+    for gene_obj in variant_obj['genes']:
+        if gene_obj['common']:
+            if gene_obj['common']['build'] == '37':
+                ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
+            else:
+                ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
+            gene_obj['ensembl_link'] = ensembl_link.format(gene_obj['common']['ensembl_id'])
+
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
 
@@ -251,7 +261,7 @@ def variant(store, institute_obj, case_obj, variant_id=None):
 
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
-    
+
     if variant_obj is None:
         return None
     # Add information to case_obj
@@ -528,10 +538,10 @@ def clinsig_human(variant_obj):
             except ValueError:
                 # New version
                 human_str = clinsig_obj['value']
-        
+
         clinsig_obj['human'] = human_str
         clinsig_obj['link'] = link.format(clinsig_obj['accession'])
-        
+
         yield clinsig_obj
 
 
@@ -591,7 +601,7 @@ def cosmic_link(variant_obj):
     else:
         cosmic_id = cosmic_ids[0]
         url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
-   
+
 
     return url_template.format(cosmic_id)
 
