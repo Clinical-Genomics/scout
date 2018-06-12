@@ -777,6 +777,7 @@
           <th>Gene</th>
           <th>Transcript</th>
           <th>HGVS Description</th>
+          <th>Amino acid</th>
         </tr>
       </thead>
       <tbody>
@@ -795,23 +796,13 @@
                   {% endif %}
                 </td>
                 <td>
-                  {% for refseq_id in transcript.refseq_ids %}
-                    {% if refseq_id %}
-                      <div>{{ refseq_id }}
-                        {% if gene.hgnc_symbol+':'+refseq_id in variant.disease_associated_transcripts %}
-                          <span class="badge badge-pill badge-danger" title="disease associated">DA</span>
-                        {% endif %}
-                      </div>
-                    {% else %}
-                      {{ transcript.transcript_id }}
-                    {% endif %}
-                  {% endfor %}
+                  {{transcript.refseq_id}}
                 </td>
                 <td title="{{ transcript.coding_sequence_name or '' }}">
                   {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                  <span class="text-muted pull-right">
-                    {{ (transcript.protein_sequence_name or '')|url_decode }}
-                  </span>
+                </td>
+                <td>            
+                  {{ (transcript.protein_sequence_name or '')|url_decode }}
                 </td>
               </tr>
             {% endif %}
