@@ -89,6 +89,16 @@ def sv_variant(store, institute_id, case_name, variant_id):
     overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
                         store.overlapping(variant_obj))
 
+    # parse_gene function is not called for SVs, but a link to ensembl gene is required
+    ensembl_link = ''
+    for gene_obj in variant_obj['genes']:
+        if gene_obj['common']:
+            if gene_obj['common']['build'] == '37':
+                ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
+            else:
+                ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
+            gene_obj['ensembl_link'] = ensembl_link.format(gene_obj['common']['ensembl_id'])
+
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
 
