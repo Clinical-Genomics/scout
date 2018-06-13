@@ -251,7 +251,7 @@ def variant(store, institute_obj, case_obj, variant_id=None):
 
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
-    
+
     if variant_obj is None:
         return None
     # Add information to case_obj
@@ -339,7 +339,7 @@ def variants_filter_by_field(store, variants, field, case_obj, institute_obj):
 
     Args:
         store(scout.adapter.MongoAdapter)
-        variants(list(dict)): List of variant objects
+        variants(list(dict or string)): List of variant objects or variant ids (can be a mixed list, but we filter just the dict objects)
         field(str): The key that indicates if variant is relevant
         case_obj(scout.models.Case)
         institute_obj(scout.models.Institute)
@@ -350,14 +350,17 @@ def variants_filter_by_field(store, variants, field, case_obj, institute_obj):
     filtered_variants = []
     # Check if the variants have information if "field"
     for var in variants:
-        if var.get(field):
-            # Add more details to the variant
-            if var['category'] == 'snv':
-                var_object = variant(store, institute_obj, case_obj, var['_id'])
-            else:
-                var_object = sv_variant(store, institute_obj['_id'], case_obj['display_name'], var['_id'])
 
-            filtered_variants.append(var_object['variant'])
+        # disregard the cases where var is a string (variant_id). This happens when a variant was not found in the database
+        if isinstance(var,dict):
+            if var.get(field):
+                # Add more details to the variant
+                if var['category'] == 'snv':
+                    var_object = variant(store, institute_obj, case_obj, var['_id'])
+                else:
+                    var_object = sv_variant(store, institute_obj['_id'], case_obj['display_name'], var['_id'])
+
+                filtered_variants.append(var_object['variant'])
 
     return filtered_variants
 
@@ -528,10 +531,10 @@ def clinsig_human(variant_obj):
             except ValueError:
                 # New version
                 human_str = clinsig_obj['value']
-        
+
         clinsig_obj['human'] = human_str
         clinsig_obj['link'] = link.format(clinsig_obj['accession'])
-        
+
         yield clinsig_obj
 
 
@@ -591,7 +594,7 @@ def cosmic_link(variant_obj):
     else:
         cosmic_id = cosmic_ids[0]
         url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
-   
+
 
     return url_template.format(cosmic_id)
 
