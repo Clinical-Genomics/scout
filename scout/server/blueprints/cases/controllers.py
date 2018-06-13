@@ -121,7 +121,6 @@ def case_report_content(store, institute_obj, case_obj):
     causatives = variants_filter_by_field(store, causatives_raw, '_id', case_obj, institute_obj)
     data.update({'causatives_detailed': causatives})
 
-
     pinned_raw = data['suspects'] # This should be a list of dictionaries, but might contain elements that are strings (variant_ids)
 
     #remove any element which is not a dictionary from the list above
