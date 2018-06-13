@@ -76,8 +76,8 @@ def authorized():
 
     if oauth_response is None:
         flash("Access denied: reason={} error={}"
-              .format(request.args['error_reason'],
-                      request.args['error_description']), 'danger')
+              .format(request.args.get('error_reason', 'unknown'),
+                      request.args('error_description', 'unknown')), 'danger')
         return abort(403)
 
     # add token to session, do it before validation to be able to fetch
