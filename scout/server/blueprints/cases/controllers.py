@@ -111,42 +111,32 @@ def case_report_content(store, institute_obj, case_obj):
     data.update({'genetic_models': dict(GENETIC_MODELS)})
     data.update({'report_created_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
 
-
-    causatives_raw = data['causatives'] # This should be a list of dictionaries, but might contain elements that are strings (variant_ids)
-
-    #remove any element which is not a dictionary from the list above
-    causatives_raw[:] = [var for var in causatives_raw if isinstance(var, dict)]
-
-    #get detailed info for the causatives:
-    causatives = variants_filter_by_field(store, causatives_raw, '_id', case_obj, institute_obj)
-    data.update({'causatives_detailed': causatives})
-
-    pinned_raw = data['suspects'] # This should be a list of dictionaries, but might contain elements that are strings (variant_ids)
-
-    #remove any element which is not a dictionary from the list above
-    pinned_raw[:] = [var for var in pinned_raw if isinstance(var, dict)]
-
-    #get detailed info for the pinned:
-    pinned = variants_filter_by_field(store, pinned_raw, '_id', case_obj, institute_obj)
-    data.update({'pinned_detailed': pinned})
+    # We collect all causatives and suspected variants
+    for var_type in ['causatives', 'suspects']:
+        # data[var_type] can include strings so we need to be careful
+        # remove any element which is not a dictionary
+        raw = [var for var in data[var_type] if isinstance(var, dict)]
+        # get detailed info for the causatives and add to data
+        var_type += '_detailed'
+        data[var_type] = variants_filter_by_field(store, raw, '_id', case_obj, institute_obj)
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
     evaluated_variants = store.evaluated_variants(case_id=case_obj['_id'])
 
     # get complete info for the acmg classified variants
     classified_detailed = variants_filter_by_field(store, evaluated_variants, 'acmg_classification', case_obj, institute_obj)
-    data.update({'classified_detailed': classified_detailed})
+    data['classified_detailed'] = classified_detailed
 
     # get complete info for tagged variants
     tagged_detailed = variants_filter_by_field(store, evaluated_variants, 'manual_rank', case_obj, institute_obj)
-    data.update({'tagged_detailed': tagged_detailed})
+    data['tagged_detailed'] = tagged_detailed
 
     # get complete info for dismissed variants
     dismissed_detailed = variants_filter_by_field(store, evaluated_variants, 'dismiss_variant', case_obj, institute_obj)
-    data.update({'dismissed_detailed': dismissed_detailed})
+    data['dismissed_detailed'] = dismissed_detailed
 
     commented_detailed = variants_filter_by_field(store, evaluated_variants, 'is_commented', case_obj, institute_obj)
-    data.update({'commented_detailed': commented_detailed})
+    data['commented_detailed'] = commented_detailed
 
     return data
 
