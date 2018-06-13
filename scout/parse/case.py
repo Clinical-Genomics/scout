@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
                     vcf_sv=None, vcf_cancer=None, peddy_ped=None,
-                    peddy_sex=None, peddy_check=None, delivery_report=None):
+                    peddy_sex=None, peddy_check=None, delivery_report=None, multiqc=None):
     """Parse all data necessary for loading a case into scout
 
     This can be done either by providing a VCF file and other information
@@ -34,6 +34,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         vcf_sv(str): Path to a vcf file
         vcf_cancer(str): Path to a vcf file
         peddy_ped(str): Path to a peddy ped
+        multiqc(str): Path to dir with multiqc information
 
     Returns:
         config_data(dict): Holds all the necessary information for loading
@@ -65,12 +66,16 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data['default_gene_panels'] = [panel.strip() for panel in
                                               config_data['default_gene_panels']]
 
+    ##################### Add information from peddy if existing ##################### 
     config_data['peddy_ped'] = peddy_ped or config_data.get('peddy_ped')
     config_data['peddy_sex_check'] = peddy_sex or config_data.get('peddy_sex')
     config_data['peddy_ped_check'] = peddy_check or config_data.get('peddy_check')
 
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
+
+    ##################### Add multiqc information ##################### 
+    config_data['multiqc'] = multiqc or config_data.get('multiqc')
 
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')

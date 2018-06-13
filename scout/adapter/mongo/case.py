@@ -288,7 +288,7 @@ class CaseHandler(object):
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - has_svvariants: If there are new svvariants
-            - multiqc: If there's an upadted multiqc report location
+            - multiqc: If there's an updated multiqc report location
 
             Args:
                 case_obj(dict): The new case information

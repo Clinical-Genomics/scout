@@ -407,7 +407,7 @@ def default_panels(institute_id, case_name):
 
 
 @cases_bp.route('/<institute_id>/<case_name>/multiqc')
-def multiqc(institute_id, case_name):
+def multiqc(institute_id, case_name, path):
     """Load multiqc report for the case."""
     data = controllers.multiqc(store, institute_id, case_name)
     if data['case'].get('multiqc') is None:

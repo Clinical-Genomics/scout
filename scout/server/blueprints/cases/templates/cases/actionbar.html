@@ -4,7 +4,11 @@
       Case
       <h4>{{ case.display_name }}</h4>
     </li>
-    <li>{{ report(institute, case) }}</li>
+    <h5>
+      <span class="glyphicon glyphicon-file"></span>
+      Reports
+    </h5>
+    <li>{{ reports(institute, case) }}</li>
     <li>{{ analysis_date(case) }}</li>
     <li>{{ genome_build(case) }}</li>
     <li>{{ status(institute, case) }}</li>
@@ -24,13 +28,18 @@
   </ul>
 {% endmacro %}
 
-{% macro report(institute, case) %}
+{% macro reports(institute, case) %}
   <div class="nav-sidebar-item">
-    <h5>
-      <span class="glyphicon glyphicon-file"></span>
-      <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}">Visualize report</a>
-    </h5>
+      <a class="btn btn-default form-control" href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}">General</a>
   </div>
+  {% if case.multiqc %}
+    <p>
+      <div class="nav-sidebar-item">
+        <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name, path=case.multiqc) }}">MultiQC</a>
+      </div>
+    </p>
+  {% endif %}
+  
 {% endmacro %}
 
 {% macro analysis_date(case) %}
@@ -189,11 +198,7 @@
 
 {% macro delivery_report(institute, case) %}
   <div class="nav-sidebar-item">
-    <h5>
-      <span class="glyphicon glyphicon-list-alt"></span>
-      Delivery report
-    </h5>
-    <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
                         case_name=case.display_name) }}" class="btn btn-default form-control" target="_blank">
       View report
     </a>
