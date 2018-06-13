@@ -106,10 +106,10 @@ def case_report_content(store, institute_obj, case_obj):
 
     data = case(store, institute_obj, case_obj)
 
-    data.update({'manual_rank_options': MANUAL_RANK_OPTIONS})
-    data.update({'dismissed_options': DISMISS_VARIANT_OPTIONS})
-    data.update({'genetic_models': dict(GENETIC_MODELS)})
-    data.update({'report_created_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
+    data['manual_rank_options'] = MANUAL_RANK_OPTIONS
+    data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
+    data['genetic_models'] = dict(GENETIC_MODELS)})
+    data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
 
     # We collect all causatives and suspected variants
     for var_type in ['causatives', 'suspects']:
@@ -139,7 +139,6 @@ def case_report_content(store, institute_obj, case_obj):
     data['commented_detailed'] = commented_detailed
 
     return data
-
 
 
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
