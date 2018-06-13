@@ -124,19 +124,19 @@ def case_report_content(store, institute_obj, case_obj):
     evaluated_variants = store.evaluated_variants(case_id=case_obj['_id'])
 
     # get complete info for the acmg classified variants
-    classified_detailed = variants_filter_by_field(store, evaluated_variants, 'acmg_classification', case_obj, institute_obj)
-    data['classified_detailed'] = classified_detailed
+    data['classified_detailed'] = variants_filter_by_field(store, evaluated_variants,
+                                                           'acmg_classification', case_obj, institute_obj)
 
     # get complete info for tagged variants
-    tagged_detailed = variants_filter_by_field(store, evaluated_variants, 'manual_rank', case_obj, institute_obj)
-    data['tagged_detailed'] = tagged_detailed
+    data['tagged_detailed'] = variants_filter_by_field(store, evaluated_variants, 
+                                                       'manual_rank', case_obj, institute_obj)
 
     # get complete info for dismissed variants
-    dismissed_detailed = variants_filter_by_field(store, evaluated_variants, 'dismiss_variant', case_obj, institute_obj)
-    data['dismissed_detailed'] = dismissed_detailed
+    data['dismissed_detailed'] = variants_filter_by_field(store, evaluated_variants, 
+                                                        'dismiss_variant', case_obj, institute_obj)
 
-    commented_detailed = variants_filter_by_field(store, evaluated_variants, 'is_commented', case_obj, institute_obj)
-    data['commented_detailed'] = commented_detailed
+    data['commented_detailed'] = variants_filter_by_field(store, evaluated_variants, 
+                                                        'is_commented', case_obj, institute_obj)
 
     return data
 
