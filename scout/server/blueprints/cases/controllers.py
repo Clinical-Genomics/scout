@@ -109,7 +109,7 @@ def case_report_content(store, institute_obj, case_obj):
     data['manual_rank_options'] = MANUAL_RANK_OPTIONS
     data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
     data['genetic_models'] = dict(GENETIC_MODELS)
-    data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
+    data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     # We collect all causatives and suspected variants
     for var_type in ['causatives', 'suspects']:
