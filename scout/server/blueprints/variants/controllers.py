@@ -339,7 +339,7 @@ def variants_filter_by_field(store, variants, field, case_obj, institute_obj):
 
     Args:
         store(scout.adapter.MongoAdapter)
-        variants(list(dict or string)): List of variant objects or variant ids (can be a mixed list, but we filter just the dict objects)
+        variants(list(dict)): List of variant objects
         field(str): The key that indicates if variant is relevant
         case_obj(scout.models.Case)
         institute_obj(scout.models.Institute)
@@ -350,17 +350,14 @@ def variants_filter_by_field(store, variants, field, case_obj, institute_obj):
     filtered_variants = []
     # Check if the variants have information if "field"
     for var in variants:
+        if var.get(field):
+            # Add more details to the variant
+            if var['category'] == 'snv':
+                var_object = variant(store, institute_obj, case_obj, var['_id'])
+            else:
+                var_object = sv_variant(store, institute_obj['_id'], case_obj['display_name'], var['_id'])
 
-        # disregard the cases where var is a string (variant_id). This happens when a variant was not found in the database
-        if isinstance(var,dict):
-            if var.get(field):
-                # Add more details to the variant
-                if var['category'] == 'snv':
-                    var_object = variant(store, institute_obj, case_obj, var['_id'])
-                else:
-                    var_object = sv_variant(store, institute_obj['_id'], case_obj['display_name'], var['_id'])
-
-                filtered_variants.append(var_object['variant'])
+            filtered_variants.append(var_object['variant'])
 
     return filtered_variants
 

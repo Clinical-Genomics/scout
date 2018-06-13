@@ -17,7 +17,7 @@ STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
 def cases(store, case_query, limit=100):
     """Preprocess case objects."""
-    
+
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
@@ -111,12 +111,24 @@ def case_report_content(store, institute_obj, case_obj):
     data.update({'genetic_models': dict(GENETIC_MODELS)})
     data.update({'report_created_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
 
+
+    causatives_raw = data['causatives'] # This should be a list of dictionaries, but might contain elements that are strings (variant_ids)
+
+    #remove any element which is not a dictionary from the list above
+    causatives_raw[:] = [var for var in causatives_raw if isinstance(var, dict)]
+
     #get detailed info for the causatives:
-    causatives = variants_filter_by_field(store, data['causatives'], '_id', case_obj, institute_obj)
+    causatives = variants_filter_by_field(store, causatives_raw, '_id', case_obj, institute_obj)
     data.update({'causatives_detailed': causatives})
 
+
+    pinned_raw = data['suspects']
+
+    #remove any element which is not a dictionary from the list above
+    pinned_raw[:] = [var for var in pinned_raw if isinstance(var, dict)]
+
     #get detailed info for the pinned:
-    pinned = variants_filter_by_field(store, data['suspects'], '_id', case_obj, institute_obj)
+    pinned = variants_filter_by_field(store, pinned_raw, '_id', case_obj, institute_obj)
     data.update({'pinned_detailed': pinned})
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
