@@ -104,7 +104,7 @@ def pdf_case_report(institute_id, case_name):
     data = controllers.case_report_content(store, institute_obj, case_obj)
 
     # workaround to be able to print the case pedigree to pdf
-    if case_obj.get('madeline_info') is not None:
+    if 'madeline_info' in case_obj and case_obj.get('madeline_info'):
         with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:
             temp_madeline.write(case_obj['madeline_info'])
 
@@ -273,7 +273,7 @@ def hpoterms():
         {'name': '{} | {}'.format(term['_id'], term['description']),
          'id': term['_id']
         } for term in terms[:7]]
-    
+
     return jsonify(json_terms)
 
 
