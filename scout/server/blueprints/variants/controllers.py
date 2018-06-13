@@ -251,7 +251,7 @@ def variant(store, institute_obj, case_obj, variant_id=None):
 
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
-    
+
     if variant_obj is None:
         return None
     # Add information to case_obj
@@ -528,10 +528,10 @@ def clinsig_human(variant_obj):
             except ValueError:
                 # New version
                 human_str = clinsig_obj['value']
-        
+
         clinsig_obj['human'] = human_str
         clinsig_obj['link'] = link.format(clinsig_obj['accession'])
-        
+
         yield clinsig_obj
 
 
@@ -591,7 +591,7 @@ def cosmic_link(variant_obj):
     else:
         cosmic_id = cosmic_ids[0]
         url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
-   
+
 
     return url_template.format(cosmic_id)
 
