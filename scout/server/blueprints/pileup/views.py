@@ -37,5 +37,4 @@ def viewer():
     }
 
     return render_template('pileup/pileup.html', alignments=alignments,
-                           position=position, vcf_file=vcf_file, genome=pileup_genome_path,
-                           exons=pileup_exons_path)
+                           position=position, vcf_file=vcf_file)
