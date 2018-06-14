@@ -33,7 +33,9 @@ def serve(context, config, host, port, debug, livereload):
         host=pymongo_config['MONGO_HOST'], 
         port=pymongo_config['MONGO_PORT'], 
         username=pymongo_config['MONGO_USERNAME'], 
-        password=pymongo_config['MONGO_PASSWORD'], )
+        password=pymongo_config['MONGO_PASSWORD'],
+        authdb=context.obj['authdb'],
+        )
 
     log.info("Test if mongod is running")
     if not valid_connection:

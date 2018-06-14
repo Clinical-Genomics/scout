@@ -1,9 +1,9 @@
 import logging
 
 from pymongo import (MongoClient)
-from pymongo.errors import (ServerSelectionTimeoutError)
+from pymongo.errors import (ServerSelectionTimeoutError, OperationFailure)
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def check_connection(host='localhost', port=27017, username=None, password=None,
@@ -29,12 +29,11 @@ def check_connection(host='localhost', port=27017, username=None, password=None,
     uri += "{0}:{1}".format(host, port)
     if authdb:
         uri = "{}/{}".format(uri, authdb)
-
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
-
     try:
         client.server_info()
-    except ServerSelectionTimeoutError as err:
+    except (ServerSelectionTimeoutError,OperationFailure) as err:
+        LOG.warning(err)
         return False
 
     return True
