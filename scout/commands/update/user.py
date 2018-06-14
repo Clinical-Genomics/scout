@@ -40,7 +40,7 @@ def user(context, user_id, update_role, add_institute, remove_admin, remove_inst
         LOG.warning("User %s could not be found", user_id)
         context.abort()
 
-    existing_roles = set(user_obj['roles'])
+    existing_roles = set(user_obj.get('roles',[]))
     if update_role:
         if not update_role in user_obj['roles']:
             existing_roles = set(user_obj['roles'])
@@ -58,7 +58,7 @@ def user(context, user_id, update_role, add_institute, remove_admin, remove_inst
 
     user_obj['roles'] = list(existing_roles)
 
-    existing_institutes = set(user_obj['institutes'])
+    existing_institutes = set(user_obj.get('institutes',[]))
     for institute_id in add_institute:
         institute_obj = adapter.institute(institute_id)
         if not institute_obj:

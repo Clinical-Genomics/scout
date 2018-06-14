@@ -25,11 +25,18 @@ def research(context, case_id, institute, force):
 
     if case_id:
         if not institute:
+            # There was an old way to create case ids so we need a special case to handle this
             # Assume institute-case combo
-            institute, case_id = case_id.split('-', 1)
+            splitted_case = case_id.split('-')
+            # Check if first part is institute, then we know it is the old format
+            if len(splitted_case) > 1:
+                institute_obj = adapter.institute(splitted_case[0])
+                if institute_obj:
+                    institute = institute_obj['_id']
+                    case_id = splitted_case[1]
         case_obj = adapter.case(institute_id=institute, case_id=case_id)
         if case_obj is None:
-            LOG.info("No matching case found")
+            LOG.warning("No matching case found")
             context.abort()
         else:
             case_objs = [case_obj]
@@ -38,10 +45,12 @@ def research(context, case_id, institute, force):
         case_objs = adapter.cases(research_requested=True)
 
     default_threshold = 8
+    files = False
     for case_obj in case_objs:
         if force or case_obj['research_requested']:
             # Test to upload research snvs
             if case_obj['vcf_files'].get('vcf_snv_research'):
+                files = True
                 adapter.delete_variants(case_id=case_obj['_id'],
                                         variant_type='research',
                                         category='snv')
@@ -56,6 +65,7 @@ def research(context, case_id, institute, force):
 
             # Test to upload research svs
             if case_obj['vcf_files'].get('vcf_sv_research'):
+                files = True
                 adapter.delete_variants(case_id=case_obj['_id'],
                                         variant_type='research',
                                         category='sv')
@@ -69,6 +79,7 @@ def research(context, case_id, institute, force):
 
             # Test to upload research cancer variants
             if case_obj['vcf_files'].get('vcf_cancer_research'):
+                files = True
                 adapter.delete_variants(case_id=case_obj['_id'],
                                         variant_type='research',
                                         category='cancer')
@@ -80,7 +91,9 @@ def research(context, case_id, institute, force):
                     category='cancer',
                     rank_threshold=default_threshold,
                     )
-
+            if not files:
+                LOG.warning("No research files found for case %s", case_id)
+                context.abort()
             case_obj['is_research'] = True
             case_obj['research_requested'] = False
             adapter.update_case(case_obj)
