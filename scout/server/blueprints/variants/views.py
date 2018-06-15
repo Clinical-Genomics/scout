@@ -50,7 +50,7 @@ def variants(institute_id, case_name):
             form.csrf_token = request.args.get('csrf_token')
         else:
             form = FiltersForm(request.form)
-     else:
+    else:
         form = FiltersForm(request.args)
  
     panel_choices = [(panel['panel_name'], panel['display_name'])
