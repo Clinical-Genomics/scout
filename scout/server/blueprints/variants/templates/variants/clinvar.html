@@ -603,7 +603,7 @@
                 <div class="panel panel-success">
                   {% if pinned.simple_id|length > 25 and  pinned.cytoband_start%}
                     <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}</div>
-                  {% elif pinned.simple_id|length %}
+                  {% elif pinned.simple_id|length > 25 %}
                     <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"(chr."+pinned.chromosome+")" }}</div>
                   {% else %}
                     <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.simple_id }}</div>
