@@ -266,7 +266,7 @@
                       {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
                         <td><strong>{{ pinned.sub_category + "(" + pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end +"), length:"+ pinned.length|string  }}</strong></td>
                       {% elif pinned.simple_id|length > 25 %}
-                        <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} (pinned.sub_category)</strong></td>
+                        <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} ({{ pinned.sub_category }})</strong></td>
                       {% else %}
                         <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} ({{ pinned.reference }} -> {{ pinned.alternative }})</strong></td>
                       {% endif %}
