@@ -37,12 +37,10 @@ def variants(institute_id, case_name):
             'functional_annotations': SEVERE_SO_TERMS,
             'clinsig': [4,5],
             'clinsig_confident_always_returned': True,
-            'thousand_genomes_frequency': '0.01',
+            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
             'variant_type': 'clinical',
             'gene_panels': panels
              })
-
-#institute_obj['frequency_cutoff'],
 
     if(request.method == "POST"):
         if bool(request.form.get('clinical_filter')):
