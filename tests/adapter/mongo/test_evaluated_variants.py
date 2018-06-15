@@ -77,3 +77,37 @@ def test_get_ranked_and_commented(real_variant_database):
     
     ## THEN assert the only variant is returned
     assert len(evaluated_variants) == 1
+
+def test_get_ranked_and_comment_two(real_variant_database):
+    adapter = real_variant_database
+    
+    ## GIVEN a database with information
+    case_id = adapter.case_collection.find_one()['_id']
+    variants = adapter.variant_collection.find()
+
+    evaluated_variants = adapter.evaluated_variants(case_id)
+    assert len(evaluated_variants) == 0
+    ## WHEN adding a comment for a variant and updating manual rank
+    for i, variant in enumerate(variants):
+        if i > 1:
+            break
+        
+        var_id = variant['variant_id']
+    
+        comment = dict(
+            institute='cust000',
+            case=case_id,
+            link='a link',
+            category='variant',
+            verb='comment',
+            variant_id=var_id,
+        )
+        adapter.event_collection.insert_one(comment)
+        
+        variant['manual_rank'] = 3
+        adapter.variant_collection.find_one_and_replace({'_id':variant['_id']}, variant)
+
+    evaluated_variants = adapter.evaluated_variants(case_id)
+    
+    ## THEN assert the only variant is returned
+    assert len(evaluated_variants) == 2
