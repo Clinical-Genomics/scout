@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### WARNING ###
 
-This is a Major version update and will require that the backend of pre releases is updated.
+This is a major version update and will require that the backend of pre releases is updated.
 Run commands:
 
 ```
@@ -20,8 +20,8 @@ $scout update hpo
 ### Fixed
 
 - Adapts clinvar parsing to new format
-- Fixed problem in `scout update user` when there where no roles
-- Makes pileup.js use online resources so it can be used by any instance
+- Fixed problem in `scout update user` when the user object had no roles
+- Makes pileup.js use online genome resources when viewing alignments. Now any instance of Scout can make use of this functionality.
 - Fix ensembl link for structural variants
 - Works even when cases does not have `'madeline_info'`
 - Parses Polyphen in correct way again
@@ -33,7 +33,7 @@ $scout update hpo
 - New command `scout update hpo`
 - New command `scout update genes` will fetch all the latest information about genes and update them
 - Load **all** variants found on chromosome **MT**
-- Adds choice in cases owerview do display as many cases as user like
+- Adds choice in cases overview do show as many cases as user like
 
 ### Removed
 

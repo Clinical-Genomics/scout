@@ -10,13 +10,13 @@ This major update includes the following highlights:
 
   ![Case report](/img/blog/case_report.png)
 
-- Scout now uploads ALL variants on the mitochondrial chromosome (MT) - independently of rank score both for clinical and research variants
+- Scout now uploads ALL variants from the mitochondrial chromosome (MT) - independently of rank score both for clinical and research variants
 
 - Filter on spidex levels are now available
 
 - Filter on chromosome is possible, mainly to get easy access to MT variants
 
-- It is possible to produce a clinvar report from the case page that could be used to submit variants to clinvar
+- It is possible to produce a clinvar submission files from the case page that could be used to submit variants to clinvar
 
 - All existing HPO terms now lives in scout. They should also be presented in a more relevant order when searched for
 
