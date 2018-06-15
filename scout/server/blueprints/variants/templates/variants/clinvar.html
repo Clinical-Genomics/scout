@@ -227,8 +227,10 @@
             {% else %}
               <span class="label label-warning pull-left">sv</span>
             {% endif %}
-            {% if pinned.simple_id|length > 50 %}
+            {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
               #Variant --> {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}
+            {% elif pinned.simple_id|length > 25 %}
+              #Variant --> {{ pinned.sub_category+"(chr."+pinned.chromosome+")" }}
             {% else %}
               #Variant --> {{ pinned.simple_id }}
             {% endif %}
@@ -261,8 +263,10 @@
                     {% endif %}
                     <tr>
                       <td>Coordinates:</td>
-                      {% if pinned.simple_id|length > 50 %}
-                        <td><strong>{{ pinned.sub_category + "(" + pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end +"), lenght:"+ pinned.length|string  }}</strong></td>
+                      {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
+                        <td><strong>{{ pinned.sub_category + "(" + pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end +"), length:"+ pinned.length|string  }}</strong></td>
+                      {% elif pinned.simple_id|length > 25 %}
+                        <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} (pinned.sub_category)</strong></td>
                       {% else %}
                         <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} ({{ pinned.reference }} -> {{ pinned.alternative }})</strong></td>
                       {% endif %}
@@ -597,8 +601,10 @@
                 <input type="hidden" name="Individual ID_{{pinned._id}}" value="{{ individual.display_name }}">
                 <input type="hidden" name="Linking ID_{{ pinned._id }}" value="{{ pinned._id }}">
                 <div class="panel panel-success">
-                  {% if pinned.simple_id|length > 50 %}
+                  {% if pinned.simple_id|length > 25 and  pinned.cytoband_start%}
                     <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}</div>
+                  {% elif pinned.simple_id|length %}
+                    <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"(chr."+pinned.chromosome+")" }}</div>
                   {% else %}
                     <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.simple_id }}</div>
                   {% endif %}
