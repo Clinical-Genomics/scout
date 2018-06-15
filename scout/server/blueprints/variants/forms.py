@@ -3,7 +3,7 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField, IntegerField)
+                     HiddenField, IntegerField, SubmitField)
 from wtforms.widgets import TextInput
 
 from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS, 
@@ -64,6 +64,9 @@ class FiltersForm(FlaskForm):
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
     exac_frequency = BetterDecimalField('ExAC', places=2)
     local_obs = IntegerField('Local obs. (archive)')
+
+    filter_variants = SubmitField(label='Filter variants')
+    clinical_filter = SubmitField(label='Clinical filter')
 
 
 class CancerFiltersForm(FiltersForm):

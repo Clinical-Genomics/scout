@@ -194,7 +194,7 @@
 {% endmacro %}
 
 {% macro filters_form() %}
-  <form method="GET">
+  <form method="POST" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}">
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">
@@ -263,10 +263,13 @@
           <label class="control-label">Submit</label>
           <div class="row">
             <div class="col-xs-6">
-              <button class="btn btn-primary form-control">Filter variants</button>
+	     {{ form.filter_variants() }} 
+<!--              <button class="btn btn-primary form-control">Filter variants</button> -->
             </div>
             <div class="col-xs-6">
-              <a href="{{ url_for('variants.variants', institute_id=institute._id,
+
+	      {{ form.clinical_filter() }}
+<!--              <a href="{{ url_for('variants.variants', institute_id=institute._id,
                           case_name=case.display_name, variant_type=form.variant_type.data,
                           functional_annotations=severe_so_terms,
                           region_annotations=['exonic', 'splicing'],
@@ -274,9 +277,11 @@
 			  clinsig_confident_always_returned=True,
                           thousand_genomes_frequency=institute.frequency_cutoff,
                           gene_panels=form.data.get('gene_panels')) }}"
-                 class="btn btn-default form-control">
-                Clinical filter
+                 class="btn btn-default form-control">                 Clinical filter
+
+ 
               </a>
+-->
             </div>
           </div>
         </div>

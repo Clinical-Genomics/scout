@@ -3,7 +3,7 @@ import io
 import logging
 
 from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response, session
-from werkzeug.datastructures import Headers
+from werkzeug.datastructures import Headers, MultiDict
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
@@ -20,14 +20,39 @@ log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
 
 
-@variants_bp.route('/<institute_id>/<case_name>/variants')
+@variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
     page = int(request.args.get('page', 1))
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_type = request.args.get('variant_type', 'clinical')
 
-    form = FiltersForm(request.args)
+    # Update filter settings if Clinical Filter was requested
+    panels = request.form.get('gene_panels')
+    if bool(request.form.get('clinical_filter')):
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'clinsig': [4,5],
+            'clinsig_confident_always_returned': True,
+            'thousand_genomes_frequency': '0.01',
+            'variant_type': 'clinical',
+            'gene_panels': panels
+             })
+
+#institute_obj['frequency_cutoff'],
+
+    if(request.method == "POST"):
+        if bool(request.form.get('clinical_filter')):
+            form = FiltersForm(clinical_filter)
+            form.csrf_token = request.args.get('csrf_token')
+        else:
+            form = FiltersForm(request.form)
+     else:
+        form = FiltersForm(request.args)
+ 
     panel_choices = [(panel['panel_name'], panel['display_name'])
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
@@ -42,7 +67,7 @@ def variants(institute_id, case_name):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
-    if len(form.hgnc_symbols.data) > 0:
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
         clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
