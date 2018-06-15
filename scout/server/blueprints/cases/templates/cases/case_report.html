@@ -287,8 +287,8 @@
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
-    {% if pinned_detailed %}
-      {% for pinned in pinned_detailed %}
+    {% if suspects_detailed %}
+      {% for pinned in suspects_detailed %}
         {% if pinned['_id'] not in causatives_detailed | map(attribute='_id') %}
           {% if pinned.category == 'snv' %}
             {{ sn_variant_content(pinned, loop.index) }}
@@ -303,7 +303,7 @@
     {% else %}
       No pinned variants available for this case
     {% endif %}
-    {% if pinned_detailed and duplicated_variants|length == pinned_detailed|length %}
+    {% if suspects_detailed and duplicated_variants|length == suspects_detailed|length %}
       All pinned variants are described among the causative variants
     {% endif %}
   </div>
@@ -320,7 +320,7 @@
     {% set duplicated_variants = [] %}
     {% if classified_detailed %}
       {% for variant in classified_detailed %}
-        {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in pinned_detailed | map(attribute='_id') %}
+        {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in suspects_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
@@ -351,7 +351,7 @@
     {% set duplicated_variants = [] %}
     {% if tagged_detailed %}
       {% for variant in tagged_detailed %}
-        {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in pinned_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') %}
+        {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in suspects_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
@@ -382,7 +382,7 @@
     {% set duplicated_variants = [] %}
     {% if commented_detailed %}
       {% for variant in commented_detailed %}
-        {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in pinned_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') and variant['_id'] not in tagged_detailed | map(attribute='_id') %}
+        {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in suspects_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') and variant['_id'] not in tagged_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
