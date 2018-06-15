@@ -198,15 +198,16 @@ class VariantHandler(VariantLoader):
            Returns:
                variant_object(Variant): A odm variant object
         """
+        query = {}
         if case_id:
             # search for a variant in a case
-            variant_obj = self.variant_collection.find_one({
-                'case_id': case_id,
-                'variant_id': document_id,
-            })
+            query['case_id'] = case_id
+            query['variant_id'] = document_id
         else:
             # search with a unique id
-            variant_obj = self.variant_collection.find_one({'_id': document_id})
+            query['_id'] = document_id
+        
+        variant_obj = self.variant_collection.find_one(query)
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
             if variant_obj['chromosome'] in ['X', 'Y']:
@@ -383,6 +384,7 @@ class VariantHandler(VariantLoader):
         Returns:
             variants(iterable(Variant))
         """
+        # Get all variants that have been evaluated in some way for a case
         query = {
             'case_id': case_id,
             '$or': [
@@ -391,32 +393,39 @@ class VariantHandler(VariantLoader):
                 {'dismiss_variant': {'$exists': True}},
             ],
         }
-        variants = []
-
+        # Collect all relevant variant_ids in a list
+        variants = {}
         for var in self.variant_collection.find(query):
-            variants.append(var)
+            variants[var['variant_id']] = var
 
-        # Get all variants that have a comment on them
+        # Collect all variant comments from the case
         event_query = {
             'case': case_id,
             'category': 'variant',
             'verb': 'comment',
         }
-        # Check that we dont add variants multiple times if they have multiple comments
-        variant_ids = set()
-
-        for event in self.event_collection.find(event_query):
-            var_id = event['variant_id']
-
+        
+        # Get all variantids for commented variants
+        comment_variants = {event['variant_id'] for event in self.event_collection.find(event_query)}
+        
+        # Get the variant objects for commented variants, if they exist
+        for var_id in comment_variants:
             # Skip if we already added the variant
-            if var_id in variant_ids:
+            if var_id in variants:
                 continue
-            variant_ids.add(var_id)
+            # Get the variant with variant_id (not _id!)
             variant_obj = self.variant(var_id, case_id=case_id)
-            variant_obj['is_commented'] = True
-            variants.append(variant_obj)
+            
+            # There could be cases with comments that refers to non existing variants
+            # if a case has been reanalysed
+            if not variant_obj:
+                continue
 
-        return variants
+            variant_obj['is_commented'] = True
+            variants[var_id] = variant_obj
+
+        # Return a list with the variant objects
+        return list(variants.values())
 
     def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,
                        gene_obj=None, variant_type='clinical', category='snv',
