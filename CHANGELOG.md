@@ -2,14 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.0.0]
 
 ### WARNING ###
 
-```
-This version will require that the backend of pre releases are updated
+This is a Major version update and will require that the backend of pre releases is updated.
 Run commands:
 
+```
 $scout update genes
 $scout update hpo
 ```
@@ -20,6 +20,11 @@ $scout update hpo
 ### Fixed
 
 - Adapts clinvar parsing to new format
+- Fixed problem in `scout update user` when there where no roles
+- Makes pileup.js use online resources so it can be used by any instance
+- Fix ensembl link for structural variants
+- Works even when cases does not have `'madeline_info'`
+- Parses Polyphen in correct way again
 
 ### Added
 
@@ -27,7 +32,8 @@ $scout update hpo
 - All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
 - New command `scout update hpo`
 - New command `scout update genes` will fetch all the latest information about genes and update them
-- Load **all** variants found on chromosome **MT** 
+- Load **all** variants found on chromosome **MT**
+- Adds choice in cases owerview do display as many cases as user like
 
 ### Removed
 
