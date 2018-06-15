@@ -393,7 +393,7 @@ class VariantHandler(VariantLoader):
                 {'dismiss_variant': {'$exists': True}},
             ],
         }
-        # Collect all relevant variants in a list
+        # Collect all relevant variant_ids in a list
         variants = {}
         for var in self.variant_collection.find(query):
             variants[var['variant_id']] = var
@@ -408,17 +408,23 @@ class VariantHandler(VariantLoader):
         # Get all variantids for commented variants
         comment_variants = {event['variant_id'] for event in self.event_collection.find(event_query)}
         
+        # Get the variant objects for commented variants, if they exist
         for var_id in comment_variants:
             # Skip if we already added the variant
             if var_id in variants:
                 continue
+            # Get the variant with variant_id (not _id!)
             variant_obj = self.variant(var_id, case_id=case_id)
             
+            # There could be cases with comments that refers to non existing variants
+            # if a case has been reanalysed
             if not variant_obj:
                 continue
+
             variant_obj['is_commented'] = True
             variants[var_id] = variant_obj
 
+        # Return a list with the variant objects
         return list(variants.values())
 
     def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,
