@@ -31,7 +31,7 @@ class HpoHandler(object):
 
         Arguments:
             hpo_bulk(list(scout.models.HpoTerm))
-        
+
         Returns:
             result: pymongo bulkwrite result
 
@@ -57,7 +57,7 @@ class HpoHandler(object):
 
         return self.hpo_term_collection.find_one({'_id': hpo_id})
 
-    def hpo_terms(self, query=None, hpo_term=None):
+    def hpo_terms(self, query=None, hpo_term=None, limit=None):
         """Return all HPO terms
 
         If a query is sent hpo_terms will try to match with regex on term or
@@ -80,8 +80,12 @@ class HpoHandler(object):
             }
         elif hpo_term:
             query_dict['hpo_id'] = hpo_term
-        
-        res = self.hpo_term_collection.find(query_dict)
+
+        if limit:
+            res = self.hpo_term_collection.find(query_dict).limit(limit)
+        else:
+            res = self.hpo_term_collection.find(query_dict)
+
         LOG.info("Found {0} terms with search word {1}".format(res.count(), query))
         return res
 
@@ -109,10 +113,10 @@ class HpoHandler(object):
         """Return all disease terms that overlaps a gene
 
             If no gene, return all disease terms
-        
+
         Args:
             hgnc_id(int)
-        
+
         Returns:
             iterable(dict): A list with all disease terms that match
         """
