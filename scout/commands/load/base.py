@@ -16,11 +16,13 @@ from .report import report as report_command
 
 LOG = logging.getLogger(__name__)
 
+
 @click.group()
 @click.pass_context
 def load(context):
     """Load the Scout database."""
     pass
+
 
 load.add_command(case_command)
 load.add_command(institute_command)
