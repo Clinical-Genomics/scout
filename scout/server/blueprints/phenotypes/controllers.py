@@ -5,7 +5,7 @@ def hpo_terms(store, query = None, limit = None):
 
     Args:
         store (obj): an adapter to the scout database
-        query (str): the terms to search in the database
+        query (str): the term to search in the database
         limit (str): the number of desired results
 
     Returns:
