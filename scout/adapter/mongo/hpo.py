@@ -66,6 +66,7 @@ class HpoHandler(object):
         Args:
             query(str): Part of a hpoterm or description
             hpo_term(str): Search for a specific hpo term
+            limit(int): the number of desired results
 
         Returns:
             result(pymongo.Cursor): A cursor with hpo terms
