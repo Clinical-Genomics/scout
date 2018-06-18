@@ -20,20 +20,24 @@
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading">HPO terms</div>
-          <table class="table table-sm">
-            <thead>
-              <th>HPO term</th>
-              <th>Phenotype description</th>
-              <th>Number of associated genes</th>
-            </thead>
-          {% for pheno in phenotypes %}
-            <tr>
-              <td><a href="http://compbio.charite.de/hpoweb/showterm?id={{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a></td>
-              <td>{{ pheno.description }}</td>
-              <td>{{pheno.genes|length}}</td>
-            </tr>
-          {% endfor %}
-        </table>
+          {% if phenotypes|length == 0 %}
+            The search didn't return ant phenotype term
+          {% else %}
+            <table class="table table-sm">
+                <thead>
+                  <th>HPO term</th>
+                  <th>Phenotype description</th>
+                  <th>Number of associated genes</th>
+                </thead>
+                {% for pheno in phenotypes %}
+                <tr>
+                  <td><a href="http://compbio.charite.de/hpoweb/showterm?id={{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a></td>
+                  <td>{{ pheno.description }}</td>
+                  <td>{{pheno.genes|length}}</td>
+                </tr>
+                {% endfor %}
+              </table>
+          {% endif %}
       </div>
     </div>
   </div>
