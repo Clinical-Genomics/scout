@@ -1,4 +1,4 @@
-from pymongo import (IndexModel, ASCENDING, DESCENDING)
+from pymongo import (IndexModel, ASCENDING, DESCENDING, TEXT)
 
 INDEXES = {
     'hgnc_gene': [
@@ -76,6 +76,13 @@ INDEXES = {
         IndexModel([
             ('description', ASCENDING)],
             name="description"),
+        IndexModel([
+            ('description', TEXT)],
+            default_language='english',
+            name="description_text"),
+        IndexModel([
+            ('hpo_number', ASCENDING)],
+            name="number"),
     ],
     'transcript': [
         IndexModel([
@@ -94,6 +101,7 @@ INDEXES = {
             background=True,
             ),
     ],
+<<<<<<< HEAD
     'hpo_term': [
         IndexModel([
             ('hpo_number', ASCENDING)],
@@ -102,4 +110,7 @@ INDEXES = {
             ),
     ],
     
+=======
+>>>>>>> Makes hpo term search more intelligent. Please run  for this to work
 }
+

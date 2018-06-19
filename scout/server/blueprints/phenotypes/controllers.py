@@ -16,5 +16,5 @@ def hpo_terms(store, query = None, limit = None):
     if limit:
         limit=int(limit)
 
-    hpo_phenotypes['phenotypes'] = list(store.hpo_terms(query=query,  limit=limit))
+    hpo_phenotypes['phenotypes'] = list(store.hpo_terms(text=query, limit=limit))
     return hpo_phenotypes
