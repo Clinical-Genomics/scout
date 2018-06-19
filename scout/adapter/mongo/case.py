@@ -332,6 +332,30 @@ class CaseHandler(object):
         return updated_case
         ##TODO Add event for updating case?
 
+    def replace_case(self, case_obj):
+        """Replace a existing case with a new one
+
+        Keeps the object id
+
+        Args:
+            case_obj(dict)
+
+        Returns:
+            updated_case(dict)
+        """
+        LOG.info("Updating case %s", case_obj['_id'])
+        # update updated_at of case to "today"
+
+        case_obj['updated_at'] = datetime.datetime.now(),
+
+        updated_case = self.case_collection.find_one_and_replace(
+            {'_id': case_obj['_id']},
+            case_obj,
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+
+        return updated_case
+
     def update_caseid(self, case_obj, family_id):
         """Update case id for a case across the database."""
         new_case = deepcopy(case_obj)
