@@ -23,7 +23,7 @@
             viz: pileup.viz.genome(),
             isReference: true,
             data: pileup.formats.twoBit({
-              url: 'http://www.biodalliance.org/datasets/hg19.2bit'
+              url: '{{ url_for("pileup.remote_static", file='http://www.biodalliance.org/datasets/hg19.2bit')}}'
             }),
             name: 'Reference'
           },
