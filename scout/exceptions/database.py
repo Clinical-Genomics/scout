@@ -23,6 +23,12 @@ class OperationalError(DatabaseError):
     pass
 
 
-class DataNotFoundError(DatabaseError):
+class DataError(DatabaseError):
+    """Exception raised for errors that are due to problems with the processed data like division by
+     zero, numeric value out of range, etc. It must be a subclass of DatabaseError."""
+    pass
+
+
+class DataNotFoundError(DataError):
     """Requested data object not found in the database"""
     pass
