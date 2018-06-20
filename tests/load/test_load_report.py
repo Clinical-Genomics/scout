@@ -19,7 +19,7 @@ def test_load_delivery_report_bad_case_id(panel_database):
                              report_path=report_path)
 
 
-def test_load_delivery_report_without_date_success(case_database):
+def test_load_delivery_report_success(case_database):
     adapter = case_database
 
     # GIVEN a case exist, without a delivery report for the given analysis date
