@@ -12,17 +12,14 @@ from .research import research as research_command
 from .variants import variants as variants_command
 from .region import region as region_command
 from .user import user as user_command
-from .report import report as report_command
 
 LOG = logging.getLogger(__name__)
-
 
 @click.group()
 @click.pass_context
 def load(context):
     """Load the Scout database."""
     pass
-
 
 load.add_command(case_command)
 load.add_command(institute_command)
@@ -31,4 +28,3 @@ load.add_command(panel_command)
 load.add_command(user_command)
 load.add_command(research_command)
 load.add_command(variants_command)
-load.add_command(report_command)

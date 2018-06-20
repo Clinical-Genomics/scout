@@ -11,10 +11,6 @@ class IntegrityError(DatabaseError):
        is affected, e.g. a foreign key check fails."""
     pass
 
-class ValidationError(Exception):
-    """Exception raised for errors that are related to validations in the database."""
-    pass
-
 class OperationalError(DatabaseError):
     """Exception raised for errors that are related to the database's 
        operation and not necessarily under the control of the programmer, 
