@@ -29,7 +29,13 @@ def variants(institute_id, case_name):
     variant_type = request.args.get('variant_type', 'clinical')
 
     # Update filter settings if Clinical Filter was requested
-    current_panels = request.form.get('gene_panels')
+    
+    default_panels = []
+    for panel in case_obj['panels']:
+        if panel['is_default']:
+            default_panels.append(panel['panel_name'])
+            
+    request.form.get('gene_panels')
     if bool(request.form.get('clinical_filter')):
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
@@ -39,7 +45,7 @@ def variants(institute_id, case_name):
             'clinsig_confident_always_returned': True,
             'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
             'variant_type': 'clinical',
-            'gene_panels': current_panels
+            'gene_panels': default_panels
              })
 
     if(request.method == "POST"):
