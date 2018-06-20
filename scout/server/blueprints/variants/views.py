@@ -69,6 +69,9 @@ def variants(institute_id, case_name):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
         clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
@@ -76,15 +79,21 @@ def variants(institute_id, case_name):
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
                 if hgnc_gene is None:
-                    flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+                    not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
             elif store.hgnc_genes(hgnc_symbol).count() == 0:
-                flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+                not_found_symbols.append(hgnc_symbol)
             elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                flash("Gene not included in clinical list: {}".format(hgnc_symbol), 'warning')
+                non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
     form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
