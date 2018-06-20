@@ -220,7 +220,7 @@
 <a name="gene_panels"/>
 <div class="card border-dark mb-3">
   <div class="card-header">
-    <strong>Gene panels used for the analysis</strong>
+    <strong>Default gene panels</strong>
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm">
@@ -233,18 +233,17 @@
       </thead>
       <tbody>
         {% for panel in case.panels %}
-          <tr>
-            <td>
-              <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}" target="_blank">
-                {{ panel.display_name|truncate(50, True) }}
-              </a>
-              {% if panel.is_default %}
-                <span class="badge badge-default pull-right">Default</span>
-              {% endif %}
-            </td>
-            <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
-            <td>{{ panel.nr_genes }}</td>
-          </tr>
+          {% if panel.is_default %}
+            <tr>
+              <td>
+                <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}" target="_blank">
+                  {{ panel.display_name|truncate(75, True) }}
+                </a>
+              </td>
+              <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
+              <td>{{ panel.nr_genes }}</td>
+            </tr>
+          {% endif %}
         {% else %}
           <tr>
             <td colspan="5">No panels linked to case</td>
@@ -560,7 +559,18 @@
 {% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic contentc -->
 <div class="card">
   <div class="card-header">
-    # <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a> <span class="badge badge-pill badge-success">SNV</span>
+    <div class="row">
+      <div class="col">
+        # <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a> <span class="badge badge-pill badge-success">SNV</span>
+      </div>
+      <div class="col text-right">
+        {% if variant.sanger_ordered and variant.validation %}
+          <span class="badge badge-pill badge-info" title="sanger-status">Sanger:{{variant.validation}}</span>
+        {% elif variant.sanger_ordered %}
+          <span class="badge badge-pill badge-info" title="sanger-status">Sanger ordered</span>
+        {% endif %}
+      </div>
+    </div>
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm">
@@ -801,7 +811,7 @@
                 <td title="{{ transcript.coding_sequence_name or '' }}">
                   {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
                 </td>
-                <td>            
+                <td>
                   {{ (transcript.protein_sequence_name or '')|url_decode }}
                 </td>
               </tr>
