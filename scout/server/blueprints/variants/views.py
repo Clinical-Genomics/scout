@@ -50,9 +50,13 @@ def variants(institute_id, case_name):
             form = FiltersForm(request.form)
     else:
         form = FiltersForm(request.args)
- 
+        
+    panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
     panel_choices = [(panel['panel_name'], panel['display_name'])
-                     for panel in case_obj.get('panels', [])]
+                     for panel in panels]
+
     form.gene_panels.choices = panel_choices
 
     # update status of case if vistited for the first time
