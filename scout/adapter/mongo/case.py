@@ -52,7 +52,7 @@ class CaseHandler(object):
 
         if status:
             query['status'] = status
-        
+
         elif finished:
             query['status'] = {'$in': ['solved', 'archived']}
 
@@ -63,7 +63,7 @@ class CaseHandler(object):
             query['is_research'] = True
 
         if name_query:
-            users = self.user_collection.find({'name': {'$regex': name_query, '$options':'i'}})
+            users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
 
@@ -295,10 +295,12 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
+        # Todo: rename to match the intended purpose
+
         LOG.info("Updating case {0}".format(case_obj['_id']))
         old_case = self.case_collection.find_one(
-                        {'_id': case_obj['_id']}
-                    )
+            {'_id': case_obj['_id']}
+        )
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {
@@ -325,14 +327,13 @@ class CaseHandler(object):
                     'research_requested': case_obj.get('research_requested', False),
                 }
             },
-            return_document = pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         LOG.info("Case updated")
         return updated_case
-        ##TODO Add event for updating case?
 
-    def replace_case(self, case_obj):
+    def save_case(self, case_obj):
         """Replace a existing case with a new one
 
         Keeps the object id
@@ -343,7 +344,9 @@ class CaseHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info("Updating case %s", case_obj['_id'])
+        # Todo: Figure out and describe when this method destroys a case if invoked instead of
+        # update_case
+        LOG.info("Saving case %s", case_obj['_id'])
         # update updated_at of case to "today"
 
         case_obj['updated_at'] = datetime.datetime.now(),

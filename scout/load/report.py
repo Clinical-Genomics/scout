@@ -47,7 +47,7 @@ def load_delivery_report(adapter: MongoAdapter,
                                  'overwrite')
 
     logger.info('Saving report for case {} in database'.format(case_obj['_id']))
-    return adapter.replace_case(case_obj)
+    return adapter.save_case(case_obj)
 
 
 def _put_report_in_case_root(case_obj, report_path):
