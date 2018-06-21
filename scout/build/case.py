@@ -214,6 +214,7 @@ def build_case(case_data, adapter):
     # Files
     case_obj['madeline_info'] = case_data.get('madeline_info')
     case_obj['vcf_files'] = case_data.get('vcf_files', {})
+    case_obj['delivery_report'] = case_data.get('delivery_report')
 
     case_obj['has_svvariants'] = False
     if (case_obj['vcf_files'].get('vcf_sv') or case_obj['vcf_files'].get('vcf_sv_research')):
