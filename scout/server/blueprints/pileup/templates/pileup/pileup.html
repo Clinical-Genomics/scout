@@ -23,7 +23,11 @@
             viz: pileup.viz.genome(),
             isReference: true,
             data: pileup.formats.twoBit({
-              url: '{{ url_for("pileup.remote_static", file='http://www.biodalliance.org/datasets/hg19.2bit')}}'
+              {% if genome %}
+                url: '{{ url_for("pileup.remote_static", file=genome) }}'
+              {% else %}
+                url: 'http://www.biodalliance.org/datasets/hg19.2bit'
+              {% endif %}
             }),
             name: 'Reference'
           },
@@ -38,7 +42,8 @@
           {
             viz: pileup.viz.genes(),
             data: pileup.formats.bigBed({
-              url: 'http://www.biodalliance.org/datasets/ensGene.bb'
+              // url: 'http://www.biodalliance.org/datasets/ensGene.bb'
+              url: '{{ url_for("pileup.remote_static", file="local/pileup_refs/ensGene.bb") }}'
             }),
             name: 'Genes'
           },
