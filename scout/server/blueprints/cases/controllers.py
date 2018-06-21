@@ -59,8 +59,8 @@ def case(store, institute_obj, case_obj):
     case_obj['panel_names'] = []
     for panel_info in case_obj.get('panels', []):
         if panel_info.get('is_default'):
-            panel_obj = store.gene_panel(panel_info[‘panel_name’], version=panel_info.get(‘version’))
-            distinct_genes.update([gene[‘hgnc_id’] for gene in panel_obj.get(‘genes’, [])])
+            panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
+            distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
             full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
             case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
