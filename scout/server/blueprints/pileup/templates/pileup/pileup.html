@@ -42,8 +42,11 @@
           {
             viz: pileup.viz.genes(),
             data: pileup.formats.bigBed({
-              // url: 'http://www.biodalliance.org/datasets/ensGene.bb'
-              url: '{{ url_for("pileup.remote_static", file="local/pileup_refs/ensGene.bb") }}'
+              {% if exons %}
+                url: '{{ url_for("pileup.remote_static", file=exons) }}'
+              {% else %}
+                url: 'http://www.biodalliance.org/datasets/ensGene.bb'
+              {% endif %}
             }),
             name: 'Genes'
           },
