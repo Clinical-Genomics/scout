@@ -256,8 +256,17 @@ def variant(store, institute_obj, case_obj, variant_id=None):
         }
 
     """
-    default_panels = [store.panel(panel['panel_id']) for panel in
-                      case_obj['panels'] if panel.get('is_default')]
+    default_panels = []
+    # Add default panel information to variant
+    for panel in case_obj['panels']:
+        if not panel.get('is_default'):
+            continue
+        panel_obj = store.gene_panel(panel['panel_name'], panel.get('version'))
+        if not panel:
+            LOG.warning("Panel {0} version {1} could not be found".format(
+                panel['panel_name'], panel.get('version')))
+            continue
+        default_panels.append(panel_obj)
 
     variant_obj = store.variant(variant_id, gene_panels=default_panels)
     genome_build = case_obj.get('genome_build', '37')
