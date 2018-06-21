@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.1b]
+
+### Added
+
+- option to point to local reference files to the genome viewer pileup.js. Documented in `docs.admin-guide.server`
+
 ## [4.0.0]
 
 ### WARNING ###
