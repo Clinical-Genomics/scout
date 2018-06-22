@@ -560,16 +560,13 @@
 <div class="card">
   <div class="card-header">
     <div class="row">
-      <div class="col">
-        # <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a> <span class="badge badge-pill badge-success">SNV</span>
-      </div>
-      <div class="col text-right">
+      # <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
+        <span class="badge badge-pill badge-success">SNV</span>&nbsp;
         {% if variant.sanger_ordered and variant.validation %}
           <span class="badge badge-pill badge-info" title="sanger-status">Sanger:{{variant.validation}}</span>
         {% elif variant.sanger_ordered %}
-          <span class="badge badge-pill badge-info" title="sanger-status">Sanger ordered</span>
+          <span class="badge badge-info" title="sanger-status">Sanger ordered</span>
         {% endif %}
-      </div>
     </div>
   </div>
   <div class="card-body">
@@ -597,7 +594,7 @@
           </td>
           <td>
             {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank">{{ panel_id }}</a><br>
+              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a>
             {% endfor %}
           </td>
         </tr>
@@ -854,7 +851,8 @@
 {% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
 <div class="card">
   <div class="card-header">
-    # <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a> <span class="badge badge-pill badge-warning">SV</span>
+    # <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
+    &nbsp;<span class="badge badge-pill badge-warning">SV</span>
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
@@ -879,7 +877,15 @@
               <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank">{{ panel_id }}</a><br>
             {% endfor %}
           </td>
-          <td>{{ variant.callers if variant.callers else '-' }}</td>
+          <td>
+            {% if variant.callers %}
+              {% for caller,call in variant.callers|sort %}
+                <span class="badge badge-secondary">{{ caller+':'+call }}</span>
+              {% endfor %}
+            {% else %}
+            -
+            {% endif %}
+          </td>
         </tr>
       </tbody>
     </table>
