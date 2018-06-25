@@ -22,7 +22,7 @@
       <typeahead url="/api/v1/genes" v-on:send="visitGene" bootstrap="yes"></typeahead>
     </div>
   </div>
-  
+
   <h1>
     {{ symbol }} <small>{{ ensembl_id }}</small>
   </h1>
@@ -50,6 +50,10 @@
     <li class="list-group-item">
       Aliases
       <span class="pull-right">{{ gene.aliases|join(', ') }}</span>
+    </li>
+    <li class="list-group-item">
+      HGNC ID
+      <span class="pull-right">{{ gene.hgnc_id }}</span>
     </li>
     <li class="list-group-item">
       Chromosome
