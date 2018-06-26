@@ -313,6 +313,7 @@ class CaseHandler(object):
                 },
                 '$set': {
                     'analysis_date': case_obj['analysis_date'],
+                    'delivery_report': case_obj.get('delivery_report'),
                     'individuals': case_obj['individuals'],
                     'updated_at': datetime.datetime.now(),
                     'rerun_requested': False,
