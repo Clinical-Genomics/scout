@@ -440,4 +440,4 @@ def upload_panel(institute_id, case_name):
     # reset gene panels
     form.gene_panels.data = ''
     return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
-                            **form.data))
+                            **form.data), code=307)
