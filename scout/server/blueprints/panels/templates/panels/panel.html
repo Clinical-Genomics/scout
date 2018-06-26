@@ -85,6 +85,7 @@
         <thead>
           <tr>
             <th>Gene</th>
+            <th>HGNC ID</th>
             <th>Transcripts</th>
             <th>Reduced penetrance</th>
             <th>Mosaicism</th>
@@ -102,6 +103,7 @@
                   {{ gene.symbol }}
                 </a>
               </td>
+              <td>{{ gene.hgnc_id }}</td>
               <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
