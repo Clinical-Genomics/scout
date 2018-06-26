@@ -54,14 +54,15 @@ class QueryHandler(object):
 
         # Requests to filter based on gene panels, hgnc_symbols or
         # coordinate ranges must always be honored. They are always added to
-        # query as top level, implicit '$and'.
+        # query as top level, implicit '$and'. When both hgnc_symbols and a 
+        # panel is used, addition of this is delayed until after the rest of 
+        # the query content is clear.
 
+        gene_query = []
         if query.get('hgnc_symbols') and query.get('gene_panels'):
-            gene_query = [
-                        {'hgnc_symbols': {'$in': query['hgnc_symbols']}},
-                        {'panels': {'$in': query['gene_panels']}}
-                    ]
-            mongo_query['$or']=gene_query
+            gene_query.append({'hgnc_symbols': {'$in': query['hgnc_symbols']}})
+            gene_query.append({'panels': {'$in': query['gene_panels']}})
+            mongo_query['$and']=gene_query
         else:
             if query.get('hgnc_symbols'):
                 hgnc_symbols = query['hgnc_symbols']
@@ -288,12 +289,23 @@ class QueryHandler(object):
                 else:
                     # if this is the only minor critera, use implicit and.
                     mongo_query['clnsig.value'] = {'$in': rank}
-
+                    
         if mongo_query_minor and mongo_query_major:
-            mongo_query['$or'] = [ {'$and': mongo_query_minor }, mongo_query_major ]
+            if (gene_query):
+                mongo_query['$and'] = [ {'$or': gene_query}, 
+                                       {'$or': [ {'$and': mongo_query_minor}, 
+                                                mongo_query_major ]} ]
+            else:
+                mongo_query['$or'] = [ {'$and': mongo_query_minor}, 
+                                                mongo_query_major ]
         elif mongo_query_minor:
-            mongo_query['$and'] = mongo_query_minor
+            if(gene_query):
+                mongo_query['$and'] = [ {'$or': gene_query},
+                                        {'$and': mongo_query_minor} ]
+            else:
+                mongo_query['$and'] = mongo_query_minor
         elif mongo_query_major:
+            # Restructure if more than ClinVar clnsig in the major category
             mongo_query['clnsig'] = mongo_query_major['clnsig']
 
         if variant_ids:
