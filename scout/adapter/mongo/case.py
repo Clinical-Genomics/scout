@@ -333,7 +333,7 @@ class CaseHandler(object):
         LOG.info("Case updated")
         return updated_case
 
-    def save_case(self, case_obj):
+    def replace_case(self, case_obj):
         """Replace a existing case with a new one
 
         Keeps the object id
