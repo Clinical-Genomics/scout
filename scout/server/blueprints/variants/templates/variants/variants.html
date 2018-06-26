@@ -56,6 +56,7 @@
 {% endblock %}
 
 {% block content %}
+  <form method="POST" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}">  
   <div class="container-fluid main">
     <div class="panel-group" id="accordion">
       <div class="panel panel-default">
@@ -125,6 +126,7 @@
 
     {{ footer() }}
   </div>
+  </form>
 {% endblock %}
 
 {% macro cell_rank(variant) %}
@@ -184,18 +186,23 @@
   <div class="container-fluid">
     <div class="form-group text-center">
       {% if more_variants %}
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
-          Next page
-        </a>
+      <div class "row">
+	<div class="col-xs-6">
+            <button name="page" type="submit" class="btn btn-default" value={{ page + 1 }}>Next page</button>
+	</div>
+	<div class="col-xs-6">
+            <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
+	</div>
+      </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
+        <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
       {% endif %}
     </div>
   </div>
 {% endmacro %}
 
 {% macro filters_form() %}
-  <form method="POST" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}">
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">
@@ -277,7 +284,6 @@
         </div>
       </div>
     </div>
-  </form>
 {% endmacro %}
 
 {% block scripts %}

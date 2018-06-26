@@ -24,7 +24,8 @@ variants_bp = Blueprint('variants', __name__, template_folder='templates')
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(request.args.get('page', 1))
+
+    page = int(request.form.get('page', 1))
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
 
