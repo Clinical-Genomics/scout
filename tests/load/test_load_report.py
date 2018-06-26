@@ -19,42 +19,18 @@ def test_load_delivery_report_bad_case_id(panel_database):
                              report_path=report_path)
 
 
-def test_load_delivery_report_success(case_database):
-    adapter = case_database
-
-    # GIVEN a case exist, without a delivery report for the given analysis date
-    assert adapter.cases().count() > 0
-    case_obj = adapter.cases()[0]
-    assert not case_obj.get('delivery_report')
-
-    # WHEN trying to load a report for a case_id that does exist in the data base
-    case_id = case_obj['_id']
-    report_path = 'report_test_path'
-
-    load_delivery_report(adapter=adapter, case_id=case_id,
-                         report_path=report_path)
-
-    # THEN a report should have been added to that case
-    updated_case_obj = adapter.cases()[0]
-    assert updated_case_obj['delivery_report'] == report_path
-
-
 def test_load_delivery_report_using_case_id_without_update_fail(case_database):
     adapter = case_database
 
     # GIVEN a case exist, with a delivery report
     assert adapter.cases().count() > 0
     case_obj = adapter.cases()[0]
-    assert not case_obj.get('delivery_report')
+    assert case_obj.get('delivery_report')
 
     # WHEN trying to load a report for a case_id that does exist in the data base without update
     # flag
     case_id = case_obj['_id']
-    report_path = 'report_test_path'
     report_path2 = 'report_test_path2'
-
-    load_delivery_report(adapter=adapter, case_id=case_id,
-                         report_path=report_path)
 
     # THEN a report should not have been added to that case
     with pytest.raises(IntegrityError):
@@ -62,7 +38,6 @@ def test_load_delivery_report_using_case_id_without_update_fail(case_database):
                              report_path=report_path2)
 
     updated_case_obj = adapter.cases()[0]
-    assert updated_case_obj.get('delivery_report') == report_path
     assert updated_case_obj.get('delivery_report') != report_path2
 
 
@@ -72,7 +47,7 @@ def test_load_delivery_report_using_case_id_with_update_success(case_database):
     # GIVEN a case exist, without a delivery report for the given analysis date
     assert adapter.cases().count() > 0
     case_obj = adapter.cases()[0]
-    assert not case_obj.get('delivery_report')
+    assert case_obj.get('delivery_report')
 
     # WHEN trying to load a report for a case_id that does exist in the data base
     case_id = case_obj['_id']
