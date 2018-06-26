@@ -36,6 +36,8 @@ def test_build_case(parsed_case, panel_database):
 
     assert case_obj['madeline_info'] == parsed_case['madeline_info']
 
+    assert case_obj['delivery_report'] == parsed_case['delivery_report']
+
     for vcf in case_obj['vcf_files']:
          assert vcf in parsed_case['vcf_files']
 
