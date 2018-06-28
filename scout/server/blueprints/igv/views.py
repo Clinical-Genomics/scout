@@ -11,17 +11,26 @@ LOG = logging.getLogger(__name__)
 @igv_bp.route('/igv')
 def viewer():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
-    locus = 'chr'+request.args['contig']+':'+request.args['start']+'-'+request.args['stop']
+    chrom = request.args['contig']
+    if chrom == 'MT':
+        chrom = 'M'
+        
+    start = request.args['start']
+    stop = request.args['stop']
+    
+    locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
+    LOG.debug('Displaying locus %s', locus)
 
     samples = request.args.getlist('sample')
     bam_files = request.args.getlist('bam')
     bai_files = request.args.getlist('bai')
-
+    print("Bam files", bam_files)
     tracks={}
     sample_tracks = []
     counter = 0
     for sample in samples:
-        if bam_files[counter]: # some samples might not have an associated bam file, take care if this
+        # some samples might not have an associated bam file, take care if this
+        if bam_files[counter]: 
             sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter], 'indexURL' : bai_files[counter] })
         counter += 1
 
