@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="//igv.org/web/img/favicon.ico">
+    <title>Integrative Genomics Viewer - BAM Example</title>
+
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" type="text/css"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
+
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
+
+    <!-- IGV CSS -->
+    <link rel="stylesheet" type="text/css" href="https://igv.org/web/release/1.0.9/igv-1.0.9.css">
+
+    <!-- jQuery JS -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+    <!-- IGV JS-->
+    <script type="text/javascript" src="https://igv.org/web/release/1.0.9/igv-1.0.9.js"></script>
+</head>
+<body>
+
+<div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var div = $("#igvDiv")[0],
+                options = {
+                    showNavigation: true,
+                    showRuler: true,
+                    reference: {
+                        id: "hg19"
+                    },
+                    genome: "hg19",
+                    locus: "{{locus}}",
+                    tracks: [
+                      {
+                            name: "Genes",
+                            type: "annotation",
+                            format: "bed",
+                            sourceType: "file",
+                            url: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz",
+                            indexURL: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi",
+                            order: Number.MAX_VALUE,
+                            visibilityWindow: 300000000,
+                            displayMode: "EXPANDED"
+                      },
+                      {% for track in sample_tracks %}
+                      {
+                        name: '{{ track.name }}',
+                        url: '{{ url_for("igv.remote_static", file=track.url) }}',
+                        indexURL: '{{ url_for("igv.remote_static", file=track.indexURL) }}',
+                        sourceType: 'file',
+                        type: "alignment"
+                      },
+                      {% endfor %}
+                    ]
+                };
+
+        igv.createBrowser(div, options);
+
+    });
+
+</script>
+
+</body>
+
+</html>

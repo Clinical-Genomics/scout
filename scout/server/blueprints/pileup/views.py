@@ -64,5 +64,5 @@ def viewer():
     LOG.debug("Use alignment files {}".format(alignments))
 
     return render_template('pileup/pileup.html', alignments=alignments,
-                           position=position, vcf_file=vcf_file, 
+                           position=position, vcf_file=vcf_file,
                            genome=genome, exons=exons)
