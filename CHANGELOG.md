@@ -28,6 +28,7 @@ $scout update hpo
 
 ### Added
 
+- Read delivery report path from case config or CLI command
 - Filter for spidex scores
 - All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
 - New command `scout update hpo`
