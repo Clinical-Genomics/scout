@@ -33,7 +33,7 @@ $scout update hpo
 - Parses Polyphen in correct way again
 
 ### Added
-
+- Added IGV alignments viewer
 - Filter for spidex scores
 - All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
 - New command `scout update hpo`
