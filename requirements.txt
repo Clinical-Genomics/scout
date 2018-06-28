@@ -16,7 +16,7 @@ loqusdb>=0.5
 Flask-Babel
 livereload
 python-dateutil
-pymongo>=3.6.0
+pymongo==3.6.0
 
 pathlib
 
