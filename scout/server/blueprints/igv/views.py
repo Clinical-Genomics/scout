@@ -11,7 +11,6 @@ LOG = logging.getLogger(__name__)
 @igv_bp.route('/igv')
 def viewer():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
-
     locus = 'chr'+request.args['contig']+':'+request.args['start']+'-'+request.args['stop']
 
     samples = request.args.getlist('sample')
