@@ -2,7 +2,7 @@
 
 Flask>=0.10
 Flask-DebugToolbar
-Flask-PyMongo==0.5.2
+Flask-PyMongo
 Flask-Bootstrap
 path.py
 Flask-OAuthlib
