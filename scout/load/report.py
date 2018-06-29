@@ -11,18 +11,18 @@ def load_delivery_report(adapter: MongoAdapter,
                          report_path: str,
                          case_id: str,
                          update: bool = False):
-    """Load a delivery report into the database
+    """ Load a delivery report into the database
 
     If the report already exists the function will exit.
     If the user want to load a report that is already in the database
     'update' has to be 'True'
 
     Args:
-        :param adapter: (MongoAdapter) connection to the database
-        leave empty for latest
-        :param report_path: (string) path to report
-        :param case_id: (string) optional case identifier
-        :param update: (bool) If existing report should be updated
+        adapter     (MongoAdapter): Connection to the database
+        report_path (string):       Path to delivery report
+        case_id     (string):       Optional case identifier
+        update      (bool):         If an existing report should be replaced
+        
     Returns:
         None
 
