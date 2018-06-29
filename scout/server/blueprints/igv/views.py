@@ -14,28 +14,61 @@ def viewer():
     chrom = request.args['contig']
     if chrom == 'MT':
         chrom = 'M'
-        
+
     start = request.args['start']
     stop = request.args['stop']
-    
+
     locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
     LOG.debug('Displaying locus %s', locus)
+
+    chromosome_build = request.args['build']
+    LOG.debug('Chromosome build is %s', chromosome_build)
 
     samples = request.args.getlist('sample')
     bam_files = request.args.getlist('bam')
     bai_files = request.args.getlist('bai')
-    print("Bam files", bam_files)
-    tracks={}
+    LOG.debug('loading the following tracks: %s', bam_files)
+
+    display_obj={}
+
+    # Add chromosome build info to the track object
+    reference = ''
+    reference_url = ''
+    indexURL = ''
+    format = ''
+    if chromosome_build == '37':
+        reference = 'hg19'
+        reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz'
+        indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
+        format = 'bed'
+    elif chromosome_build == '38':
+        reference = 'hg38'
+        reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz'
+        indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi'
+        format = 'gtf'
+
+    display_obj['reference_id'] = reference
+    display_obj['genome'] = reference
+    display_obj['reference_track'] = {
+        'name' : 'Genes',
+        'type' : 'annotation',
+        'format': format,
+        'sourceType': 'file',
+        'url' : reference_url,
+        'indexURL' : indexURL,
+        'displayMode' : 'EXPANDED'
+    }
+
     sample_tracks = []
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
-        if bam_files[counter]: 
+        if bam_files[counter]:
             sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter], 'indexURL' : bai_files[counter] })
         counter += 1
 
-    tracks['sample_tracks'] = sample_tracks
-    return render_template('igv_viewer.html', locus=locus, **tracks )
+    display_obj['sample_tracks'] = sample_tracks
+    return render_template('igv_viewer.html', locus=locus, **display_obj )
 
 
 @igv_bp.route('/remote/static', methods=['OPTIONS', 'GET'])

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="//igv.org/web/img/favicon.ico">
-    <title>Integrative Genomics Viewer - BAM Example</title>
+    <title>Scout: Integrative Genomics Viewer</title>
 
     <!-- jQuery UI CSS -->
     <link rel="stylesheet" type="text/css"
@@ -43,21 +43,22 @@
                     showNavigation: true,
                     showRuler: true,
                     reference: {
-                        id: "hg19"
+                        id: "{{reference_id}}"
                     },
-                    genome: "hg19",
+                    genome: "{{genome}}",
                     locus: "{{locus}}",
                     tracks: [
                       {
-                            name: "Genes",
-                            type: "annotation",
-                            format: "bed",
-                            sourceType: "file",
-                            url: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz",
-                            indexURL: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi",
+                            name: "{{ reference_track.name }}",
+                            type: "{{ reference_track.type }}",
+                            format: "{{ reference_track.format }}",
+                            sourceType: "{{ reference_track.sourceType }}",
+                            url: "{{ reference_track.url|replace('%2F','/') }}",
+                            indexURL: "{{ reference_track.indexURL|replace('%2F','/') }}",
+                            displayMode: "{{ reference_track.displayMode }}",
                             order: Number.MAX_VALUE,
-                            visibilityWindow: 300000000,
-                            displayMode: "EXPANDED"
+                            visibilityWindow: 300000000
+
                       },
                       {% for track in sample_tracks %}
                       {
