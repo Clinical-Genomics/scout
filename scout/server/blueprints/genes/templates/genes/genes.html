@@ -17,15 +17,20 @@
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading">Genes</div>
-        <ul class="list-group">
+        <table class="table table-bordered">
+          <thead>
+            <th>Gene symbol</th>
+            <th>HGNC ID</th>
+          </thead>
+          <tbody>
           {% for gene in genes %}
-            <li class="list-group-item">
-              <a href="{{ url_for('genes.gene', hgnc_symbol=gene.hgnc_id) }}">
-                {{ gene.hgnc_symbol }}
-              </a>
-            </li>
+            <tr>
+              <td><a href="{{ url_for('genes.gene', hgnc_symbol=gene.hgnc_id) }}">{{ gene.hgnc_symbol }}</a></td>
+              <td>{{ gene.hgnc_id }}</td>
+            </tr>
           {% endfor %}
-        </ul>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
