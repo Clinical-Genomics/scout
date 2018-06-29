@@ -17,7 +17,7 @@ Flask-Babel
 livereload
 mongo_adapter
 python-dateutil
-pymongo>=3.6.0
+pymongo==3.6.0
 
 pathlib
 
