@@ -12,7 +12,7 @@ from .research import research as research_command
 from .variants import variants as variants_command
 from .region import region as region_command
 from .user import user as user_command
-from .report import report as report_command
+from .report import delivery_report as delivery_report_command
 
 LOG = logging.getLogger(__name__)
 
@@ -31,4 +31,4 @@ load.add_command(panel_command)
 load.add_command(user_command)
 load.add_command(research_command)
 load.add_command(variants_command)
-load.add_command(report_command)
+load.add_command(delivery_report_command)

@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
                     vcf_sv=None, vcf_cancer=None, peddy_ped=None,
-                    peddy_sex=None, peddy_check=None):
+                    peddy_sex=None, peddy_check=None, delivery_report=None):
     """Parse all data necessary for loading a case into scout
 
     This can be done either by providing a VCF file and other information
@@ -49,7 +49,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         family_id, samples = parse_ped(ped)
         config_data['family'] = family_id
         config_data['samples'] = samples
-    
+
     # Each case has to have a owner. If not provided in config file it needs to be given as a
     # argument
     if 'owner' not in config_data:
@@ -76,9 +76,11 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
 
+    config_data['delivery_report'] = delivery_report if delivery_report else config_data.get('delivery_report')
+
     config_data['rank_model_version'] = config_data.get('rank_model_version')
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
-    
+
     return config_data
 
 
@@ -285,6 +287,7 @@ def parse_case(config):
         'peddy_ped': config.get('peddy_ped'),
         'peddy_sex': config.get('peddy_sex'),
         'peddy_check': config.get('peddy_check'),
+        'delivery_report': config.get('delivery_report'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db

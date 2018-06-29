@@ -13,72 +13,73 @@ from scout.constants import ANALYSIS_TYPES
 
 logger = logging.getLogger(__name__)
 
-
 individual = dict(
-    individual_id = str, # required
-    display_name = str,
-    sex = str,
-    phenotype = int,
-    father = str, # Individual id of father
-    mother = str, # Individual id of mother
-    capture_kits = list, # List of names of capture kits
-    bam_file = str, # Path to bam file
-    analysis_type = str, # choices=ANALYSIS_TYPES
-    confirmed_sex = bool, # True or False. None if no check has been done
-    confirmed_parent = bool,
-    predicted_ancestry = str, # one of AFR AMR EAS EUR SAS UNKNOWN
+    individual_id=str,  # required
+    display_name=str,
+    sex=str,
+    phenotype=int,
+    father=str,  # Individual id of father
+    mother=str,  # Individual id of mother
+    capture_kits=list,  # List of names of capture kits
+    bam_file=str,  # Path to bam file
+    analysis_type=str,  # choices=ANALYSIS_TYPES
+    confirmed_sex=bool,  # True or False. None if no check has been done
+    confirmed_parent=bool,
+    predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN
 )
 
 case = dict(
     # This is a string with the id for the family:
-    case_id = str, # required=True, unique
+    case_id=str,  # required=True, unique
     # This is the string that will be shown in scout:
-    display_name = str, # required
+    display_name=str,  # required
     # This internal_id for the owner of the case. E.g. 'cust000'
-    owner = str, # required
+    owner=str,  # required
 
     # These are the names of all the collaborators that are allowed to view the
     # case, including the owner
-    collaborators = list, # List of institute_ids
-    assignees = list, # list of str _id of a user (email)
-    individuals = list, # list of dictionaries with individuals
-    created_at = datetime,
-    updated_at = datetime,
-    suspects = list, # List of variants referred by there _id
-    causatives = list, # List of variants referred by there _id
+    collaborators=list,  # List of institute_ids
+    assignees=list,  # list of str _id of a user (email)
+    individuals=list,  # list of dictionaries with individuals
+    created_at=datetime,
+    updated_at=datetime,
+    suspects=list,  # List of variants referred by there _id
+    causatives=list,  # List of variants referred by there _id
 
-    synopsis = str, # The synopsis is a text blob
-    status = str, # default='inactive', choices=STATUS
-    is_research = bool, # default=False
-    research_requested = bool, # default=False
-    rerun_requested = bool, # default=False
+    synopsis=str,  # The synopsis is a text blob
+    status=str,  # default='inactive', choices=STATUS
+    is_research=bool,  # default=False
+    research_requested=bool,  # default=False
+    rerun_requested=bool,  # default=False
 
-    analysis_date = datetime,
+    analysis_date=datetime,
 
     # default_panels specifies which panels that should be shown when
     # the case is opened
-    panels = list, # list of dictionaries with panel information
+    panels=list,  # list of dictionaries with panel information
 
-    dynamic_gene_list = list, # List of genes
+    dynamic_gene_list=list,  # List of genes
 
-    genome_build = str, # This should be 37 or 38
-    genome_version = float, # What version of the build
+    genome_build=str,  # This should be 37 or 38
+    genome_version=float,  # What version of the build
 
-    rank_model_version = float,
-    rank_score_threshold = int, # default=8
+    rank_model_version=float,
+    rank_score_threshold=int,  # default=8
 
-    phenotype_terms = list, # List of dictionaries with phenotype information
-    phenotype_groups = list, # List of dictionaries with phenotype information
+    phenotype_terms=list,  # List of dictionaries with phenotype information
+    phenotype_groups=list,  # List of dictionaries with phenotype information
 
-    madeline_info = str, # madeline info is a full xml file
+    madeline_info=str,  # madeline info is a full xml file
 
-    vcf_files = dict, # A dictionary with vcf files
+    delivery_report=str,  # delivery report is a path to html file
 
-    diagnosis_phenotypes = list, # List of references to diseases
-    diagnosis_genes = list, # List of references to genes
+    vcf_files=dict,  # A dictionary with vcf files
 
-    has_svvariants = bool, # default=False
+    diagnosis_phenotypes=list,  # List of references to diseases
+    diagnosis_genes=list,  # List of references to genes
 
-    is_migrated = bool # default=False
+    has_svvariants=bool,  # default=False
+
+    is_migrated=bool  # default=False
 
 )
