@@ -71,7 +71,7 @@ def viewer():
     return render_template('igv_viewer.html', locus=locus, **display_obj )
 
 
-@igv_bp.route('/remote/static', methods=['OPTIONS', 'GET'])
+@igv_bp.route('/remote/static', methods=['POST', 'GET'])
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get('file')
