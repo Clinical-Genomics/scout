@@ -1,27 +1,27 @@
 import logging
 import click
 
-from scout.load.report import load_report
-from scout.exceptions import (IntegrityError, ValidationError)
+from scout.load.report import load_delivery_report
 
 LOG = logging.getLogger(__name__)
 
+
 @click.command()
 @click.argument('case_id')
+@click.argument('analysis_date')
 @click.argument('report_path', type=click.Path(exists=True))
-@click.option('-u', '--update', 
-    is_flag=True
-)
+@click.argument('update', required=False)
 @click.pass_context
-def report(context, case_id, report_path, update):
+def delivery_report(context, case_id, analysis_date, report_path,
+                    update):
     """Add delivery report to an existing case."""
+
     adapter = context.obj['adapter']
+
     try:
-        updated_case = load_report(adapter, case_id, report_path, update)
-    except IntegrityError as err:
-        LOG.warning(err)
-        context.abort()
-    except ValidationError as err:
-        LOG.warning(err)
-        LOG.info("Use flag --update if it should be overwritten")
+        load_delivery_report(adapter, case_id, analysis_date,
+                             report_path, update)
+        LOG.info("saved report to case!")
+    except Exception as e:
+        LOG.error(e)
         context.abort()

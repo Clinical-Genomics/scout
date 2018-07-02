@@ -81,6 +81,16 @@ def test_parse_case_vcf_files(scout_config):
     assert case_data['vcf_files']['vcf_sv_research'] == scout_config['vcf_sv_research']
 
 
+def test_parse_case_delivery_report(scout_config):
+    # GIVEN you load sample information from a scout config
+
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+
+    # then we should find the delivery report in the parsed data
+    assert case_data['delivery_report'] == scout_config['delivery_report']
+
+
 def test_parse_ped_file(ped_file):
     # GIVEN a pedigree with three samples
     with open(ped_file, 'r') as case_lines:

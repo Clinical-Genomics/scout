@@ -26,7 +26,7 @@ def cases(store, case_query, limit=100):
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-        case_obj['clinvar_id'] = store.clinvars(case_id=case_obj['display_name'])
+        case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
@@ -128,14 +128,14 @@ def case_report_content(store, institute_obj, case_obj):
                                                            'acmg_classification', case_obj, institute_obj)
 
     # get complete info for tagged variants
-    data['tagged_detailed'] = variants_filter_by_field(store, evaluated_variants, 
+    data['tagged_detailed'] = variants_filter_by_field(store, evaluated_variants,
                                                        'manual_rank', case_obj, institute_obj)
 
     # get complete info for dismissed variants
-    data['dismissed_detailed'] = variants_filter_by_field(store, evaluated_variants, 
+    data['dismissed_detailed'] = variants_filter_by_field(store, evaluated_variants,
                                                         'dismiss_variant', case_obj, institute_obj)
 
-    data['commented_detailed'] = variants_filter_by_field(store, evaluated_variants, 
+    data['commented_detailed'] = variants_filter_by_field(store, evaluated_variants,
                                                         'is_commented', case_obj, institute_obj)
 
     return data

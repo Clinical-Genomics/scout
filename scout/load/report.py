@@ -1,33 +1,53 @@
+# -*- coding: utf-8 -*-
 import logging
-import pymongo
 
-from scout.exceptions import (IntegrityError, ValidationError)
+from mongo_adapter import MongoAdapter
+from scout.exceptions import IntegrityError, DataNotFoundError
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-def load_report(adapter, case_id, report_path, update=False):
-    """Add the path to a report to a case
-    
+
+def load_delivery_report(adapter: MongoAdapter,
+                         report_path: str,
+                         case_id: str,
+                         update: bool = False):
+    """ Load a delivery report into a case in the database
+
+    If the report already exists the function will exit.
+    If the user want to load a report that is already in the database
+    'update' has to be 'True'
+
     Args:
-        adapter(scout.adapter.MongoAdapter)
-        case_id(str)
-        report_path(str)
-        update(bool)
-    
+        adapter     (MongoAdapter): Connection to the database
+        report_path (string):       Path to delivery report
+        case_id     (string):       Optional case identifier
+        update      (bool):         If an existing report should be replaced
+        
     Returns:
         updated_case(dict)
+
     """
-    case_obj = adapter.case(case_id)
-    if not case_obj:
-        raise IntegrityError("Case {0} does not exist".format(case_id))
-    if case_obj.get('delivery_report'):
-        if not update:
-            raise ValidationError("Delivery report already exists for case {}".format(case_id))
-    
-    LOG.info("Set delivery report to %s", report_path)    
-    updated_case = adapter.case_collection.find_one_and_update({'_id': case_id}, 
-                            {'$set': {'delivery_report':report_path}},
-                            return_document = pymongo.ReturnDocument.AFTER
-                            )
-    
-    return updated_case
+
+    case_obj = adapter.case(
+        case_id=case_id,
+    )
+
+    if case_obj is None:
+        raise DataNotFoundError("no case found")
+
+    if not case_obj.get('delivery_report'):
+        _put_report_in_case_root(case_obj, report_path)
+    else:
+        if update:
+            _put_report_in_case_root(case_obj, report_path)
+        else:
+            raise IntegrityError('Existing delivery report found, use update = True to '
+                                 'overwrite')
+
+    logger.info('Saving report for case {} in database'.format(case_obj['_id']))
+    return adapter.replace_case(case_obj)
+
+
+def _put_report_in_case_root(case_obj, report_path):
+    case_obj['delivery_report'] = report_path
+    return True

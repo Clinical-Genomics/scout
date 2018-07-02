@@ -155,9 +155,15 @@
       {% endfor %}
     </td>
     <td>
-      {% if case.clinvar_id %}
-      <span class="label label-info">created</span>
-      {%endif%}
+      {% if case.clinvar_submissions %}
+        {% for subm in case.clinvar_submissions %}
+          {% if subm.variant_type == 'snv'%}
+            <span class="label label-success" title="{{ subm.Gene_symbol if subm.Gene_symbol else 'chr'+subm.Chromosome+'_'+subm.Start }}"><a href="{{ url_for('variants.variant', institute_id=case.owner, case_name=case.display_name, variant_id=subm._id ) }}">snv</a></span>
+          {% else %}
+            <span class="label label-warning" title="{{'chr'+subm.Chromosome+'_'+subm.Variant_type}}"><a href="{{ url_for('variants.sv_variant', institute_id=case.owner, case_name=case.display_name, variant_id=subm._id ) }}">sv</a></span>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
     </td>
   </tr>
 {% endmacro %}

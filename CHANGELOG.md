@@ -24,7 +24,7 @@ $scout update hpo
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
 ### Fixed
-
+- Links to clinvar submitted variants at the cases level
 - Adapts clinvar parsing to new format
 - Fixed problem in `scout update user` when the user object had no roles
 - Makes pileup.js use online genome resources when viewing alignments. Now any instance of Scout can make use of this functionality.
@@ -34,6 +34,7 @@ $scout update hpo
 
 ### Added
 - Added IGV alignments viewer
+- Read delivery report path from case config or CLI command
 - Filter for spidex scores
 - All HPO terms are now added and fetched from the correct source (https://github.com/obophenotype/human-phenotype-ontology/blob/master/hp.obo)
 - New command `scout update hpo`

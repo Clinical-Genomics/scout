@@ -70,7 +70,7 @@ def transcript_info(request):
         refseq_mrna_pred = '',
         refseq_ncrna = '',
     )
-    
+
     return transcript
 
 
@@ -145,14 +145,14 @@ def gene_bulk(genes):
     bulk = []
     for gene_key in genes:
         bulk.append(build_hgnc_gene(genes[gene_key]))
-    
+
     return bulk
 
 @pytest.fixture
 def transcript_objs(request, parsed_transcripts):
     """Return a list with transcript objs"""
     print('')
-    
+
     _transcripts = []
     for tx_id in parsed_transcripts:
         tx_info = parsed_transcripts[tx_id]
@@ -258,7 +258,7 @@ def parsed_case(request, scout_config):
 @pytest.fixture(scope='function')
 def case_obj(request, parsed_case):
     adapter = panel_database
-    
+
     logger.info("Create a case obj")
     case = parsed_case
     case['_id'] = parsed_case['display_name']
@@ -266,7 +266,7 @@ def case_obj(request, parsed_case):
     case['dynamic_gene_list'] = {}
     case['genome_version'] = None
     case['has_svvariants'] = True
-    
+
     case['individuals'][0]['sex'] = '1'
     case['individuals'][1]['sex'] = '1'
     case['individuals'][2]['sex'] = '2'
@@ -431,7 +431,7 @@ def real_adapter(request, real_pymongo_client):
     mongo_client = real_pymongo_client
 
     logger.info("Connecting to database %s", REAL_DATABASE)
-    
+
     database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
@@ -490,7 +490,7 @@ def real_institute_database(request, real_adapter, institute_obj, user_obj):
 def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute, case and genes"
     adapter = institute_database
-    
+
     gene_objs = load_hgnc_genes(
         adapter=adapter,
         genes=genes,
@@ -517,17 +517,17 @@ def real_gene_database(request, real_institute_database, genes37_handle, hgnc_ha
                   mim2gene_handle, genemap_handle, hpo_genes_handle):
     "Returns an adapter to a database populated with user, institute, case and genes"
     adapter = real_institute_database
-    
+
     load_hgnc_genes(
         adapter=adapter,
-        ensembl_lines=genes37_handle, 
-        hgnc_lines=hgnc_handle, 
-        exac_lines=exac_handle, 
+        ensembl_lines=genes37_handle,
+        hgnc_lines=hgnc_handle,
+        exac_lines=exac_handle,
         mim2gene_lines=mim2gene_handle,
-        genemap_lines=genemap_handle, 
-        hpo_lines=hpo_genes_handle, 
+        genemap_lines=genemap_handle,
+        hpo_lines=hpo_genes_handle,
         build='37'
-        
+
     )
 
     logger.info("Creating index on hgnc collection")
@@ -556,7 +556,7 @@ def hpo_database(request, gene_database, hpo_terms_handle, hpo_to_genes_handle, 
 
 
 @pytest.fixture(scope='function')
-def real_hpo_database(request, real_gene_database, hpo_terms_handle, hpo_to_genes_handle, 
+def real_hpo_database(request, real_gene_database, hpo_terms_handle, hpo_to_genes_handle,
                       genemap_handle, hpo_disease_handle):
     "Returns an adapter to a database populated with hpo terms"
     adapter = real_gene_database
@@ -613,7 +613,6 @@ def real_panel_database(request, real_gene_database, panel_info):
 def case_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with institute, user and case"
     adapter = panel_database
-
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
 
@@ -666,7 +665,7 @@ def real_variant_database(request, real_populated_database):
     """Returns an adapter to a database populated with user, institute, case
        and variants"""
     adapter = real_populated_database
-    
+
     case_obj = adapter.case_collection.find_one()
     # Load variants
     adapter.load_variants(
@@ -1165,8 +1164,8 @@ def parsed_transcripts(request, transcripts_handle, ensembl_genes):
             continue
         tx_info['hgnc_id'] = gene_obj['hgnc_id']
         tx_info['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
-        
-        
+
+
     return transcripts
 
 
