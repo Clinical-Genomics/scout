@@ -12,17 +12,17 @@ LOG = logging.getLogger(__name__)
 @igv_bp.route('/igv')
 def viewer():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
-    chrom = request.args['contig']
+    chrom = request.args.get('contig')
     if chrom == 'MT':
         chrom = 'M'
 
-    start = request.args['start']
-    stop = request.args['stop']
+    start = request.args.get('start')
+    stop = request.args.get('stop')
 
     locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
     LOG.debug('Displaying locus %s', locus)
 
-    chromosome_build = request.args['build']
+    chromosome_build = request.args.get('build')
     LOG.debug('Chromosome build is %s', chromosome_build)
 
     samples = request.args.getlist('sample')
@@ -37,12 +37,12 @@ def viewer():
     reference_url = ''
     indexURL = ''
     format = ''
-    if chromosome_build == '37':
+    if chromosome_build == 'GRCh37':
         reference = 'hg19'
         reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz'
         indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
         format = 'bed'
-    elif chromosome_build == '38':
+    elif chromosome_build == 'GRCh38':
         reference = 'hg38'
         reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz'
         indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi'
