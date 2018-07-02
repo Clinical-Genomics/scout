@@ -92,12 +92,9 @@
         <li class="list-group-item">
           Position
           <div class="pull-right">
-            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50), vcf=case.vcf_files.vcf_sv) }}" target="_blank">
-              Alignment: {{ variant.chromosome }}
-            </a>:
-            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">
-{{ variant.position }}</a> -
-            <a class="md-label" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.end - 500), stop=(variant.end + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">{{ variant.end }}</a>
+            Alignment: {{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}
+            <a class="badge badge-info" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
+            <a class="badge badge-info" href="{{ url_for('igv.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end + 50)) }}" target="_blank">IGV (BETA)</a>
           </div>
         </li>
 	      <li class="list-group-item">
