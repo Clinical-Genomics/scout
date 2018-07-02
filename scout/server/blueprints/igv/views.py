@@ -2,6 +2,7 @@
 import logging
 from flask import (Blueprint, render_template, request, send_file)
 
+from .partial import send_file_partial
 
 igv_bp  = Blueprint('igv', __name__, template_folder='templates',
                       static_folder='static', static_url_path='/igv/static')
@@ -74,11 +75,12 @@ def viewer():
 @igv_bp.route('/remote/static', methods=['OPTIONS', 'GET'])
 def remote_static():
     """Stream *large* static files with special requirements."""
+
     file_path = request.args.get('file')
 
     range_header = request.headers.get('Range', None)
     if not range_header and file_path.endswith('.bam'):
         return abort(500)
 
-    new_resp = send_file(file_path)
+    new_resp = send_file_partial(file_path)
     return new_resp
