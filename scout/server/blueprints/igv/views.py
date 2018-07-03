@@ -37,18 +37,17 @@ def viewer():
     reference_url = ''
     indexURL = ''
     format = ''
-    if chromosome_build == 'GRCh37':
+    if chromosome_build == "GRCh37":
         reference = 'hg19'
         reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz'
         indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
         format = 'bed'
-    elif chromosome_build == 'GRCh38':
+    else:
         reference = 'hg38'
         reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz'
         indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi'
         format = 'gtf'
 
-    display_obj['reference_id'] = reference
     display_obj['genome'] = reference
     display_obj['reference_track'] = {
         'name' : 'Genes',
