@@ -68,6 +68,12 @@ def viewer():
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
+
+    if request.args.get('center_guide'):
+        display_obj['display_center_guide'] = True
+    else:
+        display_obj['display_center_guide'] = False
+
     return render_template('igv_viewer.html', locus=locus, **display_obj )
 
 
