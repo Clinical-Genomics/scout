@@ -42,8 +42,13 @@
                 options = {
                     showNavigation: true,
                     showRuler: true,
+                    {% if display_center_guide %}
+                      showCenterGuide: true,
+                    {% else %}
+                      showCenterGuide: false,
+                    {% endif %}
                     reference: {
-                        id: "{{reference_id}}"
+                        id: "{{genome}}"
                     },
                     genome: "{{genome}}",
                     locus: "{{locus}}",
