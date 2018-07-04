@@ -207,7 +207,7 @@ def get_sanger_unevaluated(store, institute_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated"""
 
     # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
-    # This was is much faster thank querying over all variants for all cases of an institute
+    # This way is much faster than querying over all variants in all cases of an institute
     sanger_ordered_by_case = store.sanger_ordered_by_institute(institute_id)
     unevaluated = []
 
