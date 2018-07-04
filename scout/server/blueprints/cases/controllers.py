@@ -203,6 +203,42 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
     mail.send(msg)
 
 
+def get_sanger_unevaluated(store, institute_id):
+    """Get all variants for an institute having Sanger validations ordered but still not evaluated"""
+
+    # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
+    # This was is much faster thank querying over all variants for all cases of an institute
+    sanger_ordered_by_case = store.sanger_ordered_by_institute(institute_id)
+    unevaluated = []
+
+    # for each object where key==case and value==[variant_id with Sanger ordered]
+    for item in sanger_ordered_by_case:
+        case = item['_id']
+        varid_list = item['vars']
+
+        unevaluated_by_case = {}
+        unevaluated_by_case[case] = []
+
+        for var_id in varid_list:
+            # For each variant with sanger validation ordered
+            variant_obj = store.variant(document_id=var_id, case_id=case)
+
+            # Double check that Sanger was ordered (and not canceled) for the variant
+            if variant_obj.get('sanger_ordered') and variant_obj.get('sanger_ordered') is True:
+
+                # Collect variant ID only if variant is not yet evaluated
+                if 'validation' not in variant_obj or not variant_obj.get('validation') in ['True positive', 'False positive']:
+                    unevaluated_by_case[case].append(variant_obj['_id'])
+
+        # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
+        if len(unevaluated_by_case[case]) > 0:
+            unevaluated.append(unevaluated_by_case)
+
+    # Return a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ]
+    # Where the keys are case_ids and the values are lists of variants with Sanger ordered but not validated
+    return unevaluated
+
+
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
     """Update default panels for a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

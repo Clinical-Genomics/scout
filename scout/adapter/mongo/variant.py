@@ -157,7 +157,7 @@ class VariantHandler(VariantLoader):
             result(Iterable[Variant])
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
-        
+
         if variant_ids:
             nr_of_variants = len(variant_ids)
 
@@ -206,7 +206,7 @@ class VariantHandler(VariantLoader):
         else:
             # search with a unique id
             query['_id'] = document_id
-        
+
         variant_obj = self.variant_collection.find_one(query)
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
@@ -342,13 +342,13 @@ class VariantHandler(VariantLoader):
 
             gene_start = gene_obj['start']
             gene_end = gene_obj['end']
-            
+
             #Get the coordinates for a region
             if not region_start:
                 region_start = gene_start
             if gene_start < region_start:
                 region_start = gene_start
-            
+
             if not region_end:
                 region_end = gene_end
             if gene_end > region_end:
@@ -404,10 +404,10 @@ class VariantHandler(VariantLoader):
             'category': 'variant',
             'verb': 'comment',
         }
-        
+
         # Get all variantids for commented variants
         comment_variants = {event['variant_id'] for event in self.event_collection.find(event_query)}
-        
+
         # Get the variant objects for commented variants, if they exist
         for var_id in comment_variants:
             # Skip if we already added the variant
@@ -415,7 +415,7 @@ class VariantHandler(VariantLoader):
                 continue
             # Get the variant with variant_id (not _id!)
             variant_obj = self.variant(var_id, case_id=case_id)
-            
+
             # There could be cases with comments that refers to non existing variants
             # if a case has been reanalysed
             if not variant_obj:
@@ -426,6 +426,37 @@ class VariantHandler(VariantLoader):
 
         # Return a list with the variant objects
         return list(variants.values())
+
+
+    def sanger_ordered_by_institute(self, institute_id):
+        """Get all variants for an institute with Sanger validations ever ordered.
+            This is used in the cases list page to highlight cases which can be potentially
+            solved by Sanger sequencing validations.
+
+        Args:
+            institute_id(str) : The id of an institute
+
+        Returns:
+            sanger_ordered(list) : a list of dictionaries, each with "case_id" as keys and list of variant ids as values
+        """
+
+        # Get all sanger ordered variants grouped by case_id
+        results = self.event_collection.aggregate([
+            {'$match': {
+                '$and': [
+                    {'verb': 'sanger' },
+                    {'institute': institute_id}
+                ],
+            }},
+            {'$group': {
+                '_id': "$case",
+                'vars': {'$addToSet' : '$variant_id'}
+            }}
+        ])
+
+        sanger_ordered =  [item for item in results]
+        return sanger_ordered
+
 
     def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,
                        gene_obj=None, variant_type='clinical', category='snv',
