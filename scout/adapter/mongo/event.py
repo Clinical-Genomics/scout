@@ -337,4 +337,3 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 content=content
             )
         return comment
-
