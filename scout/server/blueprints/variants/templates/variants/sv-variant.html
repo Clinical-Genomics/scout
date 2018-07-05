@@ -100,10 +100,12 @@
 	      <li class="list-group-item">
 	        Cytoband
           <div class="pull-right">
-            {% if variant.cytoband_start == variant.cytoband_end %}
-            {{ variant.chromosome }}{{ variant.cytoband_start }}
+            {% if variant.chromosome == variant.end_chrom and variant.cytoband_start == variant.cytoband_end %}
+              {{ variant.chromosome }}{{ variant.cytoband_start }}
+            {% elif variant.chromosome == variant.end_chrom %}
+              {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end }}
             {% else %}
-            {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end }}
+              {{ variant.chromosome }}{{ variant.cytoband_start }}-{{variant.end_chrom}}{{ variant.cytoband_end }}
             {% endif %}
           </div>
 	      </li>
