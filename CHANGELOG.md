@@ -24,7 +24,6 @@ $scout update hpo
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
 ### Fixed
-- Dismiss SVs
 - Links to clinvar submitted variants at the cases level
 - Adapts clinvar parsing to new format
 - Fixed problem in `scout update user` when the user object had no roles
@@ -34,6 +33,7 @@ $scout update hpo
 - Parses Polyphen in correct way again
 
 ### Added
+- Dismiss SVs
 - Added IGV alignments viewer
 - Read delivery report path from case config or CLI command
 - Filter for spidex scores
