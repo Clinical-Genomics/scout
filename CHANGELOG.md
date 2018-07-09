@@ -37,6 +37,7 @@ $scout update hpo
 - Moved igv and pileup viewer under a common folder
 - Fixed MT alignment view pileup.js
 - Fixed coordinates for SVs with start chromosome different from end chromosome
+- Global comments shown across cases and institutes. Case-specific variant comments are shown only for that specific case.
 - Links to clinvar submitted variants at the cases level
 - Adapts clinvar parsing to new format
 - Fixed problem in `scout update user` when the user object had no roles
