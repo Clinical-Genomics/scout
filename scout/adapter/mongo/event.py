@@ -79,26 +79,45 @@ class EventHandler(object):
               list: filtered query returning matching events
         """
 
-        query = {'institute': institute['_id']}
+        query = {}
 
         if variant_id:
-            query['category'] = 'variant'
-            query['variant_id'] = variant_id
-            if level:
-                query['level'] = level
-                if level != 'global':
-                    query['case'] = case['_id']
-        elif panel:
-            query['panel'] = panel
-        # If no variant_id or panel we know that it is a case level comment
-        else:
-            query['category'] = 'case'
-
-            if case:
+            if comments:
+                # If it's comment-related event collect global and variant-specific comment events
+                query = {
+                    '$or': [
+                        {
+                            'category' : 'variant',
+                            'variant_id' : variant_id,
+                            'verb' : 'comment',
+                            'level' : 'global'
+                        },
+                        {
+                            'category' : 'variant',
+                            'variant_id' : variant_id,
+                            'institute' : institute['_id'],
+                            'case' : case['_id'],
+                            'verb' : 'comment',
+                            'level' : 'specific'
+                        }
+                    ]
+                }
+            else: # Collect other variant-specific events which are not comments
+                query['institute'] = institute['_id']
+                query['category'] = 'variant'
+                query['variant_id'] = variant_id
                 query['case'] = case['_id']
+        else:
+            query['institute'] = institute['_id']
+            if panel:
+                query['panel'] = panel
+            # If no variant_id or panel we know that it is a case level comment
+            else:
+                query['category'] = 'case'
 
-        if comments:
-            query['verb'] = 'comment'
+                if case:
+                    query['case'] = case['_id']
+
 
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
 
