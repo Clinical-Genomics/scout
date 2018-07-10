@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from mongo_adapter import MongoAdapter
+from scout.adapter import MongoAdapter
 from scout.exceptions import IntegrityError, DataNotFoundError
 
 logger = logging.getLogger(__name__)

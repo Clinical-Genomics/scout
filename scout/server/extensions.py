@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from pymongo.errors import (ConnectionFailure)
+
+
 from flask_debugtoolbar import DebugToolbarExtension
 toolbar = DebugToolbarExtension()
 
@@ -7,8 +10,6 @@ from flask_bootstrap import Bootstrap
 bootstrap = Bootstrap()
 
 from scout.adapter import MongoAdapter
-from flask_pymongo import PyMongo
-mongo = PyMongo()
 store = MongoAdapter()
 
 from flask_login import LoginManager
@@ -26,6 +27,8 @@ mail = Mail()
 
 from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
 
+from scout.adapter.client import get_connection
+
 
 class LoqusDB(LoqusDBMongoAdapter):
     def init_app(self, app):
@@ -35,5 +38,30 @@ class LoqusDB(LoqusDBMongoAdapter):
     def case_count(self):
         return self.db.case.find({}).count()
 
+class MongoDB(object):
+    
+    def init_app(self, app):
+        """Initialize from flask"""
+        uri = app.config.get("MONGO_URI", None)
+        
+        db_name = app.config.get("MONGO_DBNAME", 'scout')
+        
+        try:
+            client = get_connection(
+                host = app.config.get("MONGO_HOST", 'localhost'),
+                port=app.config.get("MONGO_PORT", 27017), 
+                username=app.config.get("MONGO_USERNAME", None), 
+                password=app.config.get("MONGO_PASSWORD", None),
+                uri=uri, 
+                mongodb= db_name
+            )
+        except ConnectionFailure:
+            context.abort()
+
+        app.config["MONGO_DATABASE"] = client[db_name]
+
+        app.config['MONGO_CLIENT'] = client
+        
 
 loqusdb = LoqusDB()
+mongo = MongoDB()

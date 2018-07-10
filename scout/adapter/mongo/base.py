@@ -61,7 +61,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         port = app.config.get('MONGO_PORT', 27017)
         dbname = app.config['MONGO_DBNAME']
         log.info("connecting to database: %s:%s/%s", host, port, dbname)
-        self.setup(app.extensions['pymongo']['MONGO'][1])
+        self.setup(app.config['MONGO_DATABASE'])
 
     def setup(self, database):
         """Setup connection to database."""
