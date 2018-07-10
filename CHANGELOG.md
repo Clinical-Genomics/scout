@@ -32,6 +32,7 @@ $scout update hpo
 - Fix ensembl link for structural variants
 - Works even when cases does not have `'madeline_info'`
 - Parses Polyphen in correct way again
+- Fix problem with parsing gnomad from VEP
 
 ### Added
 - Dismiss SVs
