@@ -870,8 +870,14 @@
         <tr>
           <td><span class="badge badge-warning pull-left">{{variant.sub_category|upper}}</span></td>
           <td>{{ variant.length }}</td>
-          <td>chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}</td>
-          <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
+          <td>chr{{variant.chromosome}}:{{variant.position}}-{{ 'chr'+variant.end_chrom if not variant.chromosome == variant.end_chrom }}:{{variant.end}}</td>
+          {% if variant.chromosome == variant.end_chrom %}
+            <td>chr{{variant.chromosome}}:{{variant.position}}-{{ 'chr'+variant.end_chrom if not variant.chromosome == variant.end_chrom }}:{{variant.end}}</td>
+            <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
+          {% else %}
+            <td>chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}</td>
+            <td>{{variant.chromosome}}{{variant.cytoband_start}}-{{variant.end_chrom}}{{variant.cytoband_end}}</td>
+          {% endif %}
           <td>
             {% for panel_id in variant.panels %}
               <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank">{{ panel_id }}</a><br>
