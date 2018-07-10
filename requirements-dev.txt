@@ -4,7 +4,6 @@
 pytest
 pytest-flask
 pytest-cov
-mongomock
 
 # packaging
 wheel>=0.23
