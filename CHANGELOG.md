@@ -33,6 +33,7 @@ $scout update hpo
 - Parses Polyphen in correct way again
 
 ### Added
+- Dismiss SVs
 - Added IGV alignments viewer
 - Read delivery report path from case config or CLI command
 - Filter for spidex scores
