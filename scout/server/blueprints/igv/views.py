@@ -33,29 +33,46 @@ def viewer():
     display_obj={}
 
     # Add chromosome build info to the track object
-    reference = ''
-    reference_url = ''
+    fastaURL = ''
     indexURL = ''
-    format = ''
-    if chromosome_build == "GRCh37":
-        reference = 'hg19'
-        reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz'
-        indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
-        format = 'bed'
-    else:
-        reference = 'hg38'
-        reference_url = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz'
-        indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi'
-        format = 'gtf'
+    cytobandURL = ''
+    gene_track_format = ''
+    gene_track_URL = ''
+    gene_track_indexURL = ''
 
-    display_obj['genome'] = reference
+    if chromosome_build == "GRCh37" and not chrom == 'M':
+        fastaURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta'
+        indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai'
+        cytobandURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt'
+        gene_track_format = 'bed'
+        gene_track_URL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz'
+        gene_track_indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
+
+    else: #GRCh38
+        fastaURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa'
+        indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai'
+        if chrom == 'M':
+            cytobandURL =  'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt'
+        else:
+            cytobandURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/cytoBandIdeo.txt'
+        gene_track_format = 'gtf'
+        gene_track_URL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz'
+        gene_track_indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi'
+
+
     display_obj['reference_track'] = {
+        'fastaURL' : fastaURL,
+        'indexURL' : indexURL,
+        'cytobandURL' : cytobandURL
+    }
+
+    display_obj['genes_track'] = {
         'name' : 'Genes',
         'type' : 'annotation',
-        'format': format,
+        'format': gene_track_format,
         'sourceType': 'file',
-        'url' : reference_url,
-        'indexURL' : indexURL,
+        'url' : gene_track_URL,
+        'indexURL' : gene_track_indexURL,
         'displayMode' : 'EXPANDED'
     }
 

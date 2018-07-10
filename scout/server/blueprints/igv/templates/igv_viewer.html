@@ -31,7 +31,6 @@
     <script type="text/javascript" src="https://igv.org/web/release/1.0.9/igv-1.0.9.js"></script>
 </head>
 <body>
-
 <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
 
 <script type="text/javascript">
@@ -48,19 +47,20 @@
                       showCenterGuide: false,
                     {% endif %}
                     reference: {
-                        id: "{{genome}}"
+                        fastaURL: "{{ reference_track.fastaURL }}",
+                        indexURL: "{{ reference_track.indexURL }}",
+                        cytobandURL: "{{ reference_track.cytobandURL }}"
                     },
-                    genome: "{{genome}}",
                     locus: "{{locus}}",
                     tracks: [
                       {
-                            name: "{{ reference_track.name }}",
-                            type: "{{ reference_track.type }}",
-                            format: "{{ reference_track.format }}",
-                            sourceType: "{{ reference_track.sourceType }}",
-                            url: "{{ reference_track.url|replace('%2F','/') }}",
-                            indexURL: "{{ reference_track.indexURL|replace('%2F','/') }}",
-                            displayMode: "{{ reference_track.displayMode }}",
+                            name: "{{ genes_track.name }}",
+                            type: "{{ genes_track.type }}",
+                            format: "{{ genes_track.format }}",
+                            sourceType: "{{ genes_track.sourceType }}",
+                            url: "{{ genes_track.url|replace('%2F','/') }}",
+                            indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
+                            displayMode: "{{ genes_track.displayMode }}",
                             order: Number.MAX_VALUE,
                             visibilityWindow: 300000000
 
