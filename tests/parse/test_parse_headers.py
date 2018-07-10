@@ -5,6 +5,7 @@ from cyvcf2 import VCF
 def test_parse_header_format():
     description = '"Consequence annotations from Ensembl VEP. Format: Allele'\
                   '|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature"'
+    
     format_info = parse_header_format(description.strip('"'))
     assert format_info == 'Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature'
 
@@ -31,4 +32,4 @@ def test_parse_vep_header(variant_clinical_file):
     ## THEN assert the header is returned correct
     assert isinstance(vep_header, list)
     assert vep_header
-    assert 'Allele' in vep_header
+    assert 'ALLELE' in vep_header

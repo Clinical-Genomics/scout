@@ -34,8 +34,9 @@ def test_parse_transcripts(cyvcf2_variant):
     "SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|"\
     "MOTIF_SCORE_CHANGE"
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
-                            for entry in csq_entry.split(',')]
+    header = [word.upper() for word in csq_header.split('|')]
+    
+    raw_transcripts = [dict(zip(header, entry.split('|'))) for entry in csq_entry.split(',')]
     
     
     ## WHEN parsing the transcript
@@ -49,9 +50,9 @@ def test_parse_transcripts(cyvcf2_variant):
 def test_parse_functional_annotation():
     csq_header = "Allele|Consequence"
     csq_entry = "C|missense_variant"
+    header = [word.upper() for word in csq_header.split('|')]
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
-                            for entry in csq_entry.split(',')]
+    raw_transcripts = [dict(zip(header, entry.split('|'))) for entry in csq_entry.split(',')]
 
     transcripts = parse_transcripts(raw_transcripts)
     
@@ -63,8 +64,9 @@ def test_parse_optional_hgnc_annotation():
     csq_header = "Allele|Consequence|HGNC_ID"
     csq_entry = "C|missense_variant|HGNC:10001"
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
-                            for entry in csq_entry.split(',')]
+    header = [word.upper() for word in csq_header.split('|')]
+    
+    raw_transcripts = [dict(zip(header, entry.split('|'))) for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -79,7 +81,9 @@ def test_parse_regular_hgnc_annotation():
     csq_header = "Allele|Consequence|HGNC_ID"
     csq_entry = "C|missense_variant|10001"
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+    header = [word.upper() for word in csq_header.split('|')]
+    
+    raw_transcripts = [dict(zip(header, entry.split('|'))) 
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
@@ -95,8 +99,10 @@ def test_parse_vep_freq_thousand_g():
     freq = 0.01
     csq_header = "Allele|Consequence|1000GAF"
     csq_entry = "C|missense_variant|{0}".format(freq)
+
+    header = [word.upper() for word in csq_header.split('|')]
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+    raw_transcripts = [dict(zip(header, entry.split('|'))) 
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
@@ -111,8 +117,9 @@ def test_parse_vep_freq_thousand_g_alt():
     freq = 0.01
     csq_header = "Allele|Consequence|AF"
     csq_entry = "C|missense_variant|{0}".format(freq)
+    header = [word.upper() for word in csq_header.split('|')]
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+    raw_transcripts = [dict(zip(header, entry.split('|'))) 
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
@@ -127,8 +134,9 @@ def test_parse_vep_freq_gnomad():
     freq = 0.01
     csq_header = "Allele|Consequence|gnomAD_AF"
     csq_entry = "C|missense_variant|{0}".format(freq)
+    header = [word.upper() for word in csq_header.split('|')]
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+    raw_transcripts = [dict(zip(header, entry.split('|'))) 
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
@@ -143,8 +151,9 @@ def test_parse_vep_freq_exac():
     freq = 0.01
     csq_header = "Allele|Consequence|EXAC_MAX_AF"
     csq_entry = "C|missense_variant|{0}".format(freq)
+    header = [word.upper() for word in csq_header.split('|')]
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+    raw_transcripts = [dict(zip(header, entry.split('|'))) 
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
@@ -159,8 +168,9 @@ def test_parse_vep_freq_thousand_g_max():
     freqs = [0.01, 0.001]
     csq_header = "Allele|Consequence|AFR_AF|AMR_AF"
     csq_entry = "C|missense_variant|{0}|{1}".format(freqs[0], freqs[1])
+    header = [word.upper() for word in csq_header.split('|')]
     
-    raw_transcripts = [dict(zip(csq_header.split('|'), entry.split('|'))) 
+    raw_transcripts = [dict(zip(header, entry.split('|'))) 
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts

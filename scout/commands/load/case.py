@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
     default='test'
 )
 @click.option('--ped',
-    type=click.Path(exists=True)
+    type=click.File('r')
 )
 @click.option('-u', '--update', 
     is_flag=True
@@ -69,6 +69,7 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
     config_raw = yaml.load(config) if config else {}
+    
     try:
         config_data = parse_case_data(
             config=config_raw,

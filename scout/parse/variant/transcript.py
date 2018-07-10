@@ -19,13 +19,14 @@ def parse_transcripts(raw_transcripts, allele=None):
     for entry in raw_transcripts:
         transcript = {}
         # There can be several functional annotations for one variant
-        functional_annotations = entry.get('Consequence', '').split('&')
+        functional_annotations = entry.get('CONSEQUENCE', '').split('&')
         transcript['functional_annotations'] = functional_annotations
         # Get the transcript id (ensembl gene id)
-        transcript_id = entry.get('Feature', '').split(':')[0]
+        transcript_id = entry.get('FEATURE', '').split(':')[0]
         transcript['transcript_id'] = transcript_id
 
         # Add the hgnc gene identifiers
+        # The HGNC ID is prefered and will be used if it exists
         hgnc_id = entry.get('HGNC_ID')
         if hgnc_id:
             hgnc_id = hgnc_id.split(':')[-1]
@@ -46,18 +47,25 @@ def parse_transcripts(raw_transcripts, allele=None):
         ## Protein ID ##
         transcript['protein_id'] = entry.get('ENSP')
         
-        polyphen_prediction = entry.get('PolyPhen')
+        ## Polyphen prediction ##
+        polyphen_prediction = entry.get('POLYPHEN')
+        # Default is 'unknown'
+        prediction_term = 'unknown'
         if polyphen_prediction:
             prediction_term = polyphen_prediction.split('(')[0]
-        else:
-            prediction_term = 'unknown'
         transcript['polyphen_prediction'] = prediction_term
 
+        ## Sift prediction ##
+        # Check with other key if it does not exist
         sift_prediction = entry.get('SIFT')
+        # Default is 'unknown'
+        prediction_term = 'unknown'
+        
+        if not sift_prediction:
+            sift_prediction = entry.get('SIFT_PRED')
+            
         if sift_prediction:
             prediction_term = sift_prediction.split('(')[0]
-        else:
-            prediction_term = 'unknown'
 
         transcript['sift_prediction'] = prediction_term
         
@@ -77,8 +85,8 @@ def parse_transcripts(raw_transcripts, allele=None):
                 elif domain_name == 'SMART_domains':
                     transcript['smart_domain'] = domain_id
 
-        coding_sequence_entry = entry.get('HGVSc', '').split(':')
-        protein_sequence_entry = entry.get('HGVSp', '').split(':')
+        coding_sequence_entry = entry.get('HGVSC', '').split(':')
+        protein_sequence_entry = entry.get('HGVSP', '').split(':')
 
         coding_sequence_name = None
         if len(coding_sequence_entry) > 1:
@@ -136,31 +144,35 @@ def parse_transcripts(raw_transcripts, allele=None):
             # 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
             # https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
             
+            # Loop over all keys to find frequency entries
             for key in entry:
-                big_key = key.upper()
-                
                 #All frequencies endswith AF
-                if not big_key.endswith('AF'):
+                if not key.endswith('AF'):
                     continue
                 
-                if (big_key == 'AF' or big_key == '1000GAF'):
-                    transcript['thousand_g_maf'] = float(entry[key])
+                value = entry[key]
+                if not value:
                     continue
                 
-                if big_key == 'GNOMAD_AF':
-                    transcript['gnomad_maf'] = float(entry[key])
+                # This is the 1000G max af information
+                if (key == 'AF' or key == '1000GAF'):
+                    transcript['thousand_g_maf'] = float(value)
+                    continue
+                
+                if key == 'GNOMAD_AF':
+                    transcript['gnomad_maf'] = float(value)
                     continue
 
-                if big_key == 'EXAC_MAX_AF':
-                    transcript['exac_max'] = float(entry[key])
-                    transcript['exac_maf'] = float(entry[key])
+                if key == 'EXAC_MAX_AF':
+                    transcript['exac_max'] = float(value)
+                    transcript['exac_maf'] = float(value)
                     continue
                 
-                if 'GNOMAD' in big_key:
-                    gnomad_freqs.append(float(entry[key]))
+                if 'GNOMAD' in key:
+                    gnomad_freqs.append(float(value))
                 
                 else:
-                    thousandg_freqs.append(float(entry[key]))
+                    thousandg_freqs.append(float(value))
                 
             if thousandg_freqs:
                 transcript['thousandg_max'] = max(thousandg_freqs)
@@ -178,7 +190,7 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         transcript['dbsnp'] = []
         transcript['cosmic'] = []
-        variant_ids = entry.get('Existing_variation')
+        variant_ids = entry.get('EXISTING_VARIATION')
         if variant_ids:
             for variant_id in variant_ids.split('&'):
                 if variant_id.startswith('rs'):

@@ -28,18 +28,20 @@ def test_get_genes(cyvcf2_variant):
     "Pfam_domain:PF00400&hmmpanther:PTHR22847:SF319&hmmpanther:"\
     "PTHR22847&PROSITE_profiles:PS50294&PROSITE_profiles:PS50082|||||"
     
-    csq_header_line = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|"\
+    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|"\
     "Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|"\
     "Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|"\
     "STRAND|SYMBOL_SOURCE|HGNC_ID|TSL|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|"\
     "SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|"\
     "MOTIF_SCORE_CHANGE"
     
+    header = [word.upper() for word in csq_header.split('|')]
+    
     ## GIVEN a variant with vep annotation and a vep header
     raw_transcripts = (
         dict(
             zip(
-                csq_header_line.split('|'), 
+                header, 
                 csq_entry.split('|')
                 )
             )

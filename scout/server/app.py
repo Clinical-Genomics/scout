@@ -69,8 +69,6 @@ def configure_extensions(app):
     """Configure Flask extensions."""
     extensions.toolbar.init_app(app)
     extensions.bootstrap.init_app(app)
-    from pprint import pprint as pp
-    pp(app.config)
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
