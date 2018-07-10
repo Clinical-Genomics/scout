@@ -41,6 +41,7 @@ def parse_vep_header(vcf_obj):
     """Return a list with the VEP header
     
     The vep header is collected from CSQ in the vcf file
+    All keys are capitalized
     
     Args:
         vcf_obj(cyvcf2.VCF)
@@ -54,6 +55,6 @@ def parse_vep_header(vcf_obj):
         # This is a dictionary
         csq_info = vcf_obj['CSQ']
         format_info = parse_header_format(csq_info['Description'])
-        vep_header = format_info.split('|')
+        vep_header = [key.upper() for key in format_info.split('|')]
     
     return vep_header
