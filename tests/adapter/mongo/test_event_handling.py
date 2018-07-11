@@ -585,8 +585,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 2
 
-
-def test_events_comments(populated_database, institute_obj, case_obj, user_obj):
+def test_comment_level_events(populated_database, institute_obj, case_obj, user_obj):
 
     adapter = populated_database
     assert adapter.event_collection.find().count() == 0
