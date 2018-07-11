@@ -4,7 +4,6 @@ import datetime
 import pymongo
 
 from scout.models.event import VERBS_MAP
-from scout.build.user import build_user
 
 logger = logging.getLogger(__name__)
 
