@@ -68,8 +68,8 @@ def parse_frequencies(variant, transcripts):
             thousand_g = transcript.get('thousand_g_maf')
             thousandg_max = transcript.get('thousandg_max')
             
-            gnomad = transcript.get('exac_max')
-            gnomad_max = transcript.get('thousandg_max')
+            gnomad = transcript.get('gnomad_maf')
+            gnomad_max = transcript.get('gnomad_max')
             if exac:
                 frequencies['exac'] = exac
             if exac_max:
