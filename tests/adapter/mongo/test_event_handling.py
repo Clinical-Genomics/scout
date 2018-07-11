@@ -4,6 +4,7 @@ import datetime
 import pymongo
 
 from scout.models.event import VERBS_MAP
+from scout.build.user import build_user
 
 logger = logging.getLogger(__name__)
 
@@ -584,29 +585,151 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 2
 
-def test_specific_comment(real_variant_database, institute_obj, case_obj, user_obj):
-    adapter = real_variant_database
-    logger.info("Add specific comment for a variant")
-    content = "hello"
-    # GIVEN a populated database with variants
-    assert adapter.variant_collection.find().count() > 0
+
+def test_events_comments(populated_database, institute_obj, case_obj, user_obj):
+
+    adapter = populated_database
     assert adapter.event_collection.find().count() == 0
+    common_variant_id = 'this_is_a_common_variant_id'
 
-    variant = adapter.variant_collection.find_one()
-
-    # WHEN commenting on a variant
-    updated_variant = adapter.comment(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link='commentlink',
-        variant=variant,
-        content=content,
-        comment_level='specific'
+    # Add a global comment for a the variant in first case, first user, first institute
+    global_comment_case1 = dict(
+        institute='cust1',
+        case='case1',
+        user_id='user1@mail.com',
+        user_name='user1',
+        link='link',
+        category='variant',
+        verb='comment',
+        subject='7_124491972_C_A_clinical',
+        level='global',
+        variant_id=common_variant_id,
+        content='global comment case1, user1, institute1',
+        panel=None,
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
     )
-    # THEN the variant should have comments
-    event = adapter.event_collection.find_one()
-    assert event['content'] == content
+    adapter.event_collection.insert_one(global_comment_case1)
+    events = list(adapter.event_collection.find())
+    print(events)
+    assert len(events) == 1
+
+    # Add a specific comment for a the variant in first case, first user, first institute
+    specific_comment_case1 = dict(
+        institute='cust1',
+        case='case1',
+        user_id='user1@mail.com',
+        user_name='user1',
+        link='link',
+        category='variant',
+        verb='comment',
+        subject='7_124491972_C_A_clinical',
+        level='specific',
+        variant_id=common_variant_id,
+        content='specific comment case1, user1, institute1',
+        panel=None,
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
+    )
+    adapter.event_collection.insert_one(specific_comment_case1)
+    events = list(adapter.event_collection.find())
+    print(events)
+    assert len(events) == 2
+
+    # Add a specific comment for a the variant in second case, first user, first institute
+    specific_comment_case2 = dict(
+        institute='cust1',
+        case='case2',
+        user_id='user1@mail.com',
+        user_name='user1',
+        link='link',
+        category='variant',
+        verb='comment',
+        subject='7_124491972_C_A_clinical',
+        level='specific',
+        variant_id=common_variant_id,
+        content='specific comment case2, user1, institute1',
+        panel=None,
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
+    )
+    adapter.event_collection.insert_one(specific_comment_case2)
+    events = list(adapter.event_collection.find())
+    print(events)
+    assert len(events) == 3
+
+    # Add a specific comment for a the variant in third case, second user, second institute
+    specific_comment_case3_cust2 = dict(
+        institute='cust2',
+        case='case3',
+        user_id='user2@mail.com',
+        user_name='user2',
+        link='link',
+        category='variant',
+        verb='comment',
+        subject='7_124491972_C_A_clinical',
+        level='specific',
+        variant_id=common_variant_id,
+        content='specific comment case3, user2, institute2',
+        panel=None,
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
+    )
+    adapter.event_collection.insert_one(specific_comment_case3_cust2)
+    events = list(adapter.event_collection.find())
+    print(events)
+    assert len(events) == 4
+
+    # Given the following situation:
+    # 1) global comment for variant in case1, institute1, user1
+    # 2) specific comment for variant in case1, institute1, user1
+    # 3) specific comment for variant in case2, institute1, user1
+    # 4) specific comment for variant in case3, institute2, user2
+
+    institute1 = {
+        '_id' : 'cust1'
+    }
+    case1 = {
+        '_id' : 'case1'
+    }
+    # Assert that user1 from case1 can see two comments for the variant (1 specific to the variant in case1 and one global):
+    comments = list(adapter.events(institute=institute1, case=case1, variant_id=common_variant_id, comments=True))
+    assert len(comments) == 2
+    for comment in comments:
+        if comment['level'] == 'specific':
+            assert comment['content'] == 'specific comment case1, user1, institute1'
+        else:
+            assert comment['content'] == 'global comment case1, user1, institute1'
+
+
+    case2 = {
+        '_id' : 'case2'
+    }
+    # Assert that user1 from case2 can see two comments for the variant (1 specific to the variant in case2 and one global):
+    comments = list(adapter.events(institute=institute1, case=case2, variant_id=common_variant_id, comments=True))
+    assert len(comments) == 2
+    for comment in comments:
+        if comment['level'] == 'specific':
+            assert comment['content'] == 'specific comment case2, user1, institute1'
+        else:
+            assert comment['content'] == 'global comment case1, user1, institute1'
+
+
+    institute2 = {
+        '_id' : 'cust2'
+    }
+    case3 = {
+        '_id' : 'case3'
+    }
+    # Assert that user2 from case3, institute2 can see two comments for the variant (1 specific to the variant in case3 and one global)
+    comments = list(adapter.events(institute=institute2, case=case3, variant_id=common_variant_id, comments=True))
+    assert len(comments) == 2
+    for comment in comments:
+        if comment['level'] == 'specific':
+            assert comment['content'] == 'specific comment case3, user2, institute2'
+        else:
+            assert comment['content'] == 'global comment case1, user1, institute1'
+
 
 def test_add_cohort(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
