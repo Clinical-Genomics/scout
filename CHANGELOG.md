@@ -24,6 +24,7 @@ $scout update hpo
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
 ### Fixed
+- Fixed MT alignment view in via pileup.js
 - Fixed coordinates for SVs with start chromosome different from end chromosome
 - Links to clinvar submitted variants at the cases level
 - Adapts clinvar parsing to new format
@@ -46,7 +47,7 @@ $scout update hpo
 - Adds choice in cases overview do show as many cases as user like
 
 ### Removed
-
+- pileup.min.js and pileup css are imported from a remote web location now
 - All source files for HPO information, this is instead fetched directly from source
 - All source files for gene information, this is instead fetched directly from source
 
