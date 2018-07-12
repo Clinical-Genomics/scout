@@ -47,7 +47,7 @@ $scout update hpo
 - Adds choice in cases overview do show as many cases as user like
 
 ### Removed
-- pileup.min.js and pileup css are imported from a remote web location
+- pileup.min.js and pileup css are imported from a remote web location now
 - All source files for HPO information, this is instead fetched directly from source
 - All source files for gene information, this is instead fetched directly from source
 
