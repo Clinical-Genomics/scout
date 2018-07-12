@@ -193,13 +193,14 @@ def variant_case(store, case_obj, variant_obj):
     for individual in case_obj['individuals']:
         bam_path = individual.get('bam_file')
         mt_bam = individual.get('mt_bam')
+        case_obj['sample_names'].append(individual['display_name'])
         if bam_path and os.path.exists(bam_path):
             case_obj['bam_files'].append(individual['bam_file'])
             case_obj['bai_files'].append(find_bai_file(individual['bam_file']))
-            case_obj['sample_names'].append(individual['display_name'])
         if mt_bam and os.path.exists(mt_bam):
             case_obj['mt_bams'].append(individual['mt_bam'])
             case_obj['mt_bais'].append(find_bai_file(individual['mt_bam']))
+
         else:
             LOG.debug("%s: no bam file found", individual['individual_id'])
 

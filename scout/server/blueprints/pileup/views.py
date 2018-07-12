@@ -41,9 +41,6 @@ def viewer():
         'start': request.args['start'],
         'stop': request.args['stop']
     }
-    # Special case for pileup.js. Remove when we use igv.js!!!
-    if position['contig'] == 'MT':
-        position['contig'] = 'M'
 
     genome = current_app.config.get('PILEUP_GENOME')
     if genome:
