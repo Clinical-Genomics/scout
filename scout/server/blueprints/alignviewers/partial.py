@@ -5,9 +5,7 @@ import re
 
 from flask import abort, request, Response, send_file
 
-
 BYTE_RANGE_RE = re.compile(r'bytes=(\d+)-(\d+)?$')
-
 
 def parse_byte_range(byte_range):
     '''Returns the two numbers in 'bytes=123-456' or throws ValueError.

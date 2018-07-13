@@ -68,8 +68,8 @@
                       {% for track in sample_tracks %}
                       {
                         name: '{{ track.name }}',
-                        url: '{{ url_for("igv.remote_static", file=track.url) }}',
-                        indexURL: '{{ url_for("igv.remote_static", file=track.indexURL) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=track.url) }}',
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=track.indexURL) }}',
                         sourceType: 'file',
                         type: "alignment"
                       },
