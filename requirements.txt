@@ -24,7 +24,7 @@ pathlib
 Flask-Login
 
 # Parsing
-cyvcf2
+cyvcf2==0.9.0
 PyYaml
 ped_parser
 
