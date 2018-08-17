@@ -163,6 +163,40 @@
             {% endif %}
           </div>
         </li>
+        <li class="list-group-item">
+          Left breakpoint
+          <div class="pull-right">
+            {{ variant.chromosome }}:{{ variant.position }}
+            {% if variant.chromosome == "MT" and case.mt_bams %}
+              - Alignment:
+              <a class="btn btn-default btn-sm" href="{{ url_for('pileup.viewer', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">Pileup viewer</a><br>
+              <a class="btn btn-default btn-sm" href="{{ url_for('igv.viewer', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer (BETA)</a>
+            {% elif case.bam_files %}
+              - Alignment:
+              <a class="btn btn-default btn-sm" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
+              <a class="btn btn-default btn-sm" href="{{ url_for('igv.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV (BETA)</a>
+            {% else %}
+              - BAM file(s) missing
+            {% endif %}
+          </div>
+        </li>
+        <li class="list-group-item">
+          Right breakpoint
+          <div class="pull-right">
+            {{ variant.chromosome }}:{{ variant.end }}
+            {% if variant.chromosome == "MT" and case.mt_bams %}
+              - Alignment:
+              <a class="btn btn-default btn-sm" href="{{ url_for('pileup.viewer', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">Pileup viewer</a><br>
+              <a class="btn btn-default btn-sm" href="{{ url_for('igv.viewer', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer (BETA)</a>
+            {% elif case.bam_files %}
+              - Alignment:
+              <a class="btn btn-default btn-sm" href="{{ url_for('pileup.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.end - 500), stop=(variant.end + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
+              <a class="btn btn-default btn-sm" href="{{ url_for('igv.viewer', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV (BETA)</a>
+            {% else %}
+              - BAM file(s) missing
+            {% endif %}
+          </div>
+        </li>
 	      <li class="list-group-item">
 	        Cytoband
           <div class="pull-right">
