@@ -24,7 +24,8 @@ $scout update hpo
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
 ### Fixed
-- Fixed MT alignment view in via pileup.js
+- Moved igv and pileup viewer under a common folder
+- Fixed MT alignment view pileup.js
 - Fixed coordinates for SVs with start chromosome different from end chromosome
 - Links to clinvar submitted variants at the cases level
 - Adapts clinvar parsing to new format
