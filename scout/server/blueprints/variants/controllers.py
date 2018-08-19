@@ -13,6 +13,7 @@ from scout.constants.acmg import ACMG_CRITERIA
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
+from scout.server.blueprints.genes.controllers import gene
 
 LOG = logging.getLogger(__name__)
 
@@ -161,6 +162,62 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     variant_obj['length'] = {100000000000: 'inf', -1: 'n.d.'}.get(variant_length, variant_length)
 
     return variant_obj
+
+
+def variant_lines(store, variants_query):
+    """Get variants info to be exported to file, one list (line) per variant"""
+
+    export_variants = {}
+
+    for variant in variants_query:
+        variant_line = []
+        position = variant['position']
+        change = variant['reference']+'>'+variant['alternative']
+        variant_line.append(variant['chromosome'])
+        variant_line.append(position)
+        variant_line.append(change)
+        variant_line.append(str(position)+change)
+
+        # gather gene info:
+        gene_list = variant.get('genes') #this is a list of gene objects
+        gene_ids = []
+        gene_names = []
+        hgvs_p = []
+        hgvs_c = []
+
+        # if variant is in genes
+        if len(gene_list) > 0:
+            for gene_obj in gene_list:
+                hgnc_id = gene_obj['hgnc_id']
+                gene_name = gene(store, hgnc_id)['symbol']
+
+                gene_ids.append(hgnc_id)
+                gene_names.append(gene_name)
+
+                # gather HGVS info from gene transcripts
+                transcripts_list = gene_obj.get('transcripts')
+                for transcript_obj in transcripts_list:
+                    hgvs_c.append(transcript_obj.get('coding_sequence_name'))
+                    hgvs_p.append(transcript_obj.get('protein_sequence_name'))
+
+            variant_line.append(';'.join( str(x) for x in  gene_ids))
+            variant_line.append(';'.join( str(x) for x in  gene_names))
+            variant_line.append(';'.join( str(x) for x in  hgvs_c))
+            variant_line.append(';'.join( str(x) for x in  hgvs_p))
+
+        else:
+            variant_line.append('-') # instead of gene ids
+            variant_line.append('-') # instead of gene names
+
+
+        export_variants[variant['document_id']] = variant
+
+    return export_variants
+
+
+
+
+
 
 
 def get_predictions(genes):

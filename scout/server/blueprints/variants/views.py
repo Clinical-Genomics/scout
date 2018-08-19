@@ -67,13 +67,22 @@ def variants(institute_id, case_name):
         form.hgnc_symbols.data = hpo_symbols
 
     variants_query = store.variants(case_obj['_id'], query=form.data)
+    data = {}
 
     if request.args.get('export'):
-        flash('exporting the shit to file!', 'warning')
+        flash('exporting shit to file!', 'warning')
+        export_lines = []
+        if form.data['chrom'] == 'MT':
+            flash('GET ALL MT ones!', 'info')
+            # Return all MT variants
+            export_lines = controllers.variant_lines(store, variants_query)
+        else:
+            # Return max 500 variants
+            export_lines = controllers.variant_lines(store, variants_query.limit(500))
 
-
-    data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
-
+        flash('vars--->'+str(export_lines),'danger')
+    else:
+        data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, form=form,
                 severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
