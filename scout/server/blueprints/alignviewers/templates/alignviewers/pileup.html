@@ -28,7 +28,7 @@
               {% if genome %}
                 url: '{{ url_for("alignviewers.remote_static", file=genome) }}'
               {% else %}
-                url: 'http://www.biodalliance.org/datasets/hg19.2bit'
+                url: 'https://www.biodalliance.org/datasets/hg19.2bit'
               {% endif %}
             }),
             name: 'Reference'
@@ -47,7 +47,7 @@
               {% if exons %}
                 url: '{{ url_for("alignviewers.remote_static", file=exons) }}'
               {% else %}
-                url: 'http://www.biodalliance.org/datasets/ensGene.bb'
+                url: 'https://www.biodalliance.org/datasets/ensGene.bb'
               {% endif %}
             }),
             name: 'Genes'
