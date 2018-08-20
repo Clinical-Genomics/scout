@@ -1,10 +1,10 @@
 EXPORT_HEADER = (
+    'Rank score',
     'Chromosome',
     'Position',
     'Change',
     'Position+Change',
-    'Gene',
-    'HGVS Description',
-    'AD Reference',
-    'AD Alternative'
+    'HGNC id',
+    'Gene name',
+    'Canonical transcript HGVS',
 )

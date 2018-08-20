@@ -70,15 +70,17 @@ def variants(institute_id, case_name):
     data = {}
 
     if request.args.get('export'):
-        flash('exporting shit to file!', 'warning')
+        flash('exporting shit to file!--->'+str(variants_query), 'warning')
+        header = controllers.get_variants_export_header(case_obj)
+        flash('header is:'+str(header), 'info')
         export_lines = []
         if form.data['chrom'] == 'MT':
             flash('GET ALL MT ones!', 'info')
             # Return all MT variants
-            export_lines = controllers.variant_lines(store, variants_query)
+            export_lines = controllers.variant_export_lines(store, case_obj, variants_query)
         else:
             # Return max 500 variants
-            export_lines = controllers.variant_lines(store, variants_query.limit(500))
+            export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
 
         flash('vars--->'+str(export_lines),'danger')
     else:

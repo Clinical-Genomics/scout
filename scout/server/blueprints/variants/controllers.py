@@ -10,6 +10,7 @@ from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
                              ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
                              ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
 from scout.constants.acmg import ACMG_CRITERIA
+from scout.constants.variants_export import EXPORT_HEADER
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
@@ -164,7 +165,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     return variant_obj
 
 
-def variant_lines(store, variants_query):
+def variant_export_lines(store, case_obj, variants_query):
     """Get variants info to be exported to file, one list (line) per variant"""
 
     export_variants = {}
@@ -173,6 +174,7 @@ def variant_lines(store, variants_query):
         variant_line = []
         position = variant['position']
         change = variant['reference']+'>'+variant['alternative']
+        variant_line.append(variant['rank_score'])
         variant_line.append(variant['chromosome'])
         variant_line.append(position)
         variant_line.append(change)
@@ -182,7 +184,6 @@ def variant_lines(store, variants_query):
         gene_list = variant.get('genes') #this is a list of gene objects
         gene_ids = []
         gene_names = []
-        hgvs_p = []
         hgvs_c = []
 
         # if variant is in genes
@@ -194,30 +195,39 @@ def variant_lines(store, variants_query):
                 gene_ids.append(hgnc_id)
                 gene_names.append(gene_name)
 
+                hgvs_nucleotide = '-'
                 # gather HGVS info from gene transcripts
                 transcripts_list = gene_obj.get('transcripts')
                 for transcript_obj in transcripts_list:
-                    hgvs_c.append(transcript_obj.get('coding_sequence_name'))
-                    hgvs_p.append(transcript_obj.get('protein_sequence_name'))
+                    if transcript_obj.get('is_canonical') and transcript_obj.get('is_canonical') is True:
+                        hgvs_nucleotide = str(transcript_obj.get('coding_sequence_name'))
+                hgvs_c.append(hgvs_nucleotide)
 
             variant_line.append(';'.join( str(x) for x in  gene_ids))
             variant_line.append(';'.join( str(x) for x in  gene_names))
             variant_line.append(';'.join( str(x) for x in  hgvs_c))
-            variant_line.append(';'.join( str(x) for x in  hgvs_p))
-
         else:
-            variant_line.append('-') # instead of gene ids
-            variant_line.append('-') # instead of gene names
+            while i < 4:
+                variant_line.append('-') # instead of gene ids
+                i = i+1
 
+        # gather coverage info
+        variant_gts = variant['samples'] # list of coverage and gt calls for case samples
 
-        export_variants[variant['document_id']] = variant
+        for individual in case_obj['individuals']:
+            for variant_gt in variant_gts:
+                if individual['individual_id'] == variant_gt['sample_id']:
+                    variant_line.append(variant_gt['allele_depths'][0]) # AD reference
+                    variant_line.append(variant_gt['allele_depths'][1]) # AD alternate
+
+        export_variants[variant['document_id']] = variant_line
 
     return export_variants
 
 
-
-
-
+def get_variants_export_header(case_obj):
+    header = EXPORT_HEADER
+    return header
 
 
 def get_predictions(genes):
