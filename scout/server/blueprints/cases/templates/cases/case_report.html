@@ -874,7 +874,7 @@
         <tr>
           <td><span class="badge badge-warning pull-left">{{variant.sub_category|upper}}</span></td>
           <td>{{ variant.length }}</td>
-          {% if variant.end_chrom %} <!-- end_chrom key ia also in database-->
+          {% if variant.end_chrom %} <!-- end_chrom key is also in database-->
             {% if variant.chromosome == variant.end_chrom %} <!--but it's still not a rearrangement involving different chromosomes-->
               <td>chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}</td>
             {% else %}
