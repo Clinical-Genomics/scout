@@ -8,7 +8,7 @@ Flask-OAuthlib
 Flask-Markdown
 Flask-WTF
 Flask-Mail
-flask_weasyprint
+Flask-WeasyPrint
 coloredlogs
 query_phenomizer
 loqusdb>=0.5
@@ -17,8 +17,8 @@ livereload
 mongo_adapter
 python-dateutil
 pymongo==3.6.0
-
 pathlib
+WeasyPrint>=0.42.3
 
 # unclear
 Flask-Login
