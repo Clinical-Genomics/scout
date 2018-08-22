@@ -94,7 +94,7 @@
         <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
       {% endif %}
       {% if case.vcf_files.vcf_sv %}
-        <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
+        <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
       {% endif %}
       {% if case.vcf_files.vcf_cancer %}
         <a class="btn btn-default" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical cancer variants</a>
@@ -630,15 +630,11 @@
 {% macro hpo_genelist_panel() %}
   <div class="panel panel-default">
     <div class="panel-heading">
-      HPO gene panel (
-      {{ case.dynamic_gene_list|length }} genes
+      HPO gene panel ({{ case.dynamic_gene_list|length }} genes
 
-      {% if case.dynamic_panel_phenotypes %}
-        , <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
-          {{ case.dynamic_panel_phenotypes|length }} phenotypes
-        </span>
-      {% endif %}
-      )
+      {%- if case.dynamic_panel_phenotypes %},
+      <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
+          {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>{% endif %})
     </div>
     <ul class="list-group fixed-panel">
       {% for hpo_gene in case.dynamic_gene_list %}

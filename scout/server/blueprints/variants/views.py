@@ -3,7 +3,7 @@ import io
 import logging
 
 from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response, session
-from werkzeug.datastructures import Headers
+from werkzeug.datastructures import Headers, MultiDict
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
@@ -20,16 +20,50 @@ log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
 
 
-@variants_bp.route('/<institute_id>/<case_name>/variants')
+@variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(request.args.get('page', 1))
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
-    form = FiltersForm(request.args)
+    page = int(request.form.get('page', 1))
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_type = request.args.get('variant_type', 'clinical')
+
+    # Update filter settings if Clinical Filter was requested
+    
+    default_panels = []
+    for panel in case_obj['panels']:
+        if panel['is_default']:
+            default_panels.append(panel['panel_name'])
+            
+    request.form.get('gene_panels')
+    if bool(request.form.get('clinical_filter')):
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'clinsig': [4,5],
+            'clinsig_confident_always_returned': True,
+            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
+            'variant_type': 'clinical',
+            'gene_panels': default_panels
+             })
+
+    if(request.method == "POST"):
+        if bool(request.form.get('clinical_filter')):
+            form = FiltersForm(clinical_filter)
+            form.csrf_token = request.args.get('csrf_token')
+        else:
+            form = FiltersForm(request.form)
+    else:
+        form = FiltersForm(request.args)
+        
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
     panel_choices = [(panel['panel_name'], panel['display_name'])
-                     for panel in case_obj.get('panels', [])]
+                     for panel in available_panels]
+
     form.gene_panels.choices = panel_choices
 
     # update status of case if vistited for the first time
@@ -42,22 +76,31 @@ def variants(institute_id, case_name):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
-    if len(form.hgnc_symbols.data) > 0:
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
         clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
                 if hgnc_gene is None:
-                    flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+                    not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
             elif store.hgnc_genes(hgnc_symbol).count() == 0:
-                flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+                not_found_symbols.append(hgnc_symbol)
             elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                flash("Gene not included in clinical list: {}".format(hgnc_symbol), 'warning')
+                non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
     form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
@@ -398,4 +441,4 @@ def upload_panel(institute_id, case_name):
     # reset gene panels
     form.gene_panels.data = ''
     return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
-                            **form.data))
+                            **form.data), code=307)
