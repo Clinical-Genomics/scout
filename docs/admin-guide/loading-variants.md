@@ -5,4 +5,8 @@ This document will describe the process of variant loading, how it is done and w
 ## Rank Score
 
 In Scout rank score is a central theme. Rank Scores is a estimation on how potentially dangerous a variant is, similar to the CADD score with the intention of work with all types of variation. 
-The uploading of variants is based on a rank score treshold, this is to avoid to clog the database with millions of variants that we at the moment have a hard time to say anything about.
+The uploading of variants is based on a rank score threshold, this is to avoid to clog the database with millions of variants that we at the moment have a hard time to say anything about.
+
+The rank score is calculated by the tool [GENMOD][genmod]
+
+[genmod]: http://exac.broadinstitute.org/faq
