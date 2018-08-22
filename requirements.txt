@@ -17,8 +17,8 @@ livereload
 mongo_adapter
 python-dateutil
 pymongo==3.6.0
-
 pathlib
+WeasyPrint>=0.42.3
 
 # unclear
 Flask-Login
