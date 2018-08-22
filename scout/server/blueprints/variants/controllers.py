@@ -168,7 +168,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
 def variant_export_lines(store, case_obj, variants_query):
     """Get variants info to be exported to file, one list (line) per variant"""
 
-    export_variants = {}
+    export_variants = []
 
     for variant in variants_query:
         variant_line = []
@@ -211,22 +211,31 @@ def variant_export_lines(store, case_obj, variants_query):
                 variant_line.append('-') # instead of gene ids
                 i = i+1
 
-        # gather coverage info
         variant_gts = variant['samples'] # list of coverage and gt calls for case samples
-
         for individual in case_obj['individuals']:
             for variant_gt in variant_gts:
                 if individual['individual_id'] == variant_gt['sample_id']:
+                    # gather coverage info
                     variant_line.append(variant_gt['allele_depths'][0]) # AD reference
                     variant_line.append(variant_gt['allele_depths'][1]) # AD alternate
+                    # gather genotype quality info
+                    variant_line.append(variant_gt['genotype_quality'])
 
-        export_variants[variant['document_id']] = variant_line
+        variant_line = [str(i) for i in variant_line]
+        export_variants.append(",".join(variant_line))
 
     return export_variants
 
 
-def get_variants_export_header(case_obj):
-    header = EXPORT_HEADER
+def variants_export_header(case_obj):
+    header = []
+    header = header + EXPORT_HEADER
+    # Add fields specific for case samples
+    for individual in case_obj['individuals']:
+        display_name = str(individual['display_name'])
+        header.append('AD_reference_'+display_name) # Add AD reference field for a sample
+        header.append('AD_alternate_'+display_name) # Add AD alternate field for a sample
+        header.append('GT_quality_'+display_name) # Add Genotype quality field for a sample
     return header
 
 
