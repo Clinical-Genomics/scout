@@ -70,23 +70,28 @@ def variants(institute_id, case_name):
     data = {}
 
     if request.args.get('export'):
-        flash('exporting shit to file!--->'+str(variants_query), 'warning')
-        header = controllers.get_variants_export_header(case_obj)
-        flash('header is:'+str(header), 'info')
+        document_header = controllers.variants_export_header(case_obj)
         export_lines = []
         if form.data['chrom'] == 'MT':
-            flash('GET ALL MT ones!', 'info')
             # Return all MT variants
             export_lines = controllers.variant_export_lines(store, case_obj, variants_query)
         else:
             # Return max 500 variants
             export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
 
-        flash('vars--->'+str(export_lines),'danger')
+        def generate(header, lines):
+            yield header + '\n'
+            for line in lines:
+                yield line + '\n'
+
+        headers = Headers()
+        headers.add('Content-Disposition','attachment', filename=str(case_obj['_id'])+'-filtered_variants.csv')
+        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
+
     else:
         data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, form=form,
-                severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+                    severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>')
