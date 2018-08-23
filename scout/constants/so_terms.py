@@ -16,6 +16,7 @@ SO_TERMS = {
     'splice_region_variant': {'rank':14, 'region':'splicing'},
     'incomplete_terminal_codon_variant': {'rank':15, 'region':'exonic'},
     'synonymous_variant': {'rank':16, 'region':'exonic'},
+    'start_retained_variant': {'rank':17, 'region':'exonic'},
     'stop_retained_variant': {'rank':17, 'region':'exonic'},
     'coding_sequence_variant': {'rank':18, 'region':'exonic'},
     'mature_miRNA_variant': {'rank':19, 'region':'ncRNA_exonic'},
@@ -59,5 +60,6 @@ SEVERE_SO_TERMS = (
     'splice_region_variant',
     'incomplete_terminal_codon_variant',
     'synonymous_variant',
+    'start_retained_variant',
     'stop_retained_variant',
 )
