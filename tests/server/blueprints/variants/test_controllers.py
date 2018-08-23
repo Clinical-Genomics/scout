@@ -38,7 +38,7 @@ def test_cancel_sanger_mail_sent(mock_mail, real_variant_database, institute_obj
     ## THEN the supplied mail objects send method should have received a message object
     assert mock_mail._message
 
-def test_variant_export_lines(real_variant_database, case_obj):
+def test_variant_csv_export(real_variant_database, case_obj):
     adapter = real_variant_database
     case_id = case_obj['_id']
 
