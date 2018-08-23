@@ -45,7 +45,7 @@ def test_variant_csv_export(real_variant_database, case_obj):
     # Given a database with variants from a case
     snv_variants = adapter.variant_collection.find({'case_id' : case_id, "category" : "snv"})
 
-    # Given 5 specific variats to be exported
+    # Given 5 variants to be exported
     variants_to_export = []
     for variant in snv_variants.limit(5):
         assert type(variant) is dict
