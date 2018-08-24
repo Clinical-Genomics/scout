@@ -44,6 +44,7 @@ $scout update hpo
 - Fix problem with parsing gnomad from VEP
 
 ### Added
+- Added a PDF export function for gene panels
 - Added a "Filter and export" button to export custom-filtered SNVs to CSV file
 - Dismiss SVs
 - Added IGV alignments viewer
