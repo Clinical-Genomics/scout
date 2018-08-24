@@ -10,9 +10,11 @@ from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
                              ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
                              ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
 from scout.constants.acmg import ACMG_CRITERIA
+from scout.constants.variants_export import EXPORT_HEADER
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from .forms import CancerFiltersForm
+from scout.server.blueprints.genes.controllers import gene
 
 LOG = logging.getLogger(__name__)
 
@@ -161,6 +163,99 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     variant_obj['length'] = {100000000000: 'inf', -1: 'n.d.'}.get(variant_length, variant_length)
 
     return variant_obj
+
+
+def variant_export_lines(store, case_obj, variants_query):
+    """Get variants info to be exported to file, one list (line) per variant.
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            case_obj(scout.models.Case)
+            variants_query: a list of variant objects, each one is a dictionary
+
+        Returns:
+            export_variants: a list of strings. Each string  of the list corresponding to the fields
+                             of a variant to be exported to file, separated by comma
+    """
+
+    export_variants = []
+
+    for variant in variants_query:
+        variant_line = []
+        position = variant['position']
+        change = variant['reference']+'>'+variant['alternative']
+        variant_line.append(variant['rank_score'])
+        variant_line.append(variant['chromosome'])
+        variant_line.append(position)
+        variant_line.append(change)
+        variant_line.append(str(position)+change)
+
+        # gather gene info:
+        gene_list = variant.get('genes') #this is a list of gene objects
+        gene_ids = []
+        gene_names = []
+        hgvs_c = []
+
+        # if variant is in genes
+        if len(gene_list) > 0:
+            for gene_obj in gene_list:
+                hgnc_id = gene_obj['hgnc_id']
+                gene_name = gene(store, hgnc_id)['symbol']
+
+                gene_ids.append(hgnc_id)
+                gene_names.append(gene_name)
+
+                hgvs_nucleotide = '-'
+                # gather HGVS info from gene transcripts
+                transcripts_list = gene_obj.get('transcripts')
+                for transcript_obj in transcripts_list:
+                    if transcript_obj.get('is_canonical') and transcript_obj.get('is_canonical') is True:
+                        hgvs_nucleotide = str(transcript_obj.get('coding_sequence_name'))
+                hgvs_c.append(hgvs_nucleotide)
+
+            variant_line.append(';'.join( str(x) for x in  gene_ids))
+            variant_line.append(';'.join( str(x) for x in  gene_names))
+            variant_line.append(';'.join( str(x) for x in  hgvs_c))
+        else:
+            while i < 4:
+                variant_line.append('-') # instead of gene ids
+                i = i+1
+
+        variant_gts = variant['samples'] # list of coverage and gt calls for case samples
+        for individual in case_obj['individuals']:
+            for variant_gt in variant_gts:
+                if individual['individual_id'] == variant_gt['sample_id']:
+                    # gather coverage info
+                    variant_line.append(variant_gt['allele_depths'][0]) # AD reference
+                    variant_line.append(variant_gt['allele_depths'][1]) # AD alternate
+                    # gather genotype quality info
+                    variant_line.append(variant_gt['genotype_quality'])
+
+        variant_line = [str(i) for i in variant_line]
+        export_variants.append(",".join(variant_line))
+
+    return export_variants
+
+
+def variants_export_header(case_obj):
+    """Returns a header for the CSV file with the filtered variants to be exported.
+
+        Args:
+            case_obj(scout.models.Case)
+
+        Returns:
+            header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
+                    + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
+    """
+    header = []
+    header = header + EXPORT_HEADER
+    # Add fields specific for case samples
+    for individual in case_obj['individuals']:
+        display_name = str(individual['display_name'])
+        header.append('AD_reference_'+display_name) # Add AD reference field for a sample
+        header.append('AD_alternate_'+display_name) # Add AD alternate field for a sample
+        header.append('GT_quality_'+display_name) # Add Genotype quality field for a sample
+    return header
 
 
 def get_predictions(genes):
