@@ -123,7 +123,6 @@ def panel_export(panel_id):
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d")
     html_report = render_template('panels/panel_pdf_simple.html', **data)
     return render_pdf(HTML(string=html_report), download_filename=data['panel']['panel_name']+'_'+str(data['panel']['version'])+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')
-    #return render_template('panels/panel_pdf_simple.html', **data)
 
 
 @panels_bp.route('/panels/<panel_id>/update/<int:hgnc_id>', methods=['GET', 'POST'])
