@@ -69,11 +69,11 @@
           <td>
             <a href="https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={{gene.hgnc_id}}" target="_blank">{{gene.hgnc_id}}</a>
           </td>
-          <td><strong>{{ gene.symbol }}</strong></td>
+          <td>{{ gene.symbol }}</td>
           <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
           <td>{{ 'Reduced penetrance' if gene.reduced_penetrance }}</td>
           <td>{{ 'Mosaicism' if gene.mosaicism}}</td>
-          <td>{{ gene.database_entry_version }}</td>
+          <td><span class="badge badge-secondary">{{ gene.database_entry_version }}</span></td>
           <td>{{ gene.inheritance_models|join(', ') }}</td>
         </tr>
       {% endfor %}
