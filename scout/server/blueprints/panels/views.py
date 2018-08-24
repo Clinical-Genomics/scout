@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
+import datetime
 
-from flask import abort, Blueprint, request, redirect, url_for, flash
+from flask import abort, Blueprint, request, redirect, url_for, flash, render_template
+from flask_weasyprint import HTML, render_pdf
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -111,6 +113,17 @@ def panel_update(panel_id):
     panel_obj = store.panel(panel_id)
     store.apply_pending(panel_obj)
     return redirect(url_for('.panels'))
+
+
+@panels_bp.route('/panels/export-panel/<panel_id>', methods=['GET', 'POST'])
+def panel_export(panel_id):
+    """Export panel to PDF file"""
+    panel_obj = store.panel(panel_id)
+    data = controllers.panel(store, panel_obj)
+    data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d")
+    #html_report = render_template('panels/panel_pdf_simple.html', **data)
+    #return render_pdf(HTML(string=html_report), download_filename=data['panel']['panel_name']+'_'+str(data['panel']['version'])+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')
+    return render_template('panels/panel_pdf_simple.html', **data)
 
 
 @panels_bp.route('/panels/<panel_id>/update/<int:hgnc_id>', methods=['GET', 'POST'])
