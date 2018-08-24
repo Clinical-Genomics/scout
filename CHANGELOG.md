@@ -49,6 +49,7 @@ $scout update hpo
 
 ### Added
 - Added a PDF export function for gene panels
+- Added a dismissable message for cases with variants to be evaluated by Sanger
 - Added a "Filter and export" button to export custom-filtered SNVs to CSV file
 - Dismiss SVs
 - Added IGV alignments viewer

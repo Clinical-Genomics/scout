@@ -204,7 +204,17 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
 
 
 def get_sanger_unevaluated(store, institute_id):
-    """Get all variants for an institute having Sanger validations ordered but still not evaluated"""
+    """Get all variants for an institute having Sanger validations ordered but still not evaluated
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str)
+
+        Returns:
+            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+
+    """
 
     # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
     # This way is much faster than querying over all variants in all cases of an institute
@@ -234,8 +244,6 @@ def get_sanger_unevaluated(store, institute_id):
         if len(unevaluated_by_case[case]) > 0:
             unevaluated.append(unevaluated_by_case)
 
-    # Return a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ]
-    # Where the keys are case_ids and the values are lists of variants with Sanger ordered but not validated
     return unevaluated
 
 
