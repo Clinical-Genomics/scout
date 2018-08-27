@@ -361,7 +361,18 @@ class CaseHandler(object):
         return updated_case
 
     def update_caseid(self, case_obj, family_id):
-        """Update case id for a case across the database."""
+        """Update case id for a case across the database.
+        
+        This function is used when a case is a rerun or updated for another reason.
+        
+        Args:
+            case_obj(dict)
+            family_id(str): The new family id
+        
+        Returns:
+            new_case(dict): The updated case object
+        
+        """
         new_case = deepcopy(case_obj)
         new_case['_id'] = family_id
 
@@ -370,6 +381,8 @@ class CaseHandler(object):
             new_variantids = []
             for variant_id in case_obj.get(case_variants, []):
                 case_variant = self.variant(variant_id)
+                if not case_variant:
+                    continue
                 new_variantid = get_variantid(case_variant, family_id)
                 new_variantids.append(new_variantid)
             new_case[case_variants] = new_variantids
@@ -401,7 +414,15 @@ class CaseHandler(object):
 
 
 def get_variantid(variant_obj, family_id):
-    """Create a new variant id."""
+    """Create a new variant id.
+    
+    Args:
+        variant_obj(dict)
+        family_id(str)
+    
+    Returns:
+        new_id(str): The new variant id
+    """
     new_id = parse_document_id(
         chrom=variant_obj['chromosome'],
         pos=str(variant_obj['position']),
