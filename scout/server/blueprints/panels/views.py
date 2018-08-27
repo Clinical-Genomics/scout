@@ -119,7 +119,7 @@ def panel_update(panel_id):
 def panel_export(panel_id):
     """Export panel to PDF file"""
     panel_obj = store.panel(panel_id)
-    data = controllers.panel(store, panel_obj)
+    data = controllers.panel_export(store, panel_obj)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d")
     html_report = render_template('panels/panel_pdf_simple.html', **data)
     return render_pdf(HTML(string=html_report), download_filename=data['panel']['panel_name']+'_'+str(data['panel']['version'])+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')

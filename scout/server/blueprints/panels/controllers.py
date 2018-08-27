@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime as dt
+import operator
 import logging
 
 from flask import flash
@@ -97,3 +98,32 @@ def new_panel(store, institute_id, panel_name, display_name, csv_lines):
 
     panel_obj = store.add_gene_panel(panel_data)
     return panel_obj
+
+
+def panel_export(store, panel_obj):
+    """Preprocess a panel of genes."""
+    panel_obj['institute'] = store.institute(panel_obj['institute'])
+    full_name = "{}({})".format(panel_obj['display_name'], panel_obj['version'])
+    panel_obj['name_and_version'] = full_name
+
+    panel_explanained = {} # a disctionary with display_name(version) as key and an increasing index as value
+    panel_index = 0
+
+    # Add gene_to_panels - related info
+    for gene in panel_obj['genes']:
+        associated_panels = [] # list of gene panels associated to this gene
+        gene_associated_gene_panels = list(store.hgnc_to_panels(gene['hgnc_id'])) # a list of gene panels objects containing that gene
+        for panel in gene_associated_gene_panels:
+            associated_panel = "{}({})".format(panel['display_name'], panel['version'])
+            if associated_panel in panel_explanained:
+                associated_panels.append(panel_explanained[associated_panel])
+            else:
+                panel_index =  panel_index + 1
+                panel_explanained[associated_panel] =  panel_index
+                associated_panels.append(panel_index)
+        gene['associated_panels'] = associated_panels
+
+    export_footer = sorted( panel_explanained.items(), key=operator.itemgetter(1) )
+    panel_obj['export_footer'] = export_footer
+
+    return dict(panel=panel_obj)

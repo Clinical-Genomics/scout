@@ -62,6 +62,7 @@
         <td>Mosaicism</td>
         <td>Entry version</td>
         <td>Inheritance models</td>
+        <td>Panels*</td>
       </tr>
       {% for gene in panel.genes|sort(attribute='symbol') %}
         <tr>
@@ -75,9 +76,15 @@
           <td>{{ 'Mosaicism' if gene.mosaicism}}</td>
           <td><span class="badge badge-secondary">{{ gene.database_entry_version }}</span></td>
           <td>{{ gene.inheritance_models|join(', ') }}</td>
+          <td>{{ gene.associated_panels|sort|join(',') }}</td>
         </tr>
       {% endfor %}
     </table>
   </div>
 </div>
+<h6>*Gene panel explanation:</h6>
+{% for panel_index in panel.export_footer%}
+  {{panel_index[1]}}:&nbsp;{{panel_index[0]}}<br>
+{% endfor %}
+<br>
 {% endmacro %}
