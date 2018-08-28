@@ -21,6 +21,8 @@ There's a list of "Strong candidates" on the page. This list is curated by the c
 ### Misc.
 The case page also displays a simple wiki-style synopsis on the current case that can be used to communicate information on the case to collaborators.
 
+Rank model version shows which rank model that has been used to rank the variants in the case
+
 The "Activity" feed is a reverse chronological list of events and comments related to the case. Examples of events include comments, status updates, assignments, Sanger sequencing orders etc.
 
 ### Actions
