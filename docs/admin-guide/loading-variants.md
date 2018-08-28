@@ -9,4 +9,4 @@ The uploading of variants is based on a rank score threshold, this is to avoid t
 
 The rank score is calculated by the tool [GENMOD][genmod]
 
-[genmod]: http://exac.broadinstitute.org/faq
+[genmod]: https://github.com/moonso/genmod
