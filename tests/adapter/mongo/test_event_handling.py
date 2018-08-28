@@ -590,7 +590,7 @@ def test_comment_level_events(populated_database, institute_obj, case_obj, user_
     assert adapter.event_collection.find().count() == 0
     common_variant_id = 'this_is_a_common_variant_id'
 
-    # Add a global comment for a the variant in first case, first user, first institute
+    # Add a global comment for a variant in first case, first user, first institute
     global_comment_case1 = dict(
         institute='cust1',
         case='case1',
@@ -612,7 +612,7 @@ def test_comment_level_events(populated_database, institute_obj, case_obj, user_
     print(events)
     assert len(events) == 1
 
-    # Add a specific comment for a the variant in first case, first user, first institute
+    # Add a specific comment for a variant in first case, first user, first institute
     specific_comment_case1 = dict(
         institute='cust1',
         case='case1',
@@ -634,7 +634,7 @@ def test_comment_level_events(populated_database, institute_obj, case_obj, user_
     print(events)
     assert len(events) == 2
 
-    # Add a specific comment for a the variant in second case, first user, first institute
+    # Add a specific comment for a variant in second case, first user, first institute
     specific_comment_case2 = dict(
         institute='cust1',
         case='case2',
@@ -656,7 +656,7 @@ def test_comment_level_events(populated_database, institute_obj, case_obj, user_
     print(events)
     assert len(events) == 3
 
-    # Add a specific comment for a the variant in third case, second user, second institute
+    # Add a specific comment for a variant in third case, second user, second institute
     specific_comment_case3_cust2 = dict(
         institute='cust2',
         case='case3',
