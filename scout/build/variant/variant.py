@@ -344,5 +344,9 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if rank_results:
         variant_obj['rank_score_results'] = rank_results
+        
+    # Cancer specific
+    if variant.get('mvl_tag'):
+        variant_obj['mvl_tag'] = True
 
     return variant_obj
