@@ -31,11 +31,19 @@ def parse_genes(transcripts):
     # List with all genes and there transcripts
     genes = []
 
+    hgvs_identifier = None
+    canonical_transcript = None
+    exon = None
     # Group all transcripts by gene
     for transcript in transcripts:
         # Check what hgnc_id a transcript belongs to
         hgnc_id = transcript['hgnc_id']
         hgnc_symbol = transcript['hgnc_symbol']
+
+        if (transcript['is_canonical'] and transcript.get('coding_sequence_name')):
+            hgvs_identifier = transcript.get('coding_sequence_name')
+            canonical_transcript = transcript['transcript_id']
+            exon = transcript['exon']
 
         # If there is a identifier we group the transcripts under gene
         if hgnc_id:
@@ -97,6 +105,9 @@ def parse_genes(transcripts):
             'hgnc_id': hgnc_id,
             'hgnc_symbol': hgnc_symbol,
             'region_annotation': most_severe_region,
+            'hgvs_identifier': transcript['coding_sequence_name'],
+            'canonical_transcript': transcript['transcript_id'],
+            'exon': transcript['exon'],
         }
         genes.append(gene)    
 

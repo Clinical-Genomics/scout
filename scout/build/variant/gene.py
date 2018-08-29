@@ -103,5 +103,9 @@ def build_gene(gene, hgncid_to_gene=None):
             LOG.warning("Invalid polyphen prediction %s", polyphen_prediction)
         else:
             gene_obj['polyphen_prediction'] = polyphen_prediction
- 
+    
+    gene_obj['hgvs_identifier'] = gene['hgvs_identifier']
+    gene_obj['canonical_transcript'] = gene['canonical_transcript']
+    gene_obj['exon'] = gene['exon']
+    
     return gene_obj
