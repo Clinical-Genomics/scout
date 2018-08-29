@@ -153,7 +153,8 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
 
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))
-        variant_obj.update(get_variant_info(variant_genes))
+        if variant_obj.get('category') == 'cancer':
+            variant_obj.update(get_variant_info(variant_genes))
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
