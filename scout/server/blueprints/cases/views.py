@@ -5,11 +5,12 @@ import datetime
 from operator import itemgetter
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify)
+                   request, url_for, send_from_directory, jsonify, Response)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
-
+from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
 from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case, user_institutes
 from . import controllers
@@ -55,6 +56,61 @@ def case(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, **data)
 
 
+@cases_bp.route('/<institute_id>/clinvar_submissions', methods=['GET','POST'])
+@templated('cases/clinvar_submissions.html')
+def clinvar_submissions(institute_id):
+
+    def generate_csv(header, lines):
+        yield header + '\n'
+        for line in lines: # lines have already quoted fields
+            yield line + '\n'
+
+    appo=''
+    if request.method == 'POST':
+
+        if request.form.get('close'):
+            updated_submission_obj = store.update_clinvar_submission_status(request.form.get('close'), 'closed')
+        elif request.form.get('open'):
+            updated_submission_obj = store.update_clinvar_submission_status(request.form.get('open'), 'open')
+        elif request.form.get('delete'):
+            appo = 'delete --> '+request.form.get('delete')
+        elif request.form.get('delete_variant'):
+            appo = 'delete VARIANT -->'+request.form.get('delete_variant')
+        elif request.form.get('delete_casedata'):
+            appo = 'delete CASEDATA -->'+request.form.get('delete_casedata')
+
+        else: # Download CSV files (for variants or casedata)
+            csv_type = ''
+            submission_id = ''
+            if request.form.get('variant_data'):
+                csv_type = 'variant_data' # Download CSV file with variants to submit
+                submission_id = request.form.get('variant_data')
+            else:
+                csv_type = 'case_data' # Download CSV file with casedata to submit
+                submission_id = request.form.get('case_data')
+
+            submission_objs = store.clinvar_objs(request.form.get(csv_type), csv_type) # a list of clinvar submission objects (variants or casedata)
+            csv_header_obj = controllers.clinvar_header(submission_objs, csv_type) # custom csv header (dict as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
+            csv_lines = controllers.clinvar_lines(submission_objs, csv_header_obj) # csv lines (one for each variant/casedata to be submitted)
+            csv_header = list(csv_header_obj.values())
+            csv_header = ['"'+str(x)+'"' for x in csv_header] # quote columns in header for csv renedering
+
+            # Download the CSV file
+            headers = Headers()
+            headers.add('Content-Disposition','attachment', filename='scout-clinvar_submission_'+submission_id+'_'+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'.csv')
+            return Response(generate_csv(','.join(csv_header), csv_lines), mimetype='text/csv', headers=headers)
+
+
+    data = {
+        'submissions' : controllers.clinvar_submissions(store, current_user.email, institute_id),
+        'display_name' : institute_id,
+        'variant_header_fields' : CLINVAR_HEADER ,
+        'casedata_header_fields' : CASEDATA_HEADER,
+        'appo' : appo,
+    }
+    return data
+
+
 @cases_bp.route('/<institute_id>/causatives')
 @templated('cases/causatives.html')
 def causatives(institute_id):
@@ -86,7 +142,7 @@ def case_synopsis(institute_id, case_name):
     return redirect(request.referrer)
 
 
-@cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET','POST'])
+@cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET'])
 @templated('cases/case_report.html')
 def case_report(institute_id, case_name):
     """Visualize case report"""
@@ -96,7 +152,7 @@ def case_report(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
 
-@cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET','POST'])
+@cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET'])
 def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 
@@ -273,7 +329,7 @@ def hpoterms():
         {'name': '{} | {}'.format(term['_id'], term['description']),
          'id': term['_id']
         } for term in terms[:7]]
-    
+
     return jsonify(json_terms)
 
 

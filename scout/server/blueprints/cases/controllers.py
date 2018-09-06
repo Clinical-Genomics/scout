@@ -10,6 +10,7 @@ from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_M
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
+from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variants_filter_by_field
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
@@ -26,8 +27,6 @@ def cases(store, case_query, limit=100):
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-        case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
-
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
@@ -85,8 +84,6 @@ def case(store, institute_obj, case_obj):
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
 
-    case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
-
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj=case_obj),
@@ -139,6 +136,27 @@ def case_report_content(store, institute_obj, case_obj):
                                                         'is_commented', case_obj, institute_obj)
 
     return data
+
+
+def clinvar_submissions(store, user_id, institute_id):
+    """Get all Clinvar submissions for a user and an institute"""
+    submissions = list(store.clinvar_submissions(user_id, institute_id))
+    return submissions
+
+
+def clinvar_header(submission_objs, csv_type):
+    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
+
+    clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
+    return clinvar_header_obj
+
+
+def clinvar_lines(clinvar_objects, clinvar_header):
+    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
+
+    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
+    return clinvar_lines
+
 
 
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
+from bson.objectid import ObjectId
 from scout.exceptions import IntegrityError
 
 import pymongo
@@ -10,97 +11,159 @@ LOG = logging.getLogger(__name__)
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
-    def add_clinvar_submission(self, submission_objs, user, institute, case_id):
-        """Add a clinvar submission for a case. A submission consists of one or more variants added to the clinvar collection.
+    def create_submission(self, user_id, institute_id):
+        """Create an open clinvar submission for a user and an institute
+           Args:
+                user_id(str): a user ID
+                institute_id(str): an institute ID
+
+           returns:
+                submission(obj): an open clinvar submission object
+        """
+
+        submission_obj = {
+            'status' : 'open',
+            'created_at' : datetime.now(),
+            'user_id' : user_id,
+            'institute_id' : institute_id
+        }
+        LOG.info("Creating a new clinvar submission for user '%s' and institute %s", user_id, institute_id)
+        result = self.clinvar_submission_collection.insert_one(submission_obj)
+        return result.inserted_id
+
+
+    def get_open_clinvar_submission(self, user_id, institute_id):
+        """Retrieve the database id of an open clinvar submission for a user and institute,
+           if none is available then create a new submission and return it
+
+           Args:
+                user_id(str): a user ID
+                institute_id(str): an institute ID
+
+           Returns:
+                submission(obj) : an open clinvar submission object
+        """
+
+        LOG.info("Retrieving an open clinvar submission for user '%s' and institute %s", user_id, institute_id)
+        query = dict(user_id=user_id, institute_id=institute_id, status='open')
+        submission = self.clinvar_submission_collection.find_one(query)
+
+        # If there is no open submission for this user and institute, create one
+        if submission is None:
+            submission_id = self.create_submission(user_id, institute_id)
+            submission = self.clinvar_submission_collection.find_one({'_id':submission_id})
+
+        return submission
+
+
+    def update_submission(self, submission_id, submission_objects):
+        """Adds submission_objects to clinvar collection and update the coresponding submission object with their id
 
             Args:
-                submission_obj(list of objects): The list of submission variant objects created in scout/parse/clinvar/create_clinvar_submission_dict.py
-                user(str): A user ID
-                institute(str): An institute ID
-                case_id(str): A case ID
+                submission_id(str) : id of the submission to be updated
+                submission_objects(tuple): a tuple of 2 elements coresponding to a list of variants and a list of case data objects to add to submission
 
             Returns:
-                result:  list: Successful insert returns a list of documents inserted into the clinvar submissions collection.
-                         0: no document is inserted into database because there is at least one variant with that clinvar submission ID.
-                         -1: no document is inserted into database because there is at least one variant that is already in the clinvar collection (duplicated _id field)
+                updated_submission(obj): an open clinvar submission object, updated
+        """
+
+        LOG.info("Adding new variants and case data to clinvar submission '%s'", submission_id)
+        subm_variant_ids = []
+        subm_casedata_ids = []
+
+        # Insert variant submission_objects into clinvar collection
+        result = self.clinvar_collection.insert_many(submission_objects[0])
+        subm_variant_ids = result.inserted_ids
+
+        # push new clinvar variant ids to submission object
+        for var_id in subm_variant_ids:
+            self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'variant_data':var_id}})
+
+        # Insert casedata submission_objects into clinvar collection
+        if submission_objects[1]:
+            result = self.clinvar_collection.insert_many(submission_objects[1])
+            subm_casedata_ids = result.inserted_ids
+
+            # push new casedata ids to submission object
+            for cd_id in subm_casedata_ids:
+                self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'case_data':cd_id}})
+
+        updated_submission = self.clinvar_submission_collection.find_one_and_update( {'_id':submission_id}, { '$set' : {'updated_at': datetime.now()} }, return_document=pymongo.ReturnDocument.AFTER )
+        return updated_submission
+
+
+    def update_clinvar_submission_status(self, submission_id, status):
+        """Set a clinvar submission ID to 'closed'
+
+            Args:
+                submission_id(str): the ID of the clinvar submission to close
+
+            Return
+                updated_submission(obj): the submission object with a 'closed' status
 
         """
-        LOG.info("Adding a clinvar submission '%s' for case %s", submission_objs[0]['clinvar_submission'], case_id)
+        LOG.info('closing clinvar submission "%s", submission_id')
 
-        # create one object for each submitted variant:
-        ids = []
-        for subm_variant in submission_objs:
-            subm_variant['user'] = user
-            subm_variant['institute'] = institute
-            subm_variant['case'] = case_id
-            subm_variant['created_at'] = datetime.now()
-            ids.append(subm_variant['_id'])
+        updated_submission = self.clinvar_submission_collection.find_one_and_update(
+            {'_id'  : ObjectId(submission_id)},
+            {'$set' :
+                {'status' : status, 'updated_at' : datetime.now()}
+            }
+        )
+        return updated_submission
 
-        #if there is any variant with the same submssion id (SUBXXX) in the clinvar collection
-        if self.clinvars(submission_id=submission_objs[0]['clinvar_submission']):
-            result = 0
-        elif self.clinvars(variant_ids=ids): #if the variant is already present in the clinvar collection
-            result = -1
-        else:
-            LOG.info("Adding clinvar submission id: {0}".format(submission_objs[0]['clinvar_submission']))
-            result = self.clinvar_collection.insert_many(submission_objs)
 
-        return result
+    def clinvar_submissions(self, user_id, institute_id):
+        """Collect all open and closed clinvar submission created by a user for an institute
 
-    def clinvars(self, variant_ids=None, case_id=None, submission_id=None):
-        """Fetch a list of clinvar submissions by providing either a list of variants_ids, a case_id or a submission_id.
             Args:
-                variant ids ([_id])
-                case_id
-                submission_id
+                user_id(str): a user ID
+                institute_id(str): an institute ID
 
             Returns:
-                list of clinvar submissions found for any of these arguments
+                submissions(list): a list of clinvar submission objects
         """
-        query = None
 
-        if variant_ids:
-            query = { "_id" : { "$in" : variant_ids }}
-            LOG.debug("Fetch clinvar submissions for variant ID: {}".format(variant_ids))
-        elif case_id:
-            query = { 'case' : case_id }
-            LOG.debug("Fetch clinvar submissions for case ID: {}".format(case_id))
-        else:
-            query = {'clinvar_submission': submission_id}
-            LOG.debug("Fetch clinvar submissions for submission ID: {}".format(submission_id))
+        # get first all submission objects
+        query = dict(user_id=user_id, institute_id=institute_id)
+        results = list(self.clinvar_submission_collection.find(query))
 
-        submission_objs = [ subm for subm in self.clinvar_collection.find( query ).sort('clinvar_submission',pymongo.DESCENDING)]
+        submissions = []
+        for result in results:
+            submission = {}
+            submission['_id'] =  result['_id']
+            submission['status'] = result['status']
+            submission['user_id'] = result['user_id']
+            submission['institute_id'] = result['institute_id']
+            submission['created_at'] = result['created_at']
+            submission['updated_at'] = result['updated_at']
 
-        if len(submission_objs) == 0:
-            LOG.debug("Could not find any clinvar submission for the specified parameters!")
-            return None
-        else:
-            return submission_objs
+            submission['variant_data'] = list(self.clinvar_collection.find({'_id': { "$in": result['variant_data'] } }))
+            if result.get('case_data'):
+                submission['case_data'] = list(self.clinvar_collection.find({'_id' : { "$in": result['case_data'] } }))
+
+            submissions.append(submission)
+
+        return submissions
 
 
-    def add_clinvar_accession(self, variant_id, clinvar_accession):
-        """Introduces the field 'clinvar accession' to a variant submitted to clinvar
+    def clinvar_objs(self, submission_id, key_id):
+        """Collects a list of objects from the clinvar collection (variants of case data) as specified by the key_id in the clinvar submission
 
             Args:
-                variant_ids(str)
+                submission_id(str): The _id key of a clinvar submission
+                key_id(str) : either 'variant_data' or 'case_data'. It's a key in a clinvar_submission object.
+                              Its value is a list of ids of clinvar objects (either variants of casedata objects)
 
-            Returns: the submission
-
-        """
-        LOG.debug("introducing a clinvar accession for clinvar variant {}".format(variant_id))
-        new_doc = self.clinvar_collection.find_one_and_update( {"_id": variant_id}, {"$set": {"clinvar_accession": clinvar_accession}}, return_document=pymongo.ReturnDocument.AFTER )
-        return new_doc
-
-
-    def delete_clinvar_submission(self, submission_id):
-        """Delete a series of variants submitted to clinvar matching a submission id
-
-            Args:
-                clinvar_id(str)
-
-            Returns: the number of deleted variants
+                clinvar_objects(list) : a list of clinvar objects (either variants of casedata)
 
         """
-        LOG.debug("Delete clinvar variants with clinvar submissoon id {}".format(submission_id))
-        result = self.clinvar_collection.delete_many( {'clinvar_submission': submission_id} )
-        return result.deleted_count
+        # Get a submission object
+        submission = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission_id)})
+
+        # a list of clinvar object ids, they can be of csv_type 'variant' or 'casedata'
+        clinvar_obj_ids = list(submission.get(key_id))
+
+        # get a list of objects from a list of their ids
+        clinvar_objects = self.clinvar_collection.find({'_id' : { "$in": clinvar_obj_ids }})
+        return list(clinvar_objects)
