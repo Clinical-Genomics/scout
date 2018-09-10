@@ -11,15 +11,9 @@ Copyright (c) 2016 ScoutTeam__. All rights reserved.
 """
 
 import logging
-import json
-import datetime
-
-from pprint import pprint as pp
 
 import click
 
-from scout.export.variant import export_causatives
-from scout.export.panel import (export_panels, export_gene_panels)
 
 LOG = logging.getLogger(__name__)
 
@@ -28,6 +22,7 @@ from .hpo import hpo_genes
 from .transcript import transcripts
 from .gene import genes
 from .panel import panel
+from .case import cases
 
 
 @click.group()
@@ -43,4 +38,5 @@ export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)
 export.add_command(hpo_genes)
+export.add_command(cases)
 

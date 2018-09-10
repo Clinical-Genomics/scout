@@ -9,6 +9,7 @@ from bson.json_util import dumps
 import click
 
 from scout.constants import CASE_STATUSES
+from .utils import json_option
 
 LOG = logging.getLogger(__name__)
 
@@ -43,10 +44,7 @@ LOG = logging.getLogger(__name__)
               type=click.Choice(CASE_STATUSES),
               help='Specify what status to look for'
 )
-@click.option('--json',
-              is_flag=True,
-              help='Output result in json format'
-)
+@json_option
 @click.pass_context
 def cases(context, case_id, institute, reruns, finished, causatives, research_requested,
           is_research, status, json):
