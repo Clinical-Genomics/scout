@@ -44,11 +44,12 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
     # Loop over the form fields and collect the data:
     for variant_id in variant_ids: # loop over the variants
 
+        subm_obj = {} # A new submission object for each
+
         # Don't included casedata for a variant unless specified by user
         if object_type == 'casedata' and not 'casedata_'+variant_id in form_fields:
             break
 
-        subm_obj = {} # A new submission object for each
         subm_obj['csv_type'] = object_type
         subm_obj['case_id'] = form_fields.get('case_id')
         subm_obj['category'] = form_fields.get('category@'+variant_id)
@@ -63,7 +64,14 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
                 else:
                     subm_obj[key] = field_value
 
-        # set key and value for this submission object
+        # Create a unique ID for the database
+        # For casedata : = caseID_sampleID_variantID
+        # For variants : ID = caseID_variantID
+        if object_type == 'casedata':
+            subm_obj['_id'] = str(subm_obj['case_id']) + '_' + variant_id + '_' + str(subm_obj['individual_id'])
+        else:
+            subm_obj['_id'] = str(subm_obj['case_id']) + '_' + variant_id
+
         submission_objects.append(subm_obj)
 
     return submission_objects

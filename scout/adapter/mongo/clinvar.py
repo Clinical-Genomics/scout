@@ -32,6 +32,34 @@ class ClinVarHandler(object):
         return result.inserted_id
 
 
+    def delete_submission(self, submission_id):
+        """Deletes a Clinvar submission object, along with all associated clinvar objects (variants and casedata)
+
+            Args:
+                submission_id(str): the ID of the submission to be deleted
+
+            Returns:
+                result(bool): True or False (If the submission was deleted or not)
+        """
+        LOG.info("Deleting clinvar submission %s", submission_id)
+        submission_obj = self.clinvar_submission_collection.find_one({ '_id' : ObjectId(submission_id)})
+
+        submission_variants = submission_obj['variant_data']
+        submission_casedata = submission_obj['case_data']
+
+        # Delete all variants and casedata objects associated with this submission
+        result = self.clinvar_collection.delete_many({'_id': { "$in": submission_variants + submission_casedata } })
+        deleted_objects = result.deleted_count
+
+        # Delete the submission itself
+        result = self.clinvar_submission_collection.delete_one({'_id':ObjectId(submission_id)})
+        deleted_submissions = result.deleted_count
+
+        #return deleted_count, deleted_submissions
+        return deleted_objects,deleted_submissions
+
+
+
     def get_open_clinvar_submission(self, user_id, institute_id):
         """Retrieve the database id of an open clinvar submission for a user and institute,
            if none is available then create a new submission and return it
@@ -68,28 +96,30 @@ class ClinVarHandler(object):
         """
 
         LOG.info("Adding new variants and case data to clinvar submission '%s'", submission_id)
-        subm_variant_ids = []
-        subm_casedata_ids = []
+        duplicated_variants = []
 
         # Insert variant submission_objects into clinvar collection
-        result = self.clinvar_collection.insert_many(submission_objects[0])
-        subm_variant_ids = result.inserted_ids
-
-        # push new clinvar variant ids to submission object
-        for var_id in subm_variant_ids:
-            self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'variant_data':var_id}})
+        # Loop over the objects
+        for var_obj in submission_objects[0]:
+            try:
+                result = self.clinvar_collection.insert_one(var_obj)
+                self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'variant_data' : result.inserted_id }}, upsert=True)
+            except pymongo.errors.DuplicateKeyError:
+                duplicated_variants.append(var_obj['local_id'])
+                LOG.error("Attepted to insert a clinvar variant which is already in DB!")
 
         # Insert casedata submission_objects into clinvar collection
         if submission_objects[1]:
-            result = self.clinvar_collection.insert_many(submission_objects[1])
-            subm_casedata_ids = result.inserted_ids
-
-            # push new casedata ids to submission object
-            for cd_id in subm_casedata_ids:
-                self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'case_data':cd_id}})
+            # Loop over the objects
+            for case_obj in submission_objects[1]:
+                try:
+                    result = self.clinvar_collection.insert_one(case_obj)
+                    self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'case_data': result.inserted_id}}, upsert=True)
+                except pymongo.errors.DuplicateKeyError:
+                    LOG.error("One or more casedata object is already present in clinvar collection!")
 
         updated_submission = self.clinvar_submission_collection.find_one_and_update( {'_id':submission_id}, { '$set' : {'updated_at': datetime.now()} }, return_document=pymongo.ReturnDocument.AFTER )
-        return updated_submission
+        return duplicated_variants
 
 
     def update_clinvar_submission_status(self, submission_id, status):
@@ -102,7 +132,7 @@ class ClinVarHandler(object):
                 updated_submission(obj): the submission object with a 'closed' status
 
         """
-        LOG.info('closing clinvar submission "%s", submission_id')
+        LOG.info('closing clinvar submission "%s"', submission_id)
 
         updated_submission = self.clinvar_submission_collection.find_one_and_update(
             {'_id'  : ObjectId(submission_id)},

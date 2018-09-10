@@ -5,7 +5,7 @@ import datetime
 from operator import itemgetter
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, Response)
+                   request, url_for, send_from_directory, jsonify, Response, flash)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
@@ -67,13 +67,15 @@ def clinvar_submissions(institute_id):
 
     appo=''
     if request.method == 'POST':
-
-        if request.form.get('close'):
-            updated_submission_obj = store.update_clinvar_submission_status(request.form.get('close'), 'closed')
-        elif request.form.get('open'):
-            updated_submission_obj = store.update_clinvar_submission_status(request.form.get('open'), 'open')
-        elif request.form.get('delete'):
-            appo = 'delete --> '+request.form.get('delete')
+        if request.form.get('update_submission'):
+            if request.form.get('update_submission') == 'close':
+                updated_submission_obj = store.update_clinvar_submission_status(request.form.get('submission_id'), 'closed')
+            elif request.form.get('update_submission') == 'open':
+                updated_submission_obj = store.update_clinvar_submission_status(request.form.get('submission_id'), 'open')
+            else: # delete submission
+                deleted_objects, deleted_submissions = store.delete_submission(request.form.get('submission_id'))
+                #flash("{} Clinvar submission and {} associated objects where deleted".format(deleted_submissions, deleted_objects), 'info')
+                flash("Removed {} objects and {} submission from database".format(deleted_objects, deleted_submissions), 'info')
         elif request.form.get('delete_variant'):
             appo = 'delete VARIANT -->'+request.form.get('delete_variant')
         elif request.form.get('delete_casedata'):
