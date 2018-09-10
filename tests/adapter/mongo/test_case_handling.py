@@ -124,6 +124,49 @@ def test_get_cases_non_existing_assignee(real_panel_database, case_obj):
     # THEN we should get the correct case
     assert result.count() == 0
 
+def test_get_cases_causatives(real_panel_database, case_obj):
+    adapter = real_panel_database
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    # Add a causative
+    case_obj['causatives'] = ['a variant']
+    # Insert the case
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving cases that have causatives
+    result = adapter.cases(has_causatives=True)
+    # THEN we should find one case
+    assert result.count() == 1
+
+
+def test_get_cases_causatives_no_causatives(real_panel_database, case_obj):
+    adapter = real_panel_database
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    # Insert a case without causatives
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving all cases that have causatives 
+    result = adapter.cases(has_causatives=True)
+    # THEN we should get the correct case
+    assert result.count() == 0
+
+def test_get_cases_empty_causatives(real_panel_database, case_obj):
+    adapter = real_panel_database
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    # Add a empty list as causatives
+    case_obj['causatives'] = []
+    # Insert the case
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving all cases that have causatives 
+    result = adapter.cases(has_causatives=True)
+    # THEN we should not find any cases
+    assert result.count() == 0
 
 def test_get_cases_non_existing_individual(real_panel_database, case_obj):
     adapter = real_panel_database
