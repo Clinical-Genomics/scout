@@ -51,6 +51,8 @@ from scout.models.hgnc_map import HgncGene
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
+pytest_plugins = ["flask","cov"]
+
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 logger = logging.getLogger(__name__)

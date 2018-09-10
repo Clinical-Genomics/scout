@@ -9,9 +9,7 @@ from scout.adapter import MongoAdapter
 from scout.load.hgnc_gene import load_hgnc_genes
 from scout.load.hpo import load_hpo
 
-
 log = logging.getLogger(__name__)
-
 
 @pytest.fixture
 def database_name(request):
