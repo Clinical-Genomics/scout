@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - option to point to local reference files to the genome viewer pileup.js. Documented in `docs.admin-guide.server`
+- option to export single variants in `scout export variants`
+
+### Fixed
+
+- Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
 
 ## [4.0.0]
 
