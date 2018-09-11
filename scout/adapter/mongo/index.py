@@ -65,5 +65,11 @@ class IndexHandler(object):
                 if index_name not in existing_indexes:
                     LOG.info("Adding index : %s" % index_name)
                     self.db[collection_name].create_indexes(indexes)
-        
+    
+    def drop_indexes(self):
+        """Delete all indexes for the database"""
+        LOG.warning("Dropping all indexe")
+        for collection_name in INDEXES:
+            LOG.warning("Dropping all indexes for collection name %s", collection_name)
+            self.db[collection_name].drop_indexes()
 
