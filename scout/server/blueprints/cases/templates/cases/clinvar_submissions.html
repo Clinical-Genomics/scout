@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  {{ super() }} - {{ display_name }}
+  {{ super() }} - {{ institute_id }}
 {% endblock %}
 
 {% block top_nav %}
@@ -11,8 +11,8 @@
     <a href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li>
-    <a href="{{ url_for('cases.cases', institute_id=display_name) }}">
-      {{ display_name }}
+    <a href="{{ url_for('cases.cases', institute_id=institute_id) }}">
+      {{ institute_id }}
     </a>
   </li>
   <li class="active">
@@ -37,7 +37,7 @@
 {% macro submission_panel(subm_obj) %}
   {{appo}}<br>
   {{csv_lines}}
-    <form id="submission_form" action="{{ url_for('cases.clinvar_submissions', institute_id=display_name) }}" method="POST">
+    <form id="submission_form" action="{{ url_for('cases.clinvar_submissions', institute_id=institute_id) }}" method="POST">
       <input type="hidden" name="submission_id" value="{{subm_obj._id}}">
   {% if subm_obj.status=='open' %}
     <div class="panel panel-success">
@@ -82,13 +82,13 @@
                     <td width="5%">{{loop.index}}</td>
                       {% if subm_variant.category == 'sv' %}
                       <td width="15%">
-                        <a href="{{ url_for('variants.sv_variant', institute_id=display_name, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{subm_variant.local_id}}</strong></a>
+                        <a href="{{ url_for('variants.sv_variant', institute_id=institute_id, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{subm_variant.local_id}}</strong></a>
                       </td>
                       <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="glyphicon glyphicon-zoom-in"></span></button></td>
                       <td><div class="label label-warning">SV</div></td>
                       {% else %}
                       <td width="15%">
-                        <a href="{{ url_for('variants.variant', institute_id=display_name, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{subm_variant.local_id}}</strong></a>
+                        <a href="{{ url_for('variants.variant', institute_id=institute_id, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{subm_variant.local_id}}</strong></a>
                       </td>
                       <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="glyphicon glyphicon-zoom-in"></span></button></td>
                       <td><div class="label label-success">SNV</div></td>
@@ -105,9 +105,9 @@
                       <div class="vardata">
                         <div id="vardiv{{subm_variant._id}}" class="panel-body" style="display:none;">
                           {% if subm_variant.category == 'sv' %}
-                          <a href="{{ url_for('variants.sv_variant', institute_id=display_name, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</h4></a>
+                          <a href="{{ url_for('variants.sv_variant', institute_id=institute_id, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</h4></a>
                         {% else %}
-                          <a href="{{ url_for('variants.variant', institute_id=display_name, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</h4></a>
+                          <a href="{{ url_for('variants.variant', institute_id=institute_id, case_name=subm_variant.case_id, variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</h4></a>
                         {% endif %}
                         <ul>
                         {% for key, value in variant_header_fields.items() %}
@@ -148,7 +148,7 @@
                     <td width="5%">{{loop.index}}</td>
                     <td width="15%">{{case.individual_id}}</td>
                     <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="glyphicon glyphicon-zoom-in"></span></button></td>
-                    <td><a href="{{ url_for('cases.case', institute_id=display_name, case_name=case.case_id) }}" target="_blank">{{case.case_id}}</a></td>
+                    <td><a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case.case_id) }}" target="_blank">{{case.case_id}}</a></td>
                     <td>{{case.clin_features}}</td>
                     <td>{{case.linking_id}}</td>
                     <td>{{case.allele_origin}}</td>

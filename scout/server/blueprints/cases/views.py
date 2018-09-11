@@ -67,19 +67,20 @@ def clinvar_submissions(institute_id):
 
     appo=''
     if request.method == 'POST':
+        submission_id = request.form.get('submission_id')
         if request.form.get('update_submission'):
             if request.form.get('update_submission') == 'close':
-                updated_submission_obj = store.update_clinvar_submission_status(request.form.get('submission_id'), 'closed')
+                updated_submission_obj = store.update_clinvar_submission_status(submission_id, 'closed')
             elif request.form.get('update_submission') == 'open':
-                updated_submission_obj = store.update_clinvar_submission_status(request.form.get('submission_id'), 'open')
+                updated_submission_obj = store.update_clinvar_submission_status(submission_id, 'open')
             else: # delete submission
-                deleted_objects, deleted_submissions = store.delete_submission(request.form.get('submission_id'))
-                #flash("{} Clinvar submission and {} associated objects where deleted".format(deleted_submissions, deleted_objects), 'info')
+                deleted_objects, deleted_submissions = store.delete_submission(submission_id = submission_id)
                 flash("Removed {} objects and {} submission from database".format(deleted_objects, deleted_submissions), 'info')
         elif request.form.get('delete_variant'):
-            appo = 'delete VARIANT -->'+request.form.get('delete_variant')
+            result = store.delete_clinvar_object(object_id = request.form.get('delete_variant'), object_type='variant_data', submission_id = submission_id) # remove variant and associated_casedata
+            flash(result, 'info')
         elif request.form.get('delete_casedata'):
-            appo = 'delete CASEDATA -->'+request.form.get('delete_casedata')
+            result = store.delete_clinvar_object(object_id = request.form.get('delete_casedata'), object_type='case_data', submission_id = submission_id) # remove just the casedata associated to a variant
 
         else: # Download CSV files (for variants or casedata)
             csv_type = ''
@@ -105,10 +106,9 @@ def clinvar_submissions(institute_id):
 
     data = {
         'submissions' : controllers.clinvar_submissions(store, current_user.email, institute_id),
-        'display_name' : institute_id,
+        'institute_id' : institute_id,
         'variant_header_fields' : CLINVAR_HEADER ,
-        'casedata_header_fields' : CASEDATA_HEADER,
-        'appo' : appo,
+        'casedata_header_fields' : CASEDATA_HEADER
     }
     return data
 
