@@ -11,10 +11,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - option to load a multiqc report together with a case(add line in load config)
 - added a view for searching HPO terms. It is accessed from the top left corner menu
 - Updates the variants view for cancer variants. Adds a small cancer specific filter for known variants
+- Adds hgvs information on cancer variants page
 
 ### Fixed
 
 - Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
+- Can handle Tumor only samples
 
 ## [4.0.0]
 
