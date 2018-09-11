@@ -31,9 +31,9 @@ class IndexHandler(object):
 
     def load_indexes(self):
         """Add the proper indexes to the scout instance.
-        
+
         All indexes are specified in scout/constants/indexes.py
-        
+
         If this method is utilised when new indexes are defined those should be added
 
         """

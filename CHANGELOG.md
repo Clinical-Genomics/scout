@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - option to point to local reference files to the genome viewer pileup.js. Documented in `docs.admin-guide.server`
 - option to export single variants in `scout export variants`
 - option to load a multiqc report together with a case(add line in load config)
+- added a view for searching HPO terms. It is accessed from the top left corner menu
 
 ### Fixed
 
