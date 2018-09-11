@@ -24,7 +24,7 @@ WeasyPrint>=0.42.3
 Flask-Login
 
 # Parsing
-cyvcf2==0.9.0
+cyvcf2<0.10.0
 PyYaml
 ped_parser
 

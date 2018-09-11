@@ -45,7 +45,7 @@ class CaseHandler(object):
             query['assignees'] = {'$exists': False}
 
         if has_causatives:
-            query['causatives'] = {'$exists': True}
+            query['causatives'] = {'$exists': True, '$ne': []}
 
         if reruns:
             query['rerun_requested'] = True

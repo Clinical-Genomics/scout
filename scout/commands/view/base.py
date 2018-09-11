@@ -2,11 +2,9 @@ import logging
 
 import click
 
-from .case import cases
 from .panels import panels
 from .users import users
 from .institutes import institutes
-from .genes import genes
 from .diseases import diseases
 from .hpo import hpo
 from .whitelist import whitelist
@@ -30,11 +28,9 @@ def view(context):
     pass
 
 
-view.add_command(cases)
 view.add_command(panels)
 view.add_command(users)
 view.add_command(institutes)
-view.add_command(genes)
 view.add_command(diseases)
 view.add_command(hpo)
 view.add_command(whitelist)

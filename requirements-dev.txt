@@ -1,8 +1,8 @@
 # everything the developer needs in addition to the production requirements
 
 # testing
-pytest
-pytest-flask
+pytest==3.3.0
+pytest-flask==0.11
 pytest-cov
 
 # packaging

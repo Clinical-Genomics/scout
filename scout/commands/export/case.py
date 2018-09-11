@@ -1,10 +1,15 @@
 import logging
+import json
+
 
 from pprint import pprint as pp
+
+from bson.json_util import dumps
 
 import click
 
 from scout.constants import CASE_STATUSES
+from .utils import json_option
 
 LOG = logging.getLogger(__name__)
 
@@ -39,9 +44,10 @@ LOG = logging.getLogger(__name__)
               type=click.Choice(CASE_STATUSES),
               help='Specify what status to look for'
 )
+@json_option
 @click.pass_context
 def cases(context, case_id, institute, reruns, finished, causatives, research_requested,
-          is_research, status):
+          is_research, status, json):
     """Interact with cases existing in the database."""
     adapter = context.obj['adapter']
 
@@ -56,11 +62,15 @@ def cases(context, case_id, institute, reruns, finished, causatives, research_re
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
                            is_research=is_research, status=status)
-    i = 0
-    for model in models:
-        i += 1
-        pp(model)
-    
-    if i == 0:
+    if models.count():
         LOG.info("No cases could be found")
+
+    if json:
+        click.echo(dumps(models))
+        return
+
+    for model in models:
+        pp(model)
+        
+    
 
