@@ -95,11 +95,8 @@ def register_blueprints(app):
     app.register_blueprint(panels.panels_bp)
     app.register_blueprint(dashboard.dashboard_bp)
     app.register_blueprint(api.api_bp)
-<<<<<<< HEAD
     app.register_blueprint(alignviewers.alignviewers_bp)
-=======
     app.register_blueprint(phenotypes.hpo_bp)
->>>>>>> made a simple view with search form for HPO terms
 
 
 def register_filters(app):
