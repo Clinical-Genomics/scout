@@ -31,7 +31,9 @@
     <p>
       <div class="nav-sidebar-item">
         <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id, 
-                  case_name=case.display_name, path=case.multiqc) }}">MultiQC</a>
+                  case_name=case.display_name) }}">
+        MultiQC
+      </a>
       </div>
     </p>
   {% endif %}
