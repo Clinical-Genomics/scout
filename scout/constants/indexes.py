@@ -101,7 +101,6 @@ INDEXES = {
             background=True,
             ),
     ],
-<<<<<<< HEAD
     'hpo_term': [
         IndexModel([
             ('hpo_number', ASCENDING)],
@@ -110,7 +109,5 @@ INDEXES = {
             ),
     ],
     
-=======
->>>>>>> Makes hpo term search more intelligent. Please run  for this to work
 }
 
