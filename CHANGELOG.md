@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - option to export single variants in `scout export variants`
 - option to load a multiqc report together with a case(add line in load config)
 - added a view for searching HPO terms. It is accessed from the top left corner menu
+- Updates the variants view for cancer variants. Adds a small cancer specific filter for known variants
 
 ### Fixed
 
