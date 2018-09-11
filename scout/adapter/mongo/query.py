@@ -30,6 +30,7 @@ class QueryHandler(object):
                 'end': int,
                 'svtype': list,
                 'gene_panels': list(str),
+                'mvl_tag": boolean,
             }
 
         Arguments:
@@ -254,6 +255,14 @@ class QueryHandler(object):
             mongo_query_minor.append({
                 'normal.alt_freq': {
                     '$lt': float(query.get('control_frequency')),
+                }
+            })
+
+        if query.get('mvl_tag'):
+            logger.debug("add managed variant list filter")
+            mongo_query_minor.append({
+                'mvl_tag': {
+                    '$exists': True,
                 }
             })
 
