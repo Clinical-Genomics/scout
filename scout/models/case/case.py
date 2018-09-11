@@ -80,6 +80,7 @@ case = dict(
 
     has_svvariants=bool,  # default=False
 
-    is_migrated=bool  # default=False
+    is_migrated = bool, # default=False
 
+    multiqc = str,  # path to multiqc report
 )
