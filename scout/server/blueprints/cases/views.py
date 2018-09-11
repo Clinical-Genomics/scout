@@ -412,6 +412,6 @@ def multiqc(institute_id, case_name):
     data = controllers.multiqc(store, institute_id, case_name)
     if data['case'].get('multiqc') is None:
         return abort(404)
-    out_dir = os.path.dirname(data['case']['multiqc'])
+    out_dir = os.path.abspath(os.path.dirname(data['case']['multiqc']))
     filename = os.path.basename(data['case']['multiqc'])
     return send_from_directory(out_dir, filename)
