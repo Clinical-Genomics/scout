@@ -584,30 +584,6 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert adapter.event_collection.find().count() == 2
 
-def test_specific_comment(real_variant_database, institute_obj, case_obj, user_obj):
-    adapter = real_variant_database
-    logger.info("Add specific comment for a variant")
-    content = "hello"
-    # GIVEN a populated database with variants
-    assert adapter.variant_collection.find().count() > 0
-    assert adapter.event_collection.find().count() == 0
-
-    variant = adapter.variant_collection.find_one()
-
-    # WHEN commenting on a variant
-    updated_variant = adapter.comment(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link='commentlink',
-        variant=variant,
-        content=content,
-        comment_level='specific'
-    )
-    # THEN the variant should have comments
-    event = adapter.event_collection.find_one()
-    assert event['content'] == content
-
 def test_add_cohort(case_database, institute_obj, case_obj, user_obj):
     adapter = case_database
     logger.info("Testing assign a user to a case")
