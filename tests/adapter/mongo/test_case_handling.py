@@ -9,8 +9,7 @@ from scout.exceptions import (IntegrityError)
 logger = logging.getLogger(__name__)
 
 
-def test_add_cases(panel_database, case_obj):
-    adapter = panel_database
+def test_add_cases(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find().count() == 0
 
@@ -26,8 +25,7 @@ def test_add_cases(panel_database, case_obj):
     logger.info("All cases checked")
 
 
-def test_add_existing_case(panel_database, case_obj):
-    adapter = panel_database
+def test_add_existing_case(adapter,case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
 
@@ -38,8 +36,7 @@ def test_add_existing_case(panel_database, case_obj):
         adapter._add_case(case_obj)
 
 
-def test_get_case(panel_database, case_obj):
-    adapter = panel_database
+def test_get_case(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -51,8 +48,7 @@ def test_get_case(panel_database, case_obj):
     assert result['owner'] == case_obj['owner']
 
 
-def test_get_cases(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -62,8 +58,8 @@ def test_get_cases(real_panel_database, case_obj):
     assert result.count() == 1
 
 
-def test_get_cases_no_assignees(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_no_assignees(real_adapter, case_obj):
+    adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -73,19 +69,25 @@ def test_get_cases_no_assignees(real_panel_database, case_obj):
     assert result.count() == 0
 
 
-def test_get_cases_display_name(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_display_name(real_adapter, case_obj):
+    adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
+    
+    other_case = case_obj
+    other_case['_id'] = 'other_case'
+    other_case['display_name'] = 'other_case'
+    adapter.case_collection.insert_one(other_case)
+    
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query='643')
     # THEN we should get the correct case
     assert result.count() == 1
 
 
-def test_get_cases_existing_individual(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_existing_individual(real_adapter, case_obj):
+    adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -95,11 +97,13 @@ def test_get_cases_existing_individual(real_panel_database, case_obj):
     assert result.count() == 1
 
 
-def test_get_cases_assignees(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_assignees(real_adapter, case_obj, user_obj):
+    adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
 
+    adapter.user_collection.insert_one(user_obj)
+    
     user_obj = adapter.user_collection.find_one()
     case_obj['assignees'] = [user_obj['email']]
     adapter.case_collection.insert_one(case_obj)
@@ -110,10 +114,12 @@ def test_get_cases_assignees(real_panel_database, case_obj):
     assert result.count() == 1
 
 
-def test_get_cases_non_existing_assignee(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
+    adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
+
+    adapter.user_collection.insert_one(user_obj)
 
     user_obj = adapter.user_collection.find_one()
     case_obj['assignees'] = [user_obj['email']]
@@ -124,8 +130,7 @@ def test_get_cases_non_existing_assignee(real_panel_database, case_obj):
     # THEN we should get the correct case
     assert result.count() == 0
 
-def test_get_cases_causatives(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
 
@@ -140,8 +145,7 @@ def test_get_cases_causatives(real_panel_database, case_obj):
     assert result.count() == 1
 
 
-def test_get_cases_causatives_no_causatives(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_causatives_no_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
 
@@ -153,8 +157,7 @@ def test_get_cases_causatives_no_causatives(real_panel_database, case_obj):
     # THEN we should get the correct case
     assert result.count() == 0
 
-def test_get_cases_empty_causatives(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_empty_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
 
@@ -168,8 +171,8 @@ def test_get_cases_empty_causatives(real_panel_database, case_obj):
     # THEN we should not find any cases
     assert result.count() == 0
 
-def test_get_cases_non_existing_individual(real_panel_database, case_obj):
-    adapter = real_panel_database
+def test_get_cases_non_existing_individual(real_adapter, case_obj):
+    adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -179,8 +182,7 @@ def test_get_cases_non_existing_individual(real_panel_database, case_obj):
     assert result.count() == 0
 
 
-def test_get_non_existing_case(panel_database, case_obj):
-    adapter = panel_database
+def test_get_non_existing_case(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter._add_case(case_obj)
@@ -192,8 +194,7 @@ def test_get_non_existing_case(panel_database, case_obj):
     assert result is None
 
 
-def test_delete_case(panel_database, case_obj):
-    adapter = panel_database
+def test_delete_case(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -206,8 +207,7 @@ def test_delete_case(panel_database, case_obj):
     assert adapter.cases().count() == 0
 
 
-def test_update_case_collaborators(panel_database, case_obj):
-    adapter = panel_database
+def test_update_case_collaborators(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -230,8 +230,7 @@ def test_update_case_collaborators(panel_database, case_obj):
     assert set(res['collaborators']) == set([coll_1, coll_2, coll_3])
 
 
-def test_update_case_individuals(panel_database, case_obj):
-    adapter = panel_database
+def test_update_case_individuals(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
@@ -253,8 +252,7 @@ def test_update_case_individuals(panel_database, case_obj):
     assert len(res['individuals']) == 1
 
 
-def test_update_case_rerun_status(panel_database, case_obj):
-    adapter = panel_database
+def test_update_case_rerun_status(adapter, case_obj):
     case_obj['rerun_requested'] = True
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
