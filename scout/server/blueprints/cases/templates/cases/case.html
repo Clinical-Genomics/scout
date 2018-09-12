@@ -241,7 +241,7 @@
 		      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
 		  {% endif %}
                 </a>
-                {% if variant.sanger_ordered and variant.validation in ['','Not validated'] %}
+                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
                   <span class="label label-default">Sanger ordered</span>
                 {% elif variant.sanger_ordered %}
                   <span class="label label-success">Sanger validated</span>
@@ -294,7 +294,7 @@
                 </a>
               </td>
               <td>
-                {% if variant.sanger_ordered and variant.validation in ['','Not validated'] %}
+                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
                   <span class="label label-default">Sanger ordered</span>
                 {% elif variant.sanger_ordered %}
                   <span class="label label-success">Sanger validated</span>
