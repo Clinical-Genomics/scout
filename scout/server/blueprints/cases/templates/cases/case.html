@@ -241,8 +241,10 @@
 		      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
 		  {% endif %}
                 </a>
-                {% if variant.sanger_ordered %}
-                  <span class="label label-success">Sanger ordered</span>
+                {% if variant.sanger_ordered and variant.validation in ['','Not validated'] %}
+                  <span class="label label-default">Sanger ordered</span>
+                {% elif variant.sanger_ordered %}
+                  <span class="label label-success">Sanger validated</span>
                 {% endif %}
               </div>
               <div class="col-xs-4">
@@ -292,8 +294,10 @@
                 </a>
               </td>
               <td>
-                {% if variant.sanger_ordered %}
+                {% if variant.sanger_ordered and variant.validation in ['','Not validated'] %}
                   <span class="label label-default">Sanger ordered</span>
+                {% elif variant.sanger_ordered %}
+                  <span class="label label-success">Sanger validated</span>
                 {% elif variant.manual_rank %}
                   <span class="label label-default">{{ variant.manual_rank }}</span>
                 {% endif %}
@@ -305,8 +309,7 @@
                                          variant_id=variant._id) }}"
                       method="POST" accept-charset="utf-8">
                   <select class="form-control input-sm" onchange="this.form.submit()" name="type">
-                    <option>Validate Sanger...</option>
-                    {% for type in ('True positive', 'False positive') %}
+                    {% for type in ('Not validated', 'True positive', 'False positive') %}
                       <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
                     {% endfor %}
                   </select>

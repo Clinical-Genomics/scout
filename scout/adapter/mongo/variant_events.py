@@ -198,7 +198,7 @@ class VariantEventHandler(object):
         Returns:
             updated_variant(dict)
         """
-        if not validate_type in ['True positive', 'False positive']:
+        if not validate_type in ['True positive', 'False positive', 'Not validated']:
             LOG.warning("Invalid validation string: %s", validate_type)
             return
 
