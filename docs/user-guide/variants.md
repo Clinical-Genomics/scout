@@ -52,8 +52,41 @@ This is the region of the most severe functional impact
 
 ### GT Call
 
-### Compounds
-Only interesting when the compound inheritance pattern is required, the list can be very long - best to put it far down the page.
+### Variant Callers
+Badges below the GT Call table show the variant caller responsible for the calls and their filter status.
+A variant with Pass status passed all the filters from its variant callers, whereas a Filtered call was detected by the caller but not deemed passing filter quality. 
+#### GATK
+#### FreeBayes
+#### SAMtools
+
+#### TIDDIT
+[TIDDIT](https://github.com/SciLifeLab/TIDDIT) Locally developed structural variant caller that uses discordant read pair detection and supplementary alignments for split reads from the bam file to call structural variations, including deletions, duplications, inversions and translocations (BND). The number of supporting links is used to call the reliability of the call. Read depth information is used to infer the variant type as well as zygosity where possible. Delivers exact breakpoints when possible. Sensitivity for clinically relevant deletions is 100%, balanced events lower but at a best-in-class >80%. Be advised to consider zygosity calls from balanced events as highly uncertain.
+
+Jesper Eisfeldt, Francesco Vezzi, Pall Olason, Daniel Nilsson, Anna Lindstrand
+[TIDDIT, an efficient and comprehensive structural variant caller for massive parallel sequencing data](https://f1000research.com/articles/6-664/v2)
+F1000Research 2017, 6:664
+
+#### CNVnator
+[CNVnator](https://github.com/abyzovlab/CNVnator) Well established read depth aware CNV caller. Infers deletions and duplications from binning read depth. Will call inexact boundaries for the events. Effectively 100% sensitivity for large CNVs in accessible regions. Be wary if CNVnator did not call your large unbalanced variant - that may indicate a false positive. Comparatively decent zygosity-calls from v0.3.3.
+
+Abyzov A, Urban AE, Snyder M, Gerstein M.
+[CNVnator: an approach to discover, genotype, and characterize typical and atypical CNVs from family and population genome sequencing.](https://www.ncbi.nlm.nih.gov/pubmed/21324876) Genome Res. 2011 Jun;21(6):974-84.
+
+#### Manta
+[Manta](https://github.com/Illumina/manta): Internationally well used de-facto standard for structural variant calling. Uses discordant read pairs and split read graphs to call variants. Comparatively good sensitivity for insertions. Specificity is not always optimal. Be adviced of potential false positive calls of long range connectivity, in particular when in conflict with callers that rely more on read-depth.
+
+Chen, X. et al. (2016) [Manta: rapid detection of structural variants and indels for germline and cancer sequencing applications.](doi:10.1093/bioinformatics/btv710) Bioinformatics, 32, 1220-1222. Be advised to consider zygosity calls from balanced events as uncertain.
+
+#### Delly
+[Delly](https://github.com/dellytools/delly)
+The long standing, well known and decently performing tool Delly uses discordant read-pairs and split reads to call structural variants. Calls made are reliable from >300bp, but also sports an effective indel detection mode for sub-readlength indels. As with manta, Specificity is not always optimal. Be adviced of potential false positive calls of long range connectivity, in particular when in conflict with callers that rely more on read-depth. Be advised to consider zygosity calls as uncertain.
+
+Tobias Rausch, Thomas Zichner, Andreas Schlattl, Adrian M. Stuetz, Vladimir Benes, Jan O. Korbel.
+[Delly: structural variant discovery by integrated paired-end and split-read analysis.](https://academic.oup.com/bioinformatics/article/28/18/i333/245403)
+Bioinformatics 2012 28: i333-i339.
+
+### Compounds (top 20)
+Only interesting when the compound inheritance pattern is required, the list can be very long but is by default cropped to the top 20 highest ranked ones as shown in the heading.
 
 [clinvar]: https://www.ncbi.nlm.nih.gov/clinvar/
 [markdown]: https://help.github.com/articles/markdown-basics/
