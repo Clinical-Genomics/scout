@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 from .case_events import CaseEventHandler
 from .variant_events import VariantEventHandler
 
-class EventHandler(CaseEventHandler):
+class EventHandler(CaseEventHandler, VariantEventHandler):
     """Class to handle events for the mongo adapter"""
 
     def delete_event(self, event_id):
