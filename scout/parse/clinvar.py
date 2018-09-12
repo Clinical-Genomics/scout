@@ -47,8 +47,8 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
         subm_obj = {} # A new submission object for each
 
         # Don't included casedata for a variant unless specified by user
-        if object_type == 'casedata' and not 'casedata_'+variant_id in form_fields:
-            break
+        if object_type == 'casedata' and 'casedata_'+variant_id not in form_fields:
+            continue
 
         subm_obj['csv_type'] = object_type
         subm_obj['case_id'] = form_fields.get('case_id')

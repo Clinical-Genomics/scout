@@ -23,9 +23,9 @@
 {% block content_main %}
 
 <div class="container" id="main">
-  <h3>Clinvar submissions page</h3><br>
+  <h3>Clinvar submissions page</h3><a href="">howto</a><br>
   {% if submissions %}
-    {% for submission in submissions %}
+    {% for submission in submissions|sort(attribute='status', reverse=True) %}
       {{ submission_panel(submission) }}
     {% endfor %}
   {% else %}
@@ -35,14 +35,12 @@
 {% endblock %}
 
 {% macro submission_panel(subm_obj) %}
-  {{appo}}<br>
-  {{csv_lines}}
-    <form id="submission_form" action="{{ url_for('cases.clinvar_submissions', institute_id=institute_id) }}" method="POST">
+    <form class="form-inline" id="submission_form" action="{{ url_for('cases.clinvar_submissions', institute_id=institute_id) }}" method="POST">
       <input type="hidden" name="submission_id" value="{{subm_obj._id}}">
   {% if subm_obj.status=='open' %}
-    <div class="panel panel-success">
-  {% else %}
     <div class="panel panel-default">
+  {% else %}
+    <div class="panel">
   {% endif %}
       <div class="panel-heading">
         Submission <strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong>
@@ -60,6 +58,13 @@
             <li><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission</button></li>
           </ol>
         <div>
+          <div>
+            <div class="form-groupjustify-content-center">
+              <label for="clinvar_id">Submission ID:</label>
+              <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
+              <button type="submit" class="btn btn-default" name="update_submission" value="register_id">Update</button>
+            </div>
+          </div>
           <h4>Variant data:</h4>
           {% if subm_obj.variant_data %}
             <table class="table table-striped">
