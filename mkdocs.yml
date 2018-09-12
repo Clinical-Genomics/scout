@@ -1,5 +1,68 @@
 ---
 site_name: Scout Docs
+site_url: http://www.clinicalgenomics.se/scout/
 repo_url: https://github.com/Clinical-Genomics/scout
 dev_addr: "0.0.0.0:4000"
+site_author: Clinical Genomics bioinfo team
 docs_dir: docs
+
+markdown_extensions:
+  - markdown_include.include:
+      base_path: docs
+
+theme:
+  name: 'material'
+  logo: 'img/logo-only.png'
+  palette:
+    primary: 'blue grey'
+    accent: 'cyan'
+
+
+nav:
+  - Introduction: 'README.md'
+
+  - Installation: 'install.md'
+
+  - FAQ: 'faq.md'
+  
+  - Features: 
+      - HPO phenotypes: 'features/hpo.md'
+
+  - User guide:
+      - Getting started: 'user-guide/getting-started.md'
+      - General: 'user-guide/using-scout.md'
+      - Pages: 'user-guide/pages.md'
+      - Institutes: 'user-guide/institutes.md'
+      - Users: 'user-guide/users.md'
+      - Cases: 'user-guide/cases.md'
+      - Variants: 'user-guide/variants.md'
+      - Genes: 'user-guide/genes.md'
+      - Gene panels: 'user-guide/panels.md'
+      - Annotations: 'user-guide/annotations.md'
+      - ACMG: 'user-guide/acmg-criterias.md'
+  
+  - Admin guide:
+      - Intro: 'admin-guide/README.md'
+      - Setup: 'admin-guide/setup-scout.md'
+      - Loading: 'admin-guide/loading.md'
+      - Load config: 'admin-guide/load-config.md'
+      - Gene definitions: 'admin-guide/genes.md'
+      - HPO terms: 'admin-guide/hpo.md'
+      - Annotations: 'admin-guide/annotations.md'
+      - Server: 'admin-guide/server.md'
+      - Chanjo coverage integration: 'admin-guide/chanjo_coverage_integration.md'
+      - Indexes: 'admin-guide/indexes.md'
+      - Institutes: 'admin-guide/institute.md'
+  
+  - Blog:
+      - Intro: 'blog/README.md'
+      - Whats new in 3.0?: 'blog/new-3.0.md'
+      - Whats new in 3.1?: 'blog/new-3.1.md'
+      - Whats new in 3.2?: 'blog/new-3.2.md'
+      - Whats new in 3.3?: 'blog/new-3.3.md'
+      - Whats new in 3.4?: 'blog/new-3.4.md'
+      - Whats new in 3.5?: 'blog/new-3.5.md'
+      - Whats new in 4.0?: 'blog/new-4.0.0.md'
+  
+  - About:
+      -Glossary: 'GLOSSARY.md'
