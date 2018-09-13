@@ -45,6 +45,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed broken link to case page from Sanger modal in cases view
 - Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
 - Can handle Tumor only samples
+- Long lists of HGNC symbols are now possible. This was previously difficult with manual, uploaded or by HPO search when changing filter settings due to GET request limitations. Relevant pages now use POST requests.
+- Variant filter defaults to default panels also on SV and Cancer variants pages.
 
 ## [4.0.0]
 
