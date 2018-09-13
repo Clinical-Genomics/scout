@@ -30,6 +30,47 @@
     </div>
   </div>
 
+  {% if sanger_unevaluated %}
+    <div class="alert alert-info alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      {% if sanger_unevaluated|length > 1%}
+      You have <strong>{{ sanger_unevaluated|length }}</strong> cases with Sanger validations to evaluate!
+      {% else %}
+      You have <strong>1</strong> case with Sanger validations to evaluate!&nbsp;
+      {% endif %}
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#evaluateModal">
+        evaluate
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="evaluateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Sanger validations to evaluate:</h5>
+            </div>
+            <div class="modal-body">
+              <ul>
+                {% for uneval_obj in sanger_unevaluated %}
+                {% for case, var_list in uneval_obj.items() %}
+                <li>
+                  Case <strong><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case) }}" target="_blank">{{case}}</strong></a> ---> <strong>{{var_list|length}}</strong> variants.
+                </li>
+                {% endfor %}
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+
   {% for group_name, case_group in cases %}
     {% if case_group|length > 0 %}
       <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
