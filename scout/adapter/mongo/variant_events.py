@@ -6,6 +6,8 @@ import pymongo
 
 from scout.constants import REV_ACMG_MAP
 
+SANGER_OPTIONS = ['True positive', 'False positive', 'Not validated']
+
 LOG = logging.getLogger(__name__)
 
 class VariantEventHandler(object):
@@ -198,8 +200,9 @@ class VariantEventHandler(object):
         Returns:
             updated_variant(dict)
         """
-        if not validate_type in ['True positive', 'False positive']:
+        if not validate_type in SANGER_OPTIONS:
             LOG.warning("Invalid validation string: %s", validate_type)
+            LOG.info("Validation options: %s", ', '.join(SANGER_OPTIONS))
             return
 
         updated_variant = self.variant_collection.find_one_and_update(
