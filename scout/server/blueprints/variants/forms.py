@@ -3,7 +3,7 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField, IntegerField)
+                     HiddenField, IntegerField, SubmitField)
 from wtforms.widgets import TextInput
 
 from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS,
@@ -85,7 +85,7 @@ class StrFiltersForm(FlaskForm):
     gene_panels = SelectMultipleField(choices=[])
     repids = TagListField()
 
-class SvFiltersForm(FlaskForm):
+class SvFiltersForm(FiltersForm):
     """Extends FiltersForm for structural variants"""
     size = TextField('Length')
     size_inclusive = BooleanField('Length inclusive')

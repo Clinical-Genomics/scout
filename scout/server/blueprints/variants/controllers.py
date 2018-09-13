@@ -122,7 +122,8 @@ def sv_variant(store, institute_id, case_name, variant_id):
         }
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj =  store.variant(variant_id)
+
+    variant_obj = store.variant(variant_id)
 
     # fill in information for pilup view
     variant_case(store, case_obj, variant_obj)
