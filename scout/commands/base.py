@@ -44,7 +44,11 @@ LOG = logging.getLogger(__name__)
 @click.option('-db', '--mongodb', help='Name of mongo database [scout]')
 @click.option('-u', '--username')
 @click.option('-p', '--password')
-@click.option('-a', '--authdb', help='database to use for authentication')
+@click.option('-a', '--authdb', 
+            help='database to use for authentication',
+            default='admin',
+            show_default=True,
+            )
 @click.option('-port', '--port', help="Specify on what port to listen for the mongod")
 @click.option('-h', '--host', help="Specify the host for the mongo database.")
 @click.option('-c', '--config', type=click.Path(exists=True),

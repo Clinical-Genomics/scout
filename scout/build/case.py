@@ -83,6 +83,8 @@ def build_case(case_data, adapter):
 
         madeline_info = str, # madeline info is a full xml file
 
+        multiqc = str, # path to dir with multiqc information
+
         vcf_files = dict, # A dictionary with vcf files
 
         diagnosis_phenotypes = list, # List of references to diseases
@@ -213,6 +215,8 @@ def build_case(case_data, adapter):
 
     # Files
     case_obj['madeline_info'] = case_data.get('madeline_info')
+    if 'multiqc' in case_data:
+        case_obj['multiqc'] = case_data.get('multiqc')
     case_obj['vcf_files'] = case_data.get('vcf_files', {})
     case_obj['delivery_report'] = case_data.get('delivery_report')
 

@@ -22,10 +22,9 @@ LOG = logging.getLogger(__name__)
 
 class PanelHandler(object):
 
-    def load_panel(self, path, institute, panel_id, date, panel_type='clinical', version=1.0, 
+    def load_panel(self, path, institute, panel_id, date, panel_type='clinical', version=1.0,
                    display_name=None):
         """Load a gene panel based on the info sent
-        
         The panel info is first parsed, then a panel object is built and integrity checks are made.
         The panel object is then loaded into the database.
 
@@ -36,7 +35,7 @@ class PanelHandler(object):
             date(datetime.datetime): Date of creation
             version(float)
             full_name(str): Option to have a long name
-        
+
             panel_info(dict): {
                 'file': <path to panel file>(str),
                 'institute': <institute>(str),
@@ -67,24 +66,24 @@ class PanelHandler(object):
             LOG.warning("OMIM-AUTO does not exists in database")
             LOG.info('Creating a first version')
             version = 1.0
-    
+
         if existing_panel:
             version = float(math.floor(existing_panel['version']) + 1)
-    
+
         LOG.info("Setting version to %s", version)
-        
+
         try:
             mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
         except Exception as err:
             raise err
-        
+
         date_string = None
         # Get the correct date when omim files where released
         for line in mim_files['genemap2']:
             if 'Generated' in line:
                 date_string = line.split(':')[-1].lstrip().rstrip()
         date_obj = get_date(date_string)
-        
+
         if existing_panel:
             if existing_panel['date'] == date_obj:
                 LOG.warning("There is no new version of OMIM")
@@ -110,9 +109,9 @@ class PanelHandler(object):
 
         for gene in genes:
             panel_data['genes'].append(gene)
-        
+
         panel_obj = build_panel(panel_data, self)
-        
+
         if existing_panel:
 
             new_genes = self.compare_mim_panels(existing_panel, panel_obj)
@@ -128,11 +127,11 @@ class PanelHandler(object):
     def compare_mim_panels(self, existing_panel, new_panel):
         """Check if the latest version of OMIM differs from the most recent in database
            Return all genes that where not in the previous version.
-        
+
         Args:
             existing_panel(dict)
             new_panel(dict)
-        
+
         Returns:
             new_genes(set(str))
         """
@@ -144,11 +143,11 @@ class PanelHandler(object):
     def update_mim_version(self, new_genes, new_panel, old_version):
         """Set the correct version for each gene
         Loop over the genes in the new panel
-        
+
         Args:
             new_genes(set(str)): Set with the new gene symbols
             new_panel(dict)
-        
+
         """
         LOG.info('Updating versions for new genes')
         version = new_panel['version']
@@ -257,6 +256,20 @@ class PanelHandler(object):
 
         return self.panel_collection.find(query)
 
+
+    def hgnc_to_panels(self, hgnc_id):
+        """Get a list of gene panel objects for a hgnc_id
+
+            Args:
+                hgnc_id(int)
+
+            Returns:
+                hgnc_panels(dict): A dictionary with hgnc as keys and lists of
+                                   gene panel objects as values
+        """
+        return self.panel_collection.find({'genes.hgnc_id' : hgnc_id })
+
+
     def gene_to_panels(self, case_obj):
         """Fetch all gene panels and group them by gene
 
@@ -268,7 +281,7 @@ class PanelHandler(object):
         """
         LOG.info("Building gene to panels")
         gene_dict = {}
-        
+
         for panel_info in case_obj.get('panels', []):
             panel_name = panel_info['panel_name']
             panel_version = panel_info['version']
@@ -279,13 +292,13 @@ class PanelHandler(object):
 
             for gene in panel_obj['genes']:
                 hgnc_id = gene['hgnc_id']
-                
+
                 if hgnc_id not in gene_dict:
                     gene_dict[hgnc_id] = set([panel_name])
                     continue
-                
+
                 gene_dict[hgnc_id].add(panel_name)
-        
+
         LOG.info("Gene to panels done")
 
         return gene_dict

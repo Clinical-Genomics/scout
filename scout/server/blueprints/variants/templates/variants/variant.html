@@ -119,7 +119,7 @@ badge{% extends "layout.html" %}
 
 {% macro sanger_button() %}
   {% if variant.sanger_ordered %}
-    {% if variant.validation %}
+    {% if variant.validation in ['True positive', 'False positive']%}
       <p class="navbar-text">Sanger: {{ variant.validation }}</p>
     {% else %}
       <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#cancelSangerModal">

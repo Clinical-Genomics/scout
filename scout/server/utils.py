@@ -34,9 +34,8 @@ def public_endpoint(function):
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
     institute_obj = store.institute(institute_id)
-    if institute_obj is None:
-        if not 'favicon.ico' in institute_id:
-            flash("Can't find institute: {}".format(institute_id), 'warning')
+    if institute_obj is None and institute_id != 'favicon.ico':
+        flash("Can't find institute: {}".format(institute_id), 'warning')
         return abort(404)
 
     if case_name:

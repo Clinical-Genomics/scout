@@ -5,13 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [4.0.1b]
 
 ### Added
-
+- reset sanger status to "Not validated" for pinned variants
+- highlight cases with variants to be evaluated by Sanger on the cases page
 - option to point to local reference files to the genome viewer pileup.js. Documented in `docs.admin-guide.server`
 - option to export single variants in `scout export variants`
+- option to load a multiqc report together with a case(add line in load config)
+- added a view for searching HPO terms. It is accessed from the top left corner menu
+- Updates the variants view for cancer variants. Adds a small cancer specific filter for known variants
+- Adds hgvs information on cancer variants page
 
 ### Fixed
 
 - Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
+- Can handle Tumor only samples
 
 ## [4.0.0]
 
@@ -32,6 +38,7 @@ $scout update hpo
 - Moved igv and pileup viewer under a common folder
 - Fixed MT alignment view pileup.js
 - Fixed coordinates for SVs with start chromosome different from end chromosome
+- Global comments shown across cases and institutes. Case-specific variant comments are shown only for that specific case.
 - Links to clinvar submitted variants at the cases level
 - Adapts clinvar parsing to new format
 - Fixed problem in `scout update user` when the user object had no roles
@@ -42,6 +49,7 @@ $scout update hpo
 - Fix problem with parsing gnomad from VEP
 
 ### Added
+- Added a PDF export function for gene panels
 - Added a "Filter and export" button to export custom-filtered SNVs to CSV file
 - Dismiss SVs
 - Added IGV alignments viewer

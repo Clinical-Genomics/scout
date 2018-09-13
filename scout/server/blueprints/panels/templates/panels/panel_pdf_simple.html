@@ -1,0 +1,90 @@
+{% extends "report_base.html" %}
+
+{% block body %}
+<br>
+<div class="container">
+  <h4>Scout - Gene panel report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  {{ genes_panel() }}
+  [END OF REPORT]<br><br>
+  <a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
+</div>
+{% endblock %}
+
+{% macro genes_panel() %}
+<div class="card border-dark mb-3">
+  <div class="card-header">
+    Panel: <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{panel.name_and_version}}</a>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Date
+          <span class="badge badge-secondary badge-pill">{{ panel.date.strftime('%Y-%m-%d') }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Number of genes
+          <span class="badge badge-secondary badge-pill">{{ panel.genes|length }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Institute
+          <span class="badge badge-secondary badge-pill">{{ panel.institute.display_name }}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-6">
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Panel archived
+          {% if panel.is_archived %}
+            <span class="badge badge-danger badge-pill">True</span>
+          {% else %}
+            <span class="badge badge-secondary badge-pill">False</span>
+          {% endif %}
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Panel database id
+          <span class="badge badge-secondary badge-pill">{{ panel._id }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <br>
+  <div>
+    <table class="table table-sm">
+      <tr>
+        <td></td>
+        <td>HGNC id</td>
+        <td>Gene name</td>
+
+        <td>Disease associated transcripts</td>
+        <td>Reduced penetrance</td>
+        <td>Mosaicism</td>
+        <td>Entry version</td>
+        <td>Inheritance models</td>
+        <td>Panels*</td>
+      </tr>
+      {% for gene in panel.genes|sort(attribute='symbol') %}
+        <tr>
+          <td>{{loop.index}}</td>
+          <td>
+            <a href="https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={{gene.hgnc_id}}" target="_blank">{{gene.hgnc_id}}</a>
+          </td>
+          <td>{{ gene.symbol }}</td>
+          <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
+          <td>{{ 'Reduced penetrance' if gene.reduced_penetrance }}</td>
+          <td>{{ 'Mosaicism' if gene.mosaicism}}</td>
+          <td><span class="badge badge-secondary">{{ gene.database_entry_version }}</span></td>
+          <td>{{ gene.inheritance_models|join(', ') }}</td>
+          <td>{{ gene.associated_panels|sort|join(',') }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<h6>*Gene panel explanation:</h6>
+{% for panel_index in panel.export_footer%}
+  {{panel_index[1]}}:&nbsp;{{panel_index[0]}}<br>
+{% endfor %}
+<br>
+{% endmacro %}

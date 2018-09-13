@@ -228,3 +228,56 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
+
+
+def multiqc(store, institute_id, case_name):
+    """Find MultiQC report for the case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+    )
+    
+
+def get_sanger_unevaluated(store, institute_id):
+    """Get all variants for an institute having Sanger validations ordered but still not evaluated
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str)
+
+        Returns:
+            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+
+    """
+
+    # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
+    # This way is much faster than querying over all variants in all cases of an institute
+    sanger_ordered_by_case = store.sanger_ordered_by_institute(institute_id)
+    unevaluated = []
+
+    # for each object where key==case and value==[variant_id with Sanger ordered]
+    for item in sanger_ordered_by_case:
+        case = item['_id']
+        varid_list = item['vars']
+
+        unevaluated_by_case = {}
+        unevaluated_by_case[case] = []
+
+        for var_id in varid_list:
+            # For each variant with sanger validation ordered
+            variant_obj = store.variant(document_id=var_id, case_id=case)
+
+            # Double check that Sanger was ordered (and not canceled) for the variant
+            if variant_obj.get('sanger_ordered') and variant_obj.get('sanger_ordered') is True:
+
+                # Collect variant ID only if variant is not yet evaluated
+                if 'validation' not in variant_obj or not variant_obj.get('validation') in ['True positive', 'False positive']:
+                    unevaluated_by_case[case].append(variant_obj['_id'])
+
+        # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
+        if len(unevaluated_by_case[case]) > 0:
+            unevaluated.append(unevaluated_by_case)
+
+    return unevaluated

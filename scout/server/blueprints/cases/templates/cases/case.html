@@ -91,10 +91,10 @@
         <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
       {% endif %}
       {% if case.vcf_files.vcf_sv %}
-        <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
+        <a class="btn btn-default" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
       {% endif %}
       {% if case.vcf_files.vcf_cancer %}
-        <a class="btn btn-default" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical cancer variants</a>
+        <a class="btn btn-default" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical cancer variants</a>
       {% endif %}
     </div>
   </div>
@@ -238,8 +238,10 @@
 		      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
 		  {% endif %}
                 </a>
-                {% if variant.sanger_ordered %}
-                  <span class="label label-success">Sanger ordered</span>
+                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
+                  <span class="label label-default">Sanger ordered</span>
+                {% elif variant.sanger_ordered %}
+                  <span class="label label-success">Sanger validated</span>
                 {% endif %}
               </div>
               <div class="col-xs-4">
@@ -289,8 +291,10 @@
                 </a>
               </td>
               <td>
-                {% if variant.sanger_ordered %}
+                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
                   <span class="label label-default">Sanger ordered</span>
+                {% elif variant.sanger_ordered %}
+                  <span class="label label-success">Sanger validated</span>
                 {% elif variant.manual_rank %}
                   <span class="label label-default">{{ variant.manual_rank }}</span>
                 {% endif %}
@@ -302,8 +306,7 @@
                                          variant_id=variant._id) }}"
                       method="POST" accept-charset="utf-8">
                   <select class="form-control input-sm" onchange="this.form.submit()" name="type">
-                    <option>Validate Sanger...</option>
-                    {% for type in ('True positive', 'False positive') %}
+                    {% for type in ('Not validated', 'True positive', 'False positive') %}
                       <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
                     {% endfor %}
                   </select>

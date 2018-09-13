@@ -2,6 +2,8 @@
 import logging
 import os.path
 
+from pprint import pprint as pp
+
 from datetime import date
 from flask import url_for, flash
 from flask_mail import Message
@@ -146,6 +148,8 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
 
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))
+        if variant_obj.get('category') == 'cancer':
+            variant_obj.update(get_variant_info(variant_genes))
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
@@ -253,6 +257,33 @@ def variants_export_header(case_obj):
     return header
 
 
+def get_variant_info(genes):
+    """Get variant information"""
+    data = {'canonical_transcripts': []}
+    for gene_obj in genes:
+        if not gene_obj.get('canonical_transcripts'):
+            tx = gene_obj['transcripts'][0]
+            tx_id = tx['transcript_id']
+            exon = tx.get('exon', '-')
+            c_seq = tx.get('coding_sequence_name', '-')
+        else:
+            tx_id = gene_obj['canonical_transcripts']
+            exon = gene_obj.get('exon', '-')
+            c_seq = gene_obj.get('hgvs_identifier', '-')
+        
+        if len(c_seq) > 20:
+            c_seq = c_seq[:20] + '...'
+        
+        if len(genes) == 1:
+            value = ':'.join([tx_id,exon,c_seq])
+        else:
+            gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
+            value = ':'.join([gene_id, tx_id,exon,c_seq])
+        data['canonical_transcripts'].append(value)
+    
+    return data
+        
+
 def get_predictions(genes):
     """Get sift predictions from genes."""
     data = {
@@ -270,6 +301,7 @@ def get_predictions(genes):
                 gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
                 value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
+        
     return data
 
 

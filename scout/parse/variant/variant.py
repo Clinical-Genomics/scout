@@ -254,4 +254,12 @@ def parse_variant(variant, case, variant_type='clinical',
     for key in sv_frequencies:
         parsed_variant['frequencies'][key] = sv_frequencies[key]
 
+    ###################### Add Cancer specific annotations ######################
+    # MSK_MVL indicates if variants are in the MSK managed variant list
+    # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5437632/
+    mvl_tag = variant.INFO.get('MSK_MVL')
+    if mvl_tag:
+        parsed_variant['mvl_tag'] = True
+
     return parsed_variant
+

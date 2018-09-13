@@ -44,6 +44,11 @@ def cases(institute_id):
     skip_assigned = request.args.get('skip_assigned')
     all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases, limit)
+
+    sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id)
+    if len(sanger_unevaluated)> 0:
+        data['sanger_unevaluated'] = sanger_unevaluated
+
     return dict(institute=institute_obj, skip_assigned=skip_assigned, query=query, **data)
 
 
@@ -463,3 +468,14 @@ def default_panels(institute_id, case_name):
     panel_ids = request.form.getlist('panel_ids')
     controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
     return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/multiqc')
+def multiqc(institute_id, case_name):
+    """Load multiqc report for the case."""
+    data = controllers.multiqc(store, institute_id, case_name)
+    if data['case'].get('multiqc') is None:
+        return abort(404)
+    out_dir = os.path.abspath(os.path.dirname(data['case']['multiqc']))
+    filename = os.path.basename(data['case']['multiqc'])
+    return send_from_directory(out_dir, filename)

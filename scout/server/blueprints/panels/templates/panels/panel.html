@@ -73,6 +73,9 @@
           </span>
         </li>
       {% endif %}
+      <li class="list-group-item">
+        <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-warning btn-xs">Export to PDF</a>
+      </li>
     </ul>
   </div>
 {% endmacro %}

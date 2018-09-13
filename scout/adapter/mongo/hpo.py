@@ -4,6 +4,7 @@ import logging
 import operator
 
 from pymongo.errors import (DuplicateKeyError, BulkWriteError)
+from pymongo import (ASCENDING)
 
 from scout.exceptions import IntegrityError
 
@@ -31,7 +32,7 @@ class HpoHandler(object):
 
         Arguments:
             hpo_bulk(list(scout.models.HpoTerm))
-        
+
         Returns:
             result: pymongo bulkwrite result
 
@@ -57,7 +58,7 @@ class HpoHandler(object):
 
         return self.hpo_term_collection.find_one({'_id': hpo_id})
 
-    def hpo_terms(self, query=None, hpo_term=None):
+    def hpo_terms(self, query=None, hpo_term=None, text=None, limit=None):
         """Return all HPO terms
 
         If a query is sent hpo_terms will try to match with regex on term or
@@ -66,23 +67,40 @@ class HpoHandler(object):
         Args:
             query(str): Part of a hpoterm or description
             hpo_term(str): Search for a specific hpo term
+            limit(int): the number of desired results
 
         Returns:
             result(pymongo.Cursor): A cursor with hpo terms
         """
         query_dict = {}
+        search_term = None
         if query:
             query_dict = {'$or':
                 [
                     {'hpo_id': {'$regex': query, '$options':'i'}},
                     {'description': {'$regex': query, '$options':'i'}},
-                ]
+                ]   
             }
+            search_term = query
+        elif text:
+            new_string = ''
+            for i,word in enumerate(text.split(' ')):
+                if i == 0:
+                    new_string += word
+                else:
+                    new_string += ' \"{0}\"'.format(word)
+            LOG.info("Search HPO terms with %s", new_string)
+            query_dict['$text'] = {'$search': new_string}
+            search_term = text
         elif hpo_term:
             query_dict['hpo_id'] = hpo_term
+            search_term = hpo_term
+
+        limit = limit or int(10e10)
+        res = self.hpo_term_collection.find(query_dict).limit(limit).sort('hpo_number',ASCENDING)
         
-        res = self.hpo_term_collection.find(query_dict)
-        LOG.info("Found {0} terms with search word {1}".format(res.count(), query))
+
+        LOG.info("Found {0} terms with search word {1}".format(res.count(), search_term))
         return res
 
     def disease_term(self, disease_identifier):
@@ -109,10 +127,10 @@ class HpoHandler(object):
         """Return all disease terms that overlaps a gene
 
             If no gene, return all disease terms
-        
+
         Args:
             hgnc_id(int)
-        
+
         Returns:
             iterable(dict): A list with all disease terms that match
         """
