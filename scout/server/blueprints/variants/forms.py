@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
                      HiddenField, IntegerField, SubmitField)
 from wtforms.widgets import TextInput
+from flask_wtf.file import FileField
 
 from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS,
                              SPIDEX_LEVELS, SV_TYPES)
@@ -52,6 +53,8 @@ class FiltersForm(FlaskForm):
     gene_panels = SelectMultipleField(choices=[])
     hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
 
+    symbol_file = FileField('Symbol File')
+
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
@@ -59,7 +62,7 @@ class FiltersForm(FlaskForm):
     cadd_score = BetterDecimalField('CADD', places=2)
     cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
-    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
+    clinsig_confident_always_returned = BooleanField('CLINSIG Confident')
     spidex_human = SelectMultipleField('SPIDEX', choices=SPIDEX_CHOICES)
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)

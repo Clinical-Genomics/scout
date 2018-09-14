@@ -56,7 +56,8 @@ def variants(institute_id, case_name):
             form = FiltersForm(request.form)
     else:
         form = FiltersForm(request.args)
-        
+
+    # populate available panel choices
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]
  
@@ -64,6 +65,26 @@ def variants(institute_id, case_name):
                      for panel in available_panels]
 
     form.gene_panels.choices = panel_choices
+
+    # upload gene panel if symbol file exists
+    if (request.files):
+        file = request.files[form.symbol_file.name]
+
+    if request.files and file and file.filename != '':
+        log.debug("Upload file request files: {0}".format(request.files.to_dict()))
+        try:
+            stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
+        except UnicodeDecodeError as error:
+            flash("Only text files are supported!", 'warning')
+            return redirect(request.referrer)
+
+        hgnc_symbols_set = set(form.hgnc_symbols.data)
+        log.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
+        new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
+        hgnc_symbols_set.update(new_hgnc_symbols)
+        form.hgnc_symbols.data = hgnc_symbols_set
+        # reset gene panels
+        form.gene_panels.data = ''
 
     # update status of case if vistited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
@@ -404,7 +425,8 @@ def acmg():
 @variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
 def upload_panel(institute_id, case_name):
     """Parse gene panel file and fill in HGNC symbols for filter."""
-    file = request.files['file']
+    file = form.symbol_file.data
+
     if file.filename == '':
         flash('No selected file', 'warning')
         return redirect(request.referrer)
