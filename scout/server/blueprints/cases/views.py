@@ -73,39 +73,38 @@ def clinvar_submissions(institute_id):
     if request.method == 'POST':
         submission_id = request.form.get('submission_id')
         if request.form.get('update_submission'):
-            if request.form.get('update_submission') == 'close':
-                store.update_clinvar_submission_status(submission_id, 'closed')
+            if request.form.get('update_submission') == 'close': # close a submission
+                store.update_clinvar_submission_status(current_user.email, submission_id, 'closed')
             elif request.form.get('update_submission') == 'open':
-                store.update_clinvar_submission_status(submission_id, 'open')
-            elif request.form.get('update_submission') == 'register_id' and request.form.get('clinvar_id'):
+                store.update_clinvar_submission_status(current_user.email, submission_id, 'open') # open a submission
+            elif request.form.get('update_submission') == 'register_id' and request.form.get('clinvar_id'): # provide an official clinvar submission ID
                 result = store.update_clinvar_id(clinvar_id = request.form.get('clinvar_id'), submission_id = submission_id)
-            elif request.form.get('update_submission') == 'delete': # delete submission
+            elif request.form.get('update_submission') == 'delete': # delete a submission
                 deleted_objects, deleted_submissions = store.delete_submission(submission_id = submission_id)
                 flash("Removed {} objects and {} submission from database".format(deleted_objects, deleted_submissions), 'info')
-        elif request.form.get('delete_variant'):
+        elif request.form.get('delete_variant'): # delete a variant from a submission
             store.delete_clinvar_object(object_id = request.form.get('delete_variant'), object_type='variant_data', submission_id = submission_id) # remove variant and associated_casedata
-        elif request.form.get('delete_casedata'):
+        elif request.form.get('delete_casedata'): # delete a case from a submission
             store.delete_clinvar_object(object_id = request.form.get('delete_casedata'), object_type='case_data', submission_id = submission_id) # remove just the casedata associated to a variant
-        else: # Download CSV files (for variants or casedata)
-            csv_type = ''
-            submission_id = ''
-            if request.form.get('variant_data'):
-                csv_type = 'variant_data' # Download CSV file with variants to submit
-                submission_id = request.form.get('variant_data')
-            else:
-                csv_type = 'case_data' # Download CSV file with casedata to submit
-                submission_id = request.form.get('case_data')
+        else: # Download submission CSV files (for variants or casedata)
 
-            submission_objs = store.clinvar_objs(request.form.get(csv_type), csv_type) # a list of clinvar submission objects (variants or casedata)
+            clinvar_subm_id = request.form.get('clinvar_id')
+            if clinvar_subm_id =='':
+                flash('In order to download a submission CSV file you should register a Clinvar submission Name first!','warning')
+                return redirect(request.referrer)
+
+            csv_type = ''
+            csv_type = request.form.get('csv_type')
+
+            submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type) # a list of clinvar submission objects (variants or casedata)
             if submission_objs:
                 csv_header_obj = controllers.clinvar_header(submission_objs, csv_type) # custom csv header (dict as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
                 csv_lines = controllers.clinvar_lines(submission_objs, csv_header_obj) # csv lines (one for each variant/casedata to be submitted)
                 csv_header = list(csv_header_obj.values())
-                csv_header = ['"'+str(x)+'"' for x in csv_header] # quote columns in header for csv renedering
+                csv_header = ['"'+str(x)+'"' for x in csv_header] # quote columns in header for csv rendering
 
-                # Download the CSV file
                 headers = Headers()
-                headers.add('Content-Disposition','attachment', filename='scout-clinvar_submission_'+submission_id+'_'+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'.csv')
+                headers.add('Content-Disposition','attachment', filename=clinvar_subm_id+'_'+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'.csv')
                 return Response(generate_csv(','.join(csv_header), csv_lines), mimetype='text/csv', headers=headers)
             else:
                 flash('There are no submission objects of type "{}" to include in the csv file!'.format(csv_type),'warning')

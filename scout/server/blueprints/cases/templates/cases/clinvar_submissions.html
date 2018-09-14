@@ -23,7 +23,33 @@
 {% block content_main %}
 
 <div class="container" id="main">
-  <h3>Clinvar submissions page</h3><a href="">howto</a><br>
+  <h3>Clinvar submissions page<h5></h3><a href="#howto" data-toggle="collapse">howto</a></h5><br>
+  <div id="howto" class="collapse">
+    <p>
+      <dl class="dl-horizontal">
+        <dt>Requirements</dt>
+        <dd>Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">clinVar submission portal.</a><br>
+                        If your organization is not already present in clinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
+                        The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
+        </dd>
+        <dt style="margin-top: 20px;">Obtain a submission ID</dt>
+        <dd style="margin-top: 20px;">If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
+        </dd>
+        <dt style="margin-top: 20px;">Fill in panel 1 and 2</dt>
+        <dd style="margin-top: 20px;">
+          Fill in submission forms in panel 1 and 2, respectively named "Submission information" and "Organization". In the "<strong>Submission format</strong>" in panel 1 make sure to select the value "<strong>Comma-separated values</strong>".<br>
+          <strong>Assemby name</strong> fields should be filled in before proceding further with the submission.<br>
+        </dd>
+        <dt style="margin-top: 20px;">Download files</dt>
+        <dd style="margin-top: 20px;">You'll need to register the <strong>Submission Name</strong> obtained from Clinvar portal in order to download variants and casedata submission files.</dd>
+        <dt style="margin-top: 20px;">Upload files</dt>
+        <dd style="margin-top: 20px;">Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
+          The field named <strong>"Assertion Criteria File" should be left blank</strong>, since the default information is already filled in the "Variants sheet" <strong>(ACMG Guidelines, 2015)</strong>.
+        </dd>
+      </dl>
+    </p>
+  </div>
+  <br>
   {% if submissions %}
     {% for submission in submissions|sort(attribute='status', reverse=True) %}
       {{ submission_panel(submission) }}
@@ -49,7 +75,7 @@
           <ol class="breadcrumb">
             <li>Created: <strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong></li>
             <li>Last updated: <strong>{{subm_obj.updated_at.strftime('%Y-%m-%d')}}</strong></li>
-            <li><button type="submit" name="variant_data" value="{{subm_obj._id}}" class="btn btn-primary btn-xs">Download variants file</button>&nbsp;<button name="case_data" value="{{subm_obj._id}}" type="submit " class="btn btn-primary btn-xs">Download casedata file</button></li>
+            <li><button type="submit" name="csv_type" value="variant_data" class="btn btn-primary btn-xs">Download variants file</button>&nbsp;<button name="csv_type" value="case_data" type="submit" class="btn btn-primary btn-xs">Download casedata file</button></li>
             {% if subm_obj.status=='open'%}
               <li><button type="submit" name="update_submission" value="close" class="btn btn-warning btn-xs">Close submission</button></li>
             {% else %}
@@ -60,13 +86,13 @@
         <div>
           <div>
             <div class="form-groupjustify-content-center">
-              <label for="clinvar_id">Submission ID:</label>
+              <label for="clinvar_id">Submission Name:</label>
               <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
               <button type="submit" class="btn btn-default" name="update_submission" value="register_id">Update</button>
             </div>
           </div>
           <h4>Variant data:</h4>
-          {% if subm_obj.variant_data %}
+          {% if subm_obj.variant_data and subm_obj.variant_data.count() > 0 %}
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -121,7 +147,7 @@
                           {% endif %}
                         {% endfor %}
                         </div>
-                      </div>
+                      </d
                     </td>
                 {% endfor %}
               </tbody>
@@ -133,7 +159,7 @@
 
         <div>
           <h4>Case data:</h4>
-          {% if subm_obj.case_data %}
+          {% if subm_obj.case_data and subm_obj.case_data.count() > 0 %}
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -184,7 +210,9 @@
 {% endmacro %}
 
 {% block scripts %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(function () {
     $('.casedata  div').hide();
@@ -215,6 +243,8 @@ $(function () {
         }
     });
 });
+
+
 </script>
 
 {% endblock %}

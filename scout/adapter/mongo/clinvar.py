@@ -107,6 +107,21 @@ class ClinVarHandler(object):
         return updated_submission
 
 
+    def get_clinvar_id(self, submission_id):
+        """Returns the official Clinvar submission ID for a submission object
+
+            Args:
+                submission_id(str): submission_id(str) : id of the submission
+
+            Returns:
+                clinvar_subm_id(str): a string with a format: SUB[0-9]. It is obtained from clinvar portal when starting a new submission
+
+        """
+        submission_obj = self.clinvar_submission_collection.find_one({'_id': ObjectId(submission_id)})
+        clinvar_subm_id = submission_obj.get('clinvar_subm_id') # This key does not exist if it was not previously provided by user
+        return clinvar_subm_id
+
+
     def add_to_submission(self, submission_id, submission_objects):
         """Adds submission_objects to clinvar collection and update the coresponding submission object with their id
 
@@ -145,7 +160,7 @@ class ClinVarHandler(object):
         return duplicated_variants
 
 
-    def update_clinvar_submission_status(self, submission_id, status):
+    def update_clinvar_submission_status(self, user_id, submission_id, status):
         """Set a clinvar submission ID to 'closed'
 
             Args:
@@ -157,12 +172,21 @@ class ClinVarHandler(object):
         """
         LOG.info('closing clinvar submission "%s"', submission_id)
 
+        if status == 'open': # just close the submission its status does not affect the other submissions for this user
+            # Close all other submissions for this user and then open the desired one
+            self.clinvar_submission_collection.update_many(
+                {'user_id' : user_id},
+                {'$set' :
+                    {'status' : 'closed', 'updated_at' : datetime.now()}
+                }
+            )
         updated_submission = self.clinvar_submission_collection.find_one_and_update(
             {'_id'  : ObjectId(submission_id)},
             {'$set' :
                 {'status' : status, 'updated_at' : datetime.now()}
             }
         )
+
         return updated_submission
 
 
