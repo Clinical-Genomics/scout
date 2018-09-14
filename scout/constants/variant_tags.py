@@ -181,7 +181,7 @@ DISMISS_VARIANT_OPTIONS = {
         'description': 
         'Found in a gene with much benign such (e.g. missense) variation.',
         'evidence': ['type']
-        }
+        },
     43: {
         'label': 'Unstudied variation type',
         'description': 
