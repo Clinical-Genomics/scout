@@ -18,6 +18,9 @@
       <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
     </li>
    {% endif %}
+   <li>
+     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+   </li>
 {% endblock %}
 
 {% block content_main %}
@@ -196,14 +199,35 @@
       {% endfor %}
     </td>
     <td>
-      {% if case.clinvar_submissions %}
-        {% for subm in case.clinvar_submissions %}
-          {% if subm.variant_type == 'snv'%}
-            <a href="{{ url_for('variants.variant', institute_id=case.owner, case_name=case.display_name, variant_id=subm._id ) }}"><span class="glyphicon glyphicon-ok"></span></a>
-          {% else %}
-            <a href="{{ url_for('variants.sv_variant', institute_id=case.owner, case_name=case.display_name, variant_id=subm._id ) }}"><span class="glyphicon glyphicon-ok"></span></a>
-          {% endif %}
-        {% endfor %}
+      {% if case.clinvar_variants %}
+        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} variants</a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="variantModalLabel">Variants included in Clinvar submissions:</h5>
+              </div>
+              <div class="modal-body">
+                <ul>
+                  {% for varname, clinvar in case.clinvar_variants.items() %}
+                    <li>
+                    {% if clinvar.category == 'snv' %}
+                      <a href="{{ url_for('variants.variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.start}}_{{clinvar.ref}}>{{clinvar.alt}}</a>
+                    {% else %}
+                      <a href="{{ url_for('variants.sv_variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.breakpoint1}}_{{clinvar.var_type}}</a>
+                    {% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
       {% endif %}
     </td>
   </tr>

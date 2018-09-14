@@ -298,3 +298,22 @@ class ClinVarHandler(object):
         updated_submission = self.clinvar_submission_collection.find_one_and_update( {'_id':submission_id}, { '$set' : {'updated_at': datetime.now()} }, return_document=pymongo.ReturnDocument.AFTER )
 
         return updated_submission
+
+
+    def case_to_clinVars(self, case_id):
+        """Get all variants included in clinvar submissions for a case
+
+        Args:
+            case_id(str): a case display_name
+
+        Returns:
+            submission_variants(dict): keys are variant ids and values are variant submission objects
+
+        """
+        query = dict(case_id=case_id, csv_type='variant')
+        clinvar_objs = list(self.clinvar_collection.find(query))
+        submitted_vars = {}
+        for clinvar in clinvar_objs:
+            submitted_vars[clinvar.get('local_id')] = clinvar
+
+        return submitted_vars

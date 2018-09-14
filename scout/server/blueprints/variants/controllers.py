@@ -105,6 +105,11 @@ def sv_variant(store, institute_id, case_name, variant_id):
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
+
+    case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
+    if variant_id in case_clinvars:
+        variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
+
     return {
         'institute': institute_obj,
         'case': case_obj,
@@ -270,19 +275,19 @@ def get_variant_info(genes):
             tx_id = gene_obj['canonical_transcripts']
             exon = gene_obj.get('exon', '-')
             c_seq = gene_obj.get('hgvs_identifier', '-')
-        
+
         if len(c_seq) > 20:
             c_seq = c_seq[:20] + '...'
-        
+
         if len(genes) == 1:
             value = ':'.join([tx_id,exon,c_seq])
         else:
             gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
             value = ':'.join([gene_id, tx_id,exon,c_seq])
         data['canonical_transcripts'].append(value)
-    
+
     return data
-        
+
 
 def get_predictions(genes):
     """Get sift predictions from genes."""
@@ -301,7 +306,7 @@ def get_predictions(genes):
                 gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
                 value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
-        
+
     return data
 
 
@@ -458,6 +463,11 @@ def variant(store, institute_obj, case_obj, variant_id=None):
     for evaluation_obj in store.get_evaluations(variant_obj):
         evaluation(store, evaluation_obj)
         evaluations.append(evaluation_obj)
+
+    case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
+    if variant_id in case_clinvars:
+        variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
+
     return {
         'variant': variant_obj,
         'causatives': other_causatives,

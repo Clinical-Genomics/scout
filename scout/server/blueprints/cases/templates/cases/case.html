@@ -74,6 +74,9 @@
 
         <div class="row">
           <div class="col-md-6">{{ activity_panel(events) }}</div>
+          {% if case.clinvar_variants %}
+            <div class="col-md-6">{{ clinvar_panel() }}</div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -423,6 +426,23 @@
         </div>
       </form>
     </div>
+  </div>
+{% endmacro %}
+
+{% macro clinvar_panel() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Variants in Clinvar submissions</div>
+    <ul>
+      {% for var_id, submission_data in case.clinvar_variants.items() %}
+        <li>
+          {% if submission_data.category == 'snv' %}
+            <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
+          {% else %}
+            <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 {% endmacro %}
 

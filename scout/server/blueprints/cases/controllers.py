@@ -22,11 +22,13 @@ def cases(store, case_query, limit=100):
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
+
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
+        case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['display_name'])
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
@@ -83,6 +85,8 @@ def case(store, institute_obj, case_obj):
     events = list(store.events(institute_obj, case=case_obj))
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
+
+    case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['display_name'])
 
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
@@ -237,7 +241,7 @@ def multiqc(store, institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
     )
-    
+
 
 def get_sanger_unevaluated(store, institute_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated
