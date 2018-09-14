@@ -115,71 +115,77 @@ MANUAL_RANK_OPTIONS = {
 
 DISMISS_VARIANT_OPTIONS = {
     2: {
-        'label': 'common public',
+        'label': 'Common public',
         'description': 'Too common in public databases.',
         'evidence': ['freq']
         },
     3: {
-        'label': 'common local',
+        'label': 'Common local',
         'description': 'Too common in local databases.',
         'evidence': ['freq']
         },
     5: {
-        'label': 'irrelevant phenotype',
+        'label': 'Irrelevant phenotype',
         'description': 'Phenotype not relevant.',
         'evidence': ['OMIM']
         },
     7: {
-        'label': 'inconsistent inheritance pattern',
+        'label': 'Inconsistent inheritance pattern',
         'description': 'Inheritance pattern not relevant.',
         'evidence': ['OMIM', 'GT', 'inheritance_model']
         },
     11: {
-        'label': 'no plausible compound',
+        'label': 'No plausible compound',
         'description': 'No plausible compound - AR disease.',
         'evidence': ['Compounds']
         },
     13: {
-        'label': 'not in disease transcript',
+        'label': 'Not in disease transcript',
         'description': 'Not in transcript relevant to disease.',
         'evidence': ['transcript']
         },
     17: {
-        'label': 'not in refseq transcript',
+        'label': 'Not in RefSeq transcript',
         'description':
             'Not in a RefSeq transcript - could not be determined relevant.',
         'evidence': ['transcript']
         },
     19: {
-        'label': 'splicing unaffected',
+        'label': 'Splicing unaffected',
         'description': 'Does not appear to affect splicing.',
         'evidence': ['spidex']
         },
     23: {
-        'label': 'inherited from unaffected',
+        'label': 'Inherited from unaffected',
         'description': 'Inherited from an unaffected individual.',
         'evidence': ['GT', 'pedigree']
         },
     29: {
-        'label': 'technical issues',
+        'label': 'Technical issues',
         'description': 'Technical issues - likely false positive.',
         'evidence': ['GT', 'pileup']
         },
     31: {
-        'label': 'no protein function',
+        'label': 'No protein function',
         'description': 
         'Not likely to alter protein function - eg benign polyQ expansion.',
         'evidence': ['CADD', 'conservation']
         },
     37: {
-        'label': 'reputation benign',
+        'label': 'Reputation benign',
         'description': 'Reputable source classified benign.',
         'evidence': ['clinvar']
         },
     41: {
-        'label': 'common variation type',
+        'label': 'Common variation type',
         'description': 
         'Found in a gene with much benign such (e.g. missense) variation.',
+        'evidence': ['type']
+        }
+    43: {
+        'label': 'Unstudied variation type',
+        'description': 
+        'In a gene where mainly other types of variation (e.g. repeat expansion) are established as pathologic.',
         'evidence': ['type']
         }
 }
