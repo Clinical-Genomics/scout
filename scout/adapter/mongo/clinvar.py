@@ -2,7 +2,6 @@
 import logging
 from datetime import datetime
 from bson.objectid import ObjectId
-from scout.exceptions import IntegrityError
 
 import pymongo
 
@@ -134,7 +133,6 @@ class ClinVarHandler(object):
         """
 
         LOG.info("Adding new variants and case data to clinvar submission '%s'", submission_id)
-        duplicated_variants = []
 
         # Insert variant submission_objects into clinvar collection
         # Loop over the objects
@@ -143,7 +141,6 @@ class ClinVarHandler(object):
                 result = self.clinvar_collection.insert_one(var_obj)
                 self.clinvar_submission_collection.update_one({'_id':submission_id}, {'$push': { 'variant_data' : str(result.inserted_id) }}, upsert=True)
             except pymongo.errors.DuplicateKeyError:
-                duplicated_variants.append(var_obj['local_id'])
                 LOG.error("Attepted to insert a clinvar variant which is already in DB!")
 
         # Insert casedata submission_objects into clinvar collection
@@ -157,7 +154,7 @@ class ClinVarHandler(object):
                     LOG.error("One or more casedata object is already present in clinvar collection!")
 
         updated_submission = self.clinvar_submission_collection.find_one_and_update( {'_id':submission_id}, { '$set' : {'updated_at': datetime.now()} }, return_document=pymongo.ReturnDocument.AFTER )
-        return duplicated_variants
+        return updated_submission
 
 
     def update_clinvar_submission_status(self, user_id, submission_id, status):
@@ -184,7 +181,8 @@ class ClinVarHandler(object):
             {'_id'  : ObjectId(submission_id)},
             {'$set' :
                 {'status' : status, 'updated_at' : datetime.now()}
-            }
+            },
+            return_document=pymongo.ReturnDocument.AFTER
         )
 
         return updated_submission
@@ -208,12 +206,12 @@ class ClinVarHandler(object):
         submissions = []
         for result in results:
             submission = {}
-            submission['_id'] =  result['_id']
-            submission['status'] = result['status']
-            submission['user_id'] = result['user_id']
-            submission['institute_id'] = result['institute_id']
-            submission['created_at'] = result['created_at']
-            submission['updated_at'] = result['updated_at']
+            submission['_id'] =  result.get('_id')
+            submission['status'] = result.get('status')
+            submission['user_id'] = result.get('user_id')
+            submission['institute_id'] = result.get('institute_id')
+            submission['created_at'] = result.get('created_at')
+            submission['updated_at'] = result.get('updated_at')
 
             if 'clinvar_subm_id' in result:
                 submission['clinvar_subm_id'] = result['clinvar_subm_id']

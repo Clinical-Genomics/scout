@@ -101,7 +101,6 @@ def get_submission_variants(form_fields):
     return clinvars
 
 
-
 def clinvar_submission_header(submission_objs, csv_type):
     """Determine which fields to include in csv header by checking a list of submission objects
 
