@@ -9,11 +9,8 @@ TEMPLATES_AUTO_RELOAD = True
 
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
-PILEUP_GENOME='//Users/chiararasi/Documents/work/appo/Homo_sapiens.GRCh37.d5.2bit'
-
 # Flask-mail: http://pythonhosted.org/flask-mail/
 # see: https://bitbucket.org/danjac/flask-mail/issue/3
-
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
