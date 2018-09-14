@@ -35,9 +35,6 @@ CLINVAR_HEADER = {
     'funct_conseq_comment' : 'Comment on functional consequence'
 }
 
-# extra from form:
-# category@var_id
-
 # clinvar CaseData sheet
 CASEDATA_HEADER = {
     'linking_id' : 'Linking ID',
