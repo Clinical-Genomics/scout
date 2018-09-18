@@ -241,7 +241,10 @@ def get_sanger_unevaluated(store, institute_id):
 
     # for each object where key==case and value==[variant_id with Sanger ordered]
     for item in sanger_ordered_by_case:
-        case = item['_id']
+
+        case_id = item['_id']
+        case_obj = store.case(case_id=item['_id'])
+        case_display_name = case_obj.get('display_name')
         varid_list = item['vars']
 
         unevaluated_by_case = {}
@@ -249,14 +252,14 @@ def get_sanger_unevaluated(store, institute_id):
 
         for var_id in varid_list:
             # For each variant with sanger validation ordered
-            variant_obj = store.variant(document_id=var_id, case_id=case)
+            variant_obj = store.variant(document_id=var_id, case_id=case_id)
 
             # Double check that Sanger was ordered (and not canceled) for the variant
             if variant_obj and (variant_obj.get('sanger_ordered') and variant_obj.get('sanger_ordered') is True):
 
                 # Collect variant ID only if variant is not yet evaluated
                 if 'validation' not in variant_obj or not variant_obj.get('validation') in ['True positive', 'False positive']:
-                    unevaluated_by_case[case].append(variant_obj['_id'])
+                    unevaluated_by_case[case_display_name].append(variant_obj['_id'])
 
         # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
         if len(unevaluated_by_case[case]) > 0:
