@@ -248,7 +248,7 @@ def get_sanger_unevaluated(store, institute_id):
         varid_list = item['vars']
 
         unevaluated_by_case = {}
-        unevaluated_by_case[case] = []
+        unevaluated_by_case[case_display_name] = []
 
         for var_id in varid_list:
             # For each variant with sanger validation ordered
@@ -262,7 +262,7 @@ def get_sanger_unevaluated(store, institute_id):
                     unevaluated_by_case[case_display_name].append(variant_obj['_id'])
 
         # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
-        if len(unevaluated_by_case[case]) > 0:
+        if len(unevaluated_by_case[case_display_name]) > 0:
             unevaluated.append(unevaluated_by_case)
 
     return unevaluated
