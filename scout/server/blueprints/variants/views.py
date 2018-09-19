@@ -155,7 +155,7 @@ def sv_variant(institute_id, case_name, variant_id):
 
 @variants_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
 @templated('variants/str-variant.html')
-def sv_variant(institute_id, case_name, variant_id):
+def str_variant(institute_id, case_name, variant_id):
     """Display a specific STR variant."""
     data = controllers.str_variant(store, institute_id, case_name, variant_id)
     return data

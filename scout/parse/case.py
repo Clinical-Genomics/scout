@@ -81,6 +81,8 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_str'] = vcf_str if vcf_str else config_data.get('vcf_str')
+    log.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))
+
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
 
     config_data['delivery_report'] = delivery_report if delivery_report else config_data.get('delivery_report')

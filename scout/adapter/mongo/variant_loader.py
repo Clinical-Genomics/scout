@@ -501,7 +501,7 @@ class VariantLoader(object):
         Args:
             case_obj(dict): A case from the scout database
             variant_type(str): 'clinical' or 'research'. Default: 'clinical'
-            category(str): 'snv' or 'sv'. Default: 'snv'
+            category(str): 'snv', 'str' or 'sv'. Default: 'snv'
             rank_threshold(float): Only load variants above this score. Default: 0
             chrom(str): Load variants from a certain chromosome
             start(int): Specify the start position
@@ -521,6 +521,7 @@ class VariantLoader(object):
             elif category == 'sv':
                 variant_file = case_obj['vcf_files'].get('vcf_sv')
             elif category == 'str':
+                LOG.debug('Attempt to load STR VCF.')
                 variant_file = case_obj['vcf_files'].get('vcf_str')
             elif category == 'cancer':
                 # Currently this implies a paired tumor normal

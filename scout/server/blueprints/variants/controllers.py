@@ -49,7 +49,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
         'more_variants': more_variants,
     }
 
-def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50)
+def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
     # Nothing unique to STRs on this level. Inheritance?
     return variants(store, institute_obj, case_obj, variants_query, page, per_page)

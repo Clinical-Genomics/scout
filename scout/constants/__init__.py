@@ -101,7 +101,11 @@ CALLERS = {
     }, {
         'id': 'manta',
         'name': 'Manta',
-    }]
+    }],
+    'str': [{
+       'id': 'expansionhunter',
+       'name': 'ExpansionHunter'
+   }]
 }
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
