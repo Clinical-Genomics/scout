@@ -67,3 +67,7 @@ _book/
 # Other
 /local
 *sqlite
+
+# Emacs (Just so I don't have to see them green in Atom ;-)
+*~
+*#
