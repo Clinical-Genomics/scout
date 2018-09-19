@@ -25,4 +25,8 @@ FILE_TYPE_MAP = {
         'category': 'sv',
         'variant_type': 'research'
     },
+    'vcf_str': {
+        'category': 'str',
+        'variant_type': 'clinical'
+    },
 }

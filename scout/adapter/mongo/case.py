@@ -227,6 +227,7 @@ class CaseHandler(object):
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
             {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
             {'file_name': 'vcf_cancer', 'variant_type': 'clinical', 'category': 'cancer'},
+            {'file_name': 'vcf_str', 'variant_type': 'clinical', 'category': 'str'}
         ]
 
         for vcf_file in files:
@@ -288,6 +289,7 @@ class CaseHandler(object):
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - has_svvariants: If there are new svvariants
+            - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
 
             Args:
@@ -325,6 +327,7 @@ class CaseHandler(object):
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
+                    'has_strvariants': case_obj.get('has_strvariants'),
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj['multiqc'],

@@ -203,7 +203,7 @@ class VariantLoader(object):
         """
 
         case_id = case_obj['_id']
-        # Possible categories 'snv', 'sv', 'cancer':
+        # Possible categories 'snv', 'sv', 'str', 'cancer':
         categories = set()
         # Possible variant types 'clinical', 'research':
         variant_types = set()
@@ -520,6 +520,8 @@ class VariantLoader(object):
                 variant_file = case_obj['vcf_files'].get('vcf_snv')
             elif category == 'sv':
                 variant_file = case_obj['vcf_files'].get('vcf_sv')
+            elif category == 'str':
+                variant_file = case_obj['vcf_files'].get('vcf_str')
             elif category == 'cancer':
                 # Currently this implies a paired tumor normal
                 variant_file = case_obj['vcf_files'].get('vcf_cancer')

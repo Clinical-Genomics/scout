@@ -107,6 +107,17 @@ def variant(institute_id, case_name, variant_id):
     data['cancer'] = request.args.get('cancer') == 'yes'
     return dict(institute=institute_obj, case=case_obj, **data)
 
+@variants_bp.route('/<institute_id>/<case_name>/str/variants')
+@templated('variants/str-variants.html')
+def str_variants(institute_id, case_name):
+    """Display a list of STR variants."""
+    page = int(request.args.get('page', 1))
+    variant_type = request.args.get('variant_type', 'clinical')
+
+    variants_query = store.variants(case_obj['_id'], category='str')
+    data = controllers.str_variants(store, institute_obj, case_obj, page)
+    return dict(institute=institute_obj, case=case_obj, variant_type = variant_type, 
+                page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/sv/variants')
 @templated('variants/sv-variants.html')
@@ -142,6 +153,12 @@ def sv_variant(institute_id, case_name, variant_id):
     data = controllers.sv_variant(store, institute_id, case_name, variant_id)
     return data
 
+@variants_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
+@templated('variants/str-variant.html')
+def sv_variant(institute_id, case_name, variant_id):
+    """Display a specific STR variant."""
+    data = controllers.str_variant(store, institute_id, case_name, variant_id)
+    return data
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
 def variant_update(institute_id, case_name, variant_id):

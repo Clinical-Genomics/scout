@@ -38,7 +38,7 @@ def parse_variant(variant, case, variant_type='clinical',
         vep_header(list)
         individual_positions(dict): Explain what position each individual has
                                     in vcf
-        category(str): 'snv', 'sv' or 'cancer'
+        category(str): 'snv', 'sv', 'str' or 'cancer'
 
     Returns:
         parsed_variant(dict): Parsed variant
@@ -158,6 +158,23 @@ def parse_variant(variant, case, variant_type='clinical',
     if azqual:
         parsed_variant['azqual'] = float(azqual)
 
+    ################ Add STR info if present ################
+
+    # repeat id generally corresponds to gene symbol
+    repeat_id = variant.INFO.get('REPID')
+    if repeat_id:
+        parsed_variant['str_repid'] = str(repeat_id)
+
+    # repeat unit - used e g in PanelApp naming of STRs
+    repeat_unit = variant.INFO.get('RU')
+    if repeat_unit: 
+        parsed_variant['str_ru'] = str(repeat_unit)
+
+    # repeat unit - used e g in PanelApp naming of STRs
+    repeat_ref = variant.INFO.get('REF')
+    if repeat_unit: 
+        parsed_variant['str_ref'] = int(repeat_ref)
+
     ################# Add gene and transcript information #################
     raw_transcripts = []
     if vep_header:
@@ -165,7 +182,6 @@ def parse_variant(variant, case, variant_type='clinical',
         if vep_info:
             raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
                                for transcript_info in vep_info.split(','))
-
 
     parsed_transcripts = []
     dbsnp_ids = set()
