@@ -53,6 +53,11 @@ variant = dict(
     genes = list, # list with <gene>
     dbsnp_id = str,
 
+    # str variant
+    str_ru = str
+    str_repid = str
+    str_ref = str
+
     # Gene ids:
     hgnc_ids = list, # list of hgnc ids (int)
     hgnc_symbols = list, # list of hgnc symbols (str)
@@ -115,4 +120,3 @@ gt_call = dict(
     read_depth = int,
     genotype_quality = int,
 )
-

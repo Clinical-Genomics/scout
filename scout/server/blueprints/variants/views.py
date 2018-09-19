@@ -14,11 +14,10 @@ from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
 from scout.parse.clinvar import get_submission_variants, get_submission_header, get_submission_lines, create_clinvar_submission_dict, extract_submission_csv_lines
 from . import controllers
-from .forms import FiltersForm, SvFiltersForm
+from .forms import FiltersForm, SvFiltersForm, StrFiltersForm
 
 log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
-
 
 @variants_bp.route('/<institute_id>/<case_name>/variants')
 @templated('variants/variants.html')
@@ -103,7 +102,8 @@ def variant(institute_id, case_name, variant_id):
     if data is None:
         return abort(404)
     if current_app.config.get('LOQUSDB_SETTINGS'):
-        data['observations'] = controllers.observations(store, loqusdb, case_obj, data['variant'])
+        data['observations'] = controllers.observations(store, loqusdb,
+            case_obj, data['variant'])
     data['cancer'] = request.args.get('cancer') == 'yes'
     return dict(institute=institute_obj, case=case_obj, **data)
 
@@ -114,10 +114,19 @@ def str_variants(institute_id, case_name):
     page = int(request.args.get('page', 1))
     variant_type = request.args.get('variant_type', 'clinical')
 
-    variants_query = store.variants(case_obj['_id'], category='str')
-    data = controllers.str_variants(store, institute_obj, case_obj, page)
-    return dict(institute=institute_obj, case=case_obj, variant_type = variant_type, 
-                page=page, **data)
+    form = StrFiltersForm(request.args)
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    query = form.data
+    query['variant_type'] = variant_type
+
+    variants_query = store.variants(case_obj['_id'], category='str',
+        query=query)
+    data = controllers.str_variants(store, institute_obj, case_obj,
+        variants_query, page)
+    return dict(institute=institute_obj, case=case_obj,
+        variant_type = variant_type, form=form, page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/sv/variants')
 @templated('variants/sv-variants.html')
@@ -132,16 +141,19 @@ def sv_variants(institute_id, case_name):
     panel_choices = [(panel['panel_name'], panel['display_name'])
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
-    query = form.data
-    query['variant_type'] = variant_type
 
     if form.data['gene_panels'] == ['hpo']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
         form.hgnc_symbols.data = hpo_symbols
 
-    variants_query = store.variants(case_obj['_id'], category='sv', query=form.data)
-    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
+    query = form.data
+    query['variant_type'] = variant_type
+
+    variants_query = store.variants(case_obj['_id'], category='sv',
+                                    query=query)
+    data = controllers.sv_variants(store, institute_obj, case_obj,
+                                    variants_query, page)
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 

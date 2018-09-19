@@ -4,7 +4,7 @@
 {% from "utils.html" import flash_messages, comments_table %}
 
 {% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
 {% endblock %}
 
 {% block top_nav %}
@@ -28,11 +28,11 @@
 {% endblock %}
 
 {% block top_nav_right %}
-
   {{ super() }}
 {% endblock %}
 
 {% block content %}
+<form>
   <div class="container-fluid main">
     {{ flash_messages() }}
   </div>
@@ -41,14 +41,14 @@
       <thead>
         <tr>
           <th class="col-xs-1" title="Rank position">Rank</th>
-          <th title="Rank score">Score</th>
+          <th class="col-xs-1" title="Rank score">Score</th>
           <th title="Chromosome">Chr.</th>
           <th title="Repeat ID" class="col-xs-2">Repeat ID</th>
-          <th title="Repeat unit">Repeat unit</th>
+          <th class="col-xs-1" title="Repeat unit">Repeat unit</th>
           <th title="ALT">Estimated size</th>
-          <th class="col-xs-2" title="Reference">Reference</th>
-          <th class="col-xs-3" title="Normal">Normal &le;</th>
-          <th class="col-xs-3" title="Pathologic">Pathologic &ge;</th>
+          <th class="col-xs-1" title="Reference">Reference</th>
+          <th class="col-xs-1" title="Normal">Normal &le;</th>
+          <th class="col-xs-1" title="Pathologic">Pathologic &ge;</th>
         </tr>
       </thead>
       <tbody>
@@ -62,15 +62,15 @@
           <td class="text-right">{{ variant.rank_score|int }}</td>
           <td>{{ variant.chromosome }}</td>
           <td>{{ variant.str_repid }}</td>
-	  <td>variant.alt</td>
-          <td class="text-right">{{ variant.str_ru }}</td>
+	        <td class="text-right">{{ variant.str_ru }}</td>
+          <td>{{ variant.alternative }}</td>
           <td class="text-right">{{ variant.str_ref }}</td>
           <td>N</td>
           <td>P</td>
           </tr>
         {% else %}
           <tr>
-            <td colspan="{{ 10 if form.variant_type.data == 'clinical' else 9 }}">
+            <td colspan="9">
               No matching variants
             </td>
           </tr>
@@ -80,6 +80,7 @@
 
     {{ footer() }}
   </div>
+</form>
 {% endblock %}
 
 {% macro cell_rank(variant) %}
@@ -141,10 +142,6 @@
       $('select[multiple]').multiselect({
         buttonWidth: '100%'
       });
-
-      document.getElementById('file-input').onchange = function() {
-        document.getElementById('file-form').submit();
-      };
     })
 
     function add_export(){

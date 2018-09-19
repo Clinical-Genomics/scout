@@ -68,8 +68,6 @@ def parse_variant(variant, case, variant_type='clinical',
     elif not variant.ALT and category == "str":
         alt='.'
 
-    logger.debug("alt {}".format(alt))
-
     parsed_variant['ids'] = parse_ids(
         chrom=chrom,
         pos=variant.POS,

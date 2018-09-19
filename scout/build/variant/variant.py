@@ -174,6 +174,15 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if 'end_chrom' in variant:
         variant_obj['end_chrom'] = variant['end_chrom']
 
+    if 'str_ru' in variant:
+        variant_obj['str_ru'] = variant['str_ru']
+
+    if 'str_repid' in variant:
+        variant_obj['str_repid'] = variant['str_repid']
+
+    if 'str_ref' in variant:
+        variant_obj['str_ref'] = variant['str_ref']
+
     gt_types = []
     for sample in variant.get('samples', []):
         gt_call = build_genotype(sample)
@@ -344,7 +353,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if rank_results:
         variant_obj['rank_score_results'] = rank_results
-        
+
     # Cancer specific
     if variant.get('mvl_tag'):
         variant_obj['mvl_tag'] = True
