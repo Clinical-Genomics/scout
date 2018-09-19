@@ -60,12 +60,21 @@ def parse_variant(variant, case, variant_type='clinical',
 
     chrom_match = CHR_PATTERN.match(variant.CHROM)
     chrom = chrom_match.group(2)
+
     # Builds a dictionary with the different ids that are used
+
+    if variant.ALT:
+        alt=variant.ALT[0]
+    elif not variant.ALT and category == "str":
+        alt='.'
+
+    logger.debug("alt {}".format(alt))
+
     parsed_variant['ids'] = parse_ids(
         chrom=chrom,
         pos=variant.POS,
         ref=variant.REF,
-        alt=variant.ALT[0],
+        alt=alt,
         case_id=case_id,
         variant_type=variant_type
     )
@@ -90,7 +99,7 @@ def parse_variant(variant, case, variant_type='clinical',
     ### We allways assume splitted and normalized vcfs!!!
     if len(variant.ALT) > 1:
         raise VcfError("Variants are only allowed to have one alternative")
-    parsed_variant['alternative'] = variant.ALT[0]
+    parsed_variant['alternative'] = alt
 
     # cyvcf2 will set QUAL to None if '.' in vcf
     parsed_variant['quality'] = variant.QUAL
@@ -167,12 +176,12 @@ def parse_variant(variant, case, variant_type='clinical',
 
     # repeat unit - used e g in PanelApp naming of STRs
     repeat_unit = variant.INFO.get('RU')
-    if repeat_unit: 
+    if repeat_unit:
         parsed_variant['str_ru'] = str(repeat_unit)
 
     # repeat unit - used e g in PanelApp naming of STRs
     repeat_ref = variant.INFO.get('REF')
-    if repeat_unit: 
+    if repeat_unit:
         parsed_variant['str_ref'] = int(repeat_ref)
 
     ################# Add gene and transcript information #################
@@ -192,7 +201,7 @@ def parse_variant(variant, case, variant_type='clinical',
             dbsnp_ids.add(dbsnp)
         for cosmic in parsed_transcript.get('cosmic', []):
             cosmic_ids.add(cosmic)
-    
+
     # The COSMIC tag in INFO is added via VEP and/or bcftools annotate
 
     cosmic_tag = variant.INFO.get('COSMIC')
@@ -278,4 +287,3 @@ def parse_variant(variant, case, variant_type='clinical',
         parsed_variant['mvl_tag'] = True
 
     return parsed_variant
-
