@@ -249,7 +249,7 @@ def get_sanger_unevaluated(store, institute_id):
         varid_list = item['vars']
 
         unevaluated_by_case = {}
-        unevaluated_by_case[case_id] = []
+        unevaluated_by_case[case_display_name] = []
 
         for var_id in varid_list:
             # For each variant with sanger validation ordered
