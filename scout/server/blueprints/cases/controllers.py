@@ -242,6 +242,7 @@ def get_sanger_unevaluated(store, institute_id):
     # for each object where key==case and value==[variant_id with Sanger ordered]
     for item in sanger_ordered_by_case:
         case_id = item['_id'] #it's actually a case display_name and not a case _id that is saved in the event_ collection
+        print("####### CASE ID IS -------------->"+str(case_id))
         case_obj = store.case(case_id=case_id)
         case_display_name = case_obj.get('display_name')
         #print("case object is:"+str(case_obj))
