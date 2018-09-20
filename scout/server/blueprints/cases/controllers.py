@@ -243,9 +243,9 @@ def get_sanger_unevaluated(store, institute_id):
     for item in sanger_ordered_by_case:
         case_id = item['_id']
         # Get the case to collect display name
-        case_obj = store.case(case_id=case_id)
+        case_obj = dict(store.case(case_id=case_id))
 
-        if not case_obj: # the case might have been removed
+        if case_obj is None: # the case might have been removed
             continue
 
         case_display_name = case_obj.get('display_name')
