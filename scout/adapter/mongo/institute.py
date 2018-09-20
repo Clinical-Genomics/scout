@@ -34,7 +34,8 @@ class InstituteHandler(object):
         LOG.info("Institute saved")
 
     def update_institute(self, internal_id, sanger_recipient=None, coverage_cutoff=None, 
-                         frequency_cutoff=None, display_name=None, remove_sanger=None):
+                         frequency_cutoff=None, display_name=None, remove_sanger=None,
+                         phenotype_groups=None, group_abbreviations=None):
         """Update the information for an institute
 
         Args:
@@ -89,6 +90,23 @@ class InstituteHandler(object):
                 updates['$set'] = {}
             updates['$set'] = {'display_name': display_name}
 
+        if phenotype_groups:
+            if group_abbreviations:
+                group_abbreviations = list(group_abbreviations)
+            existing_groups = institute_obj.get('phenotype_groups',{})
+
+            for i,hpo_term in enumerate(phenotype_groups):
+                hpo_obj = self.hpo_term(hpo_term)
+                if not hpo_obj:
+                    raise IntegrityError("Term {} does not exist".format(hpo_term))
+                hpo_id = hpo_obj['hpo_id']
+                description = hpo_obj['description']
+                abbreviation = None
+                if group_abbreviations:
+                    abbreviation = group_abbreviations[i]
+                existing_groups[hpo_term] = {'name': description, 'abbr':abbreviation}
+            updates['$set'] = {'phenotype_groups': phenotype_groups}
+        
         if updates:
             if not '$set' in updates:
                 updates['$set'] = {}

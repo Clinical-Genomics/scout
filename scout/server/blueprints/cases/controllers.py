@@ -88,11 +88,14 @@ def case(store, institute_obj, case_obj):
 
     case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['display_name'])
 
+    # Phenotype groups can be specific for an institute, there are some default groups
+    pheno_groups = institute_obj.get('phenotype_groups') or PHENOTYPE_GROUPS
+
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj=case_obj),
         'comments': store.events(institute_obj, case=case_obj, comments=True),
-        'hpo_groups': PHENOTYPE_GROUPS,
+        'hpo_groups': pheno_groups,
         'events': events,
         'suspects': suspects,
         'causatives': causatives,
