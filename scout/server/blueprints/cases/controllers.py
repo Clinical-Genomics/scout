@@ -248,7 +248,11 @@ def get_sanger_unevaluated(store, institute_id):
         if case_obj is None: # the case might have been removed
             continue
 
-        case_display_name = case_obj.get('display_name')
+        case_display_name = ''
+        if 'display_name' in case_obj:
+            case_display_name = case_obj.get('display_name')
+        else:
+            case_display_name = case_id
         # List of variant document ids
         varid_list = item['vars']
 
