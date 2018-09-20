@@ -241,10 +241,8 @@ def get_sanger_unevaluated(store, institute_id):
 
     # for each object where key==case and value==[variant_id with Sanger ordered]
     for item in sanger_ordered_by_case:
-
-        case_id = item['_id']
-        case_obj = store.case(case_id=item['_id'])
-        case_display_name = case_obj.get('display_name')
+        case_display_name = item['_id'] #it's actually a case display_name and not a case _id that is saved in the event_ collection
+        case_obj = store.case(institute_id=institute_id, display_name=case_display_name)
         varid_list = item['vars']
 
         unevaluated_by_case = {}
@@ -252,7 +250,7 @@ def get_sanger_unevaluated(store, institute_id):
 
         for var_id in varid_list:
             # For each variant with sanger validation ordered
-            variant_obj = store.variant(document_id=var_id, case_id=case_id)
+            variant_obj = store.variant(document_id=var_id, case_id=case_obj.get('_id'))
 
             # Double check that Sanger was ordered (and not canceled) for the variant
             if variant_obj and (variant_obj.get('sanger_ordered') and variant_obj.get('sanger_ordered') is True):
