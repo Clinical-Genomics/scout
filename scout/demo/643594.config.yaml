@@ -2,7 +2,7 @@
 
 owner: cust000
 
-family: '643594'
+family: 'internal_id'
 family_name: '643594'
 samples:
   - analysis_type: wes
