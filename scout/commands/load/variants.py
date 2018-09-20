@@ -13,8 +13,9 @@ LOG = logging.getLogger(__name__)
 @click.option('--cancer-research', is_flag=True, help='Upload research cancer variants')
 @click.option('--sv', is_flag=True, help='Upload clinical structural variants')
 @click.option('--sv-research', is_flag=True, help='Upload research structural variants')
-@click.option('--snv', is_flag=True, help='Upload clinical snv variants')
-@click.option('--snv-research', is_flag=True, help='Upload research snv variants')
+@click.option('--snv', is_flag=True, help='Upload clinical SNV variants')
+@click.option('--snv-research', is_flag=True, help='Upload research SNV variants')
+@click.option('--str-clinical', is_flag=True, help='Upload clinical STR variants')
 @click.option('--chrom', help='If region, specify the chromosome')
 @click.option('--start', type=int, help='If region, specify the start')
 @click.option('--end', type=int, help='If region, specify the end')
@@ -24,7 +25,7 @@ LOG = logging.getLogger(__name__)
                 show_default=True)
 @click.pass_context
 def variants(context, case_id, institute, force, cancer, cancer_research, sv, 
-             sv_research, snv, snv_research, chrom, start, end, hgnc_id, 
+             sv_research, snv, snv_research, str_clinical, chrom, start, end, hgnc_id, 
              hgnc_symbol, rank_treshold):
     """Upload variants to a case
 
@@ -50,6 +51,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
         {'category': 'sv', 'variant_type': 'research', 'upload': sv_research},
         {'category': 'snv', 'variant_type': 'clinical', 'upload': snv},
         {'category': 'snv', 'variant_type': 'research', 'upload': snv_research},
+        {'category': 'str', 'variant_type': 'clinical', 'upload': str_clinical},
     ]
     
     gene_obj = None

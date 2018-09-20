@@ -23,8 +23,8 @@ variant = dict(
     # the clinical variants have limited annotation fields.
     variant_type = str, # required, choices=('research', 'clinical'))
 
-    category = str, # choices=('sv', 'snv')
-    sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
+    category = str, # choices=('sv', 'snv', 'str')
+    sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str')
     mate_id = str, # For SVs this identifies the other end
 
     case_id = str, # case_id is a string like owner_caseid
@@ -52,6 +52,11 @@ variant = dict(
 
     genes = list, # list with <gene>
     dbsnp_id = str,
+
+    # str variant
+    str_ru = str
+    str_repid = str
+    str_ref = str
 
     # Gene ids:
     hgnc_ids = list, # list of hgnc ids (int)
@@ -115,4 +120,3 @@ gt_call = dict(
     read_depth = int,
     genotype_quality = int,
 )
-

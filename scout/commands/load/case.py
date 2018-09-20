@@ -25,6 +25,10 @@ LOG = logging.getLogger(__name__)
     type=click.Path(exists=True),
     help='path to clinical cancer VCF file to be loaded'
 )
+@click.option('--vcf-str', 
+    type=click.Path(exists=True),
+    help='path to clinical STR VCF file to be loaded'
+)             
 @click.option('--owner', 
     help='parent institute for the case', 
     default='test'
@@ -54,7 +58,7 @@ LOG = logging.getLogger(__name__)
     help='path to a ped_check.csv file'
 )
 @click.pass_context
-def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
+def case(context, vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
          no_variants, peddy_ped, peddy_sex, peddy_check):
     """Load a case into the database.
 
@@ -77,6 +81,7 @@ def case(context, vcf, vcf_sv, vcf_cancer, owner, ped, update, config,
             owner=owner,
             vcf_snv=vcf,
             vcf_sv=vcf_sv,
+            vcf_str=vcf_str,
             vcf_cancer=vcf_cancer,
             peddy_ped=peddy_ped,
             peddy_sex=peddy_sex,

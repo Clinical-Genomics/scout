@@ -49,9 +49,13 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
         'more_variants': more_variants,
     }
 
+def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+    """Pre-process list of STR variants."""
+    # Nothing unique to STRs on this level. Inheritance?
+    return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
-def sv_variant(store, institute_id, case_name, variant_id):
-    """Pre-process a SV variant entry for detail page.
+def str_variant(store, institute_id, case_name, variant_id):
+    """Pre-process an STR variant entry for detail page.
 
     Adds information to display variant
 
@@ -60,7 +64,52 @@ def sv_variant(store, institute_id, case_name, variant_id):
         institute_id(str)
         case_name(str)
         variant_id(str)
-        var_obj(scout.models.Variant)
+
+    Returns:
+        detailed_information(dict): {
+            'institute': <institute_obj>,
+            'case': <case_obj>,
+            'variant': <variant_obj>,
+            'overlapping_snvs': <overlapping_snvs>,
+            'manual_rank_options': MANUAL_RANK_OPTIONS,
+            'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
+        }
+        """
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj =  store.variant(variant_id)
+
+    # fill in information for pilup view
+    variant_case(store, case_obj, variant_obj)
+
+    variant_obj['callers'] = callers(variant_obj, category='str')
+
+    # variant_obj['str_ru']
+    # variant_obj['str_repid']
+    # variant_obj['str_ref']
+
+    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
+                                           variant_id=variant_obj['variant_id'], comments=True)
+
+    return {
+        'institute': institute_obj,
+        'case': case_obj,
+        'variant': variant_obj,
+        'overlapping_snvs': overlapping_snvs,
+        'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
+    }
+
+def sv_variant(store, institute_id, case_name, variant_id):
+    """Pre-process an SV variant entry for detail page.
+
+    Adds information to display variant
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str)
+        case_name(str)
+        variant_id(str)
 
     Returns:
         detailed_information(dict): {

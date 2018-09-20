@@ -148,7 +148,7 @@ class VariantHandler(VariantLoader):
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
             variant_ids(List[str])
-            category(str): 'sv' or 'snv' or 'cancer'
+            category(str): 'sv', 'str', 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
@@ -454,6 +454,8 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj['vcf_files'].get('vcf_snv')
             elif category == 'sv':
                 variant_file = case_obj['vcf_files'].get('vcf_sv')
+            elif category == 'str':
+                variant_file = case_obj['vcf_files'].get('vcf_str')
         elif variant_type == 'research':
             if category == 'snv':
                 variant_file = case_obj['vcf_files'].get('vcf_snv_research')

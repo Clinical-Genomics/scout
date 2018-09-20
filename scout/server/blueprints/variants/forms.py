@@ -6,7 +6,7 @@ from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipl
                      HiddenField, IntegerField)
 from wtforms.widgets import TextInput
 
-from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS, 
+from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS,
                              SPIDEX_LEVELS, SV_TYPES)
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
@@ -74,6 +74,13 @@ class CancerFiltersForm(FiltersForm):
     control_frequency = BetterDecimalField('Control freq. <', places=2)
     mvl_tag = BooleanField('In Managed Variant List')
 
+class StrFiltersForm(FlaskForm):
+    """docstring for CancerFiltersForm"""
+    variant_type = HiddenField(default='clinical')
+
+    chrom = TextField('Chromosome')
+    gene_panels = SelectMultipleField(choices=[])
+    repids = TagListField()
 
 class SvFiltersForm(FlaskForm):
     gene_panels = SelectMultipleField(choices=[])

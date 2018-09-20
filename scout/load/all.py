@@ -66,6 +66,13 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                               category='sv', chrom=chrom, start=start, end=end)
 
+    vcf_str_file = case_obj['vcf_files'].get('vcf_str')
+    if vcf_str_file: 
+        log.info("Load clinical STR variants for case: {0} region: chr {1}, "
+                 "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
+        adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                              category='str', chrom=chrom, start=start, end=end)
+
     if case_obj['is_research']:
         log.info("Load research SNV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))

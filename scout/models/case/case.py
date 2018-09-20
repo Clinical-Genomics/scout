@@ -79,6 +79,7 @@ case = dict(
     diagnosis_genes=list,  # List of references to genes
 
     has_svvariants=bool,  # default=False
+    has_strvariants=bool, # default=False
 
     is_migrated = bool, # default=False
 
