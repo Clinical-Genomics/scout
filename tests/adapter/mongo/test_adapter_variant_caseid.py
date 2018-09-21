@@ -1,12 +1,15 @@
-
+from pprint import pprint as pp
 
 def test_update_caseid(real_oldcase_database, scout_config):
     # GIVEN a case with a "old-style" case id
     adapter = real_oldcase_database['adapter']
     old_case = real_oldcase_database['case']
     old_caseid = old_case['_id']
+    ## THEN assert that the case has the old style id
     assert old_caseid == '-'.join([old_case['owner'], old_case['display_name']])
+    ## THEN assert that the case has old id as case_id
     assert isinstance(adapter.case(old_caseid), dict)
+    ## THEN assert that grabbing the case with disaply name does not work
     assert adapter.case(scout_config['family']) is None
 
     case_lists = {'suspects': None, 'causatives': None}
@@ -33,13 +36,15 @@ def test_update_caseid(real_oldcase_database, scout_config):
     assert isinstance(new_case, dict)
     # AND the suspect/causative variant should have an updated id
     for case_variants, old_variantid in case_lists.items():
-        assert new_case[case_variants][0] != old_variantid
-        assert isinstance(adapter.variant(new_case[case_variants][0]), dict)
-    # AND the ACMG classification should have new case + variant ids
-    new_variant = adapter.variants(new_case['_id'])[0]
-    new_evaluation = adapter.get_evaluations(new_variant)[0]
-    assert new_evaluation['case_id'] == new_case['_id']
-    assert new_evaluation['variant_specific'] == new_variant['_id']
+        new_variantid = new_case[case_variants][0]
+        assert new_variantid != old_variantid
+        new_variant = adapter.variant_collection.find_one({'_id': new_variantid})
+        assert isinstance(new_variant, dict)
+        # AND the ACMG classification should have new case + variant ids
+        new_evaluations = adapter.get_evaluations(new_variant)
+        for new_evaluation in new_evaluations:
+            assert new_evaluation['case_id'] == new_case['_id']
+            assert new_evaluation['variant_specific'] == new_variant['_id']
     # AND update ids for events
     assert adapter.events(institute_obj, case=old_case).count() == 0
     new_events = adapter.events(institute_obj, case=new_case)
