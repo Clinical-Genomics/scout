@@ -257,11 +257,10 @@ def parsed_case(request, scout_config):
 
 @pytest.fixture(scope='function')
 def case_obj(request, parsed_case):
-    adapter = panel_database
 
     logger.info("Create a case obj")
     case = parsed_case
-    case['_id'] = parsed_case['display_name']
+    case['_id'] = parsed_case['case_id']
     case['created_at'] = parsed_case['analysis_date']
     case['dynamic_gene_list'] = {}
     case['genome_version'] = None
@@ -435,6 +434,8 @@ def real_adapter(request, real_pymongo_client):
     database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
+    mongo_adapter.load_indexes()
+
     logger.info("Connected to database")
 
     return mongo_adapter
@@ -442,7 +443,7 @@ def real_adapter(request, real_pymongo_client):
 
 @pytest.fixture(scope='function')
 def adapter(request, pymongo_client):
-    """Get an adapter connected to mongom database"""
+    """Get an adapter connected to mongo database"""
     logger.info("Connecting to database...")
     mongo_client = pymongo_client
 

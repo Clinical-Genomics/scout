@@ -1,4 +1,6 @@
 from copy import deepcopy
+from pprint import pprint as pp
+
 import pytest
 
 
@@ -11,7 +13,7 @@ def real_oldcase_database(real_panel_database, scout_config):
     # add suspect and causative!
     institute_obj = real_panel_database.institute(case_obj['owner'])
     user_obj = real_panel_database.users()[0]
-    variant_obj = real_panel_database.variants(case_obj['_id'])[0]
+    variant_obj = real_panel_database.variant_collection.find_one()
     real_panel_database.pin_variant(
         institute=institute_obj,
         case=case_obj,
