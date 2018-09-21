@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pprint import pprint as pp
 import pytest
 from scout.server.blueprints.cases.controllers import get_sanger_unevaluated
 
@@ -66,8 +67,8 @@ def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute
 
     # Test that the Sanger ordered but not validated for the institute are 2
     # sanger_unevaluated should look like this: [{ 'case_id': [var1, var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['internal_id'])
-    assert len(sanger_unevaluated[0][case_obj['_id']]) == 2
+    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['_id'])
+    assert len(sanger_unevaluated[0][case_obj['display_name']]) == 2
 
     # Set one of the two variants as validated
     adapter.variant_collection.find_one_and_update(
@@ -77,5 +78,6 @@ def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute
 
     # Test that now the Sanger ordered but not validated is only one
     # sanger_unevaluated should look like this: [{ 'case_id': [var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['internal_id'])
-    assert len(sanger_unevaluated[0][case_obj['_id']]) == 1
+    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['_id'])
+    pp(sanger_unevaluated)
+    assert len(sanger_unevaluated[0][case_obj['display_name']]) == 1
