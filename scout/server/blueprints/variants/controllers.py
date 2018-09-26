@@ -15,6 +15,7 @@ from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
+from scout.server.links import ensembl as ensembl_link
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
 
@@ -146,11 +147,9 @@ def sv_variant(store, institute_id, case_name, variant_id):
     ensembl_link = ''
     for gene_obj in variant_obj['genes']:
         if gene_obj['common']:
-            if gene_obj['common']['build'] == '37':
-                ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
-            else:
-                ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
-            gene_obj['ensembl_link'] = ensembl_link.format(gene_obj['common']['ensembl_id'])
+            ensembl_id = gene_obj['common']['ensembl_id']
+            build = int(gene_obj['common'].get('build','37'))
+            gene_obj['ensembl_link'] = ensembl_link(ensembl_id, build=build)
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
@@ -586,14 +585,8 @@ def parse_gene(gene_obj, build=None):
 
     if gene_obj['common']:
         ensembl_id = gene_obj['common']['ensembl_id']
-        ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
-                        "db=core;g={}")
 
-        if build == 38:
-            ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?"
-                            "db=core;g={}")
-
-        gene_obj['ensembl_link'] = ensembl_link.format(ensembl_id)
+        gene_obj['ensembl_link'] = ensembl_link(ensembl_id, build=build)
 
         gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
         gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"

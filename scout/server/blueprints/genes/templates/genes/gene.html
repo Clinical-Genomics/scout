@@ -54,8 +54,7 @@
     <li class="list-group-item">
       HGNC ID
       <span class="pull-right">
-        <a target="_blank"    href="https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{{ gene.hgnc_id }}" target="_blank"> {{ gene.hgnc_id }}
-        </a>
+        <a target="_blank" href={{ hgnc_link }} target="_blank"> {{ gene.hgnc_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
@@ -67,6 +66,12 @@
       <span class="pull-right">{{ gene.description }}</span>
     </li>
     <li class="list-group-item">
+      Ensembl ID
+      <span class="pull-right">
+        <a target="_blank" href={{ gene.ensembl_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+      </span>
+    </li>
+    <li class="list-group-item">
       Chromosome
       <span class="pull-right">{{ gene.chromosome }}</span>
     </li>
@@ -74,12 +79,11 @@
       Position
       <span class="pull-right">{{ gene.position }}</span>
     </li>
-    {% if gene.omim_id %}
+    {% if omim_link %}
     <li class="list-group-item">
       OMIM
       <span class="pull-right">
-        <a target="_blank"    href="https://www.omim.org/entry/{{ gene.omim_id }}" target="_blank"> {{ gene.omim_id }}
-        </a>
+        <a target="_blank" href={{ omim_link }} target="_blank"> {{ gene.omim_id }}</a>
       </span>
     </li>
     {% endif %}

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
+from scout.server.links import (genenames, omim, ensembl)
 
 def gene(store, hgnc_id):
     """Parse information about a gene."""
     res = {'builds': {'37': None, '38': None}, 'symbol': None, 'description': None, 'ensembl_id': None}
-    
+
     for build in res['builds']:
         record = store.hgnc_gene(hgnc_id, build=build)
         if record:
@@ -13,11 +13,16 @@ def gene(store, hgnc_id):
             res['symbol'] = record['hgnc_symbol']
             res['description'] = record['description']
             res['ensembl_id'] = record['ensembl_id']
-            
+
+            res['hgnc_link'] = genenames(record['hgnc_id'])
+            res['omim_link'] = genenames(record.get('omim_id'))
+            ensembl_id = record['ensembl_id']
+            record['ensembl_link'] = ensembl(ensembl_id, build=int(build))
+
             for transcript in record['transcripts']:
                 transcript['position'] = ("{this[chrom]}:{this[start]}-{this[end]}"
                                           .format(this=transcript))
-    
+
     # If none of the genes where found
     if not any(res.values()):
         raise ValueError
