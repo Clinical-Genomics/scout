@@ -15,7 +15,7 @@ from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
-from scout.server.links import ensembl as ensembl_link
+from scout.server.links import (add_gene_links, ensembl)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
 
@@ -584,23 +584,7 @@ def parse_gene(gene_obj, build=None):
     build = build or 37
 
     if gene_obj['common']:
-        ensembl_id = gene_obj['common']['ensembl_id']
-
-        gene_obj['ensembl_link'] = ensembl_link(ensembl_id, build=build)
-
-        gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
-        gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
-                                   "section.pl?identifier={}".format(ensembl_id))
-        gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
-                                   .format(gene_obj['common']['entrez_id']))
-
-        gene_obj['ppaint_link'] = ("https://pecan.stjude.cloud/proteinpaint/{}"
-                                   .format(gene_obj['common']['hgnc_symbol']))
-
-        reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
-                         "&species=Entries+without+species&cluster=true".format(ensembl_id))
-        gene_obj['reactome_link'] = reactome_link
-        gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
+        add_gene_links(gene_obj, build)
 
         refseq_transcripts = [transcript for transcript in gene_obj['transcripts'] if
                               transcript.get('refseq_id')]
@@ -616,6 +600,7 @@ def parse_transcript(gene_obj, tx_obj, build=None):
     """Parse variant gene transcript (VEP)."""
     build = build or 37
     ensembl_tx_id = tx_obj['transcript_id']
+
 
     ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/"
                     "Gene/Summary?t={}")
@@ -909,8 +894,8 @@ url_for):
     store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
 
-def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
-url_for):
+def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender,
+                  url_builder=url_for):
     """Send Sanger cancellation email."""
     variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],

@@ -68,7 +68,11 @@
     <li class="list-group-item">
       Ensembl ID
       <span class="pull-right">
-        <a target="_blank" href={{ gene.ensembl_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        {%if gene.build == '37'%}
+            <a target="_blank" href={{ ensembl_37_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        {% else %}
+            <a target="_blank" href={{ ensembl_38_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        {% endif %}
       </span>
     </li>
     <li class="list-group-item">

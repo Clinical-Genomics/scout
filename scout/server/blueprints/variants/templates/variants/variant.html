@@ -1138,7 +1138,9 @@
           <a href="{{ gene.hpa_link }}" class="btn btn-default" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-default" target="_blank">STRING</a>
           <a href="{{ variant.ucsc_link }}" class="btn btn-default" target="_blank">UCSC</a>
-          <a href="{{ gene.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
+          {% if gene.entrez_link %}
+            <a href="{{ gene.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
+          {% endif %}
           <a href="http://tools.genes.toronto.edu/" class="btn btn-default" target="_blank">SPANR</a>
           <a href="{{ gene.reactome_link }}" class="btn btn-default" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-default" target="_blank">Expr. Atlas</a>
