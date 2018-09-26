@@ -791,11 +791,10 @@ def beacon_link(variant_obj, build=None):
 def ucsc_link(variant_obj, build=None):
     """Compose link to UCSC."""
     build = build or 37
-    if build == 37:
-        url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
                         "position=chr{this[chromosome]}:{this[position]}"
                         "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
-    else:
+    if build == 38:
         url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg20&"
                         "position=chr{this[chromosome]}:{this[position]}"
                         "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
