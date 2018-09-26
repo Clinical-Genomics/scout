@@ -53,7 +53,10 @@
     </li>
     <li class="list-group-item">
       HGNC ID
-      <span class="pull-right">{{ gene.hgnc_id }}</span>
+      <span class="pull-right">
+        <a target="_blank"    href="https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{{ gene.hgnc_id }}" target="_blank"> {{ gene.hgnc_id }}
+        </a>
+      </span>
     </li>
     <li class="list-group-item">
       HGNC symbol
@@ -71,7 +74,15 @@
       Position
       <span class="pull-right">{{ gene.position }}</span>
     </li>
-
+    {% if gene.omim_id %}
+    <li class="list-group-item">
+      OMIM
+      <span class="pull-right">
+        <a target="_blank"    href="https://www.omim.org/entry/{{ gene.omim_id }}" target="_blank"> {{ gene.omim_id }}
+        </a>
+      </span>
+    </li>
+    {% endif %}
     <li class="list-group-item">
       Incomplete penetrance (HPO)
       <span class="pull-right">
