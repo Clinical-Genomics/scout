@@ -15,7 +15,7 @@ from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
-from scout.server.links import (add_gene_links, ensembl)
+from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
 
@@ -599,41 +599,7 @@ def parse_gene(gene_obj, build=None):
 def parse_transcript(gene_obj, tx_obj, build=None):
     """Parse variant gene transcript (VEP)."""
     build = build or 37
-    ensembl_tx_id = tx_obj['transcript_id']
-
-
-    ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/"
-                    "Gene/Summary?t={}")
-
-    if build == 38:
-        ensembl_link = ("http://ensembl.org/Homo_sapiens/"
-                        "Gene/Summary?t={}")
-
-    tx_obj['ensembl_link'] = ensembl_link.format(ensembl_tx_id)
-
-    refseq_links = []
-    if tx_obj.get('refseq_id'):
-        refseq_id = tx_obj['refseq_id']
-        refseq_links.append(
-            {
-                'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
-                'id': refseq_id,
-            }
-        )
-    tx_obj['refseq_links'] = refseq_links
-
-    tx_obj['swiss_prot_link'] = ("http://www.uniprot.org/uniprot/{}"
-                                 .format(tx_obj['swiss_prot']))
-
-    tx_obj['pfam_domain_link'] = ("http://pfam.xfam.org/family/{}"
-                                  .format(tx_obj.get('pfam_domain')))
-
-    tx_obj['prosite_profile_link'] = ("http://prosite.expasy.org/cgi-bin/prosite/"
-                                      "prosite-search-ac?{}"
-                                      .format(tx_obj.get('prosite_profile')))
-
-    tx_obj['smart_domain_link'] = ("http://smart.embl.de/smart/search.cgi?keywords={}"
-                                   .format(tx_obj.get('smart_domain')))
+    add_tx_links(tx_obj, build)
 
     if tx_obj.get('refseq_id'):
         gene_name = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
