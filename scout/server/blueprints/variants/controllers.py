@@ -185,15 +185,19 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         variant_obj['compounds'] = sorted(variant_obj['compounds'],
                                           key=lambda compound: -compound['combined_score'])
 
+    genome_build = case_obj.get('genome_build','37')
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
+            if not gene_obj['hgnc_id']:
+                continue
             if gene_obj.get('hgnc_symbol') is None:
                 hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
                 if hgnc_gene:
                     has_changed = True
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
 
+    # We update the variant if some information was missing from loading
     if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
 
@@ -324,19 +328,19 @@ def get_variant_info(genes):
             tx_id = gene_obj['canonical_transcripts']
             exon = gene_obj.get('exon', '-')
             c_seq = gene_obj.get('hgvs_identifier', '-')
-        
+
         if len(c_seq) > 20:
             c_seq = c_seq[:20] + '...'
-        
+
         if len(genes) == 1:
             value = ':'.join([tx_id,exon,c_seq])
         else:
             gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
             value = ':'.join([gene_id, tx_id,exon,c_seq])
         data['canonical_transcripts'].append(value)
-    
+
     return data
-        
+
 
 def get_predictions(genes):
     """Get sift predictions from genes."""
@@ -355,7 +359,7 @@ def get_predictions(genes):
                 gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
                 value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
-        
+
     return data
 
 
