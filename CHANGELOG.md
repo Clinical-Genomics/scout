@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [4.0.1b]
 
 ### Added
+- Links to genenames.org and omim on gene page
+- Popup on gene at variants page with gene information
 - reset sanger status to "Not validated" for pinned variants
 - highlight cases with variants to be evaluated by Sanger on the cases page
 - option to point to local reference files to the genome viewer pileup.js. Documented in `docs.admin-guide.server`

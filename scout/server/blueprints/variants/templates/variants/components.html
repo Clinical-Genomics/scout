@@ -1,6 +1,12 @@
 {% macro gene_cell(variant) %}
   {% for gene in variant.genes %}
-    <div>
+    <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class='text-left'>
+        <div>
+          <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
+        </div>
+    </div>
+    ">
       <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
         {{ gene.hgnc_symbol or gene.hgnc_id }}
       </a>
