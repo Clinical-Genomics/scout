@@ -13,7 +13,6 @@ def add_gene_links(gene_obj, build=37):
         build = int(build)
     except ValueError:
         build = 37
-
     # Add links that use the hgnc_id
     hgnc_id = gene_obj['hgnc_id']
     gene_obj['hgnc_link'] = genenames(hgnc_id)
@@ -31,12 +30,17 @@ def add_gene_links(gene_obj, build=37):
     gene_obj['string_link'] = string(ensembl_id)
     gene_obj['reactome_link'] = reactome(ensembl_id)
     gene_obj['expression_atlas_link'] = expression_atlas(ensembl_id)
+    gene_obj['exac_link'] = exac(ensembl_id)
     # Add links that use entrez_id
     gene_obj['entrez_link'] = entrez(gene_obj.get('entrez_id'))
     # Add links that use omim id
     gene_obj['omim_link'] = omim(gene_obj.get('omim_id'))
     # Add links that use hgnc_symbol
     gene_obj['ppaint_link'] = ppaint(gene_obj['hgnc_symbol'])
+    # Add links that use vega_id
+    gene_obj['vega_link'] = vega(gene_obj.get('vega_id'))
+    # Add links that use ucsc link
+    gene_obj['ucsc_link'] = ucsc(gene_obj.get('ucsc_id'))
 
 def genenames(hgnc_id):
     link = "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{}"
@@ -55,6 +59,14 @@ def ensembl(ensembl_id, build=37):
     link = "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
     if build == 38:
         link = "http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
+    if not ensembl_id:
+        return None
+
+    return link.format(ensembl_id)
+
+def exac(ensembl_id):
+
+    link = "http://exac.broadinstitute.org/gene/{}"
     if not ensembl_id:
         return None
 
@@ -107,6 +119,22 @@ def ppaint(hgnc_symbol):
         return None
 
     return link.format(hgnc_symbol)
+
+def vega(vega_id):
+    link = "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
+
+    if not vega_id:
+        return None
+
+    return link.format(vega_id)
+
+def ucsc(ucsc_id, build=37):
+    link = "https://genome.ucsc.edu/cgi-bin/hgGene?db=hg{0}&hgg_chrom=chr10&hgg_gene={0}"
+
+    if not ucsc_id:
+        return None
+
+    return link.format(build,ucsc_id)
 
 def add_tx_links(tx_obj, build=37):
     try:

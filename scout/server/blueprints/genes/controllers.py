@@ -1,27 +1,42 @@
 # -*- coding: utf-8 -*-
-from scout.server.links import (genenames, omim, ensembl)
+from pprint import pprint as pp
+
+from scout.server.links import (add_gene_links, add_tx_links, omim)
 
 def gene(store, hgnc_id):
     """Parse information about a gene."""
-    res = {'builds': {'37': None, '38': None}, 'symbol': None, 'description': None, 'ensembl_id': None}
+    res = {'builds': {'37': None, '38': None}, 'symbol': None, 'description': None, 'ensembl_id': None, 'record': None}
 
     for build in res['builds']:
         record = store.hgnc_gene(hgnc_id, build=build)
         if record:
+
             record['position'] = "{this[chromosome]}:{this[start]}-{this[end]}".format(this=record)
+            res['aliases'] = record['aliases']
+            res['hgnc_id'] = record['hgnc_id']
+            res['description'] = record['description']
             res['builds'][build] = record
             res['symbol'] = record['hgnc_symbol']
             res['description'] = record['description']
-            res['ensembl_id'] = record['ensembl_id']
+            res['entrez_id'] = record.get('entrez_id')
+            res['pli_score'] = record.get('pli_score')
 
-            res['hgnc_link'] = genenames(record['hgnc_id'])
-            res['omim_link'] = genenames(record.get('omim_id'))
-            ensembl_id = record['ensembl_id']
-            record['ensembl_link'] = ensembl(ensembl_id, build=int(build))
+            add_gene_links(record, int(build))
 
+            res['omim_id'] = record.get('omim_id')
+            res['incomplete_penetrance'] = record.get('incomplete_penetrance',False)
+            res['inheritance_models'] = record.get('inheritance_models',[])
             for transcript in record['transcripts']:
                 transcript['position'] = ("{this[chrom]}:{this[start]}-{this[end]}"
                                           .format(this=transcript))
+                add_tx_links(transcript, build)
+
+            for phenotype in record.get('phenotypes',[]):
+                phenotype['omim_link'] = omim(phenotype.get('mim_number'))
+
+            if not res['record']:
+                res['record'] = record
+            pp(record)
 
     # If none of the genes where found
     if not any(res.values()):
