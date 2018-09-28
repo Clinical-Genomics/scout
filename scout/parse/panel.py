@@ -15,7 +15,7 @@ LOG = logging.getLogger(__name__)
 VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
 
 def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, date=None,
-                   display_name=None):
+                   display_name=None,category='SNV'):
     """Parse metadata for a gene panel
 
     For historical reasons it is possible to include all information about a gene panel in the
@@ -33,6 +33,7 @@ def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, dat
         'version': version,
         'date': date,
         'display_name': display_name,
+        'category': category
     }
 
     for line in panel_lines:
@@ -52,6 +53,15 @@ def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, dat
 
     return panel_info
 
+def parse_str(str_info):
+    str = {}
+
+    return str
+
+def parse_strs(str_lines):
+    strs = []
+
+    return strs
 
 def parse_gene(gene_info):
     """Parse a gene line with information from a panel file
@@ -195,7 +205,7 @@ def parse_genes(gene_lines):
                     if len(head_line) > line_length:
                         line_length = len(head_line)
                         delimiter = alt
-                
+
                 if ('hgnc' in line or 'HGNC' in line):
                     header = [word.lower() for word in line.split(delimiter)]
                     continue
@@ -235,8 +245,8 @@ def parse_genes(gene_lines):
     return genes
 
 
-def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='clinical', date=datetime.now(), 
-                     version=1.0, display_name=None, genes = None):
+def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='clinical', date=datetime.now(),
+                version=1.0, category='gene_symbol', display_name=None, genes=None):
     """Parse the panel info and return a gene panel
 
         Args:
@@ -258,37 +268,44 @@ def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='cli
     gene_panel['date'] = date
     gene_panel['panel_id'] = panel_id
     gene_panel['institute'] = institute
-    version = version or 1.0
-    gene_panel['version'] = float(version)
+    version = version or "1.0"
+    gene_panel['version'] = string(version)
+    gene_panel['category'] = category
     gene_panel['display_name'] = display_name or panel_id
 
     if not path:
         panel_handle = genes
     else:
         panel_handle = get_file_handle(gene_panel['path'])
-    gene_panel['genes'] = parse_genes(gene_lines=panel_handle)
+
+    if category == 'gene_symbol':
+        gene_panel['genes'] = parse_genes(gene_lines=panel_handle)
+    elif category == 'STR':
+        gene_panel['STR'] = parse_strs(str_lines=panel_handle)
+    elif category == 'region':
+        gene_panel['region'] = parse_regions(region_lines=panel_handle)
 
     return gene_panel
 
 def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
     """Return all genes that should be included in the OMIM-AUTO panel
     Return the hgnc symbols
-    
+
     Genes that have at least one 'established' or 'provisional' phenotype connection
     are included in the gene panel
-    
+
     Args:
         genemap2_lines(iterable)
         mim2gene_lines(iterable)
         alias_genes(dict): A dictionary that maps hgnc_symbol to hgnc_id
-    
+
     Yields:
         hgnc_symbol(str)
     """
     parsed_genes = get_mim_genes(genemap2_lines, mim2gene_lines)
-    
+
     STATUS_TO_ADD = set(['established', 'provisional'])
-    
+
     for hgnc_symbol in parsed_genes:
         try:
             gene = parsed_genes[hgnc_symbol]
@@ -312,8 +329,6 @@ def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
                     }
                 else:
                     LOG.warning("Gene symbol %s does not exist", hgnc_symbol)
-                    
+
         except KeyError:
             pass
-    
-

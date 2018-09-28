@@ -20,27 +20,33 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command('panel', short_help='Load a gene panel')
-@click.argument('path', 
-    type=click.Path(exists=True), 
+@click.argument('path',
+    type=click.Path(exists=True),
     required=False
 )
-@click.option('--panel-id', 
+@click.option('--panel-id',
     help="The panel identifier name",
 )
 @click.option('--institute',
     help="Specify the owner of the panel. Defaults to cust000."
 )
-@click.option('-d', '--date', 
+@click.option('-d', '--date',
     help='date of gene panel on format 2017-12-24, default is today.'
 )
-@click.option('-n', '--display-name', 
+@click.option('-n', '--display-name',
     help='display name for the panel, optional'
 )
 @click.option('-v', '--version',type=float,)
-@click.option('-t', '--panel-type', 
-    default='clinical', 
+@click.option('-t', '--panel-type',
+    default='clinical',
     show_default=True,
     type=click.Choice(['clinical', 'research'])
+)
+@click.option('-c','--category',
+    help='Panel variant category (gene_symbol, STR, region)',
+    show_default=True,
+    default='gene_symbol',
+    type=click.Choice(['gene_symbol','STR','region'])
 )
 @click.option('--omim',
     is_flag=True,
@@ -50,7 +56,7 @@ LOG = logging.getLogger(__name__)
     help="A OMIM api key, see https://omim.org/api."
 )
 @click.pass_context
-def panel(context, date, display_name, version, panel_type, panel_id, path, institute, omim, api_key):
+def panel(context, date, display_name, version, panel_type, category, panel_id, path, institute, omim, api_key):
     """Add a gene panel to the database."""
 
     adapter = context.obj['adapter']
@@ -89,7 +95,8 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
             institute=institute,
             version=version,
             date=date,
-            display_name=display_name
+            display_name=display_name,
+            category=category
             )
     except Exception as err:
         LOG.warning(err)
@@ -103,6 +110,7 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
     display_name = panel_info['display_name'] or panel_id
     institute = panel_info['institute']
     date = panel_info['date']
+    category = panel_info['category']
 
     if not institute:
         LOG.warning("A Panel has to belong to a institute")
@@ -116,7 +124,7 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
     if not panel_id:
         LOG.warning("A Panel has to have a panel id")
         context.abort()
-    
+
     if version:
         existing_panel = adapter.gene_panel(panel_id, version)
     else:
@@ -135,13 +143,14 @@ def panel(context, date, display_name, version, panel_type, panel_id, path, inst
 
     try:
         adapter.load_panel(
-            path=path, 
-            institute=institute, 
-            panel_id=panel_id, 
-            date=date, 
-            panel_type=panel_type, 
-            version=version, 
-            display_name=display_name
+            path=path,
+            institute=institute,
+            panel_id=panel_id,
+            date=date,
+            panel_type=panel_type,
+            version=version,
+            display_name=display_name,
+            category=category
         )
     except Exception as err:
         LOG.warning(err)

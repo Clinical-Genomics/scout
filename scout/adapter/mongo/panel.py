@@ -22,8 +22,8 @@ LOG = logging.getLogger(__name__)
 
 class PanelHandler(object):
 
-    def load_panel(self, path, institute, panel_id, date, panel_type='clinical', version=1.0,
-                   display_name=None):
+    def load_panel(self, path, institute, panel_id, date, panel_type='clinical',
+        version=1.0, category='gene_symbol', display_name=None):
         """Load a gene panel based on the info sent
         The panel info is first parsed, then a panel object is built and integrity checks are made.
         The panel object is then loaded into the database.
@@ -34,7 +34,8 @@ class PanelHandler(object):
             panel_id(str): Panel id
             date(datetime.datetime): Date of creation
             version(float)
-            full_name(str): Option to have a long name
+            category: gene_symbol, STR or region
+            display_name(str): Option to have a long name
 
             panel_info(dict): {
                 'file': <path to panel file>(str),
@@ -43,7 +44,8 @@ class PanelHandler(object):
                 'date': date,
                 'version': version,
                 'panel_name': panel_id,
-                'full_name': name,
+                'category': category,
+                'display_name': name,
             }
         """
         panel_data = parse_gene_panel(
@@ -52,6 +54,7 @@ class PanelHandler(object):
             panel_type=panel_type,
             date=date,
             version=version,
+            category=category,
             panel_id=panel_id,
             display_name=display_name,
         )
@@ -65,7 +68,7 @@ class PanelHandler(object):
         if not existing_panel:
             LOG.warning("OMIM-AUTO does not exists in database")
             LOG.info('Creating a first version')
-            version = 1.0
+            version = "1.0"
 
         if existing_panel:
             version = float(math.floor(existing_panel['version']) + 1)
