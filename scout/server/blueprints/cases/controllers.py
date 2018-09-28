@@ -211,6 +211,16 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
+def vcf2cytosure(store, institute_id, case_name, individual_id):
+    """vcf2cytosure CGH file for inidividual."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    for individual in case_obj['individuals']:
+        if individual['individual_id'] == individual_id:
+            individual_obj = individual
+
+    return individual_obj['vcf2cytosure']
+
 
 def multiqc(store, institute_id, case_name):
     """Find MultiQC report for the case."""

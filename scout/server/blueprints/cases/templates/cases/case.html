@@ -146,6 +146,7 @@
             <th>Sequencing</th>
             <th>Ancestry (pred.)</th>
             <th>Parenthood</th>
+            <th>CGH</th>
           </tr>
         </thead>
         <tbody>
@@ -170,6 +171,15 @@
                   N/A
                 {% endif %}
               </td>
+              <td>
+                {% if ind.vcf2cytosure %}
+                <a href="{{ url_for('cases.vcf2cytosure', institute_id=institute._id,
+                      case_name=case.display_name, individual_id=ind.individual_id) }}" class="btn">
+                  <span class="glyphicon glyphicon-download">
+                  </span></a>
+                {% else %}
+                  N/A
+                {% endif %}
             </tr>
           {% endfor %}
         </tbody>
