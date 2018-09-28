@@ -219,7 +219,7 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
         if individual['individual_id'] == individual_id:
             individual_obj = individual
 
-    return individual_obj['vcf2cytosure']
+    return (individual_obj['display_name'], individual_obj['vcf2cytosure'])
 
 
 def multiqc(store, institute_id, case_name):

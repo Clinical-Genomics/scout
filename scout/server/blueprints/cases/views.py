@@ -416,15 +416,15 @@ def default_panels(institute_id, case_name):
 def vcf2cytosure(institute_id, case_name, individual_id):
     """Download vcf2cytosure file for individual."""
 
-    vcf2cytosure = controllers.vcf2cytosure(store, institute_id,
-        case_name, individual_id)
+    (display_name, vcf2cytosure) = controllers.vcf2cytosure(store,
+        institute_id, case_name, individual_id)
 
     outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
     filename = os.path.basename(vcf2cytosure)
 
     log.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
 
-    attachment_filename = individual_id + ".vcf2cytosure.cgh"
+    attachment_filename = display_name + ".vcf2cytosure.cgh"
 
     return send_from_directory(outdir, filename,
         attachment_filename=attachment_filename,
