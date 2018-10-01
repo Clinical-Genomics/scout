@@ -16,7 +16,7 @@ Flask-Babel
 livereload
 mongo_adapter
 python-dateutil
-pymongo==3.6.0
+pymongo==3.7.1
 pathlib
 WeasyPrint>=0.42.3
 click<7.0
