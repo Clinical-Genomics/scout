@@ -87,7 +87,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         Returns:
             collection_names(list(str))
         """
-        return self.db.list_collections(include_system_collections=False)
+        return self.db.list_collection_names()
         
 
     def __str__(self):

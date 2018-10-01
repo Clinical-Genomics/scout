@@ -4,7 +4,10 @@ test_index_handling.py
 Tests how the index part of the adapter behaves
 """
 
+from scout.adapter.mongo import MongoAdapter
 from scout.constants import COLLECTIONS
+
+REAL_DATABASE = 'realtestdb'
 
 # def test_collections(adapter):
 #     ## GIVEN a adapter just initialized
@@ -16,7 +19,9 @@ from scout.constants import COLLECTIONS
 #     ## THEN assert there where any collections
 #     assert i > 0
 
-def test_indexes_empty(adapter):
+def test_indexes_empty(real_pymongo_client):
+    database = real_pymongo_client[REAL_DATABASE]
+    adapter = MongoAdapter(database)
     ## GIVEN a adapter just initialized
     i = 0
     ## WHEN looping over the indexes

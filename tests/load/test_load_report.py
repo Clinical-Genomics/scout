@@ -7,7 +7,7 @@ def test_load_delivery_report_bad_case_id(panel_database):
     adapter = panel_database
 
     # GIVEN no cases in database
-    assert adapter.cases().count() == 0
+    assert adapter.cases(nr_cases=True) == 0
 
     # WHEN trying to load a report for a case_id that does not exist in the data base
     case_id = 'id_of_non_existing_case'
@@ -23,7 +23,7 @@ def test_load_delivery_report_using_case_id_without_update_fail(case_database):
     adapter = case_database
 
     # GIVEN a case exist, with a delivery report
-    assert adapter.cases().count() > 0
+    assert adapter.cases(nr_cases=True) > 0
     case_obj = adapter.cases()[0]
     assert case_obj.get('delivery_report')
 
@@ -45,7 +45,7 @@ def test_load_delivery_report_using_case_id_with_update_success(case_database):
     adapter = case_database
 
     # GIVEN a case exist, without a delivery report for the given analysis date
-    assert adapter.cases().count() > 0
+    assert adapter.cases(nr_cases=True) > 0
     case_obj = adapter.cases()[0]
     assert case_obj.get('delivery_report')
 

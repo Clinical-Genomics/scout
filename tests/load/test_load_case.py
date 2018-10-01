@@ -11,7 +11,7 @@ def test_load_case(case_obj, panel_database):
     adapter._add_case(case_obj)
 
     # THEN assert that the case have been loaded with correct info
-    assert adapter.cases().count() == 1
+    assert adapter.cases(nr_cases=True) == 1
     loaded_case = adapter.case(case_obj['_id'])
 
     assert loaded_case['_id'] == case_obj['_id']
