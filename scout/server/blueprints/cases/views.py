@@ -2,6 +2,8 @@
 import os.path
 import datetime
 
+import logging
+
 from operator import itemgetter
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
@@ -14,6 +16,7 @@ from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case, user_institutes
 from . import controllers
 
+log = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
@@ -351,7 +354,6 @@ def delivery_report(institute_id, case_name):
     filename = os.path.basename(delivery_report)
     return send_from_directory(out_dir, filename)
 
-
 @cases_bp.route('/<institute_id>/<case_name>/share', methods=['POST'])
 def share(institute_id, case_name):
     """Share a case with a different institute."""
@@ -410,6 +412,23 @@ def default_panels(institute_id, case_name):
     controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
     return redirect(request.referrer)
 
+@cases_bp.route('/<institute_id>/<case_name>/<individual_id>/cgh')
+def vcf2cytosure(institute_id, case_name, individual_id):
+    """Download vcf2cytosure file for individual."""
+
+    (display_name, vcf2cytosure) = controllers.vcf2cytosure(store,
+        institute_id, case_name, individual_id)
+
+    outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
+    filename = os.path.basename(vcf2cytosure)
+
+    log.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
+
+    attachment_filename = display_name + ".vcf2cytosure.cgh"
+
+    return send_from_directory(outdir, filename,
+        attachment_filename=attachment_filename,
+        as_attachment=True)
 
 @cases_bp.route('/<institute_id>/<case_name>/multiqc')
 def multiqc(institute_id, case_name):

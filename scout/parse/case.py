@@ -67,7 +67,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data['default_gene_panels'] = [panel.strip() for panel in
                                               config_data['default_gene_panels']]
 
-    ##################### Add information from peddy if existing ##################### 
+    ##################### Add information from peddy if existing #####################
     config_data['peddy_ped'] = peddy_ped or config_data.get('peddy_ped')
     config_data['peddy_sex_check'] = peddy_sex or config_data.get('peddy_sex')
     config_data['peddy_ped_check'] = peddy_check or config_data.get('peddy_check')
@@ -75,7 +75,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
 
-    ##################### Add multiqc information ##################### 
+    ##################### Add multiqc information #####################
     config_data['multiqc'] = multiqc or config_data.get('multiqc')
 
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
@@ -163,6 +163,7 @@ def parse_individual(sample):
                 'sex': str,
                 'phenotype': str,
                 'bam_file': str,
+                'vcf2cytosure': str,
                 'analysis_type': str,
                 'capture_kits': list(str),
             }
@@ -218,6 +219,10 @@ def parse_individual(sample):
 
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
+
+    vcf2cytosure = sample.get('vcf2cytosure')
+    if vcf2cytosure:
+        ind_info['vcf2cytosure'] = vcf2cytosure
 
     return ind_info
 
