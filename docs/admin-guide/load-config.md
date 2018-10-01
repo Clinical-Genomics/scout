@@ -1,7 +1,7 @@
 # The load config
 
 Scout have the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify to many parameters on the command line so there is an option to give this information in a yaml formated config file.
-Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc. 
+Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
 
 The basic structure of a load config looks like:
 
@@ -20,6 +20,7 @@ samples:
     phenotype: str(mandatory), [affected, unaffected, unknown]
     sex: str(mandatory), [male, female, unknown]
     expected_coverage: int(mandatory)
+    vcf2cytosure: str(optional) # path to CGH file
     bam_file: str(optional) # path to bam file
 
 vcf_snv: str(optional)
@@ -61,8 +62,9 @@ Let's go through each field:
 	- *sex* specifies the sex of the sample in human readable format
 	- *expected_coverage* the level of expected coverage
 	- *bam_file* Path to bam file to view alignments
+  - *vcf2cytosure* Path to CGH file to allow download per individual
 - **vcf_snv** path to snv vcf file
-- **vcf_sv** 
+- **vcf_sv**
 - **vcf_snv_research** path to vcf file with all variants
 - **vcf_sv_research**
 - **vcf_cancer**
@@ -103,7 +105,10 @@ samples:
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 ```
 
+### CGH (vcf2cytosure) for download
+By giving a path to each individual vcf2cytosure-file these are made available
+for download on the case page. Such SV files can be visualized using standard arrayCGH
+analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 
 [peddy]: https://github.com/brentp/peddy
 [multiqc]: https://github.com/ewels/multiqc
-
