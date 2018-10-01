@@ -16,7 +16,7 @@ def match_date(date):
 
     return False
 
-def get_date(date):
+def get_date(date, date_format = None):
     """Return a datetime object if there is a valid date
 
         Raise exception if date is not valid
@@ -24,23 +24,27 @@ def get_date(date):
 
         Args:
             date(str)
+            date_format(str)
 
         Returns:
-            date_obj(datetime.date)
+            date_obj(datetime.datetime)
     """
     date_obj = datetime.datetime.now()
     if date:
-        if match_date(date):
-            if len(date.split('-')) == 3:
-                date = date.split('-')
-            elif len(date.split(' ')) == 3:
-                date = date.split(' ')
-            elif len(date.split('.')) == 3:
-                date = date.split('.')
-            else:
-                date = date.split('/')
-            date_obj = datetime.datetime(*(int(number) for number in date))
+        if date_format:
+            date_obj = datetime.datetime.strptime(date, date_format)
         else:
-            raise ValueError("Date %s is invalid" % date)
+            if match_date(date):
+                if len(date.split('-')) == 3:
+                    date = date.split('-')
+                elif len(date.split(' ')) == 3:
+                    date = date.split(' ')
+                elif len(date.split('.')) == 3:
+                    date = date.split('.')
+                else:
+                    date = date.split('/')
+                date_obj = datetime.datetime(*(int(number) for number in date))
+            else:
+                raise ValueError("Date %s is invalid" % date)
 
     return date_obj

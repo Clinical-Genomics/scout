@@ -38,7 +38,7 @@ def user_info(institute_info):
 
 
 @pytest.fixture
-def real_database(request, database_name, institute_obj, user_obj, genes, panel_info):
+def real_database(request, database_name, institute_obj, user_obj, genes, parsed_panel):
     """Setup a real database with populated data"""
     mongo_client = pymongo.MongoClient()
     mongo_client.drop_database(database_name)
@@ -53,15 +53,7 @@ def real_database(request, database_name, institute_obj, user_obj, genes, panel_
     load_hgnc_genes(adapter, genes)
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
-    adapter.load_panel(
-        path=panel_info['file'], 
-        institute=panel_info['institute'], 
-        panel_id=panel_info['panel_name'], 
-        date=panel_info['date'], 
-        panel_type=panel_info['type'], 
-        version=panel_info['version'], 
-        display_name=panel_info['full_name']
-    )
+    adapter.load_panel(parsed_panel=parsed_panel)
 
     # load_hpo(adapter=gene_database, hpo_lines=hpo_terms_handle, disease_lines=genemap_handle)
     # adapter.add_case(case_obj)
@@ -75,5 +67,3 @@ def real_database(request, database_name, institute_obj, user_obj, genes, panel_
     request.addfinalizer(teardown)
 
     return adapter
-    
-

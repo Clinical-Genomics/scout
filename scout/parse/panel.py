@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 
-
 from pprint import pprint as pp
 from datetime import datetime
 
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
+from scout.utils.link import get_correct_ids
 
 from .omim import get_mim_genes
 
@@ -14,7 +14,28 @@ LOG = logging.getLogger(__name__)
 
 VALID_MODELS = ('AR','AD','MT','XD','XR','X','Y')
 
-def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, date=None,
+MODELS_MAP = {
+    'monoallelic_not_imprinted': ['AD'],
+    'monoallelic_maternally_imprinted': ['AD'],
+    'monoallelic_paternally_imprinted': ['AD'],
+    'monoallelic': ['AD'],
+    'biallelic': ['AR'],
+    'monoallelic_and_biallelic': ['AD','AR'] ,
+    'monoallelic_and_more_severe_biallelic': ['AD','AR'],
+    'xlinked_biallelic': ['XR'],
+    'xlinked_monoallelic': ['XD'],
+    'mitochondrial': ['MT'],
+    'unknown': [],
+}
+
+INCOMPLETE_PENETRANCE_MAP = {
+    'unknown': None,
+    'Complete': None,
+    'Incomplete': True
+}
+
+
+def get_panel_info(panel_lines=None, panel_id=None, institute=None, version=None, date=None,
                    display_name=None):
     """Parse metadata for a gene panel
 
@@ -35,18 +56,19 @@ def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, dat
         'display_name': display_name,
     }
 
-    for line in panel_lines:
-        line = line.rstrip()
-        if not line.startswith('##'):
-            break
-
-        info = line[2:].split('=')
-        field = info[0]
-        value = info[1]
-
-
-        if not panel_info.get(field):
-            panel_info[field] = value
+    if panel_lines:
+        for line in panel_lines:
+            line = line.rstrip()
+            if not line.startswith('##'):
+                break
+        
+            info = line[2:].split('=')
+            field = info[0]
+            value = info[1]
+        
+        
+            if not panel_info.get(field):
+                panel_info[field] = value
 
     panel_info['date'] = get_date(panel_info['date'])
 
@@ -268,6 +290,85 @@ def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='cli
         panel_handle = get_file_handle(gene_panel['path'])
     gene_panel['genes'] = parse_genes(gene_lines=panel_handle)
 
+    return gene_panel
+
+def parse_panel_app_gene(app_gene, hgnc_map):
+    """Parse a panel app formated gene
+    
+    Args:
+        app_gene(dict): Dict with panel app info
+        hgnc_map(dict): Map from hgnc_symbol to hgnc_id
+    
+    Returns:
+        gene_info(dict): Scout infromation
+    """
+    gene_info = {}
+    confidence_level = app_gene['LevelOfConfidence']
+    # Return empty gene if not confident gene
+    if not confidence_level == 'HighEvidence':
+        return gene_info
+    
+    hgnc_symbol = app_gene['GeneSymbol']
+    # Returns a set of hgnc ids
+    hgnc_ids = get_correct_ids(hgnc_symbol, hgnc_map)
+    if not hgnc_ids:
+        LOG.warning("Gene %s does not exist in database. Skipping gene...", hgnc_symbol)
+        return gene_info
+    
+    if len(hgnc_ids) > 1:
+        LOG.warning("Gene %s has unclear identifier. Choose random id", hgnc_symbol)
+
+    gene_info['hgnc_symbol'] = hgnc_symbol
+    for hgnc_id in hgnc_ids:
+        gene_info['hgnc_id'] = hgnc_id
+
+    gene_info['reduced_penetrance'] = INCOMPLETE_PENETRANCE_MAP.get(app_gene['Penetrance'])
+
+    inheritance_models = []
+    for model in MODELS_MAP.get(app_gene['ModeOfInheritance'],[]):
+        inheritance_models.append(model)
+    
+    gene_info['inheritance_models'] = inheritance_models
+    
+    return gene_info
+
+def parse_panel_app_panel(panel_info, hgnc_map, institute='cust000', panel_type='clinical'):
+    """Parse a PanelApp panel
+    
+    Args:
+        panel_info(dict)
+        hgnc_map(dict): Map from symbol to hgnc ids
+        institute(str)
+        panel_type(str)
+    
+    Returns:
+        gene_panel(dict)
+    """
+    date_format = "%Y-%m-%dT%H:%M:%S.%f"
+    
+    gene_panel = {}
+    gene_panel['version'] = float(panel_info['version'])
+    gene_panel['date'] = get_date(panel_info['Created'][:-1], date_format=date_format)
+    gene_panel['display_name'] = panel_info['SpecificDiseaseName']
+    gene_panel['institute'] = institute
+    gene_panel['panel_type'] = panel_type
+    
+    LOG.info("Parsing panel %s", gene_panel['display_name'])
+    
+    gene_panel['genes'] = []
+    
+    nr_low_confidence = 1
+    nr_genes = 0
+    for nr_genes, gene in enumerate(panel_info['Genes'],1):
+        gene_info = parse_panel_app_gene(gene, hgnc_map)
+        if not gene_info:
+            nr_low_confidence += 1
+            continue
+        gene_panel['genes'].append(gene_info)
+    
+    LOG.info("Number of genes in panel %s", nr_genes)
+    LOG.info("Number of low confidence genes in panel %s", nr_low_confidence)
+    
     return gene_panel
 
 def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):

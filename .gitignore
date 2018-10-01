@@ -29,6 +29,7 @@ pip-log.txt
 nosetests.xml
 .cache/
 .pytest_cache/
+pytest.ini
 
 # si
 
