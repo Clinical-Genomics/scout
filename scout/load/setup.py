@@ -48,7 +48,7 @@ def setup_scout(adapter, institute_id='cust000', user_name='Clark Kent',
     """docstring for setup_scout"""
     ########################## Delete previous information ##########################
     LOG.info("Deleting previous database")
-    for collection_name in adapter.db.collection_names():
+    for collection_name in adapter.db.list_collection_names():
         if not collection_name.startswith('system'):
             LOG.info("Deleting collection %s", collection_name)
             adapter.db.drop_collection(collection_name)

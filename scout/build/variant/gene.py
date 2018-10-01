@@ -104,8 +104,8 @@ def build_gene(gene, hgncid_to_gene=None):
         else:
             gene_obj['polyphen_prediction'] = polyphen_prediction
     
-    gene_obj['hgvs_identifier'] = gene['hgvs_identifier']
-    gene_obj['canonical_transcript'] = gene['canonical_transcript']
-    gene_obj['exon'] = gene['exon']
+    gene_obj['hgvs_identifier'] = gene.get('hgvs_identifier')
+    gene_obj['canonical_transcript'] = gene.get('canonical_transcript')
+    gene_obj['exon'] = gene.get('exon')
     
     return gene_obj
