@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [4.0.1b]
 
 ### Added
+- Command to download all panel app gene panels `scout load panel --panel-app`
 - Links to genenames.org and omim on gene page
 - Popup on gene at variants page with gene information
 - reset sanger status to "Not validated" for pinned variants
