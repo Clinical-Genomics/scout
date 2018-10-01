@@ -118,14 +118,16 @@ def test_evaluated_variants(case_obj, institute_obj, user_obj, real_populated_da
     case_id = case_obj['_id']
 
     # Assert that the database contains no variant yet
-    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1, nr_variants=True) == 0
 
     # Add to the empty database all variants from variant_objs
     for index, variant_obj in enumerate(variant_objs):
         adapter.load_variant(variant_obj)
 
     # Assert that the database contains variants now
-    n_documents = adapter.variant_collection.find().count()
+    n_documents = 0
+    for n_documents,var in enumerate(adapter.variant_collection.find(), 1):
+        pass
     assert n_documents > 0
 
     ## I want to test for the existence of variants with the following keys:

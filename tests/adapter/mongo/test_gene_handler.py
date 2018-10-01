@@ -1,13 +1,15 @@
 import pytest
+import pymongo
 
 from scout.models.hgnc_map import HgncGene
 
 from scout.exceptions import IntegrityError
 
 #################### HGNC gene tests ####################
-def test_insert_gene(adapter, parsed_gene):
+def test_insert_gene(real_adapter, parsed_gene):
+    adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting a gene
     
@@ -16,15 +18,15 @@ def test_insert_gene(adapter, parsed_gene):
     obj_id = adapter.load_hgnc_gene(gene_obj)
 
     ##THEN assert that the gene is there
-    assert adapter.all_genes().count() == 1
+    assert adapter.nr_genes() == 1
     ##THEN assert that no genes are in the '38' build
-    assert adapter.all_genes(build='38').count() == 0
+    assert adapter.nr_genes(build='38') == 0
 
 def test_insert_many_genes(adapter, parsed_gene):
     adapter = adapter
     gene_objs = []
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
     
     ##WHEN inserting a bulk of genes
     for i in range(300):
@@ -34,28 +36,28 @@ def test_insert_many_genes(adapter, parsed_gene):
     result = adapter.load_hgnc_bulk(gene_objs)
 
     ##THEN assert that the genes are loaded
-    assert adapter.all_genes().count() == 300
+    assert adapter.nr_genes() == 300
     ##THEN assert that no genes are in the '38' build
-    assert adapter.all_genes(build='38').count() == 0
+    assert adapter.nr_genes(build='38') == 0
 
 def test_insert_bulk(adapter, gene_bulk):
     ## GIVEN an empty adapter and a bulk of genes
     adapter = adapter
     
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
     assert len(gene_bulk) > 0
     
     ## WHEN inserting the gene objects
     result = adapter.load_hgnc_bulk(gene_bulk)
     
     ##THEN assert that the genes are loaded
-    assert adapter.all_genes().count() == len(gene_bulk)
+    assert adapter.nr_genes() == len(gene_bulk)
     
     
 def test_insert_many_genes_duplicate(adapter):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     gene_objs = []
     gene_obj = {
@@ -75,9 +77,8 @@ def test_insert_many_genes_duplicate(adapter):
 
 
 def test_get_gene(adapter):
-    # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting a gene and fetching it
     gene_obj = {
@@ -107,7 +108,7 @@ def test_get_gene(adapter):
 def test_get_genes(adapter):
     # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -135,9 +136,8 @@ def test_get_genes(adapter):
         assert result['hgnc_id'] == gene_obj['hgnc_id']
 
 def test_get_genes_alias(adapter):
-    # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -167,7 +167,7 @@ def test_get_genes_alias(adapter):
 def test_get_genes_regex(real_adapter):
     adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -196,30 +196,29 @@ def test_get_genes_regex(real_adapter):
     adapter.load_hgnc_gene(gene_obj3)
 
     ##THEN assert that only the correct gene was fetched for a full match
-    res = adapter.hgnc_genes(hgnc_symbol='AA', search=True)
-    assert res.count() == 1
+    assert adapter.nr_genes(hgnc_symbol='AA') == 1
 
     ##THEN assert that the correct gene was fetched
-    res = adapter.hgnc_genes(hgnc_symbol='AB', search=True)
-    assert res.count() == 1
+    assert adapter.nr_genes(hgnc_symbol='AB') == 1
 
     ##THEN assert that the correct gene was fetched
-    res = adapter.hgnc_genes(hgnc_symbol='K', search=True)
-    assert res.count() == 0
-
+    assert adapter.nr_genes(hgnc_symbol='K') == 0
+    
     ##THEN assert that the correct gene was fetched
     res = adapter.hgnc_genes(hgnc_symbol='A', search=True)
-    assert res.count() == 3
+    nr_genes = 0
+    for gene in res:
+        nr_genes += 1
+    assert nr_genes == 3
 
     #This will only work with a real pymongo adapter
     ##THEN assert that the correct gene was fetched
-    res = adapter.hgnc_genes(hgnc_symbol='a', search=True)
-    assert res.count() == 3
+    assert adapter.nr_genes(hgnc_symbol='a', search=True) == 3
 
 def test_get_all_genes(adapter):
     # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -240,14 +239,17 @@ def test_get_all_genes(adapter):
     adapter.load_hgnc_gene(gene_obj2)
 
     res = adapter.all_genes()
+    nr_genes = 0
+    for gene in res:
+        nr_genes += 1
 
     ##THEN assert that the correct number of genes where fetched
-    assert res.count() == 2
+    assert nr_genes == 2
 
 def test_drop_genes(adapter):
     # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -267,18 +269,16 @@ def test_drop_genes(adapter):
 
     adapter.load_hgnc_gene(gene_obj2)
 
-    res = adapter.all_genes()
-    assert res.count() == 2
+    assert adapter.nr_genes() == 2
 
     ##THEN assert that the correct number of genes where fetched
     adapter.drop_genes()
-    res = adapter.all_genes()
-    assert res.count() == 0
+    assert adapter.nr_genes() == 0
 
 def test_hgncid_to_gene(adapter):
     # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -298,8 +298,7 @@ def test_hgncid_to_gene(adapter):
 
     adapter.load_hgnc_gene(gene_obj2)
 
-    res = adapter.all_genes()
-    assert res.count() == 2
+    assert adapter.nr_genes() == 2
 
     ##THEN assert that the correct number of genes where fetched
     res = adapter.hgncid_to_gene()
@@ -314,7 +313,7 @@ def test_hgncid_to_gene(adapter):
 def test_hgnc_symbol_to_gene(adapter):
     # adapter = real_adapter
     ##GIVEN a empty adapter
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting two genes and fetching one
     gene_obj = {
@@ -334,8 +333,7 @@ def test_hgnc_symbol_to_gene(adapter):
 
     adapter.load_hgnc_gene(gene_obj2)
 
-    res = adapter.all_genes()
-    assert res.count() == 2
+    assert adapter.nr_genes() == 2
 
     ##THEN assert that the correct number of genes where fetched
     res = adapter.hgncsymbol_to_gene()
@@ -347,7 +345,7 @@ def test_hgnc_symbol_to_gene(adapter):
 
 def test_insert_transcript(adapter):
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
+    assert adapter.nr_transcripts() == 0
 
     ##WHEN inserting a transcript
     transcript_obj = {
@@ -368,7 +366,7 @@ def test_insert_transcript(adapter):
 def test_insert_many_transcripts(adapter):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
+    assert adapter.nr_transcripts() == 0
 
     transcript_objs = []
     ##WHEN inserting a bulk of transcripts
@@ -385,9 +383,9 @@ def test_insert_many_transcripts(adapter):
     result = adapter.load_transcript_bulk(transcript_objs)
 
     ##THEN assert that the transcripts are loaded
-    assert adapter.transcripts().count() == 300
+    assert adapter.nr_transcripts() == 300
     ##THEN assert that no transcripts are in the '38' build
-    assert adapter.transcripts(build='38').count() == 0
+    assert adapter.nr_transcripts(build='38') == 0
 
 def test_insert_many_transcripts_duplicate(adapter):
     adapter = adapter
@@ -415,22 +413,22 @@ def test_insert_many_transcripts_duplicate(adapter):
 def test_insert_transcripts(adapter, transcript_objs):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
+    assert adapter.nr_transcripts() == 0
 
     ##WHEN inserting a bulk of transcripts
     result = adapter.load_transcript_bulk(transcript_objs)
 
     ##THEN assert that the transcripts are loaded
-    assert adapter.transcripts().count() == len(transcript_objs)
+    assert adapter.nr_transcripts() == len(transcript_objs)
     ##THEN assert that no transcripts are in the '38' build
-    assert adapter.transcripts(build='38').count() == 0
+    assert adapter.nr_transcripts(build='38') == 0
 
 #################### Combined transcript/gene tests ####################
 
 def test_insert_transcript(adapter):
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
-    assert adapter.all_genes().count() == 0
+    assert adapter.nr_transcripts() == 0
+    assert adapter.nr_genes() == 0
 
     ##WHEN inserting a gene and some transcripts
     hgnc_id = 257

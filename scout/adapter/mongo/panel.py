@@ -219,12 +219,16 @@ class PanelHandler(object):
             return self.panel_collection.find_one(query)
         else:
             LOG.info("Fething gene panels %s from database", panel_id)
-            res = self.panel_collection.find(query).sort('version', -1)
-            if res.count() > 0:
-                return res[0]
-            else:
+            nr_panels = self.panel_collection.count_documents(query)
+            if nr_panels == 0:
                 LOG.info("No gene panel found")
                 return None
+            
+            # Return the panel with highest version
+            panels = self.panel_collection.find(query).sort('version', -1)
+            for panel in panels:
+                return panel
+            
 
     def gene_panels(self, panel_id=None, institute_id=None, version=None):
         """Return all gene panels

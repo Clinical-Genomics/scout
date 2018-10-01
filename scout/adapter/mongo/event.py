@@ -72,7 +72,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return event
 
     def events(self, institute, case=None, variant_id=None, level=None,
-               comments=False, panel=None):
+               comments=False, panel=None, nr_events=False):
         """Fetch events from the database.
 
           Args:
@@ -82,6 +82,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             level (str, optional): restrict comments to 'specific' or 'global'
             comments (bool, optional): restrict events to include only comments
             panel (str): A panel name
+            nr_events(bool): If the number of events found should be returned
 
           Returns:
               pymongo.Cursor: Query result
@@ -127,8 +128,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
                 if case:
                     query['case'] = case['_id']
-
-
+        
+        if nr_events:
+            return self.event_collection.count_documents(query)
+            
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
 
     def user_events(self, user_obj=None):

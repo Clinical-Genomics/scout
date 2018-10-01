@@ -139,7 +139,7 @@ class VariantHandler(VariantLoader):
         return variant_obj
 
     def variants(self, case_id, query=None, variant_ids=None, category='snv',
-                 nr_of_variants=10, skip=0, sort_key='variant_rank'):
+                 nr_of_variants=10, skip=0, sort_key='variant_rank', nr_variants=False):
         """Returns variants specified in question for a specific case.
 
         If skip not equal to 0 skip the first n variants.
@@ -152,6 +152,7 @@ class VariantHandler(VariantLoader):
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
+            nr_variants(bool): If the number of variants found should be returned
 
         Yields:
             result(Iterable[Variant])
@@ -184,6 +185,12 @@ class VariantHandler(VariantLoader):
             skip=skip,
             limit=nr_of_variants
         ).sort(sorting)
+        
+        if nr_variants:
+            i = 0
+            for i,var in enumerate(result,1):
+                pass
+            return i
 
         return result
 

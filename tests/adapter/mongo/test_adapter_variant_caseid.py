@@ -46,7 +46,7 @@ def test_update_caseid(real_oldcase_database, scout_config):
             assert new_evaluation['case_id'] == new_case['_id']
             assert new_evaluation['variant_specific'] == new_variant['_id']
     # AND update ids for events
-    assert adapter.events(institute_obj, case=old_case).count() == 0
+    assert adapter.events(institute_obj, case=old_case, nr_events=True) == 0
     new_events = adapter.events(institute_obj, case=new_case)
     for event_obj in new_events:
         assert event_obj['case'] == new_case['_id']

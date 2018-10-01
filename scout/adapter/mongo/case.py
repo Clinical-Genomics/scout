@@ -21,8 +21,8 @@ class CaseHandler(object):
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
-              research_requested=False, is_research=False, status=False,
-              name_query=None):
+              research_requested=False, is_research=False, status=None,
+              name_query=None, nr_cases=False):
         """Fetches all cases from the backend.
 
         Args:
@@ -30,6 +30,15 @@ class CaseHandler(object):
             query(dict): If a specific query is used
             skip_assigned(bool)
             has_causatives(bool)
+            skip_assigned(bool)
+            has_causatives(bool)
+            reruns(bools): If only requested reruns should be requested
+            finished(bool): If only solved and archived cases should be requested
+            research_requested(bool): If cases with research requested should be fetched
+            is_research(bool): If only cases that are in research mode should be requested
+            status(str): Is only cases with certain status should be requested
+            name_query(str): Is cases should be searched by their name
+            nr_cases(bool): If the number of cases found should be returned
 
         Yields:
             Cases ordered by date
@@ -63,8 +72,10 @@ class CaseHandler(object):
             query['is_research'] = True
 
         if name_query:
-            users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
-            if users.count() > 0:
+            users_query = {'name': {'$regex': name_query, '$options': 'i'}}
+            users = list(self.user_collection.find(users_query))
+            
+            if len(users) > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
 
             else:
@@ -74,6 +85,14 @@ class CaseHandler(object):
                 ]
 
         LOG.info("Get cases with query {0}".format(query))
+        if nr_cases:
+            LOG.debug("Returning number of cases")
+            cases = self.case_collection.find(query)
+            i = 0
+            for i,case in enumerate(cases,1):
+                pass
+            return i
+
         return self.case_collection.find(query).sort('updated_at', -1)
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
