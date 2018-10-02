@@ -23,7 +23,7 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
 
     # THEN the same number of variants should have been loaded
     nr_variants = sum(1 for i in adapter.variants(case_id=case_id, nr_of_variants=-1))
-    assert nr_of_variants == index + 1
+    assert nr_variants == index + 1
 
 # def test_manual_rank(real_populated_database, variant_objs, case_obj):
 #     """Check that the manual rank is added"""
