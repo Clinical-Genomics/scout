@@ -19,6 +19,7 @@ python-dateutil
 pymongo==3.6.0
 pathlib
 WeasyPrint>=0.42.3
+click<7.0
 
 # unclear
 Flask-Login
