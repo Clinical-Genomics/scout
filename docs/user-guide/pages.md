@@ -31,7 +31,7 @@ An overview of the [cases](cases.md) that belongs to an institute and status for
 
 ### Variants page
 
-A list of the [variants](variants.md) with some relevant information
+A list of the [variants](variants.md) with some relevant information. Variants are grouped into SNVs, SVs, and STRs. Variants can have a separate clinical and research list. A cancer / somatic variant view is also available.
 
 ### Detailed variant page
 

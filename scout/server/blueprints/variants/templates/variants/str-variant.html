@@ -18,15 +18,9 @@
     </a>
   </li>
   <li>
-    {% if cancer %}
-      <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
-        {{ variant.variant_type|capitalize }} cancer variants
-      </a>
-    {% else %}
-      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
-        {{ variant.variant_type|capitalize }} SNV and INDELs
-      </a>
-    {% endif %}
+    <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+      {{ variant.variant_type|capitalize }} STRs
+    </a>
   </li>
   <li class="active">
     <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
@@ -337,11 +331,10 @@
     </div>
     <div class="panel-body">
       <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
-      {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+      {% if variant.clinvar_submission_id %}
+        <a href="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id, submission_id=variant.clinvar_submission_id) }}" class="btn btn-default form-control">View/Modify clinvar submission {{variant.clinvar_submission_id}}</a>
+      {% elif variant._id in case.suspects %}
         <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar (BETA)</a>
-      {% endif %}
-      {% if variant.clinvar_clinsig%}
-        <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
       {% endif %}
     </div>
     {% if evaluations %}
@@ -1139,9 +1132,7 @@
           <a href="{{ gene.hpa_link }}" class="btn btn-default" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-default" target="_blank">STRING</a>
           <a href="{{ variant.ucsc_link }}" class="btn btn-default" target="_blank">UCSC</a>
-          {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
-          {% endif %}
+          <a href="{{ gene.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
           <a href="http://tools.genes.toronto.edu/" class="btn btn-default" target="_blank">SPANR</a>
           <a href="{{ gene.reactome_link }}" class="btn btn-default" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-default" target="_blank">Expr. Atlas</a>

@@ -22,10 +22,9 @@ LOG = logging.getLogger(__name__)
 
 class PanelHandler(object):
 
-    def load_panel(self, path, institute, panel_id, date, panel_type='clinical', version=1.0,
-                   display_name=None):
+    def load_panel(self, parsed_panel):
         """Load a gene panel based on the info sent
-        The panel info is first parsed, then a panel object is built and integrity checks are made.
+        A panel object is built and integrity checks are made.
         The panel object is then loaded into the database.
 
         Args:
@@ -46,16 +45,7 @@ class PanelHandler(object):
                 'full_name': name,
             }
         """
-        panel_data = parse_gene_panel(
-            path=path,
-            institute=institute,
-            panel_type=panel_type,
-            date=date,
-            version=version,
-            panel_id=panel_id,
-            display_name=display_name,
-        )
-        panel_obj = build_panel(panel_data, self)
+        panel_obj = build_panel(parsed_panel, self)
 
         self.add_gene_panel(panel_obj)
 
@@ -170,12 +160,13 @@ class PanelHandler(object):
         """
         panel_name = panel_obj['panel_name']
         panel_version = panel_obj['version']
+        display_name = panel_obj.get('display_name', panel_name)
 
         if self.gene_panel(panel_name, panel_version):
             raise IntegrityError("Panel {0} with version {1} already"
                                  " exist in database".format(panel_name, panel_version))
         LOG.info("loading panel {0}, version {1} to database".format(
-            panel_name, panel_version
+            display_name, panel_version
         ))
         self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")

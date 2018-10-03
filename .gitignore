@@ -29,6 +29,7 @@ pip-log.txt
 nosetests.xml
 .cache/
 .pytest_cache/
+pytest.ini
 
 # si
 
@@ -67,3 +68,7 @@ _book/
 # Other
 /local
 *sqlite
+
+# Emacs (Just so I don't have to see them green in Atom ;-)
+*~
+*#

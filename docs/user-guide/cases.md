@@ -28,7 +28,7 @@ The "Activity" feed is a reverse chronological list of events and comments relat
 ### Actions
 There are a few actions you can take on this page.
 
-**Adopt case**: By clicking the button next to "Adopt" you can assign yourself to a case unless someone else has already done so. If you have assigned yourself to a case you can click your name to "unassign".
+**Adopt case**: By clicking the button next to "Adopt" you can assign yourself to a case. More than one person can be assigned to a case, e.g. if multiple professions or institutes are involved in analysis. If you have assigned yourself to a case you can click your name to "unassign".
 
 The case can be moved to "Research" which means all variants will be made visible for the entire exome. Clicking "Open research" will notify the administrators of the site. The user agrees that she is reponsible to have acquired an informed consent relevant for this action. This will also be logged as a new event in the case log.
 

@@ -2,16 +2,16 @@ from scout.constants import (CYTOBANDS, BND_ALT_PATTERN, CHR_PATTERN)
 
 def get_cytoband_coordinates(chrom, pos):
     """Get the cytoband coordinate for a position
-    
+
     Args:
         chrom(str)
         pos(int)
-    
+
     Returns:
         coordinate(str)
     """
     coordinate = ""
-    
+
     if chrom in CYTOBANDS:
         for interval in CYTOBANDS[chrom][pos]:
             coordinate = interval.data
@@ -20,21 +20,21 @@ def get_cytoband_coordinates(chrom, pos):
 
 def get_sub_category(alt_len, ref_len, category, svtype=None):
     """Get the subcategory for a VCF variant
-    
+
     The sub categories are:
         'snv', 'indel', 'del', 'ins', 'dup', 'bnd', 'inv'
-    
+
     Args:
         alt_len(int)
         ref_len(int)
         category(str)
         svtype(str)
-    
+
     Returns:
         subcategory(str)
     """
     subcategory = ''
-    
+
     if category in ('snv', 'indel', 'cancer'):
         if ref_len == alt_len:
             subcategory = 'snv'
@@ -42,12 +42,12 @@ def get_sub_category(alt_len, ref_len, category, svtype=None):
             subcategory = 'indel'
     elif category == 'sv':
         subcategory = svtype
-    
+
     return subcategory
 
 def get_length(alt_len, ref_len, category, pos, end, svtype=None, svlen=None):
     """Return the length of a variant
-    
+
     Args:
         alt_len(int)
         ref_len(int)
@@ -62,7 +62,7 @@ def get_length(alt_len, ref_len, category, pos, end, svtype=None, svlen=None):
             length = alt_len
         else:
             length = abs(ref_len - alt_len)
-    
+
     elif category == 'sv':
         if svtype == 'bnd':
             length = int(10e10)
@@ -77,7 +77,7 @@ def get_length(alt_len, ref_len, category, pos, end, svtype=None, svlen=None):
 
 def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
     """Return the end coordinate for a variant
-    
+
     Args:
         pos(int)
         alt(str)
@@ -85,7 +85,7 @@ def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
         snvend(str)
         svend(int)
         svlen(int)
-    
+
     Returns:
         end(int)
     """
@@ -99,7 +99,7 @@ def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
     elif category == 'sv':
         # The END field from INFO usually works fine
         end = svend
-        
+
         # For some cases like insertions the callers set end to same as pos
         # In those cases we can hope that there is a svlen...
         if svend == pos:
@@ -116,17 +116,17 @@ def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
 
 def parse_coordinates(variant, category):
     """Find out the coordinates for a variant
-    
+
     Args:
         variant(cyvcf2.Variant)
-    
+
     Returns:
         coordinates(dict): A dictionary on the form:
         {
-            'position':<int>, 
-            'end':<int>, 
+            'position':<int>,
+            'end':<int>,
             'end_chrom':<str>,
-            'length':<int>, 
+            'length':<int>,
             'sub_category':<str>,
             'mate_id':<str>,
             'cytoband_start':<str>,
@@ -134,10 +134,15 @@ def parse_coordinates(variant, category):
         }
     """
     ref = variant.REF
-    alt = variant.ALT[0]
+
+    if variant.ALT:
+        alt = variant.ALT[0]
+    if category=="str" and not variant.ALT:
+        alt = '.'
+
     chrom_match = CHR_PATTERN.match(variant.CHROM)
     chrom = chrom_match.group(2)
-        
+
     svtype = variant.INFO.get('SVTYPE')
     if svtype:
         svtype = svtype.lower()
@@ -145,22 +150,22 @@ def parse_coordinates(variant, category):
     mate_id = variant.INFO.get('MATEID')
 
     svlen = variant.INFO.get('SVLEN')
-    
+
     svend = variant.INFO.get('END')
     snvend = int(variant.end)
-    
+
     position = int(variant.POS)
 
     ref_len = len(ref)
     alt_len = len(alt)
-    
+
     sub_category = get_sub_category(alt_len, ref_len, category, svtype)
     end = get_end(position, alt, category, snvend, svend)
 
     length = get_length(alt_len, ref_len, category, position, end, svtype, svlen)
     end_chrom = chrom
 
-    if sub_category == 'bnd':    
+    if sub_category == 'bnd':
         if ':' in alt:
             match = BND_ALT_PATTERN.match(alt)
             # BND will often be translocations between different chromosomes
@@ -168,7 +173,7 @@ def parse_coordinates(variant, category):
                 other_chrom = match.group(1)
                 match = CHR_PATTERN.match(other_chrom)
                 end_chrom = match.group(2)
-    
+
     cytoband_start = get_cytoband_coordinates(chrom, position)
     cytoband_end = get_cytoband_coordinates(end_chrom, end)
 

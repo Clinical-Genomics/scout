@@ -257,11 +257,10 @@ def parsed_case(request, scout_config):
 
 @pytest.fixture(scope='function')
 def case_obj(request, parsed_case):
-    adapter = panel_database
 
     logger.info("Create a case obj")
     case = parsed_case
-    case['_id'] = parsed_case['display_name']
+    case['_id'] = parsed_case['case_id']
     case['created_at'] = parsed_case['analysis_date']
     case['dynamic_gene_list'] = {}
     case['genome_version'] = None
@@ -435,6 +434,8 @@ def real_adapter(request, real_pymongo_client):
     database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
+    mongo_adapter.load_indexes()
+
     logger.info("Connected to database")
 
     return mongo_adapter
@@ -442,7 +443,7 @@ def real_adapter(request, real_pymongo_client):
 
 @pytest.fixture(scope='function')
 def adapter(request, pymongo_client):
-    """Get an adapter connected to mongom database"""
+    """Get an adapter connected to mongo database"""
     logger.info("Connecting to database...")
     mongo_client = pymongo_client
 
@@ -573,37 +574,26 @@ def real_hpo_database(request, real_gene_database, hpo_terms_handle, hpo_to_gene
 
 
 @pytest.fixture(scope='function')
-def panel_database(request, gene_database, panel_info):
+def panel_database(request, gene_database, parsed_panel):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
     logger.info("Adding panel to adapter")
 
     adapter.load_panel(
-        path=panel_info['file'],
-        institute=panel_info['institute'],
-        panel_id=panel_info['panel_name'],
-        date=panel_info['date'],
-        panel_type=panel_info['type'],
-        version=panel_info['version'],
-        display_name=panel_info['full_name']
+        parsed_panel=parsed_panel,
     )
 
     return adapter
 
 
 @pytest.fixture(scope='function')
-def real_panel_database(request, real_gene_database, panel_info):
+def real_panel_database(request, real_gene_database, parsed_panel):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = real_gene_database
     logger.info("Adding panel to real adapter")
+
     adapter.load_panel(
-        path=panel_info['file'],
-        institute=panel_info['institute'],
-        panel_id=panel_info['panel_name'],
-        date=panel_info['date'],
-        panel_type=panel_info['type'],
-        version=panel_info['version'],
-        display_name=panel_info['full_name']
+        parsed_panel=parsed_panel,
     )
 
     return adapter

@@ -233,6 +233,16 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
+def vcf2cytosure(store, institute_id, case_name, individual_id):
+    """vcf2cytosure CGH file for inidividual."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    for individual in case_obj['individuals']:
+        if individual['individual_id'] == individual_id:
+            individual_obj = individual
+
+    return (individual_obj['display_name'], individual_obj['vcf2cytosure'])
+
 
 def multiqc(store, institute_id, case_name):
     """Find MultiQC report for the case."""
@@ -263,25 +273,39 @@ def get_sanger_unevaluated(store, institute_id):
 
     # for each object where key==case and value==[variant_id with Sanger ordered]
     for item in sanger_ordered_by_case:
-        case = item['_id']
+        case_id = item['_id']
+        # Get the case to collect display name
+        case_obj = store.case(case_id=case_id)
+
+        if not case_obj: # the case might have been removed
+            continue
+
+        case_display_name = case_obj.get('display_name')
+
+        # List of variant document ids
         varid_list = item['vars']
 
         unevaluated_by_case = {}
-        unevaluated_by_case[case] = []
+        unevaluated_by_case[case_display_name] = []
 
         for var_id in varid_list:
             # For each variant with sanger validation ordered
-            variant_obj = store.variant(document_id=var_id, case_id=case)
+            variant_obj = store.variant(document_id=var_id, case_id=case_id)
 
             # Double check that Sanger was ordered (and not canceled) for the variant
-            if variant_obj and (variant_obj.get('sanger_ordered') and variant_obj.get('sanger_ordered') is True):
+            if not (variant_obj or variant_obj.get('sanger_ordered')):
+                continue
 
-                # Collect variant ID only if variant is not yet evaluated
-                if 'validation' not in variant_obj or not variant_obj.get('validation') in ['True positive', 'False positive']:
-                    unevaluated_by_case[case].append(variant_obj['_id'])
+            validation = variant_obj.get('validation', 'not_evaluated')
+
+            # Check that the variant is not evaluated
+            if validation in ['True positive', 'False positive']:
+                continue
+
+            unevaluated_by_case[case_display_name].append(variant_obj['_id'])
 
         # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
-        if len(unevaluated_by_case[case]) > 0:
+        if len(unevaluated_by_case[case_display_name]) > 0:
             unevaluated.append(unevaluated_by_case)
 
     return unevaluated

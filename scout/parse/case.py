@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 
 def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
-                    vcf_sv=None, vcf_cancer=None, peddy_ped=None,
+                    vcf_sv=None, vcf_cancer=None, vcf_str=None, peddy_ped=None,
                     peddy_sex=None, peddy_check=None, delivery_report=None, multiqc=None):
     """Parse all data necessary for loading a case into scout
 
@@ -31,6 +31,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         ped(iterable(str)): A ped formatted family file
         owner(str): The institute that owns a case
         vcf_snv(str): Path to a vcf file
+        vcf_str(str): Path to a VCF file
         vcf_sv(str): Path to a vcf file
         vcf_cancer(str): Path to a vcf file
         peddy_ped(str): Path to a peddy ped
@@ -66,7 +67,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         config_data['default_gene_panels'] = [panel.strip() for panel in
                                               config_data['default_gene_panels']]
 
-    ##################### Add information from peddy if existing ##################### 
+    ##################### Add information from peddy if existing #####################
     config_data['peddy_ped'] = peddy_ped or config_data.get('peddy_ped')
     config_data['peddy_sex_check'] = peddy_sex or config_data.get('peddy_sex')
     config_data['peddy_ped_check'] = peddy_check or config_data.get('peddy_check')
@@ -74,11 +75,14 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
 
-    ##################### Add multiqc information ##################### 
+    ##################### Add multiqc information #####################
     config_data['multiqc'] = multiqc or config_data.get('multiqc')
 
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
+    config_data['vcf_str'] = vcf_str if vcf_str else config_data.get('vcf_str')
+    log.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))
+
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
 
     config_data['delivery_report'] = delivery_report if delivery_report else config_data.get('delivery_report')
@@ -159,6 +163,7 @@ def parse_individual(sample):
                 'sex': str,
                 'phenotype': str,
                 'bam_file': str,
+                'vcf2cytosure': str,
                 'analysis_type': str,
                 'capture_kits': list(str),
             }
@@ -214,6 +219,10 @@ def parse_individual(sample):
 
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
+
+    vcf2cytosure = sample.get('vcf2cytosure')
+    if vcf2cytosure:
+        ind_info['vcf2cytosure'] = vcf2cytosure
 
     return ind_info
 
@@ -282,6 +291,7 @@ def parse_case(config):
         'vcf_files': {
             'vcf_snv': config.get('vcf_snv'),
             'vcf_sv': config.get('vcf_sv'),
+            'vcf_str': config.get('vcf_str'),
             'vcf_cancer': config.get('vcf_cancer'),
             'vcf_snv_research': config.get('vcf_snv_research'),
             'vcf_sv_research': config.get('vcf_sv_research'),

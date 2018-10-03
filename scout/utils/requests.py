@@ -11,27 +11,47 @@ HPO_URL = ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
            "lastStableBuild/artifact/annotation/{0}")
     
 
-def fetch_resource(url, file_name=None):
-    """Fetch a resource and return the resulting lines in a list
-    Send file_name to get more clean log messages
+def get_request(url):
+    """Return a requests response from url
     
     Args:
         url(str)
-        file_name(str)
     
     Returns:
-        lines(list(str))
+        decoded_data(str): Decoded response
     """
     try:
-        LOG.info("Requesting %s", (file_name or url))
+        LOG.info("Requesting %s", url)
         response = urllib.request.urlopen(url)
         data = response.read()      # a `bytes` object
-        lines = data.decode('utf-8').split('\n')
+        decoded_data = data.decode('utf-8')
     except HTTPError as err:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
         raise err
     except URLError as err:
         LOG.warning("Something went wrong, are you connected to internet?")
+        raise err
+    
+    if 'Error' in decoded_data:
+        raise URLError("Seems like url {} does not exist".format(url))
+    
+    return decoded_data
+    
+
+def fetch_resource(url):
+    """Fetch a resource and return the resulting lines in a list
+    Send file_name to get more clean log messages
+    
+    Args:
+        url(str)
+    
+    Returns:
+        lines(list(str))
+    """
+    try:
+        data = get_request(url)
+        lines = data.split('\n')
+    except Exception as err:
         raise err
     
     return lines

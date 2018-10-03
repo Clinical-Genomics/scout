@@ -203,7 +203,7 @@ class VariantLoader(object):
         """
 
         case_id = case_obj['_id']
-        # Possible categories 'snv', 'sv', 'cancer':
+        # Possible categories 'snv', 'sv', 'str', 'cancer':
         categories = set()
         # Possible variant types 'clinical', 'research':
         variant_types = set()
@@ -368,7 +368,7 @@ class VariantLoader(object):
         gene_to_panels = self.gene_to_panels(case_obj)
         hgncid_to_gene = self.hgncid_to_gene(genes=genes)
         genomic_intervals = self.get_coding_intervals(genes=genes)
-        
+
         LOG.info("Start inserting {0} variants into database".format(variant_type))
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
@@ -501,7 +501,7 @@ class VariantLoader(object):
         Args:
             case_obj(dict): A case from the scout database
             variant_type(str): 'clinical' or 'research'. Default: 'clinical'
-            category(str): 'snv' or 'sv'. Default: 'snv'
+            category(str): 'snv', 'str' or 'sv'. Default: 'snv'
             rank_threshold(float): Only load variants above this score. Default: 0
             chrom(str): Load variants from a certain chromosome
             start(int): Specify the start position
@@ -520,6 +520,9 @@ class VariantLoader(object):
                 variant_file = case_obj['vcf_files'].get('vcf_snv')
             elif category == 'sv':
                 variant_file = case_obj['vcf_files'].get('vcf_sv')
+            elif category == 'str':
+                LOG.debug('Attempt to load STR VCF.')
+                variant_file = case_obj['vcf_files'].get('vcf_str')
             elif category == 'cancer':
                 # Currently this implies a paired tumor normal
                 variant_file = case_obj['vcf_files'].get('vcf_cancer')

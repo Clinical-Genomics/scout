@@ -24,9 +24,96 @@
   </div>
 
   <h1>
-    {{ symbol }} <small>{{ ensembl_id }}</small>
+    {{ symbol }} <small>{{ record.ensembl_id }}</small>
   </h1>
   <p class="lead">{{ description }}</p>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Common Gene info</div>
+        <div class="row">
+            <div class="col-md-4">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    Aliases
+                    <span class="pull-right">{{ aliases|join(', ') }}</span>
+                  </li>
+                  <li class="list-group-item">
+                    HGNC ID
+                    <span class="pull-right">
+                      <a target="_blank" href={{ record.hgnc_link }} target="_blank"> {{ hgnc_id }}</a>
+                    </span>
+                  </li>
+                  <li class="list-group-item">
+                    HGNC symbol
+                    <span class="pull-right">{{ symbol }}</span>
+                  </li>
+                  <li class="list-group-item">
+                    Description
+                    <span class="pull-right">{{ description }}</span>
+                  </li>
+                  <li class="list-group-item">
+                    Incomplete penetrance (HPO)
+                    <span class="pull-right">
+                      {{ 'yes' if incomplete_penetrance else 'unknown' }}
+                    </span>
+                  </li>
+
+                  <li class="list-group-item">
+                    Inheritance models
+                    <span class="pull-right">
+                      {{ inheritance_models|join(', ') or '-' }}
+                    </span>
+                  </li>
+            </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+              <div class="panel-heading">Links</div>
+            <li class="list-group-item">
+              OMIM
+              <span class="pull-right">
+                <a target="_blank" href={{ record.omim_link }} target="_blank"> {{ omim_id }}</a>
+              </span>
+            </li>
+            <li class="list-group-item">
+              Entrez
+              <span class="pull-right">
+                <a target="_blank" href={{ record.entrez_link }} target="_blank"> {{ entrez_id }}</a>
+              </span>
+            </li>
+            <li class="list-group-item">
+              pLi Score(ExAC)
+              <span class="pull-right">
+                <a target="_blank" href={{ record.exac_link }} target="_blank"> {{ pli_score }}</a>
+              </span>
+            </li>
+            <li class="list-group-item">
+              Protein Paint
+              <span class="pull-right">
+                <a target="_blank" href={{ record.ppaint_link }} target="_blank"> {{ symbol }}</a>
+              </span>
+            </li>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+              <div class="panel-heading">Phenotypes</div>
+
+            {% for phenotype in record.phenotypes %}
+                <li class="list-group-item">
+                    {{ phenotype.description }}
+                    <span class="pull-right">
+                        <a target="_blank" href={{ record.omim_link }} target="_blank"> {{ phenotype.mim_number }}</a>
+                    </span>
+                </li>
+            {% endfor %}
+            </div>
+        </div>
+
+        </div>
+</div>
+
 
   {% for build, gene in builds.items() %}
   	<div class="panel panel-default">
@@ -48,12 +135,14 @@
 {% macro overview(gene) %}
   <ul class="list-group">
     <li class="list-group-item">
-      Aliases
-      <span class="pull-right">{{ gene.aliases|join(', ') }}</span>
-    </li>
-    <li class="list-group-item">
-      HGNC ID
-      <span class="pull-right">{{ gene.hgnc_id }}</span>
+      Ensembl ID
+      <span class="pull-right">
+        {%if gene.build == '37'%}
+            <a target="_blank" href={{ gene.ensembl_37_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        {% else %}
+            <a target="_blank" href={{ gene.ensembl_38_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        {% endif %}
+      </span>
     </li>
     <li class="list-group-item">
       Chromosome
@@ -63,18 +152,40 @@
       Position
       <span class="pull-right">{{ gene.position }}</span>
     </li>
-
     <li class="list-group-item">
-      Incomplete penetrance (HPO)
+      Expression Atlas
       <span class="pull-right">
-        {{ 'yes' if gene.incomplete_penetrance else 'unknown' }}
+        <a target="_blank" href={{ gene.expression_atlas_link }} target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
-
     <li class="list-group-item">
-      Inheritance models
+      Human Protein Atlas
       <span class="pull-right">
-        {{ gene.inheritance_models|join(', ') or '-' }}
+        <a target="_blank" href={{ gene.hpa_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+      </span>
+    </li>
+    <li class="list-group-item">
+      Reactome
+      <span class="pull-right">
+        <a target="_blank" href={{ gene.reactome_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+      </span>
+    </li>
+    <li class="list-group-item">
+      String
+      <span class="pull-right">
+        <a target="_blank" href={{ gene.string_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+      </span>
+    </li>
+    <li class="list-group-item">
+      Vega Database
+      <span class="pull-right">
+        <a target="_blank" href={{ gene.vega_link }} target="_blank"> {{ gene.vega_id }}</a>
+      </span>
+    </li>
+    <li class="list-group-item">
+      UCSC gene browser ({{ gene.build }})
+      <span class="pull-right">
+        <a target="_blank" href={{ gene.ucsc_link }} target="_blank"> {{ gene.ucsc_id }}</a>
       </span>
     </li>
   </ul>
@@ -86,7 +197,7 @@
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-          {{ transcript.ensembl_transcript_id }} / {{ transcript.refseq_id or '-' }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
+            <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a> /  {{ transcript.refseq_id or '-' }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
 		  <span class="pull-right">{{ transcript['position'] }}</span>
         </li>
       {% endfor %}

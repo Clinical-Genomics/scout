@@ -15,6 +15,7 @@ from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER
 from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
+from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
 
@@ -49,9 +50,13 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
         'more_variants': more_variants,
     }
 
+def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+    """Pre-process list of STR variants."""
+    # Nothing unique to STRs on this level. Inheritance?
+    return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
-def sv_variant(store, institute_id, case_name, variant_id):
-    """Pre-process a SV variant entry for detail page.
+def str_variant(store, institute_id, case_name, variant_id):
+    """Pre-process an STR variant entry for detail page.
 
     Adds information to display variant
 
@@ -60,7 +65,52 @@ def sv_variant(store, institute_id, case_name, variant_id):
         institute_id(str)
         case_name(str)
         variant_id(str)
-        var_obj(scout.models.Variant)
+
+    Returns:
+        detailed_information(dict): {
+            'institute': <institute_obj>,
+            'case': <case_obj>,
+            'variant': <variant_obj>,
+            'overlapping_snvs': <overlapping_snvs>,
+            'manual_rank_options': MANUAL_RANK_OPTIONS,
+            'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
+        }
+        """
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj =  store.variant(variant_id)
+
+    # fill in information for pilup view
+    variant_case(store, case_obj, variant_obj)
+
+    variant_obj['callers'] = callers(variant_obj, category='str')
+
+    # variant_obj['str_ru']
+    # variant_obj['str_repid']
+    # variant_obj['str_ref']
+
+    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
+                                           variant_id=variant_obj['variant_id'], comments=True)
+
+    return {
+        'institute': institute_obj,
+        'case': case_obj,
+        'variant': variant_obj,
+        'overlapping_snvs': overlapping_snvs,
+        'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
+    }
+
+def sv_variant(store, institute_id, case_name, variant_id):
+    """Pre-process an SV variant entry for detail page.
+
+    Adds information to display variant
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str)
+        case_name(str)
+        variant_id(str)
 
     Returns:
         detailed_information(dict): {
@@ -97,11 +147,9 @@ def sv_variant(store, institute_id, case_name, variant_id):
     ensembl_link = ''
     for gene_obj in variant_obj['genes']:
         if gene_obj['common']:
-            if gene_obj['common']['build'] == '37':
-                ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
-            else:
-                ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}")
-            gene_obj['ensembl_link'] = ensembl_link.format(gene_obj['common']['ensembl_id'])
+            ensembl_id = gene_obj['common']['ensembl_id']
+            build = int(gene_obj['common'].get('build','37'))
+            gene_obj['ensembl_link'] = ensembl_link(ensembl_id, build=build)
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
@@ -136,15 +184,19 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         variant_obj['compounds'] = sorted(variant_obj['compounds'],
                                           key=lambda compound: -compound['combined_score'])
 
+    genome_build = case_obj.get('genome_build','37')
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
+            if not gene_obj['hgnc_id']:
+                continue
             if gene_obj.get('hgnc_symbol') is None:
                 hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
                 if hgnc_gene:
                     has_changed = True
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
 
+    # We update the variant if some information was missing from loading
     if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
 
@@ -533,29 +585,7 @@ def parse_gene(gene_obj, build=None):
     build = build or 37
 
     if gene_obj['common']:
-        ensembl_id = gene_obj['common']['ensembl_id']
-        ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?"
-                        "db=core;g={}")
-
-        if build == 38:
-            ensembl_link = ("http://ensembl.org/Homo_sapiens/Gene/Summary?"
-                            "db=core;g={}")
-
-        gene_obj['ensembl_link'] = ensembl_link.format(ensembl_id)
-
-        gene_obj['hpa_link'] = ("http://www.proteinatlas.org/search/{}".format(ensembl_id))
-        gene_obj['string_link'] = ("http://string-db.org/newstring_cgi/show_network_"
-                                   "section.pl?identifier={}".format(ensembl_id))
-        gene_obj['entrez_link'] = ("https://www.ncbi.nlm.nih.gov/gene/{}"
-                                   .format(gene_obj['common']['entrez_id']))
-
-        gene_obj['ppaint_link'] = ("https://pecan.stjude.cloud/proteinpaint/{}"
-                                   .format(gene_obj['common']['hgnc_symbol']))
-
-        reactome_link = ("http://www.reactome.org/content/query?q={}&species=Homo+sapiens"
-                         "&species=Entries+without+species&cluster=true".format(ensembl_id))
-        gene_obj['reactome_link'] = reactome_link
-        gene_obj['expression_atlas_link'] = "https://www.ebi.ac.uk/gxa/genes/{}".format(ensembl_id)
+        add_gene_links(gene_obj, build)
 
         refseq_transcripts = [transcript for transcript in gene_obj['transcripts'] if
                               transcript.get('refseq_id')]
@@ -570,40 +600,7 @@ def parse_gene(gene_obj, build=None):
 def parse_transcript(gene_obj, tx_obj, build=None):
     """Parse variant gene transcript (VEP)."""
     build = build or 37
-    ensembl_tx_id = tx_obj['transcript_id']
-
-    ensembl_link = ("http://grch37.ensembl.org/Homo_sapiens/"
-                    "Gene/Summary?t={}")
-
-    if build == 38:
-        ensembl_link = ("http://ensembl.org/Homo_sapiens/"
-                        "Gene/Summary?t={}")
-
-    tx_obj['ensembl_link'] = ensembl_link.format(ensembl_tx_id)
-
-    refseq_links = []
-    if tx_obj.get('refseq_id'):
-        refseq_id = tx_obj['refseq_id']
-        refseq_links.append(
-            {
-                'link': "http://www.ncbi.nlm.nih.gov/nuccore/{}".format(refseq_id),
-                'id': refseq_id,
-            }
-        )
-    tx_obj['refseq_links'] = refseq_links
-
-    tx_obj['swiss_prot_link'] = ("http://www.uniprot.org/uniprot/{}"
-                                 .format(tx_obj['swiss_prot']))
-
-    tx_obj['pfam_domain_link'] = ("http://pfam.xfam.org/family/{}"
-                                  .format(tx_obj.get('pfam_domain')))
-
-    tx_obj['prosite_profile_link'] = ("http://prosite.expasy.org/cgi-bin/prosite/"
-                                      "prosite-search-ac?{}"
-                                      .format(tx_obj.get('prosite_profile')))
-
-    tx_obj['smart_domain_link'] = ("http://smart.embl.de/smart/search.cgi?keywords={}"
-                                   .format(tx_obj.get('smart_domain')))
+    add_tx_links(tx_obj, build)
 
     if tx_obj.get('refseq_id'):
         gene_name = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
@@ -761,11 +758,10 @@ def beacon_link(variant_obj, build=None):
 def ucsc_link(variant_obj, build=None):
     """Compose link to UCSC."""
     build = build or 37
-    if build == 37:
-        url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
                         "position=chr{this[chromosome]}:{this[position]}"
                         "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
-    else:
+    if build == 38:
         url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg20&"
                         "position=chr{this[chromosome]}:{this[position]}"
                         "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
@@ -864,8 +860,8 @@ url_for):
     store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
 
 
-def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
-url_for):
+def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender,
+                  url_builder=url_for):
     """Send Sanger cancellation email."""
     variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],

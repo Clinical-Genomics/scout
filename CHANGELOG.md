@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [4.0.1b]
 
 ### Added
+- Command to download all panel app gene panels `scout load panel --panel-app`
+- Links to genenames.org and omim on gene page
+- Popup on gene at variants page with gene information
 - reset sanger status to "Not validated" for pinned variants
 - highlight cases with variants to be evaluated by Sanger on the cases page
 - option to point to local reference files to the genome viewer pileup.js. Documented in `docs.admin-guide.server`
@@ -16,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Improved Clinvar to submit variants from different cases. Fixed HPO terms in casedata according to feedback
+- Fixed broken link to case page from Sanger modal in cases view
 - Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
 - Can handle Tumor only samples
 
