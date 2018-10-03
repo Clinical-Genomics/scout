@@ -130,6 +130,9 @@ def parse_region(gene_info):
 """Parse a region line with information from a panel file.
 
 """
+region = {}
+# placeholder : format to be defined - see e g PanelApp
+return region
 
 def parse_gene(gene_info):
     """Parse a gene line with information from a panel file
