@@ -53,15 +53,83 @@ def get_panel_info(panel_lines, panel_id=None, institute=None, version=None, dat
 
     return panel_info
 
-def parse_str(str_info):
-    str = {}
+def parse_str(gene_info):
+"""Parse a STR line with information from a panel file.
 
-    return str
+    Args:
+        gene_info(dict): dictionary with gene info
 
-def parse_strs(str_lines):
-    strs = []
+    Returns:
+        str_entry(dict): A dictionary with the STR gene information
+            {
+            'hgnc_id': int,
+            'hgnc_symbol': str,
+            'repid': str,
+            'identifier': str,
+            'ru': str,
+            'normal_max': int,
+            'pathologic_min': int,
+            'disease': str
+            }
 
-    return strs
+"""
+
+    str_entry = {}
+
+    identifier = None
+
+    hgnc_id = None
+    try:
+        if 'hgnc_id' in gene_info:
+            hgnc_id = int(gene_info['hgnc_id'])
+        elif 'hgnc_idnumber' in gene_info:
+            hgnc_id = int(gene_info['hgnc_idnumber'])
+        elif 'hgncid' in gene_info:
+            hgnc_id = int(gene_info['hgncid'])
+    except ValueError as e:
+        raise SyntaxError("Invalid hgnc id: {0}".format(hgnc_id))
+
+    gene['hgnc_id'] = hgnc_id
+    identifier = hgnc_id
+
+    hgnc_symbol = None
+    if 'hgnc_symbol' in gene_info:
+        hgnc_symbol = gene_info['hgnc_symbol']
+    elif 'hgncsymbol' in gene_info:
+        hgnc_symbol = gene_info['hgncsymbol']
+    elif 'symbol' in gene_info:
+        hgnc_symbol = gene_info['symbol']
+
+    str_entry['hgnc_symbol'] = hgnc_symbol
+
+    if not identifier:
+        if hgnc_symbol:
+            identifier = hgnc_symbol
+        elif repid:
+            identifier = repid
+        else:
+            raise SyntaxError("No gene identifier could be found")
+
+    str_entry['identifier'] = identifier
+
+    if 'ru' in gene_info:
+        str_entry['ru'] = gene_info['ru']
+
+    if 'normal_max' in gene_info:
+        str_entry['normal_max'] = gene_info['normal_max']
+
+    if 'pathologic_min' in gene_info:
+        str_entry['pathologic_min'] = gene_info['pathologic_min']
+
+    if 'disease' in gene_info:
+        str_entry['disease'] = gene_info['disease']
+
+    return str_entry
+
+def parse_region(gene_info):
+"""Parse a region line with information from a panel file.
+
+"""
 
 def parse_gene(gene_info):
     """Parse a gene line with information from a panel file
@@ -160,7 +228,7 @@ def parse_gene(gene_info):
 
     return gene
 
-def parse_genes(gene_lines):
+def parse_genes(gene_lines,category='gene_symbol'):
     """Parse a file with genes and return the hgnc ids
 
     Args:
@@ -216,8 +284,8 @@ def parse_genes(gene_lines):
                 else:
                     header = ['hgnc_symbol']
 
-            splitted_line = line.split(delimiter)
-            gene_info = dict(zip(header, splitted_line))
+            split_line = line.split(delimiter)
+            gene_info = dict(zip(header, split_line))
 
             # There are cases when excel exports empty lines that looks like
             # ;;;;;;;. This is a exception to handle these
@@ -231,7 +299,12 @@ def parse_genes(gene_lines):
                 continue
 
             try:
-                gene = parse_gene(gene_info)
+                if(category == 'gene_symbol'):
+                    gene = parse_gene(gene_info)
+                elif(category == 'STR'):
+                    gene = parse_str(gene_info)
+                elif(category == 'region'):
+                    gene = parse_region(gene_info)
             except Exception as e:
                 LOG.warning(e)
                 raise SyntaxError("Line {0} is malformed".format(i + 1))
@@ -278,12 +351,7 @@ def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='cli
     else:
         panel_handle = get_file_handle(gene_panel['path'])
 
-    if category == 'gene_symbol':
-        gene_panel['genes'] = parse_genes(gene_lines=panel_handle)
-    elif category == 'STR':
-        gene_panel['STR'] = parse_strs(str_lines=panel_handle)
-    elif category == 'region':
-        gene_panel['region'] = parse_regions(region_lines=panel_handle)
+    gene_panel[category] = parse_genes(gene_lines=panel_handle, category=category)
 
     return gene_panel
 
