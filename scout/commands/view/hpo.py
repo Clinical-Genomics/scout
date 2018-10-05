@@ -17,22 +17,19 @@ def hpo(context, term, description):
     adapter = context.obj['adapter']
     if term:
         term = term.upper()
+        # Convert term to proper format
         if not term.startswith('HP:'):
             while len(term) < 7:
                 term = '0' + term
             term = 'HP:' + term
         LOG.info("Searching for term %s", term)
-        hpo_terms = adapter.hpo_terms(hpo_term=term)
+        hpo_terms = [term for term in adapter.hpo_terms(hpo_term=term)]
     elif description:
-        sorted_terms = sorted(adapter.hpo_terms(query=description), key=itemgetter('hpo_number'))
-        for term in sorted_terms:
-            term.pop('genes')
-            print("name: {} | {} | {}".format(term['_id'], term['description'], term['hpo_number']))
-        # pp(hpo_terms)
-        context.abort()
+        hpo_terms = [term for term in adapter.hpo_terms(query=description)]
     else:
-        hpo_terms = adapter.hpo_terms()
-    if hpo_terms.count() == 0:
+        hpo_terms = [term for term in adapter.hpo_terms()]
+        
+    if len(hpo_terms) == 0:
         LOG.warning("No matching terms found")
         return
 
