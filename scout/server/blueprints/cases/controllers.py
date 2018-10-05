@@ -86,11 +86,11 @@ def case(store, institute_obj, case_obj):
         event['verb'] = VERBS_MAP[event['verb']]
 
     case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
-
+    
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj=case_obj),
-        'comments': store.events(institute_obj, case=case_obj, comments=True),
+        'comments': [comment for comment in store.events(institute_obj, case=case_obj, comments=True)],
         'hpo_groups': PHENOTYPE_GROUPS,
         'events': events,
         'suspects': suspects,

@@ -173,7 +173,7 @@
           {% endif %}
         </td>
       </tr>
-      {% if comments.count() %}
+      {% if comments %}
         <tr>
           <td colspan=2>
             <table id="panel-table" class="table table-sm" style="background-color: transparent">
@@ -830,7 +830,7 @@
     {% if n_primary_transcripts|sum > 5 %}
     .. other transcripts available for this variant are not shown.<br><br>
     {% endif %}
-    {% if variant.comments.count() %}
+    {% if variant.comments %}
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
@@ -1024,7 +1024,7 @@
               </tr>
             </tbody>
           </table>
-          {% if variant.comments.count() %}
+          {% if variant.comments %}
             <br>
             <table id="panel-table" class="table table-sm" style="background-color: transparent">
               <thead>
