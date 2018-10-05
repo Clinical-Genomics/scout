@@ -87,11 +87,8 @@ class CaseHandler(object):
         LOG.info("Get cases with query {0}".format(query))
         if nr_cases:
             LOG.debug("Returning number of cases")
-            cases = self.case_collection.find(query)
-            i = 0
-            for i,case in enumerate(cases,1):
-                pass
-            return i
+            nr_cases = sum(1 for i in self.case_collection.find(query))
+            return nr_cases
 
         return self.case_collection.find(query).sort('updated_at', -1)
 
