@@ -58,11 +58,18 @@ def cases(context, case_id, institute, reruns, finished, causatives, research_re
             models.append(case_obj)
 
     else:
-        models = adapter.cases(collaborator=institute, reruns=reruns,
-                           finished=finished, has_causatives=causatives,
-                           research_requested=research_requested,
-                           is_research=is_research, status=status)
-    if models.count():
+        cases = adapter.cases(
+            collaborator=institute, 
+            reruns=reruns,
+            finished=finished,
+            has_causatives=causatives,
+            research_requested=research_requested,
+            is_research=is_research, 
+            status=status
+        )
+        models = [case_obj for case_obj in cases]
+         
+    if len(models) == 0:
         LOG.info("No cases could be found")
 
     if json:
