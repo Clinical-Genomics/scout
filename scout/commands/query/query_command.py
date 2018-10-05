@@ -36,19 +36,21 @@ def hgnc(ctx, hgnc_symbol, hgnc_id, build):
             log.warning("Gene with id %s could not be found", hgnc_id)
             ctx.abort()
     
-    result = adapter.hgnc_genes(hgnc_symbol, build=build)
+    result = [gene_obj for gene_obj in adapter.hgnc_genes(hgnc_symbol, build=build)]
     
-    if result.count() == 0:
+    if len(result) == 0:
         log.info("No results found")
     
     else:
         click.echo("#hgnc_id\thgnc_symbol\taliases\ttranscripts")
         for gene in result:
+            hgnc_id = gene['hgnc_id']
+            transcripts = adapter.transcripts(hgnc_id = hgnc_id)
             click.echo("{0}\t{1}\t{2}\t{3}".format(
-                gene['hgnc_id'],
+                hgnc_id,
                 gene['hgnc_symbol'],
-                ', '.join(gene['aliases']),
-                ', '.join(tx['ensembl_transcript_id'] for tx in gene['transcripts']),
+                ','.join(gene['aliases']),
+                ','.join(tx['ensembl_transcript_id'] for tx in transcripts),
             ))
 
 @click.group()
