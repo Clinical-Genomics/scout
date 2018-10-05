@@ -414,7 +414,7 @@ def find_bai_file(bam_file):
 
 
 def variant(store, institute_obj, case_obj, variant_id=None):
-    """Pre-process a single variant.
+    """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
     object
