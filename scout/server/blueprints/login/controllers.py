@@ -20,10 +20,10 @@ def event_rank(count):
 def users(store):
     """Display a list of all users and which institutes they belong to."""
     user_objs = list(store.users())
-    total_events = store.user_events().count()
+    total_events = sum(1 for i in store.user_events())
     for user_obj in user_objs:
         user_obj['institutes'] = [store.institute(inst_id) for inst_id in user_obj['institutes']]
-        user_obj['events'] = store.user_events(user_obj).count()
+        user_obj['events'] = sum(1 for i in store.user_events(user_obj))
         user_obj['events_rank'] = event_rank(user_obj['events'])
     return dict(
         users=sorted(user_objs, key=lambda user: -user['events']),
