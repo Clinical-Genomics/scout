@@ -10,7 +10,7 @@ blueprint = Blueprint('dashboard', __name__, template_folder='templates')
 @blueprint.route('/dashboard')
 def index():
     """Display the Scout dashboard."""
-    total_cases = store.cases().count()
+    total_cases = store.cases(nr_cases=True)
     if total_cases == 0:
         flash('no cases loaded - please visit the dashboard later!', 'info')
         return redirect(url_for('cases.index'))
@@ -29,10 +29,10 @@ def index():
     ])
     analysis_types = [{'name': group['_id'], 'count': group['count']} for group in query]
 
-    phenotype_terms = store.case_collection.find({'phenotype_terms.1': {'$exists': True}}).count()
-    causative_variants = store.case_collection.find({'causatives.1': {'$exists': True}}).count()
-    pinned_variants = store.case_collection.find({'suspects.1': {'$exists': True}}).count()
-    cohort_tags = store.case_collection.find({'cohorts.1': {'$exists': True}}).count()
+    phenotype_terms = sum(1 for i in store.case_collection.find({'phenotype_terms.1': {'$exists': True}}))
+    causative_variants = sum(1 for i in store.case_collection.find({'causatives.1': {'$exists': True}}))
+    pinned_variants = sum(1 for i in store.case_collection.find({'suspects.1': {'$exists': True}}))
+    cohort_tags = sum(1 for i in store.case_collection.find({'cohorts.1': {'$exists': True}}))
     overview = [{
         'title': 'Phenotype terms',
         'count': phenotype_terms,
