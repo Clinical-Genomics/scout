@@ -4,7 +4,7 @@ import click
 
 log = logging.getLogger(__name__)
 
-@click.command('hgnc', short_help='Check if a gene exist')
+@click.command('genes', short_help='Check if a gene exist')
 @click.option('--hgnc-symbol', '-s',
                 help="A valid hgnc symbol",
 )
@@ -18,25 +18,25 @@ log = logging.getLogger(__name__)
                 help="Specify the genome build",
 )
 @click.pass_context
-def hgnc(ctx, hgnc_symbol, hgnc_id, build):
+def genes(ctx, hgnc_symbol, hgnc_id, build):
     """
-    Query the hgnc aliases
+    Search for genes.
     """
     adapter = ctx.obj['adapter']
     
-    if not (hgnc_symbol or hgnc_id):
-        log.warning("Please provide a hgnc symbol or hgnc id")
-        ctx.abort()
-
     if hgnc_id:
         result = adapter.hgnc_gene(hgnc_id, build=build)
         if result:
-            hgnc_symbol = result['hgnc_symbol']
+            result = [result]
         else:
             log.warning("Gene with id %s could not be found", hgnc_id)
-            ctx.abort()
+            return
+    elif hgnc_symbol:
+        result = [gene_obj for gene_obj in adapter.hgnc_genes(hgnc_symbol, build=build)]
     
-    result = [gene_obj for gene_obj in adapter.hgnc_genes(hgnc_symbol, build=build)]
+    else:
+        result = [gene_obj for gene_obj in adapter.all_genes(build=build)]
+        
     
     if len(result) == 0:
         log.info("No results found")
@@ -53,12 +53,3 @@ def hgnc(ctx, hgnc_symbol, hgnc_id, build):
                 ','.join(tx['ensembl_transcript_id'] for tx in transcripts),
             ))
 
-@click.group()
-@click.pass_context
-def query(context):
-    """
-    View objects from the database.
-    """
-    pass
-
-query.add_command(hgnc)
