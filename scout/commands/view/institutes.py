@@ -11,10 +11,10 @@ def institutes(context):
     LOG.info("Running scout view institutes")
     adapter = context.obj['adapter']
 
-    institute_objs = adapter.institutes()
-    if institute_objs.count() == 0:
+    institute_objs = [ins_obj for ins_obj in adapter.institutes()]
+    if len(institute_objs) == 0:
         click.echo("No institutes found")
-        context.abort()
+        return
 
     header = ''
     for key in institute_objs[0].keys():
