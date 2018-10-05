@@ -18,8 +18,8 @@ def panel(context, panel_id, version):
     LOG.info("Running scout delete panel")
     adapter = context.obj['adapter']
 
-    panel_objs = adapter.gene_panels(panel_id=panel_id, version=version)
-    if panel_objs.count() == 0:
+    panel_objs = [panel_obj for panel_obj in adapter.gene_panels(panel_id=panel_id, version=version)]
+    if len(panel_objs) == 0:
         LOG.info("No panels found")
         
     for panel_obj in panel_objs:
