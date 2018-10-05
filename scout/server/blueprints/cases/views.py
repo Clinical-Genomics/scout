@@ -27,7 +27,7 @@ cases_bp = Blueprint('cases', __name__, template_folder='templates',
 def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
-    institutes_count = ((institute_obj, store.cases(collaborator=institute_obj['_id']).count())
+    institutes_count = ((institute_obj, sum(1 for i in store.cases(collaborator=institute_obj['_id'])))
                         for institute_obj in institute_objs if institute_obj)
     return dict(institutes=institutes_count)
 
