@@ -5,7 +5,7 @@ import os.path
 from pprint import pprint as pp
 
 from datetime import date
-from flask import url_for, flash
+from flask import url_for, flash, request
 from flask_mail import Message
 
 from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
@@ -149,7 +149,7 @@ def sv_variant(store, institute_id, case_name, variant_id):
         if gene_obj['common']:
             ensembl_id = gene_obj['common']['ensembl_id']
             build = int(gene_obj['common'].get('build','37'))
-            gene_obj['ensembl_link'] = ensembl_link(ensembl_id, build=build)
+            gene_obj['ensembl_link'] = ensembl_link
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
@@ -799,6 +799,107 @@ def callers(variant_obj, category='snv'):
     calls = [(caller['name'], variant_obj.get(caller['id']))
              for caller in CALLERS[category] if variant_obj.get(caller['id'])]
     return calls
+
+
+def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
+url_for):
+    """Sand a verification email"""
+    variant_link=''
+    validation_type = ''
+    if variant_obj.get('category') == 'snv':
+        variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
+                                   case_name=case_obj['display_name'],
+                                   variant_id=variant_obj['_id'])
+        validation_type='Sanger'
+    else:
+        variant_link = url_builder('variants.sv_variant', institute_id=institute_obj['_id'],
+                                   case_name=case_obj['display_name'],
+                                   variant_id=variant_obj['_id'])
+        validation_type=request.form.get('validation_type')
+
+    if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
+        store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+    recipients = institute_obj['sanger_recipients']
+    if len(recipients) == 0:
+        raise MissingSangerRecipientError()
+
+    variant_size = variant_obj.get('length')
+    chromosome_start = variant_obj.get('chromosome')
+    breakpoint_1 = variant_obj.get('chromosome')+':'+str(variant_obj.get('position'))
+    breakpoint_2 = str((variant_obj.get('end_chrom') or variant_obj.get('chromosome')))+':'+ str(variant_obj.get('end'))
+
+    hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
+    gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
+                                        sample_obj['genotype_call'])
+               for sample_obj in variant_obj['samples']]
+    html=''
+    if validation_type == 'Sanger':
+        tx_changes = []
+        for gene_obj in variant_obj.get('genes', []):
+            for transcript_obj in gene_obj['transcripts']:
+                parse_transcript(gene_obj, transcript_obj)
+                if transcript_obj.get('change_str'):
+                    tx_changes.append("<li>{}</li>".format(transcript_obj['change_str']))
+
+        html = """
+          <ul">
+            <li>
+              <strong>Case {case_name}</strong>: <a href="{url}">{variant_id}</a>
+            </li>
+            <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
+            <li><strong>Gene panels</strong>: {panels}</li>
+            <li><strong>GT call</strong></li>
+            {gtcalls}
+            <li><strong>Amino acid changes</strong></li>
+            {tx_changes}
+            <li><strong>Ordered by</strong>: {name}</li>
+          </ul>
+        """.format(case_name=case_obj['display_name'],
+                   url=variant_link,
+                   variant_id=variant_obj['display_name'],
+                   hgnc_symbol=hgnc_symbol,
+                   panels=', '.format(variant_obj['panels']),
+                   gtcalls=''.join(gtcalls),
+                   tx_changes=''.join(tx_changes),
+                   name=user_obj['name'].encode('utf-8'))
+
+        kwargs = dict(subject="SCOUT: Sanger sequencing of {}".format(hgnc_symbol),
+                      html=html, sender=sender, recipients=recipients,
+                      # cc the sender of the email for confirmation
+                      cc=[user_obj['email']])
+
+    else: #not sanger
+        html = """
+          <ul">
+            <li>
+              <strong>Case {case_name}</strong>: <a href="{url}">{variant_id}</a>
+            </li>
+            <li><strong>Variant category</strong>: {category}</li>
+            <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
+            <li><strong>Gene panels</strong>: {panels}</li>
+            <li><strong>GT call</strong></li>
+            {gtcalls}
+            <li><strong>Breakpoint 1</strong>: {breakpoint_1}</li>
+            <li><strong>Breakpoint 2</strong>: {breakpoint_2}</li>
+            <li><strong>Ordered by</strong>: {name}</li>
+          </ul>
+        """.format(case_name=case_obj['display_name'],
+                   url=variant_link,
+                   variant_id=variant_obj['display_name'],
+                   category=variant_obj.get('category'),
+                   hgnc_symbol=hgnc_symbol,
+                   panels=', '.format(variant_obj['panels']),
+                   gtcalls=''.join(gtcalls),
+                   breakpoint_1 = breakpoint_1,
+                   breakpoint_2 = breakpoint_2,
+                   name=user_obj['name'].encode('utf-8'))
+
+        kwargs = dict(subject="SCOUT: {} sequencing of {} {}/{}".format(validation_type, variant_obj.get('category'), breakpoint_1, breakpoint_2),
+                      html=html, sender=sender, recipients=recipients,
+                      # cc the sender of the email for confirmation
+                      cc=[user_obj['email']])
+
+        return validation_type
 
 
 def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =

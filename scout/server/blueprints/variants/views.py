@@ -213,17 +213,20 @@ def variant_update(institute_id, case_name, variant_id):
     return redirect(request.referrer)
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/sanger', methods=['POST'])
-def sanger(institute_id, case_name, variant_id):
-    """Send Sanger email for confirming a variant."""
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>', methods=['POST'])
+def verify(institute_id, case_name, variant_id, variant_category):
+    """Start procedure to validate variant using other techniques."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
+
     try:
-        controllers.sanger(store, mail, institute_obj, case_obj, user_obj,
+        appo = controllers.variant_verify(store, mail, institute_obj, case_obj, user_obj,
                            variant_obj, current_app.config['MAIL_USERNAME'])
+        flash(appo, 'info')
     except controllers.MissingSangerRecipientError:
         flash('No sanger recipients added to institute.', 'danger')
+
     return redirect(request.referrer)
 
 
