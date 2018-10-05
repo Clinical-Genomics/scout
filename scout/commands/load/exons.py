@@ -28,7 +28,7 @@ def exons(context, build):
     start = datetime.now()
     # Test if there are any exons loaded
     
-    nr_exons = adapter.exons(build=build).count()
+    nr_exons = sum(1 for i in adapter.exons(build=build))
     if nr_exons:
         LOG.warning("Dropping all exons ")
         adapter.drop_exons(build=build)
