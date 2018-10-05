@@ -130,7 +130,7 @@ class HpoHandler(object):
             hgnc_id(int)
 
         Returns:
-            iterable(dict): A list with all disease terms that match
+            list(dict): A list with all disease terms that match
         """
         query = {}
         if hgnc_id:

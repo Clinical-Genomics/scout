@@ -13,7 +13,7 @@ def diseases(context):
 
     disease_objs = adapter.disease_terms()
 
-    nr_diseases = disease_objs.count()
+    nr_diseases = len(disease_objs)
     if nr_diseases == 0:
         click.echo("No diseases found")
     else:
