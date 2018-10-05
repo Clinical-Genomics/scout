@@ -23,7 +23,7 @@ def panels(context, institute):
 
     for panel_obj in panel_objs:
         click.echo("{0}\t{1}\t{2}\t{3}".format(
-            panel_obj['panel_name'],
+            panel_obj['display_name'],
             str(panel_obj['version']),
             len(panel_obj['genes']),
             str(panel_obj['date'].strftime('%Y-%m-%d'))
