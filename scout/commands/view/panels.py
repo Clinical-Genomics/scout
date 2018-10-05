@@ -14,10 +14,11 @@ def panels(context, institute):
     LOG.info("Running scout view panels")
     adapter = context.obj['adapter']
 
-    panel_objs = adapter.gene_panels(institute_id=institute)
-    if panel_objs.count() == 0:
+    panel_objs = [panel for panel in adapter.gene_panels(institute_id=institute)]
+    if len(panel_objs) == 0:
         LOG.info("No panels found")
-        context.abort()
+        return
+
     click.echo("#panel_name\tversion\tnr_genes\tdate")
 
     for panel_obj in panel_objs:
