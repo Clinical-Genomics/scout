@@ -11,10 +11,10 @@ def users(context):
     LOG.info("Running scout view users")
     adapter = context.obj['adapter']
 
-    user_objs = adapter.users()
-    if user_objs.count() == 0:
+    user_objs = [user for user in adapter.users()]
+    if len(user_objs) == 0:
         LOG.info("No users found")
-        context.abort()
+        return
 
     click.echo("#name\temail\troles\tinstitutes")
     for user_obj in user_objs:
