@@ -26,11 +26,10 @@ class MissingSangerRecipientError(Exception):
     pass
 
 
-def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50, nr_variants=0):
     """Pre-process list of variants."""
-    variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
+    more_variants = True if nr_variants > (skip_count + per_page) else False
 
     return {
         'variants': (parse_variant(store, institute_obj, case_obj, variant_obj, update=True) for
@@ -39,10 +38,10 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     }
 
 
-def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50, nr_variants=0):
     """Pre-process list of SV variants."""
     skip_count = (per_page * max(page - 1, 0))
-    more_variants = True if variants_query.count() > (skip_count + per_page) else False
+    more_variants = True if nr_variants > (skip_count + per_page) else False
 
     return {
         'variants': (parse_variant(store, institute_obj, case_obj, variant) for variant in
@@ -1036,7 +1035,7 @@ def upload_panel(store, institute_id, case_name, stream):
     # check if supplied gene symbols exist
     hgnc_symbols = []
     for raw_symbol in raw_symbols:
-        if store.hgnc_genes(raw_symbol).count() == 0:
+        if store.nr_genes(raw_symbol) == 0:
             flash("HGNC symbol not found: {}".format(raw_symbol), 'warning')
         else:
             hgnc_symbols.append(raw_symbol)

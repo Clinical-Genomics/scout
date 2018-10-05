@@ -187,10 +187,7 @@ class VariantHandler(VariantLoader):
         ).sort(sorting)
         
         if nr_variants:
-            i = 0
-            for i,var in enumerate(result,1):
-                pass
-            return i
+            return sum(1 for i in result)
 
         return result
 
