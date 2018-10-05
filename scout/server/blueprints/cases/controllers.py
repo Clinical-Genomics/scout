@@ -19,7 +19,7 @@ def cases(store, case_query, limit=100):
     """Preprocess case objects."""
 
     case_groups = {status: [] for status in CASE_STATUSES}
-    for case_obj in case_query.limit(limit):
+    for nr_cases,case_obj in enumerate(case_query.limit(limit), 1):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
@@ -30,7 +30,7 @@ def cases(store, case_query, limit=100):
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
-        'found_cases': case_query.count(),
+        'found_cases': nr_cases,
         'limit': limit,
     }
     return data
