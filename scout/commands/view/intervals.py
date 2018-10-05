@@ -30,5 +30,5 @@ def intervals(context, build):
         nr_intervals += int_nr
 
     LOG.info("Total nr intervals:%s", nr_intervals)
-    LOG.info("Total nr genes:%s", adapter.all_genes(build).count())
+    LOG.info("Total nr genes:%s", adapter.nr_genes(build=build))
     LOG.info("Longest interval:%s", longest)
