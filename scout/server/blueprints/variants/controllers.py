@@ -201,8 +201,13 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
     if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
 
-    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
-                                           variant_id=variant_obj['variant_id'], comments=True)
+    comments = store.events(
+                 institute_obj, 
+                 case=case_obj, 
+                 variant_id=variant_obj['variant_id'], 
+                 comments=True
+                )
+    variant_obj['comments'] = [comment for comment in comments]
 
     if variant_genes:
         variant_obj.update(get_predictions(variant_genes))

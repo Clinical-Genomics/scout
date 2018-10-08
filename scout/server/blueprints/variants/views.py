@@ -51,7 +51,7 @@ def variants(institute_id, case_name):
                     flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
                 else:
                     hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+            elif store.nr_genes(hgnc_symbol) == 0:
                 flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
             elif is_clinical and (hgnc_symbol not in clinical_symbols):
                 flash("Gene not included in clinical list: {}".format(hgnc_symbol), 'warning')
@@ -124,9 +124,9 @@ def str_variants(institute_id, case_name):
     query['variant_type'] = variant_type
 
     variants_query = store.variants(case_obj['_id'], category='str',
-        query=query)
+                                    query=query)
     data = controllers.str_variants(store, institute_obj, case_obj,
-        variants_query, page)
+                                    variants_query, page)
     return dict(institute=institute_obj, case=case_obj,
         variant_type = variant_type, form=form, page=page, **data)
 

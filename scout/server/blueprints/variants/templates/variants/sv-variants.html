@@ -221,7 +221,7 @@
                       case_name=case.display_name, variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
-  {% set comment_count = variant.comments.count() %}
+  {% set comment_count = variant.comments|length %}
   {% if variant.manual_rank %}
     <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}

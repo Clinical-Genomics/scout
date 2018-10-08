@@ -22,8 +22,8 @@ def get_hgnc_id(gene_info, adapter):
     if hgnc_id:
         true_id = int(hgnc_id)
     else:
-        gene_result = adapter.hgnc_genes(hgnc_symbol)
-        if gene_result.count() == 0:
+        gene_result = [gene for gene in adapter.hgnc_genes(hgnc_symbol)]
+        if len(gene_result) == 0:
             raise Exception("No gene could be found for {}".format(hgnc_symbol))
         for gene in gene_result:
             if hgnc_symbol.upper() == gene.hgnc_symbol.upper():

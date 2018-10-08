@@ -132,7 +132,7 @@
                       variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
-  {% set comment_count = variant.comments.count() %}
+  {% set comment_count = variant.comments|length %}
   {% if variant.acmg_classification %}
     <span class="badge pull-right" title="{{ variant.acmg_classification.label }}">
       {{ variant.acmg_classification.short }}
