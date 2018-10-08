@@ -144,12 +144,14 @@ def sv_variant(store, institute_id, case_name, variant_id):
                         store.overlapping(variant_obj))
 
     # parse_gene function is not called for SVs, but a link to ensembl gene is required
-    ensembl_link = ''
     for gene_obj in variant_obj['genes']:
         if gene_obj['common']:
             ensembl_id = gene_obj['common']['ensembl_id']
-            build = int(gene_obj['common'].get('build','37'))
-            gene_obj['ensembl_link'] = ensembl_link
+            try:
+                build = int(gene_obj['common'].get('build','37'))
+            except Exception:
+                build = 37
+            gene_obj['ensembl_link'] = ensembl(ensembl_id, build=build)
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
@@ -412,7 +414,7 @@ def find_bai_file(bam_file):
 
 
 def variant(store, institute_obj, case_obj, variant_id=None):
-    """Pre-process a single variant.
+    """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
     object
@@ -493,6 +495,8 @@ def variant(store, institute_obj, case_obj, variant_id=None):
 
     gene_models = set()
     variant_obj['disease_associated_transcripts'] = []
+
+    # Parse the gene models, both from panels and genes
     for gene_obj in variant_obj.get('genes', []):
         omim_models = set()
         for disease_term in gene_obj.get('disease_terms', []):
