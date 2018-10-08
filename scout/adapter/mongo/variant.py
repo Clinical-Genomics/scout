@@ -157,7 +157,7 @@ class VariantHandler(VariantLoader):
             result(Iterable[Variant])
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
-        
+
         if variant_ids:
             nr_of_variants = len(variant_ids)
 
@@ -206,7 +206,7 @@ class VariantHandler(VariantLoader):
         else:
             # search with a unique id
             query['_id'] = document_id
-        
+
         variant_obj = self.variant_collection.find_one(query)
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
@@ -342,13 +342,13 @@ class VariantHandler(VariantLoader):
 
             gene_start = gene_obj['start']
             gene_end = gene_obj['end']
-            
+
             #Get the coordinates for a region
             if not region_start:
                 region_start = gene_start
             if gene_start < region_start:
                 region_start = gene_start
-            
+
             if not region_end:
                 region_end = gene_end
             if gene_end > region_end:
@@ -386,13 +386,18 @@ class VariantHandler(VariantLoader):
         """
         # Get all variants that have been evaluated in some way for a case
         query = {
-            'case_id': case_id,
-            '$or': [
-                {'acmg_classification': {'$exists': True}},
-                {'manual_rank': {'$exists': True}},
-                {'dismiss_variant': {'$exists': True}},
+            '$and': [
+                {'case_id': case_id},
+                {
+                    '$or': [
+                        {'acmg_classification': {'$exists': True}},
+                        {'manual_rank': {'$exists': True}},
+                        {'dismiss_variant': {'$exists': True}},
+                    ]
+                }
             ],
         }
+
         # Collect all relevant variant_ids in a list
         variants = {}
         for var in self.variant_collection.find(query):
@@ -404,10 +409,10 @@ class VariantHandler(VariantLoader):
             'category': 'variant',
             'verb': 'comment',
         }
-        
+
         # Get all variantids for commented variants
         comment_variants = {event['variant_id'] for event in self.event_collection.find(event_query)}
-        
+
         # Get the variant objects for commented variants, if they exist
         for var_id in comment_variants:
             # Skip if we already added the variant
@@ -415,7 +420,7 @@ class VariantHandler(VariantLoader):
                 continue
             # Get the variant with variant_id (not _id!)
             variant_obj = self.variant(var_id, case_id=case_id)
-            
+
             # There could be cases with comments that refers to non existing variants
             # if a case has been reanalysed
             if not variant_obj:
