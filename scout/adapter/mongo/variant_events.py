@@ -88,7 +88,7 @@ class VariantEventHandler(object):
 
         return updated_case
 
-    def order_sanger(self, institute, case, user, link, variant):
+    def order_validation(self, institute, case, user, link, variant):
         """Create an event for order sanger for a variant
         and an event for order sanger for a case
 
@@ -102,7 +102,7 @@ class VariantEventHandler(object):
         Returns:
             updated_variant(dict)
         """
-        LOG.info("Creating event for ordering sanger for variant" \
+        LOG.info("Creating event for ordering validation for variant" \
                     " {0}".format(variant['display_name']))
 
         updated_variant = self.variant_collection.find_one_and_update(
