@@ -405,9 +405,13 @@ class VariantHandler(VariantLoader):
 
         # Collect all variant comments from the case
         event_query = {
-            'case': case_id,
-            'category': 'variant',
-            'verb': 'comment',
+            {
+                '$and': [
+                    {'case': case_id},
+                    {'category': 'variant'},
+                    {'verb': 'comment'},
+                ]
+            }
         }
 
         # Get all variantids for commented variants
@@ -431,6 +435,7 @@ class VariantHandler(VariantLoader):
 
         # Return a list with the variant objects
         return list(variants.values())
+        
 
     def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,
                        gene_obj=None, variant_type='clinical', category='snv',
