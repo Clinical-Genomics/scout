@@ -16,7 +16,7 @@ from .variant_tags import (CONSEQUENCE, CONSERVATION, DISMISS_VARIANT_OPTIONS,
                            FEATURE_TYPES, SPIDEX_LEVELS, SPIDEX_HUMAN, SV_TYPES,
                            GENETIC_MODELS, VARIANT_CALL, MANUAL_RANK_OPTIONS)
 from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP,
-                        REV_PHENOTYPE_MAP, CASE_STATUSES)
+                        REV_PHENOTYPE_MAP, CASE_STATUSES, VERBS_MAP, VERBS)
 from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
 from .file_types import FILE_TYPE_MAP
