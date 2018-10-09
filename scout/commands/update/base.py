@@ -14,6 +14,7 @@ from .disease import diseases as disease_command
 from .panel import panel as panel_command
 from .user import user as user_command
 from .institute import institute as institute_command
+from .phenotype_groups import groups as groups_command
 
 LOG = logging.getLogger(__name__)
 
@@ -37,3 +38,4 @@ update.add_command(compound_command)
 update.add_command(hpo_command)
 update.add_command(gene_command)
 update.add_command(disease_command)
+update.add_command(groups_command)

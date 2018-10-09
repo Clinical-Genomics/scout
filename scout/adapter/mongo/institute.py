@@ -1,10 +1,12 @@
 import logging
 
 from datetime import datetime
+from pprint import pprint as pp
 
 import pymongo
 
 from scout.exceptions import IntegrityError
+from scout.constants import PHENOTYPE_GROUPS
 
 LOG = logging.getLogger(__name__)
 
@@ -35,7 +37,7 @@ class InstituteHandler(object):
 
     def update_institute(self, internal_id, sanger_recipient=None, coverage_cutoff=None, 
                          frequency_cutoff=None, display_name=None, remove_sanger=None,
-                         phenotype_groups=None, group_abbreviations=None):
+                         phenotype_groups=None, group_abbreviations=None, add_groups=None):
         """Update the information for an institute
 
         Args:
@@ -45,11 +47,15 @@ class InstituteHandler(object):
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
             remove_sanger(str): Email adress for sanger user to be removed
+            phenotype_groups(iterable(str)): New phenotype groups
+            group_abbreviations(iterable(str))
+            add_groups: If groups should be added. If False replace groups
         
         Returns:
             updated_institute(dict)
                      
         """
+        add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
             raise IntegrityError("Institute {} does not exist in database".format(internal_id))
@@ -93,7 +99,9 @@ class InstituteHandler(object):
         if phenotype_groups:
             if group_abbreviations:
                 group_abbreviations = list(group_abbreviations)
-            existing_groups = institute_obj.get('phenotype_groups',{})
+            existing_groups = {}
+            if add_groups:
+                existing_groups = institute_obj.get('phenotype_groups', PHENOTYPE_GROUPS)
 
             for i,hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
@@ -105,14 +113,15 @@ class InstituteHandler(object):
                 if group_abbreviations:
                     abbreviation = group_abbreviations[i]
                 existing_groups[hpo_term] = {'name': description, 'abbr':abbreviation}
-            updates['$set'] = {'phenotype_groups': phenotype_groups}
+            updates['$set'] = {'phenotype_groups': existing_groups}
         
         if updates:
             if not '$set' in updates:
                 updates['$set'] = {}
             
             updates['$set']['updated_at'] = datetime.now()
-
+            
+            updated_institute = {}
             updated_institute = self.institute_collection.find_one_and_update(
                 {'_id':internal_id}, updates, return_document = pymongo.ReturnDocument.AFTER)
         
