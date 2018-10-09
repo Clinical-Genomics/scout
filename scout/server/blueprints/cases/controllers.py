@@ -28,7 +28,7 @@ def cases(store, case_query, limit=100):
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-        case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['display_name'])
+        case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
