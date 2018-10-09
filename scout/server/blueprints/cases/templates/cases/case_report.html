@@ -651,48 +651,6 @@
           <table id="panel-table" class="table table-sm" style="background-color: transparent">
             <thead>
               <tr>
-                <th>Affected gene(s)</th>
-                <th>Variant effect</th>
-                <th>ACMG classification</th>
-                <th>Manual rank</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for gene in variant.genes %}
-                <tr>
-                  <td>
-                      <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a> ({{ gene.region_annotation }})
-                  </td>
-                  <td>
-                    {{ gene.functional_annotation|truncate(25, True)|replace('_',' ') }}
-                  </td>
-                  <td>
-                    {% if variant.acmg_classification %}
-                      <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
-                    {% else %}
-                      -
-                    {% endif %}
-                  </td>
-                  <td>
-                  {% if variant.manual_rank %}
-                    <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
-                  {% else %}
-                  -
-                  {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </table>
-    <table id="panel-table" class="table table-sm" style="background-color: transparent">
-      <tr>
-        <td>
-          <table id="panel-table" class="table table-sm" style="background-color: transparent">
-            <thead>
-              <tr>
                 <th>Frequency
                   {% if variant.frequency == 'common' %}
                     <span class="badge badge-danger">{{variant.frequency}}</span>
@@ -756,80 +714,101 @@
             </tbody>
           </table>
         </td>
-        <td>
-          <table id="panel-table" class="table table-sm" style="background-color: transparent">
-            <thead>
-              <tr>
-                <th>Variant Rank</th>
-                <th>Rank score</th>
-                <th>CADD score</th>
-                <th>Inheritance models</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{variant.variant_rank}}</td>
-                <td>{{variant.rank_score}}</td>
-                <td>
-                  <span class="pull-left">{{ variant.cadd_score or '-' }}</strong>
-                </td>
-                <td>
-                  <span class="pull-left">
-                    {% for model in variant.genetic_models|sort %}
-                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
-                    {% else %}
-                      <span class="badge badge-warning">No models followed</span>
-                    {% endfor %}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
       </tr>
     </table>
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       <thead>
         <tr>
-          <th>Gene</th>
-          <th>Transcript</th>
-          <th>HGVS Description</th>
-          <th>Amino acid</th>
+          <th>Scout Rank</th>
+          <th>Scout score</th>
+          <th>Manual rank</th>
+          <th>CADD score</th>
+          <th>Inheritance models</th>
+          <th>ACMG classification</th>
         </tr>
       </thead>
       <tbody>
-        {% set n_primary_transcripts = [] %}
+        <tr>
+          <td>{{variant.variant_rank}}</td>
+          <td>{{variant.rank_score}}</td>
+          <td>
+          {% if variant.manual_rank %}
+            <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
+          {% else %}
+          -
+          {% endif %}
+          </td>
+          <td>
+            <span class="pull-left">{{ variant.cadd_score or '-' }}</strong>
+          </td>
+          <td>
+            <span class="pull-left">
+              {% for model in variant.genetic_models|sort %}
+                <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+              {% else %}
+                <span class="badge badge-warning">No models followed</span>
+              {% endfor %}
+            </span>
+          </td>
+          <td>
+            {% if variant.acmg_classification %}
+              <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+      <thead>
+        <tr>
+          <th>Affected gene(s)</th>
+          <th>Description</th>
+          <th>Region annotation</th>
+          <th>Transcript - HGVS - Protein</th>
+          <th>OMIM phenotypes [inheritance]</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for gene in variant.genes %}
-            {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
-          {% for transcript in gene.primary_transcripts %}
-            {% if loop.index <= 5 or transcript.is_canonical %}
-              <tr {% if transcript.is_primary %} class="table-info" {% endif %}>
-                <td>
-                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                  </a>
+          <tr>
+            <td>
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+              </a>
+            </td>
+            <td>{{gene.description|title}}</td>
+            <td>{{gene.region_annotation}}</td>
+            <td>
+              {% set n_primary_transcripts = [] %}
+              <ul>
+              {% for transcript in gene.primary_transcripts %}
+                {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
+                {% if loop.index <= 5 or transcript.is_canonical %} <!--Do not print too many transcript, but include the canonical-->
+                  <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
                   {% if transcript.is_canonical %}
                     <span class="badge badge-pill badge-secondary" title="canonical">C</span>
                   {% endif %}
-                </td>
-                <td>
-                  {{transcript.refseq_id}}
-                </td>
-                <td title="{{ transcript.coding_sequence_name or '' }}">
-                  {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                </td>
-                <td>
-                  {{ (transcript.protein_sequence_name or '')|url_decode }}
-                </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
+                  </li>
+                {% endif %}
+              {% endfor %}
+              </ul>
+              {% if n_primary_transcripts|sum > 5 %}
+              .. other transcripts available for this variant are not shown.<br><br>
+              {% endif %}
+            </td>
+            <td>
+              <ul>
+              {% for disease_term in gene.disease_terms %}
+                <li><a href="https://www.omim.org/entry/{{disease_term.disease_nr}}" targer="_blank">{{ disease_term.description }}</a>&nbsp;{{ disease_term.inheritance }}</li>
+              {% endfor %}
+            </ul>
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
-    {% if n_primary_transcripts|sum > 5 %}
-    .. other transcripts available for this variant are not shown.<br><br>
-    {% endif %}
     {% if variant.comments.count() %}
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
@@ -951,102 +930,6 @@
         <td>
           <table id="panel-table" class="table table-sm" style="background-color: transparent">
             <thead>
-              <tr>
-                <th>Affected gene(s)</th>
-                <th>Description</th>
-                <th>Region</th>
-                <th>OMIM</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for gene in variant.genes %}
-                {% if loop.index <= 5 %}
-                  <tr>
-                    <td>
-                      <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">
-                        {{ gene.common.hgnc_symbol }}
-                      </a>
-                    </td>
-                    <td>{{ gene.common.description|replace('_', ' ') }}</td>
-                    <td>{{ gene.region_annotation }}</td>
-                    <td>
-                      {% if gene.common.omim_id %}
-                        <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                          {{ gene.common.omim_id }}
-                        </a>
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endif %}
-              {% endfor %}
-              {% if variant.genes|length >5 %}
-                <tr>
-                  <td colspan=3>other {{variant.genes|length -5}} genes</td>
-                </tr>
-              {% endif%}
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </table>
-    <table id="panel-table" class="table table-sm" style="background-color: transparent">
-      <tr>
-        <td>
-          <table id="panel-table" class="table table-sm" style="background-color: transparent">
-            <thead>
-              <tr>
-                <th>Variant Rank</th>
-                <th>Rank score</th>
-                <th>Inheritance models</th>
-                <th>Manual rank</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{variant.variant_rank}}</td>
-                <td>{{variant.rank_score}}</td>
-                <td>
-                  <span class="pull-left">
-                    {% for model in variant.genetic_models|sort %}
-                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
-                    {% else %}
-                      <span class="badge badge-warning">No models followed</span>
-                    {% endfor %}
-                  </span>
-                </td>
-                <td>
-                {% if variant.manual_rank %}
-                  <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
-                {% else %}
-                -
-                {% endif %}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          {% if variant.comments.count() %}
-            <br>
-            <table id="panel-table" class="table table-sm" style="background-color: transparent">
-              <thead>
-                <tr>
-                  <td colspan=3><strong>Variant-related comments</strong></td>
-                </tr>
-              </thead>
-              <tbody>
-                {% for comment in variant.comments %}
-                  <tr>
-                    <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
-                    <td width="20%">{{comment.user_name}}:</td>
-                    <td><strong>{{ comment.content }}</strong></td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% endif %}
-        </td>
-        <td>
-          <table id="panel-table" class="table table-sm" style="background-color: transparent">
-            <thead>
               <th colspan=2>Frequencies</th>
             </thead>
             <tbody>
@@ -1064,6 +947,125 @@
               {% endfor %}
             </tbody>
           </table>
+        </td>
+      </tr>
+    </table>
+    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+      <thead>
+        <tr>
+          <th>Scout Rank</th>
+          <th>Scout score</th>
+          <th>Manual rank</th>
+          <th>Inheritance models</th>
+          <th>ACMG classification</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{variant.variant_rank}}</td>
+          <td>{{variant.rank_score}}</td>
+          <td>
+          {% if variant.manual_rank %}
+            <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
+          {% else %}
+          -
+          {% endif %}
+          </td>
+          <td>
+            <span class="pull-left">
+              {% for model in variant.genetic_models|sort %}
+                <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+              {% else %}
+                <span class="badge badge-warning">No models followed</span>
+              {% endfor %}
+            </span>
+          </td>
+          <td>
+            {% if variant.acmg_classification %}
+              <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+      <thead>
+        <tr>
+          <th>Affected gene(s)</th>
+          <th>Description</th>
+          <th>Region annotation</th>
+          <th>Transcript - HGVS - Protein</th>
+          <th>OMIM phenotypes [inheritance]</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          <tr>
+            <td>
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+              </a>
+            </td>
+            <td>{{gene.description|title}}</td>
+            <td>{{gene.region_annotation}}</td>
+            <td>
+              {% set n_primary_transcripts = [] %}
+              <ul>
+              {% for transcript in gene.primary_transcripts %}
+                {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
+                {% if loop.index <= 5 or transcript.is_canonical %} <!--Do not print too many transcript, but include the canonical-->
+                  <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
+                  {% if transcript.is_canonical %}
+                    <span class="badge badge-pill badge-secondary" title="canonical">C</span>
+                  {% endif %}
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+              {% if n_primary_transcripts|sum > 5 %}
+              .. other transcripts available for this variant are not shown.<br><br>
+              {% endif %}
+            </td>
+            <td>
+              <ul>
+              {% for disease_term in gene.disease_terms %}
+                <li><a href="https://www.omim.org/entry/{{disease_term.disease_nr}}" targer="_blank">{{ disease_term.description }}</a>&nbsp;{{ disease_term.inheritance }}</li>
+              {% endfor %}
+              </ul>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if variant.comments.count() %}
+      <br>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <td colspan=3><strong>Variant-related comments</strong></td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comment in variant.comments %}
+            <tr>
+              <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
+              <td width="20%">{{comment.user_name}}:</td>
+              <td><strong>{{ comment.content }}</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+        </td>
+        <td>
+
+
+
+
         </td>
       </tr>
     </table>
