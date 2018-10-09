@@ -801,7 +801,7 @@
             <td>
               <ul>
               {% for disease_term in gene.disease_terms %}
-                <li><a href="https://www.omim.org/entry/{{disease_term.disease_nr}}" targer="_blank">{{ disease_term.description }}</a>&nbsp;{{ disease_term.inheritance }}</li>
+                <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
               {% endfor %}
             </ul>
             </td>
@@ -990,7 +990,6 @@
         </tr>
       </tbody>
     </table>
-
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       <thead>
         <tr>
@@ -1032,7 +1031,7 @@
             <td>
               <ul>
               {% for disease_term in gene.disease_terms %}
-                <li><a href="https://www.omim.org/entry/{{disease_term.disease_nr}}" targer="_blank">{{ disease_term.description }}</a>&nbsp;{{ disease_term.inheritance }}</li>
+                <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
               {% endfor %}
               </ul>
             </td>
