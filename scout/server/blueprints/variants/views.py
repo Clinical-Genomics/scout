@@ -31,6 +31,7 @@ def variants(institute_id, case_name):
                      for panel in case_obj.get('panels', [])]
     form.gene_panels.choices = panel_choices
 
+    ##TODO this could be it's own function and reused by other views
     # update status of case if vistited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
         flash('You just activated this case!', 'info')
@@ -39,6 +40,7 @@ def variants(institute_id, case_name):
                             case_name=case_obj['display_name'])
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
+    ##TODO this could be it's own function and reused by other views
     # check if supplied gene symbols exist
     hgnc_symbols = []
     if len(form.hgnc_symbols.data) > 0:
@@ -59,6 +61,7 @@ def variants(institute_id, case_name):
                 hgnc_symbols.append(hgnc_symbol)
     form.hgnc_symbols.data = hgnc_symbols
 
+    ##TODO this could be it's own function and reused by other views
     # handle HPO gene list separately
     if form.data['gene_panels'] == ['hpo']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
@@ -94,7 +97,7 @@ def variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, form=form,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
-
+##TODO discuss if all these could be collapsed to one function
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>')
 @templated('variants/variant.html')
 def variant(institute_id, case_name, variant_id):
@@ -371,15 +374,12 @@ def update_clinvar_submission(institute_id, case_name, variant_id, submission_id
             return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id))
 
-
-
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     data = controllers.cancer_variants(store, request.args, institute_id, case_name)
     return data
-
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET', 'POST'])
 @templated('variants/acmg.html')
@@ -403,7 +403,6 @@ def variant_acmg(institute_id, case_name, variant_id):
         return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
                                 variant_id=variant_id))
 
-
 @variants_bp.route('/evaluations/<evaluation_id>', methods=['GET', 'POST'])
 @templated('variants/acmg.html')
 def evaluation(evaluation_id):
@@ -420,7 +419,6 @@ def evaluation(evaluation_id):
                 case=evaluation_obj['case'], variant=evaluation_obj['variant'],
                 CRITERIA=ACMG_CRITERIA)
 
-
 @variants_bp.route('/api/v1/acmg')
 @public_endpoint
 def acmg():
@@ -428,7 +426,6 @@ def acmg():
     criteria = request.args.getlist('criterion')
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
-
 
 @variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
 def upload_panel(institute_id, case_name):

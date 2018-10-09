@@ -25,7 +25,7 @@ LOG = logging.getLogger(__name__)
 class MissingSangerRecipientError(Exception):
     pass
 
-
+##TODO these functions looks exactly the same and should be reused
 def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50, nr_variants=0):
     """Pre-process list of variants."""
     skip_count = per_page * max(page - 1, 0)
@@ -36,7 +36,6 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
                      variant_obj in variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
-
 
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50, nr_variants=0):
     """Pre-process list of SV variants."""
@@ -49,11 +48,13 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
         'more_variants': more_variants,
     }
 
+##TODO could not this be reused like above?
 def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
     # Nothing unique to STRs on this level. Inheritance?
     return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
+##TODO again these functions should be reused
 def str_variant(store, institute_id, case_name, variant_id):
     """Pre-process an STR variant entry for detail page.
 
