@@ -74,7 +74,7 @@
 
         <div class="row">
           <div class="col-md-6">{{ activity_panel(events) }}</div>
-          {% if case.clinvar_submissions %}
+          {% if case.clinvar_variants %}
             <div class="col-md-6">{{ clinvar_panel() }}</div>
           {% endif %}
         </div>
@@ -443,71 +443,23 @@
   </div>
 {% endmacro %}
 
-
 {% macro clinvar_panel() %}
   <div class="panel panel-default">
-    <div class="panel-heading">Variants with Clinvar submission</div>
-      <form method="POST">
-        <table id="panel-table" class="table">
-          <tbody>
-            {% for subm_obj in case.clinvar_submissions %}
-              <tr>
-                <td>
-                  {% if subm_obj['variant_type'] == 'snv' %}
-                    <a href="{{ url_for('variants.variant',
-                                      institute_id=subm_obj['institute'],
-                                      case_name=subm_obj['case'],
-                                        variant_id=subm_obj['_id']) }}">
-                                        {% if subm_obj['Gene_symbol'] %}
-                                          {{subm_obj['Gene_symbol']}}
-                                        {% else %}
-                                          {{subm_obj['_id']}}
-                                        {% endif %}
-                      </a>
-                  {% else %}
-                  <a href="{{ url_for('variants.sv_variant',
-                                    institute_id=subm_obj['institute'],
-                                    case_name=subm_obj['case'],
-                                      variant_id=subm_obj['_id']) }}">
-                                      chr{{subm_obj['Chromosome']}} - {{subm_obj['variant_type']}}
-                    </a>
-
-
-
-                  {% endif %}
-
-
-                </td>
-                <td>
-                  {% if subm_obj['Clinical_significance'] == 'Pathogenic' %}
-                    <span class="label label-danger">P</span>
-                  {% elif subm_obj['Clinical_significance'] == 'Likely Pathogenic' %}
-                    <span class="label label-warning">LP</span>
-                  {% elif subm_obj['Clinical_significance'] == 'Likely benign' %}
-                    <span class="label label-info">LB</span>
-                  {% elif subm_obj['Clinical_significance'] == 'Uncertain significance' %}
-                    <span class="label label-primary">VUS</span>
-                  {% else %}
-                    <span class="label label-success">B</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <span class="label label-primary">casedata:{{subm_obj['casedata']|length}}</span>
-                </td>
-                <td>
-                  {% if subm_obj['clinvar_accession']%}
-                    <a href="https://www.ncbi.nlm.nih.gov/clinvar/variation/{{subm_obj['clinvar_accession']}}" target="_blank"><span class="label label-success">{{subm_obj['clinvar_submission'] + " ("+subm_obj['created_at'].strftime('%Y-%m-%d')+")"}} </span></a>
-                  {% else %}
-                    <span class="label label-info"><a href="{{ url_for('variants.update_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=subm_obj['_id'], submission_id=subm_obj['clinvar_submission']) }}">{{subm_obj['clinvar_submission'] + " ("+subm_obj['created_at'].strftime('%Y-%m-%d')+")"}} </span>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </form>
+    <div class="panel-heading">Variants in Clinvar submissions</div>
+    <ul>
+      {% for var_id, submission_data in case.clinvar_variants.items() %}
+        <li>
+          {% if submission_data.category == 'snv' %}
+            <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
+          {% else %}
+            <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 {% endmacro %}
+
 
 {% macro phenotype_groups_panel() %}
   <div class="panel panel-default">

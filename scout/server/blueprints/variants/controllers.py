@@ -156,9 +156,9 @@ def sv_variant(store, institute_id, case_name, variant_id):
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
 
-    clinvar_submission = store.clinvars(variant_ids=[variant_id])
-    if clinvar_submission:
-        variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
+    case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
+    if variant_id in case_clinvars:
+        variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
 
     return {
         'institute': institute_obj,
@@ -515,14 +515,15 @@ def variant(store, institute_obj, case_obj, variant_id=None):
         variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
         variant_obj['is_matching_inheritance'] = variant_models & gene_models
 
-    clinvar_submission = store.clinvars(variant_ids=[variant_obj['_id']])
-    if clinvar_submission:
-        variant_obj['clinvar_submission_id'] = clinvar_submission[0]['clinvar_submission']
-
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
         evaluation(store, evaluation_obj)
         evaluations.append(evaluation_obj)
+
+    case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
+    if variant_id in case_clinvars:
+        variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
+
     return {
         'variant': variant_obj,
         'causatives': other_causatives,

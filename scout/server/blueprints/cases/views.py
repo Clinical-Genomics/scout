@@ -7,11 +7,12 @@ import logging
 from operator import itemgetter
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, flash)
+                   request, url_for, send_from_directory, jsonify, Response, flash)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
-
+from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
 from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case, user_institutes
 from . import controllers
@@ -63,6 +64,63 @@ def case(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, **data)
 
 
+@cases_bp.route('/<institute_id>/clinvar_submissions', methods=['GET','POST'])
+@templated('cases/clinvar_submissions.html')
+def clinvar_submissions(institute_id):
+
+    def generate_csv(header, lines):
+        yield header + '\n'
+        for line in lines: # lines have already quoted fields
+            yield line + '\n'
+
+    if request.method == 'POST':
+        submission_id = request.form.get('submission_id')
+        if request.form.get('update_submission'):
+            if request.form.get('update_submission') == 'close': # close a submission
+                store.update_clinvar_submission_status(current_user.email, submission_id, 'closed')
+            elif request.form.get('update_submission') == 'open':
+                store.update_clinvar_submission_status(current_user.email, submission_id, 'open') # open a submission
+            elif request.form.get('update_submission') == 'register_id' and request.form.get('clinvar_id'): # provide an official clinvar submission ID
+                result = store.update_clinvar_id(clinvar_id = request.form.get('clinvar_id'), submission_id = submission_id)
+            elif request.form.get('update_submission') == 'delete': # delete a submission
+                deleted_objects, deleted_submissions = store.delete_submission(submission_id = submission_id)
+                flash("Removed {} objects and {} submission from database".format(deleted_objects, deleted_submissions), 'info')
+        elif request.form.get('delete_variant'): # delete a variant from a submission
+            store.delete_clinvar_object(object_id = request.form.get('delete_variant'), object_type='variant_data', submission_id = submission_id) # remove variant and associated_casedata
+        elif request.form.get('delete_casedata'): # delete a case from a submission
+            store.delete_clinvar_object(object_id = request.form.get('delete_casedata'), object_type='case_data', submission_id = submission_id) # remove just the casedata associated to a variant
+        else: # Download submission CSV files (for variants or casedata)
+
+            clinvar_subm_id = request.form.get('clinvar_id')
+            if clinvar_subm_id =='':
+                flash('In order to download a submission CSV file you should register a Clinvar submission Name first!','warning')
+                return redirect(request.referrer)
+
+            csv_type = ''
+            csv_type = request.form.get('csv_type')
+
+            submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type) # a list of clinvar submission objects (variants or casedata)
+            if submission_objs:
+                csv_header_obj = controllers.clinvar_header(submission_objs, csv_type) # custom csv header (dict as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
+                csv_lines = controllers.clinvar_lines(submission_objs, csv_header_obj) # csv lines (one for each variant/casedata to be submitted)
+                csv_header = list(csv_header_obj.values())
+                csv_header = ['"'+str(x)+'"' for x in csv_header] # quote columns in header for csv rendering
+
+                headers = Headers()
+                headers.add('Content-Disposition','attachment', filename=clinvar_subm_id+'_'+str(datetime.datetime.now().strftime("%Y-%m-%d"))+'.csv')
+                return Response(generate_csv(','.join(csv_header), csv_lines), mimetype='text/csv', headers=headers)
+            else:
+                flash('There are no submission objects of type "{}" to include in the csv file!'.format(csv_type),'warning')
+
+    data = {
+        'submissions' : controllers.clinvar_submissions(store, current_user.email, institute_id),
+        'institute_id' : institute_id,
+        'variant_header_fields' : CLINVAR_HEADER ,
+        'casedata_header_fields' : CASEDATA_HEADER
+    }
+    return data
+
+
 @cases_bp.route('/<institute_id>/causatives')
 @templated('cases/causatives.html')
 def causatives(institute_id):
@@ -94,7 +152,7 @@ def case_synopsis(institute_id, case_name):
     return redirect(request.referrer)
 
 
-@cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET','POST'])
+@cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET'])
 @templated('cases/case_report.html')
 def case_report(institute_id, case_name):
     """Visualize case report"""
@@ -104,7 +162,7 @@ def case_report(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
 
-@cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET','POST'])
+@cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET'])
 def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 

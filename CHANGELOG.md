@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Adds hgvs information on cancer variants page
 
 ### Fixed
+- Improved Clinvar to submit variants from different cases. Fixed HPO terms in casedata according to feedback
 - Fixed broken link to case page from Sanger modal in cases view
 - Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
 - Can handle Tumor only samples
