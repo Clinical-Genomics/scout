@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - added a view for searching HPO terms. It is accessed from the top left corner menu
 - Updates the variants view for cancer variants. Adds a small cancer specific filter for known variants
 - Adds hgvs information on cancer variants page
+- Adds option to update phenotype groups from CLI
 
 ### Fixed
 - Improved Clinvar to submit variants from different cases. Fixed HPO terms in casedata according to feedback
