@@ -263,7 +263,7 @@
   </div>
   <div class="card-body">
     {% if causatives_detailed %}
-      {% for causative in causatives_detailed %}
+      {% for causative in causatives_detailed|sort(attribute='variant_rank') %}
         {% if causative.category == 'snv' %}
           {{ sn_variant_content(causative, loop.index) }}
         {% else %}
@@ -287,7 +287,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if suspects_detailed %}
-      {% for pinned in suspects_detailed %}
+      {% for pinned in suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in causatives_detailed | map(attribute='_id') %}
           {% if pinned.category == 'snv' %}
             {{ sn_variant_content(pinned, loop.index) }}
@@ -318,7 +318,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if classified_detailed %}
-      {% for variant in classified_detailed %}
+      {% for variant in classified_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in suspects_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
@@ -349,7 +349,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if tagged_detailed %}
-      {% for variant in tagged_detailed %}
+      {% for variant in tagged_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in suspects_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
@@ -380,7 +380,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if commented_detailed %}
-      {% for variant in commented_detailed %}
+      {% for variant in commented_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in causatives_detailed | map(attribute='_id') | list and variant['_id'] not in suspects_detailed | map(attribute='_id') and variant['_id'] not in classified_detailed | map(attribute='_id') and variant['_id'] not in tagged_detailed | map(attribute='_id') %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
@@ -419,7 +419,7 @@
               <td><strong>Dismissed description</strong></td>
           </tr>
         </thead>
-        {% for variant in dismissed_detailed %}
+        {% for variant in dismissed_detailed|sort(attribute='variant_rank') %}
           <tr>
             <td>#{{loop.index}}</td>
             {% if variant.category == 'snv' %}

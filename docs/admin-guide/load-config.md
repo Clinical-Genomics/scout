@@ -42,7 +42,7 @@ default_gene_panels: list[str](optional)
 gene_panels: list[str](optional)
 
 # meta data
-rank_model_version: float(optional)
+rank_model_version: str(optional)
 rank_score_threshold: float(optional)
 analysis_date: datetime(optional)
 human_genome_build: str(optional)

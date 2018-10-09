@@ -64,7 +64,7 @@ case = dict(
     genome_build=str,  # This should be 37 or 38
     genome_version=float,  # What version of the build
 
-    rank_model_version=float,
+    rank_model_version=str,
     rank_score_threshold=int,  # default=8
 
     phenotype_terms=list,  # List of dictionaries with phenotype information
