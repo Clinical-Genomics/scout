@@ -10,10 +10,9 @@ from flask_mail import Message
 
 from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
                              ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
-                             ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN)
+                             ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER
-from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm

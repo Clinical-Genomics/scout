@@ -6,9 +6,8 @@ from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
-from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variants_filter_by_field

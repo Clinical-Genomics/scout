@@ -39,6 +39,8 @@ def groups(context, institute_id, phenotype_group, group_abbreviation, group_fil
         for line in group_file:
             if line.startswith('#'):
                 continue
+            if len(line) < 7:
+                continue
             line = line.rstrip().split('\t')
             phenotype_group.append(line[0])
             if line[1]:

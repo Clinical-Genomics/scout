@@ -121,9 +121,10 @@ class InstituteHandler(object):
             
             updates['$set']['updated_at'] = datetime.now()
             
-            updated_institute = {}
             updated_institute = self.institute_collection.find_one_and_update(
                 {'_id':internal_id}, updates, return_document = pymongo.ReturnDocument.AFTER)
+            
+            LOG.info("Institute updated")
         
         return updated_institute
 
