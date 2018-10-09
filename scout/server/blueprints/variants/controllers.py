@@ -216,9 +216,12 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
         variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
+
     # convert length for SV variants
     variant_length = variant_obj.get('length')
     variant_obj['length'] = {100000000000: 'inf', -1: 'n.d.'}.get(variant_length, variant_length)
+    if not 'end_chrom' in variant_obj:
+        variant_obj['end_chrom'] = variant_obj['chromosome']
 
     return variant_obj
 
@@ -495,7 +498,7 @@ def variant(store, institute_obj, case_obj, variant_id=None):
 
     gene_models = set()
     variant_obj['disease_associated_transcripts'] = []
-    
+
     # Parse the gene models, both from panels and genes
     for gene_obj in variant_obj.get('genes', []):
         omim_models = set()
