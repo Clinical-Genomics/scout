@@ -293,7 +293,7 @@ def get_sanger_unevaluated(store, institute_id):
             variant_obj = store.variant(document_id=var_id, case_id=case_id)
 
             # Double check that Sanger was ordered (and not canceled) for the variant
-            if not (variant_obj or variant_obj.get('sanger_ordered')):
+            if variant_obj is None or variant_obj.get('sanger_ordered') is None:
                 continue
 
             validation = variant_obj.get('validation', 'not_evaluated')
