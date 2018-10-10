@@ -16,8 +16,7 @@ def add_gene_links(gene_obj, build=37):
         build = 37
     # Add links that use the hgnc_id
     hgnc_id = gene_obj['hgnc_id']
-    
-    
+
     gene_obj['hgnc_link'] = genenames(hgnc_id)
     gene_obj['omim_link'] = omim(hgnc_id)
     # Add links that use ensembl_id
