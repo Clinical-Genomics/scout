@@ -8,6 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 Add new stuff here
 
+## [4.1.1]
+
+- Fix problem with comments
+- Fix problem with ensembl link
+
+
 ## [4.1.0]
 
 ### Added
