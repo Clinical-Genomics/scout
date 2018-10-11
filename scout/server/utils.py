@@ -33,6 +33,7 @@ def public_endpoint(function):
 
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
+    flash('IN INSTITUTE AND CASE!!!', 'info')
     institute_obj = store.institute(institute_id)
     if institute_obj is None and institute_id != 'favicon.ico':
         flash("Can't find institute: {}".format(institute_id), 'warning')
@@ -50,8 +51,7 @@ def institute_and_case(store, institute_id, case_name=None):
             if not case_name or not any(inst_id in case_obj['collaborators'] for inst_id in
                                         current_user.institutes):
                 # you don't have access!!
-                flash("You don't have acccess to: {}".format(institute_obj['display_name']),
-                      'danger')
+                flash("You don't have acccess to: {}".format(institute_id),'danger')
                 return abort(403)
 
     # you have access!

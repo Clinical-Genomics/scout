@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add new stuff here
 
 ## [4.1.1]
-
+- Fix problem with institute authentication flash message in utils
 - Fix problem with comments
 - Fix problem with ensembl link
 
