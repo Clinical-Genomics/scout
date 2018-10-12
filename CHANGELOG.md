@@ -9,6 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - Logs uri without pwd when connecting 
+- Disease-causing transcripts in case report
+- Thicker lines in case report
+- Supports HPO search for cases, both terms or if described in synopsis
 
 ### Fixed
 
