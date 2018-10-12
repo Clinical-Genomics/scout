@@ -148,6 +148,6 @@ class InstituteHandler(object):
 
     def institutes(self):
         """Fetch all institutes."""
-        LOG.info("Fetching all institutes")
+        LOG.debug("Fetching all institutes")
         return self.institute_collection.find()
 

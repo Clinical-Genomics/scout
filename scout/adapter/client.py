@@ -17,7 +17,7 @@ except ImportError:
     from urllib import quote_plus
 
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def get_connection(host='localhost', port=27017, username=None, password=None,
@@ -38,15 +38,18 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
         if username and password:
             uri = ("mongodb://{}:{}@{}:{}/{}"
                    .format(quote_plus(username), quote_plus(password), host, port, authdb))
+            log_uri = ("mongodb://{}:****@{}:{}/{}"
+                   .format(quote_plus(username), host, port, authdb))
         else:
-            uri = "mongodb://%s:%s" % (host, port)
+            log_uri = uri = "mongodb://%s:%s" % (host, port)
+            
 
-    logger.info("Try to connect to %s" % uri)
+    LOG.info("Try to connect to %s" % log_uri)
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
     except ServerSelectionTimeoutError as err:
-        logger.warning("Connection Refused")
+        LOG.warning("Connection Refused")
         raise ConnectionFailure
 
-    logger.info("Connection established")
+    LOG.info("Connection established")
     return client
