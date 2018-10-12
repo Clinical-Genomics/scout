@@ -10,8 +10,8 @@ Your name will be tagged for each case that is assigned to you. For cases that a
 In the search field you can enter search terms to limit the list displayed. Entering a user name shows only cases assigned to that user. A case- or sample id will return only cases with matches to those ids.
 
 A search starting with "HP:", e.g. "HP:0002664" will return cases with exactly matching [HPO phenotype terms](../features/hpo.md).
-A search starting with "synopsis:", e.g. "synopsis:epilepsy" will return cases with free text matches to the string following "synopsis:".
 
+A search starting with "synopsis:", e.g. "synopsis:epilepsy" will return cases with free text matches to the string following "synopsis:".
 
 ## Case
 This is the detailed view of one individual case. The intended use is to give a concise overview of the family under investigation and show recent activity related to the case.
