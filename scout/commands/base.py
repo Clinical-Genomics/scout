@@ -2,6 +2,8 @@
 import sys
 import logging
 
+from pprint import pprint as pp
+
 import click
 import coloredlogs
 import yaml
@@ -9,7 +11,7 @@ import yaml
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
 from scout.adapter.client import get_connection
-from pymongo.errors import ConnectionFailure
+from pymongo.errors import (ConnectionFailure, OperationFailure)
 
 # General, logging
 from scout import __version__
@@ -44,11 +46,7 @@ LOG = logging.getLogger(__name__)
 @click.option('-db', '--mongodb', help='Name of mongo database [scout]')
 @click.option('-u', '--username')
 @click.option('-p', '--password')
-@click.option('-a', '--authdb', 
-            help='database to use for authentication',
-            default='admin',
-            show_default=True,
-            )
+@click.option('-a', '--authdb', help='database to use for authentication')
 @click.option('-port', '--port', help="Specify on what port to listen for the mongod")
 @click.option('-h', '--host', help="Specify the host for the mongo database.")
 @click.option('-c', '--config', type=click.Path(exists=True),
@@ -75,7 +73,6 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     if demo:
         mongo_config['mongodb'] = 'scout-demo'
 
-
     mongo_config['host'] = (host or cli_config.get('host') or 'localhost')
     mongo_config['port'] = (port or cli_config.get('port') or 27017)
     mongo_config['username'] = username or cli_config.get('username')
@@ -93,18 +90,18 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
         LOG.debug("Setting host to %s", mongo_config['host'])
         LOG.debug("Setting port to %s", mongo_config['port'])
 
-        valid_connection = check_connection(
-            host=mongo_config['host'],
-            port=mongo_config['port'],
-            username=mongo_config['username'],
-            password=mongo_config['password'],
-            authdb=mongo_config['authdb'],
-        )
-
-        LOG.info("Test if mongod is running")
-        if not valid_connection:
-            LOG.warning("Connection could not be established")
-            context.abort()
+        # valid_connection = check_connection(
+        #     host=mongo_config['host'],
+        #     port=mongo_config['port'],
+        #     username=mongo_config['username'],
+        #     password=mongo_config['password'],
+        #     authdb=mongo_config['authdb'],
+        # )
+        #
+        # LOG.info("Test if mongod is running")
+        # if not valid_connection:
+        #     LOG.warning("Connection could not be established")
+        #     context.abort()
 
         try:
             client = get_connection(**mongo_config)
@@ -115,7 +112,17 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
 
         LOG.info("Setting up a mongo adapter")
         mongo_config['client'] = client
-        mongo_config['adapter'] = MongoAdapter(database)
+        adapter = MongoAdapter(database)
+        mongo_config['adapter'] = adapter
+        
+        LOG.info("Check if authenticated...")
+        try:
+            for ins_obj in adapter.institutes():
+                pass
+        except OperationFailure as err:
+            LOG.info("User not authenticated")
+            context.abort()
+        
 
     context.obj = mongo_config
 

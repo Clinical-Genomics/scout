@@ -4,9 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+## [4.1.2b]
 
-Add new stuff here
+### Added
+
+- Logs uri without pwd when connecting 
+
+### Fixed
+
+- Use db name instead of **auth** as default for authentification
 
 ## [4.1.1]
 - Fix problem with institute authentication flash message in utils
