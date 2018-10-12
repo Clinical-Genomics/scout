@@ -66,7 +66,12 @@ class CaseHandler(object):
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
-
+            elif name_query.startswith('HP:'):
+                LOG.debug("HPO case query")
+                query['phenotype_terms.phenotype_id'] = name_query
+            elif name_query.startswith('synopsis:'):
+                synopsis_query=name_query.replace('synopsis:','')
+                query['$text']={'$search':synopsis_query}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
@@ -367,16 +372,16 @@ class CaseHandler(object):
 
     def update_caseid(self, case_obj, family_id):
         """Update case id for a case across the database.
-        
+
         This function is used when a case is a rerun or updated for another reason.
-        
+
         Args:
             case_obj(dict)
             family_id(str): The new family id
-        
+
         Returns:
             new_case(dict): The updated case object
-        
+
         """
         new_case = deepcopy(case_obj)
         new_case['_id'] = family_id
@@ -420,11 +425,11 @@ class CaseHandler(object):
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.
-    
+
     Args:
         variant_obj(dict)
         family_id(str)
-    
+
     Returns:
         new_id(str): The new variant id
     """
