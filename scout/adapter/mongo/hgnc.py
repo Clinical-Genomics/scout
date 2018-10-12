@@ -93,11 +93,11 @@ class GeneHandler(object):
         
         return result
 
-    def hgnc_gene(self, hgnc_identifyer, build='37'):
+    def hgnc_gene(self, hgnc_identifier, build='37'):
         """Fetch a hgnc gene
 
             Args:
-                hgnc_id(int)
+                hgnc_identifier(int)
 
             Returns:
                 gene_obj(HgncGene)
@@ -107,11 +107,11 @@ class GeneHandler(object):
         query = {}
         try:
             # If the identifier is a integer we search for hgnc_id
-            hgnc_identifyer = int(hgnc_identifyer)
-            query['hgnc_id'] = hgnc_identifyer
+            hgnc_identifier = int(hgnc_identifier)
+            query['hgnc_id'] = hgnc_identifier
         except ValueError:
             # Else we seach for a hgnc_symbol
-            query['hgnc_symbol'] = hgnc_identifyer
+            query['hgnc_symbol'] = hgnc_identifier
 
         query['build'] = build
         #LOG.debug("Fetching gene %s" % hgnc_identifyer)
@@ -121,7 +121,7 @@ class GeneHandler(object):
         
         # Add the transcripts:
         transcripts = []
-        tx_objs = self.transcripts(build='37', hgnc_id=gene_obj['hgnc_id'])
+        tx_objs = self.transcripts(build=build, hgnc_id=gene_obj['hgnc_id'])
         if tx_objs.count() > 0:
             for tx in tx_objs:
                 transcripts.append(tx)
