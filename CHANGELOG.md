@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use db name instead of **auth** as default for authentification
 
 ## [4.1.1]
+- Disease-causing transcripts in case report
 - Thicker lines in case report
 - Fix problem with institute authentication flash message in utils
 - Fix problem with comments
