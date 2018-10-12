@@ -18,7 +18,7 @@ mongo_adapter
 python-dateutil
 pymongo<3.7
 pathlib
-WeasyPrint>=0.42.3
+WeasyPrint
 click<7.0
 
 # unclear
