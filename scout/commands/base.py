@@ -80,28 +80,12 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     mongo_config['authdb'] = authdb or cli_config.get('authdb') or mongo_config['mongodb']
     mongo_config['omim_api_key'] = cli_config.get('omim_api_key')
 
-    # mongo uri looks like:
-    # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
-
     if context.invoked_subcommand in ('setup', 'serve'):
         mongo_config['adapter'] = None
     else:
         LOG.info("Setting database name to %s", mongo_config['mongodb'])
         LOG.debug("Setting host to %s", mongo_config['host'])
         LOG.debug("Setting port to %s", mongo_config['port'])
-
-        # valid_connection = check_connection(
-        #     host=mongo_config['host'],
-        #     port=mongo_config['port'],
-        #     username=mongo_config['username'],
-        #     password=mongo_config['password'],
-        #     authdb=mongo_config['authdb'],
-        # )
-        #
-        # LOG.info("Test if mongod is running")
-        # if not valid_connection:
-        #     LOG.warning("Connection could not be established")
-        #     context.abort()
 
         try:
             client = get_connection(**mongo_config)
