@@ -108,6 +108,10 @@ INDEXES = {
             background=True,
             ),
     ],
-    
+    'case': [
+        IndexModel([
+            ('synopsis', TEXT)],
+            default_language='english',
+            name="synopsis_text"),
+    ],
 }
-
