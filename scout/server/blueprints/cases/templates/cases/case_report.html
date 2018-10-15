@@ -265,7 +265,7 @@
   <div class="card-body">
     {% if causatives_detailed %}
       {% for causative in causatives_detailed|sort(attribute='variant_rank') %}
-        {{ printed_vars.append(causative['_id']) }}
+        {% do printed_vars.append(causative['_id']) %}
         {% if causative.category == 'snv' %}
           {{ sn_variant_content(causative, loop.index) }}
         {% else %}
@@ -291,7 +291,7 @@
     {% if suspects_detailed %}
       {% for pinned in suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in printed_vars %}
-          {{ printed_vars.append(pinned['_id']) }}
+          {% do printed_vars.append(pinned['_id']) %}
           {% if pinned.category == 'snv' %}
             {{ sn_variant_content(pinned, loop.index) }}
           {% else %}
@@ -323,7 +323,7 @@
     {% if classified_detailed %}
       {% for variant in classified_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
-          {{ printed_vars.append(variant['_id']) }}
+          {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
@@ -355,7 +355,7 @@
     {% if tagged_detailed %}
       {% for variant in tagged_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
-          {{ printed_vars.append(variant['_id']) }}
+          {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
@@ -387,7 +387,7 @@
     {% if commented_detailed %}
       {% for variant in commented_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
-          {{ printed_vars.append(variant['_id']) }}
+          {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
