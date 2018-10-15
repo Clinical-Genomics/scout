@@ -599,15 +599,10 @@
 {% macro hpo_genelist_panel() %}
   <div class="panel panel-default">
     <div class="panel-heading">
-      HPO gene panel (
-      {{ case.dynamic_gene_list|length }} genes
-
-      {% if case.dynamic_panel_phenotypes %}
-        , <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
-          {{ case.dynamic_panel_phenotypes|length }} phenotypes
-        </span>
-      {% endif %}
-      )
+      HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
+      {%- if case.dynamic_panel_phenotypes %},
+      <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
+          {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>{% endif %})
     </div>
     <ul class="list-group fixed-panel">
       {% for hpo_gene in case.dynamic_gene_list %}

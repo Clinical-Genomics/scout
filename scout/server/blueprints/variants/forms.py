@@ -3,8 +3,9 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField, IntegerField)
+                     HiddenField, IntegerField, SubmitField)
 from wtforms.widgets import TextInput
+from flask_wtf.file import FileField
 
 from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS,
                              SPIDEX_LEVELS, SV_TYPES)
@@ -47,9 +48,12 @@ class BetterDecimalField(DecimalField):
 
 
 class FiltersForm(FlaskForm):
+    """Base FiltersForm for SNVs"""
     variant_type = HiddenField(default='clinical')
     gene_panels = SelectMultipleField(choices=[])
     hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
+
+    symbol_file = FileField('Symbol File')
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
@@ -58,7 +62,7 @@ class FiltersForm(FlaskForm):
     cadd_score = BetterDecimalField('CADD', places=2)
     cadd_inclusive = BooleanField('CADD inclusive')
     clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
-    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
+    clinsig_confident_always_returned = BooleanField('CLINSIG Confident')
     spidex_human = SelectMultipleField('SPIDEX', choices=SPIDEX_CHOICES)
 
     thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
@@ -66,6 +70,8 @@ class FiltersForm(FlaskForm):
     chrom = TextField('Chromosome')
     local_obs = IntegerField('Local obs. (archive)')
 
+    filter_variants = SubmitField(label='Filter variants')
+    clinical_filter = SubmitField(label='Clinical filter')
 
 class CancerFiltersForm(FiltersForm):
     """docstring for CancerFiltersForm"""
@@ -82,23 +88,10 @@ class StrFiltersForm(FlaskForm):
     gene_panels = SelectMultipleField(choices=[])
     repids = TagListField()
 
-class SvFiltersForm(FlaskForm):
-    gene_panels = SelectMultipleField(choices=[])
-    hgnc_symbols = TagListField()
-
-    region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
-    functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
-    genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
-
-    cadd_score = BetterDecimalField('CADD', places=2)
-    cadd_inclusive = BooleanField('CADD inclusive')
-    clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
-    clinsig_confident_always_returned = BooleanField('All CLINSIG confident')
-
-    chrom = TextField('Chromosome')
+class SvFiltersForm(FiltersForm):
+    """Extends FiltersForm for structural variants"""
     size = TextField('Length')
     size_inclusive = BooleanField('Length inclusive')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
 
-    thousand_genomes_frequency = BetterDecimalField('1000 Genomes', places=2)
     clingen_ngi = IntegerField('ClinGen NGI obs')
