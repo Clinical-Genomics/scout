@@ -100,7 +100,8 @@ def str_variant(store, institute_id, case_name, variant_id):
         'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
     }
 
-def sv_variant(store, institute_id, case_name, variant_id):
+def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
+               get_overlapping=True):
     """Pre-process an SV variant entry for detail page.
 
     Adds information to display variant
@@ -110,6 +111,8 @@ def sv_variant(store, institute_id, case_name, variant_id):
         institute_id(str)
         case_name(str)
         variant_id(str)
+        variant_obj(dcit)
+        add_case(bool): If information about case files should be added
 
     Returns:
         detailed_information(dict): {
@@ -123,10 +126,12 @@ def sv_variant(store, institute_id, case_name, variant_id):
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
-    variant_obj = store.variant(variant_id)
+    if not variant_obj:
+        variant_obj = store.variant(variant_id)
 
-    # fill in information for pilup view
-    variant_case(store, case_obj, variant_obj)
+    if add_case:
+        # fill in information for pilup view
+        variant_case(store, case_obj, variant_obj)
 
     # frequencies
     variant_obj['frequencies'] = [
@@ -140,8 +145,11 @@ def sv_variant(store, institute_id, case_name, variant_id):
     ]
 
     variant_obj['callers'] = callers(variant_obj, category='sv')
-    overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
-                        store.overlapping(variant_obj))
+    
+    overlapping_snvs = []
+    if get_overlapping:
+        overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
+                            store.overlapping(variant_obj))
 
     # parse_gene function is not called for SVs, but a link to ensembl gene is required
     for gene_obj in variant_obj['genes']:
@@ -171,7 +179,19 @@ def sv_variant(store, institute_id, case_name, variant_id):
 
 
 def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
-    """Parse information about variants."""
+    """Parse information about variants.
+    
+    - Adds information about compounds
+    - Updates the information about compounds if necessary and 'update=True'
+    
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_obj(scout.models.Institute)
+        case_obj(scout.models.Case)
+        variant_obj(scout.models.Variant)
+        update(bool): If variant should be updated in database
+        
+    """
     has_changed = False
     compounds = variant_obj.get('compounds', [])
     if compounds:
@@ -186,19 +206,24 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         variant_obj['compounds'] = sorted(variant_obj['compounds'],
                                           key=lambda compound: -compound['combined_score'])
 
+    # Update the hgnc symbols if they are incorrect
     genome_build = case_obj.get('genome_build','37')
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
+            # If there is no hgnc id there is nothin we can do
             if not gene_obj['hgnc_id']:
                 continue
+            # Else we collect the gene object and check the id
             if gene_obj.get('hgnc_symbol') is None:
-                hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'])
-                if hgnc_gene:
-                    has_changed = True
-                    gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+                hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=build)
+                if not hgnc_gene:
+                    continue
+                has_changed = True
+                gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
 
     # We update the variant if some information was missing from loading
+    # Or if symbold in reference genes have changed
     if update and has_changed:
         variant_obj = store.update_variant(variant_obj)
 
@@ -209,6 +234,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         variant_obj.update(get_predictions(variant_genes))
         if variant_obj.get('category') == 'cancer':
             variant_obj.update(get_variant_info(variant_genes))
+
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
@@ -368,7 +394,15 @@ def get_predictions(genes):
 
 
 def variant_case(store, case_obj, variant_obj):
-    """Pre-process case for the variant view."""
+    """Pre-process case for the variant view.
+    
+    Adds information about files from case obj to variant
+    
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+        variant_obj(scout.models.Variant)
+    """
     case_obj['bam_files'] = []
     case_obj['mt_bams'] = []
     case_obj['bai_files'] = []
@@ -401,6 +435,7 @@ def variant_case(store, case_obj, variant_obj):
             chrom = variant_obj['genes'][0]['common']['chromosome']
             start = min(gene['common']['start'] for gene in variant_obj['genes'])
             end = max(gene['common']['end'] for gene in variant_obj['genes'])
+            # Create a reduced VCF with variants in the region
             vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
             case_obj['region_vcf_file'] = vcf_path
     except (SyntaxError, Exception):
@@ -416,7 +451,8 @@ def find_bai_file(bam_file):
     return bai_file
 
 
-def variant(store, institute_obj, case_obj, variant_id=None):
+def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, add_case=True,
+            add_other=True, get_overlapping=True):
     """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
@@ -427,6 +463,10 @@ def variant(store, institute_obj, case_obj, variant_id=None):
         institute_obj(scout.models.Institute)
         case_obj(scout.models.Case)
         variant_id(str)
+        variant_obj(dict)
+        add_case(bool): If info about files case should be added
+        add_other(bool): If information about other causatives should be added
+        get_overlapping(bool): If overlapping svs should be collected
 
     Returns:
         variant_info(dict): {
@@ -441,36 +481,46 @@ def variant(store, institute_obj, case_obj, variant_id=None):
         }
 
     """
-    default_panels = []
-    # Add default panel information to variant
-    for panel in case_obj['panels']:
-        if not panel.get('is_default'):
-            continue
-        panel_obj = store.gene_panel(panel['panel_name'], panel.get('version'))
-        if not panel:
-            LOG.warning("Panel {0} version {1} could not be found".format(
-                panel['panel_name'], panel.get('version')))
-            continue
-        default_panels.append(panel_obj)
+    # If the variant is already collected we skip this part
+    if not variant_obj:
+        default_panels = []
+        # Add default panel information to variant
+        for panel in case_obj['panels']:
+            if not panel.get('is_default'):
+                continue
+            panel_obj = store.gene_panel(panel['panel_name'], panel.get('version'))
+            if not panel:
+                LOG.warning("Panel {0} version {1} could not be found".format(
+                    panel['panel_name'], panel.get('version')))
+                continue
+            default_panels.append(panel_obj)
 
-    variant_obj = store.variant(variant_id, gene_panels=default_panels)
+        variant_obj = store.variant(variant_id, gene_panels=default_panels)
+    
     genome_build = case_obj.get('genome_build', '37')
 
     if variant_obj is None:
         return None
     # Add information to case_obj
-    variant_case(store, case_obj, variant_obj)
+    if add_case:
+        variant_case(store, case_obj, variant_obj)
+    
+    # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id']))
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
+
     other_causatives = []
-    for other_variant in store.other_causatives(case_obj, variant_obj):
-        # This should work with old and new ids
-        case_display_name = other_variant['case_id'].split('-', 1)[-1]
-        other_variant['case_display_name'] = case_display_name
-        other_causatives.append(other_variant)
+    # Adds information about other causative variants
+    if add_other:
+        for other_variant in store.other_causatives(case_obj, variant_obj):
+            # This should work with old and new ids
+            case_display_name = other_variant['case_id'].split('-', 1)[-1]
+            other_variant['case_display_name'] = case_display_name
+            other_causatives.append(other_variant)
 
     variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj)
+
     variant_obj['end_position'] = end_position(variant_obj)
     variant_obj['frequency'] = frequency(variant_obj)
     variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
@@ -526,48 +576,22 @@ def variant(store, institute_obj, case_obj, variant_id=None):
     case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
     if variant_id in case_clinvars:
         variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
+    
+    svs = []
+    if get_overlapping:
+        svs = (parse_variant(store, institute_obj, case_obj, variant_obj) for
+                            variant_obj in store.overlapping(variant_obj))
 
     return {
         'variant': variant_obj,
         'causatives': other_causatives,
         'events': events,
-        'overlapping_svs': (parse_variant(store, institute_obj, case_obj, variant_obj) for
-                            variant_obj in store.overlapping(variant_obj)),
+        'overlapping_svs': svs,
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
         'ACMG_OPTIONS': ACMG_OPTIONS,
         'evaluations': evaluations,
     }
-
-
-def variants_filter_by_field(store, variants, field, case_obj, institute_obj):
-    """Given a list of variant objects return only those that have a key specified
-        by "field" and a value of this field not empty.
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        variants(list(dict)): List of variant objects
-        field(str): The key that indicates if variant is relevant
-        case_obj(scout.models.Case)
-        institute_obj(scout.models.Institute)
-
-    Returns:
-        filtered_variants(list): List of relevant variants
-    """
-    filtered_variants = []
-    # Check if the variants have information if "field"
-    for var in variants:
-        if var.get(field):
-            # Add more details to the variant
-            if var['category'] == 'snv':
-                var_object = variant(store, institute_obj, case_obj, var['_id'])
-            else:
-                var_object = sv_variant(store, institute_obj['_id'], case_obj['display_name'], var['_id'])
-
-            filtered_variants.append(var_object['variant'])
-
-    return filtered_variants
-
 
 def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant."""
@@ -809,8 +833,8 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
-url_for):
+def sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, 
+          url_builder=url_for):
     """Send Sanger email."""
     variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
                                case_name=case_obj['display_name'],

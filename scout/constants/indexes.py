@@ -84,6 +84,15 @@ INDEXES = {
             ('hpo_number', ASCENDING)],
             name="number"),
     ],
+    'event': [
+        IndexModel([
+            ('category', ASCENDING),
+            ('verb', ASCENDING),
+            ],
+            name="category_verb",
+            background=True,
+            ),
+    ],
     'transcript': [
         IndexModel([
             ('build', ASCENDING),
