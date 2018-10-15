@@ -187,7 +187,6 @@ def case_report_content(store, institute_obj, case_obj):
             if keyword in var_obj:
                 evaluated_variants[vt].append(var_obj)
                 break
-    print(evaluated_variants)
 
     for var_type in evaluated_variants:
         decorated_variants = []
@@ -211,7 +210,6 @@ def case_report_content(store, institute_obj, case_obj):
                     case_name=case_obj['display_name'], 
                     variant_obj=var_obj,
                     add_case=False,
-                    add_other=False,
                     get_overlapping=False
                     )
             decorated_variants.append(decorated_info['variant'])
