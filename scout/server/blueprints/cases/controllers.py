@@ -184,9 +184,9 @@ def case_report_content(store, institute_obj, case_obj):
         for vt in variant_types:
             keyword = variant_types[vt]
             # When found we add it to the categpry
+            # Eac variant can belong to multiple categories
             if keyword in var_obj:
                 evaluated_variants[vt].append(var_obj)
-                break
 
     for var_type in evaluated_variants:
         decorated_variants = []
