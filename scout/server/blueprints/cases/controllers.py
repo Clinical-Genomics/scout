@@ -255,7 +255,7 @@ def multiqc(store, institute_id, case_name):
     )
 
 
-def get_sanger_unevaluated(store, institute_id):
+def get_sanger_unevaluated(store, institute_id, user_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated
 
         Args:
@@ -270,7 +270,7 @@ def get_sanger_unevaluated(store, institute_id):
 
     # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
     # This way is much faster than querying over all variants in all cases of an institute
-    sanger_ordered_by_case = store.sanger_ordered_by_institute(institute_id)
+    sanger_ordered_by_case = store.sanger_ordered_by_institute_user(institute_id,user_id)
     unevaluated = []
 
     # for each object where key==case and value==[variant_id with Sanger ordered]
@@ -295,7 +295,7 @@ def get_sanger_unevaluated(store, institute_id):
             variant_obj = store.variant(document_id=var_id, case_id=case_id)
 
             # Double check that Sanger was ordered (and not canceled) for the variant
-            if variant_obj is None or variant_obj.get('sanger_ordered') is None:
+            if variant_obj is None or variant_obj.get('sanger_ordered') is None or variant_obj.get('sanger_ordered') is False:
                 continue
 
             validation = variant_obj.get('validation', 'not_evaluated')

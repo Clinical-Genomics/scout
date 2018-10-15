@@ -185,7 +185,7 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def sanger_ordered_by_institute(self, institute_id):
+    def sanger_ordered_by_institute_user(self, institute_id, user_id):
         """Get all variants for an institute with Sanger validations ever ordered.
             This is used in the cases list page to highlight cases which can be potentially
             solved by Sanger sequencing validations.
@@ -201,7 +201,8 @@ class VariantEventHandler(object):
         results = self.event_collection.aggregate([
             {'$match': {
                 '$and': [
-                    {'verb': 'sanger' },
+                    {'verb': 'sanger'},
+                    {'user_id': user_id},
                     {'institute': institute_id}
                 ],
             }},
