@@ -67,7 +67,7 @@ def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute
 
     # Test that the Sanger ordered but not validated for the institute are 2
     # sanger_unevaluated should look like this: [{ 'case_id': [var1, var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['_id'])
+    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['_id'], user_obj['email'])
     assert len(sanger_unevaluated[0][case_obj['display_name']]) == 2
 
     # Set one of the two variants as validated
@@ -78,6 +78,6 @@ def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute
 
     # Test that now the Sanger ordered but not validated is only one
     # sanger_unevaluated should look like this: [{ 'case_id': [var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['_id'])
+    sanger_unevaluated = get_sanger_unevaluated(adapter, institute['_id'], user_obj['email'])
     pp(sanger_unevaluated)
     assert len(sanger_unevaluated[0][case_obj['display_name']]) == 1
