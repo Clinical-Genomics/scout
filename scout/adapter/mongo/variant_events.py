@@ -89,14 +89,13 @@ class VariantEventHandler(object):
         return updated_case
 
     def order_validation(self, institute, case, user, link, variant):
-        """Create an event for order sanger for a variant
-        and an event for order sanger for a case
+        """Create an event for a variant verification for a variant
+        and an event for a variant verification for a case
 
         Arguments:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
-            link (str): The url to be used in the event
             variant (dict): A variant object
 
         Returns:

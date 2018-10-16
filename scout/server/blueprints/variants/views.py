@@ -325,9 +325,8 @@ def verify(institute_id, case_name, variant_id, variant_category):
     user_obj = store.user(current_user.email)
 
     try:
-        appo = controllers.variant_verify(store, mail, institute_obj, case_obj, user_obj,
+        controllers.order_verification(store, mail, institute_obj, case_obj, user_obj,
                            variant_obj, current_app.config['MAIL_USERNAME'], variant_url=request.referrer)
-        flash(appo, 'info')
     except controllers.MissingSangerRecipientError:
         flash('No sanger recipients added to institute.', 'danger')
 
