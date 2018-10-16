@@ -345,7 +345,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
 
     # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
     # This way is much faster than querying over all variants in all cases of an institute
-    sanger_ordered_by_case = store.sanger_ordered_by_institute_user(institute_id,user_id)
+    sanger_ordered_by_case = store.sanger_ordered(institute_id, user_id)
     unevaluated = []
 
     # for each object where key==case and value==[variant_id with Sanger ordered]
