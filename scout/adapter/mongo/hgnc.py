@@ -102,6 +102,8 @@ class GeneHandler(object):
             Returns:
                 gene_obj(HgncGene)
         """
+        if not build in ['37', '38']:
+            build = '37'
         query = {}
         try:
             # If the identifier is a integer we search for hgnc_id

@@ -398,10 +398,10 @@ class VariantHandler(VariantLoader):
             ],
         }
 
-        # Collect all relevant variant_ids in a list
+        # Collect the result in a dictionary
         variants = {}
         for var in self.variant_collection.find(query):
-            variants[var['variant_id']] = var
+            variants[var['variant_id']] = self.add_gene_info(var)
 
         # Collect all variant comments from the case
         event_query = {    
@@ -432,7 +432,7 @@ class VariantHandler(VariantLoader):
             variants[var_id] = variant_obj
 
         # Return a list with the variant objects
-        return list(variants.values())
+        return variants.values()
 
 
     def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,

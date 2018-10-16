@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - Use db name instead of **auth** as default for authentification
+- Fixes so that reports can be generated even with many variants
 
 ## [4.1.1]
 - Fix problem with institute authentication flash message in utils
