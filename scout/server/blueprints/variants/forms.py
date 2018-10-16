@@ -65,7 +65,7 @@ class FiltersForm(FlaskForm):
     clinsig_confident_always_returned = BooleanField('CLINSIG Confident')
     spidex_human = SelectMultipleField('SPIDEX', choices=SPIDEX_CHOICES)
 
-    gnomad_frequency = BetterDecimalField('Gnomad', places=2)
+    gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
     chrom = TextField('Chromosome')
     local_obs = IntegerField('Local obs. (archive)')
 
