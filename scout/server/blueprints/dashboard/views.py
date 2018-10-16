@@ -39,7 +39,7 @@ def index():
 
     LOG.info("Fetch sanger variants")
     nr_evaluated = store.variant_collection.find({'validation': {'$exists':True, '$ne': "Not validated"}}).count()
-    LOG.info("Sanger variants fetched")
+    
     LOG.info("Fetch sanger events")
     sanger_cases = store.event_collection.distinct('case', {'verb':'sanger'})
     LOG.info("Sanger events fetched")
