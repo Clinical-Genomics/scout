@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.1.2b]
-- Fixed sanger validation popup, now unevaluated by user and institute
+
 
 ### Added
 
@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 - Use db name instead of **auth** as default for authentification
 - Fixes so that reports can be generated even with many variants
+- Fixed sanger validation popup to show individual variants queried by user and institute.
 
 ## [4.1.1]
 - Fix problem with institute authentication flash message in utils
