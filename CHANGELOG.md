@@ -6,9 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.1.2b]
 
+
 ### Added
 
-- Logs uri without pwd when connecting 
+- Logs uri without pwd when connecting
 - Disease-causing transcripts in case report
 - Thicker lines in case report
 - Supports HPO search for cases, both terms or if described in synopsis
@@ -17,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 - Use db name instead of **auth** as default for authentification
 - Fixes so that reports can be generated even with many variants
+- Fixed sanger validation popup to show individual variants queried by user and institute.
 
 ## [4.1.1]
 - Fix problem with institute authentication flash message in utils
