@@ -1,3 +1,5 @@
+import logging
+
 from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, send_from_directory, jsonify, flash)
 from flask_login import current_user
@@ -6,6 +8,7 @@ from scout.server.extensions import store
 
 blueprint = Blueprint('dashboard', __name__, template_folder='templates')
 
+LOG = logging.getLogger(__name__)
 
 @blueprint.route('/dashboard')
 def index():
@@ -33,23 +36,72 @@ def index():
     causative_variants = store.case_collection.find({'causatives.1': {'$exists': True}}).count()
     pinned_variants = store.case_collection.find({'suspects.1': {'$exists': True}}).count()
     cohort_tags = store.case_collection.find({'cohorts.1': {'$exists': True}}).count()
-    overview = [{
-        'title': 'Phenotype terms',
-        'count': phenotype_terms,
-        'percent': phenotype_terms / total_cases,
-    }, {
-        'title': 'Causative variants',
-        'count': causative_variants,
-        'percent': causative_variants / total_cases,
-    }, {
-        'title': 'Pinned variants',
-        'count': pinned_variants,
-        'percent': pinned_variants / total_cases,
-    }, {
-        'title': 'Cohort tag',
-        'count': cohort_tags,
-        'percent': cohort_tags / total_cases,
-    }]
+    
+    LOG.info("Fetch sanger events")
+    sanger_events = store.event_collection.find({'verb':'sanger'})
+    LOG.info("Sanger events fetched")
+    
+    sanger_cases = set()
+    nr_evaluated = 0
+    var_ids = set()
+    LOG.info("Loop events")
+    for event in sanger_events:
+        case_id = event['case']
+        variant_id = event['variant_id']
+        LOG.info("Fetch variant")
+        variant_obj = store.variant_collection.find_one({'variant_id': variant_id,'case_id':case_id})
+        LOG.info("Variant fetched")
+        if not variant_obj:
+            continue
+        doc_id = variant_obj['_id']
+        if doc_id in var_ids:
+            continue
+        var_ids.add(doc_id)
+
+        validation = variant_obj.get('validation', 'not_evaluated')
+
+        # Check that the variant is not evaluated
+        if validation in ['True positive', 'False positive']:
+            nr_evaluated += 1
+        
+        sanger_cases.add(case_id)
+    LOG.info("Events looped")
+        
+    
+    sanger_ordered = len(sanger_cases)
+    
+    overview = [
+        {
+            'title': 'Phenotype terms',
+            'count': phenotype_terms,
+            'percent': phenotype_terms / total_cases,
+        }, 
+        {
+            'title': 'Causative variants',
+            'count': causative_variants,
+            'percent': causative_variants / total_cases,
+        }, 
+        {
+            'title': 'Pinned variants',
+            'count': pinned_variants,
+            'percent': pinned_variants / total_cases,
+        }, 
+        {
+            'title': 'Cohort tag',
+            'count': cohort_tags,
+            'percent': cohort_tags / total_cases,
+        },
+        {
+            'title': 'Sanger ordered',
+            'count': sanger_ordered,
+            'percent': sanger_ordered / total_cases,
+        },
+        {
+            'title': 'Sanger confirmed',
+            'count': nr_evaluated,
+            'percent': nr_evaluated / total_cases,
+        },
+    ]
     return render_template(
         'dashboard/index.html',
         cases=cases,
