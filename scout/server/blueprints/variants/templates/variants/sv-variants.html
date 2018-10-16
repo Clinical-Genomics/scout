@@ -151,8 +151,8 @@
           {{ form.chrom(class="form-control") }}
         </div>
         <div class="col-xs-3">
-          {{ form.thousand_genomes_frequency.label(class="control-label") }}
-          {{ form.thousand_genomes_frequency(class="form-control") }}
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
         </div>
         <div class="col-xs-3">
 	  {{ form.clingen_ngi.label(class="control-label") }}
@@ -260,8 +260,8 @@
       {% endfor %}
     </td>
     <td>
-      {% if variant.thousand_genomes_frequency %}
-        {{ variant.thousand_genomes_frequency|human_decimal }}
+      {% if variant.gnomad_frequency %}
+        {{ variant.gnomad_frequency|human_decimal }}
       {% endif %}
     </td>
     <td>

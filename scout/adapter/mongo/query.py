@@ -103,10 +103,10 @@ class QueryHandler(object):
 
         mongo_query_minor = []
 
-        if query.get('thousand_genomes_frequency') is not None:
-            thousandg = query.get('thousand_genomes_frequency')
-            if thousandg == '-1':
-                mongo_query['thousand_genomes_frequency'] = {
+        if query.get('gnomad_frequency') is not None:
+            gnomad = query.get('gnomad_frequency')
+            if gnomad == '-1':
+                mongo_query['gnomad_frequency'] = {
                                                                 '$exists': False
                                                             }
 
@@ -116,13 +116,13 @@ class QueryHandler(object):
                     {
                         '$or': [
                             {
-                                'thousand_genomes_frequency':
+                                'gnomad_frequency':
                                     {
-                                        '$lt': float(thousandg)
+                                        '$lt': float(gnomad)
                                     }
                                 },
                             {
-                                'thousand_genomes_frequency':
+                                'gnomad_frequency':
                                     {
                                         '$exists': False
                                     }
@@ -130,19 +130,7 @@ class QueryHandler(object):
                         ]
                     }
                 )
-            logger.debug("Adding thousand_genomes_frequency to query")
-
-        if query.get('exac_frequency') is not None:
-            exac = query['exac_frequency']
-            if exac == '-1':
-                mongo_query['exac_frequency'] = {'$exists': False}
-            else:
-                mongo_query_minor.append({
-                    '$or': [
-                        {'exac_frequency': {'$lt': float(exac)}},
-                        {'exac_frequency': {'$exists': False}}
-                    ]
-                })
+            logger.debug("Adding gnomad_frequency to query")
 
         if query.get('local_obs') is not None:
             mongo_query_minor.append({

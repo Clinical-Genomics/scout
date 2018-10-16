@@ -12,10 +12,10 @@ def test_build_query(adapter):
     assert query['category'] == 'snv'
     assert query['variant_type'] == 'clinical'
 
-def test_build_thousand_g_query(adapter):
+def test_build_gnomad_query(adapter):
     case_id = 'cust000'
     freq = 0.01
-    query = {'thousand_genomes_frequency': freq}
+    query = {'gnomad_frequency': freq}
     
     mongo_query = adapter.build_query(case_id, query=query)
     
@@ -25,20 +25,20 @@ def test_build_thousand_g_query(adapter):
     assert mongo_query['$and'] == [
         {
             '$or':[
-                {'thousand_genomes_frequency': {'$lt': freq}},
-                {'thousand_genomes_frequency': {'$exists': False}}
+                {'gnomad_frequency': {'$lt': freq}},
+                {'gnomad_frequency': {'$exists': False}}
             ]
         }
     ]
 
-def test_build_non_existing_thousand_g(adapter):
+def test_build_non_existing_gnomad(adapter):
     case_id = 'cust000'
     freq = '-1'
-    query = {'thousand_genomes_frequency': freq}
+    query = {'gnomad_frequency': freq}
     
     mongo_query = adapter.build_query(case_id, query=query)
     
-    assert mongo_query['thousand_genomes_frequency'] == {'$exists': False}
+    assert mongo_query['gnomad_frequency'] == {'$exists': False}
 
 def test_build_cadd_exclusive(adapter):
     case_id = 'cust000'
@@ -71,19 +71,19 @@ def test_build_cadd_inclusive(adapter):
         }
     ]
 
-def test_build_thousand_g_and_cadd(adapter):
+def test_build_gnomad_and_cadd(adapter):
     case_id = 'cust000'
     freq = 0.01
     cadd = 10.0
-    query = {'thousand_genomes_frequency': freq, 'cadd_score': cadd}
+    query = {'gnomad_frequency': freq, 'cadd_score': cadd}
     
     mongo_query = adapter.build_query(case_id, query=query)
     
     assert mongo_query['$and'] == [
         {
             '$or':[
-                {'thousand_genomes_frequency': {'$lt': freq}},
-                {'thousand_genomes_frequency': {'$exists': False}}
+                {'gnomad_frequency': {'$lt': freq}},
+                {'gnomad_frequency': {'$exists': False}}
             ]
         },
         {
@@ -131,7 +131,7 @@ def test_build_clinsig_always(adapter):
     query = {'region_annotations': region_annotation, 
              'clinsig': clinsig_items,
              'clinsig_confident_always_returned': clinsig_confident_always_returned,
-             'thousand_genomes_frequency': freq
+             'gnomad_frequency': freq
              }
 
     mongo_query = adapter.build_query(case_id, query=query)
@@ -140,8 +140,8 @@ def test_build_clinsig_always(adapter):
         { '$and': 
           [ {
               '$or':[
-                {'thousand_genomes_frequency': {'$lt': freq}},
-                {'thousand_genomes_frequency': {'$exists': False}}
+                {'gnomad_frequency': {'$lt': freq}},
+                {'gnomad_frequency': {'$exists': False}}
             ]
          },
             {'genes.region_annotation':
