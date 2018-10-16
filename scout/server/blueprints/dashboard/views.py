@@ -36,35 +36,37 @@ def index():
     causative_variants = store.case_collection.find({'causatives.1': {'$exists': True}}).count()
     pinned_variants = store.case_collection.find({'suspects.1': {'$exists': True}}).count()
     cohort_tags = store.case_collection.find({'cohorts.1': {'$exists': True}}).count()
-    
+
+    LOG.info("Fetch sanger variants")
+    nr_evaluated = store.variant_collection.find({'validation': {'$exists':True, '$ne': "Not validated"}}).count()
+    print(sanger_variants)
+    LOG.info("Sanger variants fetched")
     LOG.info("Fetch sanger events")
     sanger_events = store.event_collection.find({'verb':'sanger'})
     LOG.info("Sanger events fetched")
     
     sanger_cases = set()
-    nr_evaluated = 0
     var_ids = set()
     LOG.info("Loop events")
     for event in sanger_events:
         case_id = event['case']
-        variant_id = event['variant_id']
-        LOG.info("Fetch variant")
-        variant_obj = store.variant_collection.find_one({'variant_id': variant_id,'case_id':case_id})
-        LOG.info("Variant fetched")
-        if not variant_obj:
-            continue
-        doc_id = variant_obj['_id']
-        if doc_id in var_ids:
-            continue
-        var_ids.add(doc_id)
-
-        validation = variant_obj.get('validation', 'not_evaluated')
-
-        # Check that the variant is not evaluated
-        if validation in ['True positive', 'False positive']:
-            nr_evaluated += 1
+        # variant_id = event['variant_id']
+        # variant_obj = store.variant_collection.find_one({'variant_id': variant_id,'case_id':case_id})
+        # if not variant_obj:
+        #     continue
+        # doc_id = variant_obj['_id']
+        # if doc_id in var_ids:
+        #     continue
+        # var_ids.add(doc_id)
+        #
+        # validation = variant_obj.get('validation', 'not_evaluated')
+        #
+        # # Check that the variant is not evaluated
+        # if validation in ['True positive', 'False positive']:
+        #     nr_evaluated += 1
         
         sanger_cases.add(case_id)
+    
     LOG.info("Events looped")
         
     
