@@ -833,21 +833,14 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, url_builder =
-url_for):
+def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url):
     """Sand a verification email"""
-    variant_link=''
     validation_type = ''
+    #base_url = request['url_root']
     if variant_obj.get('category') == 'snv':
-        variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
-                                   case_name=case_obj['display_name'],
-                                   variant_id=variant_obj['_id'])
-        validation_type='Sanger'
+        validation_type='Sanger sequencing'
     else:
-        variant_link = url_builder('variants.sv_variant', institute_id=institute_obj['_id'],
-                                   case_name=case_obj['display_name'],
-                                   variant_id=variant_obj['_id'])
-        validation_type=request.form.get('validation_type')
+        validation_type='custom method'
 
     if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
         store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
@@ -859,13 +852,13 @@ url_for):
     chromosome_start = variant_obj.get('chromosome')
     breakpoint_1 = variant_obj.get('chromosome')+':'+str(variant_obj.get('position'))
     breakpoint_2 = str((variant_obj.get('end_chrom') or variant_obj.get('chromosome')))+':'+ str(variant_obj.get('end'))
-
+    panels = ', '.join(variant_obj['panels'])
     hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
     gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
                                         sample_obj['genotype_call'])
                for sample_obj in variant_obj['samples']]
     html=''
-    if validation_type == 'Sanger':
+    if validation_type == 'Sanger sequencing':
         tx_changes = []
         for gene_obj in variant_obj.get('genes', []):
             for transcript_obj in gene_obj['transcripts']:
@@ -887,10 +880,10 @@ url_for):
             <li><strong>Ordered by</strong>: {name}</li>
           </ul>
         """.format(case_name=case_obj['display_name'],
-                   url=variant_link,
+                   url=variant_url,
                    variant_id=variant_obj['display_name'],
                    hgnc_symbol=hgnc_symbol,
-                   panels=', '.format(variant_obj['panels']),
+                   panels=panels,
                    gtcalls=''.join(gtcalls),
                    tx_changes=''.join(tx_changes),
                    name=user_obj['name'].encode('utf-8'))
@@ -900,13 +893,14 @@ url_for):
                       # cc the sender of the email for confirmation
                       cc=[user_obj['email']])
 
-    else: #not sanger
+    else: #not necessary sanger (structural variants)
         html = """
           <ul>
             <li>
               <strong>Case {case_name}</strong>: <a href="{url}">{variant_id}</a>
             </li>
             <li><strong>Variant category</strong>: {category}</li>
+            <li><strong>Variant size</strong>: {size}</li>
             <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
             <li><strong>Gene panels</strong>: {panels}</li>
             <li><strong>GT call</strong></li>
@@ -916,17 +910,18 @@ url_for):
             <li><strong>Ordered by</strong>: {name}</li>
           </ul>
         """.format(case_name=case_obj['display_name'],
-                   url=variant_link,
+                   url=variant_url,
                    variant_id=variant_obj['display_name'],
-                   category=variant_obj.get('category'),
+                   category=variant_obj.get('category').upper()+' ('+variant_obj.get('sub_category').upper()+')',
+                   size=variant_size,
                    hgnc_symbol=hgnc_symbol,
-                   panels=', '.format(variant_obj['panels']),
+                   panels=panels,
                    gtcalls=''.join(gtcalls),
                    breakpoint_1 = breakpoint_1,
                    breakpoint_2 = breakpoint_2,
                    name=user_obj['name'].encode('utf-8'))
 
-        kwargs = dict(subject="SCOUT: validation by {} of {} variant {}/{}".format(validation_type, variant_obj.get('category'), breakpoint_1, breakpoint_2),
+        kwargs = dict(subject="SCOUT: validation by {} of {} variant {}/{}".format(validation_type, variant_obj.get('category').upper(), breakpoint_1, breakpoint_2),
                       html=html, sender=sender, recipients=recipients,
                       # cc the sender of the email for confirmation
                       cc=[user_obj['email']])
