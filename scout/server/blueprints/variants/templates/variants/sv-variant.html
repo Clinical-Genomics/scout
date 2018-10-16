@@ -500,6 +500,9 @@
       {% endif %}
       {{ variant.sub_category|upper }}
     </a>
+  <li class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</li>
+  <li class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</li>
+  <li class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</li>
   <li class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</li>
   </li>
   <li class="list-group-item">
@@ -516,15 +519,6 @@
       {{ individual.display_name }}: {{ individual.genotype_call }}
     </li>
   {% endfor %}
-  <li class="list-group-item">
-    <strong>Validation technique</strong>:
-    <select name="validation_type">
-      <option>Sanger</option>
-      <option>MLPA</option>
-      <option>SNP array</option>
-      <option>FISH</option>
-    </select>
-  </li>
   <li class="list-group-item">
     <strong>Ordered by</strong>:
     {{ current_user.name }}

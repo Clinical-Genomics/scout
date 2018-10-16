@@ -858,6 +858,7 @@ def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, 
                                         sample_obj['genotype_call'])
                for sample_obj in variant_obj['samples']]
     html=''
+    kwargs=None
     if validation_type == 'Sanger sequencing':
         tx_changes = []
         for gene_obj in variant_obj.get('genes', []):
@@ -888,11 +889,6 @@ def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, 
                    tx_changes=''.join(tx_changes),
                    name=user_obj['name'].encode('utf-8'))
 
-        kwargs = dict(subject="SCOUT: Sanger sequencing of {}".format(hgnc_symbol),
-                      html=html, sender=sender, recipients=recipients,
-                      # cc the sender of the email for confirmation
-                      cc=[user_obj['email']])
-
     else: #not necessary sanger (structural variants)
         html = """
           <ul>
@@ -911,7 +907,7 @@ def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, 
           </ul>
         """.format(case_name=case_obj['display_name'],
                    url=variant_url,
-                   variant_id=variant_obj['display_name'],
+                   variant_id=str(variant_obj['chromosome'])+':'+str(variant_obj['position'])+' '+variant_obj.get('sub_category').upper() ,
                    category=variant_obj.get('category').upper()+' ('+variant_obj.get('sub_category').upper()+')',
                    size=variant_size,
                    hgnc_symbol=hgnc_symbol,
@@ -921,14 +917,14 @@ def variant_verify(store, mail, institute_obj, case_obj, user_obj, variant_obj, 
                    breakpoint_2 = breakpoint_2,
                    name=user_obj['name'].encode('utf-8'))
 
-        kwargs = dict(subject="SCOUT: validation by {} of {} variant {}/{}".format(validation_type, variant_obj.get('category').upper(), breakpoint_1, breakpoint_2),
-                      html=html, sender=sender, recipients=recipients,
-                      # cc the sender of the email for confirmation
-                      cc=[user_obj['email']])
+    kwargs = dict(subject="SCOUT: validation by {} of {} variant {}/{}".format(validation_type, variant_obj.get('category').upper(), breakpoint_1, breakpoint_2),
+        html=html, sender=sender, recipients=recipients,
+        # cc the sender of the email for confirmation
+        cc=[user_obj['email']])
 
     message = Message(**kwargs)
     mail.send(message)
-    #store.order_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+    #store.order_sanger(institute_obj, case_obj, user_obj, variant_obj)
 
 
 def cancel_sanger(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender,
