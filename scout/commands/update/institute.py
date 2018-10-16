@@ -34,7 +34,7 @@ def institute(context, institute_id, sanger_recipient, coverage_cutoff, frequenc
     """
     adapter = context.obj['adapter']
     LOG.info("Running scout update institute")
-
+    
     try:
         adapter.update_institute(
             internal_id=institute_id, 

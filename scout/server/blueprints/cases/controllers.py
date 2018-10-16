@@ -6,28 +6,40 @@ from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
-from scout.models.event import VERBS_MAP
 from scout.server.utils import institute_and_case
-from scout.server.blueprints.variants.controllers import variants_filter_by_field
+from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
+from scout.server.blueprints.variants.controllers import variant as variant_decorator
+from scout.server.blueprints.variants.controllers import sv_variant
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
 
 def cases(store, case_query, limit=100):
-    """Preprocess case objects."""
+    """Preprocess case objects.
+    
+    Add the necessary information to display the 'cases' view
+    
+    Args:
+        store(adapter.MongoAdapter)
+        case_query(pymongo.Cursor)
+        limit(int): Maximum number of cases to display
+    
+    Returns:
+        data(dict): includes the cases, how many there are and the limit.
+    """
 
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
+
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
                                  case_obj.get('assignees', [])]
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-        case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
-
+        case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
@@ -37,7 +49,20 @@ def cases(store, case_query, limit=100):
 
 
 def case(store, institute_obj, case_obj):
-    """Preprocess a single case."""
+    """Preprocess a single case.
+    
+    Prepare the case to be displayed in the case view.
+
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+    
+    Returns:
+        data(dict): includes the cases, how many there are and the limit.
+    
+    """
+    # Convert individual information to more readable format
     case_obj['individual_ids'] = []
     for individual in case_obj['individuals']:
         try:
@@ -50,19 +75,23 @@ def case(store, institute_obj, case_obj):
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
                              case_obj.get('assignees', [])]
+    
+    # Fetch the variant objects for suspects and causatives
     suspects = [store.variant(variant_id) or variant_id for variant_id in
                 case_obj.get('suspects', [])]
     causatives = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('causatives', [])]
 
+    # Set of all unique genes in the default gene panels
     distinct_genes = set()
     case_obj['panel_names'] = []
     for panel_info in case_obj.get('panels', []):
-        if panel_info.get('is_default'):
-            panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
-            distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
-            full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
-            case_obj['panel_names'].append(full_name)
+        if not panel_info.get('is_default'):
+            continue
+        panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
+        distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
+        full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
+        case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
 
     for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
@@ -85,13 +114,16 @@ def case(store, institute_obj, case_obj):
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
 
-    case_obj['clinvar_submissions'] = store.clinvars(case_id=case_obj['display_name'])
+    case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['display_name'])
+
+    # Phenotype groups can be specific for an institute, there are some default groups
+    pheno_groups = institute_obj.get('phenotype_groups') or PHENOTYPE_GROUPS
 
     data = {
         'status_class': STATUS_MAP.get(case_obj['status']),
         'other_causatives': store.check_causatives(case_obj=case_obj),
         'comments': store.events(institute_obj, case=case_obj, comments=True),
-        'hpo_groups': PHENOTYPE_GROUPS,
+        'hpo_groups': pheno_groups,
         'events': events,
         'suspects': suspects,
         'causatives': causatives,
@@ -102,43 +134,110 @@ def case(store, institute_obj, case_obj):
 
 
 def case_report_content(store, institute_obj, case_obj):
-    """Gather contents to be visualized in a case report"""
-
-    data = case(store, institute_obj, case_obj)
+    """Gather contents to be visualized in a case report
+    
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+    
+    Returns:
+        data(dict)
+    
+    """
+    variant_types = {
+        'causatives_detailed': 'causatives',
+        'suspects_detailed': 'suspects',
+        'classified_detailed': 'acmg_classification',
+        'tagged_detailed': 'manual_rank',
+        'dismissed_detailed': 'dismiss_variant',
+        'commented_detailed': 'is_commented',
+    }
+    data = case_obj
+    
+    # Add the case comments
+    data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
     data['manual_rank_options'] = MANUAL_RANK_OPTIONS
     data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
     data['genetic_models'] = dict(GENETIC_MODELS)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
+    evaluated_variants = {}
+    for vt in variant_types:
+        evaluated_variants[vt] = []
     # We collect all causatives and suspected variants
+    # These are handeled in separate since they are on case level
     for var_type in ['causatives', 'suspects']:
-        # data[var_type] can include strings so we need to be careful
-        # remove any element which is not a dictionary
-        raw = [var for var in data[var_type] if isinstance(var, dict)]
-        # get detailed info for the causatives and add to data
-        var_type += '_detailed'
-        data[var_type] = variants_filter_by_field(store, raw, '_id', case_obj, institute_obj)
+        #These include references to variants
+        vt = '_'.join([var_type, 'detailed'])
+        for var_id in case_obj.get(var_type,[]):
+            variant_obj = store.variant(var_id)
+            if not variant_obj:
+                continue
+            # If the variant exists we add it to the evaluated variants
+            evaluated_variants[vt].append(variant_obj)
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
-    evaluated_variants = store.evaluated_variants(case_id=case_obj['_id'])
+    for var_obj in store.evaluated_variants(case_id=case_obj['_id']):
+        # Check which category it belongs to
+        for vt in variant_types:
+            keyword = variant_types[vt]
+            # When found we add it to the categpry
+            # Eac variant can belong to multiple categories
+            if keyword in var_obj:
+                evaluated_variants[vt].append(var_obj)
 
-    # get complete info for the acmg classified variants
-    data['classified_detailed'] = variants_filter_by_field(store, evaluated_variants,
-                                                           'acmg_classification', case_obj, institute_obj)
-
-    # get complete info for tagged variants
-    data['tagged_detailed'] = variants_filter_by_field(store, evaluated_variants,
-                                                       'manual_rank', case_obj, institute_obj)
-
-    # get complete info for dismissed variants
-    data['dismissed_detailed'] = variants_filter_by_field(store, evaluated_variants,
-                                                        'dismiss_variant', case_obj, institute_obj)
-
-    data['commented_detailed'] = variants_filter_by_field(store, evaluated_variants,
-                                                        'is_commented', case_obj, institute_obj)
+    for var_type in evaluated_variants:
+        decorated_variants = []
+        for var_obj in evaluated_variants[var_type]:
+        # We decorate the variant with some extra information
+            if var_obj['category'] == 'snv':
+                decorated_info = variant_decorator(
+                        store=store, 
+                        institute_obj=institute_obj, 
+                        case_obj=case_obj, 
+                        variant_id=None, 
+                        variant_obj=var_obj, 
+                        add_case=False,
+                        add_other=False, 
+                        get_overlapping=False
+                    )
+            else:
+                decorated_info = sv_variant(
+                    store=store, 
+                    institute_id=institute_obj['_id'], 
+                    case_name=case_obj['display_name'], 
+                    variant_obj=var_obj,
+                    add_case=False,
+                    get_overlapping=False
+                    )
+            decorated_variants.append(decorated_info['variant'])
+        # Add the decorated variants to the case
+        data[var_type] = decorated_variants
 
     return data
+
+
+def clinvar_submissions(store, user_id, institute_id):
+    """Get all Clinvar submissions for a user and an institute"""
+    submissions = list(store.clinvar_submissions(user_id, institute_id))
+    return submissions
+
+
+def clinvar_header(submission_objs, csv_type):
+    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
+
+    clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
+    return clinvar_header_obj
+
+
+def clinvar_lines(clinvar_objects, clinvar_header):
+    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
+
+    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
+    return clinvar_lines
+
 
 
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
@@ -231,7 +330,7 @@ def multiqc(store, institute_id, case_name):
     )
 
 
-def get_sanger_unevaluated(store, institute_id):
+def get_sanger_unevaluated(store, institute_id, user_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated
 
         Args:
@@ -246,7 +345,7 @@ def get_sanger_unevaluated(store, institute_id):
 
     # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
     # This way is much faster than querying over all variants in all cases of an institute
-    sanger_ordered_by_case = store.sanger_ordered_by_institute(institute_id)
+    sanger_ordered_by_case = store.sanger_ordered_by_institute_user(institute_id,user_id)
     unevaluated = []
 
     # for each object where key==case and value==[variant_id with Sanger ordered]
@@ -271,7 +370,7 @@ def get_sanger_unevaluated(store, institute_id):
             variant_obj = store.variant(document_id=var_id, case_id=case_id)
 
             # Double check that Sanger was ordered (and not canceled) for the variant
-            if not (variant_obj or variant_obj.get('sanger_ordered')):
+            if variant_obj is None or variant_obj.get('sanger_ordered') is None or variant_obj.get('sanger_ordered') is False:
                 continue
 
             validation = variant_obj.get('validation', 'not_evaluated')

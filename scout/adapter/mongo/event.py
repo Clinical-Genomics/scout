@@ -44,7 +44,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             level (str): 'specific' or 'global'. Default is 'specific'
             variant (dict): A variant
             content (str): The content of the comment
-        
+
         Returns:
             event(dict): The inserted event
         """
@@ -127,6 +127,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
                 if case:
                     query['case'] = case['_id']
+
+                if comments:
+                    query['verb'] = 'comment'
 
 
         return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
@@ -298,13 +301,13 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             content (str): The content of the comment
             comment_level (str): Any one of 'specific' or 'global'.
                                  Default is 'specific'
-        
+
         Return:
             comment(dict): The comment event that was inserted
         """
         if not comment_level in COMMENT_LEVELS:
             raise SyntaxError("Comment levels can only be in {}".format(','.join(COMMENT_LEVELS)))
-        
+
         if variant:
             LOG.info("Creating event for a {0} comment on variant {1}".format(
                 comment_level, variant['display_name']))
@@ -337,4 +340,3 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 content=content
             )
         return comment
-

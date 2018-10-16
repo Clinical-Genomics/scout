@@ -7,7 +7,7 @@ Note that internal id is unique.
 
 ## User
 
-To load a user into scout use the command `scout load user`. A user has to: 
+To load a user into scout use the command `scout load user`. A user has to:
 
 - belong to an *institute*
 - have a *name*
@@ -74,7 +74,7 @@ default_gene_panels: [panel1]
 gene_panels: [panel1]
 
 # meta data
-rank_model_version: 1.12
+rank_model_version: '1.12'
 rank_score_threshold: -100
 analysis_date: 2016-10-12 14:00:46
 human_genome_build: 37
@@ -89,7 +89,7 @@ Cases can be loaded without config file, in that case the user needs to specify 
 scout load case --ped path/to/file.ped --vcf-snv path/to/file.vcf
 ```
 
-Please use 
+Please use
 
 ```
 scout load case --help

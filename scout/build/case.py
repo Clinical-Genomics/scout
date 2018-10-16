@@ -75,7 +75,7 @@ def build_case(case_data, adapter):
         genome_build = str, # This should be 37 or 38
         genome_version = float, # What version of the build
 
-        rank_model_version = float,
+        rank_model_version = str,
         rank_score_threshold = int, # default=8
 
         phenotype_terms = list, # List of dictionaries with phenotype information
@@ -189,7 +189,7 @@ def build_case(case_data, adapter):
     case_obj['genome_version'] = case_data.get('genome_version')
 
     if case_data.get('rank_model_version'):
-        case_obj['rank_model_version'] = float(case_data['rank_model_version'])
+        case_obj['rank_model_version'] = str(case_data['rank_model_version'])
 
     if case_data.get('rank_score_threshold'):
         case_obj['rank_score_threshold'] = float(case_data['rank_score_threshold'])

@@ -2,9 +2,34 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.0.1b]
+About changelog [here](https://keepachangelog.com/en/1.0.0/)
+
+## [4.1.2b]
+
 
 ### Added
+
+- Logs uri without pwd when connecting
+- Disease-causing transcripts in case report
+- Thicker lines in case report
+- Supports HPO search for cases, both terms or if described in synopsis
+
+### Fixed
+
+- Use db name instead of **auth** as default for authentification
+- Fixes so that reports can be generated even with many variants
+- Fixed sanger validation popup to show individual variants queried by user and institute.
+
+## [4.1.1]
+- Fix problem with institute authentication flash message in utils
+- Fix problem with comments
+- Fix problem with ensembl link
+
+
+## [4.1.0]
+
+### Added
+- OMIM phenotypes to case report
 - Command to download all panel app gene panels `scout load panel --panel-app`
 - Links to genenames.org and omim on gene page
 - Popup on gene at variants page with gene information
@@ -16,11 +41,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - added a view for searching HPO terms. It is accessed from the top left corner menu
 - Updates the variants view for cancer variants. Adds a small cancer specific filter for known variants
 - Adds hgvs information on cancer variants page
+- Adds option to update phenotype groups from CLI
 
 ### Fixed
+- Improved Clinvar to submit variants from different cases. Fixed HPO terms in casedata according to feedback
 - Fixed broken link to case page from Sanger modal in cases view
 - Now only cases with non empty lists of causative variants are returned in `adapter.case(has_causatives=True)`
 - Can handle Tumor only samples
+- Long lists of HGNC symbols are now possible. This was previously difficult with manual, uploaded or by HPO search when changing filter settings due to GET request limitations. Relevant pages now use POST requests. Adds the dynamic HPO panel as a selection on the gene panel dropdown.
+- Variant filter defaults to default panels also on SV and Cancer variants pages.
 
 ## [4.0.0]
 
@@ -38,6 +67,7 @@ $scout update hpo
 - Added an analysis report page (html and PDF format) containing phenotype, gene panels and variants that are relevant to solve a case.
 
 ### Fixed
+- Optimized evaluated variants to speed up creation of case report
 - Moved igv and pileup viewer under a common folder
 - Fixed MT alignment view pileup.js
 - Fixed coordinates for SVs with start chromosome different from end chromosome

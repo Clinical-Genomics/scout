@@ -4,7 +4,7 @@ import logging
 import datetime
 import pymongo
 
-from scout.models.event import VERBS_MAP
+from scout.constants import VERBS_MAP
 
 logger = logging.getLogger(__name__)
 

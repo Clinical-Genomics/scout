@@ -3,7 +3,7 @@ import io
 import logging
 
 from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response, session
-from werkzeug.datastructures import Headers
+from werkzeug.datastructures import Headers, MultiDict
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
@@ -12,24 +12,79 @@ from scout.constants import ACMG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
-from scout.parse.clinvar import get_submission_variants, get_submission_header, get_submission_lines, create_clinvar_submission_dict, extract_submission_csv_lines
+from scout.parse.clinvar import set_submission_objects
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm, StrFiltersForm
 
 log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, template_folder='templates')
 
-@variants_bp.route('/<institute_id>/<case_name>/variants')
+@variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(request.args.get('page', 1))
+    page = int(request.form.get('page', 1))
+ 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_type = request.args.get('variant_type', 'clinical')
 
-    form = FiltersForm(request.args)
+    # Update filter settings if Clinical Filter was requested
+    
+    default_panels = []
+    for panel in case_obj['panels']:
+        if panel['is_default']:
+            default_panels.append(panel['panel_name'])
+            
+    request.form.get('gene_panels')
+    if bool(request.form.get('clinical_filter')):
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'clinsig': [4,5],
+            'clinsig_confident_always_returned': True,
+            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
+            'variant_type': 'clinical',
+            'gene_panels': default_panels
+             })
+
+    if(request.method == "POST"):
+        if bool(request.form.get('clinical_filter')):
+            form = FiltersForm(clinical_filter)
+            form.csrf_token = request.args.get('csrf_token')
+        else:
+            form = FiltersForm(request.form)
+    else:
+        form = FiltersForm(request.args)
+
+    # populate available panel choices
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+ 
     panel_choices = [(panel['panel_name'], panel['display_name'])
-                     for panel in case_obj.get('panels', [])]
+                     for panel in available_panels]
+
     form.gene_panels.choices = panel_choices
+
+    # upload gene panel if symbol file exists
+    if (request.files):
+        file = request.files[form.symbol_file.name]
+
+    if request.files and file and file.filename != '':
+        log.debug("Upload file request files: {0}".format(request.files.to_dict()))
+        try:
+            stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
+        except UnicodeDecodeError as error:
+            flash("Only text files are supported!", 'warning')
+            return redirect(request.referrer)
+
+        hgnc_symbols_set = set(form.hgnc_symbols.data)
+        log.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
+        new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
+        hgnc_symbols_set.update(new_hgnc_symbols)
+        form.hgnc_symbols.data = hgnc_symbols_set
+        # reset gene panels
+        form.gene_panels.data = ''
 
     # update status of case if vistited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
@@ -41,22 +96,32 @@ def variants(institute_id, case_name):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
-    if len(form.hgnc_symbols.data) > 0:
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
         clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
                 if hgnc_gene is None:
-                    flash("HGNC id not found: {}".format(hgnc_symbol), 'warning')
+                    not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
             elif store.hgnc_genes(hgnc_symbol).count() == 0:
-                flash("HGNC symbol not found: {}".format(hgnc_symbol), 'warning')
+                  not_found_symbols.append(hgnc_symbol)
             elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                flash("Gene not included in clinical list: {}".format(hgnc_symbol), 'warning')
+                 non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
+
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
     form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
@@ -128,18 +193,51 @@ def str_variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj,
         variant_type = variant_type, form=form, page=page, **data)
 
-@variants_bp.route('/<institute_id>/<case_name>/sv/variants')
+@variants_bp.route('/<institute_id>/<case_name>/sv/variants',
+                   methods=['GET','POST'])
 @templated('variants/sv-variants.html')
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
-    page = int(request.args.get('page', 1))
+    page = int(request.form.get('page', 1))
+ 
     variant_type = request.args.get('variant_type', 'clinical')
 
-    form = SvFiltersForm(request.args)
-
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    form = SvFiltersForm(request.form)
+
+    default_panels = []
+    for panel in case_obj['panels']:
+        if panel['is_default']:
+            default_panels.append(panel['panel_name'])
+
+    request.form.get('gene_panels')
+    if bool(request.form.get('clinical_filter')):
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
+            'variant_type': 'clinical',
+            'clingen_ngi': 10,
+            'size': 100,
+            'gene_panels': default_panels
+             })
+
+    if(request.method == "POST"):
+        if bool(request.form.get('clinical_filter')):
+            form = SvFiltersForm(clinical_filter)
+            form.csrf_token = request.args.get('csrf_token')
+        else:
+            form = SvFiltersForm(request.form)
+    else:
+        form = SvFiltersForm(request.args)
+
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
     panel_choices = [(panel['panel_name'], panel['display_name'])
-                     for panel in case_obj.get('panels', [])]
+                     for panel in available_panels]
     form.gene_panels.choices = panel_choices
 
     if form.data['gene_panels'] == ['hpo']:
@@ -147,13 +245,19 @@ def sv_variants(institute_id, case_name):
                                case_obj['dynamic_gene_list']))
         form.hgnc_symbols.data = hpo_symbols
 
-    query = form.data
-    query['variant_type'] = variant_type
+    # update status of case if vistited for the first time
+    if case_obj['status'] == 'inactive' and not current_user.is_admin:
+        flash('You just activated this case!', 'info')
+        user_obj = store.user(current_user.email)
+        case_link = url_for('cases.case', institute_id=institute_obj['_id'],
+                            case_name=case_obj['display_name'])
+        store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
-    variants_query = store.variants(case_obj['_id'], category='sv',
-                                    query=query)
+    variants_query = store.variants(case_obj['_id'], category='sv', 
+                                    query=form.data)
     data = controllers.sv_variants(store, institute_obj, case_obj,
-                                    variants_query, page)
+                                   variants_query, page)
+
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
@@ -251,125 +355,17 @@ def clinvar(institute_id, case_name, variant_id):
     data = controllers.clinvar_export(store, institute_id, case_name, variant_id)
     if request.method == 'GET':
         return data
-    else:
+    else: #POST
         form_dict = request.form.to_dict()
-        variants_to_submit = get_submission_variants(form_dict) # list of variants to be submitted
-        variant_header = get_submission_header(form_dict, variants_to_submit, 'variants')
-        variant_lines = get_submission_lines(form_dict, variants_to_submit, variant_header)
-        casedata_header = get_submission_header(form_dict, variants_to_submit, 'casedata')
-        casedata_lines = get_submission_lines(form_dict, variants_to_submit, casedata_header)
-        variant_types = {}
-        for var in variants_to_submit:
-            variant_types[var] = form_dict['variant-type_'+str(var)]
+        submission_objects = set_submission_objects(form_dict) # A tuple of submission objects (variants and casedata objects)
 
-        # create clinvar submission session object:
-        session['clinvar_submission'] = create_clinvar_submission_dict(variant_header, variant_lines, casedata_header, casedata_lines, variant_types)
-        data.update({'variant_header': variant_header, 'variant_lines': variant_lines, 'casedata_header': casedata_header, 'casedata_lines': casedata_lines, 'form':request.form,})
-        return data
+        # Add submission data to an open clinvar submission object,
+        # or create a new if no open submission is found in database
+        open_submission = store.get_open_clinvar_submission(current_user.email, institute_id)
+        updated_submission = store.add_to_submission(open_submission['_id'], submission_objects)
 
-
-@variants_bp.route('/get_csv/', methods=['POST','GET'])
-def get_csv():
-    """Creates csv files (.Variant.csv or .CaseData.csv) to be used for submitting variants to clinVar."""
-    def generate(header, lines):
-        yield '"'+header+'"' + '\n'
-        for line in lines: # lines have already quoted fields
-            yield line + '\n'
-    if request.form.get('variants_button'):
-        header = request.form['vheader']
-        lines = request.form.getlist('variant')
-        filename = str(request.form.get('subm_id')) + '.Variant.csv'
-    else:
-        header = request.form['cdheader']
-        lines = request.form.getlist('case')
-        filename = str(request.form.get('subm_id')) + '.CaseData.csv'
-
-    headers = Headers()
-    headers.add('Content-Disposition','attachment', filename=filename)
-    return Response(generate(header, lines), mimetype='text/csv', headers=headers)
-
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>', methods=['POST'])
-def save_clinvar_submission(institute_id, case_name, variant_id):
-    """Saves variants submitted to clinVar to database and redirects to variants page"""
-    # clinvar submission form exists in this session, save it to mongo db:
-    if session.get('clinvar_submission') and request.form.get('subm_id'):
-        for variant_submission in session.get('clinvar_submission'):
-            variant_submission['clinvar_submission'] = request.form.get('subm_id')
-        inserted = store.add_clinvar_submission(session.get('clinvar_submission'),current_user.email, institute_id, case_name)
-
-        if inserted == 0:
-            flash('Clinvar submission id '+str(request.form.get('subm_id'))+' already exists in database!', 'danger' )
-        elif inserted == -1:
-            flash('One of more variants your are trying to save is already present in a previous clinvar submission!', 'danger')
-        else:
-            flash('variants were saved into clinvar submissions database collection', 'success')
-
-        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
-                            variant_id=variant_id))
-
-    else: # redirect to variant's page with error message:
-        if session.get('clinvar_submission'):
-            flash("didn't receive a valid clinvar submission id from the previous form", 'danger')
-        else:
-            flash('a session object named "clinvar_submission" could not be found!', 'danger')
-        return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
-                            variant_id=variant_id))
-
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update_clinvar/<submission_id>', methods=['POST', 'GET'])
-@templated('variants/clinvar_update.html')
-def update_clinvar_submission(institute_id, case_name, variant_id, submission_id):
-    """Update/Removes a clinvar submission for a variant or a group of variants"""
-    def generate(header, lines):
-        yield header + '\n'
-        for line in lines:
-            yield line + '\n'
-
-    data = controllers.get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id)
-    if request.method == 'GET':
-        return data
-    elif request.form.get('variants_button') or request.form.get('cdata_button'):
-        variants_header, casedata_header, clinvar_lines, casedata_lines = extract_submission_csv_lines(data['clinvars'])
-
-        if request.form.get('variants_button'):
-            filename = str(submission_id) + '.Variant.csv'
-            header = variants_header
-            lines = clinvar_lines
-
-        elif request.form.get('cdata_button'):
-            filename = str(submission_id) + '.CaseData.csv'
-            header = casedata_header
-            lines = casedata_lines
-
-        headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=filename)
-        return Response(generate(header, lines), mimetype='text/csv', headers=headers)
-
-    else:
-        if request.form.get('add_accession'):
-            updates=[] #a list of tuples
-            for fieldname, value in request.form.items():
-                if not value == 'submit':
-                    updates.append(store.add_clinvar_accession(fieldname.replace('clinvar_accession_',''), value))
-            if len(updates) == 0:
-                flash('no updates done', 'info')
-            else:
-                flash('Clinvar variation ID has been updated', 'success')
-            return redirect(url_for('.update_clinvar_submission', institute_id=institute_id, case_name=case_name,
-                                variant_id=variant_id, submission_id=submission_id))
-
-        elif request.form.get('delete_submission'):
-            deleted = store.delete_clinvar_submission(submission_id)
-
-            if deleted:
-                flash('{} variants submitted to clinvar with submission id {} deleted from the database!'.format(deleted, submission_id), 'success')
-            else:
-                flash("Couldn't find any clinvar variant with submission id to remove {}.".format(submission_id), 'info')
-
-            return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
-                                variant_id=variant_id))
-
+        # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
+        return redirect(url_for('cases.clinvar_submissions', institute_id=institute_id))
 
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
@@ -432,7 +428,8 @@ def acmg():
 @variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
 def upload_panel(institute_id, case_name):
     """Parse gene panel file and fill in HGNC symbols for filter."""
-    file = request.files['file']
+    file = form.symbol_file.data
+
     if file.filename == '':
         flash('No selected file', 'warning')
         return redirect(request.referrer)
@@ -443,12 +440,23 @@ def upload_panel(institute_id, case_name):
         flash("Only text files are supported!", 'warning')
         return redirect(request.referrer)
 
-    form = FiltersForm(request.args)
+    category = request.args.get('category')
+    
+    if(category == 'sv'):
+        form = SvFiltersForm(request.args)
+    else:
+        form = FiltersForm(request.args)
+
     hgnc_symbols = set(form.hgnc_symbols.data)
     new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
     hgnc_symbols.update(new_hgnc_symbols)
     form.hgnc_symbols.data = ','.join(hgnc_symbols)
     # reset gene panels
     form.gene_panels.data = ''
-    return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
-                            **form.data))
+    # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
+    if(category == 'sv'):
+        return redirect(url_for('.sv_variants', institute_id=institute_id, case_name=case_name,
+                            **form.data), code=307)
+    else:
+        return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
+                            **form.data), code=307)

@@ -35,171 +35,53 @@
 {% endblock %}
 
 {% block content_main %}
-  {% if variant_header %} <!-- instructions and submission files download -->
-    <header class="jumbotron">
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="panel panel-primary">
-              <div class="panel-heading">Start a new clinVar submission</div>
-              <div class="panel-body">
-                <form action="{{ url_for('variants.get_csv') }}" method="POST" id="downloads_form" name="downloads_form">
-                    <input type="hidden" name="vheader" value="{{ '","'.join(variant_header) }}">
-                    <input type="hidden" name="cdheader" value="{{ '","'.join(casedata_header) }}">
-                  {% for item in variant_lines %}
-                    <input type="hidden" name="variant" value="{{ ','.join(item) }}">
-                  {% endfor %}
-                  {% for item in casedata_lines %}
-                    <input type="hidden" name="case" value="{{ ','.join(item) }}">
-                  {% endfor %}
-                <p>
-                  <dl class="dl-horizontal">
-                    <dt>Requirements</dt>
-                    <dd>Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">clinVar submission portal.</a><br>
-                        If your organization is not already present in clinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
-                        The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
-                    </dd>
-                    <dt style="margin-top: 20px;">Obtain a submission ID</dt>
-                    <dd style="margin-top: 20px;">If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".<br>
-                        Copy the ID from this field and paste it here: <input type="text" id="subm_id" name="subm_id" value="" size=20 pattern="SUB[0-9]+" placeholder="ex: SUB1234567" required><br>
-                    </dd>
-                    <dt style="margin-top: 20px;">Fill in panel 1 and 2</dt>
-                    <dd style="margin-top: 20px;">
-                        Fill in submission forms in panel 1 and 2, respectively named "Submission information" and "Organization". In the "<strong>Submission format</strong>" in panel 1 make sure to select the value "<strong>Comma-separated values</strong>".<br>
-                        <strong>Assemby name</strong> should be set to "<strong>GRCh37</strong>".<br>
-                    </dd>
-                    <dt style="margin-top: 20px;">Download variants file</dt>
-                    <dd style="margin-top: 20px;">
-                      The following variants will be included in the submission files:
-                      <br><br>
-                      {% for var in variant_lines %}
-                      <div class="col-xs-6 col-sm-6 col-md-4">
-                        <div class="panel panel-default">
-                          <div class="panel-heading">Variant description --> #{{var[0]}}</div>
-                          {% for field in variant_header %}
-                            {% if var[loop.index -1]|length > 30%}
-                              <strong>{{field}}</strong>:{{var[loop.index -1][:30]}}...<br>
-                            {% else %}
-                              <strong>{{field}}</strong>:{{var[loop.index -1]}}<br>
-                            {% endif%}
-                          {% endfor %}
-                        </div>
-                      </div>
-                      {% endfor %}
-                    </dd>
-                    <dt></dt>
-                    <dd>
-                      <button class="btn btn-primary" data-toggle="modal" name="variants_button" value="submit" id="variants_button"><font color="white">Download variants CSV file</font></button>
-                      <a class="btn btn-warning" onclick="goBack()">
-                        <font color="white">Modify submission</font>
-                      </a>
-                    </dd>
-                    <dt style="margin-top: 20px;">Download case data</dt>
-                      {% if casedata_lines %}
-                        <dd style="margin-top: 20px;">The following case data will be included in the submission files:
 
-                          <br><br>
-                        <!--preview casedata if it was provided-->
-                            {% for cdata in casedata_lines %}
-                              {% if cdata[1] %} <!--user means to submit this case-->
-                                <div class="col-xs-6 col-sm-6 col-md-4">
-                                  <div class="panel panel-success">
-                                    <div class="panel-heading">Casedata description --> #{{cdata[0]}}</div>
-                                    {% for field in casedata_header %}
-                                      {% if cdata[loop.index -1]|length > 30%}
-                                        <strong>{{field}}</strong>:{{cdata[loop.index -1][:30]}}<br>
-                                      {% else %}
-                                        <strong>{{field}}</strong>:{{cdata[loop.index -1]}}<br>
-                                      {% endif %}
-                                    {% endfor %}
-                                  </div>
-                                </div>
-                              {% endif %}
-                            {% endfor %}
-                        </dd>
-                        <dt></dt>
-                        <dd>
-                          <button class="btn btn-primary" data-toggle="modal" name="cdata_button" value="submit" id="variants_button"><font color="white">Download case data CSV file</font></button>
-                          <a class="btn btn-warning" onclick="goBack()">
-                            <font color="white">Modify submission</font>
-                          </a>
-                        </dd>
-                      {% else %}
-                        <dd style="margin-top: 20px;"> No case data was included in this submission.<br></dd>
-                        <dt></dt>
-                        <dd>
-                          <a class="btn btn-warning" onclick="goBack()">
-                            <font color="white">Modify submission</font>
-                          </a>
-                        </dd>
-                      {% endif %}
-                    <dt style="margin-top: 20px;">Upload files</dt>
-                    <dd style="margin-top: 20px;">Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
-                    The field named <strong>"Assertion Criteria File" should be left blank</strong>, since the default information is already provided in the "Variant sheet" <strong>(ACMG Guidelines, 2015)</strong>.
-                    </dd>
-                  </dl>
-                </p>
-                </form>
-              </div>
-          </div>
+ <!-- clinvar form -->
+
+<div class="container" id="main">
+  <h3>Clinvar submission page (BETA)</h3><br>
+  <a href="https://www.ncbi.nlm.nih.gov/clinvar/intro/" target="_blank">Clinvar</a> is a freely accessible archive of clinically relevant variants.
+    Contributing to this database helps improving data sharing and increasing the number of genetic diagnoses worldwide.<br>
+    The form present on this page mirrors the fields on the Clinvar submission spreadsheets. After collecting all the required fields for submitting one or more variants to Clinvar, the info is subsequently processed into comma separated files, ready to be uploaded in the submission process.<br>
+    Link to the official Clinvar <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#sub_info" target="_blank">documentation</a>.
+  <br><br>
+  <form action="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
+    <input type="hidden" name="main_var" value="{{ variant._id }}">
+    <input type="hidden" name="case_id" value="{{ case._id }}">
+    {% if 'phenotype_groups' in case and case.phenotype_groups|length >0 or 'phenotype_terms' in case and case.phenotype_terms|length >0 %}
+      {% for pheno in case.phenotype_terms if not pheno.phenotype_id in pheno_hpos %}
+        {% do pheno_hpos.append(pheno.phenotype_id) %}
+        {% do pheno_features.append(pheno.feature) %}
+      {% endfor %}
+      {% for pheno in case.phenotype_groups if not pheno.phenotype_id in pheno_hpos %}
+        {% do pheno_hpos.append(pheno.phenotype_id) %}
+        {% do pheno_features.append(pheno.feature) %}
+      {% endfor %}
+      <div class="d-flex justify-content-between">
+        <div>
+          <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
+          <label for="submit_all">Submit all pinned variants for this case</label>
+        </div>
+        <br>
+      </div>
+      <div class="row">
+        {{ panel_variant('main_var') }}
+      </div>
+      <div class="row" id="other_vars" style="display: none">
+        {{ panel_variant('other_vars') }}
+      </div>
+      <div class="col-xs-6 col-sm-6 col-md-12">
+        <div class="form-group text-center">
+          <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Add variants to Clinvar submission</button>
         </div>
       </div>
-      <form action="{{ url_for('variants.save_clinvar_submission', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="save_to_db" name="save_to_db" onsubmit="return validateForm()">
-        <input type="hidden" id="subm_id" name="subm_id" value="">
-        <div class="col-xs-6 col-sm-6 col-md-12">
-          <div class="form-group text-center">
-            <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Save this clinvar submission to scout database</button>
-          </div>
-        </div>
-    </form>
-    </header>
-
-  {% else %} <!-- clinvar form -->
-
-    <div class="container" id="main">
-      <h3>Clinvar submission page (BETA)</h3><br>
-      <a href="https://www.ncbi.nlm.nih.gov/clinvar/intro/" target="_blank">Clinvar</a> is a freely accessible archive of clinically relevant variants.
-        Contributing to this database helps improving data sharing and increasing the number of genetic diagnoses worldwide.<br>
-        The form present on this page mirrors the fields on the Clinvar submission spreadsheets. After collecting all the required fields for submitting one or more variants to Clinvar, the info is subsequently processed into comma separated files, ready to be uploaded in the submission process.<br>
-        Link to the official Clinvar <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#sub_info" target="_blank">documentation</a>.
-      <br><br>
-      <form action="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
-        <input type="hidden" name="main_var" value="{{ variant._id }}">
-        {% if 'phenotype_groups' in case and case.phenotype_groups|length >0 or 'phenotype_terms' in case and case.phenotype_terms|length >0 %}
-          {% for pheno in case.phenotype_terms if not pheno.phenotype_id in pheno_hpos %}
-            {% do pheno_hpos.append(pheno.phenotype_id) %}
-            {% do pheno_features.append(pheno.feature) %}
-          {% endfor %}
-          {% for pheno in case.phenotype_groups if not pheno.phenotype_id in pheno_hpos %}
-            {% do pheno_hpos.append(pheno.phenotype_id) %}
-            {% do pheno_features.append(pheno.feature) %}
-          {% endfor %}
-          <div class="d-flex justify-content-between">
-            <div>
-              <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
-              <label for="submit_all">Submit all pinned variants for this case</label>
-            </div>
-            <br>
-          </div>
-          <div class="row">
-            {{ panel_variant('main_var') }}
-          </div>
-          <div class="row" id="other_vars" style="display: none">
-            {{ panel_variant('other_vars') }}
-          </div>
-          <div class="col-xs-6 col-sm-6 col-md-12">
-            <div class="form-group text-center">
-              <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Generate clinvar submission form</button>
-            </div>
-          </div>
-      </form>
-    {% else %}
-      Can't submit to clinvar without specifying at least a phenotype for this case! <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-        Back to case
-      </a>
-    {% endif %}
+  </form>
+{% else %}
+    Can't submit to clinvar without specifying at least a phenotype for this case! <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      Back to case
+    </a>
   {% endif %}
-
-  </div>
+</div>
 
 
 {% endblock %}
@@ -208,17 +90,17 @@
 {% macro panel_variant(var_type) %}
   {% for pinned in pinned_vars %}
     {% if var_type=='main_var' and pinned._id == variant._id or var_type=='other_vars' and not pinned._id == variant._id %}
-    <input type="hidden" name="variant-type_{{pinned._id}}" value={{pinned.category}}>
-    <input type ="hidden" name="##Local ID_{{pinned._id}}" value="{{pinned._id}}">
-    <input type ="hidden" name="Linking ID_{{pinned._id}}" value="{{pinned._id}}">
-    <input type="hidden" name="Chromosome_{{pinned._id}}" value="{{ pinned.chromosome }}">
+    <input type="hidden" name="category@{{pinned._id}}" value={{pinned.category or 'snv' }}>
+    <input type ="hidden" name="local_id@{{pinned._id}}" value="{{pinned._id}}">
+    <input type ="hidden" name="linking_id@{{pinned._id}}" value="{{pinned._id}}">
+    <input type="hidden" name="chromosome@{{pinned._id}}" value="{{ pinned.chromosome }}">
     {% if pinned.category != 'sv' %}
-      <input type="hidden" name="Start_{{pinned._id}}" value="{{ pinned.position }}">
-      <input type="hidden" name="Stop_{{pinned._id}}" value="{{ pinned.position }}">
+      <input type="hidden" name="start@{{pinned._id}}" value="{{ pinned.position }}">
+      <input type="hidden" name="stop@{{pinned._id}}" value="{{ pinned.position }}">
     {% endif %}
-    <input type="hidden" name="Reference allele_{{pinned._id}}" value="{{ pinned.reference }}">
-    <input type="hidden" name="Alternate allele_{{pinned._id}}" value="{{ pinned.alternative }}">
-    <input type="hidden" name="Condition ID type_{{pinned._id}}" value="HPO">
+    <input type="hidden" name="ref@{{pinned._id}}" value="{{ pinned.reference }}">
+    <input type="hidden" name="alt@{{pinned._id}}" value="{{ pinned.alternative }}">
+    <input type="hidden" name="condition_id_type@{{pinned._id}}" value="HPO">
     <br><br>
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -257,7 +139,7 @@
                               {% endfor %}
                             {% endif %}
                           {% endfor %}
-                            <input type="hidden" name="Gene symbol_{{pinned._id}}" value="{{ ';'.join(gene_symbols) }}">
+                            <input type="hidden" name="gene_symbol@{{pinned._id}}" value="{{ ';'.join(gene_symbols) }}">
                         </td>
                       </tr>
                     {% endif %}
@@ -279,7 +161,7 @@
                           {% for gene in pinned.genes %}
                             {% for transcript in gene.transcripts %}
                               {% if transcript.refseq_id and transcript.coding_sequence_name %}
-                                <input type="radio" id="{{pinned._id+"_"+transcript.refseq_id}}" name="Reference sequence_{{pinned._id}}" value="{{transcript.refseq_id+"|"+transcript.coding_sequence_name}}" {% if transcript.is_primary == True %} checked {% endif %}>
+                                <input type="radio" id="{{pinned._id+"_"+transcript.refseq_id}}" name="ref_seq@{{pinned._id}}" value="{{transcript.refseq_id+"|"+transcript.coding_sequence_name}}" {% if transcript.is_primary == True %} checked {% endif %}>
                                 <label for="{{pinned._id+"_"+transcript.refseq_id}}">{{transcript.refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
                               {% endif %}
                             {% endfor %}
@@ -294,7 +176,7 @@
                         {% endfor %}
                       </td>
                       <td>
-                        <select id="Mode of inheritance_{{pinned._id}}" name="Mode of inheritance_{{pinned._id}}">
+                        <select id="Mode of inheritance_{{pinned._id}}" name="inheritance_mode@{{pinned._id}}">
                           {% if 'AR_hom' in pinned.genetic_models or 'AR_hom_dn' in pinned.genetic_models or 'AR_comp' in pinned.genetic_models or 'AR_comp_d' in pinned.genetic_models %}
                             <option value="Autosomal recessive inheritance" selected>Autosomal recessive inheritance</option>
                             <option value="Autosomal dominant">Autosomal dominant inheritance</option>
@@ -352,13 +234,13 @@
                     {% if pinned.dbsnp_id and pinned.category == 'snv'%}
                       <tr>
                         <td>var. identifier</td>
-                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="Variation identifiers_{{pinned._id}}" value="{{pinned.dbsnp_id}}" size=14 pattern="rs[0-9]+"></td>
+                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{pinned.dbsnp_id}}" size=14 pattern="rs[0-9]+"></td>
                       </tr>
                     {% endif %}
                     <tr>
                       <td style="width:40%">Clinical significance:</td>
                       <td>
-                        <select id="Clinical significance_{{pinned._id}}" name="Clinical significance_{{pinned._id}}">
+                        <select id="Clinical significance_{{pinned._id}}" name="clinsig@{{pinned._id}}">
                             <option value="Pathogenic" {% if pinned.acmg_classification == 4 %} selected {% endif %}>Pathogenic</option>
                             <option value="Likely Pathogenic" {% if pinned.acmg_classification == 3 %} selected {% endif %} >Likely Pathogenic</option>
                             <option value="Likely benign" {% if pinned.acmg_classification == 2 %} selected {% endif %} >Likely benign</option>
@@ -369,7 +251,7 @@
                     </tr>
                     <tr>
                       <td>Date last evaluated</td>
-                      <td><input type="text" id="Date last evaluated_{{pinned._id}}" name="Date last evaluated_{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{today}}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" ></td>
+                      <td><input type="text" id="Date last evaluated_{{pinned._id}}" name="last_evaluated@{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{today}}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" ></td>
                     </tr>
                   </table>
                 </td>
@@ -378,7 +260,7 @@
                     <tr>
                       <td>Functional consequence:<br>(based on experimental evidence, leave blank if unsure)</td>
                       <td>
-                        <select id="_{{pinned._id}}" name="Functional consequence_{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, 'funct_cons', this.id);">
+                        <select id="_{{pinned._id}}" name="funct_conseq@{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, 'funct_cons', this.id);">
                             <option value="-" selected> - </option>
                           {% if pinned.category == 'snv' %}
                             <option value="Dominant negative variant">Dominant negative variant</option>
@@ -413,7 +295,7 @@
                     <tr style="display:none" id="line_{{pinned._id}}">
                       <td>Additional comments on functional consequence(s)</td>
                       <td>
-                        <textarea id="Comment on functional consequence_{{pinned._id}}" name="Comment on functional consequence_{{pinned._id}}" placeholder="(optional) " rows="3" cols="30" disabled="true"></textarea>
+                        <textarea id="Comment on functional consequence_{{pinned._id}}" name="funct_conseq_comment@{{pinned._id}}" placeholder="(optional) " rows="3" cols="30" disabled="true"></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -423,13 +305,13 @@
                         {% endfor %}
                       </td>
                       <td>
-                        <input type="text" name="Condition ID value_{{pinned._id}}" value="{{pheno_hpos|join(';')}}" class="form-control" pattern="^HP:[0-9]+(?:;+HP:[0-9]+)*$" placeholder="HP:12345;HP:678910"/>
+                        <input type="text" name="condition_id_value@{{pinned._id}}" value="{{pheno_hpos|join(';')}}" class="form-control" pattern="^HP:[0-9]+(?:;+HP:[0-9]+)*$" placeholder="HP:12345;HP:678910"/>
                       </td>
                     </tr>
                     <tr>
                       <td style="width:30%">Additional comments describing condition:</td>
                       <td>
-                        <textarea name="Condition comment_{{pinned._id}}" placeholder="(optional)" rows="3" cols="30"></textarea>
+                        <textarea name="condition_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="30"></textarea>
                       </td>
                     </tr>
                   </table>
@@ -447,7 +329,7 @@
                     <tr>
                       <td>Type of structural variant:</td>
                       <td>
-                        <select name="Variant type_{{pinned._id}}" id="_{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, 'sv_type', this.id);">
+                        <select name="var_type@{{pinned._id}}" id="_{{pinned._id}}" onChange="changeTextBox(this.options[this.selectedIndex].value, 'sv_type', this.id);">
                         {% if pinned.sub_category == 'del' %}
                           <option value="duplication">duplication</option>
                           <option value="deletion" selected>deletion</option>
@@ -479,19 +361,19 @@
                       <tr style="display:none" id="copies_{{pinned._id}}">
                     {% endif %}
                       <td>Copy number</td>
-                      <td><input type="text" name="Copy number_{{pinned._id}}" value="" size=5 pattern="[0-9]+"></td>
+                      <td><input type="text" name="ncopy@{{pinned._id}}" value="" size=5 pattern="[0-9]+"></td>
                     </tr>
                     <tr>
                       <td>Reference copy number</td>
-                      <td><input type="text" name="Reference copy number_{{pinned._id}}" value="2" size=5 pattern="[0-9]+"></td>
+                      <td><input type="text" name="ref_copy@{{pinned._id}}" value="2" size=5 pattern="[0-9]+"></td>
                     </tr>
                     <tr>
                       <td>Breakpoint 1</td>
-                      <td><input type="text" name="Breakpoint 1_{{pinned._id}}" value="{{pinned.position}}" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                      <td><input type="text" name="breakpoint1@{{pinned._id}}" value="{{pinned.position}}" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                     <tr>
                       <td>Breakpoint 2</td>
-                      <td><input type="text" name="Breakpoint 2_{{pinned._id}}" value="{{pinned.end}}" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                      <td><input type="text" name="breakpoint2@{{pinned._id}}" value="{{pinned.end}}" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                   </table>
                 </td>
@@ -500,19 +382,19 @@
                   <table class="table table-fixed">
                     <tr>
                       <td>Outer start*</td>
-                      <td><input type="text" name="Outer start_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                      <td><input type="text" name="outer_start@{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                     <tr>
                       <td>Inner start*</td>
-                      <td><input type="text" name="Inner start_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                      <td><input type="text" name="inner_start@{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                     <tr>
                       <td>Inner stop*</td>
-                      <td><input type="text" name="Inner stop_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                      <td><input type="text" name="inner_stop@{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                     <tr>
                       <td>Outer stop*</td>
-                      <td><input type="text" name="Outer stop_{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
+                      <td><input type="text" name="outer_stop@{{pinned._id}}" value="" size=20 placeholder="(optional)" pattern="[0-9]+"></td>
                     </tr>
                   </table>
                   <a href="https://www.ncbi.nlm.nih.gov/dbvar/content/overview/#representation" target="_blank">* How to display uncertainty of breakpoint locations</a>
@@ -521,7 +403,7 @@
                   <table class="table table-fixed">
                     <tr>
                       <td>Comments on this variant<br>
-                        <textarea name="Comment on variant_{{pinned._id}}" placeholder="(optional)" rows="10" cols="40"></textarea>
+                        <textarea name="variant_comment@{{pinned._id}}" placeholder="(optional)" rows="10" cols="40"></textarea>
                       </td>
                     </tr>
                   </table>
@@ -541,18 +423,18 @@
                     <table>
                       <tr>
                         <td>Assertion method:</td>
-                        <td><input type="text" name="Assertion method_{{pinned._id}}" placeholder="optional (Submitter's or other publication)" size="40" value="ACMG Guidelines, 2015"></td>
+                        <td><input type="text" name="assertion_method@{{pinned._id}}" placeholder="optional (Submitter's or other publication)" size="40" value="ACMG Guidelines, 2015"></td>
                       </tr>
                       <tr>
                         <td>Assertion citation</td>
                         <td>
-                          <textarea name="Assertion method citation_{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">doi: 10.1038/gim.2015.30</textarea>
+                          <textarea name="assertion_method_cit@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">doi: 10.1038/gim.2015.30</textarea>
                         </td>
                       </tr>
                       <tr>
                         <td style="width:30%">Clinical significance citations<br>(with identifier)</td>
                         <td>
-                          <textarea name="Clinical significance citations_{{pinned._id}}" placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955" rows="3" cols="40"></textarea>
+                          <textarea name="clinsig_cit@{{pinned._id}}" placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955" rows="3" cols="40"></textarea>
                         </td>
                       </tr>
                     </table>
@@ -562,19 +444,19 @@
                       <tr>
                         <td>Method</td>
                         <td>
-                          <textarea name="Method_{{pinned._id}}" placeholder="(optional) Free text describing the experimental method used to generate support." rows="3" cols="40"></textarea>
+                          <textarea name="assertion_method@{{pinned._id}}" placeholder="(optional) Free text describing the experimental method used to generate support." rows="3" cols="40"></textarea>
                         </td>
                       </tr>
                       <tr>
                         <td style="width:30%">Comments on clinical significance</td>
                         <td>
-                          <textarea name="Comment on clinical significance_{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                          <textarea name="clinsig_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
                         </td>
                       </tr>
                       <tr>
                         <td>Drug response condition(s)</td>
                         <td>
-                          <textarea name="Drug response condition_{{pinned._id}}" placeholder="(optional) The condition for which the drug response is relevant. Separate multiple conditions by a semicolon." rows="3" cols="40"></textarea>
+                          <textarea name="drug_response@{{pinned._id}}" placeholder="(optional) The condition for which the drug response is relevant. Separate multiple conditions by a semicolon." rows="3" cols="40"></textarea>
                         </td>
                       </tr>
                     </table>
@@ -597,9 +479,9 @@
                 </div>
               </div>
               <div id="casedata_{{pinned._id}}" class="collapse">
-                <input type="hidden" name="Collection method_{{pinned._id}}" value="clinical testing">
-                <input type="hidden" name="Individual ID_{{pinned._id}}" value="{{ individual.display_name }}">
-                <input type="hidden" name="Linking ID_{{ pinned._id }}" value="{{ pinned._id }}">
+                <input type="hidden" name="collection_method@{{pinned._id}}" value="clinical testing">
+                <input type="hidden" name="individual_id@{{pinned._id}}" value="{{ individual.display_name }}">
+                <input type="hidden" name="linking_id@{{ pinned._id }}" value="{{ pinned._id }}">
                 <div class="panel panel-success">
                   {% if pinned.simple_id|length > 25 and  pinned.cytoband_start%}
                     <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}</div>
@@ -615,14 +497,14 @@
                           <table class="table table-fixed">
                             <tr>
                               <td>Affected?
-                                <select name="Affected status_{{ pinned._id }}" id="affected_status">
+                                <select name="is_affected@{{ pinned._id }}" id="affected_status">
                                   <option value="yes" selected>yes</option>
                                   <option value="no">no</option>
                                   <option value="unknown">?</option>
                                 </select>
                               </td>
                               <td style="width:50%">Ethnicity
-                                <select name="Population Group/Ethnicity_{{pinned._id}}" id="ethnicity">
+                                <select name="ethnicity@{{pinned._id}}" id="ethnicity">
                                   <option value="" selected>unspecified</option>
                                   <option value="Causasians">Causasian</option>
                                   <option value="African American">African American</option>
@@ -643,20 +525,20 @@
                             <tr>
                               <td>sex
                                 {% if individual.sex == "1" %}
-                                  <input type="hidden" name="Sex_{{pinned._id}}" value="male">
+                                  <input type="hidden" name="sex@{{pinned._id}}" value="male">
                                   <strong>male</strong>
                                 {% else %}
-                                  <input type="hidden" name="Sex_{{pinned._id}}" value="female">
+                                  <input type="hidden" name="sex@{{pinned._id}}" value="female">
                                   <strong>female</strong>
                                 {% endif %}
                               </td>
                               <td>
-                                Age:<input type="text" name="Age_{{pinned._id}}" value="" size=5>
+                                Age:<input type="text" name="age@{{pinned._id}}" value="" size=5>
                               </td>
                             </tr>
                             <tr>
                               <td>Allele origin
-                                <select name="Allele origin_{{ pinned._id }}" id="allele_origin">
+                                <select name="allele_origin@{{ pinned._id }}" id="allele_origin">
                                   <option value="germline">germline</option>
                                   <option value="de novo">de novo</option>
                                   <option value="somatic">somatic</option>
@@ -672,7 +554,7 @@
                                 {% for sample in pinned.samples %}
                                   {% if sample.display_name == individual.display_name %}
                                     <strong>({{ sample.genotype_call }})</strong><br>
-                                    <select name="Zygosity_{{pinned._id}}" id="zygosity">
+                                    <select name="zygosity@{{pinned._id}}" id="zygosity">
                                       {% if sample.genotype_call == '1/1' %}
                                         <option value="homozygote" selected>homozygote</option>
                                         <option value="single heterozygote">single heterozygote</option>
@@ -693,7 +575,7 @@
                               <tr>
                                 <td colspan=2>Structural variant analysis:</td>
                                 <td colspan=2>
-                                  <select name="sv_method" id="sv_method">
+                                  <select name="sv_analysis_method@{{pinned._id}}" id="sv_method">
                                     <option value="Paired-end mapping" selected>Paired-end mapping</option>
                                     <option value="Read depth">Read depth</option>
                                     <option value="One end anchored assembly">One end anchored assembly</option>
@@ -707,13 +589,13 @@
                           <table class="table table-fixed">
                             <tr>
                               <td>Was {{individual.display_name}} a proband?<br>
-                                <select name="Proband_{{pinned._id}}" id="proband">
+                                <select name="is_proband@{{pinned._id}}" id="proband">
                                   <option value="yes" selected>yes</option>
                                   <option value="no">no</option>
                                 </select>
                               </td>
                               <td>Family history?<br>
-                                <select name="Family history_{{pinned._id}}" id="f_history">
+                                <select name="fam_history@{{pinned._id}}" id="f_history">
                                   <option value="yes" >yes</option>
                                   <option value="no" selected>no</option>
                                 </select>
@@ -721,13 +603,13 @@
                             </td>
                             <tr>
                               <td>Was this a secondary finding?<br>
-                                <select name="Secondary finding_{{pinned._id}}" id="secondary">
+                                <select name="is_secondary_finding@{{pinned._id}}" id="secondary">
                                   <option value="yes" >yes</option>
                                   <option value="no" selected>no</option>
                                 </select>
                               </td>
                               <td>Mosaicism observed?<br>
-                                <select name="Mosaicism_{{pinned._id}}" id="mosaicism">
+                                <select name="is_mosaic@{{pinned._id}}" id="mosaicism">
                                   <option value="yes" >yes</option>
                                   <option value="no" selected>no</option>
                                 </select>
@@ -738,76 +620,75 @@
                           <table class="table table-fixed">
                             <tr>
                               <td >Co-occurrences same gene<br>
-                                <textarea name="Co-occurrences, same gene_{{pinned._id}}" placeholder="(optional) Full HGVS expressions" rows="3" cols="30"></textarea>
+                                <textarea name="co_occurr_gene@{{pinned._id}}" placeholder="(optional) Full HGVS expressions" rows="3" cols="30"></textarea>
                               </td>
                               <td >Co-occurrences other genes<br>
-                                <textarea name="Co-occurrences, other genes_{{pinned._id}}" placeholder="(optional) Full HGVS expressions" rows="3" cols="30"></textarea>
+                                <textarea name="co_occurr_other@{{pinned._id}}" placeholder="(optional) Full HGVS expressions" rows="3" cols="30"></textarea>
                               </td>
                             </tr>
                             <tr>
                               <td>Date variant was reported to submitter</td>
-                              <td><input type="text" name="Date variant was reported to submitter_{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{ case.analysis_date.date() }}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"></td>
+                              <td><input type="text" name="reported_at@{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{ case.analysis_date.date() }}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"></td>
                             </tr>
                             <tr>
                               <td>Tissue where genetic material was extracted from</td>
-                              <td><input type="text" name="Tissue_{{pinned._id}}" placeholder="(optional)" value=""></td>
+                              <td><input type="text" name="tissue@{{pinned._id}}" placeholder="(optional)" value=""></td>
                             </tr>
                           </table>
                         </td>
                         <td>
                           <table class="table table-fixed">
                             <tr>
-                              <td style="width:30%">Clinical features<br>(relative to the subject)</td>
+                              <td style="width:30%">Subject phenotypes<br>(HPO terms. ONLY if different from variant's HPO terms)</td>
                               <td>
-                                <textarea id="clin_features" name="Clinical features_{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">
-                                  {{pheno_hpos|join(';')}}
+                                <textarea id="clin_features" name="clin_features@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">
                                 </textarea>
                               </td>
                             </tr>
                             <tr>
                               <td>Comments on clinical features</td>
                               <td>
-                                <textarea name="Comment on clinical features_{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                <textarea name="clin_features_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
                               </td>
                             </tr>
                             <tr>
                               <td>Evidence citations</td>
                               <td>
-                                <textarea name="Evidence citations_{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                <textarea name="evidence_cit@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
                               </td>
                             </tr>
                             <tr>
                               <td>Testing laboratory</td>
                               <td>
-                                <input type="text" name="Testing laboratory_{{pinned._id}}" placeholder="(optional)" value="Clinical Genomics - SciLifeLab Solna, Sweden." size=40>
+                                <input type="text" name="testing_lab@{{pinned._id}}" placeholder="(optional)" value="Clinical Genomics - SciLifeLab Solna, Sweden." size=40>
                               </td>
                             </tr>
                             <tr>
                               <td>Platform type</td>
                               <td>
-                                <input type="text" name="Platform type_{{pinned._id}}" placeholder="(optional)" value="next-gen sequencing" size=30>
+                                <input type="text" name="platform_type@{{pinned._id}}" placeholder="(optional)" value="next-gen sequencing" size=30>
                               </td>
                             </tr>
                             <tr>
                               <td>Platform name</td>
                               <td>
                                 {% if individual.analysis_type == 'wes' %}
-                                  <input type="text" name="Platform name_{{pinned._id}}" placeholder="(optional)" value="Whole exome sequencing, Illumina" size=30>
+                                  <input type="text" name="platform_name@{{pinned._id}}" placeholder="(optional)" value="Whole exome sequencing, Illumina" size=30>
                                 {% else %}
-                                  <input type="text" name="Platform name_{{pinned._id}}" placeholder="(optional)" value="Whole genome sequencing, Illumina">
+                                  <input type="text" name="platform_name@{{pinned._id}}" placeholder="(optional)" value="Whole genome sequencing, Illumina">
                                 {% endif %}
                               </td>
                             </tr>
                             <tr>
                               <td>Method</td>
                               <td>
-                                <textarea name="Method_{{pinned._id}}" placeholder="(optional) Free text describing the experimental method used to generate support." rows="3" cols="40"></textarea>
+                                <textarea name="method@{{pinned._id}}" placeholder="(optional) Free text describing the experimental method used to generate support." rows="3" cols="40"></textarea>
                               </td>
                             </tr>
                             <tr>
                               <td>Method purpose</td>
                               <td>
-                                <select name="Method purpose_{{pinned._id}}">
+                                <select name="method_purpose@{{pinned._id}}">
                                   <option value="discovery" selected>discovery</option>
                                   <option value="validation">validation</option>
                                   <option value="assert pathogenicity">assert pathogenicity</option>
@@ -817,7 +698,7 @@
                             <tr>
                               <td>Method citations</td>
                               <td>
-                                <textarea name="Method citations_{{pinned._id}}" placeholder="(optional) PMID:....;PMID:..." rows="3" cols="40"></textarea>
+                                <textarea name="method_cit@{{pinned._id}}" placeholder="(optional) PMID:....;PMID:..." rows="3" cols="40"></textarea>
                               </td>
                             </tr>
                           </table>

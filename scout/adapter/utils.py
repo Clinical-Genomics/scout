@@ -29,6 +29,7 @@ def check_connection(host='localhost', port=27017, username=None, password=None,
     uri += "{0}:{1}".format(host, port)
     if authdb:
         uri = "{}/{}".format(uri, authdb)
+    LOG.info("Try to connect with uri: %s", uri)
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
     try:
         client.server_info()
