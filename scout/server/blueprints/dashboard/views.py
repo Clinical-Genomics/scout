@@ -32,43 +32,17 @@ def index():
     ])
     analysis_types = [{'name': group['_id'], 'count': group['count']} for group in query]
 
-    phenotype_terms = store.case_collection.find({'phenotype_terms.1': {'$exists': True}}).count()
-    causative_variants = store.case_collection.find({'causatives.1': {'$exists': True}}).count()
-    pinned_variants = store.case_collection.find({'suspects.1': {'$exists': True}}).count()
-    cohort_tags = store.case_collection.find({'cohorts.1': {'$exists': True}}).count()
+    phenotype_terms = store.case_collection.find({'phenotype_terms': {'$exists': True}}).count()
+    causative_variants = store.case_collection.find({'causatives': {'$exists': True}}).count()
+    pinned_variants = store.case_collection.find({'suspects': {'$exists': True}}).count()
+    cohort_tags = store.case_collection.find({'cohorts': {'$exists': True}}).count()
 
     LOG.info("Fetch sanger variants")
     nr_evaluated = store.variant_collection.find({'validation': {'$exists':True, '$ne': "Not validated"}}).count()
-    print(sanger_variants)
     LOG.info("Sanger variants fetched")
     LOG.info("Fetch sanger events")
-    sanger_events = store.event_collection.find({'verb':'sanger'})
+    sanger_cases = store.event_collection.distinct('case', {'verb':'sanger'})
     LOG.info("Sanger events fetched")
-    
-    sanger_cases = set()
-    var_ids = set()
-    LOG.info("Loop events")
-    for event in sanger_events:
-        case_id = event['case']
-        # variant_id = event['variant_id']
-        # variant_obj = store.variant_collection.find_one({'variant_id': variant_id,'case_id':case_id})
-        # if not variant_obj:
-        #     continue
-        # doc_id = variant_obj['_id']
-        # if doc_id in var_ids:
-        #     continue
-        # var_ids.add(doc_id)
-        #
-        # validation = variant_obj.get('validation', 'not_evaluated')
-        #
-        # # Check that the variant is not evaluated
-        # if validation in ['True positive', 'False positive']:
-        #     nr_evaluated += 1
-        
-        sanger_cases.add(case_id)
-    
-    LOG.info("Events looped")
-        
     
     sanger_ordered = len(sanger_cases)
     
