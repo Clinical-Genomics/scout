@@ -1,13 +1,13 @@
 from pprint import pprint as pp
 
-from scout.server.blueprints.dashboard.controllers import get_case_info
+from scout.server.blueprints.dashboard.controllers import get_dashboard_info
 
 
 def test_empty_database(real_adapter):
     ## GIVEN an empty database
     adapter = real_adapter
     ## WHEN asking for data
-    data = get_case_info(adapter, total_cases=adapter.nr_cases())
+    data = get_dashboard_info(adapter, total_cases=adapter.nr_cases())
     ## THEN assert that the data is empty
     assert data == {}
 
@@ -16,7 +16,7 @@ def test_one_case(real_adapter, case_obj):
     adapter = real_adapter
     adapter._add_case(case_obj)
     ## WHEN asking for data
-    data = get_case_info(adapter, total_cases=adapter.nr_cases())
+    data = get_dashboard_info(adapter, total_cases=adapter.nr_cases())
     ## THEN assert there is one case in the data
     for group in data['cases']:
         if group['status'] == 'all':

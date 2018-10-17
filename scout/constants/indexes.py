@@ -55,22 +55,19 @@ INDEXES = {
             ('case_id', ASCENDING),
             ('category', ASCENDING),
             ('variant_type', ASCENDING),
-            ('variant_rank', ASCENDING),
-            ('panels', ASCENDING),
-            ('thousand_genomes_frequency', ASCENDING)],
-            name="caseid_varianttype_variantrank_panels_thousandg",
-            background=True,
-            ),
-        IndexModel([
-            ('case_id', ASCENDING),
-            ('category', ASCENDING),
-            ('variant_type', ASCENDING),
             ('chromosome', ASCENDING),
             ('start', ASCENDING),
             ('end', ASCENDING),],
             name="caseid_category_chromosome_start_end",
             background=True,
             ),
+        IndexModel([
+            ('sanger_ordered', ASCENDING),
+            ],
+            name="sanger",
+            background=True,
+            ),
+        
     ],
     'hpo_term': [
         IndexModel([

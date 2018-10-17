@@ -2,7 +2,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-def get_case_info(adapter, total_cases, institute_id=None):
+def get_dashboard_info(adapter, total_cases, institute_id=None):
     """Returns cases with phenotype
     
         If phenotypes are provided search for only those
@@ -50,54 +50,77 @@ def get_case_info(adapter, total_cases, institute_id=None):
     
     data['analysis_types'] = analysis_types
 
-    phenotype_cases = adapter.case(phenotype_terms=True, institute_id=institute_id)
-    causative_cases = adapter.case(has_causatives=True, institute_id=institute_id)
-    pinned_cases = adapter.cases.find(pinned=True, institute_id=institute_id)
-    cohort_cases = adapter.cases.find(cohort=True, institute_id=institute_id)
+    phenotype_cases = sum(1 for i in adapter.case(phenotype_terms=True, institute_id=institute_id))
+    causative_cases = sum(1 for i in adapter.case(has_causatives=True, institute_id=institute_id))
+    pinned_cases = sum(1 for i in adapter.cases.find(pinned=True, institute_id=institute_id))
+    cohort_cases = sum(1 for i in adapter.cases.find(cohort=True, institute_id=institute_id))
     
     LOG.info("Fetch sanger variants")
-    nr_evaluated = adapter.variant_collection.find({'validation': {'$exists':True, '$ne': "Not validated"}}).count()
-    
-    LOG.info("Fetch sanger events")
-    sanger_cases = store.event_collection.distinct('case', {'verb':'sanger'})
-    LOG.info("Sanger events fetched")
-    
+    sanger_query = {'sanger_ordered': True}
+    if institute_id:
+        sanger_query['institute_id'] = institute_id
+
+    sanger_cases = set()
+    sanger_validated_cases = set()
+    sanger_validated_tp = set()
+    sanger_validated_fp = set()
+
+    sanger_ordered = adapter.variant_collection.find(sanger_query)
+
+    for variant in sanger_ordered:
+        case_id = variant['case_id']
+        sanger_cases.add(case_id)
+        validation = variant.get('validation')
+        if validation == 'True positive':
+            sanger_validated_tp.add(case_id)
+            sanger_validated_cases.add(case_id)
+        elif validation == 'False positive':
+            sanger_validated_fp.add(case_id)
+            sanger_validated_cases.add(case_id)
+
     sanger_ordered = len(sanger_cases)
     
     overview = [
         {
             'title': 'Phenotype terms',
-            'count': phenotype_terms,
+            'count': phenotype_cases,
             'percent': phenotype_cases / total_cases,
         }, 
         {
             'title': 'Causative variants',
-            'count': causative_variants,
+            'count': causative_cases,
             'percent': causative_cases / total_cases,
         }, 
         {
             'title': 'Pinned variants',
-            'count': pinned_variants,
+            'count': pinned_cases,
             'percent': pinned_cases / total_cases,
         }, 
         {
             'title': 'Cohort tag',
-            'count': cohort_tags,
+            'count': cohort_cases,
             'percent': cohort_cases / total_cases,
         },
         {
-            'title': 'Sanger ordered',
-            'count': sanger_ordered,
-            'percent': sanger_ordered / total_cases,
+            'title': 'Validation ordered',
+            'count': len(sanger_cases),
+            'percent': len(sanger_cases) / total_cases,
         },
         {
-            'title': 'Sanger confirmed',
-            'count': nr_evaluated,
-            'percent': nr_evaluated / total_cases,
+            'title': 'Validated',
+            'count': len(sanger_validated_cases),
+            'percent': len(sanger_validated_cases) / total_cases,
+        },
+        {
+            'title': 'Validated True Positive',
+            'count': len(sanger_validated_cases),
+            'percent': len(sanger_validated_cases) / total_cases,
+        },
+        {
+            'title': 'Validated False Positive',
+            'count': len(sanger_validated_cases),
+            'percent': len(sanger_validated_cases) / total_cases,
         },
     ]
-    
-    
-    
-    
+
     return data
