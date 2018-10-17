@@ -326,7 +326,7 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
 
     try:
         controllers.variant_verification(store=store, mail=mail, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj,
-                           variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order)
+                           variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order, url_builder=url_for)
     except controllers.MissingVerificationRecipientError:
         flash('No verification recipients added to institute.', 'danger')
 

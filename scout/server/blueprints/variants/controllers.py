@@ -833,7 +833,7 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, url_builder = url_for):
+def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, url_builder=url_for):
     """Sand a verification email and register the verification in the database
 
         Args:
@@ -907,8 +907,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     local_link = url_builder(view_type, institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
-
-    if bool(order) is True: # variant verification should be ordered
+    if order == 'True': # variant verification should be ordered
         # pin variant if it's not already pinned
         if case_obj.get('suspects') is None or variant_obj['_id'] not in case_obj['suspects']:
             store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
