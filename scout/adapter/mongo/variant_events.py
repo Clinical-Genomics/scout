@@ -137,7 +137,7 @@ class VariantEventHandler(object):
         return updated_variant
 
     def cancel_verification(self, institute, case, user, link, variant):
-        """Create an event for cancellation of an order sanger for a variant
+        """Create an event for cancellation of a verification of a variant
 
         Arguments:
             institute (dict): A Institute object
@@ -169,7 +169,7 @@ class VariantEventHandler(object):
             subject=variant['display_name'],
         )
 
-        LOG.info("Creating event for cancellation of ordering sanger for case" \
+        LOG.info("Creating event for cancellation of ordering verification for case" \
                     " {0}".format(case['display_name']))
 
         self.create_event(
@@ -185,7 +185,7 @@ class VariantEventHandler(object):
         return updated_variant
 
     def sanger_ordered(self, institute_id=None, user_id=None):
-        """Get all variants where Sanger validations ever ordered.
+        """Get all variants with validations ever ordered.
 
         Args:
             institute_id(str) : The id of an institute
