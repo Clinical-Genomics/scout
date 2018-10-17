@@ -833,7 +833,7 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order):
+def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, url_builder = url_for):
     """Sand a verification email and register the verification in the database
 
         Args:
@@ -845,14 +845,15 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
             variant_obj(dict): a variant object (snv or sv)
             sender(str): current_app.config['MAIL_USERNAME']
             variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
-            order(bool): False == cancel order, True==order verification
+            order(str): False == cancel order, True==order verification
+            url_builder(flask.url_for): for testing purposes, otherwise test verification email fails because out of context
     """
 
     recipients = institute_obj['sanger_recipients']
     if len(recipients) == 0:
         raise MissingSangerRecipientError()
 
-    page_link = None
+    view_type = None
     email_subject = None
     category = variant_obj.get('category')
     display_name = None
@@ -903,7 +904,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
-    local_link = url_for(view_type, institute_id=institute_obj['_id'],
+    local_link = url_builder(view_type, institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
 
