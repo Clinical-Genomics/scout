@@ -917,7 +917,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
 
     else: # variant verification should be cancelled
         email_subject = "SCOUT: validation of {} variant {} was CANCELLED!".format(category.upper(), display_name)
-        store.cancel_sanger(institute=institute_obj, case=case_obj, user=user_obj, link=local_link, variant=variant_obj)
+        store.cancel_verification(institute=institute_obj, case=case_obj, user=user_obj, link=local_link, variant=variant_obj)
 
     kwargs = dict(subject=email_subject, html=html, sender=sender, recipients=recipients,
         # cc the sender of the email for confirmation

@@ -136,7 +136,7 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def cancel_sanger(self, institute, case, user, link, variant):
+    def cancel_verification(self, institute, case, user, link, variant):
         """Create an event for cancellation of an order sanger for a variant
 
         Arguments:
@@ -204,7 +204,7 @@ class VariantEventHandler(object):
             query['$match']['$and'].append({'institute': institute_id})
         if user_id:
             query['$match']['$and'].append({'user_id': user_id})
-        
+
         # Get all sanger ordered variants grouped by case_id
         results = self.event_collection.aggregate([
             query,
