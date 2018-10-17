@@ -21,7 +21,7 @@ from scout.server.blueprints.genes.controllers import gene
 LOG = logging.getLogger(__name__)
 
 
-class MissingSangerRecipientError(Exception):
+class MissingVerificationRecipientError(Exception):
     pass
 
 
@@ -833,14 +833,27 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def order_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url):
-    """Sand a verification email and register the verification in the database"""
+def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order=False):
+    """Sand a verification email and register the verification in the database
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            mail(scout.server.extensions.mail): an instance of flask_mail.Mail
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
+            user_obj(dict): a user object
+            variant_obj(dict): a variant object (snv or sv)
+            sender(str): current_app.config['MAIL_USERNAME']
+            variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
+            order(bool): False == cancel order, True==order verification
+    """
 
     recipients = institute_obj['sanger_recipients']
     if len(recipients) == 0:
         raise MissingSangerRecipientError()
 
     page_link = None
+    email_subject = None
     category = variant_obj.get('category')
     display_name = None
     breakpoint_1 = str(variant_obj.get('chromosome'))+':'+str(variant_obj.get('position'))
@@ -873,7 +886,72 @@ def order_verification(store, mail, institute_obj, case_obj, user_obj, variant_o
         view_type = 'variants.sv_variant'
         display_name = breakpoint_1+'_'+variant_obj.get('sub_category').upper()
 
-    html = """
+    # body of the email
+    html = verification_email_body(
+        case_name=case_obj['display_name'],
+        url=variant_url, #this is the complete url to the variant, accessible when clicking on the email link
+        display_name=display_name,
+        category=category.upper(),
+        subcategory=variant_obj.get('sub_category').upper(),
+        breakpoint_1=breakpoint_1,
+        breakpoint_2=breakpoint_2,
+        hgnc_symbol=hgnc_symbol,
+        panels=panels,
+        gtcalls=''.join(gtcalls),
+        tx_changes=tx_changes,
+        name=user_obj['name'].encode('utf-8')
+    )
+
+    # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
+    local_link = url_for(view_type, institute_id=institute_obj['_id'],
+                           case_name=case_obj['display_name'],
+                           variant_id=variant_obj['_id'])
+
+    if order: # variant verification should be ordered
+        # pin variant if it's not already pinned
+        if case_obj.get('suspects') is None or variant_obj['_id'] not in case_obj['suspects']:
+            store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
+
+        email_subject = "SCOUT: validation of {} variant {}".format(category.upper(), display_name)
+        store.order_verification(institute=institute_obj, case=case_obj, user=user_obj, link=local_link, variant=variant_obj)
+
+    else: # variant verification should be cancelled
+        email_subject = "SCOUT: validation of {} variant {} was CANCELLED!".format(category.upper(), display_name)
+        store.cancel_sanger(institute=institute_obj, case=case_obj, user=user_obj, link=local_link, variant=variant_obj)
+
+    kwargs = dict(subject=email_subject, html=html, sender=sender, recipients=recipients,
+        # cc the sender of the email for confirmation
+        cc=[user_obj['email']])
+
+    message = Message(**kwargs)
+    # send email using flask_mail
+    mail.send(message)
+
+
+def verification_email_body(case_name, url, display_name, category, subcategory, breakpoint_1, breakpoint_2, hgnc_symbol, panels, gtcalls, tx_changes, name):
+    """
+        Builds the html code for the variant verification emails (order verification and cancel verification)
+
+        Args:
+            case_name(str): case display name
+            url(str): the complete url to the variant, accessible when clicking on the email link
+            display_name(str): a display name for the variant
+            category(str): category of the variant
+            subcategory(str): sub-category of the variant
+            breakpoint_1(str): breakpoint 1 (format is 'chr:start')
+            breakpoint_2(str): breakpoint 2 (format is 'chr:stop')
+            hgnc_symbol(str): a gene or a list of genes separated by comma
+            panels(str): a gene panel of a list of panels separated by comma
+            gtcalls(str): genotyping calls of any sample in the family
+            tx_changes(str): amino acid changes caused by the variant, only for snvs otherwise 'Not available'
+            name(str): user_obj['name'], uft-8 encoded
+
+        Returns:
+            html(str): the html body of the variant verification email
+
+    """
+    html =
+    """
        <ul>
          <li>
            <strong>Case {case_name}</strong>: <a href="{url}">{display_name}</a>
@@ -889,96 +967,9 @@ def order_verification(store, mail, institute_obj, case_obj, user_obj, variant_o
          {tx_changes}
          <li><strong>Ordered by</strong>: {name}</li>
        </ul>
-     """.format(case_name=case_obj['display_name'],
-                url=variant_url, #this is the complete url to the variant, accessible when clicking on the email link
-                display_name=display_name,
-                category=category.upper(),
-                subcategory=variant_obj.get('sub_category').upper(),
-                breakpoint_1=breakpoint_1,
-                breakpoint_2=breakpoint_2,
-                hgnc_symbol=hgnc_symbol,
-                panels=panels,
-                gtcalls=''.join(gtcalls),
-                tx_changes=tx_changes,
-                name=user_obj['name'].encode('utf-8'))
+     """.format(case_name, url, display_name, category, subcategory, breakpoint_1, breakpoint_2, hgnc_symbol, panels, gtcalls, tx_changes, name)
 
-    # build create the link to the variant that should be included in the associated verification events.
-    local_link = url_for(view_type, institute_id=institute_obj['_id'],
-                           case_name=case_obj['display_name'],
-                           variant_id=variant_obj['_id'])
-
-    # pin variant if not already pinned
-    if case_obj.get('suspects') is None or variant_obj['_id'] not in case_obj['suspects']:
-        store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
-
-    kwargs = dict(subject="SCOUT: validation of {} variant {}".format(category.upper(), display_name),
-        html=html, sender=sender, recipients=recipients,
-        # cc the sender of the email for confirmation
-        cc=[user_obj['email']])
-
-    message = Message(**kwargs)
-    mail.send(message)
-
-    #store.order_validation(institute=institute_obj, case=case_obj, user=user_obj, link=variant_link, variant=variant_obj)
-
-
-
-def cancel_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender,
-                  url_builder=url_for):
-    """Send Sanger cancellation email."""
-    variant_link = url_builder('variants.variant', institute_id=institute_obj['_id'],
-                           case_name=case_obj['display_name'],
-                           variant_id=variant_obj['_id'])
-    # if 'suspects' in case_obj and variant_obj['_id'] not in case_obj['suspects']:
-    #     store.pin_variant(institute_obj, case_obj, user_obj, variant_link, variant_obj)
-
-    recipients = institute_obj['sanger_recipients']
-    if len(recipients) == 0:
-        raise MissingSangerRecipientError()
-
-    hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
-    gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
-                                        sample_obj['genotype_call'])
-               for sample_obj in variant_obj['samples']]
-    tx_changes = []
-    for gene_obj in variant_obj.get('genes', []):
-        for transcript_obj in gene_obj['transcripts']:
-            parse_transcript(gene_obj, transcript_obj)
-            if transcript_obj.get('change_str'):
-                tx_changes.append("<li>{}</li>".format(transcript_obj['change_str']))
-
-    html = """
-      <ul">
-        <li>
-          <strong>Case {case_name}</strong>: <a href="{url}">{variant_id}</a>
-        </li>
-        <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
-        <li><strong>Gene panels</strong>: {panels}</li>
-        <li><strong>GT call</strong></li>
-        {gtcalls}
-        <li><strong>Amino acid changes</strong></li>
-        {tx_changes}
-        <li><strong>Order cancelled by</strong>: {name}</li>
-      </ul>
-    """.format(case_name=case_obj['display_name'],
-               url=variant_link,
-               variant_id=variant_obj['display_name'],
-               hgnc_symbol=hgnc_symbol,
-               panels=', '.format(variant_obj['panels']),
-               gtcalls=''.join(gtcalls),
-               tx_changes=''.join(tx_changes),
-               name=user_obj['name'].encode('utf-8'))
-
-    kwargs = dict(subject="SCOUT: Sanger sequencing of {} CANCELLED!".format(hgnc_symbol),
-                  html=html, sender=sender, recipients=recipients,
-                  # cc the sender of the email for confirmation
-                  cc=[user_obj['email']])
-
-    # compose and send the email message
-    message = Message(**kwargs)
-    mail.send(message)
-
-    store.cancel_sanger(institute_obj, case_obj, user_obj, variant_link, variant_obj)
+     return html
 
 
 def cancer_variants(store, request_args, institute_id, case_name):

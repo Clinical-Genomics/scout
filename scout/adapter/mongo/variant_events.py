@@ -88,7 +88,7 @@ class VariantEventHandler(object):
 
         return updated_case
 
-    def order_validation(self, institute, case, user, link, variant):
+    def order_verification(self, institute, case, user, link, variant):
         """Create an event for a variant verification for a variant
         and an event for a variant verification for a case
 

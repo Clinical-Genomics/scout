@@ -1104,7 +1104,7 @@
 {% endmacro %}
 
 {% macro modal_cancel_sanger() %}
-  <form action="{{ url_for('variants.cancel_sanger', institute_id=institute._id,
+  <form action="{{ url_for('variants.cancel_verification', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id) }}"
         method="POST">
     <div class="modal fade" id="cancelSangerModal">
