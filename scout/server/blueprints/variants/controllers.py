@@ -833,7 +833,7 @@ def callers(variant_obj, category='snv'):
     return calls
 
 
-def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order=False):
+def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order):
     """Sand a verification email and register the verification in the database
 
         Args:
@@ -888,18 +888,18 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
 
     # body of the email
     html = verification_email_body(
-        case_name=case_obj['display_name'],
-        url=variant_url, #this is the complete url to the variant, accessible when clicking on the email link
-        display_name=display_name,
-        category=category.upper(),
-        subcategory=variant_obj.get('sub_category').upper(),
-        breakpoint_1=breakpoint_1,
-        breakpoint_2=breakpoint_2,
-        hgnc_symbol=hgnc_symbol,
-        panels=panels,
-        gtcalls=''.join(gtcalls),
-        tx_changes=tx_changes,
-        name=user_obj['name'].encode('utf-8')
+        case_obj['display_name'],
+        variant_url, #this is the complete url to the variant, accessible when clicking on the email link
+        display_name,
+        category.upper(),
+        variant_obj.get('sub_category').upper(),
+        breakpoint_1,
+        breakpoint_2,
+        hgnc_symbol,
+        panels,
+        ''.join(gtcalls),
+        tx_changes,
+        user_obj['name'].encode('utf-8')
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
@@ -907,7 +907,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
 
-    if order: # variant verification should be ordered
+    if order is True: # variant verification should be ordered
         # pin variant if it's not already pinned
         if case_obj.get('suspects') is None or variant_obj['_id'] not in case_obj['suspects']:
             store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
@@ -950,8 +950,7 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
             html(str): the html body of the variant verification email
 
     """
-    html =
-    """
+    html = """
        <ul>
          <li>
            <strong>Case {case_name}</strong>: <a href="{url}">{display_name}</a>
@@ -967,9 +966,21 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
          {tx_changes}
          <li><strong>Ordered by</strong>: {name}</li>
        </ul>
-     """.format(case_name, url, display_name, category, subcategory, breakpoint_1, breakpoint_2, hgnc_symbol, panels, gtcalls, tx_changes, name)
+    """.format(
+        case_name=case_name,
+        url=url,
+        display_name=display_name,
+        category=category,
+        subcategory=subcategory,
+        breakpoint_1=breakpoint_1,
+        breakpoint_2=breakpoint_2,
+        hgnc_symbol=hgnc_symbol,
+        panels=panels,
+        gtcalls=gtcalls,
+        tx_changes=tx_changes,
+        name=name)
 
-     return html
+    return html
 
 
 def cancer_variants(store, request_args, institute_id, case_name):

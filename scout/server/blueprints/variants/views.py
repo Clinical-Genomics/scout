@@ -317,7 +317,7 @@ def variant_update(institute_id, case_name, variant_id):
     return redirect(request.referrer)
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>', methods=['POST'])
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>', methods=['POST'])
 def verify(institute_id, case_name, variant_id, variant_category, order):
     """Start procedure to validate variant using other techniques."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -325,8 +325,8 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
     user_obj = store.user(current_user.email)
 
     try:
-        controllers.variant_verification(store, mail, institute_obj, case_obj, user_obj,
-                           variant_obj, current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order)
+        controllers.variant_verification(store=store, mail=mail, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj,
+                           variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order)
     except controllers.MissingVerificationRecipientError:
         flash('No verification recipients added to institute.', 'danger')
 
