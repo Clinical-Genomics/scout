@@ -1,4 +1,5 @@
 import logging
+import gzip
 import urllib.request
 from urllib.error import (HTTPError, URLError)
 
@@ -23,7 +24,11 @@ def get_request(url):
     try:
         LOG.info("Requesting %s", url)
         response = urllib.request.urlopen(url)
-        data = response.read()      # a `bytes` object
+        if url.endswith('.gz'):
+            LOG.info("Decompress zipped file")
+            data = gzip.decompress(response.read())      # a `bytes` object
+        else:
+            data = response.read()      # a `bytes` object
         decoded_data = data.decode('utf-8')
     except HTTPError as err:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
@@ -86,7 +91,7 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
 
     for file_name in mim_urls:
         url = mim_urls[file_name]
-        mim_files[file_name] = fetch_resource(url, file_name)
+        mim_files[file_name] = fetch_resource(url)
 
     return mim_files
 
@@ -110,7 +115,7 @@ def fetch_hpo_to_genes():
     file_name = "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
     url = HPO_URL.format(file_name)
     
-    return fetch_resource(url, file_name)
+    return fetch_resource(url)
 
 def fetch_hpo_genes():
     """Fetch the latest version of the map from genes to hpo terms
@@ -122,7 +127,7 @@ def fetch_hpo_genes():
     file_name = "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
     url = HPO_URL.format(file_name)
     
-    return fetch_resource(url, file_name)
+    return fetch_resource(url)
 
 def fetch_hpo_phenotype_to_terms():
     """Fetch the latest version of the map from phenotype to terms
@@ -134,7 +139,7 @@ def fetch_hpo_phenotype_to_terms():
     file_name = "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
     url = HPO_URL.format(file_name)
     
-    return fetch_resource(url, file_name)
+    return fetch_resource(url)
 
 def fetch_ensembl_genes(build='37'):
     """Fetch the ensembl genes
@@ -265,7 +270,7 @@ def fetch_hgnc():
     url = 'ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}'.format(file_name)
     LOG.info("Fetching HGNC genes")
     
-    hgnc_lines = fetch_resource(url, file_name)
+    hgnc_lines = fetch_resource(url)
     
     return hgnc_lines
 
@@ -281,8 +286,16 @@ def fetch_exac_constraint():
     
     LOG.info("Fetching ExAC genes")
     
-    exac_lines = fetch_resource(url, file_name)
-    
+    try:
+        exac_lines = fetch_resource(url)
+    except URLError as err:
+        LOG.info("Failed to fetch exac constraint scores file from ftp server")
+        LOG.info("Try to fetch from google bucket...")
+        url = ("https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
+               "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz")
+
+    exac_lines = fetch_resource(url)
+
     return exac_lines
 
 def fetch_hpo_files(hpogenes=False, hpoterms=False, phenotype_to_terms=False, hpodisease=False):

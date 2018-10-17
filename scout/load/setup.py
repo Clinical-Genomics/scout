@@ -87,7 +87,7 @@ def setup_scout(adapter, institute_id='cust000', user_name='Clark Kent',
             mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
         except Exception as err:
             LOG.warning(err)
-            context.abort()
+            raise err
         mim2gene_lines = mim_files['mim2genes']
         genemap_lines = mim_files['genemap2']
 

@@ -50,7 +50,7 @@ def database(context, institute_name, user_name, user_mail, api_key):
     # Fetch the omim information
     api_key = api_key or context.obj.get('omim_api_key')
     if not api_key:
-        LOG.warning("Please provide a omim api key to load the omim gene panel")
+        LOG.warning("Please provide a omim api key with --api-key")
         context.abort()
 
     institute_name = institute_name or context.obj['institute_name']
