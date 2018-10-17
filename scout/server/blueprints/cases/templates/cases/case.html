@@ -256,9 +256,9 @@
 		  {% endif %}
                 </a>
                 {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
-                  <span class="label label-default">Sanger ordered</span>
+                  <span class="label label-default">Verification ordered</span>
                 {% elif variant.sanger_ordered %}
-                  <span class="label label-success">Sanger validated</span>
+                  <span class="label label-success">Validated</span>
                 {% endif %}
               </div>
               <div class="col-xs-4">
@@ -309,9 +309,9 @@
               </td>
               <td>
                 {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
-                  <span class="label label-default">Sanger ordered</span>
+                  <span class="label label-default">Verification ordered</span>
                 {% elif variant.sanger_ordered %}
-                  <span class="label label-success">Sanger validated</span>
+                  <span class="label label-success">Validated</span>
                 {% elif variant.manual_rank %}
                   <span class="label label-default">{{ variant.manual_rank }}</span>
                 {% endif %}

@@ -907,7 +907,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
 
-    if order is True: # variant verification should be ordered
+    if bool(order) is True: # variant verification should be ordered
         # pin variant if it's not already pinned
         if case_obj.get('suspects') is None or variant_obj['_id'] not in case_obj['suspects']:
             store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
