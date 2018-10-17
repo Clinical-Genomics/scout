@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 @blueprint.route('/dashboard')
 def index():
     """Display the Scout dashboard."""
-    total_cases = store.cases().count()
+    total_cases = store.nr_cases()
     if total_cases == 0:
         flash('no cases loaded - please visit the dashboard later!', 'info')
         return redirect(url_for('cases.index'))
