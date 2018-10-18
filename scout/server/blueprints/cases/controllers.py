@@ -254,13 +254,13 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
         'level': institute_obj.get('coverage_cutoff')
     }
 
-    response = requests.get(base_url, params=post_inputs)
+    response = requests.get(base_url, params=post_args)
     coverage_html_response = urlopen(response)
     content = coverage_html_response.read()
     soup = BeautifulSoup(content)
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
     return coverage_data
-    
+
 
 def clinvar_submissions(store, user_id, institute_id):
     """Get all Clinvar submissions for a user and an institute"""
