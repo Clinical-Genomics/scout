@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import itertools
-from urllib.request import urlopen
+import urllib
 import requests
 import datetime
 
@@ -248,14 +248,14 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     panel_name = ' ,'.join(panel_name)
 
     # build coverage report url
-    post_args = {
-        'sample_id': sample_id,
-        'panel_name': panel_name,
-        'level': institute_obj.get('coverage_cutoff')
-    }
-
-    response = requests.get(base_url, params=post_args)
-    coverage_html_response = urlopen(response)
+    params = urllib.urlencode(
+        {
+            'sample_id': sample_id,
+            'panel_name': panel_name,
+            'level': institute_obj.get('coverage_cutoff')
+        }
+    )
+    coverage_html_response = urlopen(base_url+'?%s' % params)
     content = coverage_html_response.read()
     soup = BeautifulSoup(content)
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
