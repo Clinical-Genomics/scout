@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import itertools
 from urllib.request import urlopen
+import requests
 import datetime
 
 from bs4 import BeautifulSoup
@@ -135,7 +136,7 @@ def case(store, institute_obj, case_obj):
     return data
 
 
-def case_report_content(store, institute_obj, case_obj, coverage_report):
+def case_report_content(store, institute_obj, case_obj):
     """Gather contents to be visualized in a case report
 
     Args:
@@ -219,33 +220,47 @@ def case_report_content(store, institute_obj, case_obj, coverage_report):
         # Add the decorated variants to the case
         data[var_type] = decorated_variants
 
-        if coverage_report:
-            individual_ids = [ ind['individual_id'] for ind in case_obj['individuals'] ]
-            panel_names = [ panel['panel_name'] for panel in case_obj['panels'] ]
-            data['coverage_report'] = coverage_report_contents(samples=individual_ids, level=institute_obj.get('coverage_cutoff'), panel_name=' ,'.join(panel_names) )
-
     return data
 
 
-def coverage_report_contents(samples, level, panel_name):
-    """Extracts the html code from the body of a coverage report based on chanjo-report
+def coverage_report_contents(store, institute_obj, case_obj, base_url):
+    """Posts a request to chanjo-report and capture the body of the returned response to include it in case report
 
     Args:
-        samples(list): a list of sample ids from a case
-        level(int): the coverage cutoff for an institute
-        panel_name(str): a comma-separated list of gene panels
-        base_url(str): the base url for a coverage report
+        store(adapter.MongoAdapter)
+        institute_obj(models.Institute)
+        case_obj(models.Case)
 
     Returns:
         coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
     """
 
-    coverage_html_response = urlopen(url_for('report.report', sample_id=samples, level=level, panel_name=panel_name))
+    # extract sample ids from case_obj :
+    sample_id = [ ind['individual_id'] for ind in case_obj['individuals'] ]
+
+    # extract default panel names from case_obj
+    panel_name = []
+    for panel_info in case_obj.get('panels', []):
+        if panel_info.get('is_default'):
+            panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
+            full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
+            panel_name.append(full_name)
+    panel_name = ' ,'.join(panel_name)
+
+    # build coverage report url
+    post_args = {
+        'sample_id': sample_id,
+        'panel_name': panel_name,
+        'level': institute_obj.get('coverage_cutoff')
+    }
+
+    response = requests.get(base_url, params=post_inputs)
+    coverage_html_response = urlopen(response)
     content = coverage_html_response.read()
     soup = BeautifulSoup(content)
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
     return coverage_data
-
+    
 
 def clinvar_submissions(store, user_id, institute_id):
     """Get all Clinvar submissions for a user and an institute"""
