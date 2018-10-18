@@ -61,7 +61,10 @@
   {{ tagged_panel() }}<br>
   {{ commented_panel() }}<br>
   {{ dismissed_panel() }}
-  [END OF REPORT]<br><br>
+  [END OF VARIANT REPORT]<br><br>
+  {% if coverage_data %}
+    {{ coverage_data|safe }}
+  {% endif %}
   <a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
 </div>
 {% endblock %}

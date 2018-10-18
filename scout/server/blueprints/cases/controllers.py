@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import itertools
+from urllib.request import urlopen
 import datetime
 
+from bs4 import BeautifulSoup
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer
@@ -18,14 +20,14 @@ STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
 def cases(store, case_query, limit=100):
     """Preprocess case objects.
-    
+
     Add the necessary information to display the 'cases' view
-    
+
     Args:
         store(adapter.MongoAdapter)
         case_query(pymongo.Cursor)
         limit(int): Maximum number of cases to display
-    
+
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
@@ -50,17 +52,17 @@ def cases(store, case_query, limit=100):
 
 def case(store, institute_obj, case_obj):
     """Preprocess a single case.
-    
+
     Prepare the case to be displayed in the case view.
 
     Args:
         store(adapter.MongoAdapter)
         institute_obj(models.Institute)
         case_obj(models.Case)
-    
+
     Returns:
         data(dict): includes the cases, how many there are and the limit.
-    
+
     """
     # Convert individual information to more readable format
     case_obj['individual_ids'] = []
@@ -75,7 +77,7 @@ def case(store, institute_obj, case_obj):
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
                              case_obj.get('assignees', [])]
-    
+
     # Fetch the variant objects for suspects and causatives
     suspects = [store.variant(variant_id) or variant_id for variant_id in
                 case_obj.get('suspects', [])]
@@ -133,17 +135,18 @@ def case(store, institute_obj, case_obj):
     return data
 
 
-def case_report_content(store, institute_obj, case_obj):
+def case_report_content(store, institute_obj, case_obj, coverage_report):
     """Gather contents to be visualized in a case report
-    
+
     Args:
         store(adapter.MongoAdapter)
         institute_obj(models.Institute)
         case_obj(models.Case)
-    
+        coverage_report(bool)
+
     Returns:
         data(dict)
-    
+
     """
     variant_types = {
         'causatives_detailed': 'causatives',
@@ -154,7 +157,7 @@ def case_report_content(store, institute_obj, case_obj):
         'commented_detailed': 'is_commented',
     }
     data = case_obj
-    
+
     # Add the case comments
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
@@ -194,20 +197,20 @@ def case_report_content(store, institute_obj, case_obj):
         # We decorate the variant with some extra information
             if var_obj['category'] == 'snv':
                 decorated_info = variant_decorator(
-                        store=store, 
-                        institute_obj=institute_obj, 
-                        case_obj=case_obj, 
-                        variant_id=None, 
-                        variant_obj=var_obj, 
+                        store=store,
+                        institute_obj=institute_obj,
+                        case_obj=case_obj,
+                        variant_id=None,
+                        variant_obj=var_obj,
                         add_case=False,
-                        add_other=False, 
+                        add_other=False,
                         get_overlapping=False
                     )
             else:
                 decorated_info = sv_variant(
-                    store=store, 
-                    institute_id=institute_obj['_id'], 
-                    case_name=case_obj['display_name'], 
+                    store=store,
+                    institute_id=institute_obj['_id'],
+                    case_name=case_obj['display_name'],
                     variant_obj=var_obj,
                     add_case=False,
                     get_overlapping=False
@@ -216,7 +219,30 @@ def case_report_content(store, institute_obj, case_obj):
         # Add the decorated variants to the case
         data[var_type] = decorated_variants
 
+        if coverage_report:
+            data['coverage_report'] = coverage_report_content(samples=case_obj.get('individual_ids'), institute_obj.get('coverage_cutoff'), ' ,'.join(case_obj.get('panel_names')))
+
     return data
+
+
+def coverage_report_contents(samples, level, panel_name, base_url='report.report'):
+    """Extracts the html code from the body of a coverage report based on chanjo-report
+
+    Args:
+        samples(list): a list of sample ids from a case
+        level(int): the coverage cutoff for an institute
+        panel_name(str): a comma-separated list of gene panels
+        base_url(str): the base url for a coverage report
+
+    Returns:
+        coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
+    """
+
+    coverage_html_response = urlopen(url_for(base_url, sample_id=samples, level=level, panel_name=panel_name))
+    content = coverage_html_response.read()
+    soup = BeautifulSoup(content)
+    coverage_data = ''.join(['%s' % x for x in soup.body.contents])
+    return coverage_data
 
 
 def clinvar_submissions(store, user_id, institute_id):

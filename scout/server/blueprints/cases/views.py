@@ -157,7 +157,7 @@ def case_synopsis(institute_id, case_name):
 def case_report(institute_id, case_name):
     """Visualize case report"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
+    data = controllers.case_report_content(store, institute_obj, case_obj, False)
 
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
@@ -167,7 +167,7 @@ def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
+    data = controllers.case_report_content(store, institute_obj, case_obj, True)
 
     # workaround to be able to print the case pedigree to pdf
     if case_obj.get('madeline_info') is not None:
