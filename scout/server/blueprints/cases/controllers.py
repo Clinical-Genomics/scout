@@ -220,12 +220,14 @@ def case_report_content(store, institute_obj, case_obj, coverage_report):
         data[var_type] = decorated_variants
 
         if coverage_report:
-            data['coverage_report'] = coverage_report_content(samples=case_obj.get('individual_ids'), institute_obj.get('coverage_cutoff'), ' ,'.join(case_obj.get('panel_names')))
+            individual_ids = [ ind['individual_id'] for ind in case_obj['individuals'] ]
+            panel_names = [ panel['panel_name'] for panel in case_obj['panels'] ]
+            data['coverage_report'] = coverage_report_content(samples=individual_ids, level=institute_obj.get('coverage_cutoff'), panel_name=' ,'.join(panel_names) )
 
     return data
 
 
-def coverage_report_contents(samples, level, panel_name, base_url='report.report'):
+def coverage_report_contents(samples, level, panel_name):
     """Extracts the html code from the body of a coverage report based on chanjo-report
 
     Args:
@@ -238,7 +240,7 @@ def coverage_report_contents(samples, level, panel_name, base_url='report.report
         coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
     """
 
-    coverage_html_response = urlopen(url_for(base_url, sample_id=samples, level=level, panel_name=panel_name))
+    coverage_html_response = urlopen(url_for('report.report', sample_id=samples, level=level, panel_name=panel_name))
     content = coverage_html_response.read()
     soup = BeautifulSoup(content)
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
@@ -263,7 +265,6 @@ def clinvar_lines(clinvar_objects, clinvar_header):
 
     clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
     return clinvar_lines
-
 
 
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
