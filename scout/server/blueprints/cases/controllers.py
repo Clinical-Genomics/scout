@@ -222,7 +222,7 @@ def case_report_content(store, institute_obj, case_obj, coverage_report):
         if coverage_report:
             individual_ids = [ ind['individual_id'] for ind in case_obj['individuals'] ]
             panel_names = [ panel['panel_name'] for panel in case_obj['panels'] ]
-            data['coverage_report'] = coverage_report_content(samples=individual_ids, level=institute_obj.get('coverage_cutoff'), panel_name=' ,'.join(panel_names) )
+            data['coverage_report'] = coverage_report_contents(samples=individual_ids, level=institute_obj.get('coverage_cutoff'), panel_name=' ,'.join(panel_names) )
 
     return data
 
