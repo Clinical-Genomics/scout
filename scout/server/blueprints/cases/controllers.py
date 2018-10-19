@@ -255,8 +255,8 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     post_request_data['level'] = institute_obj.get('coverage_cutoff')
 
     #send post request to chanjo report
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'} # This is chrome, you can set whatever browser you like
-    resp = requests.post(base_url+'reports/report', data = post_request_data, headers=headers)
+    #headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'} # This is chrome, you can set whatever browser you like
+    resp = requests.request('GET', base_url+'reports/report')
 
     #read response content
     soup = BeautifulSoup(resp.text)
@@ -264,7 +264,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     #extract body content
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
 
-    return str(resp.geturl())
+    return coverage_data
 
 
 def clinvar_submissions(store, user_id, institute_id):
