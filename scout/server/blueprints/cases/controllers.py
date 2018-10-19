@@ -222,7 +222,7 @@ def case_report_content(store, institute_obj, case_obj):
     return data
 
 
-def coverage_report_contents(store, institute_obj, case_obj, base_url):
+def coverage_report_contents(store, institute_obj, case_obj, base_url, headers):
     """Posts a request to chanjo-report and capture the body of the returned response to include it in case report
 
     Args:
@@ -255,7 +255,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     post_request_data['level'] = institute_obj.get('coverage_cutoff')
 
     #send post request to chanjo report
-    resp = requests.post(base_url+'reports/report', data = post_request_data)
+    resp = requests.post(base_url+'reports/report', data = post_request_data, headers=headers)
 
     #read response content
     soup = BeautifulSoup(resp.text)
