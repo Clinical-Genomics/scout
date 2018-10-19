@@ -229,6 +229,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
         store(adapter.MongoAdapter)
         institute_obj(models.Institute)
         case_obj(models.Case)
+        base_url(str): base url of server
 
     Returns:
         coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
@@ -260,6 +261,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     #read response content
     soup = BeautifulSoup(resp.text)
 
+    # remove links in the printed version of coverage report
     for tag in soup.find_all('a'):
         tag.replaceWith('')
 
