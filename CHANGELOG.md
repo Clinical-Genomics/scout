@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed sanger validation popup to show individual variants queried by user and institute.
 - Fixed problem with setting up scout
 - Fixes problem when exac file is not available through broad ftp
+- Fetch transcripts for correct build in `adapter.hgnc_gene`
 
 ## [4.1.1]
 - Fix problem with institute authentication flash message in utils

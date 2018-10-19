@@ -36,7 +36,6 @@ def gene(store, hgnc_id):
 
             if not res['record']:
                 res['record'] = record
-            pp(record)
 
     # If none of the genes where found
     if not any(res.values()):

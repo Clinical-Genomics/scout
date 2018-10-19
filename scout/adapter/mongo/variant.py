@@ -491,7 +491,7 @@ class VariantHandler(VariantLoader):
             rank_threshold = rank_threshold or 5
 
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp:
-            file_name = pathlib.Path(temp.name)
+            file_name = str(pathlib.Path(temp.name))
             for header_line in vcf_obj.raw_header.split('\n'):
                 if len(header_line) > 3:
                     temp.write(header_line + '\n')
