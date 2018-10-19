@@ -250,7 +250,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
             panel_name.append(full_name)
     panel_name = ' ,'.join(panel_name)
     post_request_data['panel_name'] = panel_name
-    post_request_data['default_genes'] = list(distinct_genes)
+    #post_request_data['default_genes'] = list(distinct_genes)
 
     # add institute-specific cutoff level to the post request object
     post_request_data['level'] = institute_obj.get('coverage_cutoff')
