@@ -163,6 +163,8 @@ def case_report(institute_id, case_name):
         data['coverage_report'] = controllers.coverage_report_contents(store, institute_obj, case_obj, request.url_root)
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
+    return str(request)
+
 
 @cases_bp.route('/<institute_id>/<case_name>/pdf_report', methods=['GET'])
 def pdf_case_report(institute_id, case_name):

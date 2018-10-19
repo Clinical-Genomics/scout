@@ -257,7 +257,8 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     #send post request to chanjo report
     session = requests.Session()
-    resp = session.get(base_url+'reports/report', params = post_request_data)
+    headers={'User-Agent': 'Mozilla/5.0'}
+    resp = session.get(base_url+'reports/report', params = post_request_data, headers=headers)
 
     #read response content
     soup = BeautifulSoup(resp.text)
