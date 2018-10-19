@@ -256,7 +256,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     #send post request to chanjo report
     #headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'} # This is chrome, you can set whatever browser you like
-    resp = requests.request('GET', base_url+'reports/report')
+    resp = requests.request('GET', url_for('report.report', sample_id=post_request_data['sample_id'], level=post_request_data['level'], panel_name=post_request_data['panel_name']))
 
     #read response content
     soup = BeautifulSoup(resp.text)
