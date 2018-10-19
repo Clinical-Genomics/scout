@@ -222,7 +222,7 @@ def case_report_content(store, institute_obj, case_obj):
     return data
 
 
-def coverage_report_contents(store, institute_obj, case_obj, base_url, headers):
+def coverage_report_contents(store, institute_obj, case_obj, base_url):
     """Posts a request to chanjo-report and capture the body of the returned response to include it in case report
 
     Args:
