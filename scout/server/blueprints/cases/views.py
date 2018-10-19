@@ -160,7 +160,7 @@ def case_report(institute_id, case_name):
     data = controllers.case_report_content(store, institute_obj, case_obj)
 
     if current_app.config.get('SQLALCHEMY_DATABASE_URI'):
-        data['coverage_report'] = controllers.coverage_report_contents(store, institute_obj, case_obj, request.url_root, request.headers)
+        data['coverage_report'] = controllers.coverage_report_contents(store, institute_obj, case_obj, request.url_root)
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
 
