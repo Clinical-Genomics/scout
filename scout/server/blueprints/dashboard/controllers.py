@@ -107,24 +107,31 @@ def get_dashboard_info(adapter, institute_id=None):
     data['overview'] = overview
     
     variants = []
+    nr_validated = len(validated_tp) + len(validated_fp)
     if nr_ordered:
-        variants = [
+        variants.append(
             {
                 'title': 'Validation ordered',
-                'count': nr_ordered
-            },
-            {
-                'title': 'Validated True Positive',
-                'count': len(validated_tp),
-                'percent': len(validated_tp) / nr_ordered,
-            },
-            {
-                'title': 'Validated False Positive',
-                'count': len(validated_fp),
-                'percent': len(validated_fp) / nr_ordered,
-            },
+                'count': nr_ordered,
+                'percent': 1
+            }
+        )
+    if nr_validated:
+            variants.append(
+                {
+                    'title': 'Validated True Positive',
+                    'count': len(validated_tp),
+                    'percent': len(validated_tp) / nr_validated,
+                }
+            )
             
-        ]
+            variants.append(
+                {
+                    'title': 'Validated False Positive',
+                    'count': len(validated_fp),
+                    'percent': len(validated_fp) / nr_validated,
+                }
+            )
     
     data['variants'] = variants
     

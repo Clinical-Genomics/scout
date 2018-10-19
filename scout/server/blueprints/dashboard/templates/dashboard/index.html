@@ -89,6 +89,9 @@
         <div class="panel-body">
           <h1 class="text-center">{{ topic.count }}</h1>
         </div>
+        <div class="text-center"><span class="text-muted">
+          {{ (topic.percent * 100)|round(1) }}%</span>
+        </div>
       </div>
     </div>
   {% endfor %}
