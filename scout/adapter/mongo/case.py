@@ -111,15 +111,13 @@ class CaseHandler(object):
             nr_cases(int)
         """
         query = {}
-        print("HEJ!", institute_id)
-        
+
         if institute_id:
             query['collaborators'] = institute_id
         
         LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = self.case_collection.find(query).count()
-        # nr_cases = self.case_collection.count_documents(query)
-        
+
         return nr_cases
     
 
