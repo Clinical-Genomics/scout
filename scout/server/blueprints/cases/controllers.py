@@ -260,6 +260,9 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     #read response content
     soup = BeautifulSoup(resp.text)
 
+    for tag in soup.find_all('a'):
+        tag.replaceWith('')
+
     #extract body content using BeautifulSoup
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
 
