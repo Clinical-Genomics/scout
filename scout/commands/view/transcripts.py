@@ -16,7 +16,7 @@ def transcripts(context, build, hgnc_id, json):
     adapter = context.obj['adapter']
 
     if not json:
-        click.echo("Chromosom\tstart\tend\ttranscript_id\thgnc_id\trefseq\tis_primary")
+        click.echo("Chromosome\tstart\tend\ttranscript_id\thgnc_id\trefseq\tis_primary")
     for tx_obj in adapter.transcripts(build=build, hgnc_id=hgnc_id):
         if json:
             pp(tx_obj)
