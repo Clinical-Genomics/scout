@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import itertools
 import requests
-from werkzeug.datastructures import Headers
 import datetime
 
 from bs4 import BeautifulSoup
@@ -223,7 +222,7 @@ def case_report_content(store, institute_obj, case_obj):
     return data
 
 
-def coverage_report_contents(store, institute_obj, case_obj, base_url):
+def coverage_report_contents(store, institute_obj, case_obj, base_url, headers):
     """Posts a request to chanjo-report and capture the body of the returned response to include it in case report
 
     Args:
@@ -245,7 +244,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     for panel_info in case_obj.get('panels', []):
         if panel_info.get('is_default'):
             panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
-            #distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
+            distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
             full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
             panel_name.append(full_name)
     panel_name = ' ,'.join(panel_name)
@@ -255,10 +254,11 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     # add institute-specific cutoff level to the post request object
     post_request_data['level'] = institute_obj.get('coverage_cutoff')
 
+    post_request_data['']
+
     #send post request to chanjo report
-    session = requests.Session()
-    headers={'User-Agent': 'Mozilla/5.0'}
-    resp = session.get(base_url+'reports/report', params = post_request_data, headers=headers)
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'} # This is chrome, you can set whatever browser you like
+    resp = requests.post(base_url+'reports/report', data = post_request_data, headers=headers)
 
     #read response content
     soup = BeautifulSoup(resp.text)
@@ -266,7 +266,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     #extract body content
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
 
-    return coverage_data
+    return headers
 
 
 def clinvar_submissions(store, user_id, institute_id):
