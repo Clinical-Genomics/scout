@@ -99,7 +99,7 @@ class CaseHandler(object):
         LOG.info("Get cases with query {0}".format(query))
         return self.case_collection.find(query).sort('updated_at', -1)
 
-    def nr_cases(self, collaborator=None):
+    def nr_cases(self, institute_id=None):
         """Return the number of cases
         
         This function will change when we migrate to 3.7.1
@@ -111,11 +111,12 @@ class CaseHandler(object):
             nr_cases(int)
         """
         query = {}
+        print("HEJ!", institute_id)
         
-        if collaborator:
-            LOG.debug("Use collaborator {0}".format(collaborator))
-            query['collaborators'] = collaborator
+        if institute_id:
+            query['collaborators'] = institute_id
         
+        LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = self.case_collection.find(query).count()
         # nr_cases = self.case_collection.count_documents(query)
         

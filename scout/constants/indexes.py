@@ -66,6 +66,7 @@ INDEXES = {
             ],
             name="sanger",
             background=True,
+            sparse=True,
             ),
         
     ],
