@@ -264,7 +264,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     #extract body content
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
 
-    return str(resp)
+    return str(soup)
 
 
 def clinvar_submissions(store, user_id, institute_id):
