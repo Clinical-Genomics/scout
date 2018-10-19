@@ -234,9 +234,9 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
         coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
     """
 
-    post_request_data = {}
+    request_data = {}
     # extract sample ids from case_obj and add them to the post request object:
-    post_request_data['sample_id'] = [ ind['individual_id'] for ind in case_obj['individuals'] ]
+    request_data['sample_id'] = [ ind['individual_id'] for ind in case_obj['individuals'] ]
 
     # extract default panel names and default genes from case_obj and add them to the post request object
     distinct_genes = set()
@@ -244,24 +244,23 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     for panel_info in case_obj.get('panels', []):
         if panel_info.get('is_default'):
             panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
-            distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
+            #distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
             full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
             panel_name.append(full_name)
     panel_name = ' ,'.join(panel_name)
-    post_request_data['panel_name'] = panel_name
+    request_data['panel_name'] = panel_name
     #post_request_data['default_genes'] = list(distinct_genes)
 
     # add institute-specific cutoff level to the post request object
-    post_request_data['level'] = institute_obj.get('coverage_cutoff')
+    request_data['level'] = institute_obj.get('coverage_cutoff')
 
     #send post request to chanjo report
-    #headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'} # This is chrome, you can set whatever browser you like
-    resp = requests.request('GET', url_for('report.report'))
+    resp = requests.get(base_url+'reports/report', params=request_data)
 
     #read response content
     soup = BeautifulSoup(resp.text)
 
-    #extract body content
+    #extract body content using BeautifulSoup
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
 
     return coverage_data
