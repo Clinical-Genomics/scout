@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import itertools
-import urllib
 import requests
 import datetime
 
@@ -235,30 +234,35 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
         coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
     """
 
-    # extract sample ids from case_obj :
-    sample_id = [ ind['individual_id'] for ind in case_obj['individuals'] ]
+    post_request_data = {}
+    # extract sample ids from case_obj and add them to the post request object:
+    post_request_data['sample_id'] = [ ind['individual_id'] for ind in case_obj['individuals'] ]
 
-    # extract default panel names from case_obj
+    # extract default panel names and default genes from case_obj and add them to the post request object
+    distinct_genes = set()
     panel_name = []
     for panel_info in case_obj.get('panels', []):
         if panel_info.get('is_default'):
             panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
+            distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
             full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
             panel_name.append(full_name)
     panel_name = ' ,'.join(panel_name)
+    post_request_data['panel_name'] = panel_name
+    post_request_data['default_genes'] = list(distinct_genes)
 
-    # build coverage report url
-    params = urllib.urlencode(
-        {
-            'sample_id': sample_id,
-            'panel_name': panel_name,
-            'level': institute_obj.get('coverage_cutoff')
-        }
-    )
-    coverage_html_response = urlopen(base_url+'?%s' % params)
-    content = coverage_html_response.read()
-    soup = BeautifulSoup(content)
+    # add institute-specific cutoff level to the post request object
+    post_request_data['level'] = institute_obj.get('coverage_cutoff')
+
+    #send post request to chanjo report
+    resp = requests.post(base_url+'reports/report', data = post_request_data)
+
+    #read response content
+    soup = BeautifulSoup(resp.text)
+
+    #extract body content
     coverage_data = ''.join(['%s' % x for x in soup.body.contents])
+
     return coverage_data
 
 
