@@ -255,7 +255,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     # add institute-specific cutoff level to the post request object
     request_data['level'] = institute_obj.get('coverage_cutoff')
 
-    #send post request to chanjo report
+    #send get request to chanjo report
     resp = requests.get(base_url+'reports/report', params=request_data)
 
     #read response content
