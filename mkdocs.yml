@@ -40,6 +40,7 @@ nav:
       - Gene panels: 'user-guide/panels.md'
       - Annotations: 'user-guide/annotations.md'
       - ACMG: 'user-guide/acmg-criterias.md'
+      - Dashboard: 'user-guide/dashboard.md'
   
   - Admin guide:
       - Intro: 'admin-guide/README.md'
