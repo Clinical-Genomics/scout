@@ -38,7 +38,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
         parsed_tx = transcripts_dict[ens_tx_id]
         # Get the ens gene id
         ens_gene_id = parsed_tx['ensembl_gene_id']
-        # pp(ens_gene_id)
+        
         # Fetch the internal gene object to find out the correct hgnc id
         gene_obj = ensembl_genes.get(ens_gene_id)
         # If the gene is non existing in scout we skip the transcript
@@ -69,27 +69,33 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
             # If there are several mrna the one that is in 'primary_transcripts' is choosen
             # Else one is choosen at random
             # The same follows for the other categories where nc_rna has precedense over mrna_predicted
+            # We will store all refseq identifiers in a list as well
             tx_data['is_primary'] = False
             primary_transcripts = tx_data['primary_transcripts']
             refseq_identifier = None
+            refseq_identifiers = []
             for category in TRANSCRIPT_CATEGORIES:
                 identifiers = tx_data[category]
                 if not identifiers:
                     continue
-
-                intersection = identifiers.intersection(primary_transcripts)
-                ref_seq_transcripts += 1
-                if intersection:
-                    refseq_identifier = intersection.pop()
-                    tx_data['is_primary'] = True
-                    nr_primary_transcripts += 1
-                else:
-                    refseq_identifier = identifiers.pop()
-                # If there was refseq identifiers we break the loop
-                break
+                
+                for refseq_id in identifiers:
+                    refseq_identifiers.append(refseq_id)
+                    if refseq_identifier:
+                        continue
+                    ref_seq_transcripts += 1
+                    if refseq_id in primary_transcripts:
+                        refseq_identifier = refseq_id
+                        tx_data['is_primary'] = True
+                        nr_primary_transcripts += 1
+                    else:
+                        refseq_identifier = refseq_id
 
             if refseq_identifier:
                 tx_data['refseq_id'] = refseq_identifier
+            if refseq_identifiers:
+                tx_data['refseq_identifiers'] = refseq_identifiers
+                
             ####################  ####################  ####################
 
             # Build the transcript object

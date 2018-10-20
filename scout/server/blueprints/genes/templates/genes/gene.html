@@ -95,7 +95,8 @@
             </li>
             </div>
         </div>
-
+        
+        {% if record.phenotypes %}
         <div class="col-md-4">
             <div class="panel panel-default">
               <div class="panel-heading">Phenotypes</div>
@@ -110,6 +111,7 @@
             {% endfor %}
             </div>
         </div>
+        {% endif %}
 
         </div>
 </div>
@@ -197,7 +199,9 @@
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-            <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a> /  {{ transcript.refseq_id or '-' }} {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
+            <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a> 
+            /  {{ transcript.refseq_identifiers|join(', ') or '-' }} 
+            {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
 		  <span class="pull-right">{{ transcript['position'] }}</span>
         </li>
       {% endfor %}

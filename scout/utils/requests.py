@@ -178,12 +178,14 @@ def fetch_ensembl_genes(build='37'):
     
     return result
 
-def fetch_ensembl_transcripts(build='37'):
+def fetch_ensembl_transcripts(build='37', chromosomes=None):
     """Fetch the ensembl genes
     
     Args:
         build(str): ['37', '38']
+        chromosomes(iterable(str))
     """
+    chromosomes = chromosomes or CHROMOSOMES
     LOG.info("Fetching ensembl transcripts build %s ...", build)
     if build == '37':
         url = 'http://grch37.ensembl.org'
@@ -206,7 +208,7 @@ def fetch_ensembl_transcripts(build='37'):
     ]
     
     filters = {
-        'chromosome_name': CHROMOSOMES,
+        'chromosome_name': chromosomes,
     }
     
     result = dataset.query(

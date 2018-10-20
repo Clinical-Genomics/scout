@@ -84,6 +84,9 @@ def panel(context, path, date, display_name, version, panel_type, panel_id, inst
     if (omim or panel_app):
         return
 
+    if path is None:
+        LOG.info("Please provide a panel")
+        return
     try:
         load_panel(path, adapter, date, display_name, version, panel_type, panel_id, institute)
     except Exception as err:

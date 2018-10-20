@@ -28,6 +28,7 @@ def build_transcript(transcript_info, build='37'):
     is_primary = transcript_info.get('is_primary', False)
     
     refseq_id = transcript_info.get('refseq_id')
+    refseq_identifiers = transcript_info.get('refseq_identifiers')
 
     try:
         chrom = transcript_info['chrom']
@@ -62,7 +63,8 @@ def build_transcript(transcript_info, build='37'):
         start=start, 
         end=end, 
         is_primary=is_primary, 
-        refseq_id=refseq_id, 
+        refseq_id=refseq_id,
+        refseq_identifiers=refseq_identifiers,
         build=build
     )
     # Remove unnessesary keys
