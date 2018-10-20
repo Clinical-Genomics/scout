@@ -146,8 +146,18 @@ class InstituteHandler(object):
 
         return institute_obj
 
-    def institutes(self):
-        """Fetch all institutes."""
+    def institutes(self, institute_ids=None):
+        """Fetch all institutes.
+        
+        Args:
+            institute_ids(list(str))
+        
+        Returns:
+            res(pymongo.Cursor)
+        """
+        query = {}
+        if institute_ids:
+            query['_id'] = {'$in': institute_ids}
         LOG.debug("Fetching all institutes")
-        return self.institute_collection.find()
+        return self.institute_collection.find(query)
 

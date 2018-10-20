@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Disease-causing transcripts in case report
 - Thicker lines in case report
 - Supports HPO search for cases, both terms or if described in synopsis
+- Adds sanger information to dashboard
 
 ### Fixed
 
