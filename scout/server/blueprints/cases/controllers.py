@@ -241,19 +241,18 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     # extract default panel names and default genes from case_obj and add them to the post request object
     distinct_genes = set()
-    panel_name = []
+    panel_names = []
     for panel_info in case_obj.get('panels', []):
-        if panel_info.get('is_default'):
-            panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
-            #distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
-            full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
-            panel_name.append(full_name)
-    panel_name = ' ,'.join(panel_name)
-    request_data['panel_name'] = panel_name
-    #post_request_data['default_genes'] = list(distinct_genes)
+        if not panel_info.get('is_default'):
+            continue
+        panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
+        full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
+        panel_names.append(full_name)
+    panel_names = ' ,'.join(panel_names)
+    request_data['panel_name'] = panel_names
 
     # add institute-specific cutoff level to the post request object
-    request_data['level'] = institute_obj.get('coverage_cutoff')
+    request_data['level'] = institute_obj.get('coverage_cutoff', 15)
 
     #send get request to chanjo report
     resp = requests.get(base_url+'reports/report', params=request_data)
