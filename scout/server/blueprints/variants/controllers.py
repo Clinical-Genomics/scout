@@ -857,20 +857,17 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     email_subject = None
     category = variant_obj.get('category')
     display_name = None
-    breakpoint_1 = str(variant_obj.get('chromosome'))+':'+str(variant_obj.get('position'))
-    breakpoint_2 = None
-    if variant_obj.get('end_chrom'):
-        breakpoint_2 = str(variant_obj.get('end_chrom'))+':'+str(variant_obj.get('end'))
-    else:
-        breakpoint_2 = str(variant_obj.get('chromosome'))+':'+str(variant_obj.get('end'))
-
+    chromosome = variant_obj['chromosome']
+    end_chrom = variant_obj.get('end_chrom', chromosome)
+    breakpoint_1 = ':'.join([chromosome, str(variant_obj['position'])])
+    breakpoint_2 = ':'.join([end_chrom, str(variant_obj.get('end'))])
     variant_size = variant_obj.get('length')
     panels = ', '.join(variant_obj['panels'])
     hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
     gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
                                         sample_obj['genotype_call'])
                for sample_obj in variant_obj['samples']]
-    tx_changes = 'Not available'
+    tx_changes = []
 
     if category == 'snv': #SNV
         view_type = 'variants.variant'
@@ -881,26 +878,24 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
                 parse_transcript(gene_obj, transcript_obj)
                 if transcript_obj.get('change_str'):
                     tx_changes.append("<li>{}</li>".format(transcript_obj['change_str']))
-        tx_changes=''.join(tx_changes)
-
     else: #SV
         view_type = 'variants.sv_variant'
-        display_name = breakpoint_1+'_'+variant_obj.get('sub_category').upper()
+        display_name = '_'.join([breakpoint_1, variant_obj.get('sub_category').upper()])
 
     # body of the email
     html = verification_email_body(
-        case_obj['display_name'],
-        variant_url, #this is the complete url to the variant, accessible when clicking on the email link
-        display_name,
-        category.upper(),
-        variant_obj.get('sub_category').upper(),
-        breakpoint_1,
-        breakpoint_2,
-        hgnc_symbol,
-        panels,
-        ''.join(gtcalls),
-        tx_changes,
-        user_obj['name'].encode('utf-8')
+        case_name = case_obj['display_name'],
+        url = variant_url, #this is the complete url to the variant, accessible when clicking on the email link
+        display_name = display_name,
+        category = category.upper(),
+        subcategory = variant_obj.get('sub_category').upper(),
+        breakpoint_1 = breakpoint_1,
+        breakpoint_2 = breakpoint_2,
+        hgnc_symbol = hgnc_symbol,
+        panels = panels,
+        gtcalls = ''.join(gtcalls),
+        tx_changes = ''.join(tx_changes) or 'Not available',
+        name = user_obj['name'].encode('utf-8')
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.

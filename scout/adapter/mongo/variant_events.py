@@ -96,6 +96,7 @@ class VariantEventHandler(object):
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
+            link (str): The url to be used in the event
             variant (dict): A variant object
 
         Returns:
