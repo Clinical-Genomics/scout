@@ -13,14 +13,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Disease-causing transcripts in case report
 - Thicker lines in case report
 - Supports HPO search for cases, both terms or if described in synopsis
+- Adds sanger information to dashboard
 
 ### Fixed
 
-- Use db name instead of **auth** as default for authentification
+- Use db name instead of **auth** as default for authentication
 - Fixes so that reports can be generated even with many variants
 - Fixed sanger validation popup to show individual variants queried by user and institute.
 - Fixed problem with setting up scout
 - Fixes problem when exac file is not available through broad ftp
+- Fetch transcripts for correct build in `adapter.hgnc_gene`
 
 ## [4.1.1]
 - Fix problem with institute authentication flash message in utils

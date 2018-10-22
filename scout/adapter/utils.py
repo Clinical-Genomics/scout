@@ -1,5 +1,13 @@
 import logging
 
+try:
+    # Python 3.x
+    from urllib.parse import quote_plus
+except ImportError:
+    # Python 2.x
+    from urllib import quote_plus
+
+
 from pymongo import (MongoClient)
 from pymongo.errors import (ServerSelectionTimeoutError, OperationFailure)
 
@@ -23,13 +31,15 @@ def check_connection(host='localhost', port=27017, username=None, password=None,
     """
     #uri looks like:
     #mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
-    uri = "mongodb://"
     if username and password:
-        uri += "{0}:{1}@".format(username, password)
-    uri += "{0}:{1}".format(host, port)
-    if authdb:
-        uri = "{}/{}".format(uri, authdb)
-    LOG.info("Try to connect with uri: %s", uri)
+        uri = ("mongodb://{}:{}@{}:{}/{}"
+               .format(quote_plus(username), quote_plus(password), host, port, authdb))
+        log_uri = ("mongodb://{}:****@{}:{}/{}"
+               .format(quote_plus(username), host, port, authdb))
+    else:
+        log_uri = uri = "mongodb://%s:%s" % (host, port)
+    
+    LOG.info("Test connection with uri: %s", log_uri)
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
     try:
         client.server_info()

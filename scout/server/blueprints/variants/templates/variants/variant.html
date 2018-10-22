@@ -49,11 +49,11 @@
   {% endif %}
   <div class="row">
     <div class="col-xs-12">{{ matching_variants() }}</div>
-  </div>
-  <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-4">{{ panel_basics() }}</div>
-    <div class="col-xs-12 col-sm-6 col-md-4">{{ panel_summary() }}</div>
-    <div class="col-xs-12 col-md-4">{{ transcript_overview() }}</div>
+    <div class="col-xs-12 col-sm-8 col-md-8">
+      <div class="col-xs-12 col-sm-12 col-md-12">{{ panel_summary() }}</div>
+      <div class="col-xs-12 col-md-12">{{ transcript_overview() }}</div>
+    </div>
   </div>
   <div class="row">
     <div class="col-xs-12 col-sm-6">{{ inheritance_panel() }}</div>
@@ -471,11 +471,8 @@
   <div class="panel panel-default fixed-panel">
     <div class="panel-heading">Disease associated transcripts</div>
     <div class="panel-body">
-      {% for transcript_str in variant.disease_associated_transcripts %}
-        {{ transcript_str }}
-      {% else %}
-        <span class="text-muted">No transcripts</span>
-      {% endfor %}
+        {{ variant.disease_associated_transcripts|join(', ')
+          if variant.disease_associated_transcripts else '-' }}
     </div>
     <div class="panel-heading">Transcript overview</div>
     <table class="table table-bordered table-hover">
@@ -489,25 +486,29 @@
       <tbody>
         {% for gene in variant.genes %}
           {% for transcript in gene.primary_transcripts %}
-            <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
-              <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-                {% if transcript.is_canonical %}
-                  <span class="badge pull-right" title="canonical">C</span>
-                {% endif %}
-              </td>
-              <td>
-                <div>{{ transcript.refseq_id or transcript.transcript_id}}</div>
-              </td>
-              <td title="{{ transcript.coding_sequence_name or '' }}">
-                {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                <span class="text-muted pull-right">
-                  {{ (transcript.protein_sequence_name or '')|url_decode }}
-                </span>
-              </td>
-            </tr>
+            {% for refseq_id in transcript.refseq_identifiers %}
+              <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
+                <td>
+                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                  {% if transcript.is_canonical %}
+                    <span class="badge pull-right" title="canonical">C</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div>
+                    {{ refseq_id }}<span class="text-muted">({{ transcript.transcript_id }})</span>
+                  </div>
+                </td>
+                <td title="{{ transcript.coding_sequence_name or '' }}">
+                  {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
+                  <span class="text-muted pull-right">
+                    {{ (transcript.protein_sequence_name or '')|url_decode }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
           {% endfor %}
         {% endfor %}
       </tbody>
@@ -984,7 +985,9 @@
           {% for transcript in gene.transcripts %}
             <tr class="{{ 'danger' if transcript.is_disease_associated }}">
               <td>
-                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
               </td>
               <td>
                 <a target="_blank" href="{{ transcript.ensembl_link }}">
@@ -995,9 +998,7 @@
                 {% endif %}
               </td>
               <td>
-                {% for refseq in transcript.refseq_links %}
-                  <a href="{{ refseq.link }}" target="_blank">{{ refseq.id }}</a>
-                {% endfor %}
+                {{ transcript.refseq_identifiers|join(',') }}
               </td>
               <td>{{ transcript.biotype or '' }}</td>
               <td data-toggle="tooltip" data-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">

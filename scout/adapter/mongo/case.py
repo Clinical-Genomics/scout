@@ -21,8 +21,8 @@ class CaseHandler(object):
 
     def cases(self, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
-              research_requested=False, is_research=False, status=False,
-              name_query=None):
+              research_requested=False, is_research=False, status=None,
+              phenotype_terms=False, pinned=False, cohort=False, name_query=None):
         """Fetches all cases from the backend.
 
         Args:
@@ -30,6 +30,15 @@ class CaseHandler(object):
             query(dict): If a specific query is used
             skip_assigned(bool)
             has_causatives(bool)
+            reruns(bool)
+            finished(bool)
+            research_requested(bool)
+            is_research(bool)
+            status(str)
+            phenotype_terms(bool): Fetch all cases with phenotype terms
+            pinned(bool): Fetch all cases with pinned variants
+            name_query(str): Could be hpo term, user, part of display name, 
+                             part of inds or part of synopsis
 
         Yields:
             Cases ordered by date
@@ -62,6 +71,15 @@ class CaseHandler(object):
         if is_research:
             query['is_research'] = True
 
+        if phenotype_terms:
+            query['phenotype_terms'] = {'$exists': True, '$ne': []}
+
+        if pinned:
+            query['suspects'] = {'$exists': True, '$ne': []}
+
+        if cohort:
+            query['cohorts'] = {'$exists': True, '$ne': []}
+
         if name_query:
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
@@ -80,6 +98,28 @@ class CaseHandler(object):
 
         LOG.info("Get cases with query {0}".format(query))
         return self.case_collection.find(query).sort('updated_at', -1)
+
+    def nr_cases(self, institute_id=None):
+        """Return the number of cases
+        
+        This function will change when we migrate to 3.7.1
+        
+        Args:
+            collaborator(str): Institute id
+        
+        Returns:
+            nr_cases(int)
+        """
+        query = {}
+
+        if institute_id:
+            query['collaborators'] = institute_id
+        
+        LOG.debug("Fetch all cases with query {0}".format(query))
+        nr_cases = self.case_collection.find(query).count()
+
+        return nr_cases
+    
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
                                  phenotype_ids=None, build='37'):
