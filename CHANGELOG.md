@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
-- Use db name instead of **auth** as default for authentification
+- Use db name instead of **auth** as default for authentication
 - Fixes so that reports can be generated even with many variants
 - Fixed sanger validation popup to show individual variants queried by user and institute.
 - Fixed problem with setting up scout

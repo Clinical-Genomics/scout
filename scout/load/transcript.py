@@ -31,14 +31,14 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
 
     if transcripts_lines is None:
         transcripts_lines = fetch_ensembl_transcripts(build=build)
-    
+
     # Map with all transcripts enstid -> parsed transcript
     transcripts_dict = parse_transcripts(transcripts_lines)
     for ens_tx_id in list(transcripts_dict):
         parsed_tx = transcripts_dict[ens_tx_id]
         # Get the ens gene id
         ens_gene_id = parsed_tx['ensembl_gene_id']
-        
+
         # Fetch the internal gene object to find out the correct hgnc id
         gene_obj = ensembl_genes.get(ens_gene_id)
         # If the gene is non existing in scout we skip the transcript
@@ -46,7 +46,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
             transcripts_dict.pop(ens_tx_id)
             LOG.debug("Gene %s does not exist in build %s", ens_gene_id, build)
             continue
-        
+
         # Add the correct hgnc id
         parsed_tx['hgnc_id'] = gene_obj['hgnc_id']
         # Primary transcript information is collected from HGNC
@@ -63,13 +63,13 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
         for tx_data in bar:
 
             #################### Get the correct refseq identifier ####################
-            # We need to decide one refseq identifier for each transcript, if there are any to choose 
+            # We need to decide one refseq identifier for each transcript, if there are any to choose
             # from. The algorithm is as follows:
             # If these is ONE mrna this is choosen
             # If there are several mrna the one that is in 'primary_transcripts' is choosen
             # Else one is choosen at random
             # The same follows for the other categories where nc_rna has precedense over mrna_predicted
-            # We will store all refseq identifiers in a list as well
+            # We will store all refseq identifiers in a "refseq_identifiers" list as well
             tx_data['is_primary'] = False
             primary_transcripts = tx_data['primary_transcripts']
             refseq_identifier = None
@@ -78,7 +78,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
                 identifiers = tx_data[category]
                 if not identifiers:
                     continue
-                
+
                 for refseq_id in identifiers:
                     refseq_identifiers.append(refseq_id)
                     if refseq_identifier:
@@ -95,7 +95,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
                 tx_data['refseq_id'] = refseq_identifier
             if refseq_identifiers:
                 tx_data['refseq_identifiers'] = refseq_identifiers
-                
+
             ####################  ####################  ####################
 
             # Build the transcript object
@@ -112,4 +112,3 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
     LOG.info('Number of primary transcripts: %s', nr_primary_transcripts)
 
     return transcript_objs
-    

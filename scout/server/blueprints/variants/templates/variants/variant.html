@@ -49,11 +49,11 @@
   {% endif %}
   <div class="row">
     <div class="col-xs-12">{{ matching_variants() }}</div>
-  </div>
-  <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-4">{{ panel_basics() }}</div>
-    <div class="col-xs-12 col-sm-6 col-md-4">{{ panel_summary() }}</div>
-    <div class="col-xs-12 col-md-4">{{ transcript_overview() }}</div>
+    <div class="col-xs-12 col-sm-8 col-md-8">
+      <div class="col-xs-12 col-sm-12 col-md-12">{{ panel_summary() }}</div>
+      <div class="col-xs-12 col-md-12">{{ transcript_overview() }}</div>
+    </div>
   </div>
   <div class="row">
     <div class="col-xs-12 col-sm-6">{{ inheritance_panel() }}</div>
@@ -471,7 +471,7 @@
   <div class="panel panel-default fixed-panel">
     <div class="panel-heading">Disease associated transcripts</div>
     <div class="panel-body">
-        {{ variant.disease_associated_transcripts|join(', ') 
+        {{ variant.disease_associated_transcripts|join(', ')
           if variant.disease_associated_transcripts else '-' }}
     </div>
     <div class="panel-heading">Transcript overview</div>
