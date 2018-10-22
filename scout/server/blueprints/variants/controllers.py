@@ -178,7 +178,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
     }
 
 
-def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
+def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, genome_build='37'):
     """Parse information about variants.
 
     - Adds information about compounds
@@ -190,6 +190,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
         update(bool): If variant should be updated in database
+        genome_build(str)
 
     """
     has_changed = False
@@ -207,7 +208,6 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False):
                                           key=lambda compound: -compound['combined_score'])
 
     # Update the hgnc symbols if they are incorrect
-    genome_build = case_obj.get('genome_build','37')
     variant_genes = variant_obj.get('genes')
     if variant_genes is not None:
         for gene_obj in variant_genes:
@@ -498,6 +498,8 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
         variant_obj = store.variant(variant_id, gene_panels=default_panels)
 
     genome_build = case_obj.get('genome_build', '37')
+    if genome_build not in ['37','38']:
+        genome_build = '37'
 
     if variant_obj is None:
         return None
@@ -519,7 +521,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
             other_variant['case_display_name'] = case_display_name
             other_causatives.append(other_variant)
 
-    variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj)
+    variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
 
     variant_obj['end_position'] = end_position(variant_obj)
     variant_obj['frequency'] = frequency(variant_obj)
@@ -537,9 +539,6 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['callers'] = callers(variant_obj, category='snv')
 
-    for gene_obj in variant_obj.get('genes', []):
-        parse_gene(gene_obj, genome_build)
-
     individuals = {individual['individual_id']: individual for individual in
                    case_obj['individuals']}
     for sample_obj in variant_obj['samples']:
@@ -551,17 +550,20 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
 
     # Parse the gene models, both from panels and genes
     for gene_obj in variant_obj.get('genes', []):
+        # Adds gene level links
+        parse_gene(gene_obj, genome_build)
         omim_models = set()
         for disease_term in gene_obj.get('disease_terms', []):
             omim_models.update(disease_term.get('inheritance', []))
         gene_obj['omim_inheritance'] = list(omim_models)
-        for transcript_obj in gene_obj['transcripts']:
-            if transcript_obj.get('is_disease_associated'):
-                hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
-                               gene_obj['hgnc_id'])
-                refseq_id = transcript_obj['refseq_id']
-                transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
-                variant_obj['disease_associated_transcripts'].append(transcript_str)
+
+        # Build strings for the disease associated transcripts from gene panel
+        for refseq_id in gene_obj.get('disease_associated_transcripts', []):
+            hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
+                           gene_obj['hgnc_id'])
+            transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
+            variant_obj['disease_associated_transcripts'].append(transcript_str)
+
         gene_models = gene_models | omim_models
 
     if variant_obj.get('genetic_models'):
@@ -617,16 +619,17 @@ def parse_gene(gene_obj, build=None):
 
     if gene_obj['common']:
         add_gene_links(gene_obj, build)
+        refseq_transcripts = []
+        for tx_obj in gene_obj['transcripts']:
+            parse_transcript(gene_obj, tx_obj, build)
 
-        refseq_transcripts = [transcript for transcript in gene_obj['transcripts'] if
-                              transcript.get('refseq_id')]
-        # select refseq transcripts as "primary" or use all Ensembl transcripts
-        gene_obj['primary_transcripts'] = (refseq_transcripts if len(refseq_transcripts) > 0 else
-                                           gene_obj['transcripts'])
+            # select refseq transcripts as "primary"
+            if not tx_obj.get('refseq_id'):
+                continue
 
-    for tx_obj in gene_obj['transcripts']:
-        parse_transcript(gene_obj, tx_obj, build)
+            refseq_transcripts.append(tx_obj)
 
+        gene_obj['primary_transcripts'] = (refseq_transcripts if refseq_transcripts else [])
 
 def parse_transcript(gene_obj, tx_obj, build=None):
     """Parse variant gene transcript (VEP)."""
@@ -637,7 +640,6 @@ def parse_transcript(gene_obj, tx_obj, build=None):
         gene_name = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
                      gene_obj['hgnc_id'])
         tx_obj['change_str'] = transcript_str(tx_obj, gene_name)
-
 
 def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string."""

@@ -49,7 +49,8 @@ def parse_transcripts(transcript_lines):
                 'ensembl_transcript_id': tx_id,
             }
             parsed_transcripts[tx_id] = tx_info
-
+        
+        tx_info = parsed_transcripts[tx_id]
         # Add the ref seq information
         if tx.get('refseq_mrna_predicted'):
             tx_info['mrna_predicted'].add(tx['refseq_mrna_predicted'])

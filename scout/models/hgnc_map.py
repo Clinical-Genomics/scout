@@ -36,11 +36,12 @@ class HgncTranscript(dict):
         "end": int, 
         "is_primary": bool, 
         "refseq_id": str, 
+        "refseq_identifiers": list, 
         "build": str, # Genome build
         "length": int
     """
     def __init__(self, transcript_id, hgnc_id, chrom, start, end, is_primary=False, 
-                 refseq_id=None, build='37'):
+                 refseq_id=None, refseq_identifiers=None, build='37'):
         super(HgncTranscript, self).__init__()
         self['ensembl_transcript_id'] = transcript_id
         self['hgnc_id'] = int(hgnc_id)
@@ -49,6 +50,7 @@ class HgncTranscript(dict):
         self['end'] = int(end)
         self['is_primary'] = is_primary
         self['refseq_id'] = refseq_id
+        self['refseq_identifiers'] = refseq_identifiers
         self['build'] = build
         self['length'] = self['end'] - self['start']
 

@@ -57,14 +57,19 @@ class IndexHandler(object):
         If there are any indexes that are not added to the database, add those.
 
         """
+        LOG.info("Updating indexes...")
+        nr_updated = 0
         for collection_name in INDEXES:
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
             for index in indexes:
                 index_name = index.document.get('name')
                 if index_name not in existing_indexes:
+                    nr_updated += 1
                     LOG.info("Adding index : %s" % index_name)
                     self.db[collection_name].create_indexes(indexes)
+        if nr_updated == 0:
+            LOG.info("All indexes in place")
     
     def drop_indexes(self):
         """Delete all indexes for the database"""
