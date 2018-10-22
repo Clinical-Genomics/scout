@@ -40,7 +40,7 @@ def user(context, institute_id, user_name, user_mail, admin):
         LOG.info("User is admin")
         roles.append('admin')
 
-    user_info = dict(email=user_mail, name=user_name, roles=roles, institutes=institutes)
+    user_info = dict(email=user_mail.lower(), name=user_name, roles=roles, institutes=institutes)
 
     user_obj = build_user(user_info)
 

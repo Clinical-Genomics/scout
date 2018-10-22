@@ -89,8 +89,13 @@ def authorized():
     google_data = google_user.data
 
     user_obj = store.user(google_data['email'])
+
+    # Try again with lower-cased email address if no match
     if user_obj is None:
-        flash('your email is not whitelisted, contact admin.', 'warning')
+        user_obj = store.user(google_data['email'].lower())
+        
+    if user_obj is None:
+        flash("email not whitelisted: {}".format(google_data['email']), 'warning')
         return redirect(url_for('public.index'))
 
     user_obj['name'] = google_data['name']
