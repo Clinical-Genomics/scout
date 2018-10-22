@@ -48,35 +48,39 @@ class VariantHandler(VariantLoader):
         # We need to check if there are any additional information in the gene panels
 
         # extra_info will hold information from gene panels
+        # Collect all extra info from the panels in a dictionary with hgnc_id as keys
         extra_info = {}
         for panel_obj in gene_panels:
             for gene_info in panel_obj['genes']:
                 hgnc_id = gene_info['hgnc_id']
-                if hgnc_id in extra_info:
-                    extra_info[hgnc_id].append(gene_info)
-                else:
-                    extra_info[hgnc_id] = [gene_info]
+                if hgnc_id not in extra_info:
+                    extra_info[hgnc_id] = []
+
+                extra_info[hgnc_id].append(gene_info)
 
         # Loop over the genes in the variant object to add information
-        # from hgnc_genes and panel genes
+        # from hgnc_genes and panel genes to the variant object
         for variant_gene in variant_obj.get('genes', []):
             hgnc_id = variant_gene['hgnc_id']
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
-
+            
+            if not hgnc_gene:
+                continue
+            
             # Create a dictionary with transcripts information
+            # Use ensembl transcript id as keys
             transcripts_dict = {}
-            if hgnc_gene:
-                # Add transcript information from the hgnc gene
-                for transcript in hgnc_gene.get('transcripts', []):
-                    tx_id = transcript['ensembl_transcript_id']
-                    transcripts_dict[tx_id] = transcript
+            # Add transcript information from the hgnc gene
+            for transcript in hgnc_gene.get('transcripts', []):
+                tx_id = transcript['ensembl_transcript_id']
+                transcripts_dict[tx_id] = transcript
 
-                # Add the transcripts to the gene object
-                hgnc_gene['transcripts_dict'] = transcripts_dict
+            # Add the transcripts to the gene object
+            hgnc_gene['transcripts_dict'] = transcripts_dict
 
-                if hgnc_gene.get('incomplete_penetrance'):
-                    variant_gene['omim_penetrance'] = True
+            if hgnc_gene.get('incomplete_penetrance'):
+                variant_gene['omim_penetrance'] = True
 
             # Get the panel specific information for the gene
             panel_info = extra_info.get(hgnc_id, [])
@@ -89,8 +93,7 @@ class VariantHandler(VariantLoader):
             mosaicism = False
             manual_inheritance = set()
 
-            # We need to loop since there can be information from multiple
-            # panels
+            # We need to loop since there can be information from multiple panels
             for gene_info in panel_info:
                 # Check if there are manually annotated disease transcripts
                 for tx in gene_info.get('disease_associated_transcripts', []):
@@ -98,13 +101,14 @@ class VariantHandler(VariantLoader):
                     stripped = re.sub(r'\.[0-9]', '', tx)
                     disease_associated_no_version.add(stripped)
                     disease_associated.add(tx)
+
                 if gene_info.get('reduced_penetrance'):
                     manual_penetrance = True
 
                 if gene_info.get('mosaicism'):
                     mosaicism = True
-                manual_inheritance.update(gene_info.get('inheritance_models', []))
 
+                manual_inheritance.update(gene_info.get('inheritance_models', []))
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
             variant_gene['mosaicism'] = mosaicism
@@ -127,6 +131,9 @@ class VariantHandler(VariantLoader):
                         # Check if the refseq id are disease associated
                         if refseq_id in disease_associated_no_version:
                             transcript['is_disease_associated'] = True
+                        
+                        # Add all refseq indentifiers
+                        transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
 
                     if hgnc_transcript.get('is_primary'):
                         transcript['is_primary'] = True
@@ -135,6 +142,9 @@ class VariantHandler(VariantLoader):
 
             # Add the associated disease terms
             variant_gene['disease_terms'] = self.disease_terms(hgnc_id)
+
+            print(hgnc_id)
+            pp(variant_gene['disease_associated_transcripts'])
 
         return variant_obj
 
