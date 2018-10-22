@@ -517,8 +517,11 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     if add_other:
         for other_variant in store.other_causatives(case_obj, variant_obj):
             # This should work with old and new ids
-            case_display_name = other_variant['case_id'].split('-', 1)[-1]
-            other_variant['case_display_name'] = case_display_name
+            case_id = other_variant['case_id']
+            other_case = store.case(case_id)
+            if not other_case:
+                continue
+            other_variant['case_display_name'] = other_case.get('display_name', case_id)
             other_causatives.append(other_variant)
 
     variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
