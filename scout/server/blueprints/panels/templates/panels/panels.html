@@ -16,6 +16,7 @@
 
 {% block content_main %}
   <div>
+    {{ new_panel() }}
     {% if panel_groups %}
       {% for institute,panels in panel_groups %}
         {{ panel_view(institute,panels) }}
@@ -26,6 +27,43 @@
   </div>
 {% endblock %} <!-- end of content_main -->
 
+{% macro new_panel() %}
+<div id="newpaneldiv_{{panel_id}}">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
+        <div class="form-group row">
+          <label for="" class="col-sm-2 col-form-label">New panel</label>
+          <div class="col-sm-3">
+              <select name="institute" class="form-control">
+                <option>Choose institute...</option>
+                {% for institute in institutes %}
+                  <option value="{{ institute._id }}">{{ institute.display_name }}</option>
+                {% endfor %}
+              </select>
+          </div>
+          <div class="col-sm-3">
+              <input type="text" name="new_panel_name" class="form-control" placeholder="Panel ID">
+            </div>
+            <div class="col-sm-4">
+              <input type="text" name="display_name" class="form-control" placeholder="Full name">
+            </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">CSV file</label>
+            <div class="col-sm-6">
+              <input type="file" name="csv_file" class="form-control" required>
+              <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
+            </div>
+            <div class="col-sm-4">
+              <button type="submit" class="btn btn-default">Upload</button>
+            </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
 
 {% macro panel_view(institute,panels) %}
   <div class="panel panel-default">
@@ -49,7 +87,7 @@
           <tr>
             <td><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a></td>
             <td>{{ panel.version }} ({{ panel.date.date()}})</td>
-            <td>{{ panel.genes|length}}</td>
+            <td><span class="badge">{{ panel.genes|length}}</span></td>
             <td><button id="{{panel._id}}" type="button" class="btn btn-primary btn-xs history_btn"><span class="glyphicon glyphicon-zoom-in"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
             <td><button id="{{panel._id}}" type="button" class="btn btn-warning btn-xs modify_btn"><span class="glyphicon glyphicon-pencil"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
           </tr>
@@ -58,7 +96,6 @@
       {% endfor %}
       </table>
     </div>
-
   </div>
 {% endmacro %}
 
@@ -136,10 +173,5 @@ $('.modify_btn').on('click', function(){
       $(sel).fadeToggle();
     }
 });
-
-
-
-
-
 </script>
 {% endblock %}
