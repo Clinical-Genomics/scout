@@ -15,80 +15,41 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="col-md-12">{{new_panel()}}</div>
-  <div class="col-md-12">{{panels()}}</div>
-{% endblock %}
-
-{% macro new_panel() %}
-<!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add_panel">
-    Add panel
-  </button>
-
-  <div id="add_panel" class="modal fade" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add Employee</h4>
-            </div>
-            <div class="modal-body">
-                <form method="post" id="frm_add">
-				<input type="hidden" value="add" name="action" id="action">
-                  <div class="form-group">
-                    <label for="name" class="control-label">Name:</label>
-                    <input type="text" class="form-control" id="name" name="name"/>
-                  </div>
-                  <div class="form-group">
-                    <label for="salary" class="control-label">Salary:</label>
-                    <input type="text" class="form-control" id="salary" name="salary"/>
-                  </div>
-				  <div class="form-group">
-                    <label for="salary" class="control-label">Age:</label>
-                    <input type="text" class="form-control" id="age" name="age"/>
-                  </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="btn_add" class="btn btn-primary">Save</button>
-            </div>
-			</form>
-        </div>
-    </div>
+    {% if panel_groups %}
+      {% for institute,panels in panel_groups %}
+        {{ panel_view(institute,panels) }}
+      {% endfor %}
+    {% else %}
+      <div class="panel-body">No gene panels found.</div>
+    {% endif %}
   </div>
-{% endmacro %}
+{% endblock %} <!-- end of content_main -->
 
-{% macro panels() %}
-  <div class="panel-group">
-    {% for institute, panels in panel_groups %}
-      <div class="panel panel-default">
-          <div class="panel-heading">{{ institute.display_name }} - Panels</div>
-          {% for panel in panels %}
-            <div class="panel-group" id="accordion-{{ panel.panel_name }}">
-        <div class="panel panel-default">
-    <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
-                  {{ panel.display_name }}
-    </a>
-    <span class="label pull-right">
-      <a data-toggle="collapse" data-parent="#accordion-{{ panel.panel_name }}" href="#collapse{{ panel.panel_name}}">History</a>
-    </span>
-        </div>
-        <div id="collapse{{ panel.panel_name }}" class="panel-collapse collapse in">
-    <div id="panel-body">
-      <Ul>
-              {% for version in panel_versions[panel.panel_name] %}
-              <li>
-          <a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a>
-              </li>
-              {% endfor %}
-      </ul>
+
+{% macro panel_view(institute,panels) %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <strong>{{ institute.display_name }}</strong> - Panels
     </div>
-        </div>
-      </div>
-          {% endfor %}
-          </div>
-      </div>
-    {% endfor %}
+    <div>
+      {% for panel in panels %}
+        <!--create table for each panel-->
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Latest version</th>
+            <th>History</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ panel.panel_name }}</td>
+            <td>{{ panel.panel_name }}</td>
+            <td>{{ panel.panel_name }}</td>
+          </tr>
+        </tbody>
+      {% endfor %}
+    </div>
+
   </div>
 {% endmacro %}
