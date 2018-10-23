@@ -142,7 +142,6 @@ def case_report_content(store, institute_obj, case_obj):
         store(adapter.MongoAdapter)
         institute_obj(models.Institute)
         case_obj(models.Case)
-        coverage_report(bool)
 
     Returns:
         data(dict)

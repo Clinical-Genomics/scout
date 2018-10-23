@@ -24,17 +24,17 @@ variants_bp = Blueprint('variants', __name__, template_folder='templates')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
     page = int(request.form.get('page', 1))
- 
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
 
     # Update filter settings if Clinical Filter was requested
-    
+
     default_panels = []
     for panel in case_obj['panels']:
         if panel['is_default']:
             default_panels.append(panel['panel_name'])
-            
+
     request.form.get('gene_panels')
     if bool(request.form.get('clinical_filter')):
         clinical_filter = MultiDict({
@@ -60,7 +60,7 @@ def variants(institute_id, case_name):
     # populate available panel choices
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]
- 
+
     panel_choices = [(panel['panel_name'], panel['display_name'])
                      for panel in available_panels]
 
@@ -199,7 +199,7 @@ def str_variants(institute_id, case_name):
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
     page = int(request.form.get('page', 1))
- 
+
     variant_type = request.args.get('variant_type', 'clinical')
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -253,7 +253,7 @@ def sv_variants(institute_id, case_name):
                             case_name=case_obj['display_name'])
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
-    variants_query = store.variants(case_obj['_id'], category='sv', 
+    variants_query = store.variants(case_obj['_id'], category='sv',
                                     query=form.data)
     data = controllers.sv_variants(store, institute_obj, case_obj,
                                    variants_query, page)
@@ -317,31 +317,19 @@ def variant_update(institute_id, case_name, variant_id):
     return redirect(request.referrer)
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/sanger', methods=['POST'])
-def sanger(institute_id, case_name, variant_id):
-    """Send Sanger email for confirming a variant."""
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>', methods=['POST'])
+def verify(institute_id, case_name, variant_id, variant_category, order):
+    """Start procedure to validate variant using other techniques."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
-    try:
-        controllers.sanger(store, mail, institute_obj, case_obj, user_obj,
-                           variant_obj, current_app.config['MAIL_USERNAME'])
-    except controllers.MissingSangerRecipientError:
-        flash('No sanger recipients added to institute.', 'danger')
-    return redirect(request.referrer)
 
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/cancel_sanger', methods=['POST'])
-def cancel_sanger(institute_id, case_name, variant_id):
-    """Send Sanger cancelation email for confirming a variant."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
-    user_obj = store.user(current_user.email)
     try:
-        controllers.cancel_sanger(store, mail, institute_obj, case_obj, user_obj,
-                           variant_obj, current_app.config['MAIL_USERNAME'])
-    except controllers.MissingSangerRecipientError:
-        flash('No sanger recipients added to institute.', 'danger')
+        controllers.variant_verification(store=store, mail=mail, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj,
+                           variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order, url_builder=url_for)
+    except controllers.MissingVerificationRecipientError:
+        flash('No verification recipients added to institute.', 'danger')
+
     return redirect(request.referrer)
 
 
@@ -438,7 +426,7 @@ def upload_panel(institute_id, case_name):
         return redirect(request.referrer)
 
     category = request.args.get('category')
-    
+
     if(category == 'sv'):
         form = SvFiltersForm(request.args)
     else:
