@@ -29,22 +29,25 @@ def panels():
             lines = content.decode('windows-1252').split('\r')
 
         new_panel_name = request.form.get('new_panel_name')
+        new_panel_id = None
         if new_panel_name:
-            panel_obj = controllers.new_panel(
+            new_panel_id = controllers.new_panel(
                 store=store,
                 institute_id=request.form['institute'],
                 panel_name=new_panel_name,
                 display_name=request.form['display_name'],
                 csv_lines=lines,
             )
-            if panel_obj is None:
-                return redirect(request.referrer)
-            flash("new gene panel added: {}!".format(panel_obj['panel_name']))
+            flash("new gene panel added, database id: {}!".format(new_panel_id))
         else:
-            panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
-            if panel_obj is None:
-                return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
-        return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
+            flash('modify an existing panel!', 'warning')
+            #panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
+            #if panel_obj is None:
+            #    return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
+        if new_panel_id is None:
+            flash('Something went wrong and the panel list was not updated!','warning')
+            return redirect(request.referrer)
+        return redirect(url_for('panels.panel', panel_id=new_panel_id))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [name

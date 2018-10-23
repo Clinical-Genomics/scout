@@ -96,8 +96,8 @@ def new_panel(store, institute_id, panel_name, display_name, csv_lines):
         genes=new_genes,
     ), store)
 
-    panel_obj = store.add_gene_panel(panel_data)
-    return panel_obj
+    panel_id = store.add_gene_panel(panel_data)
+    return panel_id
 
 
 def panel_export(store, panel_obj):

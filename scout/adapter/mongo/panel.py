@@ -168,8 +168,9 @@ class PanelHandler(object):
         LOG.info("loading panel {0}, version {1} to database".format(
             display_name, panel_version
         ))
-        self.panel_collection.insert_one(panel_obj)
+        result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
+        return result.inserted_id
 
     def panel(self, panel_id):
         """Fetch a gene panel by '_id'.
