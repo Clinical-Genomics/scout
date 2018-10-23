@@ -74,14 +74,39 @@
 
 {% macro modify_panel(panel_id, panel_obj) %}
   <tr id="modifydiv_{{panel_id}}" style="display:none;">
-    <td>{{ modify_form(panel_obj) }}</td>
+    <td colspan=5>{{ modify_form(panel_obj) }}</td>
   </tr>
 {% endmacro %}
 
 {% macro modify_form(panel_obj) %}
-  <form>
-    
+  <br>
+  <strong>{{panel_obj.panel_name}}</strong><br>
+  <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
+    <input type="hidden" name="panel_name" value="{{panel_obj.panel_name}}">
+    <div class="form-group">
+      <div class="col-sm-3">
+        <div class="radio">
+          <label><input type="radio" name="modify_option" checked>Add genes from CSV file</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="modify_option">Replace genes using CSV file</label>
+        </div>
+      </div><!--end of <div class="col-sm-4">-->
+
+      <div class="form-group">
+          <div class="col-sm-6">
+            <input type="file" name="csv_file" class="form-control" required>
+            <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
+          </div>
+          <div class="col-sm-2">
+            <button id="submit" type="submit">submit</button>
+          </div>
+      </div>
+
+    </div><!--end of form-group-->
+
   </form>
+  <br>
 {% endmacro %}
 
 
