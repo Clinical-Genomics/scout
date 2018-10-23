@@ -36,10 +36,10 @@
         <table class="table table-striped">
         <thead>
           <tr>
-            <th width="15%">Name</th>
+            <th width="30%">Name</th>
             <th width="20%">Version</th>
             <th width="15%">Number of genes</th>
-            <th width="40%">History</th>
+            <th width="25%">History</th>
             <th width="10%"></th>
           </tr>
         </thead>
@@ -51,8 +51,9 @@
             <td>{{ panel.version }} ({{ panel.date.date()}})</td>
             <td>{{ panel.genes|length}}</td>
             <td><button id="{{panel._id}}" type="button" class="btn btn-primary btn-xs history_btn"><span class="glyphicon glyphicon-zoom-in"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
-            <td class="align-right"><button type="submit" name="delete_variant" value="" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-pencil"></span></button></td>
+            <td><button id="{{panel._id}}" type="button" class="btn btn-warning btn-xs modify_btn"><span class="glyphicon glyphicon-pencil"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
           </tr>
+          {{ modify_panel(panel._id, panel) }}
         </tbody>
       {% endfor %}
       </table>
@@ -71,6 +72,16 @@
   </div>
 {% endmacro %}
 
+{% macro modify_panel(panel_id, panel_obj) %}
+  <tr id="modifydiv_{{panel_id}}" style="display:none;">
+    <td>
+      
+
+    </td>
+  </tr>
+{% endmacro %}
+
+
 {% block scripts %}
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -86,6 +97,19 @@ $('.history_btn').on('click', function(){
       $(sel).fadeToggle();
     }
 });
+
+$('.modify_btn').on('click', function(){
+    var bid = $(this)[0].id;
+    var sel = '#modifydiv_' + bid;
+    if($(sel).is(':visible')){
+      $(sel).hide();
+    }
+    else{
+      $(sel).fadeToggle();
+    }
+});
+
+
 
 
 
