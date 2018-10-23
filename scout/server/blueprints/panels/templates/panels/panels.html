@@ -74,11 +74,14 @@
 
 {% macro modify_panel(panel_id, panel_obj) %}
   <tr id="modifydiv_{{panel_id}}" style="display:none;">
-    <td>
-    
-
-    </td>
+    <td>{{ modify_form(panel_obj) }}</td>
   </tr>
+{% endmacro %}
+
+{% macro modify_form(panel_obj) %}
+  <form>
+    
+  </form>
 {% endmacro %}
 
 
