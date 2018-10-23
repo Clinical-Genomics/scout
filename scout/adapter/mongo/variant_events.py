@@ -88,9 +88,9 @@ class VariantEventHandler(object):
 
         return updated_case
 
-    def order_sanger(self, institute, case, user, link, variant):
-        """Create an event for order sanger for a variant
-        and an event for order sanger for a case
+    def order_verification(self, institute, case, user, link, variant):
+        """Create an event for a variant verification for a variant
+        and an event for a variant verification for a case
 
         Arguments:
             institute (dict): A Institute object
@@ -102,7 +102,7 @@ class VariantEventHandler(object):
         Returns:
             updated_variant(dict)
         """
-        LOG.info("Creating event for ordering sanger for variant" \
+        LOG.info("Creating event for ordering validation for variant" \
                     " {0}".format(variant['display_name']))
 
         updated_variant = self.variant_collection.find_one_and_update(
@@ -137,8 +137,8 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def cancel_sanger(self, institute, case, user, link, variant):
-        """Create an event for cancellation of an order sanger for a variant
+    def cancel_verification(self, institute, case, user, link, variant):
+        """Create an event for cancellation of a verification of a variant
 
         Arguments:
             institute (dict): A Institute object
@@ -170,7 +170,7 @@ class VariantEventHandler(object):
             subject=variant['display_name'],
         )
 
-        LOG.info("Creating event for cancellation of ordering sanger for case" \
+        LOG.info("Creating event for cancellation of ordering verification for case" \
                     " {0}".format(case['display_name']))
 
         self.create_event(
@@ -186,7 +186,7 @@ class VariantEventHandler(object):
         return updated_variant
 
     def sanger_ordered(self, institute_id=None, user_id=None):
-        """Get all variants where Sanger validations ever ordered.
+        """Get all variants with validations ever ordered.
 
         Args:
             institute_id(str) : The id of an institute
@@ -205,7 +205,7 @@ class VariantEventHandler(object):
             query['$match']['$and'].append({'institute': institute_id})
         if user_id:
             query['$match']['$and'].append({'user_id': user_id})
-        
+
         # Get all sanger ordered variants grouped by case_id
         results = self.event_collection.aggregate([
             query,

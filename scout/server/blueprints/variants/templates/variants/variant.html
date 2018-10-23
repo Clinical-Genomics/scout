@@ -136,7 +136,7 @@
 {% macro sanger_form() %}
   <ul class="list-group">
     <li class="list-group-item">
-      <strong>Case {{ case_id }}</strong>:
+      <strong>Case {{ case.display_name }}</strong><br>
       <a href="{{ url_for('variants.variant', institute_id=institute._id,
                           case_name=case.display_name, variant_id=variant._id) }}">
         {{ variant.display_name }}
@@ -1081,8 +1081,8 @@
 {% endmacro %}
 
 {% macro modal_sanger() %}
-  <form action="{{ url_for('variants.sanger', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id) }}"
+  <form action="{{ url_for('variants.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
         method="POST">
     <div class="modal fade" id="sangerModal">
       <div class="modal-dialog">
@@ -1105,8 +1105,8 @@
 {% endmacro %}
 
 {% macro modal_cancel_sanger() %}
-  <form action="{{ url_for('variants.cancel_sanger', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id) }}"
+  <form action="{{ url_for('variants.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
         method="POST">
     <div class="modal fade" id="cancelSangerModal">
       <div class="modal-dialog">

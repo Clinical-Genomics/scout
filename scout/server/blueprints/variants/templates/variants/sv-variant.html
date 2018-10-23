@@ -27,6 +27,10 @@
 {% endblock %}
 
 {% block top_nav_right %}
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    <li>{{ verify_button() }}</li>
+  {% endif %}
   <li>{{ pin_button() }}</li>
   <li>{{ causative_button() }}</li>
   {{ super() }}
@@ -227,6 +231,17 @@
       {{ ext_links(variant) }}
     </div>
   </div>
+
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    {{ verify_modal() }}
+  {% endif %}
+
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    {{ modal_cancel_verify() }}
+  {% endif %}
+
 {% endblock %}
 
 {% macro pin_button() %}
@@ -435,6 +450,110 @@
       </tbody>
     </table>
   </div>
+
+{% endmacro %}
+
+{% macro verify_button() %}
+  {% if variant.sanger_ordered %}
+    {% if variant.validation in ['True positive', 'False positive']%}
+      <p class="navbar-text">Validation: {{ variant.validation }}</p>
+    {% else %}
+      <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#cancelVerifyModal">
+        Verification pending...
+      </button>
+    {% endif %}
+  {% else %}
+    <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#svVerifyModal">
+      Verify
+    </button>
+  {% endif %}
+{% endmacro %}
+
+{% macro verify_modal() %}
+<form action="{{ url_for('variants.verify', institute_id=institute._id,
+                         case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
+      method="POST">
+  <div class="modal fade" id="svVerifyModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Order verification</h4>
+        </div>
+        <div class="modal-body">
+          {{ verify_form() }}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Send verification order request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
+{% macro modal_cancel_verify() %}
+  <form action="{{ url_for('variants.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
+        method="POST">
+    <div class="modal fade" id="cancelVerifyModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cancel variant verification</h4>
+          </div>
+          <div class="modal-body">
+            {{ verify_form() }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send cancellation request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro verify_form() %}
+<ul class="list-group">
+  <li class="list-group-item">
+    <strong>Case {{ case.display_name }}</strong><br>
+    <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
+                        case_name=case.display_name, variant_id=variant._id) }}">
+      {% if variant.end_chrom and variant.end_chrom == variant.chromosome %}
+        {{variant.chromosome}}:{{variant.position}}-{{variant.end}}
+      {% elif variant.end_chrom %}
+        {{variant.chromosome}}:{{variant.position}} - {{variant.end_chrom}}:{{variant.end}}
+      {% endif %}
+      {{ variant.sub_category|upper }}
+    </a>
+  <li class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</li>
+  <li class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</li>
+  <li class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</li>
+  <li class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</li>
+  </li>
+  <li class="list-group-item">
+    <strong>Encompassing genes</strong>:
+    {{ variant.hgnc_symbols|join(', ') }}
+  </li>
+  <li class="list-group-item">
+    <strong>Gene panels</strong>:
+    {{ variant.panels|join(', ') }}
+  </li>
+  <li class="list-group-item disabled"><strong>GT call</strong></li>
+  {% for individual in variant.samples %}
+    <li class="list-group-item">
+      {{ individual.display_name }}: {{ individual.genotype_call }}
+    </li>
+  {% endfor %}
+  <li class="list-group-item">
+    <strong>Ordered by</strong>:
+    {{ current_user.name }}
+  </li>
+</ul>
 {% endmacro %}
 
 {% block scripts %}
