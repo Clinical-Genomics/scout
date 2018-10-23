@@ -1,5 +1,6 @@
 # Everything needed in production
 
+BeautifulSoup4
 Flask>=0.10
 Flask-DebugToolbar
 Flask-Bootstrap

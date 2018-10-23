@@ -61,12 +61,15 @@
   {{ tagged_panel() }}<br>
   {{ commented_panel() }}<br>
   {{ dismissed_panel() }}
-  [END OF REPORT]<br><br>
+  [END OF VARIANT REPORT]<br><br>
+  {% if coverage_report %}
+    {{ coverage_report|safe }}<br>
+  {% endif %}
   <a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
 </div>
 {% endblock %}
 
-{% endblock %}
+{% endblock %} <!--end of body-->
 
 {% macro phenotype_panel() %}
 <a name="phenotype"/>
