@@ -15,6 +15,7 @@
 {% endblock %}
 
 {% block content_main %}
+  <div>
     {% if panel_groups %}
       {% for institute,panels in panel_groups %}
         {{ panel_view(institute,panels) }}
@@ -32,24 +33,61 @@
       <strong>{{ institute.display_name }}</strong> - Panels
     </div>
     <div>
-      {% for panel in panels %}
-        <!--create table for each panel-->
+        <table class="table table-striped">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Latest version</th>
-            <th>History</th>
+            <th width="15%">Name</th>
+            <th width="20%">Version</th>
+            <th width="15%">Number of genes</th>
+            <th width="40%">History</th>
+            <th width="10%"></th>
           </tr>
         </thead>
+      {% for panel in panels %}
+        <!--create table for each panel-->
         <tbody>
           <tr>
-            <td>{{ panel.panel_name }}</td>
-            <td>{{ panel.panel_name }}</td>
-            <td>{{ panel.panel_name }}</td>
+            <td><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a></td>
+            <td>{{ panel.version }} ({{ panel.date.date()}})</td>
+            <td>{{ panel.genes|length}}</td>
+            <td><button id="{{panel._id}}" type="button" class="btn btn-primary btn-xs history_btn"><span class="glyphicon glyphicon-zoom-in"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td class="align-right"><button type="submit" name="delete_variant" value="" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-pencil"></span></button></td>
           </tr>
         </tbody>
       {% endfor %}
+      </table>
     </div>
 
   </div>
 {% endmacro %}
+
+{% macro history_view(panel_id, panel_name) %}
+  <div id="paneldiv_{{panel_id}}" style="display:none;">
+    <ul>
+    {% for version in panel_versions[panel_name]|sort(attribute='version', reverse=True) %}
+      <li><a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a></li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}
+
+{% block scripts %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+$('.history_btn').on('click', function(){
+    var bid = $(this)[0].id;
+    var sel = '#paneldiv_' + bid;
+    if($(sel).is(':visible')){
+      $(sel).hide();
+    }
+    else{
+      $(sel).fadeToggle();
+    }
+});
+
+
+
+</script>
+{% endblock %}
