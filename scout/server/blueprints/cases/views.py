@@ -158,7 +158,6 @@ def case_report(institute_id, case_name):
     """Visualize case report"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_obj, case_obj)
-
     return dict(institute=institute_obj, case=case_obj, format='html', **data)
 
 
@@ -168,6 +167,10 @@ def pdf_case_report(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_obj, case_obj)
+
+    # add coverage report on the bottom of this report
+    if current_app.config.get('SQLALCHEMY_DATABASE_URI'):
+        data['coverage_report'] = controllers.coverage_report_contents(store, institute_obj, case_obj, request.url_root)
 
     # workaround to be able to print the case pedigree to pdf
     if case_obj.get('madeline_info') is not None:
