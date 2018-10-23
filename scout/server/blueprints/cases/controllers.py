@@ -18,14 +18,14 @@ STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
 def cases(store, case_query, limit=100):
     """Preprocess case objects.
-    
+
     Add the necessary information to display the 'cases' view
-    
+
     Args:
         store(adapter.MongoAdapter)
         case_query(pymongo.Cursor)
         limit(int): Maximum number of cases to display
-    
+
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
@@ -50,17 +50,17 @@ def cases(store, case_query, limit=100):
 
 def case(store, institute_obj, case_obj):
     """Preprocess a single case.
-    
+
     Prepare the case to be displayed in the case view.
 
     Args:
         store(adapter.MongoAdapter)
         institute_obj(models.Institute)
         case_obj(models.Case)
-    
+
     Returns:
         data(dict): includes the cases, how many there are and the limit.
-    
+
     """
     # Convert individual information to more readable format
     case_obj['individual_ids'] = []
@@ -75,7 +75,7 @@ def case(store, institute_obj, case_obj):
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
                              case_obj.get('assignees', [])]
-    
+
     # Fetch the variant objects for suspects and causatives
     suspects = [store.variant(variant_id) or variant_id for variant_id in
                 case_obj.get('suspects', [])]
@@ -135,15 +135,15 @@ def case(store, institute_obj, case_obj):
 
 def case_report_content(store, institute_obj, case_obj):
     """Gather contents to be visualized in a case report
-    
+
     Args:
         store(adapter.MongoAdapter)
         institute_obj(models.Institute)
         case_obj(models.Case)
-    
+
     Returns:
         data(dict)
-    
+
     """
     variant_types = {
         'causatives_detailed': 'causatives',
@@ -154,7 +154,7 @@ def case_report_content(store, institute_obj, case_obj):
         'commented_detailed': 'is_commented',
     }
     data = case_obj
-    
+
     # Add the case comments
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
@@ -194,20 +194,20 @@ def case_report_content(store, institute_obj, case_obj):
         # We decorate the variant with some extra information
             if var_obj['category'] == 'snv':
                 decorated_info = variant_decorator(
-                        store=store, 
-                        institute_obj=institute_obj, 
-                        case_obj=case_obj, 
-                        variant_id=None, 
-                        variant_obj=var_obj, 
+                        store=store,
+                        institute_obj=institute_obj,
+                        case_obj=case_obj,
+                        variant_id=None,
+                        variant_obj=var_obj,
                         add_case=False,
-                        add_other=False, 
+                        add_other=False,
                         get_overlapping=False
                     )
             else:
                 decorated_info = sv_variant(
-                    store=store, 
-                    institute_id=institute_obj['_id'], 
-                    case_name=case_obj['display_name'], 
+                    store=store,
+                    institute_id=institute_obj['_id'],
+                    case_name=case_obj['display_name'],
                     variant_obj=var_obj,
                     add_case=False,
                     get_overlapping=False

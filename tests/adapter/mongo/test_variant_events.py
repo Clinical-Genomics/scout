@@ -80,8 +80,8 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
     assert adapter.event_collection.find().count() == 4
 
 
-def test_order_sanger(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Testing ordering sanger for a variant")
+def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    logger.info("Testing ordering verification for a variant")
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -96,7 +96,7 @@ def test_order_sanger(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     link = 'orderSangerlink'
     # WHEN ordering sanger for a variant
-    updated_variant = adapter.order_sanger(
+    updated_variant = adapter.order_verification(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
@@ -119,8 +119,8 @@ def test_order_sanger(adapter, institute_obj, case_obj, user_obj, variant_obj):
         assert event_obj['category'] in ['case', 'variant']
 
 
-def test_cancel_sanger(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Testing cancel sanger ordering for a variant")
+def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    logger.info("Testing cancel verification ordering for a variant")
     # GIVEN a populated database with a variant that has sanger ordered
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -131,7 +131,7 @@ def test_cancel_sanger(adapter, institute_obj, case_obj, user_obj, variant_obj):
     assert adapter.event_collection.find().count() == 0
 
     link = 'orderSangerlink'
-    updated_variant = adapter.order_sanger(
+    updated_variant = adapter.order_verification(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
@@ -144,7 +144,7 @@ def test_cancel_sanger(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     # WHEN canceline sanger ordering for a variant
     cancel_link = 'cancelSangerlink'
-    updated_variant = adapter.cancel_sanger(
+    updated_variant = adapter.cancel_verification(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,

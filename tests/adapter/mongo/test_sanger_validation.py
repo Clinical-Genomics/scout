@@ -51,7 +51,7 @@ def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute
         assert variant.get('validation') == None
 
         # Order Sanger for variant
-        updated_variant = adapter.order_sanger(
+        updated_variant = adapter.order_verification(
             institute=institute,
             case=case,
             user=user,
