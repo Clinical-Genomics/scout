@@ -46,10 +46,6 @@ def panels():
 
         else: # modify an existing panel
             update_option = request.form['modify_option']
-            if request.form['modify_option'] == 'add':
-                flash('modify an existing panel: ADD', 'warning')
-            else:
-                flash('modify an existing panel: REPLACE', 'warning')
             panel_obj= controllers.update_panel(store=store, panel_name=request.form['panel_name'], csv_lines=lines, option=update_option)
             if panel_obj is None:
                 return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
@@ -107,7 +103,7 @@ def panel(panel_id):
                                         hgnc_id=hgnc_id))
         elif action == 'delete':
             log.debug("marking gene to be deleted: %s", hgnc_id)
-            store.add_pending(panel_obj, gene_obj, action='delete')
+            panel_obj = store.add_pending(panel_obj, gene_obj, action='delete')
 
     data = controllers.panel(store, panel_obj)
     if request.args.get('case_id'):
@@ -121,7 +117,8 @@ def panel(panel_id):
 def panel_update(panel_id):
     """Update panel to a new version."""
     panel_obj = store.panel(panel_id)
-    new_panel_id = store.apply_pending(panel_obj)
+    update_version = request.form.get('version', None)
+    new_panel_id = store.apply_pending(panel_obj, update_version)
     return redirect(url_for('panels.panel', panel_id=new_panel_id))
 
 

@@ -368,18 +368,19 @@ class PanelHandler(object):
 
         return updated_panel
 
-    def apply_pending(self, panel_obj):
-        """Apply the pending changes to an existing gene panel
+    def apply_pending(self, panel_obj, version):
+        """Apply the pending changes to an existing gene panel or create a new version of the same panel.
 
         Args:
             panel_obj(dict): panel in database to update
+            version(double): panel version to update
 
         Returns:
-            new_panel(dict): Panel with changes
+            updated_panel_id(str): id of updated panel or the new one
         """
+
         updates = {}
         new_panel = deepcopy(panel_obj)
-        new_panel.pop('_id')
         new_panel['pending'] = []
         new_panel['date'] = dt.datetime.now()
 
@@ -420,7 +421,8 @@ class PanelHandler(object):
 
                 # If action is delete we do not add the gene to new genes
                 if action == 'delete':
-                    pass
+                    continue
+
                 elif action == 'edit':
                     if info.get('disease_associated_transcripts'):
                         gene['disease_associated_transcripts'] = info['disease_associated_transcripts']
@@ -437,14 +439,26 @@ class PanelHandler(object):
                 new_genes.append(gene)
 
         new_panel['genes'] = new_genes
-        new_panel['version'] = panel_obj['version'] + 1
+        new_panel['version'] = float(version)
 
-        inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
+        inserted_id = None
+        # if the same version of the panel should be updated
+        if new_panel['version'] == panel_obj['version']:
+            # replace panel_obj with new_panel
+            result = self.panel_collection.find_one_and_replace({'_id':panel_obj['_id']}, new_panel, return_document=pymongo.ReturnDocument.AFTER)
+            inserted_id = result['_id']
+        else: # create a new version of the same panel
+            new_panel.pop('_id')
 
-        # archive the old panel
-        panel_obj['is_archived'] = True
-        self.update_panel(panel_obj)
+            # archive the old panel
+            panel_obj['is_archived'] = True
+            self.update_panel(panel_obj)
+
+            # insert the new panel
+            inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
+
         return inserted_id
+
 
     def latest_panels(self, institute_id):
         """Return the latest version of each panel."""

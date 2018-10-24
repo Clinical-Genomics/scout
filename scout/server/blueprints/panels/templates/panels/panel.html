@@ -189,7 +189,7 @@
                 <label>Version</label>
               </div>
               <div class="col-xs-9">
-                <input class="form-control" name="version" type="number" value="{{ panel.version + 1 }}">
+                <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
               </div>
             </div>
           </div>
