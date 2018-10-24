@@ -359,7 +359,7 @@ class PanelHandler(object):
         updated_panel = self.panel_collection.find_one_and_update(
             {'_id': panel_obj['_id']},
             {
-                '$push': {
+                '$addToSet': {
                     'pending': pending_action
                 }
             },
@@ -439,12 +439,12 @@ class PanelHandler(object):
         new_panel['genes'] = new_genes
         new_panel['version'] = panel_obj['version'] + 1
 
-        self.panel_collection.insert_one(new_panel)
+        inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
 
         # archive the old panel
         panel_obj['is_archived'] = True
         self.update_panel(panel_obj)
-        return new_panel
+        return inserted_id
 
     def latest_panels(self, institute_id):
         """Return the latest version of each panel."""

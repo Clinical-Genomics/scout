@@ -121,8 +121,8 @@ def panel(panel_id):
 def panel_update(panel_id):
     """Update panel to a new version."""
     panel_obj = store.panel(panel_id)
-    store.apply_pending(panel_obj)
-    return redirect(url_for('.panels'))
+    new_panel_id = store.apply_pending(panel_obj)
+    return redirect(url_for('panels.panel', panel_id=new_panel_id))
 
 
 @panels_bp.route('/panels/export-panel/<panel_id>', methods=['GET', 'POST'])
