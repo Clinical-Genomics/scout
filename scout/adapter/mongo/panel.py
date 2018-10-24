@@ -344,6 +344,7 @@ class PanelHandler(object):
             updated_panel(dict):
 
         """
+        
         valid_actions = ['add', 'delete', 'edit']
         if action not in valid_actions:
             raise ValueError("Invalid action {0}".format(action))

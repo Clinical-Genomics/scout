@@ -133,14 +133,14 @@ def test_apply_pending_delete_gene(panel_database):
     panel_obj['pending'] = [action]
     old_version = panel_obj['version']
 
-    res = adapter.apply_pending(panel_obj)
-    ## THEN assert that a new panel was created
-    print(panel_obj['version'])
+    updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version']+1)
+    updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
 
-    assert res['version'] != old_version
+    # assert that the updated panel has a newer version
+    assert updated_panel['version'] != old_version
 
     ## THEN assert that the new panel does not have the deleted gene
-    for gene in res['genes']:
+    for gene in updated_panel['genes']:
         assert gene['hgnc_id'] != hgnc_id
 
 def test_apply_pending_delete_two_genes(real_panel_database):
@@ -168,9 +168,10 @@ def test_apply_pending_delete_two_genes(real_panel_database):
 
     panel_obj['pending'] = [action, action2]
 
-    res = adapter.apply_pending(panel_obj)
+    updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version'])
+    updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
 
-    for gene in res['genes']:
+    for gene in updated_panel['genes']:
         assert gene['hgnc_id'] not in hgnc_ids
 
 def test_apply_pending_add_gene(real_panel_database):
@@ -196,7 +197,8 @@ def test_apply_pending_add_gene(real_panel_database):
 
     panel_obj['pending'] = [action]
 
-    updated_panel = adapter.apply_pending(panel_obj)
+    updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version']+1)
+    updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
 
     assert len(updated_panel['genes']) == 1
 
@@ -231,7 +233,8 @@ def test_apply_pending_add_two_genes(real_panel_database):
 
     panel_obj['pending'] = [action1, action2]
 
-    updated_panel = adapter.apply_pending(panel_obj)
+    updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version']+1)
+    updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
 
     assert len(updated_panel['genes']) == 2
     for gene in updated_panel['genes']:
