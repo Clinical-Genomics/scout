@@ -124,12 +124,12 @@
     <div class="form-group">
       <div class="col-sm-3">
         <div class="radio">
-          <label><input type="radio" name="modify_option" checked>Add genes from CSV file</label>
+          <label><input type="radio" name="modify_option" value="add" checked>Add genes from CSV file</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="modify_option">Replace genes using CSV file</label>
+          <label><input type="radio" name="modify_option" value="replace">Replace genes using CSV file</label>
         </div>
-      </div><!--end of <div class="col-sm-4">-->
+      </div><!--end of <div class="col-sm-3">-->
 
       <div class="form-group">
           <div class="col-sm-6">
@@ -140,9 +140,7 @@
             <button id="submit" type="submit">submit</button>
           </div>
       </div>
-
     </div><!--end of form-group-->
-
   </form>
   <br>
 {% endmacro %}
