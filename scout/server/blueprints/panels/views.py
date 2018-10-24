@@ -37,11 +37,13 @@ def panels():
                 display_name=request.form['display_name'],
                 csv_lines=lines,
             )
-            flash("new gene panel added, database id: {}!".format(new_panel_id))
             if new_panel_id is None:
                 flash('Something went wrong and the panel list was not updated!','warning')
                 return redirect(request.referrer)
+            else:
+                flash("new gene panel added, {}!".format(new_panel_name))
             return redirect(url_for('panels.panel', panel_id=new_panel_id))
+
         else: # modify an existing panel
             update_option = request.form['modify_option']
             if request.form['modify_option'] == 'add':

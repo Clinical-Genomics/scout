@@ -118,7 +118,7 @@
                   <a class="btn btn-default btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
                   <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
                     <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
-                    <button name="action" value="delete" class="btn btn-danger btn-xs">Delete</button>
+                    <button name="action" value="delete" class="btn btn-danger btn-xs" type="submit">Delete</button>
                   </form>
                 {% endif %}
               </td>
