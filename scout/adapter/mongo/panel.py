@@ -376,7 +376,7 @@ class PanelHandler(object):
             version(double): panel version to update
 
         Returns:
-            updated_panel_id(str): id of updated panel or the new one
+            inserted_id(str): id of updated panel or the new one
         """
 
         updates = {}
