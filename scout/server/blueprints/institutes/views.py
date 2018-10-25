@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-import datetime
-
 import logging
 
-from pprint import pprint as pp
-
-from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, Response, flash)
+from flask import (Blueprint, render_template)
 from flask_login import current_user
 
-from dateutil.parser import parse as parse_date
 from scout.constants import PHENOTYPE_GROUPS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
-# from . import controllers
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +14,7 @@ blueprint = Blueprint('overview', __name__, template_folder='templates')
 
 
 @blueprint.route('/overview')
-def index():
+def institutes():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
     institutes = []
@@ -45,4 +38,4 @@ def index():
 
     data = dict(institutes=institutes)
     return render_template(
-        'overview/index.html', **data)
+        'overview/institutes.html', **data)
