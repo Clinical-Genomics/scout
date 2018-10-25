@@ -446,7 +446,11 @@ class PanelHandler(object):
         # if the same version of the panel should be updated
         if new_panel['version'] == panel_obj['version']:
             # replace panel_obj with new_panel
-            result = self.panel_collection.find_one_and_replace({'_id':panel_obj['_id']}, new_panel, return_document=pymongo.ReturnDocument.AFTER)
+            result = self.panel_collection.find_one_and_replace(
+                {'_id':panel_obj['_id']}, 
+                new_panel, 
+                return_document=pymongo.ReturnDocument.AFTER
+            )
             inserted_id = result['_id']
         else: # create a new version of the same panel
             new_panel.pop('_id')
