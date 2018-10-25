@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - Institutes
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+
+  <li class="active">
+    <span class="navbar-text">Institutes Overview</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  {% for institute in institutes %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        {{ institute.display_name }}
+        {% if current_user.is_admin %}
+          <span class="text-muted">({{ institute.internal_id }})</span>
+        {% endif %}
+      </div>
+        <div class="row">
+            <div class="col-md-4">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    Coverage Cutoff
+                    <span class="pull-right">{{ institute.coverage_cutoff }}</span>
+                  </li>
+                  <li class="list-group-item">
+                    Sanger Recipients
+                    <span class="pull-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
+                  </li>
+                  <li class="list-group-item">
+                    Frequency Cutoff
+                    <span class="pull-right">{{ institute.frequency_cutoff }}</span>
+                  </li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+
+  {% endfor %}
+{% endblock %}
