@@ -15,7 +15,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ url_for('panels.panels') }}">Gene Panels</a>
+    <a href="{{ url_for('panels.panels') }}">Gene Panels</a>
   </li>
   <li class="active">
     <span class="navbar-text">{{ panel.display_name }} {{ panel.version }}</span>
@@ -118,7 +118,7 @@
                   <a class="btn btn-default btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
                   <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
                     <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
-                    <button name="action" value="delete" class="btn btn-danger btn-xs">Delete</button>
+                    <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
                   </form>
                 {% endif %}
               </td>
@@ -168,7 +168,13 @@
           ">
             {{ gene.symbol }}
           </span>
-          <span class="badge pull-right">{{ gene.action }}</span>
+          {% if gene.action == 'add' %}
+            <span class="label label-primary badge-pill pull-right">{{ gene.action }}</span>
+          {% elif gene.action == 'delete' %}
+            <span class="label label-danger badge-pill pull-right">{{ gene.action }}</span>
+          {% else %}
+            <span class="label label-secondary badge-pill pull-right">{{ gene.action }}</span>
+          {% endif %}
         </li>
       {% else %}
         <li class="list-group-item">No pending genes</li>
@@ -183,7 +189,7 @@
                 <label>Version</label>
               </div>
               <div class="col-xs-9">
-                <input class="form-control" name="version" type="number" value="{{ panel.version + 1 }}">
+                <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
               </div>
             </div>
           </div>

@@ -8,7 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ### Added
-- Printing coverage report on the bottom of the pdf case report 
+- Option add/replace when updating a panel via CSV file
+- More flexible versioning of the gene panels
+- Printing coverage report on the bottom of the pdf case report
 - Variant verification option for SVs
 - Logs uri without pwd when connecting
 - Disease-causing transcripts in case report
@@ -17,7 +19,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds sanger information to dashboard
 
 ### Fixed
-
 - Use db name instead of **auth** as default for authentication
 - Fixes so that reports can be generated even with many variants
 - Fixed sanger validation popup to show individual variants queried by user and institute.
