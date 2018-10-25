@@ -197,8 +197,12 @@ def test_apply_pending_add_gene(real_panel_database):
 
     panel_obj['pending'] = [action]
 
+    # update panel version to panel_versio +1
     updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version']+1)
     updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
+
+    #assert that panel version was updated
+    assert updated_panel['version'] == panel_obj['version'] + 1
 
     assert len(updated_panel['genes']) == 1
 
@@ -233,8 +237,12 @@ def test_apply_pending_add_two_genes(real_panel_database):
 
     panel_obj['pending'] = [action1, action2]
 
-    updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version']+1)
+    # update panel without changing panel version
+    updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version'])
     updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
+
+    #assert that panel version was NOT updated
+    assert updated_panel['version'] == panel_obj['version']
 
     assert len(updated_panel['genes']) == 2
     for gene in updated_panel['genes']:
