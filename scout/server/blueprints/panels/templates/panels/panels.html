@@ -118,7 +118,7 @@
 
 {% macro modify_form(panel_obj) %}
   <br>
-  <strong>{{panel_obj.panel_name}}</strong><br>
+  <strong>{{panel_obj.display_name}}</strong><br>
   <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
     <input type="hidden" name="panel_name" value="{{panel_obj.panel_name}}">
     <div class="form-group">
