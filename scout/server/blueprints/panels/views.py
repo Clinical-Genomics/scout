@@ -46,7 +46,12 @@ def panels():
 
         else: # modify an existing panel
             update_option = request.form['modify_option']
-            panel_obj= controllers.update_panel(store=store, panel_name=request.form['panel_name'], csv_lines=lines, option=update_option)
+            panel_obj= controllers.update_panel(
+                                   store=store, 
+                                   panel_name=request.form['panel_name'], 
+                                   csv_lines=lines, 
+                                   option=update_option
+             )
             if panel_obj is None:
                 return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
             else:

@@ -66,7 +66,8 @@ def update_panel(store, panel_name, csv_lines, option):
             flash("gene not found: {} - {}".format(new_gene['hgnc_id'], new_gene['hgnc_symbol']),'danger')
             continue
         if new_gene['hgnc_symbol'] and gene_obj['hgnc_symbol'] != new_gene['hgnc_symbol']:
-            flash("symbol mis-match: {} | {}".format(gene_obj['hgnc_symbol'],new_gene['hgnc_symbol']), 'warning')
+            flash("symbol mis-match: {0} | {1}".format(
+                gene_obj['hgnc_symbol'], new_gene['hgnc_symbol']), 'warning')
 
         info_data = {
             'disease_associated_transcripts': new_gene['transcripts'],
