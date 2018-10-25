@@ -197,7 +197,7 @@ def test_apply_pending_add_gene(real_panel_database):
 
     panel_obj['pending'] = [action]
 
-    # update panel version to panel_versio +1
+    # update panel version to panel_version +1
     updated_panel_id = adapter.apply_pending(panel_obj, panel_obj['version']+1)
     updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
 
