@@ -17,10 +17,10 @@ from scout.server.utils import user_institutes
 
 log = logging.getLogger(__name__)
 
-blueprint = Blueprint('institutesov', __name__, template_folder='templates')
+blueprint = Blueprint('overview', __name__, template_folder='templates')
 
 
-@blueprint.route('/institutesov')
+@blueprint.route('/overview')
 def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
@@ -36,7 +36,7 @@ def index():
             {
                 'display_name': ins_obj['display_name'],
                 'internal_id': ins_obj['_id'],
-                'coverage_cutoff': ins_obj['coverage_cutoff'],
+                'coverage_cutoff': ins_obj.get('coverage_cutoff', 'None'),
                 'sanger_recipients': sanger_recipients,
                 'frequency_cutoff': ins_obj.get('frequency_cutoff', 'None'),
                 'phenotype_groups': ins_obj.get('phenotype_groups', PHENOTYPE_GROUPS)
@@ -44,6 +44,5 @@ def index():
         )
 
     data = dict(institutes=institutes)
-    pp(data)
     return render_template(
-        'institutesov/index.html', **data)
+        'overview/index.html', **data)
