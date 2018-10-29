@@ -30,15 +30,22 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
-
+    variant_res = variants_query.skip(skip_count).limit(per_page)
+    
     genome_build = case_obj.get('genome_build', '37')
     if genome_build not in ['37','38']:
         genome_build = '37'
+
+    variants = []
+    for variant_obj in variant_res:
+        variant_obj['overlapping'] = store.overlapping(variant_obj)
+        variants.append(parse_variant(store, institute_obj, case_obj, variant_obj, 
+                        update=True, genome_build=genome_build))
+
     
 
     return {
-        'variants': (parse_variant(store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build) for
-                     variant_obj in variants_query.skip(skip_count).limit(per_page)),
+        'variants': variants,
         'more_variants': more_variants,
     }
 
@@ -187,7 +194,8 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
     }
 
 
-def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, genome_build='37'):
+def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, genome_build='37', 
+                  get_compounds = True):
     """Parse information about variants.
 
     - Adds information about compounds
@@ -204,7 +212,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
     """
     has_changed = False
     compounds = variant_obj.get('compounds', [])
-    if compounds:
+    if compounds and get_compounds:
         # Check if we need to add compound information
         # If it is the first time the case is viewed we fill in some compound information
         if 'not_loaded' not in compounds[0]:
