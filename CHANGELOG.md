@@ -11,7 +11,7 @@ Add new content here
 ## [4.1.3]
 
 ### Fixed
-
+- Fixed visualization issue in gene panel PDF export
 - Displays all primary transcripts
 
 ## [4.1.2]
