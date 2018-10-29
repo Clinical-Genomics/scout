@@ -61,7 +61,7 @@
         <td>Reduced penetrance</td>
         <td>Mosaicism</td>
         <td>Entry version</td>
-        <td>Inheritance models</td>
+        <td>Inheritance</td>
         <td>Panels*</td>
       </tr>
       {% for gene in panel.genes|sort(attribute='symbol') %}
@@ -76,7 +76,13 @@
           <td>{{ 'Mosaicism' if gene.mosaicism}}</td>
           <td><span class="badge badge-secondary">{{ gene.database_entry_version }}</span></td>
           <td>{{ gene.inheritance_models|join(', ') }}</td>
-          <td>{{ gene.associated_panels|sort|join(',') }}</td>
+          <td>
+            {% for batch_panels in gene.associated_panels|sort|batch(10) -%}
+              {{ batch_panels|join(',') }}
+              {%- if not loop.last -%},<br>{%- endif %}
+            {%- endfor %}
+          </td>
+
         </tr>
       {% endfor %}
     </table>
