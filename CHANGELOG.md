@@ -6,7 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.x.x]
 
-Add new changes here
+Add new content here
+
+## [4.1.3]
+
+### Fixed
+
+- Displays all primary transcripts
 
 ## [4.1.2]
 
