@@ -133,7 +133,7 @@ def variants(institute_id, case_name):
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = {}
 
-    if request.args.get('export'):
+    if request.form.get('export'):
         document_header = controllers.variants_export_header(case_obj)
         export_lines = []
         if form.data['chrom'] == 'MT':
@@ -255,8 +255,27 @@ def sv_variants(institute_id, case_name):
 
     variants_query = store.variants(case_obj['_id'], category='sv',
                                     query=form.data)
-    data = controllers.sv_variants(store, institute_obj, case_obj,
-                                   variants_query, page)
+
+    data = {}
+    # if variants should be exported
+    if request.form.get('export'):
+        document_header = controllers.variants_export_header(case_obj)
+        export_lines = []
+        # Return max 500 variants
+        export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
+
+        def generate(header, lines):
+            yield header + '\n'
+            for line in lines:
+                yield line + '\n'
+
+        headers = Headers()
+        headers.add('Content-Disposition','attachment', filename=str(case_obj['_id'])+'-filtered_sv-variants.csv')
+        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
+
+    else:
+        data = controllers.sv_variants(store, institute_obj, case_obj,
+                                       variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
