@@ -4,18 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
+## [4.1.4]
 
-Add new content here
+### Fixed
+- Fixed visualization issue in gene panel PDF export
+
 
 ## [4.1.3]
 
 ### Fixed
-- Fixed visualization issue in gene panel PDF export
 - Displays all primary transcripts
 
-## [4.1.2]
 
+## [4.1.2]
 
 ### Added
 - Option add/replace when updating a panel via CSV file
