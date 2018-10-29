@@ -24,13 +24,13 @@
 
 {% macro reports(institute, case) %}
   <div class="nav-sidebar-item">
-      <a class="btn btn-default form-control" href="{{ url_for('cases.case_report', institute_id=institute._id, 
+      <a class="btn btn-default form-control" href="{{ url_for('cases.case_report', institute_id=institute._id,
                 case_name=case.display_name) }}">General</a>
   </div>
   {% if case.multiqc %}
     <p>
       <div class="nav-sidebar-item">
-        <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id, 
+        <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id,
                   case_name=case.display_name) }}">
         MultiQC
       </a>
@@ -39,7 +39,7 @@
   {% endif %}
   {% if case.delivery_report %}
     <div class="nav-sidebar-item">
-        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id, 
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
                     case_name=case.display_name) }}" class="btn btn-default form-control" target="_blank">
         Delivery
       </a>
@@ -53,10 +53,10 @@
       {% endfor %}
     </div>
   {% endif %}
-  
+
   {% if config.SQLALCHEMY_DATABASE_URI %}
   <div class="nav-sidebar-item">
-    <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+    <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', '), case_name=case.display_name) }}" target="_blank">
       <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
       <div class="form-group">
@@ -68,6 +68,7 @@
       <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
         <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
+        <input type="hidden" name="case_name" value="{{ case.display_name }}" />
         {% for sample_id in case.individual_ids %}
 				    <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
 			  {% endfor %}

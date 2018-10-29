@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [4.1.4]
+
+### Added
+- PDF coverage report contains case display name
 
 ### Fixed
 - Fixed visualization issue in gene panel PDF export
