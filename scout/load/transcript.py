@@ -80,15 +80,16 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
                     continue
 
                 for refseq_id in identifiers:
+                    # Add all refseq identifiers to refseq_identifiers
                     refseq_identifiers.append(refseq_id)
-                    if refseq_identifier:
-                        continue
                     ref_seq_transcripts += 1
+
                     if refseq_id in primary_transcripts:
                         refseq_identifier = refseq_id
                         tx_data['is_primary'] = True
                         nr_primary_transcripts += 1
-                    else:
+                    
+                    if not refseq_identifier:
                         refseq_identifier = refseq_id
 
             if refseq_identifier:
@@ -97,7 +98,6 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
                 tx_data['refseq_identifiers'] = refseq_identifiers
 
             ####################  ####################  ####################
-
             # Build the transcript object
             tx_obj = build_transcript(tx_data, build)
             transcript_objs.append(tx_obj)
