@@ -184,6 +184,9 @@ def fetch_ensembl_transcripts(build='37', chromosomes=None):
     Args:
         build(str): ['37', '38']
         chromosomes(iterable(str))
+    
+    Returns:
+        result(DataFrame)
     """
     chromosomes = chromosomes or CHROMOSOMES
     LOG.info("Fetching ensembl transcripts build %s ...", build)

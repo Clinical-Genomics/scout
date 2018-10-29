@@ -139,7 +139,6 @@ def parse_ensembl_transcript_request(result):
                 ensembl_info[key] = None
             else:
                 ensembl_info[key] = row[key]
-
         yield ensembl_info
 
 

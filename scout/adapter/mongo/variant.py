@@ -143,9 +143,6 @@ class VariantHandler(VariantLoader):
             # Add the associated disease terms
             variant_gene['disease_terms'] = self.disease_terms(hgnc_id)
 
-            print(hgnc_id)
-            pp(variant_gene['disease_associated_transcripts'])
-
         return variant_obj
 
     def variants(self, case_id, query=None, variant_ids=None, category='snv',

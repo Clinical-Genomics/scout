@@ -29,22 +29,33 @@ def panels():
             lines = content.decode('windows-1252').split('\r')
 
         new_panel_name = request.form.get('new_panel_name')
-        if new_panel_name:
-            panel_obj = controllers.new_panel(
+        if new_panel_name: #create a new panel
+            new_panel_id = controllers.new_panel(
                 store=store,
                 institute_id=request.form['institute'],
                 panel_name=new_panel_name,
                 display_name=request.form['display_name'],
                 csv_lines=lines,
             )
-            if panel_obj is None:
+            if new_panel_id is None:
+                flash('Something went wrong and the panel list was not updated!','warning')
                 return redirect(request.referrer)
-            flash("new gene panel added: {}!".format(panel_obj['panel_name']))
-        else:
-            panel_obj = controllers.update_panel(store, request.form['panel_name'], lines)
+            else:
+                flash("new gene panel added, {}!".format(new_panel_name))
+            return redirect(url_for('panels.panel', panel_id=new_panel_id))
+
+        else: # modify an existing panel
+            update_option = request.form['modify_option']
+            panel_obj= controllers.update_panel(
+                                   store=store, 
+                                   panel_name=request.form['panel_name'], 
+                                   csv_lines=lines, 
+                                   option=update_option
+             )
             if panel_obj is None:
                 return abort(404, "gene panel not found: {}".format(request.form['panel_name']))
-        return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
+            else:
+                return redirect(url_for('panels.panel', panel_id=panel_obj['_id']))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [name
@@ -97,7 +108,7 @@ def panel(panel_id):
                                         hgnc_id=hgnc_id))
         elif action == 'delete':
             log.debug("marking gene to be deleted: %s", hgnc_id)
-            store.add_pending(panel_obj, gene_obj, action='delete')
+            panel_obj = store.add_pending(panel_obj, gene_obj, action='delete')
 
     data = controllers.panel(store, panel_obj)
     if request.args.get('case_id'):
@@ -111,8 +122,9 @@ def panel(panel_id):
 def panel_update(panel_id):
     """Update panel to a new version."""
     panel_obj = store.panel(panel_id)
-    store.apply_pending(panel_obj)
-    return redirect(url_for('.panels'))
+    update_version = request.form.get('version', None)
+    new_panel_id = store.apply_pending(panel_obj, update_version)
+    return redirect(url_for('panels.panel', panel_id=new_panel_id))
 
 
 @panels_bp.route('/panels/export-panel/<panel_id>', methods=['GET', 'POST'])

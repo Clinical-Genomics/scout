@@ -375,7 +375,7 @@ class CaseHandler(object):
                     'has_strvariants': case_obj.get('has_strvariants'),
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
-                    'multiqc': case_obj['multiqc'],
+                    'multiqc': case_obj.get('multiqc'),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
