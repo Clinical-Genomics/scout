@@ -284,7 +284,7 @@ def variant_export_lines(store, case_obj, variants_query):
         variant_line.append(variant['chromosome'])
         variant_line.append(position)
         variant_line.append(change)
-        variant_line.append('_'.join([str(position), change])
+        variant_line.append('_'.join([str(position), change]))
 
         # gather gene info:
         gene_list = variant.get('genes') #this is a list of gene objects
