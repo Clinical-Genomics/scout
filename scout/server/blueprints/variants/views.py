@@ -149,7 +149,7 @@ def variants(institute_id, case_name):
                 yield line + '\n'
 
         headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['_id'])+'-filtered_variants.csv')
+        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_variants.csv')
         return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
 
     else:
@@ -270,7 +270,7 @@ def sv_variants(institute_id, case_name):
                 yield line + '\n'
 
         headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['_id'])+'-filtered_sv-variants.csv')
+        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_sv-variants.csv')
         return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
 
     else:
