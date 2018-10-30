@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.x.x]
+
+Add stuff here
+
 ## [4.1.4]
 
 ### Added
@@ -12,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fixed broken download of filtered variants
 - Fixed visualization issue in gene panel PDF export
+- Fixed bug when updating gene names in variant controller
 
 
 ## [4.1.3]
