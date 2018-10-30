@@ -31,8 +31,13 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
 
+    genome_build = case_obj.get('genome_build', '37')
+    if genome_build not in ['37','38']:
+        genome_build = '37'
+    
+
     return {
-        'variants': (parse_variant(store, institute_obj, case_obj, variant_obj, update=True) for
+        'variants': (parse_variant(store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build) for
                      variant_obj in variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -43,8 +48,12 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
     skip_count = (per_page * max(page - 1, 0))
     more_variants = True if variants_query.count() > (skip_count + per_page) else False
 
+    genome_build = case_obj.get('genome_build', '37')
+    if genome_build not in ['37','38']:
+        genome_build = '37'
+
     return {
-        'variants': (parse_variant(store, institute_obj, case_obj, variant) for variant in
+        'variants': (parse_variant(store, institute_obj, case_obj, variant, genome_build=genome_build) for variant in
                      variants_query.skip(skip_count).limit(per_page)),
         'more_variants': more_variants,
     }
@@ -216,7 +225,7 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
                 continue
             # Else we collect the gene object and check the id
             if gene_obj.get('hgnc_symbol') is None:
-                hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=build)
+                hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=genome_build)
                 if not hgnc_gene:
                     continue
                 has_changed = True
@@ -275,7 +284,7 @@ def variant_export_lines(store, case_obj, variants_query):
         variant_line.append(variant['chromosome'])
         variant_line.append(position)
         variant_line.append(change)
-        variant_line.append('_'.join([str(position), change]))
+        variant_line.append(str(position)+change)
 
         # gather gene info:
         gene_list = variant.get('genes') #this is a list of gene objects
