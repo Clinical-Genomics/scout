@@ -6,7 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.1.4]
 
+### Added
+- Download of filtered SVs
+
 ### Fixed
+- Fixed broken download of filtered variants
 - Fixed visualization issue in gene panel PDF export
 
 
