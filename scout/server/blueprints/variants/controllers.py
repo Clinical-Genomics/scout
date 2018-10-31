@@ -38,11 +38,10 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
     variants = []
     for variant_obj in variant_res:
-        variant_obj['overlapping'] = store.overlapping(variant_obj)
+        overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
+        variant_obj['overlapping'] = overlapping_svs or None
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj, 
                         update=True, genome_build=genome_build))
-
-    
 
     return {
         'variants': variants,
