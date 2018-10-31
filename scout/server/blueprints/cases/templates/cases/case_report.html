@@ -422,10 +422,10 @@
       <table class="table table-striped table-sm" style="background-color: transparent">
         <thead>
           <tr>
-              <td></td>
-              <td><strong>Variant name</strong></td>
-	      <td><strong>Genes</strong></td>
-              <td><strong>Dismissed description</strong></td>
+              <td width="5%"></td>
+              <td width="25%"><strong>Variant name</strong></td>
+	            <td width="25%"><strong>Genes</strong></td>
+              <td width="45%"><strong>Dismissed description</strong></td>
           </tr>
         </thead>
         {% for variant in dismissed_detailed|sort(attribute='variant_rank') %}
@@ -437,9 +437,13 @@
               <td><a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
             {% endif %}
 	    <td>
+        <ul>
 	      {% for gene in variant.genes %}
-                <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a> ({{ gene.region_annotation }})
+          <li
+            <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a><br>({{ gene.region_annotation }})
+          </li>
 	      {% endfor %}
+        </ul>
 	    </td>
             <td>
               {% for reason in variant.dismiss_variant %}
@@ -523,7 +527,7 @@
 
                     {% elif reason== '23' %} <!-- inherited from unaffected -->
                       <br>
-                      <table id="panel-table" class="table-borderless table-sm" >
+                      <table id="panel-table" class="table-borderless table-xs" >
                         <thead>
                           <tr style="background-color: transparent">
                             <th rowspan="2">Sample</th>
@@ -544,13 +548,13 @@
                               <td class="text-center">{{ sample.genotype_call }}</td>
                               {% if sample.allele_depths %}
                                   {% for number in sample.allele_depths %}
-                                    <td class="text-right">{{ number }}</td>
+                                    <td class="text-center">{{ number }}</td>
                                   {% endfor %}
                               {% else %}
-                                  <td class="text-right"><small>N/A</small></td>
-                                  <td class="text-right"><small>N/A</small></td>
+                                  <td class="text-center"><small>N/A</small></td>
+                                  <td class="text-center"><small>N/A</small></td>
                               {% endif %}
-                              <td class="text-right">{{ sample.genotype_quality }}</td>
+                              <td class="text-center">{{ sample.genotype_quality }}</td>
                             </tr>
                           {% endfor %}
                         </tbody>
