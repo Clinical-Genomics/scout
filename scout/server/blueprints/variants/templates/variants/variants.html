@@ -266,13 +266,13 @@
           <label class="control-label">Submit</label>
           <div class="row">
             <div class="col-xs-4">
-              <button class="btn btn-primary form-control" onclick="remove_export()">Filter variants</button>
-             </div>
-            <div class="col-xs-4">
-              <button class="btn btn-default form-control" onclick="remove_export()">Clinical filter</button>
+              {{ form.filter_variants(class_="btn btn-primary form-control") }}
             </div>
             <div class="col-xs-4">
-              <button class="btn btn-warning form-control" onclick="add_export()">Filter and export</button>
+               {{ form.clinical_filter(class_="btn btn-default form-control") }}
+            </div>
+            <div class="col-xs-4">
+              {{ form.export(class_="btn btn-warning form-control") }}
             </div>
           </div>
         </div>
@@ -305,25 +305,6 @@
         the_form.submit();
       };
     })
-
-    function add_export(){
-      var the_form = document.forms['filters_form'];
-      var hidden_export = document.createElement('input');
-
-      hidden_export.type = 'hidden';
-      hidden_export.name = 'export';
-      hidden_export.value = 'True';
-      hidden_export.id = 'export';
-      the_form.appendChild(hidden_export);
-      the_form.submit();
-    }
-
-    function remove_export(){
-      var the_form = document.forms['filters_form'];
-      var hidden_export = document.getElementById('export');
-      the_form.removeChild(hidden_export);
-      the_form.submit();
-    }
 
   </script>
 {% endblock %}
