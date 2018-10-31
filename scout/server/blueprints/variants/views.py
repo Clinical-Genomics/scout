@@ -255,7 +255,6 @@ def sv_variants(institute_id, case_name):
 
     variants_query = store.variants(case_obj['_id'], category='sv',
                                     query=form.data)
-
     data = {}
     # if variants should be exported
     if request.form.get('export'):

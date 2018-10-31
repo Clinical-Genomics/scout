@@ -71,6 +71,7 @@ class FiltersForm(FlaskForm):
 
     filter_variants = SubmitField(label='Filter variants')
     clinical_filter = SubmitField(label='Clinical filter')
+    export = SubmitField(label='Filter and export')
 
 class CancerFiltersForm(FiltersForm):
     """docstring for CancerFiltersForm"""
@@ -94,3 +95,5 @@ class SvFiltersForm(FiltersForm):
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
 
     clingen_ngi = IntegerField('ClinGen NGI obs')
+
+    export = SubmitField(label='Filter and export')
