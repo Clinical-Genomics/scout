@@ -547,7 +547,7 @@ class VariantLoader(object):
         individual_positions = {}
         for i, ind in enumerate(vcf_obj.samples):
             individual_positions[ind] = i
-
+        
         # Dictionary for cancer analysis
         sample_info = {}
         if category == 'cancer':

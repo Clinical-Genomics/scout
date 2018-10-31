@@ -150,10 +150,13 @@ def variants(institute_id, case_name):
 
         headers = Headers()
         headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_variants.csv')
-        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
 
-    else:
-        data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
+        # return a csv with the exported variants
+        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv',
+                        headers=headers)
+
+    data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
+    
     return dict(institute=institute_obj, case=case_obj, form=form,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
