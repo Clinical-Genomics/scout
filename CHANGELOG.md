@@ -10,9 +10,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New index on variant_id for events
 - Display overlapping compounds on variants view
 
-
-## [4.1.5]
-
 ### Fixed
 - Fixed broken clinical filter
 
