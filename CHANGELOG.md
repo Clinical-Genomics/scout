@@ -4,9 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
+## [4.2.0]
 
-Add stuff here
+### Added
+- New index on variant_id for events
+- Display overlapping compounds on variants view
 
 
 ## [4.1.5]
