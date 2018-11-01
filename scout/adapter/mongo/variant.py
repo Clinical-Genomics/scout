@@ -64,10 +64,10 @@ class VariantHandler(VariantLoader):
             hgnc_id = variant_gene['hgnc_id']
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
-            
+
             if not hgnc_gene:
                 continue
-            
+
             # Create a dictionary with transcripts information
             # Use ensembl transcript id as keys
             transcripts_dict = {}
@@ -131,7 +131,7 @@ class VariantHandler(VariantLoader):
                         # Check if the refseq id are disease associated
                         if refseq_id in disease_associated_no_version:
                             transcript['is_disease_associated'] = True
-                        
+
                         # Add all refseq indentifiers
                         transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
 
@@ -193,14 +193,14 @@ class VariantHandler(VariantLoader):
         ).sort(sorting)
 
         return result
-    
+
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
-        
+
         Args:
             institute_id(str)
             case_id(str)
-        
+
         Returns:
             res(pymongo.Cursor): A Cursor with all variants with sanger activity
         """
@@ -379,16 +379,25 @@ class VariantHandler(VariantLoader):
             if gene_end > region_end:
                 region_end = gene_end
 
-        query = self.build_query(
-            case_id=variant_obj['case_id'],
-            query={
-                'variant_type': variant_obj['variant_type'],
-                'chrom': chromosome,
-                'start': region_start,
-                'end': region_end,
-            },
-            category=category
-        )
+        query = {
+            '$and': [
+                {'case_id': variant_obj['case_id']},
+                {
+                    '$or': [
+                        {   #query for coordinates if sv is not a complex rearrangement
+                            'sub_category': { '$ne': 'bnd' },
+                            'chrom' : chromosome,
+                            'start' : region_start,
+                            'end': region_end,
+                        },
+                        {   # otherwise get BND SVs overlapping with the same gene
+                            'sub_category' : { '$eq': 'bnd' },
+                            'genes' : { '$elemMatch' : { 'hgnc_id' : gene_id}}
+                        }
+                    ],
+                },
+            ],
+        }
         sort_key = [('rank_score', pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)
@@ -428,7 +437,7 @@ class VariantHandler(VariantLoader):
             variants[var['variant_id']] = self.add_gene_info(var)
 
         # Collect all variant comments from the case
-        event_query = {    
+        event_query = {
             '$and': [
                 {'case': case_id},
                 {'category': 'variant'},
