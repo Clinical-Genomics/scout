@@ -41,3 +41,33 @@
     </tbody>
   </table>
 {% endmacro %}
+
+{% macro svs_table(institute, case, overlapping) %}
+  <table class='table table-bordered table-hover table-condensed'>
+    <thead>
+      <tr>
+        <th>Region</th>
+        <th>Type</th>
+        <th>Length</th>
+        <th>Rank score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sv in overlapping %}
+        <tr>
+          <td>
+              <a href='{{ url_for("variants.sv_variant",
+                                 institute_id=institute._id,
+                                 case_name=case.display_name,
+                                 variant_id=sv._id) }}'>
+                {{ sv.chromosome }}{{ sv.cytoband_start }} 
+              </a>
+          </td>
+          <td class='text-right'>{{ sv.sub_category }}</td>
+          <td class='text-right'>{{ sv.length }}</td>
+          <td class='text-right'>{{ sv.rank_score }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}

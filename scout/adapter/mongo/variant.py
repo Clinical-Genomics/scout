@@ -389,7 +389,6 @@ class VariantHandler(VariantLoader):
             },
             category=category
         )
-
         sort_key = [('rank_score', pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)

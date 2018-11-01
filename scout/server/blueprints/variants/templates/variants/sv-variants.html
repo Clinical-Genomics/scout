@@ -49,7 +49,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="POST">
+<form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
   <div class="container-fluid main">
     <div class="panel-group" id="accordion">
       <div class="panel panel-default">
@@ -67,7 +67,7 @@
     </div>
     {{ flash_messages() }}
   </div>
-  
+
   <div class="table-responsive">
     <table id="variantsTable" class="table table-bordered table-hover">
       <thead>
@@ -173,13 +173,14 @@
         <div class="col-xs-6">
           <label class="control-label">Submit</label>
           <div class="row">
-            <div class="col-xs-6">
-             {{ form.filter_variants(class_="btn btn-primary form-control") }} 
+            <div class="col-xs-4">
+              {{ form.filter_variants(class_="btn btn-primary form-control") }}
             </div>
-            <div class="col-xs-6">
+            <div class="col-xs-4">
              {{ form.clinical_filter(class_="btn btn-default form-control") }}
-             Clinical filter
-              </a>
+            </div>
+            <div class="col-xs-4">
+              {{ form.export(class_="btn btn-warning form-control") }}
             </div>
           </div>
         </div>

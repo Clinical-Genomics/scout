@@ -88,7 +88,11 @@ INDEXES = {
             ('verb', ASCENDING),
             ],
             name="category_verb",
-            background=True,
+            ),
+        IndexModel([
+            ('variant_id', ASCENDING),
+            ],
+            name="variant_id",
             ),
     ],
     'transcript': [

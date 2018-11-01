@@ -5,13 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
+## [4.x.x]
+
+Add new stuff here
+
+## [4.3.0]
+
+### Added
+- Downloaded PDF coverage report name contains case display name and date
+
+
+## [4.2.0]
+
+### Added
+- New index on variant_id for events
+- Display overlapping compounds on variants view
+
+### Fixed
+- Fixed broken clinical filter
+
+
 ## [4.1.4]
 
 ### Added
-- PDF coverage report contains case display name
+- Download of filtered SVs
 
 ### Fixed
+- Fixed broken download of filtered variants
 - Fixed visualization issue in gene panel PDF export
+- Fixed bug when updating gene names in variant controller
 
 
 ## [4.1.3]

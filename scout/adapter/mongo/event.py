@@ -92,7 +92,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         if variant_id:
             if comments:
                 # If it's comment-related event collect global and variant-specific comment events
-                LOG.info("Fetching all comments for institute {0} case {1} variant {2}".format(
+                LOG.debug("Fetching all comments for institute {0} case {1} variant {2}".format(
                           institute['_id'], case['_id'], variant_id))
                 query = {
                     '$or': [
