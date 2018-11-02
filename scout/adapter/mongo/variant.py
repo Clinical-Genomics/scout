@@ -340,8 +340,8 @@ class VariantHandler(VariantLoader):
     def overlapping(self, variant_obj):
         """Return overlapping variants.
 
-        Look at the genes that a variant overlaps to, to get coordinates.
-        Then return all variants that overlap these coordinates.
+        Look at the genes that a variant overlaps to.
+        Then return all variants that overlap these genes.
 
         If variant_obj is sv it will return the overlapping snvs and oposite
         There is a problem when SVs are huge since there are to many overlapping variants.
