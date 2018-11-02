@@ -875,7 +875,7 @@
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
             {% else %}
-              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom}}:{{variant.end}}s
+              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom}}:{{variant.end}}
             {% endif %}
           </td>
           {% if variant.cytoband_start and variant.cytoband_end %}
