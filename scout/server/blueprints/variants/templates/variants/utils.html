@@ -60,11 +60,11 @@
                                  institute_id=institute._id,
                                  case_name=case.display_name,
                                  variant_id=sv._id) }}'>
-                {{ sv.chromosome }}{{ sv.cytoband_start }} 
+                {{ sv.chromosome }}{{ sv.cytoband_start }}
               </a>
           </td>
           <td class='text-right'>{{ sv.sub_category }}</td>
-          <td class='text-right'>{{ sv.length }}</td>
+          <td class='text-right'>{{ sv.length if sv.length < 100000000000 else "-" }}</td>
           <td class='text-right'>{{ sv.rank_score }}</td>
         </tr>
       {% endfor %}

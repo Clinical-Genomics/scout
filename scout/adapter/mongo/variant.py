@@ -340,7 +340,7 @@ class VariantHandler(VariantLoader):
     def overlapping(self, variant_obj):
         """Return overlapping variants.
 
-        Look at the genes that a variant overlaps to get coordinates.
+        Look at the genes that a variant overlaps to, to get coordinates.
         Then return all variants that overlap these coordinates.
 
         If variant_obj is sv it will return the overlapping snvs and oposite
@@ -355,49 +355,14 @@ class VariantHandler(VariantLoader):
         #This is the category of the variants that we want to collect
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
 
-        region_start = None
-        region_end = None
-        chromosome = variant_obj['chromosome']
-
-        #This is the place where there might be to large regions
-        for gene_id in variant_obj['hgnc_ids']:
-            gene_obj = self.hgnc_gene(gene_id)
-            if not gene_obj:
-                continue
-
-            gene_start = gene_obj['start']
-            gene_end = gene_obj['end']
-
-            #Get the coordinates for a region
-            if not region_start:
-                region_start = gene_start
-            if gene_start < region_start:
-                region_start = gene_start
-
-            if not region_end:
-                region_end = gene_end
-            if gene_end > region_end:
-                region_end = gene_end
-
         query = {
             '$and': [
                 {'case_id': variant_obj['case_id']},
-                {
-                    '$or': [
-                        {   #query for coordinates if sv is not a complex rearrangement
-                            'sub_category': { '$ne': 'bnd' },
-                            'chrom' : chromosome,
-                            'start' : region_start,
-                            'end': region_end,
-                        },
-                        {   # otherwise get BND SVs overlapping with the same gene
-                            'sub_category' : { '$eq': 'bnd' },
-                            'genes' : { '$elemMatch' : { 'hgnc_id' : gene_id}}
-                        }
-                    ],
-                },
-            ],
+                {'category': category},
+                {'hgnc_ids' : { '$in' : variant_obj['hgnc_ids']}}
+            ]
         }
+
         sort_key = [('rank_score', pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)
