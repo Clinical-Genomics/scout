@@ -15,6 +15,12 @@ Add new stuff here
 - Downloaded PDF coverage report name contains case display name and date
 
 
+## [4.2.1]
+
+### Fixed
+- Better PDF rendering for excluded variants in report
+
+
 ## [4.2.0]
 
 ### Added
