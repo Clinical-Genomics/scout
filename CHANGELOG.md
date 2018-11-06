@@ -9,6 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add new stuff here
 
 
+## [4.2.1]
+
+### Fixed
+- Better PDF rendering for excluded variants in report
+
+
 ## [4.2.0]
 
 ### Added
