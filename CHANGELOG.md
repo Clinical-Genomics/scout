@@ -12,6 +12,7 @@ Add new stuff here
 ## [4.2.1]
 
 ### Fixed
+- Re-introduced gene name(s) in verification email subject
 - Better PDF rendering for excluded variants in report
 
 

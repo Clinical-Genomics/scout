@@ -888,6 +888,12 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     variant_size = variant_obj.get('length')
     panels = ', '.join(variant_obj['panels'])
     hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
+    email_subj_gene_symbol = None
+    if len(variant_obj['hgnc_symbols']) > 3:
+        email_subj_gene_symbol = ' '.join([ str(len(variant_obj['hgnc_symbols'])) + 'genes'])
+    else:
+        email_subj_gene_symbol = hgnc_symbol
+
     gtcalls = ["<li>{}: {}</li>".format(sample_obj['display_name'],
                                         sample_obj['genotype_call'])
                for sample_obj in variant_obj['samples']]
@@ -926,16 +932,17 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     local_link = url_builder(view_type, institute_id=institute_obj['_id'],
                            case_name=case_obj['display_name'],
                            variant_id=variant_obj['_id'])
+
     if order == 'True': # variant verification should be ordered
         # pin variant if it's not already pinned
         if case_obj.get('suspects') is None or variant_obj['_id'] not in case_obj['suspects']:
             store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
 
-        email_subject = "SCOUT: validation of {} variant {}".format(category.upper(), display_name)
+        email_subject = "SCOUT: validation of {} variant {}, ({})".format( category.upper(), display_name, email_subj_gene_symbol)
         store.order_verification(institute=institute_obj, case=case_obj, user=user_obj, link=local_link, variant=variant_obj)
 
     else: # variant verification should be cancelled
-        email_subject = "SCOUT: validation of {} variant {} was CANCELLED!".format(category.upper(), display_name)
+        email_subject = "SCOUT: validation of {} variant {}, ({}), was CANCELLED!".format(category.upper(), display_name, email_subj_gene_symbol)
         store.cancel_verification(institute=institute_obj, case=case_obj, user=user_obj, link=local_link, variant=variant_obj)
 
     kwargs = dict(subject=email_subject, html=html, sender=sender, recipients=recipients,
