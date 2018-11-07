@@ -1,12 +1,12 @@
 
 def test_build_query(adapter):
     case_id = 'cust000'
-    
+
     # GIVEN a empty database
-    
+
     # WHEN building a query
     query = adapter.build_query(case_id)
-    
+
     # THEN the query should be on the right format
     assert query['case_id'] == case_id
     assert query['category'] == 'snv'
@@ -16,12 +16,12 @@ def test_build_gnomad_query(adapter):
     case_id = 'cust000'
     freq = 0.01
     query = {'gnomad_frequency': freq}
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
-    
+
     assert mongo_query['case_id'] == case_id
     assert mongo_query['category'] == 'snv'
-    assert mongo_query['variant_type'] == 'clinical'    
+    assert mongo_query['variant_type'] == 'clinical'
     assert mongo_query['$and'] == [
         {
             '$or':[
@@ -35,9 +35,9 @@ def test_build_non_existing_gnomad(adapter):
     case_id = 'cust000'
     freq = '-1'
     query = {'gnomad_frequency': freq}
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
-    
+
     assert mongo_query['gnomad_frequency'] == {'$exists': False}
 
 def test_build_cadd_exclusive(adapter):
@@ -76,9 +76,9 @@ def test_build_gnomad_and_cadd(adapter):
     freq = 0.01
     cadd = 10.0
     query = {'gnomad_frequency': freq, 'cadd_score': cadd}
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
-    
+
     assert mongo_query['$and'] == [
         {
             '$or':[
@@ -95,7 +95,7 @@ def test_build_clinsig(adapter):
     case_id = 'cust000'
     clinsig_items = [ 3, 4, 5 ]
     query = {'clinsig': clinsig_items}
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query['clnsig.value'] == {
@@ -106,19 +106,19 @@ def test_build_clinsig_filter(adapter):
     case_id = 'cust000'
     clinsig_items = [ 4, 5 ]
     region_annotation = ['exonic', 'splicing']
-    
-    query = {'region_annotations': region_annotation, 
+
+    query = {'region_annotations': region_annotation,
                  'clinsig': clinsig_items }
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
-    
+
     assert mongo_query['$and'] == [
         { 'genes.region_annotation':
               {'$in': region_annotation }
           },
         { 'clnsig.value':
               { '$in': clinsig_items }
-          } 
+          }
         ]
 
 def test_build_clinsig_always(adapter):
@@ -127,8 +127,8 @@ def test_build_clinsig_always(adapter):
     clinsig_items = [ 4, 5 ]
     region_annotation = ['exonic', 'splicing']
     freq=0.01
-    
-    query = {'region_annotations': region_annotation, 
+
+    query = {'region_annotations': region_annotation,
              'clinsig': clinsig_items,
              'clinsig_confident_always_returned': clinsig_confident_always_returned,
              'gnomad_frequency': freq
@@ -137,7 +137,7 @@ def test_build_clinsig_always(adapter):
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query['$or'] == [
-        { '$and': 
+        { '$and':
           [ {
               '$or':[
                 {'gnomad_frequency': {'$lt': freq}},
@@ -153,10 +153,10 @@ def test_build_clinsig_always(adapter):
                 '$elemMatch': { 'value':
                                     { '$in' : clinsig_items },
                                 'revstat':
-                                    { '$in' : ['mult', 
-                                               'single', 
-                                               'exp', 
-                                               'guideline'] 
+                                    { '$in' : ['mult',
+                                               'single',
+                                               'exp',
+                                               'guideline']
                                       }
                                 }
                 }
@@ -168,22 +168,22 @@ def test_build_spidex_not_reported(adapter):
     spidex_human = ['not_reported']
 
     query = { 'spidex_human': spidex_human }
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
-    
-    assert mongo_query['$and'] == [{'$or': [{'spidex': {'$exists': False}}] }] 
+
+    assert mongo_query['$and'] == [{'$or': [{'spidex': {'$exists': False}}] }]
 
 def test_build_spidex_high(adapter):
     case_id = 'cust000'
     spidex_human = ['high']
 
     query = { 'spidex_human': spidex_human }
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
-    
+
     assert mongo_query['$and'] == [{'$or': [{'$or': [
                     {'$and': [
-                            {'spidex': {'$gt': -2}}, {'spidex': {'$lt': -float('inf')}}]}, 
+                            {'spidex': {'$gt': -2}}, {'spidex': {'$lt': -float('inf')}}]},
                     {'$and': [
                             {'spidex': {'$gt': 2}}, {'spidex': {'$lt': float('inf')}}]}
                     ]}]}]
@@ -203,10 +203,10 @@ def test_build_clinsig_always_only(adapter):
         '$elemMatch': { 'value':
                             { '$in' : clinsig_items },
                         'revstat':
-                            { '$in' : ['mult', 
-                                       'single', 
-                                       'exp', 
-                                       'guideline'] 
+                            { '$in' : ['mult',
+                                       'single',
+                                       'exp',
+                                       'guideline']
                               }
                         }
         }
@@ -225,7 +225,7 @@ def test_build_ngi_sv(adapter):
     case_id = 'cust000'
     count = 1
     query = {'clingen_ngi': count}
-    
+
     mongo_query = adapter.build_query(case_id, query=query)
     assert  mongo_query['$and'] == [
         {
@@ -251,17 +251,17 @@ def test_build_range(adapter):
 
 def test_get_overlapping_variant(populated_database, parsed_case):
     """Add a couple of overlapping variants"""
-    
+
     ## GIVEN a database with some basic information but no variants
-    
+
     case_id = parsed_case['case_id']
 
     assert populated_database.variants(case_id, category='snv').count() == 0
-    
+
     assert populated_database.variants(case_id, category='sv').count() == 0
 
     ## WHEN inserting a couple of variants
-    
+
     institute_id = parsed_case['owner']
     institute_obj = populated_database.institute(institute_id)
     snv_one = dict(
@@ -278,13 +278,11 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         position=235824342,
         end=235824342,
         length=1,
-        reference='A',
-        alternative='T',
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
         hgnc_symbols=['LYST'],
-        hgnc_ids=[1968]
+        hgnc_ids=[1968],
     )
     populated_database.load_variant(snv_one)
 
@@ -299,20 +297,18 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         sub_category='snv',
         case_id=case_id,
         chromosome='1',
-        position=235824350,
-        end=235824350,
+        position=235710920,
+        end=235710920,
         length=1,
-        reference='G',
-        alternative='T',
         rank_score=9,
         variant_rank=2,
         institute=institute_obj,
-        hgnc_symbols=['LYST'],
-        hgnc_ids=[1968]
+        hgnc_symbols=['GNG4'],
+        hgnc_ids=[4407]
     )
-    
     populated_database.load_variant(snv_two)
 
+    # create a SV that overlaps just with snv_one
     sv_one = dict(
         _id='first_sv',
         document_id='first_sv',
@@ -327,8 +323,6 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         position=235824350,
         end=235824355,
         length=5,
-        reference='A',
-        alternative='ATTTTTT',
         rank_score=10,
         variant_rank=1,
         institute=institute_obj,
@@ -336,51 +330,45 @@ def test_get_overlapping_variant(populated_database, parsed_case):
         hgnc_ids=[1968]
     )
     populated_database.load_variant(sv_one)
+
+    # create a SV that overlaps with both variants
+    sv_two = dict(
+        _id='second_sv',
+        document_id='second_sv',
+        variant_id='second_sv',
+        display_name='second_sv',
+        simple_id='second_sv',
+        variant_type='clinical',
+        category='sv',
+        sub_category='del',
+        case_id=case_id,
+        chromosome='1',
+        position=235710900,
+        end=235824450,
+        length=113550,
+        rank_score=15,
+        variant_rank=1,
+        institute=institute_obj,
+        hgnc_symbols=['LYST', 'GNG4'],
+        hgnc_ids=[1968, 4407]
+    )
+    populated_database.load_variant(sv_two)
+
     ## THEN make sure that the variants where inserted
     result = populated_database.variants(case_id, category='snv')
     # Thow snvs where loaded
     assert result.count() == 2
 
-    #One SV was added
+    #Two SV where added
     result = populated_database.variants(case_id, category='sv')
-    assert result.count() == 1
-        
-    #Try to match only snv_one
-    query = {'chrom': '1', 'start': 235824342, 'end':235824342}
-    result = populated_database.variants(case_id, category='snv', query=query)
-    assert result.count() == 1
-
-    #Try to match both snvs
-    query = {'chrom': '1', 'start': 235824341, 'end':235824352}
-    result = populated_database.variants(case_id, category='snv', query=query)
     assert result.count() == 2
 
-    #Try interval larger than sv
-    query = {'chrom': '1', 'start': 235824342, 'end':235824360}
-    result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 1
-
-    #Try interval lower overlap sv
-    query = {'chrom': '1', 'start': 235824332, 'end':235824352}
-    result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 1
-
-    #Try interval outside sv
-    query = {'chrom': '1', 'start': 5, 'end':7}
-    result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 0
-
-    #Try minimal interval sv
-    query = {'chrom': '1', 'start': 235824352, 'end':235824352}
-    result = populated_database.variants(case_id, category='sv', query=query)
-    assert result.count() == 1
-
-    # test function
+    # test functions to collect all overlapping variants
     result = populated_database.overlapping(snv_one)
     index = 0
     for variant in result:
         index += 1
-    assert index == 1
+    assert index == 2
 
     # test function
     result = populated_database.overlapping(snv_two)
@@ -391,6 +379,13 @@ def test_get_overlapping_variant(populated_database, parsed_case):
 
     # test function
     result = populated_database.overlapping(sv_one)
+    index = 0
+    for variant in result:
+        index += 1
+    assert index == 1
+
+    # test function
+    result = populated_database.overlapping(sv_two)
     index = 0
     for variant in result:
         index += 1
