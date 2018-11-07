@@ -4,16 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
-
-Add new stuff here
-
 
 ## [4.2.1]
 
 ### Fixed
 - Re-introduced gene name(s) in verification email subject
 - Better PDF rendering for excluded variants in report
+- Problem to access old case when `is_default` did not exist on a panel
 
 
 ## [4.2.0]
