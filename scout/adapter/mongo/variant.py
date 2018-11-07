@@ -64,10 +64,10 @@ class VariantHandler(VariantLoader):
             hgnc_id = variant_gene['hgnc_id']
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
-            
+
             if not hgnc_gene:
                 continue
-            
+
             # Create a dictionary with transcripts information
             # Use ensembl transcript id as keys
             transcripts_dict = {}
@@ -131,7 +131,7 @@ class VariantHandler(VariantLoader):
                         # Check if the refseq id are disease associated
                         if refseq_id in disease_associated_no_version:
                             transcript['is_disease_associated'] = True
-                        
+
                         # Add all refseq indentifiers
                         transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
 
@@ -193,14 +193,14 @@ class VariantHandler(VariantLoader):
         ).sort(sorting)
 
         return result
-    
+
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
-        
+
         Args:
             institute_id(str)
             case_id(str)
-        
+
         Returns:
             res(pymongo.Cursor): A Cursor with all variants with sanger activity
         """
@@ -340,8 +340,8 @@ class VariantHandler(VariantLoader):
     def overlapping(self, variant_obj):
         """Return overlapping variants.
 
-        Look at the genes that a variant overlaps to get coordinates.
-        Then return all variants that overlap these coordinates.
+        Look at the genes that a variant overlaps to.
+        Then return all variants that overlap these genes.
 
         If variant_obj is sv it will return the overlapping snvs and oposite
         There is a problem when SVs are huge since there are to many overlapping variants.
@@ -355,40 +355,14 @@ class VariantHandler(VariantLoader):
         #This is the category of the variants that we want to collect
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
 
-        region_start = None
-        region_end = None
-        chromosome = variant_obj['chromosome']
+        query = {
+            '$and': [
+                {'case_id': variant_obj['case_id']},
+                {'category': category},
+                {'hgnc_ids' : { '$in' : variant_obj['hgnc_ids']}}
+            ]
+        }
 
-        #This is the place where there might be to large regions
-        for gene_id in variant_obj['hgnc_ids']:
-            gene_obj = self.hgnc_gene(gene_id)
-            if not gene_obj:
-                continue
-
-            gene_start = gene_obj['start']
-            gene_end = gene_obj['end']
-
-            #Get the coordinates for a region
-            if not region_start:
-                region_start = gene_start
-            if gene_start < region_start:
-                region_start = gene_start
-
-            if not region_end:
-                region_end = gene_end
-            if gene_end > region_end:
-                region_end = gene_end
-
-        query = self.build_query(
-            case_id=variant_obj['case_id'],
-            query={
-                'variant_type': variant_obj['variant_type'],
-                'chrom': chromosome,
-                'start': region_start,
-                'end': region_end,
-            },
-            category=category
-        )
         sort_key = [('rank_score', pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)
@@ -428,7 +402,7 @@ class VariantHandler(VariantLoader):
             variants[var['variant_id']] = self.add_gene_info(var)
 
         # Collect all variant comments from the case
-        event_query = {    
+        event_query = {
             '$and': [
                 {'case': case_id},
                 {'category': 'variant'},

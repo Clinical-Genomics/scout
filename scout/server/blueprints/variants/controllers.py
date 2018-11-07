@@ -183,6 +183,9 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
     if variant_id in case_clinvars:
         variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
 
+    if not 'end_chrom' in variant_obj:
+        variant_obj['end_chrom'] = variant_obj['chromosome']
+
     return {
         'institute': institute_obj,
         'case': case_obj,
