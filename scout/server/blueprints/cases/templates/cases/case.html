@@ -315,6 +315,9 @@
                 {% elif variant.manual_rank %}
                   <span class="label label-default">{{ variant.manual_rank }}</span>
                 {% endif %}
+                {% if variant.mosaic_tags %}
+                  <span class="label label-info">mosaic</span>
+                {% endif %}
               </td>
               <td>
                 <form action="{{ url_for('cases.mark_validation',
