@@ -32,7 +32,7 @@ def variants(institute_id, case_name):
 
     default_panels = []
     for panel in case_obj['panels']:
-        if panel['is_default']:
+        if panel.get('is_default'):
             default_panels.append(panel['panel_name'])
 
     request.form.get('gene_panels')
