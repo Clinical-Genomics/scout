@@ -9,6 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add new stuff here
 
 
+## [4.2.2]
+
+### Fixed
+- Fixed gene panel create/modify from CSV file utf-8 decoding error
+
+
 ## [4.2.1]
 
 ### Fixed
