@@ -158,6 +158,9 @@
       {% for user in case.assignees %}
         <span class="badge pull-right">{{ user.name }}</span>
       {% endfor %}
+      {% if case.needs_check %}
+        <span class="label label-warning">decipher</span>
+      {% endif %}
     </td>
     <td>
       <span class="label label-info">{{ case.status }}</span>

@@ -1,5 +1,7 @@
 import logging
+from pprint import pprint as pp
 
+import pymongo
 import click
 
 LOG = logging.getLogger(__name__)
@@ -92,11 +94,18 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         adapter.update_case(case_obj)
     
     if reupload_sv:
+        LOG.info("Set needs_check to True for case %s", case_id)
+        updated_case = adapter.case_collection.find_one_and_update(
+            {'_id':case_id}, 
+            {'$set': {'needs_check': True}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        pp(updated_case)
         rankscore_treshold = rankscore_treshold or case_obj.get("rank_score_threshold", 5)
         sv_files = ['vcf_sv_research', 'vcf_sv']
         adapter.delete_variants(case_id, variant_type='clinical', category='sv')
         adapter.delete_variants(case_id, variant_type='research', category='sv')
         if case_obj['vcf_files'].get('vcf_sv'):
-            adapter.load_variants(case_obj, variant_type='clinical', category='sv', rank_threshold=rank_score_threshold)
+            adapter.load_variants(case_obj, variant_type='clinical', category='sv', rank_threshold=rankscore_treshold)
         if case_obj['vcf_files'].get('vcf_sv_research'):
-            adapter.load_variants(case_obj, variant_type='research', category='sv', rank_threshold=rank_score_threshold)
+            adapter.load_variants(case_obj, variant_type='research', category='sv', rank_threshold=rankscore_treshold)
