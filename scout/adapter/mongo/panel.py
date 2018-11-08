@@ -344,7 +344,7 @@ class PanelHandler(object):
             updated_panel(dict):
 
         """
-        
+
         valid_actions = ['add', 'delete', 'edit']
         if action not in valid_actions:
             raise ValueError("Invalid action {0}".format(action))
@@ -433,8 +433,10 @@ class PanelHandler(object):
                         gene['reduced_penetrance'] = info['reduced_penetrance']
                     if info.get('mosaicism'):
                         gene['mosaicism'] = info['mosaicism']
-                    if info.get('database_entry_version'):
-                        gene['database_entry_version'] = info['database_entry_version']
+                    if info.get('entry_version'):
+                        gene['database_entry_version'] = info['entry_version']
+                    if info.get('comment'):
+                        gene['comment'] = info['comment']
                     new_genes.append(gene)
             else:
                 new_genes.append(gene)
@@ -447,8 +449,8 @@ class PanelHandler(object):
         if new_panel['version'] == panel_obj['version']:
             # replace panel_obj with new_panel
             result = self.panel_collection.find_one_and_replace(
-                {'_id':panel_obj['_id']}, 
-                new_panel, 
+                {'_id':panel_obj['_id']},
+                new_panel,
                 return_document=pymongo.ReturnDocument.AFTER
             )
             inserted_id = result['_id']

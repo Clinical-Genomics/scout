@@ -13,6 +13,7 @@ Add new stuff here
 
 ### Fixed
 - Fixed gene panel create/modify from CSV file utf-8 decoding error
+- Updating genes in gene panels now supports edit comments and entry version
 
 
 ## [4.2.1]

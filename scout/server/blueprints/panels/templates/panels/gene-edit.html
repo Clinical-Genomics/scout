@@ -38,6 +38,11 @@
                 {{ form.inheritance_models(class="form-control") }}
               </div>
               <div class="col-md-4">
+                {{ form.entry_version.label(class="control-label") }}
+                (floating point number)
+                {{ form.entry_version(class="form-control") }}
+              </div>
+              <div class="col-md-4">
                 {{ form.comment.label(class="control-label") }}
                 {{ form.comment(class="form-control") }}
               </div>
