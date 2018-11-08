@@ -324,16 +324,19 @@ def variant_update(institute_id, case_name, variant_id):
         flash("updated ACMG classification: {}".format(new_acmg), 'info')
 
     new_dismiss = request.form.getlist('dismiss_variant')
-    if new_dismiss:
+    if request.form.getlist('dismiss_variant'):
         store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
                                      new_dismiss)
         if new_dismiss:
             flash("Dismissed variant: {}".format(new_dismiss), 'info')
 
     if variant_obj.get('dismiss_variant') and not new_dismiss:
-        store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
+        if 'dismiss' in request.form:
+            store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
                                      new_dismiss)
-        flash("Reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
+            flash("Reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
+        else:
+            log.debug("DO NOT reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
 
     mosaic_tags = request.form.getlist('mosaic_tags')
     if mosaic_tags:
@@ -343,10 +346,10 @@ def variant_update(institute_id, case_name, variant_id):
             flash("Added mosaic tags: {}".format(mosaic_tags), 'info')
 
     if variant_obj.get('mosaic_tags') and not mosaic_tags:
-        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj,
+        if 'mosaic' in request.form:
+            store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj,
                                      mosaic_tags)
-        flash("Reset mosaic tags: {}".format(variant_obj.get('mosaic_tags')), 'info')
-
+            flash("Reset mosaic tags: {}".format(variant_obj.get('mosaic_tags')), 'info')
 
     return redirect(request.referrer)
 
