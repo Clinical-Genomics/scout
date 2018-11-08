@@ -100,7 +100,6 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
             {'$set': {'needs_check': True}},
             return_document=pymongo.ReturnDocument.AFTER
         )
-        pp(updated_case)
         rankscore_treshold = rankscore_treshold or case_obj.get("rank_score_threshold", 5)
         sv_files = ['vcf_sv_research', 'vcf_sv']
         adapter.delete_variants(case_id, variant_type='clinical', category='sv')

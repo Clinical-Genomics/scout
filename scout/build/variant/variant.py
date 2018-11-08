@@ -335,6 +335,8 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             variant_obj['swegen'] = frequencies['swegen']
     if frequencies.get('decipher'):
         variant_obj['decipher'] = frequencies['decipher']
+    elif frequencies.get('decipherAF'):
+        variant_obj['decipher'] = frequencies['decipherAF']
 
     # Add the severity predictors
 

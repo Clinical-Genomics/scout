@@ -31,6 +31,7 @@ class QueryHandler(object):
                 'svtype': list,
                 'gene_panels': list(str),
                 'mvl_tag": boolean,
+                'decipher": boolean,
             }
 
         Arguments:
@@ -81,13 +82,9 @@ class QueryHandler(object):
             mongo_query['chromosome'] = chromosome
             #Only check coordinates if there is a chromosome
             if (query.get('start') and query.get('end')):
-                mongo_query['position'] = {
-                                                '$lte': int(query['end'])
-                                        }
+                mongo_query['position'] = {'$lte': int(query['end'])}
 
-                mongo_query['end'] = {
-                                        '$gte': int(query['start'])
-                                    }
+                mongo_query['end'] = {'$gte': int(query['start'])}
 
         mongo_query_minor = []
 
@@ -103,40 +100,33 @@ class QueryHandler(object):
 
         mongo_query_minor = []
 
-        if query.get('gnomad_frequency') is not None:
-            gnomad = query.get('gnomad_frequency')
+        gnomad = query.get('gnomad_frequency')
+        if gnomad is not None:
+            # -1 means to exclude all variants that exists in gnomad
             if gnomad == '-1':
-                mongo_query['gnomad_frequency'] = {
-                                                                '$exists': False
-                                                            }
-
+                mongo_query['gnomad_frequency'] = {'$exists': False}
             else:
                 # Replace comma with dot
                 mongo_query_minor.append(
                     {
                         '$or': [
                             {
-                                'gnomad_frequency':
-                                    {
-                                        '$lt': float(gnomad)
-                                    }
-                                },
+                                'gnomad_frequency': {'$lt': float(gnomad)}
+                            },
                             {
-                                'gnomad_frequency':
-                                    {
-                                        '$exists': False
-                                    }
+                                'gnomad_frequency': {'$exists': False}
                             }
                         ]
                     }
                 )
             logger.debug("Adding gnomad_frequency to query")
 
-        if query.get('local_obs') is not None:
+        local_obs = query.get('local_obs')
+        if  local_obs is not None:
             mongo_query_minor.append({
                 '$or': [
                     {'local_obs_old': None},
-                    {'local_obs_old': {'$lt': query['local_obs'] + 1}},
+                    {'local_obs_old': {'$lt': local_obs + 1}},
                 ]
             })
 
@@ -232,6 +222,10 @@ class QueryHandler(object):
             logger.debug("Adding SV_type %s to query" %
                          ', '.join(svtype))
 
+        if query.get('decipher'):
+            mongo_query['decipher'] = {'$exists': True}
+            logger.debug("Adding decipher to query")
+
         if query.get('depth'):
             logger.debug("add depth filter")
             mongo_query_minor.append({
@@ -298,9 +292,14 @@ class QueryHandler(object):
 
         if mongo_query_minor and mongo_query_major:
             if gene_query:
-                mongo_query['$and'] = [ {'$or': gene_query},
-                                        {'$or': [ {'$and': mongo_query_minor},
-                                                  mongo_query_major ]} ]
+                mongo_query['$and'] = [ 
+                    {'$or': gene_query}, 
+                    {
+                        '$or': [
+                            {'$and': mongo_query_minor}, mongo_query_major
+                        ]
+                    } 
+                ]
             else:
                 mongo_query['$or'] = [ {'$and': mongo_query_minor},
                                        mongo_query_major ]

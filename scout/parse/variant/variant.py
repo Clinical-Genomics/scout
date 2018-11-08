@@ -74,7 +74,7 @@ def parse_variant(variant, case, variant_type='clinical',
         ref=variant.REF,
         alt=alt,
         case_id=case_id,
-        variant_type=variant_type
+        variant_type=variant_type,
     )
     parsed_variant['case_id'] = case_id
     # type can be 'clinical' or 'research'
