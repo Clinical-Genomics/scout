@@ -55,10 +55,10 @@ class QueryHandler(object):
 
         # Requests to filter based on gene panels, hgnc_symbols or
         # coordinate ranges must always be honored. They are always added to
-        # query as top level, implicit '$and'. When both hgnc_symbols and a 
-        # panel is used, addition of this is delayed until after the rest of 
+        # query as top level, implicit '$and'. When both hgnc_symbols and a
+        # panel is used, addition of this is delayed until after the rest of
         # the query content is clear.
- 
+
         gene_query = []
 
         if query.get('hgnc_symbols') and query.get('gene_panels'):
@@ -148,6 +148,14 @@ class QueryHandler(object):
                 ]
             })
 
+        if query.get('swegen') is not None:
+            mongo_query_minor.append({
+                '$or': [
+                    {'swegen': {'$exists': False}},
+                    {'swegen': {'$lt': query['swegen'] + 1}},
+                ]
+            })
+
         if query.get('spidex_human'):
             # construct spidex query. Build the or part starting with empty SPIDEX values
             spidex_human = query['spidex_human']
@@ -158,12 +166,12 @@ class QueryHandler(object):
 
             for spidex_level in SPIDEX_HUMAN:
                 if ( spidex_level in spidex_human ):
-                    spidex_query_or_part.append({'$or': [ 
+                    spidex_query_or_part.append({'$or': [
                                 {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['neg'][0]}},
                                           {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['neg'][1]}}]},
                                 {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['pos'][0]}},
                                           {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['pos'][1]}} ]} ]})
-            
+
             mongo_query_minor.append({'$or': spidex_query_or_part })
 
         if query.get('cadd_score') is not None:
@@ -290,11 +298,11 @@ class QueryHandler(object):
 
         if mongo_query_minor and mongo_query_major:
             if gene_query:
-                mongo_query['$and'] = [ {'$or': gene_query}, 
-                                        {'$or': [ {'$and': mongo_query_minor}, 
+                mongo_query['$and'] = [ {'$or': gene_query},
+                                        {'$or': [ {'$and': mongo_query_minor},
                                                   mongo_query_major ]} ]
             else:
-                mongo_query['$or'] = [ {'$and': mongo_query_minor}, 
+                mongo_query['$or'] = [ {'$and': mongo_query_minor},
                                        mongo_query_major ]
         elif mongo_query_minor:
             if gene_query:
@@ -309,7 +317,7 @@ class QueryHandler(object):
                 mongo_query['$and'] = [{ '$or': gene_query }]
         elif gene_query:
                 mongo_query['$and'] = [{ '$or': gene_query }]
- 
+
         if variant_ids:
             mongo_query['variant_id'] = {'$in': variant_ids}
 
