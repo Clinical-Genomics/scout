@@ -168,7 +168,7 @@ def gene_edit(panel_id, hgnc_id):
 
     if panel_gene:
         for field_key in ['disease_associated_transcripts', 'reduced_penetrance',
-                          'mosaicism', 'entry_version', 'inheritance_models', 'comment']:
+                          'mosaicism', 'inheritance_models', 'database_entry_version', 'comment']:
             form_field = getattr(form, field_key)
             if not form_field.data:
                 panel_value = panel_gene.get(field_key)

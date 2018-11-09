@@ -394,7 +394,6 @@ class PanelHandler(object):
             if update['action'] != 'add':
                 updates[hgnc_id] = update
                 continue
-
             info = update.get('info', {})
             gene_obj = {
                 'hgnc_id': hgnc_id,
@@ -408,16 +407,16 @@ class PanelHandler(object):
                 gene_obj['reduced_penetrance'] = info['reduced_penetrance']
             if info.get('mosaicism'):
                 gene_obj['mosaicism'] = info['mosaicism']
-            if info.get('database_entry_version'):
-                gene_obj['database_entry_version'] = info['database_entry_version']
+            if info.get('entry_version'):
+                gene_obj['database_entry_version'] = info['entry_version']
+            if info.get('comment'):
+                gene_obj['comment'] = info['comment']
             new_genes.append(gene_obj)
-
 
         for gene in panel_obj['genes']:
             hgnc_id = gene['hgnc_id']
 
             if hgnc_id not in updates:
-
                 new_genes.append(gene)
                 continue
 
@@ -443,6 +442,7 @@ class PanelHandler(object):
                 if info.get('comment'):
                     gene['comment'] = info['comment']
                 new_genes.append(gene)
+
 
         new_panel['genes'] = new_genes
         new_panel['version'] = float(version)

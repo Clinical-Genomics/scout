@@ -9,6 +9,6 @@ class PanelGeneForm(FlaskForm):
     disease_associated_transcripts = SelectMultipleField('Disease transcripts', choices=[])
     reduced_penetrance = BooleanField()
     mosaicism = BooleanField()
-    entry_version = FloatField()
+    database_entry_version = FloatField()
     inheritance_models = SelectMultipleField(choices=GENETIC_MODELS)
     comment = TextField()
