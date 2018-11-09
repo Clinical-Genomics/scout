@@ -344,7 +344,7 @@ class PanelHandler(object):
             updated_panel(dict):
 
         """
-        
+
         valid_actions = ['add', 'delete', 'edit']
         if action not in valid_actions:
             raise ValueError("Invalid action {0}".format(action))
@@ -391,53 +391,58 @@ class PanelHandler(object):
             hgnc_id = update['hgnc_id']
 
             # If action is add we create a new gene object
-            if update['action'] == 'add':
-                info = update.get('info', {})
-                gene_obj = {
-                    'hgnc_id': hgnc_id,
-                    'symbol': update['symbol']
-                }
-                if info.get('disease_associated_transcripts'):
-                    gene_obj['disease_associated_transcripts'] = info['disease_associated_transcripts']
-                if info.get('inheritance_models'):
-                    gene_obj['inheritance_models'] = info['inheritance_models']
-                if info.get('reduced_penetrance'):
-                    gene_obj['reduced_penetrance'] = info['reduced_penetrance']
-                if info.get('mosaicism'):
-                    gene_obj['mosaicism'] = info['mosaicism']
-                if info.get('database_entry_version'):
-                    gene_obj['database_entry_version'] = info['database_entry_version']
-                new_genes.append(gene_obj)
-
-            else:
+            if update['action'] != 'add':
                 updates[hgnc_id] = update
+                continue
+            info = update.get('info', {})
+            gene_obj = {
+                'hgnc_id': hgnc_id,
+                'symbol': update['symbol']
+            }
+            if info.get('disease_associated_transcripts'):
+                gene_obj['disease_associated_transcripts'] = info['disease_associated_transcripts']
+            if info.get('inheritance_models'):
+                gene_obj['inheritance_models'] = info['inheritance_models']
+            if info.get('reduced_penetrance'):
+                gene_obj['reduced_penetrance'] = info['reduced_penetrance']
+            if info.get('mosaicism'):
+                gene_obj['mosaicism'] = info['mosaicism']
+            if info.get('database_entry_version'):
+                gene_obj['database_entry_version'] = info['database_entry_version']
+            if info.get('comment'):
+                gene_obj['comment'] = info['comment']
+            new_genes.append(gene_obj)
 
         for gene in panel_obj['genes']:
             hgnc_id = gene['hgnc_id']
 
-            if hgnc_id in updates:
-                current_update = updates[hgnc_id]
-                action = current_update['action']
-                info = current_update['info']
-
-                # If action is delete we do not add the gene to new genes
-                if action == 'delete':
-                    continue
-
-                elif action == 'edit':
-                    if info.get('disease_associated_transcripts'):
-                        gene['disease_associated_transcripts'] = info['disease_associated_transcripts']
-                    if info.get('inheritance_models'):
-                        gene['inheritance_models'] = info['inheritance_models']
-                    if info.get('reduced_penetrance'):
-                        gene['reduced_penetrance'] = info['reduced_penetrance']
-                    if info.get('mosaicism'):
-                        gene['mosaicism'] = info['mosaicism']
-                    if info.get('database_entry_version'):
-                        gene['database_entry_version'] = info['database_entry_version']
-                    new_genes.append(gene)
-            else:
+            if hgnc_id not in updates:
                 new_genes.append(gene)
+                continue
+
+            current_update = updates[hgnc_id]
+            action = current_update['action']
+            info = current_update['info']
+
+            # If action is delete we do not add the gene to new genes
+            if action == 'delete':
+                continue
+
+            elif action == 'edit':
+                if info.get('disease_associated_transcripts'):
+                    gene['disease_associated_transcripts'] = info['disease_associated_transcripts']
+                if info.get('inheritance_models'):
+                    gene['inheritance_models'] = info['inheritance_models']
+                if info.get('reduced_penetrance'):
+                    gene['reduced_penetrance'] = info['reduced_penetrance']
+                if info.get('mosaicism'):
+                    gene['mosaicism'] = info['mosaicism']
+                if info.get('database_entry_version'):
+                    gene['database_entry_version'] = info['database_entry_version']
+                if info.get('comment'):
+                    gene['comment'] = info['comment']
+                new_genes.append(gene)
+
 
         new_panel['genes'] = new_genes
         new_panel['version'] = float(version)
@@ -447,8 +452,8 @@ class PanelHandler(object):
         if new_panel['version'] == panel_obj['version']:
             # replace panel_obj with new_panel
             result = self.panel_collection.find_one_and_replace(
-                {'_id':panel_obj['_id']}, 
-                new_panel, 
+                {'_id':panel_obj['_id']},
+                new_panel,
                 return_document=pymongo.ReturnDocument.AFTER
             )
             inserted_id = result['_id']
