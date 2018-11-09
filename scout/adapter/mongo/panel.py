@@ -407,8 +407,8 @@ class PanelHandler(object):
                 gene_obj['reduced_penetrance'] = info['reduced_penetrance']
             if info.get('mosaicism'):
                 gene_obj['mosaicism'] = info['mosaicism']
-            if info.get('entry_version'):
-                gene_obj['database_entry_version'] = info['entry_version']
+            if info.get('database_entry_version'):
+                gene_obj['database_entry_version'] = info['database_entry_version']
             if info.get('comment'):
                 gene_obj['comment'] = info['comment']
             new_genes.append(gene_obj)
@@ -437,8 +437,8 @@ class PanelHandler(object):
                     gene['reduced_penetrance'] = info['reduced_penetrance']
                 if info.get('mosaicism'):
                     gene['mosaicism'] = info['mosaicism']
-                if info.get('entry_version'):
-                    gene['database_entry_version'] = info['entry_version']
+                if info.get('database_entry_version'):
+                    gene['database_entry_version'] = info['database_entry_version']
                 if info.get('comment'):
                     gene['comment'] = info['comment']
                 new_genes.append(gene)
