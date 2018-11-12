@@ -136,9 +136,7 @@
   {% elif variant.manual_rank %}
     <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
-  {% if variant.mosaic_tags %}
-    <span class="label label-info">mosaic</span>
-  {% endif %}
+
   {% if comment_count > 0 %}
     <a href="#"
        class="badge pull-right"
@@ -177,6 +175,9 @@
     <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" 
     data-html="true" data-trigger="hover click" 
     data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
+  {% endif %}
+  {% if variant.mosaic_tags %}
+    <span class="label label-warning">mosaic</span>
   {% endif %}
 {% endmacro %}
 
