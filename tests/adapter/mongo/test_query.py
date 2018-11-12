@@ -236,6 +236,21 @@ def test_build_ngi_sv(adapter):
         }
     ]
 
+def test_build_swegen_sv(adapter):
+    case_id = 'cust000'
+    count = 1
+    query = {'swegen': count}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+    assert  mongo_query['$and'] == [
+        {
+            '$or':[
+                {'swegen': {'$exists': False}},
+                {'swegen': {'$lt': query['swegen'] + 1}}
+            ]
+        }
+    ]
+
 def test_build_range(adapter):
     case_id = 'cust000'
     chrom = '1'

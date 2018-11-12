@@ -156,7 +156,7 @@ def variants(institute_id, case_name):
                         headers=headers)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
-    
+
     return dict(institute=institute_obj, case=case_obj, form=form,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
@@ -223,6 +223,7 @@ def sv_variants(institute_id, case_name):
             'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
             'variant_type': 'clinical',
             'clingen_ngi': 10,
+            'swegen': 10,
             'size': 100,
             'gene_panels': default_panels
              })

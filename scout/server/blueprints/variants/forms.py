@@ -95,5 +95,6 @@ class SvFiltersForm(FiltersForm):
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
 
     clingen_ngi = IntegerField('ClinGen NGI obs')
+    swegen = IntegerField('SweGen obs')
 
     export = SubmitField(label='Filter and export')

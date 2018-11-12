@@ -331,6 +331,8 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         variant_obj['clingen_cgh_pathogenic'] = frequencies['clingen_cgh_pathogenic']
     if frequencies.get('clingen_ngi'):
         variant_obj['clingen_ngi'] = frequencies['clingen_ngi']
+    if frequencies.get('swegen'):
+            variant_obj['swegen'] = frequencies['swegen']
     if frequencies.get('decipher'):
         variant_obj['decipher'] = frequencies['decipher']
 

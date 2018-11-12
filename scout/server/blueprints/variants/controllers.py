@@ -156,6 +156,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         ('ClinGen CGH (benign)', variant_obj.get('clingen_cgh_benign')),
         ('ClinGen CGH (pathogenic)', variant_obj.get('clingen_cgh_pathogenic')),
         ('ClinGen NGI', variant_obj.get('clingen_ngi')),
+        ('SweGen', variant_obj.get('swegen')),
         ('Decipher', variant_obj.get('decipher')),
     ]
 
