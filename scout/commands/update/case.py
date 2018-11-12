@@ -97,20 +97,28 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
     
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)
+        updates = {'needs_check': True}
+        if rankscore_treshold:
+            updates['sv_rank_model_version'] = rankmodel_version
+        if vcf_sv:
+            updates['vcf_files.vcf_sv'] = vcf_sv
+        if vcf_sv:
+            updates['vcf_files.vcf_sv_research'] = vcf_sv_research
+            
         updated_case = adapter.case_collection.find_one_and_update(
             {'_id':case_id}, 
-            {'$set': {
-                'needs_check': True,
-                'sv_rank_model_version': rankmodel_version or case_obj.get("sv_rank_model_version")
-                }
+            {'$set': updates
             },
             return_document=pymongo.ReturnDocument.AFTER
         )
-        rankscore_treshold = rankscore_treshold or case_obj.get("rank_score_threshold", 5)
-        sv_files = ['vcf_sv_research', 'vcf_sv']
-        adapter.delete_variants(case_id, variant_type='clinical', category='sv')
-        adapter.delete_variants(case_id, variant_type='research', category='sv')
-        if case_obj['vcf_files'].get('vcf_sv'):
-            adapter.load_variants(case_obj, variant_type='clinical', category='sv', rank_threshold=rankscore_treshold)
-        if case_obj['vcf_files'].get('vcf_sv_research'):
-            adapter.load_variants(case_obj, variant_type='research', category='sv', rank_threshold=rankscore_treshold)
+        rankscore_treshold = rankscore_treshold or updated_case.get("rank_score_threshold", 5)
+        # Delete and reload the clinical SV variants
+        if updated_case['vcf_files'].get('vcf_sv'):
+            adapter.delete_variants(case_id, variant_type='clinical', category='sv')
+            adapter.load_variants(updated_case, variant_type='clinical', 
+                                  category='sv', rank_threshold=rankscore_treshold)
+        # Delete and reload research SV variants
+        if updated_case['vcf_files'].get('vcf_sv_research'):
+            adapter.delete_variants(case_id, variant_type='research', category='sv')
+            adapter.load_variants(updated_case, variant_type='research', 
+                                  category='sv', rank_threshold=rankscore_treshold)

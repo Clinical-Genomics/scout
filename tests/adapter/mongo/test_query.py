@@ -251,6 +251,14 @@ def test_build_swegen_sv(adapter):
         }
     ]
 
+def test_build_decipher(adapter):
+    case_id = 'cust000'
+    count = 1
+    query = {'decipher': True}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+    assert  mongo_query['decipher'] == {'$exists': True}
+
 def test_build_range(adapter):
     case_id = 'cust000'
     chrom = '1'
