@@ -120,5 +120,6 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         # Delete and reload research SV variants
         if updated_case['vcf_files'].get('vcf_sv_research'):
             adapter.delete_variants(case_id, variant_type='research', category='sv')
-            adapter.load_variants(updated_case, variant_type='research', 
-                                  category='sv', rank_threshold=rankscore_treshold)
+            if updated_case.get('is_research'):
+                adapter.load_variants(updated_case, variant_type='research', 
+                                      category='sv', rank_threshold=rankscore_treshold)
