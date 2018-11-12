@@ -23,10 +23,15 @@ def panels():
         # update an existing panel
         csv_file = request.files['csv_file']
         content = csv_file.stream.read()
-        if b'\n' in content:
-            lines = content.decode().split('\n')
-        else:
-            lines = content.decode('windows-1252').split('\r')
+        lines = None
+        try:
+            if b'\n' in content:
+                lines = content.decode('utf-8', 'ignore').split('\n')
+            else:
+                lines = content.decode('windows-1252').split('\r')
+        except Exception as err:
+            flash('Something went wrong while parsing the panel CSV file! ({})'.format(err), 'danger')
+            return redirect(request.referrer)
 
         new_panel_name = request.form.get('new_panel_name')
         if new_panel_name: #create a new panel
@@ -41,15 +46,15 @@ def panels():
                 flash('Something went wrong and the panel list was not updated!','warning')
                 return redirect(request.referrer)
             else:
-                flash("new gene panel added, {}!".format(new_panel_name))
+                flash("new gene panel added, {}!".format(new_panel_name),'success')
             return redirect(url_for('panels.panel', panel_id=new_panel_id))
 
         else: # modify an existing panel
             update_option = request.form['modify_option']
             panel_obj= controllers.update_panel(
-                                   store=store, 
-                                   panel_name=request.form['panel_name'], 
-                                   csv_lines=lines, 
+                                   store=store,
+                                   panel_name=request.form['panel_name'],
+                                   csv_lines=lines,
                                    option=update_option
              )
             if panel_obj is None:
@@ -163,7 +168,7 @@ def gene_edit(panel_id, hgnc_id):
 
     if panel_gene:
         for field_key in ['disease_associated_transcripts', 'reduced_penetrance',
-                          'mosaicism', 'inheritance_models', 'comment']:
+                          'mosaicism', 'inheritance_models', 'database_entry_version', 'comment']:
             form_field = getattr(form, field_key)
             if not form_field.data:
                 panel_value = panel_gene.get(field_key)

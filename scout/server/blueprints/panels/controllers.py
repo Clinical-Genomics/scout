@@ -119,16 +119,22 @@ def new_panel(store, institute_id, panel_name, display_name, csv_lines):
         return None
 
     log.debug("build new gene panel")
-    panel_data = build_panel(dict(
-        panel_name=panel_name,
-        institute=institute_obj['_id'],
-        version=1.0,
-        date=dt.datetime.now(),
-        display_name=display_name,
-        genes=new_genes,
-    ), store)
 
-    panel_id = store.add_gene_panel(panel_data)
+    panel_id = None
+    try:
+        panel_data = build_panel(dict(
+            panel_name=panel_name,
+            institute=institute_obj['_id'],
+            version=1.0,
+            date=dt.datetime.now(),
+            display_name=display_name,
+            genes=new_genes,
+        ), store)
+        panel_id= store.add_gene_panel(panel_data)
+
+    except Exception as err:
+        log.error('An error occurred while adding the gene panel {}'.format(err))
+
     return panel_id
 
 

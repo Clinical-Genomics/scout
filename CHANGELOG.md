@@ -9,6 +9,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add new stuff here
 - Show and filter on SweGen frequency for SVs
 
+## [4.2.2]
+
+### Fixed
+- Fixed gene panel create/modify from CSV file utf-8 decoding error
+- Updating genes in gene panels now supports edit comments and entry version
+
+
 ## [4.2.1]
 
 ### Fixed
