@@ -333,8 +333,11 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         variant_obj['clingen_ngi'] = frequencies['clingen_ngi']
     if frequencies.get('swegen'):
             variant_obj['swegen'] = frequencies['swegen']
+    # Decipher is never a frequency, it will ony give 1 if variant exists in decipher
+    # Check if decipher exists
     if frequencies.get('decipher'):
         variant_obj['decipher'] = frequencies['decipher']
+    # If not check if field decipherAF exists
     elif frequencies.get('decipherAF'):
         variant_obj['decipher'] = frequencies['decipherAF']
 

@@ -35,10 +35,12 @@ LOG = logging.getLogger(__name__)
               help='Remove all SVs and re upload from existing files')
 @click.option('--rankscore-treshold',
               help='Set a new rank score treshold if desired')
+@click.option('--rankmodel-version',
+              help='Update the rank model version')
 @click.pass_context
 def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
          vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research, peddy_ped,
-         reupload_sv, rankscore_treshold):
+         reupload_sv, rankscore_treshold, rankmodel_version):
     """
     Update a case in the database
     """
@@ -97,7 +99,11 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         LOG.info("Set needs_check to True for case %s", case_id)
         updated_case = adapter.case_collection.find_one_and_update(
             {'_id':case_id}, 
-            {'$set': {'needs_check': True}},
+            {'$set': {
+                'needs_check': True,
+                'sv_rank_model_version': rankmodel_version or case_obj.get("sv_rank_model_version")
+                }
+            },
             return_document=pymongo.ReturnDocument.AFTER
         )
         rankscore_treshold = rankscore_treshold or case_obj.get("rank_score_threshold", 5)
