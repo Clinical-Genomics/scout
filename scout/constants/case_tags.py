@@ -39,6 +39,7 @@ VERBS_MAP = {
     "remove_cohort": "removed cohort for",
     "acmg": "updated ACMG classification for",
     "dismiss_variant": "Dismissed variant for",
+    "mosaic_tags": "Updated mosaic tags for",
     "update_default_panels": "updated default panels for",
 }
 

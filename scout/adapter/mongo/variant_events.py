@@ -481,6 +481,54 @@ class VariantEventHandler(object):
         LOG.debug("Variant updated")
         return updated_variant
 
+    def update_mosaic_tags(self, institute, case, user, link, variant,
+                               mosaic_tags):
+        """Create an event for updating the mosaicism tags for a variant
+
+          This function will create a event and update the mosaicism tags of the variant.
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            variant (dict): A variant object
+            mosaic_tags (list): The new mosaic tags list
+
+        Return:
+            updated_variant
+
+        """
+        LOG.info("Creating event for updating mosaic tags for variant %s", variant['display_name'])
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='mosaic_tags',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        if mosaic_tags:
+            LOG.info("Setting mosaic tags to {0} for variant {1}"
+                        .format(mosaic_tags, variant['display_name']))
+            action = '$set'
+        else:
+            LOG.info("Reset dismiss variant from {0} for variant {1}"
+                        .format(variant['mosaic_tags'], variant['display_name']))
+            action = '$unset'
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant['_id']},
+            {action: {'mosaic_tags': mosaic_tags}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        LOG.debug("Variant updated")
+        return updated_variant
+
     def update_acmg(self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str):
         """Create an event for updating the ACMG classification of a variant.
 

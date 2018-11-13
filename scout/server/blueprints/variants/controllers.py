@@ -8,9 +8,10 @@ from datetime import date
 from flask import url_for, flash, request
 from flask_mail import Message
 
-from scout.constants import (CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS,
-                             ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
-                             ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP)
+from scout.constants import (
+    CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
+    ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP, MOSAICISM_OPTIONS,
+)
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER
 from scout.server.utils import institute_and_case
@@ -614,6 +615,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
         'overlapping_svs': svs,
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
+        'mosaic_variant_options': MOSAICISM_OPTIONS,
         'ACMG_OPTIONS': ACMG_OPTIONS,
         'evaluations': evaluations,
     }

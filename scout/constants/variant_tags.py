@@ -189,3 +189,26 @@ DISMISS_VARIANT_OPTIONS = {
         'evidence': ['type']
         }
 }
+
+MOSAICISM_OPTIONS = {
+    1: {
+        'label': 'Suspected in parent',
+        'description': 'Variant is suspected to be mosaic in a parent sample.',
+        'evidence': ['allele_count']
+        },
+    2: {
+        'label': 'Suspected in affected',
+        'description': 'Variant is suspected to be mosaic in a affected sample.',
+        'evidence': ['allele_count']
+        },
+    3: {
+        'label': 'Confirmed in parent',
+        'description': 'Variant is confirmed to be mosaic in a parent sample.',
+        'evidence': ['allele_count']
+        },
+    4: {
+        'label': 'Confirmed in affected',
+        'description': 'Variant is confirmed to be mosaic in a affected sample.',
+        'evidence': ['allele_count']
+        },
+}

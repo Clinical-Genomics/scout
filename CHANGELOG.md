@@ -6,8 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.x.x]
 
-Add new stuff here
+### Added
+- Mosaicism tag on variants
 - Show and filter on SweGen frequency for SVs
+
 
 ## [4.2.2]
 

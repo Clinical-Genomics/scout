@@ -308,7 +308,7 @@
             </select>
           </div>
           <div class="col-xs-4">
-            <button type="submit" class="btn btn-default form-control">Save</button>
+            <button type="submit" name="manual_rank" class="btn btn-default form-control">Save</button>
           </div>
         </div>
       </form>
@@ -327,7 +327,26 @@
             </select>
           </div>
           <div class="col-xs-4">
-            <button type="submit" class="btn btn-default form-control">Save</button>
+            <button type="submit" name="dismiss" class="btn btn-default form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="panel-body">
+      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+        <label>Mosaic Tags</label>
+        <div class="row">
+          <div class="col-xs-8">
+            <select multiple name="mosaic_tags" class="form-control">
+              {% for rank, data in mosaic_variant_options.items() %}
+                <option {% if rank~"" in variant.mosaic_tags %} selected {% endif %} value="{{ rank }}">
+                  {{ data.label }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button type="submit" name="mosaic" class="btn btn-default form-control">Save</button>
           </div>
         </div>
       </form>
