@@ -10,6 +10,9 @@ When a variant is marked causative, Scout will remember the variant so when when
 # Dismissing a variant
 Conversely, often it is possible to judge a variant highly unlikely to cause the patients phenotype, for one of many reasons. Perhaps it is too common locally, is of LoF type in a gene where only GoF mutation has been described in disease, lacks genotype-phenotype correlation in the case of broad panels or has no obvious conceptual impact on the protein generated. The user can choose one or more reasons to dismiss the variant. Dismissed variants are grayed out on variants display, and shown as dismissed in the case report.
 
+# Mark a variant as mosaic
+Variants can be marked as mosaic. There are some different alternatives on the variant page depending on the situation.
+
 # Sending Sanger email
 It's possible to send an email to a user defined email address with information regarding a variant for Sanger validation. You can access this functionality through the variant detail view in the upper right hand corner.
 
