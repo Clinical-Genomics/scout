@@ -79,7 +79,7 @@ def parse_display_name(chrom, pos, ref, alt, variant_type):
 def parse_document_id(chrom, pos, ref, alt, variant_type, case_id):
     """Parse the unique document id for a variant.
 
-    This will allways bu unique in the database.
+    This will always be unique in the database.
 
     Args:
         chrom(str)

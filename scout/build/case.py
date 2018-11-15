@@ -191,6 +191,9 @@ def build_case(case_data, adapter):
     if case_data.get('rank_model_version'):
         case_obj['rank_model_version'] = str(case_data['rank_model_version'])
 
+    if case_data.get('sv_rank_model_version'):
+        case_obj['sv_rank_model_version'] = str(case_data['sv_rank_model_version'])
+
     if case_data.get('rank_score_threshold'):
         case_obj['rank_score_threshold'] = float(case_data['rank_score_threshold'])
 

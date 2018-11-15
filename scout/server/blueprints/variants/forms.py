@@ -93,6 +93,7 @@ class SvFiltersForm(FiltersForm):
     size = TextField('Length')
     size_inclusive = BooleanField('Length inclusive')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
+    decipher = BooleanField('Decipher')
 
     clingen_ngi = IntegerField('ClinGen NGI obs')
     swegen = IntegerField('SweGen obs')

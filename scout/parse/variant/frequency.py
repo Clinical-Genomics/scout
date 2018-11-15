@@ -144,5 +144,4 @@ def parse_sv_frequencies(variant):
             value = int(value)
         if value > 0:
             sv_frequencies[key] = value
-
     return sv_frequencies

@@ -19,6 +19,9 @@
     <li>{{ rerun(case) }}</li>
     <li>{{ rank_model(case) }}</li>
     <li>{{ share_case(institute, case, collaborators) }}</li>
+    {% if case.needs_check %}
+      <li>{{ check_decipher(case, institute) }}</li>
+    {% endif %}
   </ul>
 {% endmacro %}
 
@@ -244,6 +247,21 @@
       Rank model
     </h5>
     Version {{ case.rank_model_version }}
+  </div>
+{% endmacro %}
+
+{% macro check_decipher(case, institute) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-ok-sign"></span>
+    </h5>
+      <form method="POST"
+            action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
+        <button name="action" value="DELETE" class="btn btn-success form-control">
+          <span class="glyphicon glyphicon-check"></span>
+          Decipher Checked
+        </button>
+      </form>
   </div>
 {% endmacro %}
 
