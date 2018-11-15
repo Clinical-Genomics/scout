@@ -391,6 +391,15 @@ def mark_causative(institute_id, case_name, variant_id):
     case_url = url_for('.case', institute_id=institute_id, case_name=case_name)
     return redirect(case_url)
 
+@cases_bp.route('/<institute_id>/<case_name>/check-case', methods=['POST'])
+def check_case(institute_id, case_name):
+    """Mark a case that is has been checked.
+       This means to set case['needs_check'] to False
+    """
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    store.case_collection.find_one_and_update({'_id':case_obj['_id']}, {'$set': {'needs_check': False}})
+    return redirect(request.referrer)
+
 
 @cases_bp.route('/<institute_id>/<case_name>/delivery-report')
 def delivery_report(institute_id, case_name):

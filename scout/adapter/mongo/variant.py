@@ -327,6 +327,7 @@ class VariantHandler(VariantLoader):
             Args:
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
+                category(str): 'snv', 'sv' or 'cancer'
         """
         category = category or ''
         LOG.info("Deleting old {0} {1} variants for case {2}".format(
