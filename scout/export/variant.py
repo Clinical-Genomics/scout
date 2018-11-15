@@ -21,12 +21,10 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
         yield adapter.variant(document_id)
         return
 
-    if case_id:
-        variant_ids = adapter.get_case_causatives(case_id=case_id)
-
-    else:
-        variant_ids = adapter.get_causatives(institute_id=collaborator)
-
+    variant_ids = adapter.get_causatives(
+        institute_id=collaborator,
+        case_id=case_id
+        )
     ##TODO add check so that same variant is not included more than once
     for document_id in variant_ids:
 

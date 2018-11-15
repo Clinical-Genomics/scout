@@ -46,40 +46,20 @@ def variants(context, collaborator, document_id, case_id, json):
     #and genotypes
     if case_id:
         vcf_header[1] = vcf_header[1] + "\tFORMAT"
-
         case_obj = adapter.case(case_id=case_id)
         for individual in case_obj['individuals']:
             vcf_header[1] = vcf_header[1] + "\t" + individual['individual_id']
 
-        #print header
-        for line in vcf_header:
-            click.echo(line)
+    #print header
+    for line in vcf_header:
+        click.echo(line)
 
-        for variant_obj in variants:
-            variant_string = get_vcf_entry(variant_obj)
-            click.echo(variant_string)
+    for variant_obj in variants:
+        variant_string = get_vcf_entry(variant_obj, case_id=case_id)
+        click.echo(variant_string)
 
-    else:
 
-        for line in vcf_header:
-            click.echo(line)
-
-        #put variants in a dict to get unique ones
-        variant_string = ("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}")
-
-        for variant_obj in variants:
-            click.echo(variant_string.format(
-                variant_obj['chromosome'],
-                variant_obj['position'],
-                variant_obj['dbsnp_id'],
-                variant_obj['reference'],
-                variant_obj['alternative'],
-                variant_obj['quality'],
-                ';'.join(variant_obj['filters']),
-                '.'
-            ))
-
-def get_vcf_entry(variant_obj):
+def get_vcf_entry(variant_obj, case_id=None):
     """
         Get vcf entry from variant object
 
@@ -100,7 +80,7 @@ def get_vcf_entry(variant_obj):
             ]
         )
 
-    variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}".format(
+    variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
         variant_obj['chromosome'],
         variant_obj['position'],
         variant_obj['dbsnp_id'],
@@ -108,10 +88,12 @@ def get_vcf_entry(variant_obj):
         variant_obj['alternative'],
         variant_obj['quality'],
         ';'.join(variant_obj['filters']),
-        info_field,
-        'GT'
+        info_field
     )
-    for sample in variant_obj['samples']:
-        variant_string += "\t" + sample['genotype_call']
+
+    if case_id:
+        variant_string += "\tGT"
+        for sample in variant_obj['samples']:
+            variant_string += "\t" + sample['genotype_call']
 
     return variant_string

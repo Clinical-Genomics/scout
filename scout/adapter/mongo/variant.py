@@ -241,38 +241,36 @@ class VariantHandler(VariantLoader):
                                                variant_obj['position'])
         return variant_obj
 
-    def get_causatives(self, institute_id):
+    def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute
 
             Args:
                 institute_id(str)
+                case_id(str)
 
             Yields:
                 str: variant document id
         """
-        query = self.case_collection.aggregate([
-            {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True}}},
-            {'$unwind': '$causatives'},
-            {'$group': {'_id': '$causatives'}}
-        ])
-        return [item['_id'] for item in query]
 
-    def get_case_causatives(self, case_id):
-        """
-            Return all causatives for a case
+        causatives = []
 
-            Args:
-                case_id(str)
+        if case_id:
 
-            Returns:
-                list: list of variant _id
-        """
+            case_obj = self.case_collection.find_one(
+                    {"display_name": case_id}
+                )
+            causatives = [causative for causative in case_obj['causatives']]
 
-        case_obj = self.case_collection.find_one(
-                {"display_name": case_id}
-            )
+        elif institute_id:
 
-        return [causative for causative in case_obj['causatives']]
+            query = self.case_collection.aggregate([
+                {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True}}},
+                {'$unwind': '$causatives'},
+                {'$group': {'_id': '$causatives'}}
+            ])
+            causatives = [item['_id'] for item in query]
+
+        return causatives
 
 
     def check_causatives(self, case_obj=None, institute_obj=None):
