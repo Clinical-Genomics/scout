@@ -257,6 +257,24 @@ class VariantHandler(VariantLoader):
         ])
         return [item['_id'] for item in query]
 
+    def get_case_causatives(self, case_id):
+        """
+            Return all causatives for a case
+
+            Args:
+                case_id(str)
+
+            Returns:
+                list: list of variant _id
+        """
+
+        case_obj = self.case_collection.find_one(
+                {"display_name": case_id}
+            )
+
+        return [causative for causative in case_obj['causatives']]
+
+
     def check_causatives(self, case_obj=None, institute_obj=None):
         """Check if there are any variants that are previously marked causative
 
