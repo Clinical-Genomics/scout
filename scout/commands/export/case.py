@@ -64,7 +64,8 @@ def cases(context, case_id, institute, reruns, finished, causatives, research_re
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
                            is_research=is_research, status=status)
-        if not models.count():
+        models = [case_obj for case_obj in models]
+        if len(models) == 0:
             LOG.info("No cases could be found")
 
     if json:
