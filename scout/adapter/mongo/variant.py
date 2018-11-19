@@ -257,7 +257,7 @@ class VariantHandler(VariantLoader):
         if case_id:
 
             case_obj = self.case_collection.find_one(
-                    {"display_name": case_id}
+                    {"_id": case_id}
                 )
             causatives = [causative for causative in case_obj['causatives']]
 
