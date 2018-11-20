@@ -6,6 +6,8 @@ from bson.json_util import dumps
 from scout.export.variant import export_variants
 from .utils import json_option
 
+from scout.constants.variants_export import VCF_HEADER
+
 LOG = logging.getLogger(__name__)
 
 @click.command('variants', short_help='Export variants')
@@ -37,18 +39,15 @@ def variants(context, collaborator, document_id, case_id, json):
         click.echo(dumps([var for var in variants]))
         return
 
-    vcf_header = [
-        "##fileformat=VCFv4.2",
-        "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
-    ]
+    vcf_header = VCF_HEADER
 
     #If case_id is given, print more complete vcf entries, with INFO,
     #and genotypes
     if case_id:
-        vcf_header[1] = vcf_header[1] + "\tFORMAT"
+        vcf_header[-1] = vcf_header[-1] + "\tFORMAT"
         case_obj = adapter.case(case_id=case_id)
         for individual in case_obj['individuals']:
-            vcf_header[1] = vcf_header[1] + "\t" + individual['individual_id']
+            vcf_header[-1] = vcf_header[-1] + "\t" + individual['individual_id']
 
     #print header
     for line in vcf_header:
