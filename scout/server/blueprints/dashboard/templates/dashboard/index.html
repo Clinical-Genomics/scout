@@ -2,14 +2,7 @@
 
 
 {% block content_main %}
-
-<form id='form' method='POST' action="{{ url_for('dashboard.index') }}">  
-  <select name="institute" onchange="this.form.submit()">
-    {% for inst in institutes %}
-      <option value="{{ inst._id }}" {{ "selected" if inst._id == choice }} >{{ inst.display_name }}</option>
-    {% endfor %}
-  </select>
-</form>
+{{ dashboard_search_form() }}
 
 <h1>Basic statistics</h1>
 <div class="row">
@@ -98,3 +91,28 @@
 </div>
 
 {% endblock %}
+
+{% macro dashboard_search_form() %}
+<form id='form' method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
+    <div class="row">
+      <div class="col-md-8 col-xs-8">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-search"></span>
+          </span>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="Slice cases"></input>
+          </div>
+      </div>
+      <div class="col-md-2 col-xs-2">
+      <select name="institute" onchange="this.form.submit()">
+        {% for inst in institutes %}
+          <option value="{{ inst._id }}" {{ "selected" if inst._id == choice }} >{{ inst.display_name }}</option>
+        {% endfor %}
+      </select>
+      </div>
+      <div class="col-md-2 col-xs-2">
+        <button type="submit" class="form-control">Search</input>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
