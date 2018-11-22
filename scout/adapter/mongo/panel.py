@@ -339,6 +339,9 @@ class PanelHandler(object):
             panel_obj(dict): The panel that is about to be updated
             hgnc_gene(dict)
             action(str): choices=['add','delete','edit']
+            info(dict): additional gene info (disease_associated_transcripts,
+                        reduced_penetrance, mosaicism, database_entry_version ,
+                        inheritance_models, comment)
 
         Returns:
             updated_panel(dict):
@@ -384,7 +387,8 @@ class PanelHandler(object):
         new_panel = deepcopy(panel_obj)
         new_panel['pending'] = []
         new_panel['date'] = dt.datetime.now()
-
+        info_fields = ['disease_associated_transcripts', 'inheritance_models', 'reduced_penetrance',
+            'mosaicism', 'database_entry_version', 'comment']
         new_genes = []
 
         for update in panel_obj.get('pending', []):
@@ -399,18 +403,10 @@ class PanelHandler(object):
                 'hgnc_id': hgnc_id,
                 'symbol': update['symbol']
             }
-            if info.get('disease_associated_transcripts'):
-                gene_obj['disease_associated_transcripts'] = info['disease_associated_transcripts']
-            if info.get('inheritance_models'):
-                gene_obj['inheritance_models'] = info['inheritance_models']
-            if info.get('reduced_penetrance'):
-                gene_obj['reduced_penetrance'] = info['reduced_penetrance']
-            if info.get('mosaicism'):
-                gene_obj['mosaicism'] = info['mosaicism']
-            if info.get('database_entry_version'):
-                gene_obj['database_entry_version'] = info['database_entry_version']
-            if info.get('comment'):
-                gene_obj['comment'] = info['comment']
+
+            for field in info_fields:
+                if field in info:
+                    gene_obj[field] = info[field]
             new_genes.append(gene_obj)
 
         for gene in panel_obj['genes']:
@@ -429,20 +425,10 @@ class PanelHandler(object):
                 continue
 
             elif action == 'edit':
-                if info.get('disease_associated_transcripts'):
-                    gene['disease_associated_transcripts'] = info['disease_associated_transcripts']
-                if info.get('inheritance_models'):
-                    gene['inheritance_models'] = info['inheritance_models']
-                if info.get('reduced_penetrance'):
-                    gene['reduced_penetrance'] = info['reduced_penetrance']
-                if info.get('mosaicism'):
-                    gene['mosaicism'] = info['mosaicism']
-                if info.get('database_entry_version'):
-                    gene['database_entry_version'] = info['database_entry_version']
-                if info.get('comment'):
-                    gene['comment'] = info['comment']
+                for field in info_fields:
+                    if field in info:
+                        gene[field] = info[field]
                 new_genes.append(gene)
-
 
         new_panel['genes'] = new_genes
         new_panel['version'] = float(version)
