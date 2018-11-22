@@ -2,7 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from scout.constants import (SPIDEX_HUMAN)
+from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 
 class QueryHandler(object):
 
@@ -265,7 +265,11 @@ class QueryHandler(object):
         # trust clnsig entries with trusted revstat levels.
 
         if query.get('clinsig'):
-            rank = [int(item) for item in query['clinsig']]
+            rank = []
+            for item in query['clinsig']:
+                rank.append(int(item))
+                # search for human readable clinsig values in newer cases
+                rank.append(CLINSIG_MAP[int(item)])
 
             if query.get('clinsig_confident_always_returned') == True:
 
@@ -292,13 +296,13 @@ class QueryHandler(object):
 
         if mongo_query_minor and mongo_query_major:
             if gene_query:
-                mongo_query['$and'] = [ 
-                    {'$or': gene_query}, 
+                mongo_query['$and'] = [
+                    {'$or': gene_query},
                     {
                         '$or': [
                             {'$and': mongo_query_minor}, mongo_query_major
                         ]
-                    } 
+                    }
                 ]
             else:
                 mongo_query['$or'] = [ {'$and': mongo_query_minor},
