@@ -9,6 +9,7 @@ from flask_login import current_user
 from scout.constants import SEVERE_SO_TERMS
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants import ACMG_MAP
+from scout.constants import REV_CLINSIG_MAP
 from scout.server.extensions import store, mail, loqusdb
 from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
@@ -129,6 +130,15 @@ def variants(institute_id, case_name):
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
         form.hgnc_symbols.data = hpo_symbols
+
+    # Convert human readable clinsig values into numerical values before query
+    clinsig_values = []
+    for clinsig in form.data['clinsig']:
+        if clinsig.isdigit(): # if it's a string representation of a number
+            clinsig_values.append(clinsig) # no need to convert it
+        else:
+            clinsig_values.append(REV_CLINSIG_MAP[clinsig])
+    form.data['clinsig'] = clinsig_values # replace with new values
 
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = {}

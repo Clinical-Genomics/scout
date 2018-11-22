@@ -17,6 +17,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed gene panel create/modify from CSV file utf-8 decoding error
 - Updating genes in gene panels now supports edit comments and entry version
 
+### Fixed
+- Clinvar fiter not working with human readable clinsig values
+
 
 ## [4.2.1]
 

@@ -177,7 +177,6 @@ class VariantHandler(VariantLoader):
         mongo_query = self.build_query(case_id, query=query,
                                        variant_ids=variant_ids,
                                        category=category)
-
         sorting = []
         if sort_key == 'variant_rank':
             sorting = [('variant_rank', pymongo.ASCENDING)]
