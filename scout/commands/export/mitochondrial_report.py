@@ -11,7 +11,7 @@ from scout.export.variant import export_mt_variants
 LOG = logging.getLogger(__name__)
 
 @click.command('mt_report', short_help='Mitochondrial variants Excel report')
-@click.option('--case-id',
+@click.option('--case_id',
               help='Case id to search for',
               required=True
 )
@@ -80,7 +80,7 @@ def mt_report(context, case_id, test, outpath=None):
         for col,field in enumerate(MT_EXPORT_HEADER):
             Report_Sheet.write(row,col,field)
 
-        # Write variant lines
+        # Write variant lines, after header (start at line 1)
         for row, line in enumerate(sample_lines,1): # each line becomes a row in the document
             for col, field in enumerate(line): # each field in line becomes a cell
                 Report_Sheet.write(row,col,field)

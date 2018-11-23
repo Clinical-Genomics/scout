@@ -5,7 +5,6 @@ from scout.export.variant import export_mt_variants
 from scout.constants.variants_export import MT_EXPORT_HEADER
 
 def test_export_mt_report(real_populated_database):
-
     adapter = real_populated_database
     case_id = adapter.case_collection.find_one()['_id']
     case_obj = adapter.case(case_id=case_id)
@@ -34,5 +33,5 @@ def test_export_mt_report(real_populated_database):
 
     # test that the cli that uses the function above works when invoked with the right options
     runner = CliRunner()
-    result = runner.invoke(cli, ['export', 'mt_report', '--case-id', case_id, '--test'])
+    result = runner.invoke(cli, ['export', 'mt_report', '--case_id', case_id, '--test'])
     assert result.exit_code == 0
