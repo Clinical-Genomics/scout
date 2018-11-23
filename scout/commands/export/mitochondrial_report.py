@@ -33,7 +33,7 @@ def mt_report(context, case_id, test, outpath=None):
             written_files(int): number of files written (or simulated)
 
         Returns:
-            path_to_files(str): path to the created files
+            written_files(int): number of written or simulated files
     """
     LOG.info('exporting mitochondrial variants for case "{}"'.format(case_id))
 
