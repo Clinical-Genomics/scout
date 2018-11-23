@@ -30,7 +30,7 @@ def mt_report(context, case_id, test, outpath=None):
         Args:
             adapter(MongoAdapter)
             case_id(str)
-            outpath, written_files(tuple): output path and number of files written (or simulated)
+            written_files(int): number of files written (or simulated)
 
         Returns:
             path_to_files(str): path to the created files
@@ -71,7 +71,7 @@ def mt_report(context, case_id, test, outpath=None):
         workbook = Workbook(os.path.join(outpath,document_name))
         Report_Sheet = workbook.add_worksheet()
 
-        if test is True and sample_lines and workbook:
+        if test and sample_lines and workbook:
             written_files +=1
             continue
 
@@ -90,6 +90,6 @@ def mt_report(context, case_id, test, outpath=None):
             written_files += 1
 
     LOG.info("Number of excel files written to folder {0}: {1}".format(outpath, written_files))
-    if test is True:
+    if test:
         LOG.info("Number of excel files that can be written to folder {0}: {1}".format(outpath, written_files))
-    return (outpath, written_files)
+    return written_files
