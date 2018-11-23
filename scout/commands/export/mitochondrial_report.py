@@ -12,20 +12,25 @@ LOG = logging.getLogger(__name__)
 
 @click.command('mt_report', short_help='Mitochondrial variants Excel report')
 @click.option('--case-id',
-              help='Case id to search for'
+              help='Case id to search for',
+              required=True
 )
 @click.option('--outpath',
               help='Path to output file'
 )
+@click.option('--test',
+              help='Use this flag to test the function',
+              is_flag=True
+)
 @click.pass_context
-def mt_report(context, case_id, outpath=None):
+def mt_report(context, case_id, test, outpath=None):
     """Export all mitochondrial variants for each sample of a case
        and write them to an excel file
 
         Args:
             adapter(MongoAdapter)
             case_id(str)
-            outpath(str) : path to output file
+            outpath, written_files(tuple): output path and number of files written (or simulated)
 
         Returns:
             path_to_files(str): path to the created files
@@ -66,6 +71,10 @@ def mt_report(context, case_id, outpath=None):
         workbook = Workbook(os.path.join(outpath,document_name))
         Report_Sheet = workbook.add_worksheet()
 
+        if test is True and sample_lines and workbook:
+            written_files +=1
+            continue
+
         # Write the column header
         row = 0
         for col,field in enumerate(MT_EXPORT_HEADER):
@@ -81,4 +90,6 @@ def mt_report(context, case_id, outpath=None):
             written_files += 1
 
     LOG.info("Number of excel files written to folder {0}: {1}".format(outpath, written_files))
-    return outpath
+    if test is True:
+        LOG.info("Number of excel files that can be written to folder {0}: {1}".format(outpath, written_files))
+    return (outpath, written_files)
