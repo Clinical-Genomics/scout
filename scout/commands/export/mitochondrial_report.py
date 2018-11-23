@@ -89,7 +89,8 @@ def mt_report(context, case_id, test, outpath=None):
         if os.path.exists(os.path.join(outpath,document_name)):
             written_files += 1
 
-    LOG.info("Number of excel files written to folder {0}: {1}".format(outpath, written_files))
     if test:
         LOG.info("Number of excel files that can be written to folder {0}: {1}".format(outpath, written_files))
+    else:
+        LOG.info("Number of excel files written to folder {0}: {1}".format(outpath, written_files))
     return written_files
