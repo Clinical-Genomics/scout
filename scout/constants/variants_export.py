@@ -9,6 +9,16 @@ EXPORT_HEADER = [
     'Canonical_transcript_HGVS'
 ]
 
+MT_EXPORT_HEADER = [
+    'Position',
+    'Change',
+    'Position+Change',
+    'Gene',
+    'HGVS Description',
+    'AD Reference',
+    'AD Alternative'
+]
+
 VCF_HEADER = [
     '##fileformat=VCFv4.2',
     '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">',
