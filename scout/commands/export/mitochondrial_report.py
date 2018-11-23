@@ -41,12 +41,12 @@ def mt_report(context, case_id, test, outpath=None):
     query = {'chrom':'MT'}
 
     case_obj = adapter.case(case_id=case_id)
-    samples = case_obj.get('individuals')
 
     if not case_obj:
         LOG.warning('Could not find a scout case with id "{}". No report was created.'.format(case_id))
         context.abort()
 
+    samples = case_obj.get('individuals')
     mt_variants = list(adapter.variants(case_id=case_id, query=query, nr_of_variants= -1, sort_key='position'))
     if not mt_variants:
         LOG.warning('There are no MT variants associated to case {} in database!'.format(case_id))
