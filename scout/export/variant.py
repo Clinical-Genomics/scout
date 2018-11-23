@@ -1,4 +1,7 @@
-from pprint import pprint as pp
+# -*- coding: utf-8 -*-
+import logging
+
+LOG = logging.getLogger(__name__)
 
 from scout.constants import (CHROMOSOMES, CHROMOSOME_INTEGERS)
 
@@ -51,7 +54,7 @@ def export_mt_variants(variants, sample_id):
     """Export mitochondrial variants for a case to create a MT excel report
 
     Args:
-        variants(Iterable[Variant]): all MT variants for a case, sorted by position
+        variants(list): all MT variants for a case, sorted by position
         sample_id(str) : the id of a sample within the case
 
     Returns:
@@ -60,22 +63,26 @@ def export_mt_variants(variants, sample_id):
     document_lines = []
     for variant in variants:
         line = []
-        line.append(variant['chromosome'])
         position = variant.get('position')
         change = '>'.join([variant.get('reference'),variant.get('alternative')])
         line.append(position)
         line.append(change)
         line.append(str(position)+change)
-        prot_effect = ''
+        genes = []
+        prot_effect = []
         for gene in variant.get('genes'):
+            genes.append(gene['hgnc_symbol'])
             for transcript in gene.get('transcripts'):
-                if transcript.get('is_canonical') is True:
-                    prot_effect=transcript.get('protein_sequence_name')
-        line.append(prot_effect)
-        ref_ad=''
-        alt_ad=''
+                if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
+                    prot_effect.append(transcript.get('protein_sequence_name'))
+
+        line.append(','.join(genes))
+        line.append(','.join(prot_effect))
+        
+        ref_ad = ''
+        alt_ad = ''
         for sample in variant['samples']:
-            if sample['sample_id'] == sample_id:
+            if sample.get('sample_id') == sample_id:
                 ref_ad = sample['allele_depths'][0]
                 alt_ad = sample['allele_depths'][1]
         line.append(ref_ad)

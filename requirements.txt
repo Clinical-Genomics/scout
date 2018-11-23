@@ -20,6 +20,7 @@ python-dateutil
 pymongo<3.7
 pathlib
 WeasyPrint>=0.42.3
+xlsxwriter
 click<7.0
 
 # unclear
