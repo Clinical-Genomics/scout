@@ -19,7 +19,8 @@ LOG = logging.getLogger(__name__)
 )
 @click.pass_context
 def mt_report(context, case_id, outpath=None):
-    """Export all mitochondrial variants for a collaborator and a case
+    """Export all mitochondrial variants for each sample of a case
+       and write them to an excel file
 
         Args:
             adapter(MongoAdapter)
@@ -27,8 +28,7 @@ def mt_report(context, case_id, outpath=None):
             outpath(str) : path to output file
 
         Returns:
-            zipped_file_path(str): path to created zip file,
-                containing a file for each sample in the case
+            path_to_files(str): path to the created files
     """
     LOG.info('exporting mitochondrial variants for case "{}"'.format(case_id))
 
@@ -48,16 +48,18 @@ def mt_report(context, case_id, outpath=None):
         context.abort()
 
     today = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    # set up outfolder
+    if not outpath:
+        outpath = str(os.getcwd())
+
     # get document lines for each of the cases's individuals
     # Write excel document for each sample in case
+    written_files = 0
+
     for sample in samples:
         sample_id = sample['individual_id']
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
-        LOG.info(str(sample['individual_id'])+'--->'+str(sample_lines))
-
-        # set up outfolder
-        if not outpath:
-            outpath = str(os.getcwd())
 
         # set up document name
         document_name = '.'.join([case_obj['display_name'], sample_id, today]) + '.xlsx'
@@ -74,3 +76,9 @@ def mt_report(context, case_id, outpath=None):
             for col, field in enumerate(line): # each field in line becomes a cell
                 Report_Sheet.write(row,col,field)
         workbook.close()
+
+        if os.path.exists(os.path.join(outpath,document_name)):
+            written_files += 1
+
+    LOG.info("Number of excel files written to folder {0}: {1}".format(outpath, written_files))
+    return outpath
