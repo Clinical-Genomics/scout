@@ -4,6 +4,10 @@ from scout.commands import cli
 from scout.export.variant import export_mt_variants
 from scout.constants.variants_export import MT_EXPORT_HEADER
 
+class Config():
+    def __init__(self):
+        self.adapter = None
+
 def test_export_mt_report(real_populated_database):
     adapter = real_populated_database
     case_id = adapter.case_collection.find_one()['_id']
@@ -32,6 +36,8 @@ def test_export_mt_report(real_populated_database):
         assert len(sample_lines[0]) == len(MT_EXPORT_HEADER)
 
     # test that the cli that uses the function above works when invoked with the right options
+    ctx = click.Context(cli, obj = Config())
+    ctx.obj.adapter = adapter
     runner = CliRunner()
     result = runner.invoke(cli, ['export', 'mt_report', '--case_id', case_id, '--test'])
     assert result.exit_code == 0
