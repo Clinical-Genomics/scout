@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
+import shutil
 import datetime
 
 import zipfile
@@ -203,18 +204,21 @@ def mt_report(institute_id, case_name):
         with zipfile.ZipFile(data, mode='w') as z:
             for f_name in pathlib.Path(temp_excel_dir).iterdir():
                 zipfile.ZipFile
-                z.write(f_name)
+                z.write(f_name, os.path.basename(f_name))
         data.seek(0)
+
+        # remove temp folder with excel files in it
+        shutil.rmtree(temp_excel_dir)
+
         return send_file(
             data,
             mimetype='application/zip',
             as_attachment=True,
-            attachment_filename='_'.join([case_name, 'MT_report', today, '.zip'])
+            attachment_filename='_'.join(['scout', case_name, 'MT_report', today])+'.zip'
         )
     else:
         flash('No MT report excel file could be exported for this sample', 'warning')
         return redirect(request.referrer)
-
 
 
 @cases_bp.route('/<institute_id>/<case_name>/diagnose', methods=['POST'])
