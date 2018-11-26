@@ -29,6 +29,8 @@ class QueryHandler(object):
                 'start': int,
                 'end': int,
                 'svtype': list,
+                'size': int,
+                'size_shorter': boolean,
                 'gene_panels': list(str),
                 'mvl_tag": boolean,
                 'decipher": boolean,
@@ -205,14 +207,13 @@ class QueryHandler(object):
             size_query = {'length': {'$gt': int(size)}}
             logger.debug("Adding length: %s to query" % size)
 
-            if query.get('size_inclusive') == 'yes':
+            if query.get('size_shorter'):
                 size_query = {
                     '$or': [
-                        size_query,
+                        {'length': {'$lt': int(size)}},
                         {'length': {'$exists': False}}
-
                     ]}
-                logger.debug("Adding size inclusive to query.")
+                logger.debug("Adding size less than, undef inclusive to query.")
 
             mongo_query_minor.append(size_query)
 
@@ -292,13 +293,13 @@ class QueryHandler(object):
 
         if mongo_query_minor and mongo_query_major:
             if gene_query:
-                mongo_query['$and'] = [ 
-                    {'$or': gene_query}, 
+                mongo_query['$and'] = [
+                    {'$or': gene_query},
                     {
                         '$or': [
                             {'$and': mongo_query_minor}, mongo_query_major
                         ]
-                    } 
+                    }
                 ]
             else:
                 mongo_query['$or'] = [ {'$and': mongo_query_minor},
