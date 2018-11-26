@@ -2,12 +2,16 @@
 import os.path
 import datetime
 
+import zipfile
+import io
+import pathlib
+
 import logging
 
 from operator import itemgetter
 
 from flask import (abort, Blueprint, current_app, redirect, render_template,
-                   request, url_for, send_from_directory, jsonify, Response, flash)
+                   request, url_for, send_from_directory, jsonify, Response, flash, send_file)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
@@ -179,6 +183,38 @@ def pdf_case_report(institute_id, case_name):
 
     html_report = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, format='pdf', **data)
     return render_pdf(HTML(string=html_report), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')
+
+
+@cases_bp.route('/<institute_id>/<case_name>/mt_report', methods=['GET'])
+def mt_report(institute_id, case_name):
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # create a temp folder to write excel files into
+    temp_excel_dir = os.path.join(cases_bp.static_folder, '_'.join([case_name, 'mt_reports']))
+    os.makedirs(temp_excel_dir, exist_ok=True)
+
+    # create mt excel files, one for each sample
+    n_files = controllers.mt_excel_files(store, case_obj, temp_excel_dir)
+
+    if n_files:
+        today = datetime.datetime.now().strftime('%Y-%m-%d')
+        # zip the files on the fly and serve the archive to the user
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, mode='w') as z:
+            for f_name in pathlib.Path(temp_excel_dir).iterdir():
+                zipfile.ZipFile
+                z.write(f_name)
+        data.seek(0)
+        return send_file(
+            data,
+            mimetype='application/zip',
+            as_attachment=True,
+            attachment_filename='_'.join([case_name, 'MT_report', today, '.zip'])
+        )
+    else:
+        flash('No MT report excel file could be exported for this sample', 'warning')
+        return redirect(request.referrer)
+
 
 
 @cases_bp.route('/<institute_id>/<case_name>/diagnose', methods=['POST'])
