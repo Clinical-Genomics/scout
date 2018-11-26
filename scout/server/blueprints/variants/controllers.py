@@ -855,9 +855,12 @@ def expected_inheritance(variant_obj):
 
 def callers(variant_obj, category='snv'):
     """Return info about callers."""
-    calls = [(caller['name'], variant_obj.get(caller['id']))
-             for caller in CALLERS[category] if variant_obj.get(caller['id'])]
-    return calls
+    calls = set()
+    for caller in CALLERS[category]:
+        if variant_obj.get(caller['id']):
+            calls.add((caller['name'], variant_obj[caller['id']]))
+        
+    return list(calls)
 
 
 def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, url_builder=url_for):
