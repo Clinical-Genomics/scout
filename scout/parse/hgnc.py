@@ -57,6 +57,7 @@ def parse_hgnc_line(line, header):
     else:
         hgnc_gene['entrez_id'] = None
 
+    # These are the primary transcripts according to HGNC
     ref_seq = raw_info.get('refseq_accession')
     if ref_seq:
         hgnc_gene['ref_seq'] = ref_seq.strip('"').split('|')
