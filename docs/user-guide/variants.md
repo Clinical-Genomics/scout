@@ -68,6 +68,8 @@ A variant with Pass status passed all the filters from its variant callers, wher
 #### SVs
 
 SVs are structural variants, balanced or unbalanced chromosomal abberrations.
+Size filtering can be done either to show only variants longer than the given size, or shorter if the "Length shorter than" checkbox is activated.
+When the checkbox is ticked, queries are also inclusive of non-existing annotations e.g. SV events without size. Note that some BNDs, like interchromosomal translocations are given with a very large (larger than chromosome) size instead.
 
 Scout supports viewing general SVs as encoded in the VCF format specification.
 Some sample callers that we have worked with include:
