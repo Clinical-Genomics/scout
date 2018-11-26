@@ -54,21 +54,9 @@ def build_gene(gene, hgncid_to_gene=None):
         gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
         gene_obj['ensembl_id'] = hgnc_gene['ensembl_id']
         gene_obj['description'] = hgnc_gene['description']
-        
-        if hgnc_gene.get('ar'):
-            inheritance.add('AR')
-        if hgnc_gene.get('ad'):
-            inheritance.add('AD')
-        if hgnc_gene.get('xd'):
-            inheritance.add('XD')
-            inheritance.add('X')
-        if hgnc_gene.get('xr'):
-            inheritance.add('XR')
-            inheritance.add('X')
-        if hgnc_gene.get('y'):
-            inheritance.add('Y')
-    
-    gene_obj['inheritance'] = list(inheritance)
+
+    if hgnc_gene.get('inheritance_models'):
+        gene_obj['inheritance'] = hgnc_gene['inheritance_models']
     
     transcripts = []
     for transcript in gene['transcripts']:
