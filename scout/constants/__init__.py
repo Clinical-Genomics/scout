@@ -67,15 +67,20 @@ PAR_COORDINATES = {
 
 CALLERS = {
     'snv': [{
-        'id': 'gatk',
-        'name': 'GATK',
-    }, {
-        'id': 'freebayes',
-        'name': 'Freebayes',
-    }, {
-        'id': 'samtools',
-        'name': 'SAMtools',
-    }],
+            'id': 'gatk',
+            'name': 'GATK',
+        }, {
+            'id': 'freebayes',
+            'name': 'Freebayes',
+        }, {
+            'id': 'samtools',
+            'name': 'SAMtools',
+        },
+        {
+            'id': 'bcftools',
+            'name': 'SAMtools',
+            }
+    ],
     'cancer': [{
         'id': 'mutect',
         'name': 'MuTect',
