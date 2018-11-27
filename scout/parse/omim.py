@@ -10,6 +10,7 @@ entry_pattern = re.compile("\([1,2,3,4]\)")
 mim_inheritance_terms = [
         'Autosomal recessive',
         'Autosomal dominant',
+        'Digenic recessive',
         'X-linked dominant',
         'X-linked recessive',
         'Y-linked',
@@ -19,6 +20,7 @@ mim_inheritance_terms = [
 TERMS_MAPPER = {
      'Autosomal recessive': 'AR',
      'Autosomal dominant': 'AD',
+     'Digenic recessive': 'DR',
      'X-linked dominant': 'XD',
      'X-linked recessive': 'XR',
      'Y-linked': 'Y',
