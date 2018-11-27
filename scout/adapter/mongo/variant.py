@@ -82,7 +82,8 @@ class VariantHandler(VariantLoader):
             if hgnc_gene.get('incomplete_penetrance'):
                 variant_gene['omim_penetrance'] = True
 
-            # Get the panel specific information for the gene
+            ############# PANEL SPECIFIC INFORMATION #############
+            # Panels can have extra information about genes and transcripts
             panel_info = extra_info.get(hgnc_id, [])
 
             # Manually annotated disease associated transcripts
@@ -109,6 +110,7 @@ class VariantHandler(VariantLoader):
                     mosaicism = True
 
                 manual_inheritance.update(gene_info.get('inheritance_models', []))
+            
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
             variant_gene['mosaicism'] = mosaicism
@@ -120,26 +122,32 @@ class VariantHandler(VariantLoader):
             # First loop over the variants transcripts
             for transcript in variant_gene.get('transcripts', []):
                 tx_id = transcript['transcript_id']
-                if tx_id in transcripts_dict:
-                    hgnc_transcript = transcripts_dict[tx_id]
-                    # If the transcript has a ref seq identifier we add that
-                    # to the variants transcript
-                    if hgnc_transcript.get('refseq_id'):
-                        refseq_id = hgnc_transcript['refseq_id']
-                        transcript['refseq_id'] = refseq_id
+                if not tx_id in transcripts_dict:
+                    continue
 
-                        # Check if the refseq id are disease associated
-                        if refseq_id in disease_associated_no_version:
-                            transcript['is_disease_associated'] = True
+                # This is the common information about the transcript
+                hgnc_transcript = transcripts_dict[tx_id]
 
-                        # Add all refseq indentifiers
-                        transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
+                # Check in the common information if it is a primary transcript
+                if hgnc_transcript.get('is_primary'):
+                    transcript['is_primary'] = True
+                # If the transcript has a ref seq identifier we add that
+                # to the variants transcript
+                if not hgnc_transcript.get('refseq_id'):
+                    continue
+                
+                refseq_id = hgnc_transcript['refseq_id']
+                transcript['refseq_id'] = refseq_id
 
-                    if hgnc_transcript.get('is_primary'):
-                        transcript['is_primary'] = True
+                # Check if the refseq id are disease associated
+                if refseq_id in disease_associated_no_version:
+                    transcript['is_disease_associated'] = True
+
+                # Since a ensemble transcript can have multiple refseq identifiers we add all of 
+                # those
+                transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
 
             variant_gene['common'] = hgnc_gene
-
             # Add the associated disease terms
             variant_gene['disease_terms'] = self.disease_terms(hgnc_id)
 
