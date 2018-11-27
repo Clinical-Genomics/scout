@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fixed gene panel create/modify from CSV file utf-8 decoding error
 - Updating genes in gene panels now supports edit comments and entry version
+- Gene panel export timeout error
 
 
 ## [4.2.1]
