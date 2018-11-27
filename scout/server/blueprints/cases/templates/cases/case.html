@@ -117,7 +117,10 @@
 
 {% macro related_causatives_list() %}
   <div class="panel panel-default">
-    <div class="panel-heading">Matching causatives from other cases</div>
+    <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case 
+      that have been marked as causative in another case for this insitute">
+      Matching causatives from other cases
+    </div>
     <ul class="list-group">
       {% for variant in other_causatives %}
         <li class="list-group-item">
@@ -199,7 +202,10 @@
 
 {% macro synopsis_panel() %}
   <div class="panel panel-default">
-    <div class="panel-heading">Synopsis</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
+     the case! Markdown format">
+      Synopsis
+    </div>
     <div class="panel-body">
       {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
     </div>
@@ -233,7 +239,10 @@
 
 {% macro candidates_list() %}
   <div class="panel panel-default">
-    <div class="panel-heading">Causative variants</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that has been 
+                                                            marked causative for this case">
+      Causative variants
+    </div>
     <ul class="list-group">
       {% for variant in causatives %}
         <li class="list-group-item">
@@ -277,7 +286,10 @@
         <div class="panel-body">No variants marked causative</div>
       {% endfor %}
     </ul>
-    <div class="panel-heading panel-heading-secondary">Pinned variants</div>
+    <div data-toggle='tooltip' class="panel-heading panel-heading-secondary" 
+         title="Displays all variants that has been pinned for this case">
+      Pinned variants
+    </div>
     <table class="table table-hover">
       <colgroup>
         <col class="col-xs-5">
