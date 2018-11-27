@@ -23,6 +23,7 @@ from .transcript import transcripts
 from .gene import genes
 from .panel import panel
 from .case import cases
+from .mitochondrial_report import mt_report
 
 
 @click.group()
@@ -39,4 +40,4 @@ export.add_command(transcripts)
 export.add_command(variants)
 export.add_command(hpo_genes)
 export.add_command(cases)
-
+export.add_command(mt_report)
