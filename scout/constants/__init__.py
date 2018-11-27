@@ -21,6 +21,7 @@ from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
 from .file_types import FILE_TYPE_MAP
 from .clinvar import (CLINVAR_HEADER, CASEDATA_HEADER)
+from .variants_export import (EXPORT_HEADER, VCF_HEADER, MT_EXPORT_HEADER)
 
 cytobands_handle = get_file_handle(cytobands_path)
 
