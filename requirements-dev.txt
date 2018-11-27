@@ -5,6 +5,7 @@ pytest==3.3.0
 pytest-flask==0.11
 pytest-cov
 pandas
+mongomock<=3.12
 
 # packaging
 wheel>=0.23
