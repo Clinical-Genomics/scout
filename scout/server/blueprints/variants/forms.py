@@ -91,7 +91,7 @@ class StrFiltersForm(FlaskForm):
 class SvFiltersForm(FiltersForm):
     """Extends FiltersForm for structural variants"""
     size = TextField('Length')
-    size_inclusive = BooleanField('Length inclusive')
+    size_shorter = BooleanField('Length shorter than')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
     decipher = BooleanField('Decipher')
 
