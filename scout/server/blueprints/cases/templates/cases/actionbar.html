@@ -4,87 +4,92 @@
       Case
       <h4>{{ case.display_name }}</h4>
     </li>
-    <h5>
-      <span class="glyphicon glyphicon-file"></span>
-      Reports
-    </h5>
-    <li>{{ reports(institute, case) }}</li>
     <li>{{ analysis_date(case) }}</li>
     <li>{{ genome_build(case) }}</li>
-    <li>{{ status(institute, case) }}</li>
-    <li>{{ assign(institute, case) }}</li>
-    {% if not (case.is_archived or case.is_research) %}
-      <li>{{ research(case) }}</li>
-    {% endif %}
-    <li>{{ rerun(case) }}</li>
     <li>{{ rank_model(case) }}</li>
-    <li>{{ share_case(institute, case, collaborators) }}</li>
-    {% if case.needs_check %}
-      <li>{{ check_decipher(case, institute) }}</li>
-    {% endif %}
+    <li>{{ reports(institute, case) }}</li>
+    <li>{{ actions(institute, case) }}</li>
   </ul>
+{% endmacro %}
+
+{% macro actions(institute, case) %}
+  <div class="nav-sidebar-item">
+    <h5>
+      <span class="glyphicon glyphicon-hand-down"></span>
+      Actions
+    </h5>
+    <div class="btn-group-vertical" role="group" style="width:100%">
+      {{ status(institute, case) }}
+      {{ assign(institute, case) }}
+      {% if not (case.is_archived or case.is_research) %}
+      {{ research(case) }}
+      {% endif %}
+      {{ rerun(case) }}
+      {{ share_case(institute, case, collaborators) }}
+      {% if case.needs_check %}
+        {{ check_decipher(case, institute) }}
+      {% endif %}
+    </div>
+  </div>
 {% endmacro %}
 
 {% macro reports(institute, case) %}
   <div class="nav-sidebar-item">
+    <div class="btn-group-vertical" role="group" style="width:100%">
+      <h5>
+        <span class="glyphicon glyphicon-file"></span>
+        Reports
+      </h5>
+      <!-- General report button -->
       <a class="btn btn-default form-control" href="{{ url_for('cases.case_report', institute_id=institute._id,
                 case_name=case.display_name) }}">General</a>
-  </div>
-  {% if case.multiqc %}
-    <div class="nav-sidebar-item">
-        <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id,
-                  case_name=case.display_name) }}">
-        MultiQC
-      </a>
-    </div>
-  {% endif %}
-  <div class="nav-sidebar-item">
+      <!-- MultiQC, if available -->
+      {% if case.multiqc %}
+      <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id,
+                case_name=case.display_name) }}">MultiQC</a>
+      {% endif %}
+      <!-- Mitochondrial report -->
       <a class="btn btn-default form-control" href="{{ url_for('cases.mt_report', institute_id=institute._id,
                 case_name=case.display_name) }}">Mitochondrial report</a>
-  </div>
-  {% if case.delivery_report %}
-    <div class="nav-sidebar-item">
+      <!-- Delivery report, if available -->
+      {% if case.delivery_report %}
         <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
                     case_name=case.display_name) }}" class="btn btn-default form-control" target="_blank">
         Delivery
-      </a>
-      <hr>
-      {% for analysis in case.analyses %}
-        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                            case_name=case.display_name, date=analysis.date) }}" target="_blank">
-          {{ analysis.date.date() }}
         </a>
-        <br />
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  {% if config.SQLALCHEMY_DATABASE_URI %}
-  <div class="nav-sidebar-item">
-    <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
-      <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-
-      <div class="form-group">
-        <button type="submit" class="btn btn-default form-control">Coverage report</button>
-      </div>
-    </form>
-    <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
-    <p>
-      <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
-        <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
-        <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
-        {% for sample_id in case.individual_ids %}
-				    <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
-			  {% endfor %}
+        {% for analysis in case.analyses %}
+          <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                              case_name=case.display_name, date=analysis.date) }}" target="_blank">
+            {{ analysis.date.date() }}
+          </a>
+        {% endfor %}
+      {% endif %}
+      <!-- Coverage report, if available -->
+      {% if config.SQLALCHEMY_DATABASE_URI %}
+      <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+        <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
         <div class="form-group">
-          <button type="submit" class="btn btn-default form-control">
-            Download PDF (coverage)
-          </button>
+          <button type="submit" class="btn btn-default form-control">Coverage report</button>
         </div>
       </form>
-    </p>
+      <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
+      <p>
+        <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
+          <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
+          <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
+          {% for sample_id in case.individual_ids %}
+              <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
+          {% endfor %}
+          <div class="form-group">
+            <button type="submit" class="btn btn-default form-control">
+              Download PDF (coverage)
+            </button>
+          </div>
+        </form>
+      </p>
+      {% endif %}
+    </div>
   </div>
-  {% endif %}
 {% endmacro %}
 
 {% macro analysis_date(case) %}
@@ -113,8 +118,6 @@
 {% macro status(institute, case) %}
   <form method="POST"
         action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
-
-    <div class="nav-sidebar-item">
       <h5>
         <span class="glyphicon glyphicon-{{ 'star' if case.status == 'prioritized' else 'star-empty' }}"></span>
         Status: {{ case.status|capitalize }}
@@ -138,49 +141,44 @@
           </button>
         </div>
       </div>
-    </div>
   </form>
 {% endmacro %}
 
 {% macro assign(institute, case) %}
-  <div class="nav-sidebar-item">
-    <h5>
-      <span class="glyphicon glyphicon-user"></span>
-      Assignees
-    </h5>
-    {% for user in case.assignees %}
-      <div class="form-group">
-        <form method="POST"
-              action="{{ url_for('cases.assign', institute_id=institute._id,
-                                 case_name=case.display_name, user_id=user._id) }}">
-          <button name="action" value="DELETE" class="btn btn-default form-control">
-            <span class="glyphicon glyphicon-remove"></span>
-            {{ user.name }}
-          </button>
-        </form>
-      </div>
-    {% endfor %}
-    <form method="POST"
-          action="{{ url_for('cases.assign', institute_id=institute._id,
-                             case_name=case.display_name) }}"
-          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-      <button class="btn btn-primary form-control">Assign yourself</button>
-    </form>
-  </div>
+  <h5>
+    <span class="glyphicon glyphicon-user"></span>
+    Assignees
+  </h5>
+  {% for user in case.assignees %}
+    <div class="form-group">
+      <form method="POST"
+            action="{{ url_for('cases.assign', institute_id=institute._id,
+                               case_name=case.display_name, user_id=user._id) }}">
+        <button name="action" value="DELETE" class="btn btn-default form-control">
+          <span class="glyphicon glyphicon-remove"></span>
+          {{ user.name }}
+        </button>
+      </form>
+    </div>
+  {% endfor %}
+  <form method="POST"
+        action="{{ url_for('cases.assign', institute_id=institute._id,
+                           case_name=case.display_name) }}"
+        title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+    <button class="btn btn-primary form-control">Assign yourself</button>
+  </form>
 {% endmacro %}
 
 {% macro research(case) %}
-  <div class="nav-sidebar-item">
-    <h5>
-      <span class="glyphicon glyphicon-education"></span>
-      Research list
-    </h5>
-    {% if case.research_requested %}
-      <i>Research pending</i>
-    {% else %}
-      <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
-    {% endif %}
-  </div>
+  <h5>
+    <span class="glyphicon glyphicon-education"></span>
+    Research list
+  </h5>
+  {% if case.research_requested %}
+    <i>Research pending</i>
+  {% else %}
+    <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+  {% endif %}
 {% endmacro %}
 
 {% macro research_modal(institute, case) %}
@@ -208,14 +206,12 @@
 {% endmacro %}
 
 {% macro rerun(case) %}
-  <div class="nav-sidebar-item">
-    <h5><span class="glyphicon glyphicon-retweet"></span> Reruns</h5>
-    {% if case.rerun_requested %}
-      <i>Rerun pending</i>
-    {% else %}
-      <button type="button" class="btn btn-warning form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
-    {% endif %}
-  </div>
+  <h5><span class="glyphicon glyphicon-retweet"></span> Reruns</h5>
+  {% if case.rerun_requested %}
+    <i>Rerun pending</i>
+  {% else %}
+    <button type="button" class="btn btn-warning form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+  {% endif %}
 {% endmacro %}
 
 {% macro rerun_modal(institute, case) %}
@@ -268,7 +264,6 @@
 
 {% macro share_case(institute, case, collaborators) %}
   {% if case.owner == institute._id %}
-  <div class="nav-sidebar-item">
     <h5>
       <span class="glyphicon glyphicon-cog"></span>
       Share case
@@ -306,6 +301,5 @@
         </div>
       </form>
     {% endif %}
-  </div>
   {% endif %}
 {% endmacro %}
