@@ -18,6 +18,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updating genes in gene panels now supports edit comments and entry version
 - Gene panel export timeout error
 
+### Fixed
+- Clinvar fiter not working with human readable clinsig values
+
 
 ## [4.2.1]
 

@@ -1,3 +1,4 @@
+from scout.constants import CLINSIG_MAP
 
 def test_build_query(adapter):
     case_id = 'cust000'
@@ -94,17 +95,28 @@ def test_build_gnomad_and_cadd(adapter):
 def test_build_clinsig(adapter):
     case_id = 'cust000'
     clinsig_items = [ 3, 4, 5 ]
+    all_clinsig = [] # both numerical and human readable values
+
+    for item in clinsig_items:
+        all_clinsig.append(item)
+        all_clinsig.append(CLINSIG_MAP[item])
+
     query = {'clinsig': clinsig_items}
 
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query['clnsig.value'] == {
-            '$in': clinsig_items
+            '$in': all_clinsig
             }
 
 def test_build_clinsig_filter(adapter):
     case_id = 'cust000'
     clinsig_items = [ 4, 5 ]
+    all_clinsig = [] # both numerical and human readable values
+    for item in clinsig_items:
+        all_clinsig.append(item)
+        all_clinsig.append(CLINSIG_MAP[item])
+
     region_annotation = ['exonic', 'splicing']
 
     query = {'region_annotations': region_annotation,
@@ -117,7 +129,7 @@ def test_build_clinsig_filter(adapter):
               {'$in': region_annotation }
           },
         { 'clnsig.value':
-              { '$in': clinsig_items }
+              { '$in': all_clinsig }
           }
         ]
 
@@ -125,6 +137,11 @@ def test_build_clinsig_always(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     clinsig_items = [ 4, 5 ]
+    all_clinsig = [] # both numerical and human readable values
+    for item in clinsig_items:
+        all_clinsig.append(item)
+        all_clinsig.append(CLINSIG_MAP[item])
+
     region_annotation = ['exonic', 'splicing']
     freq=0.01
 
@@ -151,7 +168,7 @@ def test_build_clinsig_always(adapter):
         { 'clnsig':
               {
                 '$elemMatch': { 'value':
-                                    { '$in' : clinsig_items },
+                                    { '$in' : all_clinsig },
                                 'revstat':
                                     { '$in' : ['mult',
                                                'single',
@@ -192,6 +209,10 @@ def test_build_clinsig_always_only(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     clinsig_items = [ 4, 5 ]
+    all_clinsig = [] # both numerical and human readable values
+    for item in clinsig_items:
+        all_clinsig.append(item)
+        all_clinsig.append(CLINSIG_MAP[item])
 
     query = {'clinsig': clinsig_items,
              'clinsig_confident_always_returned': clinsig_confident_always_returned
@@ -201,7 +222,7 @@ def test_build_clinsig_always_only(adapter):
 
     assert mongo_query['clnsig'] == {
         '$elemMatch': { 'value':
-                            { '$in' : clinsig_items },
+                            { '$in' : all_clinsig },
                         'revstat':
                             { '$in' : ['mult',
                                        'single',
