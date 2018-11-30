@@ -27,22 +27,24 @@
 
 {% macro reports(institute, case) %}
   <div class="nav-sidebar-item">
-      <a class="btn btn-default form-control" href="{{ url_for('cases.case_report', institute_id=institute._id, 
+      <a class="btn btn-default form-control" href="{{ url_for('cases.case_report', institute_id=institute._id,
                 case_name=case.display_name) }}">General</a>
   </div>
   {% if case.multiqc %}
-    <p>
-      <div class="nav-sidebar-item">
-        <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id, 
+    <div class="nav-sidebar-item">
+        <a class="btn btn-default form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id,
                   case_name=case.display_name) }}">
         MultiQC
       </a>
-      </div>
-    </p>
+    </div>
   {% endif %}
+  <div class="nav-sidebar-item">
+      <a class="btn btn-default form-control" href="{{ url_for('cases.mt_report', institute_id=institute._id,
+                case_name=case.display_name) }}">Mitochondrial report</a>
+  </div>
   {% if case.delivery_report %}
     <div class="nav-sidebar-item">
-        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id, 
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
                     case_name=case.display_name) }}" class="btn btn-default form-control" target="_blank">
         Delivery
       </a>
@@ -56,7 +58,7 @@
       {% endfor %}
     </div>
   {% endif %}
-  
+
   {% if config.SQLALCHEMY_DATABASE_URI %}
   <div class="nav-sidebar-item">
     <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
@@ -83,7 +85,6 @@
     </p>
   </div>
   {% endif %}
-
 {% endmacro %}
 
 {% macro analysis_date(case) %}

@@ -63,9 +63,9 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
         for tx_data in bar:
 
             #################### Get the correct refseq identifier ####################
-            # We need to decide one refseq identifier for each transcript, if there are any to choose
-            # from. The algorithm is as follows:
-            # If these is ONE mrna this is choosen
+            # We need to decide one refseq identifier for each transcript, if there are any to 
+            # choose from. The algorithm is as follows:
+            # If there is ONE mrna this is choosen
             # If there are several mrna the one that is in 'primary_transcripts' is choosen
             # Else one is choosen at random
             # The same follows for the other categories where nc_rna has precedense over mrna_predicted

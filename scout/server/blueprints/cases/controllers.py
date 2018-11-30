@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
+import os
 import itertools
 import requests
 import datetime
 
 from bs4 import BeautifulSoup
+from xlsxwriter import Workbook
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
+from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variant as variant_decorator
@@ -287,6 +290,52 @@ def clinvar_lines(clinvar_objects, clinvar_header):
 
     clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
     return clinvar_lines
+
+
+def mt_excel_files(store, case_obj, temp_excel_dir):
+    """Collect MT variants and format line of a MT variant report
+    to be exported in excel format
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(models.Case)
+        temp_excel_dir(os.Path): folder where the temp excel files are written to
+
+    Returns:
+        written_files(int): the number of files written to temp_excel_dir
+
+    """
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    samples = case_obj.get('individuals')
+
+    query = {'chrom':'MT'}
+    mt_variants = list(store.variants(case_id=case_obj['_id'], query=query, nr_of_variants= -1, sort_key='position'))
+
+    written_files = 0
+    for sample in samples:
+        sample_id = sample['individual_id']
+        sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
+
+        # set up document name
+        document_name = '.'.join([case_obj['display_name'], sample_id, today]) + '.xlsx'
+        workbook = Workbook(os.path.join(temp_excel_dir,document_name))
+        Report_Sheet = workbook.add_worksheet()
+
+        # Write the column header
+        row = 0
+        for col,field in enumerate(MT_EXPORT_HEADER):
+            Report_Sheet.write(row,col,field)
+
+        # Write variant lines, after header (start at line 1)
+        for row, line in enumerate(sample_lines,1): # each line becomes a row in the document
+            for col, field in enumerate(line): # each field in line becomes a cell
+                Report_Sheet.write(row,col,field)
+        workbook.close()
+
+        if os.path.exists(os.path.join(temp_excel_dir,document_name)):
+            written_files += 1
+
+    return written_files
 
 
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
