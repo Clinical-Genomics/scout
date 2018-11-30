@@ -269,6 +269,8 @@ class QueryHandler(object):
             rank = []
             for item in query['clinsig']:
                 rank.append(item)
+                # search for human readable clinsig values in newer cases
+                rank.append(CLINSIG_MAP[int(item)])
 
             if query.get('clinsig_confident_always_returned') == True:
 
