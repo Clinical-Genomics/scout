@@ -41,7 +41,7 @@ def variants(institute_id, case_name):
             'variant_type': 'clinical',
             'region_annotations': ['exonic','splicing'],
             'functional_annotations': SEVERE_SO_TERMS,
-            'clinsig': [4,5],
+            'clinsig': [4,5,'likely_pathogenic','pathogenic'],
             'clinsig_confident_always_returned': True,
             'gnomad_frequency': str(institute_obj['frequency_cutoff']),
             'variant_type': 'clinical',
