@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 import logging
+from pathlib import Path
+import json
+
 from scout.resources import mme_schema_path
 
 LOG = logging.getLogger(__name__)
 
-def validate_mme_json(json_file):
-    """Validate a json file containing matchmaker exchange json patients against
-    the json schema defined in https://github.com/ga4gh/mme-apis
+def mme_patients(json_patients_file):
+    """Reads a json file containing MME patients
+    and returns a list of patient dictionaries
 
-    Args:
-        json_file(str): path to json file containing one or more patients
+        Args:
+            json_patients_file(str) : string path to json patients file
 
-    Returns
-        valid_json(bool): True if file passed validation, otherwise False
-
+        Returns:
+            mme_patients(list) : a list of MME patient objects
     """
-    LOG.info('Validation json schema for MME patients from file {}'.format(json_file))
-
-    mme_api_schema = mme_schema_path
-    return mme_schema
+    with open(json_patients_file) as json_data:
+        patients = json.load(json_data)
+        return patients

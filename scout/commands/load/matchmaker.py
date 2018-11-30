@@ -2,7 +2,7 @@
 import logging
 import click
 
-from scout.parse.mme import validate_mme_json
+from scout.parse.mme import mme_patients
 
 LOG = logging.getLogger(__name__)
 
@@ -43,11 +43,7 @@ def mme_patient(context, json, mme_url=None, mme_uri=None):
             the connected nodes.
     """
     LOG.info('Save patients to matchbox')
-    appo = validate_mme_json(json)
-
-
-
-
+    mme_patient_list = mme_patients(json) # a list of dictionaries
 
     # if patient(s) should be saved by POST request to server:
     if mme_url:
