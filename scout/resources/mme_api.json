@@ -1,0 +1,245 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "MatchmakerExchange API",
+
+  "definitions": {
+    "ageOfOnset": {
+      "type": "string",
+      "pattern": "^HP:\\d{7}$"
+    },
+    "feature": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^HP:\\d{7}$"
+        },
+        "observed": {
+          "enum": [
+            "yes",
+            "no"
+          ]
+        },
+        "ageOfOnset": {
+          "$ref": "#/definitions/ageOfOnset"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "patient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "institution": {
+              "type": "string"
+            },
+            "href": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "name",
+            "href"
+          ]
+        },
+        "species": {
+          "type": "string",
+          "pattern": "^NCBITaxon:\\d+$"
+        },
+        "gender": {
+          "enum": [
+            "MALE",
+            "FEMALE",
+            "OTHER",
+            "MIXED_SAMPLE",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "ageOfOnset": {
+          "$ref": "#/definitions/ageOfOnset"
+        },
+        "inheritanceMode": {
+          "type": "string",
+          "pattern": "^HP:\\d{7}$"
+        },
+        "disorders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^(MIM:|Orphanet:)\\d{1,6}$"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/feature"
+          }
+        },
+        "genomicFeatures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "gene": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              },
+              "variant": {
+                "type": "object",
+                "properties": {
+                  "assembly": {
+                    "pattern": "^(NCBI36|GRCh37|GRCh38)(\\.p\\d+)?$"
+                  },
+                  "referenceName": {
+                    "pattern": "^(\\d+|[XYM])$"
+                  },
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  },
+                  "referenceBase": {
+                    "pattern": "^([ATCG]+)$"
+                  },
+                  "alternativeBase": {
+                    "pattern": "^([ATCG]+)$"
+                  }
+                },
+                "required": [
+                  "assembly",
+                  "referenceName",
+                  "start"
+                ]
+              },
+              "zygosity": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^SO:\\d{7}"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "required": [
+              "gene"
+            ]
+          }
+        },
+        "test": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "contact"
+      ],
+      "not": {
+        "properties": {
+          "features": {
+            "maxItems": 0
+          },
+          "genomicFeatures": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+
+    "request": {
+      "type": "object",
+      "properties": {
+        "patient": {
+          "$ref": "#/definitions/patient"
+        }
+      },
+      "required": [
+        "patient"
+      ]
+    },
+
+    "response": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "score": {
+                "type": "object",
+                "properties": {
+                  "patient": {
+                    "type": "number"
+                  }
+                },
+                "required": ["patient"]
+              },
+              "patient": {
+                "$ref": "#/definitions/patient"
+              }
+            },
+            "required": ["score", "patient"]
+          }
+        }
+      }
+    }
+  },
+
+  "links": [
+    {
+      "description": "Return similar patients",
+      "href": "/match",
+      "method": "POST",
+      "rel": "full",
+      "schema": {
+        "$ref": "#/definitions/request"
+      },
+      "targetSchema": {
+        "$ref": "#/definitions/response"
+      }
+    }
+  ]
+}
