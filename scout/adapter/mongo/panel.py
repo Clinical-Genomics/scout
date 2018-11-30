@@ -448,7 +448,7 @@ class PanelHandler(object):
 
             # archive the old panel
             panel_obj['is_archived'] = True
-            self.update_panel(panel_obj)
+            self.update_panel(panel_obj=panel_obj, date_obj=panel_obj['date'])
 
             # insert the new panel
             inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
