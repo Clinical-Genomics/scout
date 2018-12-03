@@ -40,10 +40,8 @@ def mme_patient(context, json, token,  mme_url):
                 If this is provided the patients will be included in matchbox by sending a POST
                 request to the server, triggering in turn a search of the same patients over the connected nodes.
 
-        Returns:
-            BOOOOH!!!!
-
     """
+    
     LOG.info('Save one or more patients to matchbox and query connected nodes')
     mme_patient_list = []
     try:
