@@ -29,7 +29,6 @@ LOG = logging.getLogger(__name__)
     help='matchbox authorization token',
 )
 
-
 @click.pass_context
 def mme_patient(context, json, token,  mme_url):
     """Load one or more patients to the database
@@ -53,11 +52,23 @@ def mme_patient(context, json, token,  mme_url):
         LOG.warning("Something went wrong while parsing patient file: {}".format(err))
         context.abort()
 
-    response = [] # a list of matchbox server responses, one for each patient
+
+    n_succes_response = 0
+    n_inserted = 0
+    n_updated = 0
+
+    counter = 0
 
     for patient in mme_patient_list:
+
         resp = matchbox_add(matchbox_url=mme_url, json_patient=patient, token=token)
-        LOG.info(str(resp))
+        message = resp['message']
 
+        if resp['status_code'] == 200:
+            n_succes_response += 1
 
-    return None
+        if message == 'insertion OK':
+            n_inserted +=1
+        elif 'That patient record (specifically that ID) had already been submitted in the past' in message:
+            n_updated +=1
+        LOG.info('Number of new patients in matchbox:{0}, number of updated records:{1}, number of failed requests:{2}'.format(n_inserted, n_updated, (len(mme_patient_list)-n_succes_response) ))
