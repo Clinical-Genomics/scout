@@ -1,11 +1,12 @@
 import logging
+from scout.update.matchmaker import matchbox_update
 
 import click
 
 LOG = logging.getLogger(__name__)
 
 @click.command('panel', short_help='Delete a gene panel')
-@click.option('--panel-id', 
+@click.option('--panel-id',
     help="The panel identifier name",
     required=True
 )
@@ -21,7 +22,7 @@ def panel(context, panel_id, version):
     panel_objs = adapter.gene_panels(panel_id=panel_id, version=version)
     if panel_objs.count() == 0:
         LOG.info("No panels found")
-        
+
     for panel_obj in panel_objs:
         adapter.delete_panel(panel_obj)
 
@@ -53,7 +54,7 @@ def index(context):
     """Delete all indexes in the database"""
     LOG.info("Running scout delete index")
     adapter = context.obj['adapter']
-    
+
     for collection in adapter.db.collection_names():
         adapter.db[collection].drop_indexes()
     LOG.info("All indexes deleted")
@@ -131,6 +132,36 @@ def case(context, institute, case_id, display_name):
         LOG.warning("Case does not exist in database")
         context.abort()
 
+
+
+@click.command('mme_patient', short_help='Remove a patient from MatchMaker')
+@click.option('-id',
+    type=click.STRING,
+    nargs=1,
+    required=True,
+    help='patient ID as in matchbox database',
+)
+@click.option('-token',
+    type=click.STRING,
+    nargs=1,
+    required=True,
+    help='matchbox authorization token',
+)
+@click.option('-mme_url',
+    type=click.STRING,
+    nargs=1,
+    required=False,
+    help='url of a running matchbox instance',
+    default='http://localhost:9020'
+)
+@click.pass_context
+def mme_patient(context, id, token, mme_url):
+    """Delete a patient from matchbox by sending a POST request to the server"""
+
+    LOG.info("Delete patient with ID: {} from matchbox server".format(id))
+    resp = matchbox_update(matchbox_url=mme_url, update_action='delete', json_patient=id, token=token)
+
+
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context
 # def diseases(context):
@@ -175,3 +206,4 @@ delete.add_command(user)
 delete.add_command(index)
 delete.add_command(panel)
 delete.add_command(exons)
+delete.add_command(mme_patient)
