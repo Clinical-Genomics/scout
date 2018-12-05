@@ -316,6 +316,78 @@ def clinvar_variant(request):
 
 
 #############################################################
+################### Matchmaker fixtures #####################
+#############################################################
+@pytest.fixture(scope='function')
+def matchmaker_patients(request):
+    # return a matchmaker-like patient object
+    matchmaker_patients = [
+    {
+        "contact": {
+          "href": "mme_user@mail.com",
+          "name": "A User"
+        },
+        "features": [
+          {
+            "id": "HP:0001644",
+            "label": "Dilated cardiomyopathy",
+            "observed": "yes"
+          },
+        ],
+        "genomicFeatures": [
+          {
+            "gene": {
+              "id": "LIMS2"
+            },
+            "type": {
+              "id": "SO:0001583",
+              "label": "MISSENSE"
+            },
+            "variant": {
+              "alternateBases": "C",
+              "assembly": "GRCh37",
+              "end": 128412081,
+              "referenceBases": "G",
+              "referenceName": "2",
+              "start": 128412080
+            },
+            "zygosity": 1
+          },
+        ],
+        "id": "a_patient_id"
+    },
+    {
+        "contact": {
+          "href": "mme_user@mail.com",
+          "name": "A User"
+        },
+        "features": [
+          {
+            "id": "HP:0010943",
+            "label": "Echogenic fetal bowel",
+            "observed": "yes"
+          }
+        ],
+        "genomicFeatures": [
+          {
+            "gene": {
+              "id": "GUCY2C"
+              }
+            }
+        ],
+        "id": "another_patient_id"
+    }]
+    return matchmaker_patients
+
+
+@pytest.fixture(scope='session')
+def temp_json_file(tmpdir_factory):
+
+    file = tmpdir_factory.mktemp('temp_data').join('test_patients.json')
+    return file
+
+
+#############################################################
 ##################### Institute fixtures ####################
 #############################################################
 @pytest.fixture(scope='function')

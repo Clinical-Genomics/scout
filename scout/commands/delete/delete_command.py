@@ -1,5 +1,5 @@
 import logging
-from scout.update.matchmaker import matchbox_update
+from scout.update.matchmaker import mme_update
 
 import click
 
@@ -139,7 +139,7 @@ def case(context, institute, case_id, display_name):
     type=click.STRING,
     nargs=1,
     required=True,
-    help='patient ID as in matchbox database',
+    help='patient ID as in matchmaker database',
 )
 @click.option('-token',
     type=click.STRING,
@@ -156,10 +156,10 @@ def case(context, institute, case_id, display_name):
 )
 @click.pass_context
 def mme_patient(context, id, token, mme_url):
-    """Delete a patient from matchbox by sending a POST request to the server"""
+    """Delete a patient from matchmaker by sending a POST request to the server"""
 
     LOG.info("Delete patient with ID: {} from matchbox server".format(id))
-    resp = matchbox_update(matchbox_url=mme_url, update_action='delete', json_patient=id, token=token)
+    resp = mme_update(matchmaker_url=mme_url, update_action='delete', json_patient=id, token=token)
 
 
 # @click.command('diseases', short_help='Display all diseases')

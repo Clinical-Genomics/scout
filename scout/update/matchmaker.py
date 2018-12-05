@@ -7,11 +7,11 @@ from werkzeug.datastructures import Headers
 
 LOG = logging.getLogger(__name__)
 
-def matchbox_update(matchbox_url, update_action, json_patient, token):
-    """ Add a patient to matchbox by posting a request
+def mme_update(matchmaker_url, update_action, json_patient, token):
+    """ Add a patient to matchmaker by posting a request
 
         Args:
-            matchbox_url(str): url of matchbox server
+            matchmaker_url(str): url of a matchmaker server
             update_action(str): 'add' or 'delete' to either add or delete a patient
             patient: a patient object as in https://github.com/ga4gh/mme-apis or an ID(str)
             auth_token(str): authorization token
@@ -26,13 +26,15 @@ def matchbox_update(matchbox_url, update_action, json_patient, token):
 
     json_response = None
     data = {}
-    method = update_action.upper()
-    url = '/'.join([matchbox_url, 'patient', update_action])
+    method = None
+    url = '/'.join([matchmaker_url, 'patient', update_action])
 
     if update_action == 'add':
         data["patient"] = json_patient
+        method = 'POST'
     else: #delete a patient
         data["id"] = json_patient
+        method = 'DELETE'
     try:
         LOG.info('sending HTTP request to server: {0}, data: {1}'.format(url, data))
         appo = json.dumps(data)
@@ -45,7 +47,7 @@ def matchbox_update(matchbox_url, update_action, json_patient, token):
         )
         json_response = None
 
-        # workaround to take into account a malformed json response from matchbox serve:
+        # workaround to take into account a malformed json response from matchmaker server:
         try:
             json_response = server_return.json()
         except Exception as json_exp:

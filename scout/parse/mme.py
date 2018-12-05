@@ -2,9 +2,6 @@
 import logging
 from pathlib import Path
 import json
-
-from scout.resources import mme_schema_path
-
 LOG = logging.getLogger(__name__)
 
 def mme_patients(json_patients_file):
