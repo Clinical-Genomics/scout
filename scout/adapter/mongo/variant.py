@@ -110,7 +110,7 @@ class VariantHandler(VariantLoader):
                     mosaicism = True
 
                 manual_inheritance.update(gene_info.get('inheritance_models', []))
-            
+
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
             variant_gene['mosaicism'] = mosaicism
@@ -135,7 +135,7 @@ class VariantHandler(VariantLoader):
                 # to the variants transcript
                 if not hgnc_transcript.get('refseq_id'):
                     continue
-                
+
                 refseq_id = hgnc_transcript['refseq_id']
                 transcript['refseq_id'] = refseq_id
 
@@ -143,7 +143,7 @@ class VariantHandler(VariantLoader):
                 if refseq_id in disease_associated_no_version:
                     transcript['is_disease_associated'] = True
 
-                # Since a ensemble transcript can have multiple refseq identifiers we add all of 
+                # Since a ensemble transcript can have multiple refseq identifiers we add all of
                 # those
                 transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
 
@@ -341,6 +341,31 @@ class VariantHandler(VariantLoader):
             same_variant = other_variant['display_name'].startswith(variant_id)
             if not_same_case and same_variant:
                 yield other_variant
+
+
+    def case_individual_variants(self, case_id, sample_display_name):
+        """ Find all variants for a subject of a case
+
+        Args:
+            case_id(str): a case id
+            sample_display_name(str): the display name of an individual of the case
+
+        Returns:
+            result(iterable(Variant))
+        """
+        LOG.info('Retrieving all variants for case id: {0}, subject display name: {1}'.format(case_id, sample_display_name))
+        has_allele = re.compile('1|2') # a non wild-type allele is called at least once in this sample
+        query = {
+            "$and": [
+                {'case_id' : case_id},
+                {'samples': {
+                    '$elemMatch': { 'display_name' : sample_display_name, 'genotype_call': { '$regex' : has_allele } }
+                }}
+            ]
+        }
+        result = self.variant_collection.find(query)
+        return result
+
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
