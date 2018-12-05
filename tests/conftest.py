@@ -320,7 +320,7 @@ def clinvar_variant(request):
 #############################################################
 @pytest.fixture(scope='function')
 def matchmaker_patients(request):
-    # return a matchmaker-like patient object
+    # return a list containing two matchmaker-like patient objects
     matchmaker_patients = [
     {
         "contact": {
