@@ -294,10 +294,8 @@ def test_build_range(adapter):
     assert mongo_query['end'] == {'$gte': start}
 
 def test_get_overlapping_variant(populated_database, parsed_case):
-    """Add a couple of overlapping variants"""
 
     ## GIVEN a database with some basic information but no variants
-
     case_id = parsed_case['case_id']
 
     assert populated_database.variants(case_id, category='snv').count() == 0
@@ -434,3 +432,31 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     for variant in result:
         index += 1
     assert index == 2
+
+
+def test_case_individual_variants(parsed_case, real_populated_database, variant_objs):
+
+    adapter = real_populated_database
+    case_obj = parsed_case
+
+    #collect display_name for one of the individuals of the case
+    a_subject_object = case_obj['individuals'][0] # doesn't matter if it's affected
+    subject_diplay_name = a_subject_object['display_name']
+    assert subject_diplay_name
+
+    # populate database with variants
+    # Add to the empty database all variants from variant_objs
+    for index, variant_obj in enumerate(variant_objs):
+        adapter.load_variant(variant_obj)
+
+    # get_number of variants for that case
+    n_case_variants = adapter.variant_collection.find({'case_id':case_obj['_id']}).count()
+    assert n_case_variants > 0
+
+    # use specific query to collect variants that is actually present in the above selected sample.
+    # these are the variants that have a genotype call for that variant and are not wild type for it
+
+    n_sample_variants = adapter.case_individual_variants(case_obj['_id'],subject_diplay_name).count()
+
+    # number of sample variants should be smaller than number of case variants
+    assert n_sample_variants < n_case_variants
