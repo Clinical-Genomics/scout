@@ -1,16 +1,24 @@
 # -*- coding: utf-8 -*-
 import logging
 import click
+import json
 import requests
 
 from scout.update.matchmaker import mme_update
-from scout.export.matchmaker_patient import phenotype_features, genomic_features
-from scout.parse.mme import mme_patients
+from scout.parse.mme import mme_patients, phenotype_features, genomic_features
 
 LOG = logging.getLogger(__name__)
 
 @click.command('mme_patient', short_help='Load one or more patients to MatchMaker Exchange')
-@click.option('-json',
+# the email of a valid user in scout. Name will be collected for the user as well since
+# contact info is mandatory to insert patients into MatchMaker Exchange
+@click.option('-email',
+    type=click.STRING,
+    nargs=1,
+    required=True,
+    help='email of the scout user to include in MME contact info'
+)
+@click.option('-json_file',
     type=click.Path(exists=True),
     nargs=1,
     required=False,
@@ -37,11 +45,11 @@ LOG = logging.getLogger(__name__)
 )
 
 @click.pass_context
-def mme_patient(context, json, case_id, token, mme_url):
+def mme_patient(context, email, json_file, case_id, token, mme_url):
     """Load one or more patients to the database
 
         Args:
-            json(str): Path to a json file containing patient data
+            json_file(str): Path to a json file containing patient data
 
             case_id(str): a scout case ID
 
@@ -54,17 +62,29 @@ def mme_patient(context, json, case_id, token, mme_url):
     LOG.info('Save one or more patients to matchmaker and query all connected nodes')
     mme_patient_list = []
 
+    # collect contact info to include in patient data
+    adapter = context.obj['adapter']
+    user_obj = adapter.user(email=email)
+    if user_obj is None:
+        LOG.info("could't find any user with email '{} in scout database!'".format('email'))
+        context.abort()
+    contact_info = {
+        'name' : user_obj['name'],
+        'href' : user_obj['email'],
+        'institution' : 'Customer of SciLifeLab Stockholm, Sweden.'
+    }
+
     # if patients to include in matchmaker are passed by json file
-    if json:
+    if json_file:
         try:
-            mme_patient_list = mme_patients(json) # a list of MME patient dictionaries
+            mme_patient_list = mme_patients(json_file) # a list of MME patient dictionaries
         except Exception as err:
             LOG.warning("Something went wrong while parsing patient file: {}".format(err))
             context.abort()
 
-    elif case_id: # else if patients are already stored inside scout database
+    # else if patients are already stored inside scout database
+    elif case_id:
         # collect data for each affected subject of a provided case
-        adapter = context.obj['adapter']
         case_obj = adapter.case(case_id=case_id)
         if case_obj is None:
             LOG.info('No case with id "{}"'.format(case_id))
@@ -76,28 +96,30 @@ def mme_patient(context, json, case_id, token, mme_url):
 
         # collect each affected individual for a case
         # and create a matchmaker patient model for it
+
         for individual in case_obj.get('individuals'):
-            if individual['phenotype'] == 2:
+            if individual['phenotype'] == 2: # affected
                 mme_patient = {}
-                mme_patient['id'] = '_'.join([case_obj['_id'], individual.get('display_name')])
+                mme_patient['contact'] = contact_info
+                mme_patient['id'] = '.'.join([case_obj['_id'], individual.get('individual_id')]) # This is a required field form MME
+                mme_patient['label'] = '.'.join([case_obj['display_name'], individual.get('display_name')])
                 mme_patient['features'] = features
 
-                # get all variants for this specific individual:
-                individual_variants = list(adapter.case_individual_variants(case_id, individual.get('display_name')))
-
+                # get all snv variants for this specific individual:
+                individual_variants = list(adapter.case_individual_snv_variants(case_id, individual.get('display_name')))
                 LOG.info('number of variants found for affected individual {0}: {1}'.format(case_obj['display_name'], len(individual_variants )))
 
-                # export the above variants to matchmaker-like genotype feature objects
-                #mme_patient['genomicFeatures'] = genomic_features(adapter,individual_variants)
+                # parse variants to obtain MatchMaker-like variant objects (genomic features)
+                mme_patient['genomicFeatures'] = genomic_features(adapter, scout_variants=individual_variants, sample_name=individual.get('display_name'), build=case_obj.get('genome_build'))
+                LOG.info(mme_patient['genomicFeatures'])
+                mme_patient['disorders'] = []
+                if individual['sex'] == '1':
+                    mme_patient['sex'] = 'MALE'
+                else:
+                    mme_patient['sex'] = 'FEMALE'
 
+                mme_patient_list.append(mme_patient)
 
-
-                #LOG.info((mme_patient['genomicFeatures']))
-
-
-
-            # collect variants for affected individuals of this case
-            # these will be the genomic features to include in Matchmaker
     else:
         LOG.warning('You should provide either a scout case ID or a json file!')
         context.abort()

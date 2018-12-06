@@ -343,8 +343,9 @@ class VariantHandler(VariantLoader):
                 yield other_variant
 
 
-    def case_individual_variants(self, case_id, sample_display_name):
-        """ Find all variants for a subject of a case
+    def case_individual_snv_variants(self, case_id, sample_display_name):
+        """ Find all snv variants for a subject of a case
+            Using this function to retrieve variant to be included in matchmaker for a patient
 
         Args:
             case_id(str): a case id
@@ -358,6 +359,7 @@ class VariantHandler(VariantLoader):
         query = {
             "$and": [
                 {'case_id' : case_id},
+                {'category' : 'snv'},
                 {'samples': {
                     '$elemMatch': { 'display_name' : sample_display_name, 'genotype_call': { '$regex' : has_allele } }
                 }}
