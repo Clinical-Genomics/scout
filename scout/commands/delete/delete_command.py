@@ -145,20 +145,20 @@ def case(context, institute, case_id, display_name):
     type=click.STRING,
     nargs=1,
     required=True,
-    help='matchbox authorization token',
+    help='matchmaker authorization token',
 )
 @click.option('-mme_url',
     type=click.STRING,
     nargs=1,
     required=False,
-    help='url of a running matchbox instance',
+    help='url of a running matchmaker instance',
     default='http://localhost:9020'
 )
 @click.pass_context
 def mme_patient(context, id, token, mme_url):
     """Delete a patient from matchmaker by sending a POST request to the server"""
 
-    LOG.info("Delete patient with ID: {} from matchbox server".format(id))
+    LOG.info("Delete patient with ID: {} from matchmaker server".format(id))
     resp = mme_update(matchmaker_url=mme_url, update_action='delete', json_patient=id, token=token)
 
 
