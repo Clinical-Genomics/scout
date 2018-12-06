@@ -13,8 +13,8 @@ def mme_update(matchmaker_url, update_action, json_patient, token):
         Args:
             matchmaker_url(str): url of a matchmaker server
             update_action(str): 'add' or 'delete' to either add or delete a patient
-            patient: a patient object as in https://github.com/ga4gh/mme-apis or an ID(str)
-            auth_token(str): authorization token
+            json_patient: a patient object as in https://github.com/ga4gh/mme-apis or an ID(str)
+            token(str): authorization token
 
         Returns:
             json_response: a json-formatted server response

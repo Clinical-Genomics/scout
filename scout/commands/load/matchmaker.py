@@ -111,7 +111,7 @@ def mme_patient(context, email, json_file, case_id, token, mme_url):
 
                 # parse variants to obtain MatchMaker-like variant objects (genomic features)
                 mme_patient['genomicFeatures'] = genomic_features(adapter, scout_variants=individual_variants, sample_name=individual.get('display_name'), build=case_obj.get('genome_build'))
-                LOG.info(mme_patient['genomicFeatures'])
+                
                 mme_patient['disorders'] = []
                 if individual['sex'] == '1':
                     mme_patient['sex'] = 'MALE'
