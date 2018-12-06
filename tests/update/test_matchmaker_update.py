@@ -11,7 +11,7 @@ from scout.update.matchmaker import mme_update
 
 TOKEN = 'abcd'
 
-# mock matchbox server to send responses when it get requests
+# mock matchmaker server to send responses when it get requests
 class MockServerRequestHandler(BaseHTTPRequestHandler):
 
     def _set_headers(self):
@@ -87,6 +87,7 @@ class TestMockMatchMakerServer(object):
     def test_add_scout_patient(self, real_populated_database, case_obj, user_obj, institute_obj, gene_bulk):
 
         adapter = real_populated_database
+        case_obj = case_obj
 
         # add a phenotype for this case
         hpo_obj = [{
@@ -96,17 +97,15 @@ class TestMockMatchMakerServer(object):
             {
                 'phenotype_id' : 'HP:0000878',
                 'feature' : 'A phenotype'
-            }]
-
+            }
+        ]
         # update phenotype terms of the case with hpo_obj
-        case_obj = case_obj
+        case_obj['phenotype_terms'] = hpo_obj
+        features = phenotype_features(case_obj)
 
         # make sure that this case contains at least a sample
         a_sample = case_obj['individuals'][0].get('display_name')
         assert a_sample
-
-        case_obj['phenotype_terms'] = hpo_obj
-        features = phenotype_features(case_obj)
 
         # assert that two phenotypes are found when parsing case object
         assert len(features) == 2
