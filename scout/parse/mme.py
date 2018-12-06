@@ -18,7 +18,7 @@ def mme_patients(json_patients_file):
         return patients
 
 
-def phenotype_features(adapter, case_obj):
+def phenotype_features(case_obj):
     """Extract all phenotype-associated terms for a case. Drawback of this method is that
         it returns the same phenotype terms for each affected individual
         of the case. Customised phenotypes could be entered in Matchmaker
@@ -59,6 +59,8 @@ def genomic_features(adapter, scout_variants, sample_name, build):
 
         Args:
             scout_variants(list): a list of scout variants
+            sample_name(str): a name of a sample with the case
+            build(str): genome build
 
         Returns:
             genomic_features(list): a list of genomic feature objects that looks like this:

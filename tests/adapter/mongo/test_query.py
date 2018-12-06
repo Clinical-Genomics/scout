@@ -434,7 +434,7 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     assert index == 2
 
 
-def test_case_individual_variants(parsed_case, real_populated_database, variant_objs):
+def test_case_individual_snv_variants(parsed_case, real_populated_database, variant_objs):
 
     adapter = real_populated_database
     case_obj = parsed_case
@@ -456,7 +456,7 @@ def test_case_individual_variants(parsed_case, real_populated_database, variant_
     # use specific query to collect variants that is actually present in the above selected sample.
     # these are the variants that have a genotype call for that variant and are not wild type for it
 
-    n_sample_variants = adapter.case_individual_variants(case_obj['_id'],subject_diplay_name).count()
+    n_sample_variants = adapter.case_individual_snv_variants(case_obj['_id'],subject_diplay_name).count()
 
     # number of sample variants should be smaller than number of case variants
     assert n_sample_variants < n_case_variants

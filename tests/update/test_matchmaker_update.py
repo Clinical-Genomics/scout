@@ -2,14 +2,11 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import socket
 from threading import Thread
 import requests
-import re
 
 from pathlib import Path
 import json
 
-from nose.tools import assert_true
-
-from scout.parse.mme import mme_patients
+from scout.parse.mme import mme_patients, phenotype_features, genomic_features
 from scout.update.matchmaker import mme_update
 
 TOKEN = 'abcd'
@@ -84,4 +81,70 @@ class TestMockMatchMakerServer(object):
         url = 'http://localhost:{port}'.format(port=self.mock_server_port)
 
         response = mme_update( matchmaker_url=url, update_action='delete', json_patient='patient_id', token=TOKEN)
+        assert response['status'] == 200
+
+
+    def test_add_scout_patient(self, real_populated_database, case_obj, user_obj, institute_obj, gene_bulk):
+
+        adapter = real_populated_database
+
+        # add a phenotype for this case
+        hpo_obj = [{
+                'phenotype_id' : 'HP:0000878',
+                'feature' : 'A phenotype'
+            },
+            {
+                'phenotype_id' : 'HP:0000878',
+                'feature' : 'A phenotype'
+            }]
+
+        # update phenotype terms of the case with hpo_obj
+        case_obj = case_obj
+
+        # make sure that this case contains at least a sample
+        a_sample = case_obj['individuals'][0].get('display_name')
+        assert a_sample
+
+        case_obj['phenotype_terms'] = hpo_obj
+        features = phenotype_features(case_obj)
+
+        # assert that two phenotypes are found when parsing case object
+        assert len(features) == 2
+        assert 'id' in features[0] # 'id' key must be found
+        assert 'label' in features[0] # 'label' key must be found
+        assert 'observed' in features[0] # 'observed' key must be found
+
+        ## GIVEN a populated database with variants in a certain gene
+        hgnc_id = 3233
+        gene_obj = adapter.hgnc_gene(hgnc_id)
+        assert gene_obj
+
+        # load a number of variants hitting that gene
+        nr_loaded = adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                              category='snv', rank_threshold=None, chrom=None,
+                              start=None, end=None, gene_obj=gene_obj)
+
+        gene_variants = list(adapter.variants(case_id=case_obj['_id'], nr_of_variants=-1))
+        assert len(gene_variants) > 0
+
+        # collect parsed genomic features for these variants
+        g_features = genomic_features(adapter, gene_variants, a_sample, '37')
+
+        # check number and format of the extracted genomic features
+        assert len(g_features) == len(gene_variants)
+        assert "gene" in g_features[0]
+        assert "variant" in g_features[0]
+        assert "zygosity" in g_features[0]
+
+        # build test patient based on the above data
+        patient = {
+            'features' : features,
+            'genomicFeatures' : g_features,
+            'id' : 'test_patient',
+            'contact' : { 'name': 'test_user', 'href' : 'test.email@email.com' }
+        }
+
+        # send it to matchmaker server via post request
+        url = 'http://localhost:{port}'.format(port=self.mock_server_port)
+        response = mme_update( matchmaker_url=url, update_action='add', json_patient=patient, token=TOKEN)
         assert response['status'] == 200
