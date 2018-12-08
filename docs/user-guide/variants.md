@@ -106,10 +106,16 @@ Scout supports viewing STRs, Short Tandem Repeats, initially only for a clinical
 Tested callers include:
 
 ##### ExpansionHunter
-[ExpansionHunter](https://github.com/Illumina/ExpansionHunter) Longer-than-readlength analysis of STR sites. Requires a pre-made panel file noting the location of target sites to analyze, then rapidly analyses bam files. Dolzenko et al [Detection of long repeat expansions from PCR-free whole-genome sequence data](https://genome.cshlp.org/content/27/11/1895).
+[ExpansionHunter][expansion-hunter] Longer-than-readlength analysis of STR sites. Requires a pre-made panel file noting the location of target sites to analyze, then rapidly analyses bam files. Dolzenko et al [Detection of long repeat expansions from PCR-free whole-genome sequence data](https://genome.cshlp.org/content/27/11/1895).
+
+##### Annotating STRs
+
+The out put files of expansion hunter if preferably annotated with [stranger][stranger] before loaded into scout.
 
 ### Compounds (top 20)
 Only interesting when the compound inheritance pattern is required, the list can be very long but is by default cropped to the top 20 highest ranked ones as shown in the heading.
 
 [clinvar]: https://www.ncbi.nlm.nih.gov/clinvar/
 [markdown]: https://help.github.com/articles/markdown-basics/
+[expansion-hunter]: https://github.com/Illumina/ExpansionHunter
+[stranger]: https://github.com/moonso/stranger
