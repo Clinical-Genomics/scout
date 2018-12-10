@@ -46,7 +46,7 @@ LOG = logging.getLogger(__name__)
 
 @click.pass_context
 def mme_patient(context, email, json_file, case_id, token, mme_url):
-    """Load one or more patients to the database
+    """Load one or more patients to MatchMaker Exchange
 
         Args:
             json_file(str): Path to a json file containing patient data
@@ -95,9 +95,8 @@ def mme_patient(context, email, json_file, case_id, token, mme_url):
         LOG.info('collected phenotypes for this case:{}'.format(features))
 
         # collect OMIM disorders (if available) for this case
-        disorders = omim_disorders(adapter, case_obj)
+        disorders = omim_disorders(case_obj)
         LOG.info('collected disorders for this case:{}'.format(disorders))
-
 
         # collect each affected individual and its genomic features for this case
         for individual in case_obj.get('individuals'):

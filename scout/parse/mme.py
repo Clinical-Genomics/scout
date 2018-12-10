@@ -53,12 +53,11 @@ def phenotype_features(case_obj):
     return features
 
 
-def omim_disorders(adapter, case_obj):
+def omim_disorders( case_obj):
     """Extract all OMIM phenotypes available for the case
 
     Args:
         case_obj(dict): a scout case object
-        adapter(adapter.MongoAdapter)
 
     Returns:
         disorders(list): a list of OMIM disorder objects
@@ -69,10 +68,8 @@ def omim_disorders(adapter, case_obj):
     case_disorders = case_obj.get('diagnosis_phenotypes') # array of OMIM terms
     if case_disorders:
         for disorder in case_disorders:
-            disease_term_obj = adapter.disease_term_collection.find_one({'disease_nr':disorder})
             disorder_obj = {
-                "id" : ':'.join([ 'MIM', disorder]),
-                "label" : disease_term_obj.get('description')
+                "id" : ':'.join([ 'MIM', str(disorder)])
             }
             disorders.append(disorder_obj)
     return disorders
