@@ -217,8 +217,17 @@ th {
 /* dismiss table row */
 
 .dismiss {
-	 background-color: #C9C9C9;
+   background-color: #C9C9C9;
 }
+
+.medium {
+	 background-color: #ffff66;
+}
+
+.warning {
+	 background-color: #ff6666;
+}
+
 
 /* BOOTSTRAP 4 CLASSES */
 .d-flex {
