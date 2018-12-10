@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Mosaicism tag on variants
 - Show and filter on SweGen frequency for SVs
+- Show annotations for STR variants
 
 
 ## [4.2.2]
