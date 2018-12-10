@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import urllib.parse
 
 LOG = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ def export_mt_variants(variants, sample_id):
             genes.append(gene.get('hgnc_symbol',''))
             for transcript in gene.get('transcripts'):
                 if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
-                    prot_effect.append(transcript.get('protein_sequence_name'))
+                    prot_effect.append(urllib.parse.unquote(transcript.get('protein_sequence_name')))
         line.append(','.join(genes))
         line.append(','.join(prot_effect))
         ref_ad = ''
