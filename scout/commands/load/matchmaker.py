@@ -5,7 +5,7 @@ import json
 import requests
 
 from scout.update.matchmaker import mme_update
-from scout.parse.mme import mme_patients, phenotype_features, genomic_features
+from scout.parse.mme import mme_patients, phenotype_features, omim_disorders, genomic_features
 
 LOG = logging.getLogger(__name__)
 
@@ -90,13 +90,16 @@ def mme_patient(context, email, json_file, case_id, token, mme_url):
             LOG.info('No case with id "{}"'.format(case_id))
             context.abort()
 
-        # collect phenotype terms for this case
-        features = phenotype_features(adapter, case_obj)
+        # collect HPO phenotype terms (if available) for this case
+        features = phenotype_features(case_obj)
         LOG.info('collected phenotypes for this case:{}'.format(features))
 
-        # collect each affected individual for a case
-        # and create a matchmaker patient model for it
+        # collect OMIM disorders (if available) for this case
+        disorders = omim_disorders(adapter, case_obj)
+        LOG.info('collected disorders for this case:{}'.format(disorders))
 
+
+        # collect each affected individual and its genomic features for this case
         for individual in case_obj.get('individuals'):
             if individual['phenotype'] == 2: # affected
                 mme_patient = {}
@@ -104,6 +107,7 @@ def mme_patient(context, email, json_file, case_id, token, mme_url):
                 mme_patient['id'] = '.'.join([case_obj['_id'], individual.get('individual_id')]) # This is a required field form MME
                 mme_patient['label'] = '.'.join([case_obj['display_name'], individual.get('display_name')])
                 mme_patient['features'] = features
+                mme_patient['disorders'] = disorders
 
                 # get all snv variants for this specific individual:
                 individual_variants = list(adapter.case_individual_snv_variants(case_id, individual.get('display_name')))
@@ -111,8 +115,7 @@ def mme_patient(context, email, json_file, case_id, token, mme_url):
 
                 # parse variants to obtain MatchMaker-like variant objects (genomic features)
                 mme_patient['genomicFeatures'] = genomic_features(adapter, scout_variants=individual_variants, sample_name=individual.get('display_name'), build=case_obj.get('genome_build'))
-                
-                mme_patient['disorders'] = []
+
                 if individual['sex'] == '1':
                     mme_patient['sex'] = 'MALE'
                 else:
