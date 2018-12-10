@@ -177,10 +177,20 @@ def parse_variant(variant, case, variant_type='clinical',
     if repeat_unit:
         parsed_variant['str_ru'] = str(repeat_unit)
 
-    # repeat unit - used e g in PanelApp naming of STRs
+    # repeat ref - reference copy number
     repeat_ref = variant.INFO.get('REF')
-    if repeat_unit:
+    if repeat_ref:
         parsed_variant['str_ref'] = int(repeat_ref)
+
+    # repeat len - number of repeats found in case
+    repeat_len = variant.INFO.get('RL')
+    if repeat_len:
+        parsed_variant['str_len'] = int(repeat_len)
+
+    # str status - this indicates the severity of the expansion level
+    str_status = variant.INFO.get('STR_STATUS')
+    if str_status:
+        parsed_variant['str_status'] = str(str_status)
 
     ################# Add gene and transcript information #################
     raw_transcripts = []
