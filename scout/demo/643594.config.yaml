@@ -43,7 +43,7 @@ samples:
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
-vcf_str: scout/demo/643594.clinical.str.vcf.gz
+vcf_str: scout/demo/643594.clinical.str.annotated.vcf.gz
 vcf_snv_research: scout/demo/643594.research.vcf.gz
 vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 

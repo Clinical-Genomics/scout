@@ -49,7 +49,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             # the clinical variants have limited annotation fields.
             variant_type = str, # required, choices=('research', 'clinical'))
 
-            category = str, # choices=('sv', 'snv')
+            category = str, # choices=('sv', 'snv', 'str')
             sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
             mate_id = str, # For SVs this identifies the other end
 
@@ -96,12 +96,20 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             local_obs_old = int,
             local_obs_hom_old = int,
             local_obs_total_old = int, # default=638
+
             # Predicted deleteriousness:
             cadd_score = float,
             clnsig = list, # list of <clinsig>
             spidex = float,
 
             missing_data = bool, # default False
+            
+            # STR specific information
+            str_repid = str, repeat id generally corresponds to gene symbol
+            str_ru = str, used e g in PanelApp naming of STRs
+            str_ref = int, reference copy number
+            str_len = int, number of repeats found in case
+            str_status = str, this indicates the severity of the expansion level
 
             # Callers
             gatk = str, # choices=VARIANT_CALL, default='Not Used'
@@ -174,6 +182,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if 'end_chrom' in variant:
         variant_obj['end_chrom'] = variant['end_chrom']
 
+    ############ Str specific ############
     if 'str_ru' in variant:
         variant_obj['str_ru'] = variant['str_ru']
 
@@ -182,6 +191,12 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if 'str_ref' in variant:
         variant_obj['str_ref'] = variant['str_ref']
+
+    if 'str_len' in variant:
+        variant_obj['str_len'] = variant['str_len']
+
+    if 'str_status' in variant:
+        variant_obj['str_status'] = variant['str_status']
 
     gt_types = []
     for sample in variant.get('samples', []):
