@@ -6,7 +6,7 @@ import requests
 from pathlib import Path
 import json
 
-from scout.parse.mme import mme_patients, phenotype_features, genomic_features
+from scout.parse.mme import mme_patients, phenotype_features, genomic_features, omim_disorders
 from scout.update.matchmaker import mme_update
 
 TOKEN = 'abcd'
@@ -103,6 +103,12 @@ class TestMockMatchMakerServer(object):
         case_obj['phenotype_terms'] = hpo_obj
         features = phenotype_features(case_obj)
 
+        # Add a couple of OMIM diagnoses for this case
+        # to create patients disorders for matchmaker
+        case_obj['diagnosis_phenotypes'] = [607504, 145590]
+        disorders = omim_disorders(case_obj)
+        assert len(disorders) == 2
+
         # make sure that this case contains at least a sample
         a_sample = case_obj['individuals'][0].get('display_name')
         assert a_sample
@@ -139,6 +145,7 @@ class TestMockMatchMakerServer(object):
         patient = {
             'features' : features,
             'genomicFeatures' : g_features,
+            'disorders' : disorders,
             'id' : 'test_patient',
             'contact' : { 'name': 'test_user', 'href' : 'test.email@email.com' }
         }
