@@ -32,7 +32,7 @@ PyYaml
 ped_parser
 
 # extras
-intervaltree
+intervaltree<3.0
 
 # chanjo-report
 python-dateutil
