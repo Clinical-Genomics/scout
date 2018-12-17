@@ -8,7 +8,7 @@
 
 <script>
 $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); 
+    $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
 
@@ -158,11 +158,16 @@ $(document).ready(function(){
     </li>
     <li class="list-group-item disabled"><strong>Amino acid changes</strong></li>
     {% for gene in variant.genes %}
-      {% for transcript in gene.transcripts %}
-        {% if transcript.refseq_id %}
-          <li class="list-group-item">{{ transcript.change_str }}</li>
-        {% endif %}
-      {% endfor %}
+        {% for transcript in gene.primary_transcripts %}
+          {% for refseq_id in transcript.refseq_identifiers %}
+              {% if transcript.protein_sequence_name%}
+                <li class="list-group-item">
+                  {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
+                  {{ (transcript.protein_sequence_name or '')|url_decode }}
+                </li>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
     {% endfor %}
     <li class="list-group-item disabled"><strong>GT call</strong></li>
     {% for individual in variant.samples %}
@@ -501,7 +506,7 @@ $(document).ready(function(){
         {{ variant.disease_associated_transcripts|join(', ')
           if variant.disease_associated_transcripts else '-' }}
     </div>
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with refseq ids. 
+    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with refseq ids.
       One ensembl transcript can have multiple refseq ids. Blue color indicates that the ensembl transcript is mapped
       to a transcript that is canonical according to HGNC">
       Transcript overview

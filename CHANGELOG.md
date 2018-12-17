@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Mosaicism tag on variants
 - Show and filter on SweGen frequency for SVs
+- Show annotations for STR variants
 
 
 ## [4.2.2]
@@ -16,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fixed gene panel create/modify from CSV file utf-8 decoding error
 - Updating genes in gene panels now supports edit comments and entry version
+- Gene panel export timeout error
 
 ### Fixed
 - Clinvar fiter not working with human readable clinsig values

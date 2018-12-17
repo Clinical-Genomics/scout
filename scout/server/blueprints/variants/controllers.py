@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+import urllib.parse
 
 from pprint import pprint as pp
 
@@ -859,7 +860,7 @@ def callers(variant_obj, category='snv'):
     for caller in CALLERS[category]:
         if variant_obj.get(caller['id']):
             calls.add((caller['name'], variant_obj[caller['id']]))
-        
+
     return list(calls)
 
 
@@ -909,11 +910,32 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
         view_type = 'variants.variant'
         display_name = variant_obj.get('display_name')
         tx_changes = []
+
         for gene_obj in variant_obj.get('genes', []):
-            for transcript_obj in gene_obj['transcripts']:
-                parse_transcript(gene_obj, transcript_obj)
-                if transcript_obj.get('change_str'):
-                    tx_changes.append("<li>{}</li>".format(transcript_obj['change_str']))
+            for tx_obj in gene_obj['transcripts']:
+                parse_transcript(gene_obj, tx_obj)
+                # select refseq transcripts as "primary"
+                if not tx_obj.get('refseq_id'):
+                    continue
+
+                for refseq_id in tx_obj.get('refseq_identifiers'):
+                    transcript_line = []
+                    if "common" in gene_obj:
+                        transcript_line.append(gene_obj['common']['hgnc_symbol'])
+                    else:
+                        transcript_line.append(gene_obj['hgnc_id'])
+                    transcript_line.append('-'.join([refseq_id, tx_obj['transcript_id']]))
+                    if "coding_sequence_name" in tx_obj:
+                        transcript_line.append(urllib.parse.unquote(tx_obj['coding_sequence_name']))
+                    else:
+                        transcript_line.append('')
+                    if "protein_sequence_name" in tx_obj:
+                        transcript_line.append(urllib.parse.unquote(tx_obj['protein_sequence_name']))
+                    else:
+                        transcript_line.append('')
+
+                    tx_changes.append("<li>{}</li>".format(':'.join(transcript_line)))
+
     else: #SV
         view_type = 'variants.sv_variant'
         display_name = '_'.join([breakpoint_1, variant_obj.get('sub_category').upper()])
