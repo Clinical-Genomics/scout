@@ -6,11 +6,26 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.x.x]
 
+Add new stuff here
+
+## [4.3.0]
+
 ### Added
 - Mosaicism tag on variants
 - Show and filter on SweGen frequency for SVs
 - Show annotations for STR variants
+- Show all transcripts in verification email
+- Added mitochondrial export
+- Adds alternative to search for SVs shorter that the given length
+- Look for 'bcftools' in the `set` field of VCFs
+- Display digenic inheritance from OMIM
+- Displays what refseq transcript that is primary in hgnc
 
+### Fixed
+
+- Archived panels displays the correct date (not retroactive change)
+- Fixed problem with waiting times in gene panel exports
+- Clinvar fiter not working with human readable clinsig values
 
 ## [4.2.2]
 
@@ -18,10 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed gene panel create/modify from CSV file utf-8 decoding error
 - Updating genes in gene panels now supports edit comments and entry version
 - Gene panel export timeout error
-
-### Fixed
-- Clinvar fiter not working with human readable clinsig values
-
 
 ## [4.2.1]
 
