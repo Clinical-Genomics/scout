@@ -110,7 +110,7 @@ class VariantHandler(VariantLoader):
                     mosaicism = True
 
                 manual_inheritance.update(gene_info.get('inheritance_models', []))
-            
+
             variant_gene['disease_associated_transcripts'] = list(disease_associated)
             variant_gene['manual_penetrance'] = manual_penetrance
             variant_gene['mosaicism'] = mosaicism
@@ -135,7 +135,7 @@ class VariantHandler(VariantLoader):
                 # to the variants transcript
                 if not hgnc_transcript.get('refseq_id'):
                     continue
-                
+
                 refseq_id = hgnc_transcript['refseq_id']
                 transcript['refseq_id'] = refseq_id
 
@@ -143,7 +143,7 @@ class VariantHandler(VariantLoader):
                 if refseq_id in disease_associated_no_version:
                     transcript['is_disease_associated'] = True
 
-                # Since a ensemble transcript can have multiple refseq identifiers we add all of 
+                # Since a ensemble transcript can have multiple refseq identifiers we add all of
                 # those
                 transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
 
@@ -337,6 +337,8 @@ class VariantHandler(VariantLoader):
         institute_causatives = self.get_causatives(variant_obj['institute'])
         for causative_id in institute_causatives:
             other_variant = self.variant(causative_id)
+            if not other_variant:
+                continue        
             not_same_case = other_variant['case_id'] != case_obj['_id']
             same_variant = other_variant['display_name'].startswith(variant_id)
             if not_same_case and same_variant:
