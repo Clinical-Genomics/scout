@@ -90,6 +90,8 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['rank_model_version'] = config_data.get('rank_model_version')
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
 
+    config_data['track'] = config_data.get('track', 'rare')
+
     return config_data
 
 
@@ -114,6 +116,9 @@ def add_peddy_information(config_data):
         file_handle = open(config_data['peddy_sex_check'], 'r')
         for ind_info in parse_peddy_sex_check(file_handle):
             sex_check[ind_info['sample_id']] = ind_info
+
+    if not ped_info:
+        return
 
     analysis_inds = {}
     for ind in config_data['samples']:
@@ -220,9 +225,27 @@ def parse_individual(sample):
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
 
+    # Path to downloadable vcf2cytosure file
     vcf2cytosure = sample.get('vcf2cytosure')
     if vcf2cytosure:
         ind_info['vcf2cytosure'] = vcf2cytosure
+
+    # Cancer specific values
+    tumor_type = sample.get('tumor_type')
+    if tumor_type:
+        ind_info['tumor_type'] = tumor_type
+
+    tumor_mutational_burden = sample.get('tmb')
+    if tumor_mutational_burden:
+        ind_info['tmb'] = tumor_mutational_burden
+
+    msi = sample.get('msi')
+    if msi:
+        ind_info['msi'] = msi
+
+    tumor_purity = sample.get('tumor_purity')
+    if tumor_purity:
+        ind_info['tumor_purity'] = tumor_purity
 
     return ind_info
 
@@ -305,6 +328,7 @@ def parse_case(config):
         'peddy_check': config.get('peddy_check'),
         'delivery_report': config.get('delivery_report'),
         'multiqc': config.get('multiqc'),
+        'track': config.get('track', 'rare'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db
