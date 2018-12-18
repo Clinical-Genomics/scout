@@ -15,8 +15,8 @@
   <div class="card-header">
     Panel: <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{panel.name_and_version}}</a>
   </div>
-  <div class="row">
-    <div class="col-sm-6">
+  <div class="card-body">
+    <div class="row">
       <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           Date
@@ -30,10 +30,6 @@
           Institute
           <span class="badge badge-secondary badge-pill">{{ panel.institute.display_name }}</span>
         </li>
-      </ul>
-    </div>
-    <div class="col-sm-6">
-      <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           Panel archived
           {% if panel.is_archived %}
@@ -49,6 +45,7 @@
       </ul>
     </div>
   </div>
+</div>
   <br>
   <div>
     <table class="table table-sm">
