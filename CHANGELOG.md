@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 Add new stuff here
 
+### Fixed
+- Visualization of PDF-exported gene panels
+
 ## [4.3.0]
 
 ### Added
