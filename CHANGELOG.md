@@ -10,6 +10,7 @@ Add new stuff here
 
 ### Fixed
 - Visualization of PDF-exported gene panels
+- Sex and affected status is correctly displayed on general report
 
 ## [4.3.0]
 
