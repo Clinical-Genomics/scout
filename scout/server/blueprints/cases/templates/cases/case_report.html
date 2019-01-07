@@ -103,7 +103,6 @@
             <thead>
               <tr>
                 <th>Sample</th>
-                <th></th>
                 <th>Sex</th>
                 <th>Phenotype</th>
                 <th>Sequencing</th>
@@ -115,19 +114,20 @@
               {% for ind in case.individuals %}
                 <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
                   <td>{{ ind.display_name }}</td>
-                  {% if ind.phenotype==2 %} <!--for later use-->
-                    {% do affected.append(ind.display_name) %}
-                    <td><span class="badge badge-pill badge-danger" title="Affected">A</span>
-                  {% else %}
-                  <td></td>
-                  {% endif %}
                   <td>
                     {{ ind.sex_human }}
                     {% if ind.confirmed_sex %}
                       <span class="glyphicon glyphicon-ok"></span>
                     {% endif %}
                   </td>
-                  <td>{{ ind.phenotype_human }}</td>
+                  <td>
+                  {% if ind.phenotype==2 %} <!--for later use-->
+                    {% do affected.append(ind.display_name) %}
+                    <span class="badge badge-pill badge-danger" title="Affected">A</span>
+                  {% else %}
+                    <span class="badge badge-pill badge-secondary" title="Not affected">NA</span>
+                  {% endif %}
+                  </td>
                   <td>{{ ind.analysis_type|upper }}</td>
                   <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
                   <td>

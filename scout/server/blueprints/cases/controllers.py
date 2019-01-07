@@ -160,6 +160,14 @@ def case_report_content(store, institute_obj, case_obj):
     }
     data = case_obj
 
+    for individual in data['individuals']:
+        try:
+            sex = int(individual.get('sex', 0))
+        except ValueError as err:
+            sex = 0
+        individual['sex_human'] = SEX_MAP[sex]
+        individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
+
     # Add the case comments
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
