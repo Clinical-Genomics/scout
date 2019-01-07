@@ -104,7 +104,7 @@
               <tr>
                 <th>Sample</th>
                 <th>Sex</th>
-                <th>Phenotype</th>
+                <th>Affected</th>
                 <th>Sequencing</th>
                 <th>Ancestry (pred.)</th>
                 <th>Parenthood</th>
@@ -123,9 +123,9 @@
                   <td>
                   {% if ind.phenotype==2 %} <!--for later use-->
                     {% do affected.append(ind.display_name) %}
-                    <span class="badge badge-pill badge-danger" title="Affected">A</span>
+                    <span class="badge badge-pill badge-danger" title="Affected">YES</span>
                   {% else %}
-                    <span class="badge badge-pill badge-secondary" title="Not affected">NA</span>
+                    <span class="badge badge-pill badge-secondary" title="Not affected">NO</span>
                   {% endif %}
                   </td>
                   <td>{{ ind.analysis_type|upper }}</td>
