@@ -11,7 +11,9 @@ Add new stuff here
 ### Fixed
 - Visualization of PDF-exported gene panels
 - Reintroduced the exon/intron number in variant verification email
+- Sex and affected status is correctly displayed on general report
 - Force number validation in SV filter by size
+
 
 ## [4.3.0]
 
