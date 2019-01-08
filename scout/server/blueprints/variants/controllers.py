@@ -925,6 +925,12 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
                     else:
                         transcript_line.append(gene_obj['hgnc_id'])
                     transcript_line.append('-'.join([refseq_id, tx_obj['transcript_id']]))
+                    if "exon" in tx_obj:
+                        transcript_line.append(''.join([ "exon", tx_obj["exon"]]))
+                    elif "intron" in tx_obj:
+                        transcript_line.append(''.join([ "intron", tx_obj["intron"]]))
+                    else:
+                        transcript_line.append('intergenic')
                     if "coding_sequence_name" in tx_obj:
                         transcript_line.append(urllib.parse.unquote(tx_obj['coding_sequence_name']))
                     else:
