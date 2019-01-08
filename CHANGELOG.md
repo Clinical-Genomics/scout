@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 Add new stuff here
 
+### Added
+- Instructions to install cairo and pango libs from WeasyPrint page
+
 ### Fixed
 - Visualization of PDF-exported gene panels
 - Reintroduced the exon/intron number in variant verification email
