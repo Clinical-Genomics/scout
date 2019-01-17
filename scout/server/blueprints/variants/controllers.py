@@ -50,7 +50,6 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         'more_variants': more_variants,
     }
 
-
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
     skip_count = (per_page * max(page - 1, 0))

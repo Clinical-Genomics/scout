@@ -426,6 +426,17 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
 
     return (individual_obj['display_name'], individual_obj['vcf2cytosure'])
 
+def gene_variants(store, variants_query, page=1, per_page=50):
+    """Pre-process list of variants."""
+    variant_count = variants_query.count()
+    skip_count = per_page * max(page - 1, 0)
+    more_variants = True if variant_count > (skip_count + per_page) else False
+    variant_res = variants_query.skip(skip_count).limit(per_page)
+
+    return {
+        'variants': variant_res,
+        'more_variants': more_variants,
+    }
 
 def multiqc(store, institute_id, case_name):
     """Find MultiQC report for the case."""

@@ -248,6 +248,36 @@ class VariantHandler(VariantLoader):
                                                variant_obj['position'])
         return variant_obj
 
+    def gene_variants(self, institute_obj=None, query=None,
+                   category='snv', variant_type='clinical',
+                   nr_of_variants=50, skip=0):
+        """Return all variants seen in a given gene.
+
+        If skip not equal to 0 skip the first n variants.
+
+        Arguments:
+            query(dict): A dictionary with querys for the database, including
+            variant_type: 'clinical', 'research'
+            category(str): 'sv', 'str', 'snv' or 'cancer'
+            nr_of_variants(int): if -1 return all variants
+            skip(int): How many variants to skip
+            institute_id(str): institute id (unused)
+        """
+
+        mongo_variant_query = self.build_variant_query(query=query,
+                                   category=category, variant_type=variant_type)
+
+        sorting = [('rank_score', pymongo.DESCENDING)]
+
+        result = self.variant_collection.find(
+            mongo_variant_query,
+            skip=skip,
+            limit=nr_of_variants
+            ).sort(sorting)
+
+        return result
+
+
     def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute
 
@@ -338,7 +368,7 @@ class VariantHandler(VariantLoader):
         for causative_id in institute_causatives:
             other_variant = self.variant(causative_id)
             if not other_variant:
-                continue        
+                continue
             not_same_case = other_variant['case_id'] != case_obj['_id']
             same_variant = other_variant['display_name'].startswith(variant_id)
             if not_same_case and same_variant:

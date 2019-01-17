@@ -46,9 +46,9 @@ INDEXES = {
             ),
         IndexModel([
             ('hgnc_symbols', ASCENDING),
-            ('rank_score', DESCENDING)],
+            ('rank_score', DESCENDING),
             ('category', ASCENDING),
-            ('variant_type', ASCENDING),
+            ('variant_type', ASCENDING)],
             name="hgncsymbol_rankscore_category_varianttype",
             background=True,
             ),

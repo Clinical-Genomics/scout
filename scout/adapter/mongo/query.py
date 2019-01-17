@@ -6,6 +6,40 @@ from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 
 class QueryHandler(object):
 
+    def build_variant_query(self, query=None, category='snv', variant_type='clinical'):
+        """Build a mongo query across multiple cases.
+
+        Beware that unindexed queries against a large variant collection will
+        be extremely slow.
+
+        Currently indexed query options:
+            hgnc_symbols
+            rank_score
+        """
+
+        query = query or {}
+        mongo_variant_query = {}
+
+        logger.debug("Building a mongo query for %s" % query)
+
+        hgnc_symbols = query.get('hgnc_symbols')
+        if not hgnc_symbols:
+            logger.debug("No HGNC symbols asked. Leaving query blank (%s)." % mongo_variant_query)
+            return mongo_variant_query
+
+        mongo_variant_query['hgnc_symbols'] = hgnc_symbols
+
+        mongo_variant_query['variant_type'] = variant_type
+
+        mongo_variant_query['category'] = category
+
+        rank_score = query.get('rank_score') or 15
+
+        mongo_variant_query['rank_score'] = {'$gt': rank_score}
+        logger.debug("Querying %s" % mongo_variant_query)
+
+        return mongo_variant_query
+
     def build_query(self, case_id, query=None, variant_ids=None, category='snv'):
         """Build a mongo query
 
