@@ -23,9 +23,9 @@ class QueryHandler(object):
         logger.debug("Building a mongo query for %s" % query)
 
         hgnc_symbols = query.get('hgnc_symbols')
-        if not hgnc_symbols:
-            logger.debug("No HGNC symbols asked. Leaving query blank (%s)." % mongo_variant_query)
-            return mongo_variant_query
+#        if not hgnc_symbols:
+#            logger.debug("No HGNC symbols asked. Leaving query blank (%s)." % mongo_variant_query)
+#            return mongo_variant_query
 
         mongo_variant_query['hgnc_symbols'] = {'$in': hgnc_symbols}
 
