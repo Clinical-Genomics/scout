@@ -27,15 +27,15 @@ class QueryHandler(object):
             logger.debug("No HGNC symbols asked. Leaving query blank (%s)." % mongo_variant_query)
             return mongo_variant_query
 
-        mongo_variant_query['hgnc_symbols'] = hgnc_symbols
+        mongo_variant_query['hgnc_symbols'] = {'$in': hgnc_symbols}
 
-        mongo_variant_query['variant_type'] = variant_type
+        mongo_variant_query['variant_type'] = {'$in': variant_type}
 
         mongo_variant_query['category'] = category
 
         rank_score = query.get('rank_score') or 15
 
-        mongo_variant_query['rank_score'] = {'$gt': rank_score}
+        mongo_variant_query['rank_score'] = {'$gte': rank_score}
         logger.debug("Querying %s" % mongo_variant_query)
 
         return mongo_variant_query

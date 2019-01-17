@@ -147,7 +147,7 @@ def causatives(institute_id):
 
     return dict(institute=institute_obj, variant_groups=all_variants)
 
-@cases_bp.route('/<institute_id>/gene_variants')
+@cases_bp.route('/<institute_id>/gene_variants', methods=['GET','POST'])
 @templated('cases/gene_variants.html')
 def gene_variants(institute_id):
     """Display a list of SNV variants."""
@@ -157,7 +157,7 @@ def gene_variants(institute_id):
 
     # populate form, conditional on request method
     if(request.method == "POST"):
-            form = GeneVariantFilterForm(request.form)
+            form = GeneVariantFiltersForm(request.form)
     else:
         form = GeneVariantFiltersForm(request.args)
 
