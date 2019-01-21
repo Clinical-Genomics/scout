@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add new stuff here
 
 ### Added
+- Show calls from all callers even if call is not available
 - Instructions to install cairo and pango libs from WeasyPrint page
 
 ### Fixed
