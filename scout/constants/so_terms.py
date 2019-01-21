@@ -62,4 +62,5 @@ SEVERE_SO_TERMS = (
     'synonymous_variant',
     'start_retained_variant',
     'stop_retained_variant',
+    'coding_sequence_variant'
 )
