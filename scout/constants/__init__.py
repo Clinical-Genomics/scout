@@ -79,8 +79,8 @@ CALLERS = {
         },
         {
             'id': 'bcftools',
-            'name': 'SAMtools',
-            }
+            'name': 'Bcftools',
+        }
     ],
     'cancer': [{
         'id': 'mutect',
