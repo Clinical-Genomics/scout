@@ -12,6 +12,7 @@ Add new stuff here
 - Instructions to install cairo and pango libs from WeasyPrint page
 
 ### Fixed
+- Fixed code to extract variant conservation (gerp, phyloP, phastCons)
 - Visualization of PDF-exported gene panels
 - Reintroduced the exon/intron number in variant verification email
 - Sex and affected status is correctly displayed on general report
