@@ -858,8 +858,11 @@ def callers(variant_obj, category='snv'):
     """Return info about callers."""
     calls = set()
     for caller in CALLERS[category]:
+        LOG.info('CALLER:{}'.format(caller))
         if variant_obj.get(caller['id']):
             calls.add((caller['name'], variant_obj[caller['id']]))
+        else:
+            calls.add((caller['name'], 'Not Used'))
 
     return list(calls)
 
