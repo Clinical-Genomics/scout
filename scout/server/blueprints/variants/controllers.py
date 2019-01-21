@@ -861,7 +861,7 @@ def callers(variant_obj, category='snv'):
         if variant_obj.get(caller['id']):
             calls.add((caller['name'], variant_obj[caller['id']]))
         else:
-            calls.add((caller['name'], 'Not Used'))
+            calls.add((caller['name'], 'Not available'))
 
     return list(calls)
 
