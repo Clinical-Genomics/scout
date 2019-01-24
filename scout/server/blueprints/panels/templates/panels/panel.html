@@ -67,9 +67,12 @@
         <li class="list-group-item">
           Coverage overview
           <span class="pull-right">
-            <a href="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.individuals|map(attribute='individual_id')|list, gene_id=panel.genes|map(attribute='hgnc_id')|join(',')) }}" target="_blank">
+            <a class="pull-right" href="#" onclick="document.getElementById('report-genes-form').submit();">
               {{ case.display_name }}
             </a>
+            <form id="report-genes-form" action="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.individuals|map(attribute='individual_id')|list) }}" target="_blank" method="POST">
+              <input type="hidden" name="gene_ids" value="{{ panel.genes|map(attribute='hgnc_id')|join(',') }}">
+            </form>
           </span>
         </li>
       {% endif %}
