@@ -95,7 +95,7 @@
             </li>
             </div>
         </div>
-        
+
         {% if record.phenotypes %}
         <div class="col-md-4">
             <div class="panel panel-default">
@@ -173,6 +173,12 @@
       </span>
     </li>
     <li class="list-group-item">
+      ClinGen
+      <span class="pull-right">
+        <a target="_blank" href={{ gene.hgnc_link }} target="_blank"> {{ gene.hgnc_id }}</a>
+      </span>
+    </li>
+    <li class="list-group-item">
       String
       <span class="pull-right">
         <a target="_blank" href={{ gene.string_link }} target="_blank"> {{ gene.ensembl_id }}</a>
@@ -199,8 +205,8 @@
     <ul class="list-group">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-            <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a> 
-            /  {{ transcript.refseq_identifiers|join(', ') or '-' }} 
+            <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a>
+            /  {{ transcript.refseq_identifiers|join(', ') or '-' }}
             {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
 		  <span class="pull-right">{{ transcript['position'] }}</span>
         </li>
