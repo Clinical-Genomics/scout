@@ -171,7 +171,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
 
     # parse_gene function is not called for SVs, but a link to ensembl gene is required
     for gene_obj in variant_obj['genes']:
-        if gene_obj['common']:
+        if gene_obj.get('common'):
             ensembl_id = gene_obj['common']['ensembl_id']
             try:
                 build = int(gene_obj['common'].get('build','37'))
@@ -584,7 +584,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
 
         # Build strings for the disease associated transcripts from gene panel
         for refseq_id in gene_obj.get('disease_associated_transcripts', []):
-            hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
+            hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj.get('common') else
                            gene_obj['hgnc_id'])
             transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
             variant_obj['disease_associated_transcripts'].append(transcript_str)
@@ -643,7 +643,7 @@ def parse_gene(gene_obj, build=None):
     """Parse variant genes."""
     build = build or 37
 
-    if gene_obj['common']:
+    if gene_obj.get('common'):
         add_gene_links(gene_obj, build)
         refseq_transcripts = []
         for tx_obj in gene_obj['transcripts']:
