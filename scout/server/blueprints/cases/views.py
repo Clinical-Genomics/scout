@@ -126,6 +126,38 @@ def clinvar_submissions(institute_id):
     return data
 
 
+@cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
+def matchmaker_add(institute_id, case_name):
+
+    mme_save_options = ['sex', 'features', 'disorders']
+    for index, item in enumerate(mme_save_options):
+        if item in request.form:
+            mme_save_options[index] = True
+        else:
+            mme_save_options[index] = False
+    genomic_features = request.form.get('genomicfeatures')
+    genes_only = True # upload to matchmaker only gene names
+    if genomic_features == 'variants':
+        genes_only = False # upload to matchmaker both variants and gene names
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+
+    add_result = controllers.mme_add(store=store, user_obj=user_obj, case_obj=case_obj,
+        add_gender=mme_save_options[0], add_features=mme_save_options[1],
+            add_disorders=mme_save_options[2], genes_only=genes_only)
+
+    flash(add_result)
+
+    return redirect(request.referrer)
+
+
+
+
+
+
+
+
 @cases_bp.route('/<institute_id>/causatives')
 @templated('cases/causatives.html')
 def causatives(institute_id):

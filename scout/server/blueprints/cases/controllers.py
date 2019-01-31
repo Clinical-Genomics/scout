@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from xlsxwriter import Workbook
 from flask import url_for
 from flask_mail import Message
+from flask import current_app
 import query_phenomizer
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
@@ -17,6 +18,8 @@ from scout.server.utils import institute_and_case
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import sv_variant
+from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features
+from scout.update.matchmaker import mme_update
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
@@ -119,7 +122,7 @@ def case(store, institute_obj, case_obj):
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
 
-    case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['display_name'])
+    case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
 
     # Phenotype groups can be specific for an institute, there are some default groups
     pheno_groups = institute_obj.get('phenotype_groups') or PHENOTYPE_GROUPS
@@ -416,6 +419,7 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
+
 def vcf2cytosure(store, institute_id, case_name, individual_id):
     """vcf2cytosure CGH file for inidividual."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -492,3 +496,83 @@ def get_sanger_unevaluated(store, institute_id, user_id):
             unevaluated.append(unevaluated_by_case)
 
     return unevaluated
+
+
+def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, genes_only):
+    """Add a patient to MatchMaker server
+
+    Args:
+        store(adapter.MongoAdapter)
+        user_obj(dict) a scout user object (to be added as matchmaker contact)
+        case_obj(dict) a scout case object
+        add_gender(bool) if True case gender will be included in matchmaker
+        add_features(bool) if True HPO features will be included in matchmaker
+        add_disorders(bool) if True OMIM diagnoses will be included in matchmaker
+        genes_only(bool) if True only genes and not variants will be shared
+
+    Returns:
+        submitted_info(dict) info submitted to MatchBox and its responses
+    """
+    # Required params for sending an add request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_accepts = current_app.config.get('MME_ACCEPTS')
+    mme_token = current_app.config.get('MME_TOKEN')
+
+    if not mme_base_url or not mme_accepts or not mme_token:
+        return 'Please check that Matchmaker connection parameters are valid'
+
+    features = []   # this is the list of HPO terms
+    disorders = []  # this is the list of OMIM diagnoses
+
+     # create contact dictionary
+    contact_info = {
+        'name' : user_obj['name'],
+        'href' : ''.join( ['mailto:',user_obj['email']] ),
+        'institution' : 'Scout software user, Science For Life Laboratory, Stockholm, Sweden'
+    }
+    if add_features: # create features dictionaries
+        features = hpo_terms(case_obj)
+
+    if add_disorders: # create OMIM disorders dictionaries
+        disorders = omim_terms(case_obj)
+
+    # send a POST request and collect response for each affected individual in case
+    server_responses = []
+
+    submitted_info = {
+        'contact' : contact_info,
+        'sex' : add_gender,
+        'features' : features,
+        'disorders' : disorders,
+        'genes_only' : genes_only,
+    }
+    for individual in case_obj.get('individuals'):
+        if not individual['phenotype'] == 2: # include only affected individuals
+            continue
+
+        patient = {
+            'contact' : contact_info,
+            'id' : '.'.join([case_obj['_id'], individual.get('individual_id')]), # This is a required field form MME
+            'label' : '.'.join([case_obj['display_name'], individual.get('display_name')]),
+            'features' : features,
+            'disorders' : disorders
+        }
+        if add_gender:
+            if individual['sex'] == '1':
+                patient['sex'] = 'MALE'
+            else:
+                patient['sex'] = 'FEMALE'
+
+        g_features = genomic_features(store, case_obj, individual.get('display_name'), genes_only)
+        patient['genomicFeatures'] = g_features
+
+        # send add request to server and capture response
+        resp = mme_update(mme_base_url, mme_accepts, 'add', patient, mme_token)
+
+        server_responses.append({
+                'patient_id': patient['id'],
+                'message': resp.get('message'),
+                'status_code' : resp.get('status_code')
+            })
+    submitted_info['server_responses'] = server_responses
+    return submitted_info
