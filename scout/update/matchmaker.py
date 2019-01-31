@@ -47,8 +47,8 @@ def mme_update(mme_base_url, content_type, update_action, patient, token):
             headers = headers,
             data = json.dumps(data) #not really required for DELETE
         )
-        LOG.info('IM HERE!!!')
-        json_response = {'message':resp.text}
+        json_response = resp.json()
+        json_response['status_code'] = resp.status_code
 
     except Exception as err:
         LOG.info('An error occurred while sending HTTP request to server ({})'.format(err))
