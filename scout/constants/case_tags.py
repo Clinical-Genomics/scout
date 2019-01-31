@@ -1,6 +1,6 @@
 ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown')
 
-SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown', 0: 'unknown', 
+SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown', 0: 'unknown',
           '1': 'male', '2': 'female', '0': 'unknown'}
 REV_SEX_MAP = {'male':'1', 'female': '2', 'unknown': '0'}
 
@@ -41,6 +41,7 @@ VERBS_MAP = {
     "dismiss_variant": "Dismissed variant for",
     "mosaic_tags": "Updated mosaic tags for",
     "update_default_panels": "updated default panels for",
+    "mme_add": "Exported to MatchMaker Exchange patient",
 }
 
 VERBS = list(VERBS_MAP.keys())

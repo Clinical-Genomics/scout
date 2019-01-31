@@ -37,7 +37,7 @@ class CaseHandler(object):
             status(str)
             phenotype_terms(bool): Fetch all cases with phenotype terms
             pinned(bool): Fetch all cases with pinned variants
-            name_query(str): Could be hpo term, user, part of display name, 
+            name_query(str): Could be hpo term, user, part of display name,
                              part of inds or part of synopsis
 
         Yields:
@@ -101,12 +101,12 @@ class CaseHandler(object):
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases
-        
+
         This function will change when we migrate to 3.7.1
-        
+
         Args:
             collaborator(str): Institute id
-        
+
         Returns:
             nr_cases(int)
         """
@@ -114,12 +114,12 @@ class CaseHandler(object):
 
         if institute_id:
             query['collaborators'] = institute_id
-        
+
         LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = self.case_collection.find(query).count()
 
         return nr_cases
-    
+
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
                                  phenotype_ids=None, build='37'):
@@ -305,6 +305,7 @@ class CaseHandler(object):
 
         return case_obj
 
+
     def _add_case(self, case_obj):
         """Add a case to the database
            If the case already exists exception is raised
@@ -336,6 +337,7 @@ class CaseHandler(object):
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
+            - mme_submission: If case was submitted to MatchMaker Exchange
 
             Args:
                 case_obj(dict): The new case information
@@ -376,6 +378,7 @@ class CaseHandler(object):
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
+                    'mme_submission': case_obj.get('mme_submission'),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER

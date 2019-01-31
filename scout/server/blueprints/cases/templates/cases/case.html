@@ -494,16 +494,6 @@
       {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
         <p>This case is in MatchMaker!</p>
         <div class="row">
-          <div class="col-xs-6">
-            <div>
-              <a class="btn btn-default form-control" href="{{ url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name, match_type='internal') }}">Internal matches</a>
-            </div>
-            </div>
-            <div class="col-xs-6">
-                <div">
-                  <a class="btn btn-default form-control" href="{{ url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name, match_type='external') }}">External matches</a>
-                </div>
-            </div>
         </div>
         <p class="text-center"><a href="#mme_form" data-toggle="collapse">modify or delete submission</a></p>
       {% else %} <!-- display option to submit case to MatchMaker -->

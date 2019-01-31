@@ -147,15 +147,31 @@ def matchmaker_add(institute_id, case_name):
         add_gender=mme_save_options[0], add_features=mme_save_options[1],
             add_disorders=mme_save_options[2], genes_only=genes_only)
 
-    flash(add_result)
+    # flash MME responses (one for each patient posted)
+    n_succes_response = 0
+    n_inserted = 0
+    n_updated = 0
+    category = 'warning'
+
+    for resp in add_result['server_responses']:
+        message = resp.get('message')
+        if resp.get('status_code') == 200:
+            n_succes_response += 1
+        else:
+            flash('an error occurred while adding patient to matchmaker: {}'.format(message), 'warning')
+        if message == 'Patient was successfully updated.':
+            n_updated +=1
+        elif message == 'Patient was successfully inserted into database.':
+            n_inserted +=1
+
+    # if at least one patient was inserted or updates into matchmaker, save submission at the case level:
+    if n_inserted or n_updated:
+        category = 'success'
+        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
+    flash('Number of new patients in matchmaker:{0}, number of updated records:{1}, number of failed requests:{2}'.format(
+            n_inserted, n_updated, len(add_result.get('server_responses')) - n_succes_response), category)
 
     return redirect(request.referrer)
-
-
-
-
-
-
 
 
 @cases_bp.route('/<institute_id>/causatives')
