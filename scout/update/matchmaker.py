@@ -6,15 +6,15 @@ from werkzeug.datastructures import Headers
 
 LOG = logging.getLogger(__name__)
 
-def mme_update(mme_base_url, content_type, update_action, patient, token):
+def mme_update(mme_base_url, update_action, patient, token, content_type=None):
     """Add or remove a patient from MatchMaker server
 
     Args:
         mme_base_url(str): base URL of MME service
-        content_type(str): MME request Content-Type
         update_action(str): 'add' or 'delete' to either add or delete a patient
         patient: a patient object (if update_action is 'add') or an id(str)
         token(str): MME server authorization token
+        content_type(str): MME request Content-Type
 
     Returns:
         json_response: a json-formatted server response

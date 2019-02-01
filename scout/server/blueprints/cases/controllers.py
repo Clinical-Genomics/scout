@@ -567,7 +567,8 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
         patient['genomicFeatures'] = g_features
 
         # send add request to server and capture response
-        resp = mme_update(mme_base_url, mme_accepts, 'add', patient, mme_token)
+        resp = mme_update(mme_base_url=mme_base_url, update_action='add', patient=patient, token=mme_token,
+                content_type=mme_accepts)
 
         server_responses.append({
                 'patient_id': patient['id'],
@@ -576,3 +577,41 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
             })
     submitted_info['server_responses'] = server_responses
     return submitted_info
+
+
+def mme_delete(store, case_obj):
+    """Delete all affected samples for a case from MatchMaker
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict) a scout case object
+
+    Returns:
+         server_responses(list): a list of object of this type:
+                    {
+                        'patient_id': patient_id
+                        'message': server_message,
+                        'status_code': server_status_code
+                    }
+    """
+    # Required params for sending a delete request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_token = current_app.config.get('MME_TOKEN')
+    server_responses = []
+
+    if not mme_base_url or not mme_token:
+        return 'Please check that Matchmaker connection parameters are valid'
+
+    # for each patient of the case in matchmaker
+    for patient_id in case_obj['mme_submission']['patient_id']:
+        # send delete request to server and capture server's response
+        resp = mme_update(mme_base_url=mme_base_url, update_action='delete', patient=patient_id,
+                token=mme_token)
+
+        server_responses.append({
+            'patient_id': patient_id,
+            'message': resp.get('message'),
+            'status_code': resp.get('status_code')
+        })
+
+    return server_responses

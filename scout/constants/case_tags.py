@@ -41,7 +41,8 @@ VERBS_MAP = {
     "dismiss_variant": "Dismissed variant for",
     "mosaic_tags": "Updated mosaic tags for",
     "update_default_panels": "updated default panels for",
-    "mme_add": "Exported to MatchMaker Exchange patient",
+    "mme_add": "Exported to MatchMaker patient",
+    "mme_remove": "Removed from MatchMaker patient",
 }
 
 VERBS = list(VERBS_MAP.keys())

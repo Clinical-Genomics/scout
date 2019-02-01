@@ -174,6 +174,30 @@ def matchmaker_add(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route('/<institute_id>/<case_name>/mme_delete', methods=['POST'])
+def matchmaker_delete(institute_id, case_name):
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    delete_result = controllers.mme_delete(store, case_obj)
+
+    n_deleted = 0
+    category = 'warning'
+
+    for resp in delete_result:
+        if resp['status_code'] == 200:
+            n_deleted += 1
+        else:
+            flash(resp['message'], category)
+    if n_deleted:
+        category = 'success'
+        # update case by removing mme submission
+        # and create events for patients deletion from MME
+        user_obj = store.user(current_user.email)
+        store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
+    flash('Number of patients deleted from Matchmaker: {} out of {}'.format(n_deleted, len(delete_result)), category)
+    return redirect(request.referrer)
+
+
 @cases_bp.route('/<institute_id>/causatives')
 @templated('cases/causatives.html')
 def causatives(institute_id):

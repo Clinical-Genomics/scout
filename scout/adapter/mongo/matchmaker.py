@@ -48,3 +48,28 @@ class MMEHandler(object):
                     level='specific')
 
         return updated_case
+
+
+    def case_mme_delete(self, case_obj, user_obj):
+        """Delete a MatchMaker submission from a case record
+           and creates the related event.
+        Args:
+            case_obj(dict): a scout case object
+            user_obj(dict): a scout user object
+        Returns:
+            updated_case(dict): the updated scout case
+
+        """
+        institute_obj = self.institute(case_obj['owner'])
+        # create events for subjects removal from Matchmaker this cas
+        for individual in case_obj['individuals']:
+            if individual['phenotype'] == 2: # affected
+                # create event for patient removal
+                self.create_event(institute=institute_obj, case=case_obj, user=user_obj,
+                    link='', category='case', verb='mme_remove', subject=individual['display_name'],
+                    level='specific')
+
+        # Reset mme_submission field for this case
+        case_obj['mme_submission'] = None
+        updated_case = self.update_case(case_obj)
+        return updated_case
