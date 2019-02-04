@@ -141,11 +141,28 @@ def matchmaker_add(institute_id, case_name):
         genes_only = False # upload to matchmaker both variants and gene names
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # If there are no genomic features nor HPO terms to share for this case, abort
+    if not case_obj.get('suspects') and not mme_save_options[1]:
+        flash('In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)', 'danger')
+        return redirect(request.referrer)
+
     user_obj = store.user(current_user.email)
+
+    # Required params for sending an add request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_accepts = current_app.config.get('MME_ACCEPTS')
+    mme_token = current_app.config.get('MME_TOKEN')
+
+    if not mme_base_url or not mme_accepts or not mme_token:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+
 
     add_result = controllers.mme_add(store=store, user_obj=user_obj, case_obj=case_obj,
         add_gender=mme_save_options[0], add_features=mme_save_options[1],
-            add_disorders=mme_save_options[2], genes_only=genes_only)
+            add_disorders=mme_save_options[2], genes_only=genes_only,
+            mme_base_url = mme_base_url, mme_accepts=mme_accepts, mme_token=mme_token)
 
     # flash MME responses (one for each patient posted)
     n_succes_response = 0
@@ -178,7 +195,14 @@ def matchmaker_add(institute_id, case_name):
 def matchmaker_delete(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    delete_result = controllers.mme_delete(store, case_obj)
+    # Required params for sending a delete request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_token = current_app.config.get('MME_TOKEN')
+    if not mme_base_url or not mme_token:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+
+    delete_result = controllers.mme_delete(store, case_obj, mme_base_url, mme_token)
 
     n_deleted = 0
     category = 'warning'

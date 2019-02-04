@@ -105,7 +105,7 @@ def genomic_features(store, case_obj, sample_name, genes_only):
         if not hgnc_genes:
             continue
         for hgnc_id in hgnc_genes:
-            gene_obj = store.hgnc_gene(hgnc_id, build)
+            gene_obj = store.hgnc_gene(hgnc_id)
             if not gene_obj:
                 continue
             g_feature = {
@@ -128,11 +128,11 @@ def genomic_features(store, case_obj, sample_name, genes_only):
             }
             zygosity = None
             # collect zygosity for the given sample
-            zygosities = var['samples'] # it's list with zygosity situation for each sample of the case
+            zygosities = var['samples'] # it's a list with zygosity situation for each sample of the case
             for zyg in zygosities:
                 if zyg.get('display_name') == sample_name: # sample of interest
                     zygosity = zyg['genotype_call'].count('1')
             g_feature['zygosity'] = zygosity
             g_features.append(g_feature)
-            
+
     return g_features

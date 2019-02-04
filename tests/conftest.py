@@ -48,6 +48,7 @@ from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
 
 from scout.models.hgnc_map import HgncGene
 
+
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
@@ -1214,3 +1215,21 @@ def hpo_genes(request, hpo_genes_handle):
     """Get the exac genes"""
     print('')
     return parse_hpo_genes(hpo_genes_handle)
+
+
+#############################################################
+#################### MatchMaker Fixtures ####################
+#############################################################
+
+@pytest.fixture(scope='function')
+def mme_submission():
+    mme_subm_obj = {
+        'patient_id' : ['internal_id.ADM1059A2'],
+        'created_at' : 'sometime',
+        'updated_at' : 'sometime',
+        'sex' : True,
+        'features' : [],
+        'disorders' : [],
+        'genes_only' : False
+    }
+    return mme_subm_obj

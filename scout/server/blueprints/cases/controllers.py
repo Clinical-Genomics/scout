@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 from xlsxwriter import Workbook
 from flask import url_for
 from flask_mail import Message
-from flask import current_app
 import query_phenomizer
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
@@ -498,7 +497,8 @@ def get_sanger_unevaluated(store, institute_id, user_id):
     return unevaluated
 
 
-def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, genes_only):
+def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, genes_only,
+    mme_base_url, mme_accepts, mme_token):
     """Add a patient to MatchMaker server
 
     Args:
@@ -509,20 +509,20 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
         add_features(bool) if True HPO features will be included in matchmaker
         add_disorders(bool) if True OMIM diagnoses will be included in matchmaker
         genes_only(bool) if True only genes and not variants will be shared
+        mme_base_url(str) base url of the MME server
+        mme_accepts(str) accepted content of the request
+        mme_token(str) auth token of the MME server
 
     Returns:
         submitted_info(dict) info submitted to MatchBox and its responses
     """
-    # Required params for sending an add request to MME:
-    mme_base_url = current_app.config.get('MME_URL')
-    mme_accepts = current_app.config.get('MME_ACCEPTS')
-    mme_token = current_app.config.get('MME_TOKEN')
 
     if not mme_base_url or not mme_accepts or not mme_token:
         return 'Please check that Matchmaker connection parameters are valid'
 
     features = []   # this is the list of HPO terms
     disorders = []  # this is the list of OMIM diagnoses
+    g_features = []
 
      # create contact dictionary
     contact_info = {
@@ -547,7 +547,7 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
         'genes_only' : genes_only,
     }
     for individual in case_obj.get('individuals'):
-        if not individual['phenotype'] == 2: # include only affected individuals
+        if not individual['phenotype'] in  [2, 'affected']: # include only affected individuals
             continue
 
         patient = {
@@ -563,8 +563,9 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
             else:
                 patient['sex'] = 'FEMALE'
 
-        g_features = genomic_features(store, case_obj, individual.get('display_name'), genes_only)
-        patient['genomicFeatures'] = g_features
+        if case_obj.get('suspects'):
+            g_features = genomic_features(store, case_obj, individual.get('display_name'), genes_only)
+            patient['genomicFeatures'] = g_features
 
         # send add request to server and capture response
         resp = mme_update(mme_base_url=mme_base_url, update_action='add', patient=patient, token=mme_token,
@@ -579,12 +580,14 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
     return submitted_info
 
 
-def mme_delete(store, case_obj):
+def mme_delete(store, case_obj, mme_base_url, mme_token):
     """Delete all affected samples for a case from MatchMaker
 
     Args:
         store(adapter.MongoAdapter)
         case_obj(dict) a scout case object
+        mme_base_url(str) base url of the MME server
+        mme_token(str) auth token of the MME server
 
     Returns:
          server_responses(list): a list of object of this type:
@@ -594,9 +597,6 @@ def mme_delete(store, case_obj):
                         'status_code': server_status_code
                     }
     """
-    # Required params for sending a delete request to MME:
-    mme_base_url = current_app.config.get('MME_URL')
-    mme_token = current_app.config.get('MME_TOKEN')
     server_responses = []
 
     if not mme_base_url or not mme_token:
