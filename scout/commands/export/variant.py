@@ -1,14 +1,77 @@
+import os
 import click
 import logging
+import datetime
 
 from bson.json_util import dumps
+from xlsxwriter import Workbook
 
-from scout.export.variant import export_variants
+from scout.export.variant import export_variants, export_verified_variants
 from .utils import json_option
 
-from scout.constants.variants_export import VCF_HEADER
+from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 
 LOG = logging.getLogger(__name__)
+
+
+@click.command('verified', short_help='Export validated variants')
+@click.option('-c', '--collaborator',
+        help="Specify what collaborator to export variants from. Defaults to cust000",
+)
+@click.option('--outpath',
+              help='Path to output file'
+)
+@click.option('--test',
+              help='Use this flag to test the function',
+              is_flag=True
+)
+@click.pass_context
+def verified(context, collaborator, test, outpath=None):
+    """Export variants which have been verified for an institute
+        and write them to an excel file.
+
+    Args:
+        collaborator(str): institute id
+        test(bool): True if the function is called for testing purposes
+        outpath(str): path to output file
+
+    Returns:
+        written_files(int): number of written or simulated files
+    """
+    collaborator = collaborator or 'cust000'
+    LOG.info('Exporting verified variants for cust {}'.format(collaborator))
+
+    adapter = context.obj['adapter']
+    verified_vars = list(adapter.verified(institute_id=collaborator))
+    LOG.info('FOUND {} verified variants for institute {}'.format(len(verified_vars), collaborator))
+
+    if not verified_vars:
+        LOG.warning('There are no verified variants for institute {} in database!'.format(collaborator))
+
+    document_lines = export_verified_variants(verified_vars)
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    #LOG.info(verified_vars)
+
+    for line in document_lines:
+        LOG.info(line)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @click.command('variants', short_help='Export variants')
 @click.option('-c', '--collaborator',

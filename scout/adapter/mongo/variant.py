@@ -248,6 +248,34 @@ class VariantHandler(VariantLoader):
                                                variant_obj['position'])
         return variant_obj
 
+
+    def verified(self, institute_id):
+        """Return all verified variants for a given institute
+
+        Args:
+            institute_id(str): institute id
+
+        Returns:
+            res(pymongo.Cursor): A Cursor with all verified variants
+        """
+        lookup = { # Looking up in variant case as well
+                '$lookup' : {
+                    'from' : 'case',
+                    'localField' : 'case_id',
+                    'foreignField' : '_id',
+                    'as' : 'case_obj'
+        }}
+        match = {
+            '$match': {
+                'institute' : institute_id,
+                'validation': {'$in' : ['False positive', 'True positive']}
+            }
+        }
+        pipeline = [lookup, match]
+        res = self.variant_collection.aggregate(pipeline)
+        return res
+
+
     def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute
 
@@ -338,7 +366,7 @@ class VariantHandler(VariantLoader):
         for causative_id in institute_causatives:
             other_variant = self.variant(causative_id)
             if not other_variant:
-                continue        
+                continue
             not_same_case = other_variant['case_id'] != case_obj['_id']
             same_variant = other_variant['display_name'].startswith(variant_id)
             if not_same_case and same_variant:

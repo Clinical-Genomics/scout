@@ -27,3 +27,20 @@ VCF_HEADER = [
     '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">',
     '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO'
 ]
+
+VERIFIED_VARIANTS_HEADER= [
+    'database_id',
+    'variant_type',
+    'display_name',
+    'case_name',
+    'Position',
+    'Change',
+    'Canonical_transcript_HGVS'
+    'Genes', # This is going to be a list flattened to a string
+    'Protein effect',
+    'Variant_callers', # This is going to be a list flattened to a string
+    'Rank_score',
+    'CADD_score',
+    'Samples'
+    'Sample_genotype', # This is going to be a list flattened to a string
+]

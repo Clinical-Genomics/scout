@@ -4,7 +4,7 @@ import urllib.parse
 
 LOG = logging.getLogger(__name__)
 
-from scout.constants import (CHROMOSOMES, CHROMOSOME_INTEGERS)
+from scout.constants import (CHROMOSOMES, CHROMOSOME_INTEGERS, CALLERS)
 
 def export_variants(adapter, collaborator, document_id=None, case_id=None):
     """Export causative variants for a collaborator
@@ -49,6 +49,68 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
     for variant in variants:
         variant_obj = variant[2]
         yield variant_obj
+
+
+def export_verified_variants(aggregate_variants):
+    """Create the lines for an excel file with verified variants for
+        an institute
+
+        Args:
+            aggregate_variants(list): a list of variants with aggregates case data
+
+        Returns:
+            document_lines(list): list of lines to include in the document
+    """
+    callers = ['gatk', 'samtools', 'freebayes', 'bcftools']
+    document_lines = []
+    for variant in aggregate_variants:
+        line = [] # line elements corespond to contants.variants_export.VERIFIED_VARIANTS_HEADER
+        line.append(variant['_id']) # variant database ID
+        line.append(variant['variant_type'])
+        line.append(variant['display_name'][:30]) # variant display name
+        line.append(variant['case_obj'][0]['display_name']) # case display name
+        line.append(''.join(['chr',variant['chromosome'],':',str(variant['position'])])) # position
+        line.append('>'.join([variant.get('reference')[:10],variant.get('alternative')[:10]])) # change
+        genes = []
+        prot_effect = []
+        for gene in variant.get('genes'): # this will be a unique long field in the document
+            genes.append(gene.get('hgnc_symbol',''))
+            for transcript in gene.get('transcripts'):
+                if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
+                    prot_effect.append(urllib.parse.unquote(transcript.get('protein_sequence_name')))
+        line.append(','.join(genes))
+        line.append(','.join(prot_effect))
+
+        # get variant callers:
+        callers = [] # a list of dictionaries
+        call_results = []
+        if variant['category'] == 'snv':
+            callers = CALLERS['snv']
+        elif variant['category'] == 'sv':
+            callers = CALLERS['sv']
+
+        for caller_obj in callers:
+            caller_id = caller_obj['id']
+            if variant.get(caller_id):
+                call_results.append(':'.join([caller_id, variant.get(caller_id)]))
+
+        line.append(','.join(call_results))
+        line.append(variant.get('rank_score'))
+        line.append(variant.get('cadd_score'))
+
+        # get genotype and allele depth for each sample
+        samples = []
+        gtypes = []
+        for sample in variant['samples']:
+            samples.append(sample['display_name'])
+            depth = ''.join([ '(', str(sample['allele_depths'][0]), '/', str(sample['allele_depths'][1]), ')' ])
+            gtypes.append(' '.join([ sample['genotype_call'], depth ]))
+
+        line.append(','.join(samples))
+        line.append(','.join(gtypes))
+
+        document_lines.append(line)
+    return document_lines
 
 
 def export_mt_variants(variants, sample_id):
