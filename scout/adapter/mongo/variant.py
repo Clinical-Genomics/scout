@@ -269,11 +269,14 @@ class VariantHandler(VariantLoader):
 
         sorting = [('rank_score', pymongo.DESCENDING)]
 
+        if nr_of_variants == -1:
+            nr_of_variants = 0 # This will return all variants
+        else:
+            nr_of_variants = skip + nr_of_variants
+
         result = self.variant_collection.find(
-            mongo_variant_query,
-            skip=skip,
-            limit=nr_of_variants
-            ).sort(sorting)
+            mongo_variant_query
+            ).sort(sorting).skip(skip).limit(nr_of_variants)
 
         return result
 
