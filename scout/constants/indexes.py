@@ -51,6 +51,8 @@ INDEXES = {
             ('variant_type', ASCENDING)],
             name="hgncsymbol_rankscore_category_varianttype",
             background=True,
+            partialFilterExpression={'rank_score': { $gt: 5 } },
+                                     'category': 'snv'}
             ),
         IndexModel([
             ('case_id', ASCENDING),
