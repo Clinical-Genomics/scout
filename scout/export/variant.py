@@ -72,6 +72,7 @@ def export_verified_variants(aggregate_variants):
         line.append(variant.get('validation'))
         case_name = variant['case_obj'][0]['display_name']  # case display name
         line.append(case_name)
+        line.append(variant['institute'])
         line.append(''.join(['chr',variant['chromosome'],':',str(variant['position'])])) # position
         line.append('>'.join([variant.get('reference')[:10],variant.get('alternative')[:10]])) # change
         genes = []

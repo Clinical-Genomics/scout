@@ -35,6 +35,7 @@ VERIFIED_VARIANTS_HEADER= [
     'Display name',
     'Verified state',
     'Case name',
+    'Institute',
     'Position',
     'Change',
     'Canonical_transcript_HGVS'

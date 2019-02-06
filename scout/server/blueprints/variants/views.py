@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 import io
+import os.path
+import shutil
 import logging
+import datetime
+import zipfile
+import pathlib
 
-from flask import Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response, session
+from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response,
+                    session, send_file)
 from werkzeug.datastructures import Headers, MultiDict
 from flask_login import current_user
 
@@ -17,7 +23,7 @@ from . import controllers
 from .forms import FiltersForm, SvFiltersForm, StrFiltersForm
 
 log = logging.getLogger(__name__)
-variants_bp = Blueprint('variants', __name__, template_folder='templates')
+variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
 
 @variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
 @templated('variants/variants.html')
@@ -482,3 +488,35 @@ def upload_panel(institute_id, case_name):
     else:
         return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
                             **form.data), code=307)
+
+
+@variants_bp.route('/verified', methods=['GET'])
+def download_verified():
+    """Download all verified variants for user's cases"""
+    user_institutes = current_user.institutes
+    temp_excel_dir = os.path.join(variants_bp.static_folder, 'verified_folder')
+    os.makedirs(temp_excel_dir, exist_ok=True)
+
+    written_files = controllers.verified_excel_file(store, user_institutes, temp_excel_dir)
+    if written_files:
+        today = datetime.datetime.now().strftime('%Y-%m-%d')
+        # zip the files on the fly and serve the archive to the user
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, mode='w') as z:
+            for f_name in pathlib.Path(temp_excel_dir).iterdir():
+                zipfile.ZipFile
+                z.write(f_name, os.path.basename(f_name))
+        data.seek(0)
+
+        # remove temp folder with excel files in it
+        shutil.rmtree(temp_excel_dir)
+
+        return send_file(
+            data,
+            mimetype='application/zip',
+            as_attachment=True,
+            attachment_filename='_'.join(['scout', 'verified_variants', today])+'.zip'
+        )
+    else:
+        flash("No verified variants could be exported for user's institutes", 'warning')
+        return redirect(request.referrer)

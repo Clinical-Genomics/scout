@@ -53,7 +53,7 @@ def verified(context, collaborator, test, outpath=None):
     document_lines = export_verified_variants(verified_vars)
 
     today = datetime.datetime.now().strftime('%Y-%m-%d')
-    document_name = document_name = '.'.join(['verified_variants', collaborator, today]) + '.xlsx'
+    document_name = '.'.join(['verified_variants', collaborator, today]) + '.xlsx'
 
     # If this was a test and lines are created return success
     if test and document_lines:
