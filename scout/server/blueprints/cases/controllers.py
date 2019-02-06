@@ -479,10 +479,12 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                 hgvs_c.append(hgvs_nucleotide)
                 hgvs_p.append(hgvs_protein)
 
+            log.debug("HGVS: {} {} {}.".format(gene_symbols, hgvs_c, hgvs_p))
+
             if len(gene_symbols) == 1:
-                if(hgvs_p[0] != ""):
+                if(hgvs_p[0] != "None"):
                     hgvs = hgvs_p[0]
-                elif(hgvs_c[0]):
+                elif(hgvs_c[0] != "None"):
                     hgvs = hgvs_c[0]
                 else:
                     hgvs = "-"
