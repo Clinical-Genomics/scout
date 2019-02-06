@@ -9,9 +9,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add new stuff here
 
 ### Added
+- Show calls from all callers even if call is not available
 - Instructions to install cairo and pango libs from WeasyPrint page
+- Display cases with number of variants from CLI
+- Only display cases with number of variants above certain treshold. (Also CLI)
 
 ### Fixed
+- Fixed code to extract variant conservation (gerp, phyloP, phastCons)
 - Visualization of PDF-exported gene panels
 - Reintroduced the exon/intron number in variant verification email
 - Sex and affected status is correctly displayed on general report

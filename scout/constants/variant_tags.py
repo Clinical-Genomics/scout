@@ -9,7 +9,20 @@ CONSEQUENCE = (
     'unknown'
 )
 
-CONSERVATION = ('NotConserved', 'Conserved')
+CONSERVATION = {
+    'dbNSFP_GERP___RS' : {
+        'conserved_min' : 2,
+        'conserved_max' : 10
+    },
+    'dbNSFP_phastCons100way_vertebrate': {
+        'conserved_min' : 0.8,
+        'conserved_max' : 100
+    },
+    'dbNSFP_phyloP100way_vertebrate' : {
+        'conserved_min' : 2.5,
+        'conserved_max' : 100
+    }
+}
 
 FEATURE_TYPES = (
   'exonic',
@@ -167,7 +180,7 @@ DISMISS_VARIANT_OPTIONS = {
         },
     31: {
         'label': 'No protein function',
-        'description': 
+        'description':
         'Not likely to alter protein function - eg benign polyQ expansion.',
         'evidence': ['CADD', 'conservation']
         },
@@ -178,13 +191,13 @@ DISMISS_VARIANT_OPTIONS = {
         },
     41: {
         'label': 'Common variation type',
-        'description': 
+        'description':
         'Found in a gene with much benign such (e.g. missense) variation.',
         'evidence': ['type']
         },
     43: {
         'label': 'Unstudied variation type',
-        'description': 
+        'description':
         'In a gene where mainly other types of variation (e.g. repeat expansion) are established as pathologic.',
         'evidence': ['type']
         }
