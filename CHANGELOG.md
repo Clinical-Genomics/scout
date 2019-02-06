@@ -11,6 +11,7 @@ Add new stuff here
 ### Added
 - Show calls from all callers even if call is not available
 - Instructions to install cairo and pango libs from WeasyPrint page
+- Export of verified variants by CLI or from the dashboard
 
 ### Fixed
 - Fixed code to extract variant conservation (gerp, phyloP, phastCons)
