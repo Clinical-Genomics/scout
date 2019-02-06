@@ -45,13 +45,13 @@
       <table class="table table-bordered table-hover">
 	<thead>
           <tr>
-            <th class="col-xs-1" title="Rank score">Score</th>
+            <th class="col-xs-1" title="Rank score">Case : Score</th>
             <th class="col-xs-2" title="HGNC symbols">Gene</th>
-            <th class="col-xs-2" title="PopFreq">PopFreq</th>
+            <th class="col-xs-1" title="PopFreq">PopFreq</th>
             <th class="col-xs-1" title="CADD score">CADD</th>
             <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
             <th class="col-xs-2" title="Functional annotation">Func. annotation</th>
-            <th class="col-xs-2" title="HGVS">HGVS</th>
+            <th class="col-xs-3" title="HGVS">HGVS</th>
           </tr>
 	</thead>
 	<tbody>
@@ -75,7 +75,7 @@
                   <div>{{ annotation }}</div>
                 {% endfor %}
               </td>
-              <td>HGVS</td>
+              <td> {{ variant.hgvs }}</td>
             </tr>
           {% else %}
           <tr>
@@ -94,8 +94,8 @@
 {% macro cell_rank(variant) %}
 <a class="variants-row-item flex-small layout"
    href="{{ url_for('variants.variant', institute_id=institute._id,
-        case_name=variant.case_id, variant_id=variant._id) }}">
-  {{ variant.rank_score|int }}
+        case_name=variant.case_display_name, variant_id=variant._id) }}">
+  {{ variant.case_display_name}} : {{ variant.rank_score|int }}
 </a>
 {% endmacro %}
 

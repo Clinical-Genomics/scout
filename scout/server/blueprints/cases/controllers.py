@@ -4,19 +4,26 @@ import itertools
 import requests
 import datetime
 
+import logging
+
 from bs4 import BeautifulSoup
 from xlsxwriter import Workbook
 from flask import url_for
 from flask_mail import Message
 import query_phenomizer
+from flask_login import current_user
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
-from scout.server.utils import institute_and_case
+from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import sv_variant
+from scout.server.blueprints.variants.controllers import get_predictions
+from scout.server.blueprints.genes.controllers import gene
+
+log = logging.getLogger(__name__)
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
@@ -433,8 +440,58 @@ def gene_variants(store, variants_query, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
+    my_institutes = list(inst['_id'] for inst in user_institutes(store, current_user))
+
+    log.debug("Institutes allowed: {}.".format(my_institutes))
+
+    variants = []
+    for variant_obj in variant_res:
+        # hide other institutes for now
+        if (variant_obj['institute'] not in my_institutes):
+            log.debug("Institute {} not allowed.".format(variant_obj['institute']))
+            continue
+
+        variant_case_obj = store.case(case_id=variant_obj['case_id'])
+        case_display_name = variant_case_obj['display_name']
+        variant_obj['case_display_name'] = case_display_name
+
+        gene_ids = []
+        gene_symbols = []
+        hgvs_c = []
+        hgvs_p = []
+        variant_genes = variant_obj.get('genes')
+
+        if variant_genes is not None:
+            functional_annotation = ''
+            for gene_obj in variant_genes:
+                hgnc_id = gene_obj['hgnc_id']
+                gene_symbol = gene(store, hgnc_id)['symbol']
+                gene_ids.append(hgnc_id)
+                gene_symbols.append(gene_symbol)
+
+                hgvs_nucleotide = '-'
+                # gather HGVS info from gene transcripts
+                transcripts_list = gene_obj.get('transcripts')
+                for transcript_obj in transcripts_list:
+                    if transcript_obj.get('is_canonical') and transcript_obj.get('is_canonical') is True:
+                        hgvs_nucleotide = str(transcript_obj.get('coding_sequence_name'))
+                        hgvs_protein = str(transcript_obj.get('protein_sequence_name'))
+                hgvs_c.append(hgvs_nucleotide)
+                hgvs_p.append(hgvs_protein)
+
+            if len(gene_symbols) == 1:
+                if(hgvs_p[0] != ""):
+                    hgvs = hgvs_p[0]
+                elif(hgvs_c[0]):
+                    hgvs = hgvs_c[0]
+                else:
+                    hgvs = "-"
+                variant_obj['hgvs'] = hgvs
+            variant_obj.update(get_predictions(variant_genes))
+        variants.append(variant_obj)
+
     return {
-        'variants': variant_res,
+        'variants': variants,
         'more_variants': more_variants,
     }
 
