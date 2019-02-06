@@ -129,6 +129,11 @@ def clinvar_submissions(institute_id):
 @cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
 def matchmaker_add(institute_id, case_name):
 
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if case_obj.get('suspects') and len(case_obj.get('suspects'))>3:
+        flash('At the moment it is not possible to save to MatchMaker more than 3 pinned variants', 'warning')
+        return redirect(request.referrer)
+
     mme_save_options = ['sex', 'features', 'disorders']
     for index, item in enumerate(mme_save_options):
         if item in request.form:
@@ -140,7 +145,6 @@ def matchmaker_add(institute_id, case_name):
     if genomic_features == 'variants':
         genes_only = False # upload to matchmaker both variants and gene names
 
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # If there are no genomic features nor HPO terms to share for this case, abort
     if not case_obj.get('suspects') and not mme_save_options[1]:
