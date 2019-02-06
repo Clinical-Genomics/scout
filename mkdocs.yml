@@ -54,6 +54,8 @@ nav:
       - Chanjo coverage integration: 'admin-guide/chanjo_coverage_integration.md'
       - Indexes: 'admin-guide/indexes.md'
       - Institutes: 'admin-guide/institute.md'
+      - Display data:
+          - Cases: 'admin-guide/display-data/cases.md'
   
   - Blog:
       - Intro: 'blog/README.md'
