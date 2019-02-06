@@ -61,7 +61,6 @@ def export_verified_variants(aggregate_variants):
         Returns:
             document_lines(list): list of lines to include in the document
     """
-    callers = ['gatk', 'samtools', 'freebayes', 'bcftools']
     document_lines = []
     for variant in aggregate_variants:
         line = [] # line elements corespond to contants.variants_export.VERIFIED_VARIANTS_HEADER
