@@ -47,7 +47,7 @@
           <tr>
             <th class="col-xs-1" title="Rank score">Score</th>
             <th class="col-xs-2" title="HGNC symbols">Gene</th>
-            <th class="col-xs-2" title="1000 Genomes">PopFreq</th>
+            <th class="col-xs-2" title="PopFreq">PopFreq</th>
             <th class="col-xs-1" title="CADD score">CADD</th>
             <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
             <th class="col-xs-2" title="Functional annotation">Func. annotation</th>
@@ -92,7 +92,11 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
+<a class="variants-row-item flex-small layout"
+   href="{{ url_for('variants.variant', institute_id=institute._id,
+        case_name=variant.case_id, variant_id=variant._id) }}">
   {{ variant.rank_score|int }}
+</a>
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
