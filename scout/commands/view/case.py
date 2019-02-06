@@ -43,16 +43,16 @@ def cases(context, institute, display_name, case_id, nr_variants, variants_tresh
         return
     
     header = ['case_id', 'display_name', 'institute']
+    
+    if variants_treshold:
+        LOG.info("Only show cases with more than %s variants", variants_treshold)
+        nr_variants = True
+    
     if nr_variants:
         LOG.info("Displaying number of variants for each case")
         header.append('clinical')
         header.append('research')
     
-    if variants_treshold:
-        if not nr_variants:
-            LOG.warning("'--variants-treshold' can only be used together with '--nr-variants'!")
-            context.abort()
-        LOG.info("Only show cases with more than %s variants", variants_treshold)
     
     click.echo("#"+'\t'.join(header))
     for model in models:
