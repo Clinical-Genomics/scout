@@ -66,9 +66,12 @@ def export_verified_variants(aggregate_variants):
     for variant in aggregate_variants:
         line = [] # line elements corespond to contants.variants_export.VERIFIED_VARIANTS_HEADER
         line.append(variant['_id']) # variant database ID
+        line.append(variant['category'])
         line.append(variant['variant_type'])
         line.append(variant['display_name'][:30]) # variant display name
-        line.append(variant['case_obj'][0]['display_name']) # case display name
+        line.append(variant.get('validation'))
+        case_name = variant['case_obj'][0]['display_name']  # case display name
+        line.append(case_name)
         line.append(''.join(['chr',variant['chromosome'],':',str(variant['position'])])) # position
         line.append('>'.join([variant.get('reference')[:10],variant.get('alternative')[:10]])) # change
         genes = []
@@ -102,12 +105,20 @@ def export_verified_variants(aggregate_variants):
         samples = []
         gtypes = []
         for sample in variant['samples']:
-            samples.append(sample['display_name'])
+            case_individual = next(ind for ind in variant['case_obj'][0]['individuals'] if ind['individual_id'] == sample['sample_id'])
+            if case_individual['phenotype'] == 2:
+                samples.append(''.join([sample['display_name'],'(A)'])) # label sample as affected
+            else:
+                samples.append(sample['display_name'])
             depth = ''.join([ '(', str(sample['allele_depths'][0]), '/', str(sample['allele_depths'][1]), ')' ])
             gtypes.append(' '.join([ sample['genotype_call'], depth ]))
 
         line.append(','.join(samples))
         line.append(','.join(gtypes))
+
+        # Build local link to variant:
+        local_link = '/'.join([ '', variant['institute'], case_name, variant['_id'] ])
+        line.append(local_link)
 
         document_lines.append(line)
     return document_lines

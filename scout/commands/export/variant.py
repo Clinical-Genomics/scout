@@ -38,6 +38,7 @@ def verified(context, collaborator, test, outpath=None):
     Returns:
         written_files(int): number of written or simulated files
     """
+    written_files = 0
     collaborator = collaborator or 'cust000'
     LOG.info('Exporting verified variants for cust {}'.format(collaborator))
 
@@ -47,29 +48,42 @@ def verified(context, collaborator, test, outpath=None):
 
     if not verified_vars:
         LOG.warning('There are no verified variants for institute {} in database!'.format(collaborator))
+        return None
 
     document_lines = export_verified_variants(verified_vars)
+
     today = datetime.datetime.now().strftime('%Y-%m-%d')
+    document_name = document_name = '.'.join(['verified_variants', collaborator, today]) + '.xlsx'
 
-    #LOG.info(verified_vars)
+    # If this was a test and lines are created return success
+    if test and document_lines:
+        written_files +=1
+        LOG.info('Success. Verified variants file contains {} lines'.format(len(document_lines)))
+        return written_files
 
-    for line in document_lines:
-        LOG.info(line)
+    # create workbook and new sheet
+    # set up outfolder
+    if not outpath:
+        outpath = str(os.getcwd())
+    workbook = Workbook(os.path.join(outpath,document_name))
+    Report_Sheet = workbook.add_worksheet()
 
+    # Write the column header
+    row = 0
+    for col,field in enumerate(VERIFIED_VARIANTS_HEADER):
+        Report_Sheet.write(row,col,field)
 
+    # Write variant lines, after header (start at line 1)
+    for row, line in enumerate(document_lines,1): # each line becomes a row in the document
+        for col, field in enumerate(line): # each field in line becomes a cell
+            Report_Sheet.write(row,col,field)
+    workbook.close()
 
+    if os.path.exists(os.path.join(outpath,document_name)):
+        LOG.info('Success. Verified variants file of {} lines was written to disk'. format(len(document_lines)))
+        written_files += 1
 
-
-
-
-
-
-
-
-
-
-
-
+    return written_files
 
 
 
