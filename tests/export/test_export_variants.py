@@ -57,12 +57,20 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
             {'$set' : {'validation' : valid_status[i] } }
          )
 
+        # insert validation events
+        adapter.event_collection.insert_one({
+            'verb' : 'validate',
+            'institute' : test_vars[i]['institute'],
+            'variant_id' : test_vars[i]['variant_id'],
+            'case' : case_id
+         })
+
     # There should be 3 validated variants now
     assert adapter.variant_collection.find({'validation':{'$exists':True}}).count()==3
 
     # Call function to get aggregated data (variant + case data):
     cust = case_obj['owner']
-    aggregated_vars = list(adapter.verified(cust))
+    aggregated_vars = adapter.verified(cust)
     assert len(aggregated_vars) == 3 # same number of variants is returned
 
     # Call function that creates document lines
