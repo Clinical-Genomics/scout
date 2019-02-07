@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import flash_messages, comments_table %}
 
@@ -143,8 +142,8 @@
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
         <div class="col-xs-2">
-          {{ form.rank_score.label(class="control-label") }}
-          {{ form.rank_score(class="form-control") }}
+          <label class="control-label">Rank Score</label>
+          <input type="number" class="form-control" name="rank_score" min="5">
         </div>
         <div class="col-xs-2">
           {{ form.variant_type.label(class="control-label") }}
