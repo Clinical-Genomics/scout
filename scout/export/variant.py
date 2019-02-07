@@ -69,7 +69,7 @@ def export_verified_variants(aggregate_variants):
         line.append(variant['variant_type'])
         line.append(variant['display_name'][:30]) # variant display name
         line.append(variant.get('validation'))
-        case_name = variant['case_obj'][0]['display_name']  # case display name
+        case_name = variant['case_obj']['display_name']  # case display name
         line.append(case_name)
         line.append(variant['institute'])
         line.append(''.join(['chr',variant['chromosome'],':',str(variant['position'])])) # position
@@ -105,7 +105,7 @@ def export_verified_variants(aggregate_variants):
         samples = []
         gtypes = []
         for sample in variant['samples']:
-            case_individual = next(ind for ind in variant['case_obj'][0]['individuals'] if ind['individual_id'] == sample['sample_id'])
+            case_individual = next(ind for ind in variant['case_obj']['individuals'] if ind['individual_id'] == sample['sample_id'])
             if case_individual['phenotype'] == 2:
                 samples.append(''.join([sample['display_name'],'(A)'])) # label sample as affected
             else:

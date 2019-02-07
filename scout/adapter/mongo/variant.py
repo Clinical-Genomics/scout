@@ -265,13 +265,14 @@ class VariantHandler(VariantLoader):
                     'foreignField' : '_id',
                     'as' : 'case_obj'
         }}
+        unwind = {'$unwind' : '$case_obj'}
         match = {
             '$match': {
                 'institute' : institute_id,
                 'validation': {'$in' : ['False positive', 'True positive']}
             }
         }
-        pipeline = [lookup, match]
+        pipeline = [lookup, unwind, match]
         res = self.variant_collection.aggregate(pipeline)
         return res
 
