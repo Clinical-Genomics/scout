@@ -126,6 +126,12 @@ def clinvar_submissions(institute_id):
     return data
 
 
+@cases_bp.route('/mme_matches', methods=['GET', 'POST'])
+@templated('cases/matchmaker_matches.html')
+def matchmaker_matches():
+    return "This is the matches page"
+
+
 @cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
 def matchmaker_add(institute_id, case_name):
 
@@ -144,7 +150,6 @@ def matchmaker_add(institute_id, case_name):
     genes_only = True # upload to matchmaker only gene names
     if genomic_features == 'variants':
         genes_only = False # upload to matchmaker both variants and gene names
-
 
     # If there are no genomic features nor HPO terms to share for this case, abort
     if not case_obj.get('suspects') and not mme_save_options[1]:
@@ -185,7 +190,7 @@ def matchmaker_add(institute_id, case_name):
         elif message == 'Patient was successfully inserted into database.':
             n_inserted +=1
 
-    # if at least one patient was inserted or updates into matchmaker, save submission at the case level:
+    # if at least one patient was inserted or updated into matchmaker, save submission at the case level:
     if n_inserted or n_updated:
         category = 'success'
         store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
