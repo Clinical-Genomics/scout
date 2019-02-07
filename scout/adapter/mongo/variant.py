@@ -256,24 +256,24 @@ class VariantHandler(VariantLoader):
             institute_id(str): institute id
 
         Returns:
-            res(pymongo.Cursor): A Cursor with all verified variants
+            res(list): a list with validated variants
         """
-        lookup = { # Looking up in variant case as well
-                '$lookup' : {
-                    'from' : 'case',
-                    'localField' : 'case_id',
-                    'foreignField' : '_id',
-                    'as' : 'case_obj'
-        }}
-        unwind = {'$unwind' : '$case_obj'}
-        match = {
-            '$match': {
-                'institute' : institute_id,
-                'validation': {'$in' : ['False positive', 'True positive']}
-            }
+        query = {
+            'verb' : 'validate',
+            'institute' : institute_id,
         }
-        pipeline = [lookup, unwind, match]
-        res = self.variant_collection.aggregate(pipeline)
+        res = []
+        validate_events = self.event_collection.find(query)
+        for validated in list(validate_events):
+            case_id = validated['case']
+            var_obj = self.variant(case_id=case_id, document_id=validated['variant_id'])
+            case_obj = self.case(case_id=case_id)
+            var_obj['case_obj'] = {
+                'display_name' : case_obj['display_name'],
+                'individuals' : case_obj['individuals']
+            }
+            res.append(var_obj)
+
         return res
 
 

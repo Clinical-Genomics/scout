@@ -43,8 +43,9 @@ def verified(context, collaborator, test, outpath=None):
     LOG.info('Exporting verified variants for cust {}'.format(collaborator))
 
     adapter = context.obj['adapter']
-    verified_vars = list(adapter.verified(institute_id=collaborator))
+    verified_vars = adapter.verified(institute_id=collaborator)
     LOG.info('FOUND {} verified variants for institute {}'.format(len(verified_vars), collaborator))
+
 
     if not verified_vars:
         LOG.warning('There are no verified variants for institute {} in database!'.format(collaborator))
@@ -84,7 +85,6 @@ def verified(context, collaborator, test, outpath=None):
         written_files += 1
 
     return written_files
-
 
 
 @click.command('variants', short_help='Export variants')

@@ -1188,7 +1188,7 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
     LOG.info('Creating verified variant document..')
 
     for cust in institute_list:
-        verif_vars = list(store.verified(institute_id=cust))
+        verif_vars = store.verified(institute_id=cust)
         LOG.info('Found {} verified variants for customer {}'.format(len(verif_vars), cust))
 
         if not verif_vars:
