@@ -268,6 +268,8 @@ class VariantHandler(VariantLoader):
             case_id = validated['case']
             var_obj = self.variant(case_id=case_id, document_id=validated['variant_id'])
             case_obj = self.case(case_id=case_id)
+            if not case_obj or not var_obj:
+                continue # Take into account that stuff might have been removed from database
             var_obj['case_obj'] = {
                 'display_name' : case_obj['display_name'],
                 'individuals' : case_obj['individuals']
