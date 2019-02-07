@@ -493,7 +493,8 @@ def upload_panel(institute_id, case_name):
 @variants_bp.route('/verified', methods=['GET'])
 def download_verified():
     """Download all verified variants for user's cases"""
-    user_institutes = current_user.institutes
+    user_obj = store.user(current_user.email)
+    user_institutes = user_obj.get('institutes')
     temp_excel_dir = os.path.join(variants_bp.static_folder, 'verified_folder')
     os.makedirs(temp_excel_dir, exist_ok=True)
 
