@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Instructions to install cairo and pango libs from WeasyPrint page
 - Display cases with number of variants from CLI
 - Only display cases with number of variants above certain treshold. (Also CLI)
+- Export of verified variants by CLI or from the dashboard
 
 ### Fixed
 - Fixed code to extract variant conservation (gerp, phyloP, phastCons)

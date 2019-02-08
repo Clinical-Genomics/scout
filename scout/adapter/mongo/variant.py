@@ -251,6 +251,37 @@ class VariantHandler(VariantLoader):
                                                variant_obj['position'])
         return variant_obj
 
+
+    def verified(self, institute_id):
+        """Return all verified variants for a given institute
+
+        Args:
+            institute_id(str): institute id
+
+        Returns:
+            res(list): a list with validated variants
+        """
+        query = {
+            'verb' : 'validate',
+            'institute' : institute_id,
+        }
+        res = []
+        validate_events = self.event_collection.find(query)
+        for validated in list(validate_events):
+            case_id = validated['case']
+            var_obj = self.variant(case_id=case_id, document_id=validated['variant_id'])
+            case_obj = self.case(case_id=case_id)
+            if not case_obj or not var_obj:
+                continue # Take into account that stuff might have been removed from database
+            var_obj['case_obj'] = {
+                'display_name' : case_obj['display_name'],
+                'individuals' : case_obj['individuals']
+            }
+            res.append(var_obj)
+
+        return res
+
+
     def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute
 
@@ -341,7 +372,7 @@ class VariantHandler(VariantLoader):
         for causative_id in institute_causatives:
             other_variant = self.variant(causative_id)
             if not other_variant:
-                continue        
+                continue
             not_same_case = other_variant['case_id'] != case_obj['_id']
             same_variant = other_variant['display_name'].startswith(variant_id)
             if not_same_case and same_variant:

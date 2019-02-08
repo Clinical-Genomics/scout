@@ -5,7 +5,10 @@ import urllib.parse
 
 from pprint import pprint as pp
 
+from xlsxwriter import Workbook
+
 from datetime import date
+import datetime
 from flask import url_for, flash, request
 from flask_mail import Message
 
@@ -14,7 +17,8 @@ from scout.constants import (
     ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP, MOSAICISM_OPTIONS,
 )
 from scout.constants.acmg import ACMG_CRITERIA
-from scout.constants.variants_export import EXPORT_HEADER
+from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.export.variant import export_verified_variants
 from scout.server.utils import institute_and_case
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
@@ -1165,3 +1169,49 @@ def upload_panel(store, institute_id, case_name, stream):
         else:
             hgnc_symbols.append(raw_symbol)
     return hgnc_symbols
+
+
+def verified_excel_file(store, institute_list, temp_excel_dir):
+    """Collect all verified variants in a list on institutes and save them to file
+
+    Args:
+        store(adapter.MongoAdapter)
+        institute_list(list): a list of institute ids
+        temp_excel_dir(os.Path): folder where the temp excel files are written to
+
+    Returns:
+        written_files(int): the number of files written to temp_excel_dir
+    """
+    document_lines = []
+    written_files = 0
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    LOG.info('Creating verified variant document..')
+
+    for cust in institute_list:
+        verif_vars = store.verified(institute_id=cust)
+        LOG.info('Found {} verified variants for customer {}'.format(len(verif_vars), cust))
+
+        if not verif_vars:
+            continue
+
+        cust_verified = export_verified_variants(verif_vars)
+
+        document_name = '.'.join([cust, '_verified_variants', today]) + '.xlsx'
+        workbook = Workbook(os.path.join(temp_excel_dir,document_name))
+        Report_Sheet = workbook.add_worksheet()
+
+        # Write the column header
+        row = 0
+        for col,field in enumerate(VERIFIED_VARIANTS_HEADER):
+            Report_Sheet.write(row,col,field)
+
+        # Write variant lines, after header (start at line 1)
+        for row, line in enumerate(cust_verified,1): # each line becomes a row in the document
+            for col, field in enumerate(line): # each field in line becomes a cell
+                Report_Sheet.write(row,col,field)
+        workbook.close()
+
+        if os.path.exists(os.path.join(temp_excel_dir,document_name)):
+            written_files += 1
+
+    return written_files

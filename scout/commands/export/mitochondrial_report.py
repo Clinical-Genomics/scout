@@ -30,7 +30,8 @@ def mt_report(context, case_id, test, outpath=None):
         Args:
             adapter(MongoAdapter)
             case_id(str)
-            written_files(int): number of files written (or simulated)
+            test(bool): True if the function is called for testing purposes
+            outpath(str): path to output file
 
         Returns:
             written_files(int): number of written or simulated files
