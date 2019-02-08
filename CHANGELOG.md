@@ -4,9 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
-
-Add new stuff here
+## [4.3.1]
 
 ### Added
 - Show calls from all callers even if call is not available
@@ -20,6 +18,7 @@ Add new stuff here
 - Reintroduced the exon/intron number in variant verification email
 - Sex and affected status is correctly displayed on general report
 - Force number validation in SV filter by size
+- Display ensembl transcripts when no refseq exists
 
 
 ## [4.3.0]
