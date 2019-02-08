@@ -521,9 +521,9 @@ $(document).ready(function(){
       </thead>
       <tbody>
         {% for gene in variant.genes %}
-          {% for transcript in gene.primary_transcripts %}
-            {% for refseq_id in transcript.refseq_identifiers %}
-              <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
+          {% if not variant.has_refseq %}
+            {% for transcript in gene.transcripts %}
+              <tr>
                 <td>
                   <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                     {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
@@ -534,10 +534,7 @@ $(document).ready(function(){
                 </td>
                 <td>
                   <div>
-                    {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>
-                    {% if refseq_id in gene.common.primary_transcripts %}
-                    <span class="text-muted">(hgnc-primary)</span>
-                    {% endif %}
+                    {{ transcript.transcript_id }}
                   </div>
                 </td>
                 <td title="{{ transcript.coding_sequence_name or '' }}">
@@ -548,7 +545,38 @@ $(document).ready(function(){
                 </td>
               </tr>
             {% endfor %}
-          {% endfor %}
+            
+          {% else %}
+          
+            {% for transcript in gene.primary_transcripts %}
+              {% for refseq_id in transcript.refseq_identifiers %}
+                <tr {% if transcript.is_primary %} class="bg-info" {% endif %}>
+                  <td>
+                    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                    </a>
+                    {% if transcript.is_canonical %}
+                      <span class="badge pull-right" title="vep canonical">C</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div>
+                      {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>
+                      {% if refseq_id in gene.common.primary_transcripts %}
+                      <span class="text-muted">(hgnc-primary)</span>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td title="{{ transcript.coding_sequence_name or '' }}">
+                    {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
+                    <span class="text-muted pull-right">
+                      {{ (transcript.protein_sequence_name or '')|url_decode }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          {% endif %}  
         {% endfor %}
       </tbody>
     </table>

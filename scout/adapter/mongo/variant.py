@@ -44,6 +44,9 @@ class VariantHandler(VariantLoader):
             gene_panels(list(dict)): List of panels from database
         """
         gene_panels = gene_panels or []
+        
+        # Add a variable that checks if there are any refseq transcripts
+        variant_obj['has_refseq'] = False
 
         # We need to check if there are any additional information in the gene panels
 
@@ -138,7 +141,7 @@ class VariantHandler(VariantLoader):
 
                 refseq_id = hgnc_transcript['refseq_id']
                 transcript['refseq_id'] = refseq_id
-
+                variant_obj['has_refseq'] = True
                 # Check if the refseq id are disease associated
                 if refseq_id in disease_associated_no_version:
                     transcript['is_disease_associated'] = True
