@@ -44,6 +44,9 @@ class VariantHandler(VariantLoader):
             gene_panels(list(dict)): List of panels from database
         """
         gene_panels = gene_panels or []
+        
+        # Add a variable that checks if there are any refseq transcripts
+        variant_obj['has_refseq'] = False
 
         # We need to check if there are any additional information in the gene panels
 
@@ -138,7 +141,7 @@ class VariantHandler(VariantLoader):
 
                 refseq_id = hgnc_transcript['refseq_id']
                 transcript['refseq_id'] = refseq_id
-
+                variant_obj['has_refseq'] = True
                 # Check if the refseq id are disease associated
                 if refseq_id in disease_associated_no_version:
                     transcript['is_disease_associated'] = True
@@ -247,6 +250,37 @@ class VariantHandler(VariantLoader):
                 variant_obj['is_par'] = is_par(variant_obj['chromosome'],
                                                variant_obj['position'])
         return variant_obj
+
+
+    def verified(self, institute_id):
+        """Return all verified variants for a given institute
+
+        Args:
+            institute_id(str): institute id
+
+        Returns:
+            res(list): a list with validated variants
+        """
+        query = {
+            'verb' : 'validate',
+            'institute' : institute_id,
+        }
+        res = []
+        validate_events = self.event_collection.find(query)
+        for validated in list(validate_events):
+            case_id = validated['case']
+            var_obj = self.variant(case_id=case_id, document_id=validated['variant_id'])
+            case_obj = self.case(case_id=case_id)
+            if not case_obj or not var_obj:
+                continue # Take into account that stuff might have been removed from database
+            var_obj['case_obj'] = {
+                'display_name' : case_obj['display_name'],
+                'individuals' : case_obj['individuals']
+            }
+            res.append(var_obj)
+
+        return res
+
 
     def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute
