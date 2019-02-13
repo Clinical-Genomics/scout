@@ -138,7 +138,7 @@ def matchmaker_matches(institute_id, case_name):
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.mme_matches(store, case_obj, institute_obj, mme_base_url, mme_token)
+    data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
     if data['server_errors']:
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
         return redirect(request.referrer)
@@ -225,7 +225,7 @@ def matchmaker_delete(institute_id, case_name):
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
 
-    delete_result = controllers.mme_delete(store, case_obj, mme_base_url, mme_token)
+    delete_result = controllers.mme_delete(case_obj, mme_base_url, mme_token)
 
     n_deleted = 0
     category = 'warning'

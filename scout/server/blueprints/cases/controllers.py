@@ -549,6 +549,7 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
         'features' : features,
         'disorders' : disorders,
         'genes_only' : genes_only,
+        'patient_id' : []
     }
     for individual in case_obj.get('individuals'):
         if not individual['phenotype'] in  [2, 'affected']: # include only affected individuals
@@ -584,11 +585,10 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
     return submitted_info
 
 
-def mme_delete(store, case_obj, mme_base_url, mme_token):
+def mme_delete(case_obj, mme_base_url, mme_token):
     """Delete all affected samples for a case from MatchMaker
 
     Args:
-        store(adapter.MongoAdapter)
         case_obj(dict) a scout case object
         mme_base_url(str) base url of the MME server
         mme_token(str) auth token of the MME server
@@ -607,8 +607,9 @@ def mme_delete(store, case_obj, mme_base_url, mme_token):
         return 'Please check that Matchmaker connection parameters are valid'
 
     # for each patient of the case in matchmaker
-    for patient_id in case_obj['mme_submission']['patient_id']:
+    for patient in case_obj['mme_submission']['patients']:
         # send delete request to server and capture server's response
+        patient_id = patient['id']
         resp = mme_update(mme_base_url=mme_base_url, update_action='delete', patient=patient_id,
                 token=mme_token)
 
@@ -621,12 +622,14 @@ def mme_delete(store, case_obj, mme_base_url, mme_token):
     return server_responses
 
 
-def mme_matches(store, case_obj, institute_obj, mme_base_url, mme_token):
+def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
     """Show Matchmaker submission data for a sample and eventual matchesself.
 
     Args:
-        store(adapter.MongoAdapter)
-        case_obj(dict) a scout case object
+        case_obj(dict): a scout case object
+        institute_obj(dict): an institute object
+        mme_base_url(str) base url of the MME server
+        mme_token(str) auth token of the MME server
 
     Returns:
         data(dict): data to display in the html template

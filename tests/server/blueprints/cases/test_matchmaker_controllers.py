@@ -17,15 +17,19 @@ class MockServerRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
-    def do_POST(self):
+    def send_ok():
         self._set_headers()
         # return the simplest ok response:
         self.wfile.write(bytes("{\"status_code\": 200}", "utf-8"))
 
+    def do_POST(self):
+        send_ok()
+
     def do_DELETE(self):
-        self._set_headers()
-        # return the simplest ok response:
-        self.wfile.write(bytes("{\"status_code\": 200}", "utf-8"))
+        send_ok()
+
+    def do_GET(self, match_objs): #mocks get MME matches
+        send_ok()
 
 
 def get_free_port():
@@ -48,7 +52,6 @@ class TestMockMatchMakerServer(object):
         cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
         cls.mock_server_thread.setDaemon(True)
         cls.mock_server_thread.start()
-
 
 
     def test_mme_add(self, populated_database, user_obj, case_obj, parsed_variant):
@@ -108,17 +111,26 @@ class TestMockMatchMakerServer(object):
             add_gender=True, add_features=True, add_disorders=True, genes_only=False,
             mme_base_url = mme_base_url, mme_accepts=MME_ACCEPTS, mme_token=MME_TOKEN)
 
-        assert submitted_info['server_responses'][0]['patient_id']
-        assert submitted_info['server_responses'][0]['status_code'] == 200
+        assert submitted_info['server_responses'][0]['patient']
 
 
+    def test_mme_delete(self, mme_submission, case_obj):
+        """test calling the controller that deletes a patient from MatchMaker"""
 
-        def test_mme_delete(mme_submission):
-            """test calling the controller that deletes a patient from MatchMaker"""
+        mme_base_url = 'http://localhost:{port}'.format(port=self.mock_server_port)
+        case_obj['mme_submission'] = mme_submission
+        server_responses = controllers.mme_delete(case_obj, mme_base_url, MME_TOKEN)
 
-            mme_base_url = 'http://localhost:{port}'.format(port=self.mock_server_port)
+        assert server_responses[0]['patient_id'] == mme_submission['patients'][0]['id']
 
-            server_responses = controllers.mme_delete(mme_base_url, 'delete', mme_submission['patient_id'][0], MME_TOKEN)
+    def test_mme_matches(self, case_obj, mme_submission, institute_obj):
+        """Testing calling the controller that collects all matches for a patient"""
 
-            assert server_responses['patient_id']
-            assert server_responses['status_code'] == 200
+        mme_base_url = 'http://localhost:{port}'.format(port=self.mock_server_port)
+        case_obj['mme_submission'] = mme_submission
+        data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, MME_TOKEN)
+        assert data
+        assert data['institute'] == institute_obj
+        assert data['case'] == case_obj
+        query_patient = mme_submission['patients'][0]['id']
+        assert query_patient in data['matches']

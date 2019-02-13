@@ -1224,7 +1224,7 @@ def hpo_genes(request, hpo_genes_handle):
 @pytest.fixture(scope='function')
 def mme_submission():
     mme_subm_obj = {
-        'patient_id' : ['internal_id.ADM1059A2'],
+        'patients' : [ {'id' : 'internal_id.ADM1059A2'} ],
         'created_at' : 'sometime',
         'updated_at' : 'sometime',
         'sex' : True,
@@ -1233,3 +1233,58 @@ def mme_submission():
         'genes_only' : False
     }
     return mme_subm_obj
+
+
+@pytest.fixture(scope='function')
+def match_objs():
+    """Mock the results of an internal and an external match"""
+    matches = [
+        {    # External match where test_patient is the query and with results
+
+            '_id' : {'$oid':'match_1'},
+            'created' : {'$date': 1549964103911},
+            'has_matches' : True,
+            'data' : {
+                'patient' : {
+                    'id' : 'internal_id.ADM1059A2',
+                    'contact' : {
+                        'href' : 'mailto:test_contact@email.com'
+                    }
+                }
+            },
+            'results' : [
+                {'patient' : { 'patient_data' : 'test_stuff'},
+                 'score' : {'patient' : 0.425}
+                }
+                ,
+                {'patient' : { 'patient_data2' : 'test_stuff2'},
+                 'score' : {'patient' : 0.333}
+                },
+            ],
+            'match_type' : 'external'
+        },
+        {    #  Internal match where test_patient is among results
+            '_id' : {'$oid':'match_2'},
+            'created' : {'$date': 1549964103911},
+            'has_matches' : True,
+            'data' : {
+                'patient' : {
+                    'id' : 'external_patient_x',
+                    'contact' : {
+                        'href' : 'mailto:test_contact@email.com'
+                    }
+                }
+            },
+            'results' : [
+                {'patient' : {
+                    'id' : 'internal_id.ADM1059A2',
+                    'contact' : {
+                        'href' : 'mailto:test_contact2@email.com'
+                    },
+                    'score' : {'patient' : 0.367}    
+                }},
+            ],
+            'match_type' : 'internal'
+        },
+    ]
+    return matches
