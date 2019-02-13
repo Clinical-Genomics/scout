@@ -4,6 +4,8 @@ import itertools
 import requests
 import datetime
 
+import logging
+
 from bs4 import BeautifulSoup
 from xlsxwriter import Workbook
 from flask import url_for
@@ -17,8 +19,11 @@ from scout.server.utils import institute_and_case
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import sv_variant
-from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features
+from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.update.matchmaker import mme_update
+from scout.utils.matchmaker import sample_matches
+
+LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
@@ -100,7 +105,6 @@ def case(store, institute_obj, case_obj):
         full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
         case_obj['panel_names'].append(full_name)
     case_obj['default_genes'] = list(distinct_genes)
-
     for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
                                     case_obj.get('phenotype_terms', [])):
         hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
@@ -572,7 +576,7 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
                 content_type=mme_accepts)
 
         server_responses.append({
-                'patient_id': patient['id'],
+                'patient': patient,
                 'message': resp.get('message'),
                 'status_code' : resp.get('status_code')
             })
@@ -615,3 +619,38 @@ def mme_delete(store, case_obj, mme_base_url, mme_token):
         })
 
     return server_responses
+
+
+def mme_matches(store, case_obj, institute_obj, mme_base_url, mme_token):
+    """Show Matchmaker submission data for a sample and eventual matchesself.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict) a scout case object
+
+    Returns:
+        data(dict): data to display in the html template
+    """
+    data = {
+        'institute' : institute_obj,
+        'case' : case_obj,
+        'server_errors' : []
+    }
+    matches = {}
+    # loop over the submitted samples and get matches from the MatchMaker server
+    if not case_obj.get('mme_submission'):
+        return None
+
+    for patient in case_obj['mme_submission']['patients']:
+        patient_id = patient['id']
+        matches[patient_id] = None
+        server_resp = sample_matches(mme_base_url, mme_token, patient_id)
+        if 'status_code' in server_resp: # the server returned a valid response
+            # and this will be a list of match objects sorted by desc date
+            matches[patient_id] = parse_matches(patient_id, server_resp['matches'])
+        else:
+            LOG.info('Server returned error message: {}'.format(server_resp['message']))
+            data['server_errors'].append(server_resp['message'])
+
+    data['matches'] = matches
+    return data

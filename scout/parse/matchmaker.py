@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 import json
 LOG = logging.getLogger(__name__)
@@ -136,3 +137,79 @@ def genomic_features(store, case_obj, sample_name, genes_only):
             g_features.append(g_feature)
 
     return g_features
+
+
+def parse_matches(patient_id, match_objs):
+    """Parse a list of matchmaker matches objects and returns
+       a readable list of matches to display in matchmaker matches view.
+
+    Args:
+        patient_id(str): id of a mme patient
+        match_objs(list): list of match objs returned by MME server for the patient
+
+    Return:
+        matching_patients(list): a list of dictionaries like this:
+        [
+            {
+                'match_oid' : '5c628537b79502057784777b',
+                'match_date' : datetime,
+                'match_type' : 'internal' or 'external',
+                'patient_id' : patient_id,
+                'score' : match scores (dict),
+                'patient' : patient_obj
+            },
+        ]
+    """
+    LOG.info('Parsing MatchMaker matches for patient {}'.format(patient_id))
+    matching_patients = []
+
+    for match_obj in match_objs:
+        # save match object ID
+        match_oid = match_obj['_id']['$oid']
+        # convert match date from millisecond to readable date
+        milliseconds_date = match_obj['created']['$date']
+        mdate = datetime.datetime.fromtimestamp(milliseconds_date/1000.0)
+
+        # if patient was used as query patient:
+        if match_obj['data']['patient']['id'] == patient_id:
+            match_results = match_obj['results'] # List of matching patients
+            for m_result in match_results:
+                match_type = 'external'
+                contact_institution = m_result['patient']['contact'].get('institution')
+                if contact_institution and 'Scout software user' in contact_institution:
+                    match_type = 'internal'
+
+                match_patient = {
+                    'match_oid' : match_oid,
+                    'match_date' : mdate,
+                    'match_type' : match_type,
+                    'patient_id' : m_result['patient']['id'],
+                    'score' : m_result['score'],
+                    'patient' : m_result['patient']
+                }
+                matching_patients.append(match_patient)
+
+        else: # else if patient was returned as a match result for another patient
+            m_patient = match_obj['data']['patient']
+            match_type = 'external'
+            contact_institution = m_patient['contact'].get('institution')
+            if contact_institution and 'Scout software user' in contact_institution:
+                match_type = 'internal'
+
+            # loop over match results to capture score for matching
+            score = None
+            for res in match_obj['results']:
+                if res['patient']['id'] == patient_id:
+                    score = res['score']
+                    
+            match_patient = {
+                'match_oid' : match_oid,
+                'match_date' : mdate,
+                'match_type' : match_type,
+                'patient_id' : m_patient['id'],
+                'score' : score,
+                'patient' : m_patient
+            }
+            matching_patients.append(match_patient)
+
+    return matching_patients

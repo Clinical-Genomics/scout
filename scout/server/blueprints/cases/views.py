@@ -126,10 +126,24 @@ def clinvar_submissions(institute_id):
     return data
 
 
-@cases_bp.route('/mme_matches', methods=['GET', 'POST'])
-@templated('cases/matchmaker_matches.html')
-def matchmaker_matches():
-    return "This is the matches page"
+@cases_bp.route('/<institute_id>/<case_name>/mme_matches', methods=['GET', 'POST'])
+@templated('cases/matchmaker.html')
+def matchmaker_matches(institute_id, case_name):
+
+    # Required params for sending an add request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_token = current_app.config.get('MME_TOKEN')
+
+    if not mme_base_url or not mme_token:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.mme_matches(store, case_obj, institute_obj, mme_base_url, mme_token)
+    if data['server_errors']:
+        flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
+        return redirect(request.referrer)
+
+    return dict(data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])

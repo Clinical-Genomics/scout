@@ -492,10 +492,9 @@
     <div class="panel-heading">Matching patients</div>
     <div class="panel-body">
       {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
-        <p>This case is in MatchMaker!</p>
+        <p>This case is in MatchMaker!&nbsp;&nbsp;<a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-default" role="button">Matches</a></p>
         <div class="row">
         </div>
-        <p class="text-center"><a href="{{url_for('cases.matchmaker_matches')}}">matches</a></p>
         <p class="text-center"><a href="#mme_form" data-toggle="collapse">modify or delete submission</a></p>
       {% else %} <!-- display option to submit case to MatchMaker -->
         <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>

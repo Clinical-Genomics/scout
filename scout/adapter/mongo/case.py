@@ -464,7 +464,7 @@ class CaseHandler(object):
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
-
+        
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

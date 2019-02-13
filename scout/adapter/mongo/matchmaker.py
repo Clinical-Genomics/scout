@@ -23,12 +23,12 @@ class MMEHandler(object):
             created = case_obj['mme_submission']['created_at']
         else:
             created = updated
-        patients_id = [ resp['patient_id'] for resp in mme_subm_obj.get('server_responses')]
+        patients = [ resp['patient'] for resp in mme_subm_obj.get('server_responses')]
 
         subm_obj = {
             'created_at' : created,
             'updated_at' : updated,
-            'patient_id' : patients_id, # list of patients ids
+            'patients' : patients, # list of submitted patient data
             'subm_user' : user_obj['_id'], # submitting user
             'sex' : mme_subm_obj['sex'],
             'features' : mme_subm_obj['features'],
