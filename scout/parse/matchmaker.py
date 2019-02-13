@@ -201,7 +201,7 @@ def parse_matches(patient_id, match_objs):
             for res in match_obj['results']:
                 if res['patient']['id'] == patient_id:
                     score = res['score']
-                    
+
             match_patient = {
                 'match_oid' : match_oid,
                 'match_date' : mdate,
@@ -212,4 +212,6 @@ def parse_matches(patient_id, match_objs):
             }
             matching_patients.append(match_patient)
 
+    # sort results by descending score
+    matching_patients = sorted(matching_patients, key=lambda k: k['score']['patient'], reverse=True)
     return matching_patients
