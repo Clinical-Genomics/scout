@@ -46,6 +46,7 @@
 			<div class="tab-content ">
 			  <div class="tab-pane active" id="1">
           {{patient_data()}}
+          {{search_nodes()}}
 				</div>
 				<div class="tab-pane" id="2">
           {{show_matches('external')}}
@@ -79,29 +80,50 @@
         <li>Patient label: <strong>{{patient.label}}</strong></li>
         <li>Sex: <strong>{{patient.sex}}</strong></li>
         <li>genomic features:
-          <ul>
+          <div class="row">
             {% for g_feat in patient.genomicFeatures %}
-              {% for key, value in g_feat.items() %}
-                <li>
-                {% if key == 'gene' %}
-                  {{key}}:&nbsp;<span class="label label-default">{{value.id}}</span>
-                {% elif key == 'variant' %}
-                  {{key}}:<br>
-                  {% for ikey, item in value.items() %}
-                    {{ikey}}:<strong>{{item}}</strong><br>
-                  {% endfor %}
-                {% else %} <!-- this will be zygosity -->
-                  {{key}}:<strong>{{value}}</strong>
-                {% endif %}
-                </li>
-              {% endfor %}
-              <hr>
+              <div class="col-xs-6 col-md-3">
+                <div class="thumbnail">
+                  <div class="caption">
+                    {% for key, value in g_feat.items() %}
+                        {% if key == 'gene' %}
+                          <h3>gene: {{value.id}}</h3>
+                        {% elif key == 'variant' %}
+                          {{key}}:<br>
+                          {% for ikey, item in value.items() %}
+                            {{ikey}}:<strong>{{item}}</strong><br>
+                          {% endfor %}
+                        {% else %} <!-- this will be zygosity -->
+                          {{key}}:<strong>{{value}}</strong>
+                        {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
             {% endfor %}
-          </ul>
+          </div>
+        </li>
       </ul>
     {% endfor %}
   </p>
 </div>
+{% endmacro %}
+
+{% macro search_nodes() %}
+<hr>
+<form action="{{ url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+  <p><h4>Search for similar patients
+  <select id="nodes" name="nodes">
+    <option value="external" selected>Search all nodes</option>
+    {% for node in nodes %}
+      <option value="{{node.id}}">{{node.description}} (specific node)</option>
+    {% endfor %}
+    <option value="internal">Limit search to other scout patients</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  </h4>
+  </p>
+</form>
 {% endmacro %}
 
 {% macro show_matches(type) %}
@@ -175,7 +197,6 @@
     </table>
   {% endfor %}
 {% endmacro %}
-
 
 {% block scripts %}
   {{ super() }}

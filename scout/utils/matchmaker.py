@@ -7,6 +7,51 @@ from werkzeug.datastructures import Headers
 
 LOG = logging.getLogger(__name__)
 
+def search_nodes(case_obj, mme_base_url, token, node):
+    """Send a match request to one or all MatchMaker nodes
+
+    Args:
+        mme_base_url(str): base URL of MME service
+        token(str): MME server authorization token
+        node(str): 'internal', external or external_node_id
+
+    Returns
+        match_results(list): list of match results
+    """
+    return 'meh'
+
+
+
+def mme_nodes(mme_base_url, token):
+    """Return the available MatchMaker nodes
+
+    Args:
+        mme_base_url(str): base URL of MME service
+        token(str): MME server authorization token
+
+    Returns:
+        nodes(list): a list of node disctionaries
+    """
+    nodes = []
+    url = ''.join([mme_base_url, '/nodes'])
+    headers = Headers()
+    headers = { 'X-Auth-Token': token}
+    method = 'GET'
+    try:
+        LOG.info('Getting available external matchmaker nodes.')
+        # send GET request
+        resp = requests.request(
+            method = method,
+            url = url,
+            headers = headers,
+            data = { 'timestamp' : datetime.datetime.now().timestamp()} #sending data so response is not cached
+        )
+        nodes = resp.json()
+    except Exception as err:
+        LOG.info('An error occurred while getting available MME nodes:{}'.format(err))
+
+    return nodes
+
 def sample_matches(mme_base_url, token, mme_sample_id):
     """Get all MatchMaker matches for a sample with a given id.
 

@@ -21,7 +21,7 @@ from scout.server.blueprints.variants.controllers import variant as variant_deco
 from scout.server.blueprints.variants.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.update.matchmaker import mme_update
-from scout.utils.matchmaker import sample_matches
+from scout.utils.matchmaker import sample_matches, mme_nodes
 
 LOG = logging.getLogger(__name__)
 
@@ -656,4 +656,6 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
             data['server_errors'].append(server_resp['message'])
 
     data['matches'] = matches
+    data['nodes'] = mme_nodes(mme_base_url,mme_token)
+
     return data

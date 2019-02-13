@@ -138,6 +138,12 @@ def matchmaker_matches(institute_id, case_name):
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    # user has triggeres a match request
+    if request.method == 'POST':
+        node = request.form.get('nodes')
+        flash('Looking for similar patients on {}'.format(node))
+        return redirect(request.referrer)
+
     data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
     if data['server_errors']:
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
