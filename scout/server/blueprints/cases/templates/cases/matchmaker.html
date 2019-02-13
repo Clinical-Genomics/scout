@@ -137,7 +137,7 @@
             </td>
             <td>
               {% for feature in match_obj.patient.features %}
-                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="label label-primary">{{feature.id}}</span>
+                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="label label-primary">{{feature.label}}({{feature.id}})</span>
               {% endfor %}
             </td>
             <td>
