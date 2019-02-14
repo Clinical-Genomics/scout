@@ -136,6 +136,7 @@
       <thead>
         <tr>
           <th scope="col">Patient ID</th>
+          <th scope="col">MME node</th>
           <th scope="col">Score</th>
           <th scope="col">Match date</th>
           <th scope="col">Contact</th>
@@ -149,6 +150,7 @@
         {% if match_obj.match_type == type %}
           <tr>
             <td>{{match_obj.patient_id}}</td>
+            <td>{{match_obj.node.label}}</td>
             <td><span class="badge badge-primary badge-pill">{{match_obj.score.patient|round(4)}}</badge></td>
             <td>{{match_obj.match_date.strftime('%Y-%m-%d')}}</td>
             <td>{{match_obj.patient.contact.name}}
@@ -159,7 +161,7 @@
             </td>
             <td>
               {% for feature in match_obj.patient.features %}
-                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="label label-primary">{{feature.id}}</span>
+                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="label label-primary">{{feature.label}}({{feature.id}})</span>
               {% endfor %}
             </td>
             <td>
