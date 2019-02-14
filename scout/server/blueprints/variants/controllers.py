@@ -571,7 +571,9 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     individuals = {individual['individual_id']: individual for individual in
                    case_obj['individuals']}
     for sample_obj in variant_obj['samples']:
-        individual = individuals[sample_obj['sample_id']]
+        individual = individuals[sample_obj.get('sample_id')]
+        if not individual:
+            return None
         sample_obj['is_affected'] = True if individual['phenotype'] == 2 else False
 
     gene_models = set()
