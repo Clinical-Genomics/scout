@@ -146,8 +146,20 @@ def parse_matches(patient_id, match_objs):
     Args:
         patient_id(str): id of a mme patient
         match_objs(list): list of match objs returned by MME server for the patient
+                # match_objs looks like this:
+                    [
+                        {
+                            'node' : { id : node_id , label: node_label},
+                            'patients' : [
+                                { 'patient': {patient1_data} },
+                                { 'patient': {patient2_data} },
+                                ..
+                            ]
+                        },
+                        ..
+                    ]
 
-    Return:
+    Returns:
         matching_patients(list): a list of dictionaries like this:
         [
             {
@@ -156,8 +168,10 @@ def parse_matches(patient_id, match_objs):
                 'match_type' : 'internal' or 'external',
                 'patient_id' : patient_id,
                 'score' : match scores (dict),
-                'patient' : patient_obj
+                'patient' : patient_obj,
+                'host_node' : { id : node_id , label: node_label}
             },
+            ..
         ]
     """
     LOG.info('Parsing MatchMaker matches for patient {}'.format(patient_id))
@@ -173,21 +187,23 @@ def parse_matches(patient_id, match_objs):
         # if patient was used as query patient:
         if match_obj['data']['patient']['id'] == patient_id:
             match_results = match_obj['results'] # List of matching patients
-            for m_result in match_results:
-                match_type = 'external'
-                contact_institution = m_result['patient']['contact'].get('institution')
-                if contact_institution and 'Scout software user' in contact_institution:
-                    match_type = 'internal'
+            for node_result in match_results:
+                for patient in node_result['patients']:
+                    match_type = 'external'
+                    contact_institution = patient['patient']['contact'].get('institution')
+                    if contact_institution and 'Scout software user' in contact_institution:
+                        match_type = 'internal'
 
-                match_patient = {
-                    'match_oid' : match_oid,
-                    'match_date' : mdate,
-                    'match_type' : match_type,
-                    'patient_id' : m_result['patient']['id'],
-                    'score' : m_result['score'],
-                    'patient' : m_result['patient']
-                }
-                matching_patients.append(match_patient)
+                    match_patient = {
+                        'match_oid' : match_oid,
+                        'match_date' : mdate,
+                        'match_type' : match_type,
+                        'patient_id' : patient['patient']['id'],
+                        'score' : patient['score'],
+                        'patient' : patient['patient'],
+                        'node' : node_result['node']
+                    }
+                    matching_patients.append(match_patient)
 
         else: # else if patient was returned as a match result for another patient
             m_patient = match_obj['data']['patient']
@@ -199,18 +215,21 @@ def parse_matches(patient_id, match_objs):
             # loop over match results to capture score for matching
             score = None
             for res in match_obj['results']:
-                if res['patient']['id'] == patient_id:
-                    score = res['score']
+                for patient in res['patients']:
+                    LOG.info('Looping in else, patient:{}'.format(patient['patient']['id']))
+                    if patient['patient']['id'] == patient_id:
 
-            match_patient = {
-                'match_oid' : match_oid,
-                'match_date' : mdate,
-                'match_type' : match_type,
-                'patient_id' : m_patient['id'],
-                'score' : score,
-                'patient' : m_patient
-            }
-            matching_patients.append(match_patient)
+                        score = patient['score']
+                        match_patient = {
+                            'match_oid' : match_oid,
+                            'match_date' : mdate,
+                            'match_type' : match_type,
+                            'patient_id' : m_patient['id'],
+                            'score' : score,
+                            'patient' : m_patient,
+                            'node' : res['node']
+                        }
+                        matching_patients.append(match_patient)
 
     # sort results by descending score
     matching_patients = sorted(matching_patients, key=lambda k: k['score']['patient'], reverse=True)
