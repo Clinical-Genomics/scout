@@ -8,7 +8,7 @@ import logging
 
 from bs4 import BeautifulSoup
 from xlsxwriter import Workbook
-from flask import url_for
+from flask import url_for, current_app
 from flask_mail import Message
 import query_phenomizer
 
@@ -21,7 +21,7 @@ from scout.server.blueprints.variants.controllers import variant as variant_deco
 from scout.server.blueprints.variants.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.update.matchmaker import mme_update
-from scout.utils.matchmaker import sample_matches, mme_nodes
+from scout.utils.matchmaker import sample_matches
 
 LOG = logging.getLogger(__name__)
 
@@ -140,7 +140,9 @@ def case(store, institute_obj, case_obj):
         'causatives': causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
+        'mme_nodes': current_app.mme_nodes, # Get available MatchMaker nodes for matching case
     }
+
     return data
 
 
@@ -659,6 +661,5 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
             data['server_errors'].append(server_resp['message'])
 
     data['matches'] = matches
-    data['nodes'] = mme_nodes(mme_base_url,mme_token)
 
     return data
