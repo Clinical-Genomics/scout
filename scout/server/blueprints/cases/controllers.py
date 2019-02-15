@@ -650,7 +650,10 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
         server_resp = sample_matches(mme_base_url, mme_token, patient_id)
         if 'status_code' in server_resp: # the server returned a valid response
             # and this will be a list of match objects sorted by desc date
-            matches[patient_id] = parse_matches(patient_id, server_resp['matches'])
+            pat_matches = []
+            if server_resp.get('matches'):
+                pat_matches = parse_matches(patient_id, server_resp['matches'])
+            matches[patient_id] = pat_matches
         else:
             LOG.info('Server returned error message: {}'.format(server_resp['message']))
             data['server_errors'].append(server_resp['message'])

@@ -492,10 +492,30 @@
     <div class="panel-heading">Matching patients</div>
     <div class="panel-body">
       {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
-        <p>This case is in MatchMaker!&nbsp;&nbsp;<a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-default" role="button">Matches</a></p>
-        <div class="row">
-        </div>
-        <p class="text-center"><a href="#mme_form" data-toggle="collapse">modify or delete submission</a></p>
+        <p>This case is in MatchMaker!</p>
+        <p class="text-center">
+          <div class="btn-group" role="group" aria-label="...">
+            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-default" role="button">Matches</a>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Match <span class="caret"></span>
+              </button>
+
+
+              <ul class="dropdown-menu">
+                <li><a href="#">Against other Scout patients in MatchMaker</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+
+
+
+              </ul>
+            </div>
+            <a class="btn btn-default" href="#mme_form" data-toggle="collapse">Modify or delete submission</a>
+          </div>
+        </p>
       {% else %} <!-- display option to submit case to MatchMaker -->
         <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
       {% endif %}
@@ -570,6 +590,7 @@
                   Share to MatchMaker
                 {% endif %}</button>
             </div>
+          </div>
         </form>
         {% if case.mme_submission %}
           {{ modal_mme_delete() }}
