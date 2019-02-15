@@ -151,6 +151,11 @@ def matchmaker_matches(institute_id, case_name):
 
     return dict(data)
 
+@cases_bp.route('/<institute_id>/<case_name>/<target>', methods=['GET','POST'])
+def matchmaker_match(institute_id, case_name, target):
+    flash('matching against:{}'.format(target), 'info')
+    return redirect(request.referrer)
+
 
 @cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
 def matchmaker_add(institute_id, case_name):
