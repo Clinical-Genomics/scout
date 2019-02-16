@@ -160,44 +160,34 @@ def parse_matches(patient_id, match_objs):
                     ]
 
     Returns:
-        matching_patients(list): a list of dictionaries like this:
-        [
-            {
-                'match_oid' : '5c628537b79502057784777b',
-                'match_date' : datetime,
-                'match_type' : 'internal' or 'external',
-                'patient_id' : patient_id,
-                'score' : match scores (dict),
-                'patient' : patient_obj,
-                'host_node' : { id : node_id , label: node_label}
-            },
-            ..
-        ]
+        parsed_matches(list): a list of parsed match objects
+
     """
     LOG.info('Parsing MatchMaker matches for patient {}'.format(patient_id))
-    matching_patients = []
+    parsed_matches = []
 
     for match_obj in match_objs:
-        # save match object ID
-        match_oid = match_obj['_id']['$oid']
+
         # convert match date from millisecond to readable date
         milliseconds_date = match_obj['created']['$date']
         mdate = datetime.datetime.fromtimestamp(milliseconds_date/1000.0)
+        match_type = 'external'
+        matching_patients = []
+
+        parsed_match = {
+            'match_oid' : match_obj['_id']['$oid'],# save match object ID
+            'match_date' : mdate
+        }
 
         # if patient was used as query patient:
         if match_obj['data']['patient']['id'] == patient_id:
             match_results = match_obj['results'] # List of matching patients
             for node_result in match_results:
-                for patient in node_result['patients']:
-                    match_type = 'external'
-                    contact_institution = patient['patient']['contact'].get('institution')
-                    if contact_institution and 'Scout software user' in contact_institution:
-                        match_type = 'internal'
+                if match_obj['match_type'] == 'internal':
+                    match_type = 'internal'
 
+                for patient in node_result['patients']:
                     match_patient = {
-                        'match_oid' : match_oid,
-                        'match_date' : mdate,
-                        'match_type' : match_type,
                         'patient_id' : patient['patient']['id'],
                         'score' : patient['score'],
                         'patient' : patient['patient'],
@@ -207,7 +197,6 @@ def parse_matches(patient_id, match_objs):
 
         else: # else if patient was returned as a match result for another patient
             m_patient = match_obj['data']['patient']
-            match_type = 'external'
             contact_institution = m_patient['contact'].get('institution')
             if contact_institution and 'Scout software user' in contact_institution:
                 match_type = 'internal'
@@ -221,9 +210,6 @@ def parse_matches(patient_id, match_objs):
 
                         score = patient['score']
                         match_patient = {
-                            'match_oid' : match_oid,
-                            'match_date' : mdate,
-                            'match_type' : match_type,
                             'patient_id' : m_patient['id'],
                             'score' : score,
                             'patient' : m_patient,
@@ -231,6 +217,11 @@ def parse_matches(patient_id, match_objs):
                         }
                         matching_patients.append(match_patient)
 
+        parsed_match['match_type'] = match_type
+        parsed_match['patients'] = matching_patients
+        parsed_matches.append(parsed_match)
+
     # sort results by descending score
-    matching_patients = sorted(matching_patients, key=lambda k: k['score']['patient'], reverse=True)
-    return matching_patients
+    parsed_matches = sorted(parsed_matches, key=lambda k: k['match_date'], reverse=True)
+    #matching_patients = sorted(matching_patients, key=lambda k: k['score']['patient'], reverse=True)
+    return parsed_matches
