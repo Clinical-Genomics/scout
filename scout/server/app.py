@@ -43,7 +43,7 @@ def create_app(config_file=None, config=None):
         app.config.from_pyfile(config_file)
 
     # If there is a MatchMaker Exchange server
-    # Collect the connect external nodes
+    # collect the connected external nodes
     app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
 
 
