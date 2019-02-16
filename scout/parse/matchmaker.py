@@ -223,5 +223,4 @@ def parse_matches(patient_id, match_objs):
 
     # sort results by descending score
     parsed_matches = sorted(parsed_matches, key=lambda k: k['match_date'], reverse=True)
-    #matching_patients = sorted(matching_patients, key=lambda k: k['score']['patient'], reverse=True)
     return parsed_matches
