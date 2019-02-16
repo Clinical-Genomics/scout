@@ -21,7 +21,7 @@ from scout.server.blueprints.variants.controllers import variant as variant_deco
 from scout.server.blueprints.variants.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.update.matchmaker import mme_update
-from scout.utils.matchmaker import sample_matches, matchmaker_request
+from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
 
@@ -649,7 +649,8 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
     for patient in case_obj['mme_submission']['patients']:
         patient_id = patient['id']
         matches[patient_id] = None
-        server_resp = sample_matches(mme_base_url, mme_token, patient_id)
+        url = ''.join([ mme_base_url, '/matches/', patient_id])
+        server_resp = matchmaker_request(url=url, token=mme_token, method='GET')
         if 'status_code' in server_resp: # the server returned a valid response
             # and this will be a list of match objects sorted by desc date
             pat_matches = []
@@ -718,5 +719,4 @@ def mme_match(case_obj, institute_obj, match_type, mme_base_url, mme_token, node
                     'message' : json_resp.get('message') # None if request was successful
                 }
                 server_responses.append(resp_obj)
-
     return server_responses

@@ -162,7 +162,15 @@ def matchmaker_match(institute_id, case_name, target):
         return redirect(request.referrer)
 
     match_results = controllers.mme_match(case_obj, institute_obj, target, mme_base_url, mme_token, nodes, mme_accepts)
-    flash('Match request results:{}'.format(match_results))
+    ok_responses = 0
+    for match_results in match_results:
+        match_results['status_code'] == 200
+        ok_responses +=1
+    if ok_responses:
+        flash("Match request sent. Look for eventual matches in 'Matches' page.", 'info')
+    else:
+        flash('An error occurred while sending match request.', 'danger')
+
     return redirect(request.referrer)
 
 
