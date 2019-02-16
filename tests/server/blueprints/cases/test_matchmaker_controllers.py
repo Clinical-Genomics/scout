@@ -17,19 +17,19 @@ class MockServerRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
-    def send_ok():
+    def _send_ok(self):
         self._set_headers()
         # return the simplest ok response:
         self.wfile.write(bytes("{\"status_code\": 200}", "utf-8"))
 
     def do_POST(self):
-        send_ok()
+        self._send_ok()
 
     def do_DELETE(self):
-        send_ok()
+        self._send_ok()
 
     def do_GET(self, match_objs): #mocks get MME matches
-        send_ok()
+        self._send_ok()
 
 
 def get_free_port():
@@ -123,6 +123,7 @@ class TestMockMatchMakerServer(object):
 
         assert server_responses[0]['patient_id'] == mme_submission['patients'][0]['id']
 
+
     def test_mme_matches(self, case_obj, mme_submission, institute_obj):
         """Testing calling the controller that collects all matches for a patient"""
 
@@ -134,3 +135,53 @@ class TestMockMatchMakerServer(object):
         assert data['case'] == case_obj
         query_patient = mme_submission['patients'][0]['id']
         assert query_patient in data['matches']
+
+
+    def test_mme_match(self, case_obj, mme_submission):
+        """Testing calling the controller that triggers internal and external MME matches"""
+
+        mme_base_url = 'http://localhost:{port}'.format(port=self.mock_server_port)
+        case_obj['mme_submission'] = mme_submission
+
+        ##  Test function to trigger internal matches:
+        server_responses = controllers.mme_match(case_obj=case_obj, match_type='internal',
+            mme_base_url=mme_base_url, mme_token=MME_TOKEN)
+        # server response will be a list of responses
+        assert isinstance(server_responses, list)
+        # with one element:
+        assert len(server_responses)==1
+        # server response coresponds to the right patient
+        assert server_responses[0]['patient_id'] == case_obj['mme_submission']['patients'][0]['id']
+        # and the node is the internal node
+        assert server_responses[0]['server'] == 'Local MatchMaker node'
+
+        ## Test Matches against external nodes:
+        # Test function to trigger external matches against one node
+        nodes = [{ 'id': 'mock_node_1' }]
+        server_responses = controllers.mme_match(case_obj=case_obj, match_type=nodes[0]['id'],
+            mme_base_url=mme_base_url, mme_token=MME_TOKEN, nodes=nodes, mme_accepts=MME_ACCEPTS)
+        # make sure that a list of server response with one element is returned
+        assert isinstance(server_responses, list)
+        assert len(server_responses)==1
+        # server response coresponds to the right patient
+        assert server_responses[0]['patient_id'] == case_obj['mme_submission']['patients'][0]['id']
+        # and the node is the external node
+        assert server_responses[0]['server'] == 'mock_node_1'
+
+
+        # Test function to trigger external matches against all nodes:
+        # add another node:
+        nodes.append({ 'id': 'mock_node_2' })
+        server_responses = controllers.mme_match(case_obj=case_obj, match_type='external',
+            mme_base_url=mme_base_url, mme_token=MME_TOKEN, nodes=nodes, mme_accepts=MME_ACCEPTS)
+        # server response will be a list of responses
+        assert isinstance(server_responses, list)
+        # there will be one response for each node (2)
+        assert len(server_responses)==2
+
+        node_ids = [ node['id'] for node in nodes]
+        for i, resp in enumerate(server_responses):
+            # matching of patient 1 on each node returns a matching for the right patient
+            assert server_responses[i]['patient_id'] == case_obj['mme_submission']['patients'][0]['id']
+            # both nodes were interrogated
+            assert server_responses[i]['server'] in node_ids

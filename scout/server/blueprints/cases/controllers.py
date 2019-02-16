@@ -20,7 +20,6 @@ from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_li
 from scout.server.blueprints.variants.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
-from scout.update.matchmaker import mme_update
 from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
@@ -525,7 +524,7 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
 
     if not mme_base_url or not mme_accepts or not mme_token:
         return 'Please check that Matchmaker connection parameters are valid'
-
+    url = ''.join([mme_base_url, '/patient/add'])
     features = []   # this is the list of HPO terms
     disorders = []  # this is the list of OMIM diagnoses
     g_features = []
@@ -575,8 +574,8 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
             patient['genomicFeatures'] = g_features
 
         # send add request to server and capture response
-        resp = mme_update(mme_base_url=mme_base_url, update_action='add', patient=patient, token=mme_token,
-                content_type=mme_accepts)
+        resp = matchmaker_request(url=url, token=mme_token, method='POST', content_type=mme_accepts,
+            accept='application/json', data={'patient':patient})
 
         server_responses.append({
                 'patient': patient,
@@ -610,10 +609,11 @@ def mme_delete(case_obj, mme_base_url, mme_token):
 
     # for each patient of the case in matchmaker
     for patient in case_obj['mme_submission']['patients']:
+
         # send delete request to server and capture server's response
         patient_id = patient['id']
-        resp = mme_update(mme_base_url=mme_base_url, update_action='delete', patient=patient_id,
-                token=mme_token)
+        url = ''.join([mme_base_url, '/patient/delete/', patient_id])
+        resp = matchmaker_request(url=url, token=mme_token, method='DELETE', )
 
         server_responses.append({
             'patient_id': patient_id,
@@ -666,12 +666,11 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
     return data
 
 
-def mme_match(case_obj, institute_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
+def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
     """Initiate a MatchMaker match against either other Scout patients on external nodes
 
     Args:
         case_obj(dict): a scout case object already submitted to MME
-        institute_obj(dict): an institute object
         match_type(str): 'internal' or 'external'
         mme_base_url(str): base url of the MME server
         mme_token(str): auth token of the MME server

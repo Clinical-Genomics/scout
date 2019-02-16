@@ -161,7 +161,7 @@ def matchmaker_match(institute_id, case_name, target):
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
 
-    match_results = controllers.mme_match(case_obj, institute_obj, target, mme_base_url, mme_token, nodes, mme_accepts)
+    match_results = controllers.mme_match(case_obj, target, mme_base_url, mme_token, nodes, mme_accepts)
     ok_responses = 0
     for match_results in match_results:
         match_results['status_code'] == 200
