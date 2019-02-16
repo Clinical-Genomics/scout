@@ -7,18 +7,61 @@ from werkzeug.datastructures import Headers
 
 LOG = logging.getLogger(__name__)
 
-def search_nodes(case_obj, mme_base_url, token, node):
-    """Send a match request to one or all MatchMaker nodes
+def matchmaker_request(url, token, method, content_type=None, accept=None, data=None):
+    """Send a request to MatchMaker and return its response
 
     Args:
-        mme_base_url(str): base URL of MME service
+        url(str): url to send request to
         token(str): MME server authorization token
-        node(str): 'internal', external or external_node_id
+        method(str): 'GET', 'POST' or 'DELETE'
+        content_type(str): MME request Content-Type
+        accept(str): accepted response
+        data(dict): eventual data to send in request
 
-    Returns
-        match_results(list): list of match results
+    Returns:
+        json_response(dict): server response
     """
-    return 'meh'
+    headers = Headers()
+    headers = { 'X-Auth-Token': token}
+    if content_type:
+        headers['Content-Type'] = content_type
+    if accept:
+        headers['Accept'] = accept
+
+    #sending data anyway so response will not be cached
+    req_data = data or {'timestamp' : datetime.datetime.now().timestamp()}
+    json_response = None
+    try:
+        LOG.info('Sending {} request to MME url {}. Data sent: {}'.format(
+            method, url, req_data))
+        resp = requests.request(
+            method = method,
+            url = url,
+            headers = headers,
+            data = json.dumps(req_data)
+        )
+        json_response = resp.json()
+        LOG.info('MME server response was:{}'.format(json_response))
+        json_response['status_code'] = resp.status_code
+
+    except Exception as err:
+        LOG.info('An error occurred while sending HTTP request to server ({})'.format(err))
+        json_response = {
+            'message' : str(err)
+        }
+    return json_response
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

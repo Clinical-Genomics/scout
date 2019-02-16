@@ -21,7 +21,7 @@ from scout.server.blueprints.variants.controllers import variant as variant_deco
 from scout.server.blueprints.variants.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.update.matchmaker import mme_update
-from scout.utils.matchmaker import sample_matches
+from scout.utils.matchmaker import sample_matches, matchmaker_request
 
 LOG = logging.getLogger(__name__)
 
@@ -516,11 +516,11 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
         add_disorders(bool) if True OMIM diagnoses will be included in matchmaker
         genes_only(bool) if True only genes and not variants will be shared
         mme_base_url(str) base url of the MME server
-        mme_accepts(str) accepted content of the request
+        mme_accepts(str) request content accepted by MME server
         mme_token(str) auth token of the MME server
 
     Returns:
-        submitted_info(dict) info submitted to MatchBox and its responses
+        submitted_info(dict) info submitted to MatchMaker and its responses
     """
 
     if not mme_base_url or not mme_accepts or not mme_token:
@@ -625,7 +625,7 @@ def mme_delete(case_obj, mme_base_url, mme_token):
 
 
 def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
-    """Show Matchmaker submission data for a sample and eventual matchesself.
+    """Show Matchmaker submission data for a sample and eventual matches.
 
     Args:
         case_obj(dict): a scout case object
@@ -663,3 +663,60 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
     data['matches'] = matches
 
     return data
+
+
+def mme_match(case_obj, institute_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
+    """Initiate a MatchMaker match against either other Scout patients on external nodes
+
+    Args:
+        case_obj(dict): a scout case object already submitted to MME
+        institute_obj(dict): an institute object
+        match_type(str): 'internal' or 'external'
+        mme_base_url(str): base url of the MME server
+        mme_token(str): auth token of the MME server
+        mme_accepts(str): request content accepted by MME server (only for internal matches)
+
+    Returns:
+        matches(list): a list of eventual matches
+    """
+    query_patients = []
+    server_responses = []
+    url = None
+    # list of patient dictionaries is required for internal matching
+    query_patients = case_obj['mme_submission']['patients']
+    if match_type=='internal':
+        url = ''.join([mme_base_url,'/match'])
+        for patient in query_patients:
+            json_resp = matchmaker_request(url=url, token=mme_token, method='POST',
+                content_type=mme_accepts, accept=mme_accepts, data={'patient':patient})
+            resp_obj = {
+                'server' : 'Local MatchMaker node',
+                'patient_id' : patient['id'],
+                'results' : json_resp.get('results'),
+                'status_code' : json_resp.get('status_code'),
+                'message' : json_resp.get('message') # None if request was successful
+            }
+            server_responses.append(resp_obj)
+    else: # external matching
+        # external matching requires only patient ID
+        query_patients = [ patient['id'] for patient in query_patients]
+        node_ids = [ node['id'] for node in nodes ]
+        if match_type in node_ids: # match is against a specific external node
+            node_ids = [match_type]
+
+        # Match every affected patient
+        for patient in query_patients:
+            # Against every node
+            for node in node_ids:
+                url = ''.join([mme_base_url,'/match/external/', patient, '?node=', node])
+                json_resp = matchmaker_request(url=url, token=mme_token, method='POST')
+                resp_obj = {
+                    'server' : node,
+                    'patient_id' : patient,
+                    'results' : json_resp.get('results'),
+                    'status_code' : json_resp.get('status_code'),
+                    'message' : json_resp.get('message') # None if request was successful
+                }
+                server_responses.append(resp_obj)
+
+    return server_responses

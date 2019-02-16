@@ -502,9 +502,10 @@
                   Match against&nbsp;<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                  <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='scout') }}">Scout patients in MatchMaker</a></li>
+                  <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</a></li>
+                  <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
                   {% for node in mme_nodes %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
+                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">External node-> {{node.description}}</a></li>
                   {% endfor %}
                 </ul>
               </div>

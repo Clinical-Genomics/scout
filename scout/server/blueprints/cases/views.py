@@ -129,8 +129,8 @@ def clinvar_submissions(institute_id):
 @cases_bp.route('/<institute_id>/<case_name>/mme_matches', methods=['GET', 'POST'])
 @templated('cases/matchmaker.html')
 def matchmaker_matches(institute_id, case_name):
-
-    # Required params for sending an add request to MME:
+    """Show all MatchMaker matches for a given case"""
+    # Required params for getting matches from MME server:
     mme_base_url = current_app.config.get('MME_URL')
     mme_token = current_app.config.get('MME_TOKEN')
 
@@ -138,12 +138,6 @@ def matchmaker_matches(institute_id, case_name):
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    # user has triggeres a match request
-    if request.method == 'POST':
-        node = request.form.get('nodes')
-        flash('Looking for similar patients on {}'.format(node))
-        return redirect(request.referrer)
-
     data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
     if data['server_errors']:
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
@@ -151,15 +145,30 @@ def matchmaker_matches(institute_id, case_name):
 
     return dict(data)
 
+
 @cases_bp.route('/<institute_id>/<case_name>/<target>', methods=['GET','POST'])
 def matchmaker_match(institute_id, case_name, target):
-    flash('matching against:{}'.format(target), 'info')
+    """Starts an internal match or a match against one or all MME external nodes"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # Required params for sending an add request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_accepts = current_app.config.get('MME_ACCEPTS')
+    mme_token = current_app.config.get('MME_TOKEN')
+    nodes = current_app.mme_nodes
+
+    if not mme_base_url or not mme_token or not mme_accepts:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+
+    match_results = controllers.mme_match(case_obj, institute_obj, target, mme_base_url, mme_token, nodes, mme_accepts)
+    flash('Match request results:{}'.format(match_results))
     return redirect(request.referrer)
 
 
 @cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
 def matchmaker_add(institute_id, case_name):
-
+    """Add or update a case in MatchMaker"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     if case_obj.get('suspects') and len(case_obj.get('suspects'))>3:
         flash('At the moment it is not possible to save to MatchMaker more than 3 pinned variants', 'warning')
@@ -191,7 +200,6 @@ def matchmaker_add(institute_id, case_name):
     if not mme_base_url or not mme_accepts or not mme_token:
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
-
 
     add_result = controllers.mme_add(store=store, user_obj=user_obj, case_obj=case_obj,
         add_gender=mme_save_options[0], add_features=mme_save_options[1],
@@ -227,7 +235,7 @@ def matchmaker_add(institute_id, case_name):
 
 @cases_bp.route('/<institute_id>/<case_name>/mme_delete', methods=['POST'])
 def matchmaker_delete(institute_id, case_name):
-
+    """Remove a case from MatchMaker"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Required params for sending a delete request to MME:
     mme_base_url = current_app.config.get('MME_URL')
