@@ -79,7 +79,11 @@ def export_verified_variants(aggregate_variants, unique_callers):
             line.append(local_link)
             line.append(variant.get('validation'))
             line.append(case_name)
-            line.append(sample.get('display_name'))
+            case_individual = next(ind for ind in variant['case_obj']['individuals'] if ind['individual_id'] == sample['sample_id'])
+            if case_individual['phenotype'] == 2:
+                line.append(' '.join([sample.get('display_name'),'(A)'])) # label sample as affected
+            else:
+                line.append(sample.get('display_name'))
             line.append(''.join(['chr',variant['chromosome'],':',str(variant['position'])])) # position
             line.append('>'.join([variant.get('reference')[:10],variant.get('alternative')[:10]])) # change
             genes = []
