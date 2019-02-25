@@ -51,12 +51,13 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
         yield variant_obj
 
 
-def export_verified_variants(aggregate_variants):
+def export_verified_variants(aggregate_variants, unique_callers):
     """Create the lines for an excel file with verified variants for
         an institute
 
         Args:
             aggregate_variants(list): a list of variants with aggregates case data
+            unique_callers(set): a unique list of available callers
 
         Returns:
             document_lines(list): list of lines to include in the document
@@ -65,60 +66,58 @@ def export_verified_variants(aggregate_variants):
     for variant in aggregate_variants:
         # get genotype and allele depth for each sample
         samples = []
-        gtypes = []
         for sample in variant['samples']:
+
+            """
             case_individual = next(ind for ind in variant['case_obj']['individuals'] if ind['individual_id'] == sample['sample_id'])
             if case_individual['phenotype'] == 2:
                 samples.append(''.join([sample['display_name'],'(A)'])) # label sample as affected
             else:
                 samples.append(sample['display_name'])
-            depth = ''.join([ '(', str(sample['allele_depths'][0]), '/', str(sample['allele_depths'][1]), ')' ])
-            gtypes.append(' '.join([ sample['genotype_call'], depth ]))
+            """
+            #depth = ''.join([ '(', str(sample['allele_depths'][0]), '/', str(sample['allele_depths'][1]), ')' ])
+            #gtypes.append(' '.join([ sample['genotype_call'], depth ]))
 
             line = [] # line elements corespond to contants.variants_export.VERIFIED_VARIANTS_HEADER
+            line.append(variant['institute'])
             line.append(variant['_id']) # variant database ID
             line.append(variant['category'])
             line.append(variant['variant_type'])
             line.append(variant['display_name'][:30]) # variant display name
-            line.append(variant.get('validation'))
+            # Build local link to variant:
             case_name = variant['case_obj']['display_name']  # case display name
+            local_link = '/'.join([ '', variant['institute'], case_name, variant['_id'] ])
+            line.append(local_link)
+            line.append(variant.get('validation'))
             line.append(case_name)
-            line.append(variant['institute'])
+            line.append(sample.get('display_name'))
             line.append(''.join(['chr',variant['chromosome'],':',str(variant['position'])])) # position
             line.append('>'.join([variant.get('reference')[:10],variant.get('alternative')[:10]])) # change
             genes = []
             prot_effect = []
+            funct_anno = []
             for gene in variant.get('genes'): # this will be a unique long field in the document
                 genes.append(gene.get('hgnc_symbol',''))
+                funct_anno.append(gene.get('functional_annotation'))
                 for transcript in gene.get('transcripts'):
                     if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
                         prot_effect.append(urllib.parse.unquote(transcript.get('protein_sequence_name')))
-            line.append(','.join(genes))
             line.append(','.join(prot_effect))
-
-            # get variant callers:
-            callers = [] # a list of dictionaries
-            call_results = []
-            if variant['category'] == 'snv':
-                callers = CALLERS['snv']
-            elif variant['category'] == 'sv':
-                callers = CALLERS['sv']
-
-            for caller_obj in callers:
-                caller_id = caller_obj['id']
-                if variant.get(caller_id):
-                    call_results.append(':'.join([caller_id, variant.get(caller_id)]))
-
-            line.append(','.join(call_results))
+            line.append(','.join(funct_anno))
+            line.append(','.join(genes))
             line.append(variant.get('rank_score'))
             line.append(variant.get('cadd_score'))
+            line.append(sample.get('genotype_call'))
+            line.append(sample['allele_depths'][0])
+            line.append(sample['allele_depths'][1])
+            line.append(sample['genotype_quality'])
 
-            line.append(','.join(samples))
-            line.append(','.join(gtypes))
-
-            # Build local link to variant:
-            local_link = '/'.join([ '', variant['institute'], case_name, variant['_id'] ])
-            line.append(local_link)
+            # Set callers values. One cell per caller, leave blank if not applicable
+            for caller in unique_callers:
+                if variant.get(caller):
+                    line.append(variant.get(caller))
+                else:
+                    line.append('-')
             document_lines.append(line)
     return document_lines
 
@@ -148,8 +147,8 @@ def export_mt_variants(variants, sample_id):
             for transcript in gene.get('transcripts'):
                 if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
                     prot_effect.append(urllib.parse.unquote(transcript.get('protein_sequence_name')))
-        line.append(','.join(genes))
         line.append(','.join(prot_effect))
+        line.append(','.join(genes))
         ref_ad = ''
         alt_ad = ''
         for sample in variant['samples']:

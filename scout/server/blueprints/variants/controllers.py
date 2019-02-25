@@ -1195,8 +1195,11 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
         if not verif_vars:
             continue
-
-        cust_verified = export_verified_variants(verif_vars)
+        unique_callers = set()
+        for var_type, var_callers in CALLERS.items():
+            for caller in var_callers:
+                unique_callers.add(caller.get('id'))
+        cust_verified = export_verified_variants(verif_vars, unique_callers)
 
         document_name = '.'.join([cust, '_verified_variants', today]) + '.xlsx'
         workbook = Workbook(os.path.join(temp_excel_dir,document_name))
@@ -1204,7 +1207,7 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
         # Write the column header
         row = 0
-        for col,field in enumerate(VERIFIED_VARIANTS_HEADER):
+        for col,field in enumerate(VERIFIED_VARIANTS_HEADER + list(unique_callers)):
             Report_Sheet.write(row,col,field)
 
         # Write variant lines, after header (start at line 1)
