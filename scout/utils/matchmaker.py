@@ -68,4 +68,6 @@ def mme_nodes(mme_base_url, token):
         return nodes
     url = ''.join([mme_base_url, '/nodes'])
     nodes = matchmaker_request(url=url, token=token, method='GET')
+    if isinstance(nodes,dict):
+        return None
     return nodes
