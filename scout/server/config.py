@@ -22,3 +22,8 @@ ACCEPT_LANGUAGES = ['en', 'sv']
 
 # FEATURE FLAGS
 SHOW_CAUSATIVES = False
+
+#MatchMaker related parameters
+MME_ACCEPTS = 'application/vnd.ga4gh.matchmaker.v1.0+json'
+MME_URL = 'http://localhost:9020'
+MME_TOKEN = 'custom_token'
