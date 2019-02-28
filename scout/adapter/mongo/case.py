@@ -37,7 +37,7 @@ class CaseHandler(object):
             status(str)
             phenotype_terms(bool): Fetch all cases with phenotype terms
             pinned(bool): Fetch all cases with pinned variants
-            name_query(str): Could be hpo term, user, part of display name, 
+            name_query(str): Could be hpo term, user, part of display name,
                              part of inds or part of synopsis
 
         Yields:
@@ -87,6 +87,10 @@ class CaseHandler(object):
             elif name_query.startswith('HP:'):
                 LOG.debug("HPO case query")
                 query['phenotype_terms.phenotype_id'] = name_query
+            elif name_query.startswith('PG:'):
+                LOG.debug("PG case query")
+                phenotyp_group_query = name_query.replace('PG:', 'HP:')
+                query['phenotype_groups.phenotype_id'] = name_query
             elif name_query.startswith('synopsis:'):
                 synopsis_query=name_query.replace('synopsis:','')
                 query['$text']={'$search':synopsis_query}
@@ -101,12 +105,12 @@ class CaseHandler(object):
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases
-        
+
         This function will change when we migrate to 3.7.1
-        
+
         Args:
             collaborator(str): Institute id
-        
+
         Returns:
             nr_cases(int)
         """
@@ -114,12 +118,12 @@ class CaseHandler(object):
 
         if institute_id:
             query['collaborators'] = institute_id
-        
+
         LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = self.case_collection.find(query).count()
 
         return nr_cases
-    
+
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
                                  phenotype_ids=None, build='37'):

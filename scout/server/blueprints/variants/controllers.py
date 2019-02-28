@@ -399,7 +399,7 @@ def get_predictions(genes):
         'sift_predictions': [],
         'polyphen_predictions': [],
         'region_annotations': [],
-        'functional_annotations': [],
+        'functional_annotations': []
     }
     for gene_obj in genes:
         for pred_key in data:
@@ -859,8 +859,6 @@ def callers(variant_obj, category='snv'):
     for caller in CALLERS[category]:
         if variant_obj.get(caller['id']):
             calls.add((caller['name'], variant_obj[caller['id']]))
-        else:
-            calls.add((caller['name'], 'Not available'))
 
     return list(calls)
 
