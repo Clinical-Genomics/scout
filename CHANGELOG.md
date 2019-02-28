@@ -6,13 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.x.x]
 
-Add new stuff here
+Add stuff here
+
+
+## [4.3.1]
 
 ### Added
 - Show calls from all callers even if call is not available
 - Instructions to install cairo and pango libs from WeasyPrint page
 - Display cases with number of variants from CLI
 - Only display cases with number of variants above certain treshold. (Also CLI)
+- Export of verified variants by CLI or from the dashboard
 - Extend case level queries with default panels, cohorts and phenotype groups.
 - Slice dashboard statistics display using case level queries
 - Add a view where all variants for an institute can be searched across cases, filtering on gene and rank score. Allows searching research variants for cases that have research open.
@@ -23,6 +27,7 @@ Add new stuff here
 - Reintroduced the exon/intron number in variant verification email
 - Sex and affected status is correctly displayed on general report
 - Force number validation in SV filter by size
+- Display ensembl transcripts when no refseq exists
 
 
 ## [4.3.0]

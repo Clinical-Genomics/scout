@@ -38,6 +38,7 @@
   {% endfor %}
 </div>
 
+
 <h1>Pedigree info</h1>
 <div class="row">
   {% for topic in pedigree %}
@@ -89,7 +90,13 @@
     </div>
   {% endfor %}
 </div>
-
+<div>
+  <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
+    <ol class="breadcrumb">
+      <li><button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-xs">Download verified variants for your cases</button></li>
+    </ol>
+  </form>
+</div>
 {% endblock %}
 
 {% macro dashboard_search_form() %}

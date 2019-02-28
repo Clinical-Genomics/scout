@@ -17,7 +17,7 @@ import click
 
 LOG = logging.getLogger(__name__)
 
-from .variant import variants
+from .variant import variants, verified
 from .hpo import hpo_genes
 from .transcript import transcripts
 from .gene import genes
@@ -38,6 +38,7 @@ export.add_command(panel)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(variants)
+export.add_command(verified)
 export.add_command(hpo_genes)
 export.add_command(cases)
 export.add_command(mt_report)

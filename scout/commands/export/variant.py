@@ -1,14 +1,91 @@
+import os
 import click
 import logging
+import datetime
 
 from bson.json_util import dumps
+from xlsxwriter import Workbook
 
-from scout.export.variant import export_variants
+from scout.export.variant import export_variants, export_verified_variants
 from .utils import json_option
 
-from scout.constants.variants_export import VCF_HEADER
+from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 
 LOG = logging.getLogger(__name__)
+
+
+@click.command('verified', short_help='Export validated variants')
+@click.option('-c', '--collaborator',
+        help="Specify what collaborator to export variants from. Defaults to cust000",
+)
+@click.option('--outpath',
+              help='Path to output file'
+)
+@click.option('--test',
+              help='Use this flag to test the function',
+              is_flag=True
+)
+@click.pass_context
+def verified(context, collaborator, test, outpath=None):
+    """Export variants which have been verified for an institute
+        and write them to an excel file.
+
+    Args:
+        collaborator(str): institute id
+        test(bool): True if the function is called for testing purposes
+        outpath(str): path to output file
+
+    Returns:
+        written_files(int): number of written or simulated files
+    """
+    written_files = 0
+    collaborator = collaborator or 'cust000'
+    LOG.info('Exporting verified variants for cust {}'.format(collaborator))
+
+    adapter = context.obj['adapter']
+    verified_vars = adapter.verified(institute_id=collaborator)
+    LOG.info('FOUND {} verified variants for institute {}'.format(len(verified_vars), collaborator))
+
+
+    if not verified_vars:
+        LOG.warning('There are no verified variants for institute {} in database!'.format(collaborator))
+        return None
+
+    document_lines = export_verified_variants(verified_vars)
+
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    document_name = '.'.join(['verified_variants', collaborator, today]) + '.xlsx'
+
+    # If this was a test and lines are created return success
+    if test and document_lines:
+        written_files +=1
+        LOG.info('Success. Verified variants file contains {} lines'.format(len(document_lines)))
+        return written_files
+
+    # create workbook and new sheet
+    # set up outfolder
+    if not outpath:
+        outpath = str(os.getcwd())
+    workbook = Workbook(os.path.join(outpath,document_name))
+    Report_Sheet = workbook.add_worksheet()
+
+    # Write the column header
+    row = 0
+    for col,field in enumerate(VERIFIED_VARIANTS_HEADER):
+        Report_Sheet.write(row,col,field)
+
+    # Write variant lines, after header (start at line 1)
+    for row, line in enumerate(document_lines,1): # each line becomes a row in the document
+        for col, field in enumerate(line): # each field in line becomes a cell
+            Report_Sheet.write(row,col,field)
+    workbook.close()
+
+    if os.path.exists(os.path.join(outpath,document_name)):
+        LOG.info('Success. Verified variants file of {} lines was written to disk'. format(len(document_lines)))
+        written_files += 1
+
+    return written_files
+
 
 @click.command('variants', short_help='Export variants')
 @click.option('-c', '--collaborator',

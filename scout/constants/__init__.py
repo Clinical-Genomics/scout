@@ -21,7 +21,7 @@ from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
 from .file_types import FILE_TYPE_MAP
 from .clinvar import (CLINVAR_HEADER, CASEDATA_HEADER)
-from .variants_export import (EXPORT_HEADER, VCF_HEADER, MT_EXPORT_HEADER)
+from .variants_export import (EXPORT_HEADER, VCF_HEADER, MT_EXPORT_HEADER, VERIFIED_VARIANTS_HEADER)
 
 cytobands_handle = get_file_handle(cytobands_path)
 
@@ -83,34 +83,34 @@ CALLERS = {
         }
     ],
     'cancer': [{
-        'id': 'mutect',
-        'name': 'MuTect',
-    }, {
-        'id': 'pindel',
-        'name': 'Pindel',
-    }, {
-        'id': 'gatk',
-        'name': 'GATK',
-    }, {
-        'id': 'freebayes',
-        'name': 'Freebayes',
+            'id': 'mutect',
+            'name': 'MuTect',
+        }, {
+            'id': 'pindel',
+            'name': 'Pindel',
+        }, {
+            'id': 'gatk',
+            'name': 'GATK',
+        }, {
+            'id': 'freebayes',
+            'name': 'Freebayes',
     }],
     'sv': [{
-        'id': 'cnvnator',
-        'name': 'CNVnator',
-    }, {
-        'id': 'delly',
-        'name': 'Delly',
-    }, {
-        'id': 'tiddit',
-        'name': 'TIDDIT',
-    }, {
-        'id': 'manta',
-        'name': 'Manta',
+            'id': 'cnvnator',
+            'name': 'CNVnator',
+        }, {
+            'id': 'delly',
+            'name': 'Delly',
+        }, {
+            'id': 'tiddit',
+            'name': 'TIDDIT',
+        }, {
+            'id': 'manta',
+            'name': 'Manta',
     }],
     'str': [{
-       'id': 'expansionhunter',
-       'name': 'ExpansionHunter'
+           'id': 'expansionhunter',
+           'name': 'ExpansionHunter'
    }]
 }
 
