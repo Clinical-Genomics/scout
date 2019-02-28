@@ -19,10 +19,11 @@ LOG = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
-    def cases(self, collaborator=None, query=None, skip_assigned=False,
+    def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
-              phenotype_terms=False, pinned=False, cohort=False, name_query=None):
+              phenotype_terms=False, pinned=False, cohort=False, name_query=None,
+              yield_query=False):
         """Fetches all cases from the backend.
 
         Args:
@@ -39,6 +40,7 @@ class CaseHandler(object):
             pinned(bool): Fetch all cases with pinned variants
             name_query(str): Could be hpo term, HPO-group, user, part of display name,
                              part of inds or part of synopsis
+            yield_query(bool): If true, only return query string.
 
         Yields:
             Cases ordered by date
@@ -49,6 +51,10 @@ class CaseHandler(object):
         if collaborator:
             LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
+
+        if owner:
+            LOG.debug("Use owner {0}".format(owner))
+            query['owner'] = owner
 
         if skip_assigned:
             query['assignees'] = {'$exists': False}
@@ -106,6 +112,9 @@ class CaseHandler(object):
                     {'display_name': {'$regex': name_query}},
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
+
+        if(yield_query):
+            return query
 
         LOG.info("Get cases with query {0}".format(query))
         return self.case_collection.find(query).sort('updated_at', -1)
