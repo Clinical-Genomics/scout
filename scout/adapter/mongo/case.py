@@ -37,7 +37,7 @@ class CaseHandler(object):
             status(str)
             phenotype_terms(bool): Fetch all cases with phenotype terms
             pinned(bool): Fetch all cases with pinned variants
-            name_query(str): Could be hpo term, user, part of display name,
+            name_query(str): Could be hpo term, HPO-group, user, part of display name,
                              part of inds or part of synopsis
 
         Yields:
@@ -89,11 +89,14 @@ class CaseHandler(object):
                 query['phenotype_terms.phenotype_id'] = name_query
             elif name_query.startswith('PG:'):
                 LOG.debug("PG case query")
-                phenotyp_group_query = name_query.replace('PG:', 'HP:')
-                query['phenotype_groups.phenotype_id'] = name_query
+                phenotype_group_query = name_query.replace('PG:', 'HP:')
+                query['phenotype_groups.phenotype_id'] = phenotype_group_query
             elif name_query.startswith('synopsis:'):
                 synopsis_query=name_query.replace('synopsis:','')
                 query['$text']={'$search':synopsis_query}
+            elif name_query.startswith('cohort:'):
+                cohort_query = name_query.replace('cohort:','')
+                query['cohorts'] = cohort_query
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
