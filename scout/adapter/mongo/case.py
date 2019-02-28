@@ -97,6 +97,10 @@ class CaseHandler(object):
             elif name_query.startswith('cohort:'):
                 cohort_query = name_query.replace('cohort:','')
                 query['cohorts'] = cohort_query
+            elif name_query.startswith('panel:'):
+                panel_name_query = name_query.replace('panel:','')
+                query['panels'] = {'$elemMatch': {'panel_name': panel_name_query,
+                                    'is_default': True }}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
