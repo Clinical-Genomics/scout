@@ -160,6 +160,8 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
         cases = adapter.cases(owner=institute_id)
     elif slice_query:
         cases = adapter.cases(name_query=slice_query)
+    else:
+        cases = adapter.cases()
 
     phenotype_cases = 0
     causative_cases = 0
