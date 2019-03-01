@@ -16,6 +16,7 @@ research_snv_file = 'demo/643594.research.vcf.gz'
 ped_path = pkg_resources.resource_filename('scout', ped_file)
 clinical_sv_file = 'demo/643594.clinical.SV.vcf.gz'
 research_sv_file = 'demo/643594.research.SV.vcf.gz'
+empty_sv_file = 'demo/empty.clinical.SV.vcf.gz'
 
 panel_path = pkg_resources.resource_filename('scout', panel_file)
 madeline_path = pkg_resources.resource_filename('scout', madeline_file)
@@ -26,3 +27,5 @@ clinical_sv_path = pkg_resources.resource_filename('scout', clinical_sv_file)
 
 research_snv_path = pkg_resources.resource_filename('scout', research_snv_file)
 research_sv_path = pkg_resources.resource_filename('scout', research_sv_file)
+
+empty_sv_clinical_path = pkg_resources.resource_filename('scout', empty_sv_file)
