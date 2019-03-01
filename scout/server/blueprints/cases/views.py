@@ -195,8 +195,8 @@ def gene_variants(institute_id):
 
     log.debug("query {}".format(form.data))
 
-    variants_query = store.gene_variants(institute_obj=institute_obj,
-                    query=form.data, category='snv', variant_type=variant_type)
+    variants_query = store.gene_variants(query=form.data, category='snv',
+                            variant_type=variant_type)
     data = {}
 
     data = controllers.gene_variants(store, variants_query, page)

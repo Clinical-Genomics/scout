@@ -28,6 +28,7 @@ class CaseHandler(object):
 
         Args:
             collaborator(str): If collaborator should be considered
+            owner(str): Query cases for specified case owner only
             query(dict): If a specific query is used
             skip_assigned(bool)
             has_causatives(bool)
@@ -40,10 +41,14 @@ class CaseHandler(object):
             pinned(bool): Fetch all cases with pinned variants
             name_query(str): Could be hpo term, HPO-group, user, part of display name,
                              part of inds or part of synopsis
-            yield_query(bool): If true, only return query string.
+            yield_query(bool): If true, only return mongo query dict for use in
+                                compound querying.
 
-        Yields:
-            Cases ordered by date
+        Returns:
+            Cases ordered by date.
+            If yield_query is True, does not pose query to db;
+                instead returns corresponding query dict
+                that can be reused in compound queries or for testing.
         """
         LOG.debug("Fetch all cases")
         query = query or {}

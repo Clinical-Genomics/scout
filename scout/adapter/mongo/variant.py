@@ -251,7 +251,7 @@ class VariantHandler(VariantLoader):
                                                variant_obj['position'])
         return variant_obj
 
-    def gene_variants(self, institute_obj=None, query=None,
+    def gene_variants(self, query=None,
                    category='snv', variant_type='clinical',
                    nr_of_variants=50, skip=0):
         """Return all variants seen in a given gene.
@@ -264,7 +264,6 @@ class VariantHandler(VariantLoader):
             category(str): 'sv', 'str', 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-            institute_id(str): institute id (unused)
         """
 
         mongo_variant_query = self.build_variant_query(query=query,

@@ -11,7 +11,7 @@
     <a href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="active">
-    <span class="navbar-text">{{ institute.display_name }}</span>
+    <span class="navbar-text">{{ institute.display_name }} Cases</span>
   </li>
   {% if config.SHOW_CAUSATIVES %}
     <li>
@@ -19,7 +19,7 @@
     </li>
    {% endif %}
     <li>
-      <a href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All variants</a>
+      <a href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
     </li>
    <li>
      <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>

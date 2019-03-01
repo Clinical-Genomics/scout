@@ -7,7 +7,8 @@ from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 class QueryHandler(object):
 
     def build_variant_query(self, query=None, category='snv', variant_type='clinical'):
-        """Build a mongo query across multiple cases.
+        """Build a mongo query across multiple casesself.
+        Translate query options from a form into a complete mongo query dictionary.
 
         Beware that unindexed queries against a large variant collection will
         be extremely slow.
@@ -15,6 +16,17 @@ class QueryHandler(object):
         Currently indexed query options:
             hgnc_symbols
             rank_score
+            variant_type
+            category
+
+        Args:
+            adapter(MongoAdapter)
+            query(dict): A query dictionary for the database, from a query form.
+            category(str): 'snv', 'sv', 'str' or 'cancer'
+            variant_type(str): 'clinical' or 'research'
+
+        Returns:
+            mongo_query : A dictionary in the mongo query format.
         """
 
         query = query or {}
@@ -23,9 +35,6 @@ class QueryHandler(object):
         logger.debug("Building a mongo query for %s" % query)
 
         hgnc_symbols = query.get('hgnc_symbols')
-#        if not hgnc_symbols:
-#            logger.debug("No HGNC symbols asked. Leaving query blank (%s)." % mongo_variant_query)
-#            return mongo_variant_query
 
         mongo_variant_query['hgnc_symbols'] = {'$in': hgnc_symbols}
 

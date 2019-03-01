@@ -3,7 +3,7 @@
 {% from "utils.html" import flash_messages, comments_table %}
 
 {% block title %}
-  {{ super() }} - {{ institute.display_name }} - All variants
+  {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
 {% endblock %}
 
 {% block top_nav %}
@@ -13,12 +13,21 @@
   </li>
   <li>
     <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }}
+      {{ institute.display_name }} Cases
     </a>
   </li>
-  <li class="active">
-    <span class="navbar-text">All cases SNV and INDELs</span>
-  </li>
+  {% if config.SHOW_CAUSATIVES %}
+    <li>
+      <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+    </li>
+   {% endif %}
+   <li class="active">
+     <span class="navbar-text">All SNVs and INDELs</span>
+   </li>
+   <li>
+     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+   </li>
+
 {% endblock %}
 
 {% block content %}
@@ -100,14 +109,6 @@
 
 {% macro cell_cadd(variant) %}
   <div>
-<!--  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-    <div class='text-left'>
-      <strong>Sift</strong>
-      {{ variant.sift_predictions|join(',') }} <br>
-      <strong>PolyPhen</strong>
-      {{ (variant.polyphen_predictions or ['-'])|join(',') }}
-    </div>
-  "> -->
     {{ variant.cadd_score }}
   </div>
 {% endmacro %}
@@ -172,11 +173,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
-        container: 'body',
-      });
-
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
