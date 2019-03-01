@@ -29,22 +29,24 @@ VCF_HEADER = [
 ]
 
 VERIFIED_VARIANTS_HEADER= [
+    'Institute',
     'Database id',
     'Variant category',
     'Variant type',
     'Display name',
+    'Local link',
     'Verified state',
     'Case name',
-    'Institute',
+    'Sample',
     'Position',
     'Change',
-    'Canonical_transcript_HGVS'
+    'Canonical_transcript_HGVS',
+    'Functional annotations',
     'Genes', # This is going to be a list flattened to a string
-    'Protein effect',
-    'Variant callers', # This is going to be a list flattened to a string
     'Rank score',
     'CADD score',
-    'Samples',
-    'Sample genotype', # This is going to be a list flattened to a string
-    'Scout link'
+    'Sample genotype',
+    'AD reference',
+    'AD alternative',
+    'Genotype quality'
 ]
