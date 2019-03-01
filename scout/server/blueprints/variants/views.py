@@ -174,7 +174,9 @@ def variant(institute_id, case_name, variant_id):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.variant(store, institute_obj, case_obj, variant_id)
     if data is None:
-        return abort(404)
+        flash('An error occurred while retrieving variant object', 'danger')
+        return redirect(request.referrer)
+
     if current_app.config.get('LOQUSDB_SETTINGS'):
         data['observations'] = controllers.observations(store, loqusdb,
             case_obj, data['variant'])

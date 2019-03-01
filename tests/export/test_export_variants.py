@@ -2,6 +2,7 @@
 
 from scout.export.variant import export_mt_variants, export_verified_variants
 from scout.constants.variants_export import MT_EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants import CALLERS
 
 def test_export_mt_variants(case_obj, real_populated_database):
     """Test the function that creates lines with MT variants to be exported"""
@@ -73,10 +74,17 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
     aggregated_vars = adapter.verified(cust)
     assert len(aggregated_vars) == 3 # same number of variants is returned
 
+    unique_callers = set()
+    for var_type, var_callers in CALLERS.items():
+        for caller in var_callers:
+            unique_callers.add(caller.get('id'))
+
+    n_individuals = len(case_obj['individuals'])
+
     # Call function that creates document lines
-    document_lines = export_verified_variants(aggregated_vars)
-    assert len(document_lines) == 3 # one line per variant should be returned
+    document_lines = export_verified_variants(aggregated_vars, unique_callers)
+    assert len(document_lines) == 3 * n_individuals # one line per variant and individual
 
     for line in document_lines:
         # Make sure that document cells will be the same as in document header
-        assert len(line) == len(VERIFIED_VARIANTS_HEADER)
+        assert len(line) == len(VERIFIED_VARIANTS_HEADER + list(unique_callers))
