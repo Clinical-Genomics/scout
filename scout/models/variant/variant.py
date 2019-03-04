@@ -54,9 +54,9 @@ variant = dict(
     dbsnp_id = str,
 
     # str variant
-    str_ru = str
-    str_repid = str
-    str_ref = str
+    str_ru = str,
+    str_repid = str,
+    str_ref = str,
 
     # Gene ids:
     hgnc_ids = list, # list of hgnc ids (int)
