@@ -667,7 +667,7 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
 
 
 def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
-    """Initiate a MatchMaker match against either other Scout patients on external nodes
+    """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
         case_obj(dict): a scout case object already submitted to MME
