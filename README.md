@@ -7,6 +7,7 @@
 
 [![Build Status][travis-img]][travis-url]
 [![PyPI Version][pypi-img]][pypi-url]
+[![Coverage Status](https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master)](https://coveralls.io/github/Clinical-Genomics/scout?branch=master)
 
 ## What is Scout?
 
