@@ -9,6 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add stuff here
 
 
+### Fixed
+- Clinsig filter is fixed 
+
+
 ## [4.3.1]
 
 ### Added

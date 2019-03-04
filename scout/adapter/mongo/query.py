@@ -268,7 +268,7 @@ class QueryHandler(object):
         if query.get('clinsig'):
             rank = []
             for item in query['clinsig']:
-                rank.append(item)
+                rank.append(int(item))
                 # search for human readable clinsig values in newer cases
                 rank.append(CLINSIG_MAP[int(item)])
 
