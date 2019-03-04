@@ -44,7 +44,7 @@ hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_pat
 transcripts38_reduced_path, genes38_reduced_path,)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
-                        clinical_sv_path, ped_path, load_path, panel_path)
+                        clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -231,7 +231,7 @@ def hpo_diseases(request, hpo_disease_file):
 ##################### Case fixtures #########################
 #############################################################
 @pytest.fixture(scope='function')
-def ped_lines(request, scout_config):
+def ped_lines(request):
     """Get the lines for a case"""
     case_lines = [
         "#Family ID	Individual ID	Paternal ID	Maternal ID	Sex	Phenotype",
@@ -1068,6 +1068,12 @@ def sv_clinical_file(request):
     """Get the path to a variant file"""
     print('')
     return clinical_sv_path
+
+@pytest.fixture(scope='function')
+def empty_sv_clinical_file(request):
+    """Get the path to a variant file without variants"""
+    print('')
+    return empty_sv_clinical_path
 
 
 @pytest.fixture(scope='function')

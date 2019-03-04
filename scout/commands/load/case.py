@@ -6,6 +6,8 @@ from pprint import pprint as pp
 import click
 import yaml
 
+from cyvcf2 import VCF
+
 from scout.load import load_scout
 from scout.parse.case import (parse_case_data)
 from scout.exceptions import IntegrityError, ConfigError
@@ -92,9 +94,10 @@ def case(context, vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
         context.abort()
 
     LOG.info("Use family %s" % config_data['family'])
-
+    
     try:
         case_obj = adapter.load_case(config_data, update)
     except Exception as err:
+        LOG.error("Something went wrong during loading")
         LOG.warning(err)
         context.abort()
