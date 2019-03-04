@@ -17,7 +17,7 @@ install:
     - pip install -r requirements.txt -r requirements-dev.txt -e .
 
 after_success:
-    - coveralls
+    - coveralls --ignore-errors
 
 notifications:
     email: false
