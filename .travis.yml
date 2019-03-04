@@ -16,5 +16,8 @@ install:
     - pip install cython
     - pip install -r requirements.txt -r requirements-dev.txt -e .
 
+after_success:
+    - coveralls
+
 notifications:
     email: false
