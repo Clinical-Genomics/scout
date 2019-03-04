@@ -40,7 +40,7 @@ def parse_clnsig(acc, sig, revstat, transcripts):
 
             for sign_term in sig_groups:
                 clnsig_accsessions.append({
-                    'value': ', '.join(sign_term),
+                    'value': sign_term,
                     'accession': int(acc),
                     'revstat': ', '.join(revstat_groups),
                 })
