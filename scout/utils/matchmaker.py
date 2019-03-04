@@ -42,9 +42,12 @@ def matchmaker_request(url, token, method, content_type=None, accept=None, data=
         )
         json_response = resp.json()
         LOG.info('MME server response was:{}'.format(json_response))
-        if isinstance(json_response, dict):
-            json_response['status_code'] = resp.status_code
 
+        if isinstance(json_response, str):
+            json_response = {
+                'message' : json_response,
+            }
+        json_response['status_code'] = resp.status_code
     except Exception as err:
         LOG.info('An error occurred while sending HTTP request to server ({})'.format(err))
         json_response = {
