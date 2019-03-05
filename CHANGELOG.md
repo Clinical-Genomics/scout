@@ -10,7 +10,9 @@ Add stuff here
 
 
 ### Fixed
-- Clinsig filter is fixed 
+- Clinsig filter is fixed so clinsig numerical values are returned
+- Split multi clinsig string values in different elements of clinsig array
+- Regex to search in multi clinsig string values or multi revstat string values
 
 
 ## [4.3.1]
