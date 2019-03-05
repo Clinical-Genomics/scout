@@ -513,6 +513,7 @@ class VariantLoader(object):
         """
         # We need the institute object
         institute_id = self.institute(institute_id=case_obj['owner'])['_id']
+        nr_inserted = 0
 
         variant_file = None
         if variant_type == 'clinical':
@@ -537,6 +538,14 @@ class VariantLoader(object):
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
 
+        # Check if there are any variants in file
+        try:
+            vcf_obj = VCF(variant_file)
+            var = next(vcf_obj)
+        except StopIteration as err:
+            LOG.warning("Variant file %s does not include any variants", variant_file)
+            return nr_inserted
+        # We need to reload the file
         vcf_obj = VCF(variant_file)
 
         # Parse the neccessary headers from vcf file
