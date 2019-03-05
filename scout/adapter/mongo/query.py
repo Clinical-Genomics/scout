@@ -283,15 +283,21 @@ class QueryHandler(object):
                 mongo_query_major = { "clnsig":
                         {
                             '$elemMatch': {
-                                            '$or' : [
-                                                { 'value' : { '$in': rank }},
-                                                { 'value' : re.compile('|'.join(str_rank)) }
-                                            ],
-                                            '$or' : [
-                                                {'revstat': { '$in': trusted_revision_level }},
-                                                {'revstat' : re.compile('|'.join(trusted_revision_level)) }
-                                            ]
-                                          }
+                                '$or' : [
+                                    {
+                                        '$and' : [
+                                             {'value' : { '$in': rank }},
+                                             {'revstat': { '$in': trusted_revision_level }}
+                                        ]
+                                    },
+                                    {
+                                        '$and': [
+                                            {'value' : re.compile('|'.join(str_rank))},
+                                            {'revstat' : re.compile('|'.join(trusted_revision_level))}
+                                        ]
+                                    }
+                                ]
+                            }
                          }
                     }
 

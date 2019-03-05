@@ -240,19 +240,24 @@ def test_build_clinsig_always(adapter, real_variant_database):
              ]},
         { 'clnsig':
               {
-                '$elemMatch': {
-                                '$or' :[
-                                    { 'value' : { '$in': all_clinsig }},
-                                    { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
-                                ],
-                                '$or' : [
-                                    { 'revstat' : {'$in' : trusted_revstat_lev }},
-                                    { 'revstat' : re.compile('|'.join(trusted_revstat_lev)) }
-                                ]
-
-                            }
+                '$elemMatch' : {
+                    '$or': [
+                        {
+                            '$and' : [
+                                 {'value' : { '$in': all_clinsig }},
+                                 {'revstat': { '$in': trusted_revstat_lev }}
+                            ]
+                        },
+                        {
+                            '$and': [
+                                {'value' : re.compile('|'.join(clinsig_mapped_items))},
+                                {'revstat' : re.compile('|'.join(trusted_revstat_lev))}
+                            ]
+                        }
+                    ]
                 }
-          }
+            }
+         }
         ]
 
     # Test that the query works with real data
@@ -336,17 +341,24 @@ def test_build_clinsig_always_only(adapter):
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert mongo_query['clnsig'] == {
-        '$elemMatch': {
-                        '$or' : [
-                                { 'value' : { '$in': all_clinsig }},
-                                { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
-                            ],
-                        '$or': [
-                            { 'revstat' : {'$in' : trusted_revstat_lev }},
-                            {'revstat' : re.compile('|'.join(trusted_revstat_lev)) }
-                        ]
-        }}
+    assert mongo_query['clnsig'] ==  {
+       '$elemMatch' : {
+           '$or': [
+               {
+                   '$and' : [
+                        {'value' : { '$in': all_clinsig }},
+                        {'revstat': { '$in': trusted_revstat_lev }}
+                   ]
+               },
+               {
+                   '$and': [
+                       {'value' : re.compile('|'.join(clinsig_mapped_items))},
+                       {'revstat' : re.compile('|'.join(trusted_revstat_lev))}
+                   ]
+               }
+           ]
+       }
+   }
 
 def test_build_chrom(adapter):
     case_id = 'cust000'
