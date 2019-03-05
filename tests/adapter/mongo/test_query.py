@@ -206,6 +206,7 @@ def test_build_clinsig_filter(adapter, real_variant_database):
 def test_build_clinsig_always(adapter, real_variant_database):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
+    trusted_revstat_lev = ['mult', 'single', 'exp', 'guideline']
     clinsig_items = [ 4, 5 ]
     clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
@@ -225,7 +226,6 @@ def test_build_clinsig_always(adapter, real_variant_database):
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-
     assert mongo_query['$or'] == [
         { '$and':
           [ {
@@ -240,18 +240,17 @@ def test_build_clinsig_always(adapter, real_variant_database):
              ]},
         { 'clnsig':
               {
-                '$elemMatch': { '$or' :
-                                [
+                '$elemMatch': {
+                                '$or' :[
                                     { 'value' : { '$in': all_clinsig }},
                                     { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
                                 ],
-                                'revstat':
-                                    { '$in' : ['mult',
-                                               'single',
-                                               'exp',
-                                               'guideline']
-                                      }
-                                }
+                                '$or' : [
+                                    { 'revstat' : {'$in' : trusted_revstat_lev }},
+                                    { 'revstat' : re.compile('|'.join(trusted_revstat_lev)) }
+                                ]
+
+                            }
                 }
           }
         ]
@@ -322,6 +321,7 @@ def test_build_spidex_high(adapter):
 def test_build_clinsig_always_only(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
+    trusted_revstat_lev = ['mult', 'single', 'exp', 'guideline']
     clinsig_items = [ 4, 5 ]
     clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
@@ -338,19 +338,15 @@ def test_build_clinsig_always_only(adapter):
 
     assert mongo_query['clnsig'] == {
         '$elemMatch': {
-                        '$or' :
-                            [
+                        '$or' : [
                                 { 'value' : { '$in': all_clinsig }},
                                 { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
                             ],
-                        'revstat':
-                            { '$in' : ['mult',
-                                       'single',
-                                       'exp',
-                                       'guideline']
-                              }
-                        }
-        }
+                        '$or': [
+                            { 'revstat' : {'$in' : trusted_revstat_lev }},
+                            {'revstat' : re.compile('|'.join(trusted_revstat_lev)) }
+                        ]
+        }}
 
 def test_build_chrom(adapter):
     case_id = 'cust000'

@@ -287,8 +287,10 @@ class QueryHandler(object):
                                                 { 'value' : { '$in': rank }},
                                                 { 'value' : re.compile('|'.join(str_rank)) }
                                             ],
-                                            'revstat':
-                                            { '$in': trusted_revision_level }
+                                            '$or' : [
+                                                {'revstat': { '$in': trusted_revision_level }},
+                                                {'revstat' : re.compile('|'.join(trusted_revision_level)) }
+                                            ]
                                           }
                          }
                     }
