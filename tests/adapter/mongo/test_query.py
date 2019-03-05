@@ -1,4 +1,5 @@
 from scout.constants import CLINSIG_MAP
+import re
 
 def test_build_query(adapter):
     case_id = 'cust000'
@@ -95,28 +96,36 @@ def test_build_gnomad_and_cadd(adapter):
 def test_build_clinsig(adapter):
     case_id = 'cust000'
     clinsig_items = [ 3, 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
 
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     query = {'clinsig': clinsig_items}
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert mongo_query['clnsig.value'] == {
-            '$in': all_clinsig
-            }
-
+    assert mongo_query['clnsig'] == {
+                            '$elemMatch': {
+                                '$or' : [
+                                    { 'value' : { '$in': all_clinsig }},
+                                    { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
+                                ]
+                            }
+                        }
 
 def test_build_clinsig_filter(adapter, real_variant_database):
     case_id = 'cust000'
     clinsig_items = [ 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     region_annotation = ['exonic', 'splicing']
 
@@ -129,10 +138,16 @@ def test_build_clinsig_filter(adapter, real_variant_database):
         { 'genes.region_annotation':
               {'$in': region_annotation }
           },
-        { 'clnsig.value':
-              { '$in': all_clinsig }
-          }
+        { 'clnsig': {
+            '$elemMatch': {
+                '$or' : [
+                    { 'value' : { '$in': all_clinsig }},
+                    { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
+                ]
+            }
+         }}
         ]
+
 
     assert real_variant_database.variant_collection.find_one()
 
@@ -155,20 +170,49 @@ def test_build_clinsig_filter(adapter, real_variant_database):
     adapter = real_variant_database
 
     # filter real variants using query:
-    n_filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query).count()
+    filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
 
     # number of variants returned by raw query and filtered variants should be the same:
-    assert n_filtered_variants == n_results_raw_query
+    assert filtered_variants.count() == n_results_raw_query
+
+    # Check if query works on clnsig.value that comma separated values:
+    a_variant = list(filtered_variants)[0]
+    assert a_variant['_id']
+
+    # there should be no variant with clnsig.value=='Pathogenic, Likely pathogenic'
+    assert real_variant_database.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'}).count() == 0
+
+    # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
+    real_variant_database.variant_collection.update_one({'_id' : a_variant['_id']}, {'$set' : {'clnsig.0.value': 'Pathogenic, Likely pathogenic'}})
+
+    # One variant has multiple clssig now:
+    real_variant_database.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'}).count() == 1
+
+    # Update raw query to find this variant as well
+    n_results_raw_query = real_variant_database.variant_collection.find({
+        '$and' : [
+            {'genes.region_annotation' : {'$in' : region_annotation}},
+            {'clnsig.value' : {'$in' : [4, 'Likely pathogenic', 5, 'Pathogenic', 'Pathogenic, Likely pathogenic']}},
+            {'case_id' : case_id},
+            {'category' : 'snv'},
+            {'variant_type' : 'clinical'}
+        ]}).count()
+
+    # Makes sure that the variant is found anyway by the query:
+    n_filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query).count()
+    assert n_results_raw_query == n_filtered_variants
 
 
 def test_build_clinsig_always(adapter, real_variant_database):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     clinsig_items = [ 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     region_annotation = ['exonic', 'splicing']
     freq=0.01
@@ -180,6 +224,7 @@ def test_build_clinsig_always(adapter, real_variant_database):
              }
 
     mongo_query = adapter.build_query(case_id, query=query)
+
 
     assert mongo_query['$or'] == [
         { '$and':
@@ -195,8 +240,11 @@ def test_build_clinsig_always(adapter, real_variant_database):
              ]},
         { 'clnsig':
               {
-                '$elemMatch': { 'value':
-                                    { '$in' : all_clinsig },
+                '$elemMatch': { '$or' :
+                                [
+                                    { 'value' : { '$in': all_clinsig }},
+                                    { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
+                                ],
                                 'revstat':
                                     { '$in' : ['mult',
                                                'single',
@@ -275,10 +323,12 @@ def test_build_clinsig_always_only(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     clinsig_items = [ 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     query = {'clinsig': clinsig_items,
              'clinsig_confident_always_returned': clinsig_confident_always_returned
@@ -287,8 +337,12 @@ def test_build_clinsig_always_only(adapter):
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query['clnsig'] == {
-        '$elemMatch': { 'value':
-                            { '$in' : all_clinsig },
+        '$elemMatch': {
+                        '$or' :
+                            [
+                                { 'value' : { '$in': all_clinsig }},
+                                { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
+                            ],
                         'revstat':
                             { '$in' : ['mult',
                                        'single',

@@ -1,4 +1,5 @@
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -267,10 +268,13 @@ class QueryHandler(object):
 
         if query.get('clinsig'):
             rank = []
+            str_rank = []
+
             for item in query['clinsig']:
                 rank.append(int(item))
                 # search for human readable clinsig values in newer cases
                 rank.append(CLINSIG_MAP[int(item)])
+                str_rank.append(CLINSIG_MAP[int(item)])
 
             if query.get('clinsig_confident_always_returned') == True:
 
@@ -278,8 +282,11 @@ class QueryHandler(object):
 
                 mongo_query_major = { "clnsig":
                         {
-                            '$elemMatch': { 'value':
-                                            { '$in': rank },
+                            '$elemMatch': {
+                                            '$or' : [
+                                                { 'value' : { '$in': rank }},
+                                                { 'value' : re.compile('|'.join(str_rank)) }
+                                            ],
                                             'revstat':
                                             { '$in': trusted_revision_level }
                                           }
@@ -289,11 +296,24 @@ class QueryHandler(object):
             else:
                 logger.debug("add CLINSIG filter for rank: %s" %
                              ', '.join(str(query['clinsig'])))
+                clnsig_query = {
+                    "clnsig":
+                        {
+                            '$elemMatch': {
+                                '$or' : [
+                                    { 'value' : { '$in': rank }},
+                                    { 'value' : re.compile('|'.join(str_rank)) }
+                                ]
+                            }
+                        }
+                }
                 if mongo_query_minor:
-                    mongo_query_minor.append({'clnsig.value': {'$in': rank}})
+                    #mongo_query_minor.append({'clnsig.value': {'$in': rank}})
+                    mongo_query_minor.append(clnsig_query)
+
                 else:
                     # if this is the only minor critera, use implicit and.
-                    mongo_query['clnsig.value'] = {'$in': rank}
+                    mongo_query['clnsig'] = clnsig_query['clnsig']
 
         if mongo_query_minor and mongo_query_major:
             if gene_query:
