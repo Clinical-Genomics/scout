@@ -252,7 +252,7 @@ class VariantHandler(VariantLoader):
         return variant_obj
 
     def gene_variants(self, query=None,
-                   category='snv', variant_type='clinical',
+                   category='snv', variant_type=['clinical'],
                    nr_of_variants=50, skip=0):
         """Return all variants seen in a given gene.
 

@@ -40,3 +40,20 @@ def test_one_causative(real_adapter, case_obj):
             assert info['count'] == 1
         else:
             assert info['count'] == 0
+
+def test_with_slice_query(real_adapter, case_obj):
+    ## GIVEN an database with one case
+    adapter = real_adapter
+    adapter._add_case(case_obj)
+    ## WHEN asking for data
+    case_display_id = case_obj['display_name']
+
+    slice_query = case_display_id
+    data = get_dashboard_info(adapter, slice_query=slice_query)
+
+    ## THEN assert there is one case in the data
+    for group in data['cases']:
+        if group['status'] == 'all':
+            assert group['count'] == 1
+        elif group['status'] == case_obj['status']:
+            assert group['count'] == 1

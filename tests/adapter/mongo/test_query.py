@@ -1,5 +1,21 @@
 from scout.constants import CLINSIG_MAP
 
+def test_build_gene_variant_query(adapter):
+    hgnc_symbols = ['POT1']
+
+    # GIVEN a empty database
+
+    # WHEN building a query
+    symbol_query = {}
+    symbol_query['hgnc_symbols'] = hgnc_symbols
+    gene_variant_query = adapter.build_variant_query(query=symbol_query)
+
+    # THEN the query should be on the right format
+    assert gene_variant_query['variant_type'] == {'$in': ['clinical']} # default
+    assert gene_variant_query['category'] == 'snv' # default
+    assert gene_variant_query['rank_score'] == {'$gte': 15} # default
+    assert gene_variant_query['hgnc_symbols'] == {'$in': hgnc_symbols} # given
+
 def test_build_query(adapter):
     case_id = 'cust000'
 
