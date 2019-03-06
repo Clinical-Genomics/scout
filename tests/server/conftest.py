@@ -4,6 +4,10 @@ import logging
 import pytest
 import pymongo
 
+from flask import request
+from flask_login import login_user, logout_user
+
+from scout.server.blueprints.login.models import LoginUser
 from scout.server.app import create_app
 from scout.adapter import MongoAdapter
 from scout.load.hgnc_gene import load_hgnc_genes
@@ -18,9 +22,18 @@ def database_name(request):
 
 
 @pytest.fixture
-def app(database_name, real_database):
+def app(database_name, real_database, user_obj):
+
     app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=database_name,
                                  DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
+
+    @app.route('/auto_login')
+    def auto_login():
+        log.debug('Got request for auto login for {}'.format(user_obj))
+        user_inst = LoginUser(user_obj)
+        assert login_user(user_inst, remember=True)
+        return "ok"
+
     return app
 
 
@@ -55,8 +68,8 @@ def real_database(request, database_name, institute_obj, user_obj, genes, parsed
                                           ('hgnc_symbol', pymongo.ASCENDING)])
     adapter.load_panel(parsed_panel=parsed_panel)
 
-    # load_hpo(adapter=gene_database, hpo_lines=hpo_terms_handle, disease_lines=genemap_handle)
-    # adapter.add_case(case_obj)
+    #load_hpo(adapter=gene_database, hpo_lines=hpo_terms_handle, disease_lines=genemap_handle)
+#    adapter.add_case(case_obj)
 
     # for variant in variant_objs:
     #     adapter.load_variant(variant)
