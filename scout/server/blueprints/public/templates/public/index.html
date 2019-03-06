@@ -1,9 +1,10 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block content_main %}
-  <header class="jumbotron">
-    <h1>Scout</h1>
-    <p>Analyze VCFs quicker and easier</p>
+  <div class="jumbotron">
+    <h1 class="display-4">Scout</h1>
+    <p class="lead">Analyze VCFs quicker and easier</p>
+    <hr class="my-4">
     <p>
       Scout allows you to browse VCFs in a web browser, identify
       compound pairs, and solve cases as a team.
@@ -13,13 +14,13 @@
 
     {% if current_user.is_authenticated %}
       <p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('cases.index') }}">
+        <a class="btn btn-primary btn-lg" href="{{ url_for('cases.index') }}" role="button">
           Welcome <strong>{{ current_user.name }}!</strong>
         </a>
       </p>
     {% else %}
       {% if config.GOOGLE %}
-        <a class="btn btn-primary" href="{{ url_for('login.login') }}">
+        <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
       {% else %}
@@ -35,7 +36,7 @@
         </form>
       {% endif %}
     {% endif %}
-  </header>
+  </div>
   <main>
     <div class="row">
       <div class="col-xs-12 col-sm-4">

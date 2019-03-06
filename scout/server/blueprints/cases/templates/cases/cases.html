@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -24,11 +24,11 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="panel panel-default">
-    <div class="panel-body">
+  <div class="card panel-default">
+    <div class="card-body">
       {{ search_form() }}
     </div>
-    <div class="panel-footer text-center">
+    <div class="card-footer text-center">
       Showing {{ limit if limit < found_cases else found_cases }} /  {{ found_cases }} cases
     </div>
   </div>

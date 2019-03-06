@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - Institutes
@@ -13,26 +13,22 @@
 {% endblock %}
 
 {% block content_main %}
-  {% for institute, case_count in institutes %}
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-xs-8">
-            <h3 class="panel-title">
-              <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-                {{ institute.display_name }}
-              </a>
-
-              {% if current_user.is_admin %}
-                <span class="text-muted">({{ institute._id }})</span>
-              {% endif %}
-            </h3>
-          </div>
+  <div class="container">
+    <h2> Available Institutes </h2>
+      {% for institute, case_count in institutes %}
+      <div class="card light-card">
+        <div class="card-body">
+          <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+            {{ institute.display_name }}
+          </a>
+          {% if current_user.is_admin %}
+            <span class="text-muted">({{ institute._id }})</span>
+          {% endif %}
           <div class="col-xs-4">
-            <span class="badge pull-right">{{ case_count }} cases</span>
+            <span class="badge badge-light pull-right">{{ case_count }} cases</span>
           </div>
         </div>
       </div>
-    </div>
-  {% endfor %}
+      {% endfor %}
+  </div>
 {% endblock %}
