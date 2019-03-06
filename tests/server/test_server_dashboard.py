@@ -11,10 +11,10 @@ log = logging.getLogger(__name__)
 
 def test_dashboard(app,user_obj, institute_obj):
     # GIVEN an initialized client
-    # GIVEN a valid user
+    # GIVEN a valid user and institute
 
     with app.test_client() as client:
-        # Login
+        # GIVEN that the user could be logged in
         resp = client.get(url_for('auto_login'))
         assert resp.status_code == 200
 
@@ -23,9 +23,6 @@ def test_dashboard(app,user_obj, institute_obj):
         log.debug("Current user institutes {}".format(current_user.institutes))
 
         # WHEN accessing the dashboard page
-        #    resp = urlopen(url_for('dashboard.index',
-        #                                    institute_id=institute_obj['internal_id'],
-        #                                    _external=True))
         resp = client.get(url_for('dashboard.index',
                                   institute_id=institute_obj['internal_id']))
 
