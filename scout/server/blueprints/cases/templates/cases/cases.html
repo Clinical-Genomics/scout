@@ -7,23 +7,22 @@
 {% block top_nav %}
   {{ super() }}
 
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li class="active">
-    <span class="navbar-text">{{ institute.display_name }}</span>
-  </li>
-  {% if config.SHOW_CAUSATIVES %}
-    <li>
-      <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+  <ul class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('cases.index') }}">Institutes</a></li>
+    <li class="breadcrumb-item active">{{ institute.display_name }}</li>
+    {% if config.SHOW_CAUSATIVES %}
+      <li class="breadcrumb-item active">
+        <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+      </li>
+    {% endif %}
+    <li class="breadcrumb-item active">
+      <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
     </li>
-   {% endif %}
-   <li>
-     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-   </li>
+  </ul>
 {% endblock %}
 
 {% block content_main %}
+<div class="container-float" style="margin-top:30px">
   <div class="card panel-default">
     <div class="card-body">
       {{ search_form() }}
@@ -84,6 +83,7 @@
       <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
     {% endif %}
   {% endfor %}
+</div>
 {% endblock %}
 
 {% macro search_form() %}

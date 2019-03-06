@@ -13,22 +13,19 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="container">
-    <h2> Available Institutes </h2>
+  <div class="container pull-left" style="margin-top:30px">
+    <ul class="list-group">
       {% for institute, case_count in institutes %}
-      <div class="card light-card">
-        <div class="card-body">
-          <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-            {{ institute.display_name }}
-          </a>
-          {% if current_user.is_admin %}
-            <span class="text-muted">({{ institute._id }})</span>
-          {% endif %}
-          <div class="col-xs-4">
-            <span class="badge badge-light pull-right">{{ case_count }} cases</span>
-          </div>
-        </div>
-      </div>
+      <li class="list-group-item d-flex align-items-center">
+        <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+          {{ institute.display_name }}
+        </a>
+        {% if current_user.is_admin %}
+          <span class="text-muted">({{ institute._id }})</span>
+        {% endif %}
+          <span class="badge badge-primary badge-pill">{{ case_count }} cases </span>
+      </li>
       {% endfor %}
+    </ul>
   </div>
 {% endblock %}
