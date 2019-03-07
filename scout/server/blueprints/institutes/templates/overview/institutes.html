@@ -12,11 +12,12 @@
 {% endblock %}
 
 {% block content_main %}
+<div class="container">
   <div class="card-columns">
     {% for institute in institutes %}
       <div class="card">
         <div class="card-header">
-        {{ institute.display_name }}
+        <a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}">{{ institute.display_name }}</a>
         {% if current_user.is_admin %}
           <span class="text-muted">({{ institute.internal_id }})</span>
         {% endif %}
@@ -31,13 +32,18 @@
             Sanger Recipients
             <span class="pull-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
           </li>
-            <li class="list-group-item">
+          <li class="list-group-item">
             Frequency Cutoff
             <span class="pull-right">{{ institute.frequency_cutoff }}</span>
+          </li>
+          <li class="list-group-item">
+            Number of Cases
+            <span class="pull-right">{{ institute.case_count }}</span>
           </li>
           </ul>
         </div>
       </div>
     {% endfor %}
   </div>
+</div>
 {% endblock %}
