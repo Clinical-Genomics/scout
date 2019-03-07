@@ -78,11 +78,14 @@
   {% endif %}
 
 
+  <div class="container-float">
   {% for group_name, case_group in cases %}
+    
     {% if case_group|length > 0 %}
-      <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+      <div class="card-deck">{{ cases_table(group_name, case_group) }}</div>
     {% endif %}
   {% endfor %}
+  </div>
 </div>
 {% endblock %}
 
@@ -122,27 +125,50 @@
 {% endmacro %}
 
 {% macro cases_table(group_name, cases) %}
-  <table class="table table-hover table-special">
-    <thead>
-      <tr>
-        <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
-        <th class="col-xs-2">Status</th>
-        <th class="col-xs-2">Analysis date</th>
-        <th class="col-xs-2">Link</th>
-        <th class="col-xs-2">Sequencing</th>
-        <th class="col-xs-2">Clinvar</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for case in cases %}
-        {{ case_row(case) }}
-      {% else %}
-        <tr>
-          <td colspan="5">No cases found.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% for case in cases %}
+    <div class="card">
+      <!-- <img class="card-img-top" src="{{ case.madeline_info|safe }}" alt="Card image"> -->
+      <div class="card-header">
+        <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">{{ case.display_name }}</a>
+        {% if case.individuals|length > 1 %}
+          <span class="label label-info">
+            {% for item in case.individuals %}
+              <span class="small fa fa-user"></span>
+            {% endfor %}
+          </span>
+        {% endif %}
+        
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Analysis Date
+          <span class="pull-right">{{ case.analysis_date.date() }}</span>
+        </li>
+        <li class="list-group-item">
+          Analysis Type
+          {% for analysis_type in case.analysis_types %}
+            {% if analysis_type == 'wgs' %}
+              {% set label_class = 'primary' %}
+            {% elif analysis_type == 'wes' %}
+              {% set label_class = 'warning' %}
+            {% elif analysis_type == 'tga' %}
+              {% set label_class = 'info' %}
+            {% elif analysis_type == 'panel' %}
+              {% set label_class = 'secondary' %}
+            {% else %}
+              {% set label_class = 'default' %}
+            {% endif %}
+
+            <span class="badge badge-{{ label_class }} pull-right">
+              {{ analysis_type|upper }}
+            </span>
+          {% endfor %}
+        </li>
+        
+      </div>
+    </div>
+    {% endfor %}
 {% endmacro %}
 
 {% macro case_row(case) %}
