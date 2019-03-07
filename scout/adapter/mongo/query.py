@@ -33,7 +33,7 @@ class QueryHandler(object):
 
         logger.debug("Building a mongo query for %s" % query)
 
-        if(query.get('hgnc_symbols')):
+        if query.get('hgnc_symbols'):
             mongo_variant_query['hgnc_symbols'] = {'$in': query['hgnc_symbols']}
 
         mongo_variant_query['variant_type'] = {'$in': variant_type}
