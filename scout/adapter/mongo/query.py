@@ -7,7 +7,7 @@ from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 class QueryHandler(object):
 
     def build_variant_query(self, query=None, category='snv', variant_type=['clinical']):
-        """Build a mongo query across multiple casesself.
+        """Build a mongo query across multiple cases.
         Translate query options from a form into a complete mongo query dictionary.
 
         Beware that unindexed queries against a large variant collection will
