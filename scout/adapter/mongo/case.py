@@ -118,7 +118,7 @@ class CaseHandler(object):
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
 
-        if(yield_query):
+        if yield_query:
             return query
 
         LOG.info("Get cases with query {0}".format(query))
