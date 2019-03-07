@@ -16,15 +16,9 @@ from scout.load.hpo import load_hpo
 log = logging.getLogger(__name__)
 
 @pytest.fixture
-def database_name(request):
-    db_name = 'realtestdb'
-    return db_name
+def app(real_database_name, real_variant_database, user_obj):
 
-
-@pytest.fixture
-def app(database_name, real_database, user_obj):
-
-    app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=database_name,
+    app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=real_database_name,
                                  DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
 
     @app.route('/auto_login')
@@ -35,7 +29,6 @@ def app(database_name, real_database, user_obj):
         return "ok"
 
     return app
-
 
 @pytest.fixture
 def institute_info():
@@ -50,33 +43,32 @@ def user_info(institute_info):
     return _user_info
 
 
-@pytest.fixture
-def real_database(request, database_name, institute_obj, user_obj, genes, parsed_panel):
-    """Setup a real database with populated data"""
-    mongo_client = pymongo.MongoClient()
-    mongo_client.drop_database(database_name)
+#@pytest.fixture
+#def real_database(request, database_name, institute_obj, user_obj, genes, parsed_panel):
+#    """Setup a real database with populated data"""
+#    mongo_client = pymongo.MongoClient()
+#    mongo_client.drop_database(database_name)
+#
+#    database = mongo_client[database_name]
+#    adapter = MongoAdapter(database)
+#
+#    # Populate the database
+#    adapter.add_institute(institute_obj)
+#    adapter.add_user(user_obj)
+#
+#    load_hgnc_genes(adapter, genes)
+#    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
+#                                          ('hgnc_symbol', pymongo.ASCENDING)])
+#    adapter.load_panel(parsed_panel=parsed_panel)
 
-    database = mongo_client[database_name]
-    adapter = MongoAdapter(database)
-
-    # Populate the database
-    adapter.add_institute(institute_obj)
-    adapter.add_user(user_obj)
-
-    load_hgnc_genes(adapter, genes)
-    adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
-                                          ('hgnc_symbol', pymongo.ASCENDING)])
-    adapter.load_panel(parsed_panel=parsed_panel)
-
-    #load_hpo(adapter=gene_database, hpo_lines=hpo_terms_handle, disease_lines=genemap_handle)
+#    load_hpo(adapter=gene_database, hpo_lines=hpo_terms_handle, disease_lines=genemap_handle)
 #    adapter.add_case(case_obj)
 
     # for variant in variant_objs:
     #     adapter.load_variant(variant)
 
-    def teardown():
-        mongo_client.drop_database(database_name)
-
-    request.addfinalizer(teardown)
-
-    return adapter
+#    def teardown():
+##
+#    request.addfinalizer(teardown)
+#
+#    return adapter
