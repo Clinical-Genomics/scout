@@ -134,7 +134,7 @@ def igv():
         if bam_files[counter]:
             sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter],
                                    'indexURL' : bai_files[counter],
-                                   height=700, maxHeight=2000})
+                                   'height' : 700, 'maxHeight' : 2000})
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
