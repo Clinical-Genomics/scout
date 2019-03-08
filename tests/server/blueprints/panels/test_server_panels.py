@@ -14,9 +14,11 @@ from flask import url_for
 #     for panel_obj in real_database.panels(institute_id=institute_obj['_id']):
 #         assert panel_obj['display_name'] in resp.data
 
-def test_panel(client, real_database, panel_info):
+def test_panel(client, real_panel_database, panel_info):
+    adapter = real_panel_database
+
     # GIVEN a panel in the database
-    panel_obj = real_database.gene_panels()[0]
+    panel_obj = adapter.gene_panels()[0]
     # WHEN accessing the panel view
     resp = client.get(url_for('panels.panel', panel_id=panel_obj['_id']))
     # THEN it should display the panel with all the genes
