@@ -102,7 +102,7 @@
 
 {% macro cell_rank(variant) %}
 <a class="variants-row-item flex-small layout"
-   href="{{ url_for('variants.variant', institute_id=institute._id,
+   href="{{ url_for('variants.variant', institute_id=variant.institute,
         case_name=variant.case_display_name, variant_id=variant._id) }}">
   {{ variant.case_display_name}} : {{ variant.rank_score|int }}
 </a>
