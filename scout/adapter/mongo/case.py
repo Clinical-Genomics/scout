@@ -19,14 +19,16 @@ LOG = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
-    def cases(self, collaborator=None, query=None, skip_assigned=False,
+    def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
-              phenotype_terms=False, pinned=False, cohort=False, name_query=None):
+              phenotype_terms=False, pinned=False, cohort=False, name_query=None,
+              yield_query=False):
         """Fetches all cases from the backend.
 
         Args:
             collaborator(str): If collaborator should be considered
+            owner(str): Query cases for specified case owner only
             query(dict): If a specific query is used
             skip_assigned(bool)
             has_causatives(bool)
@@ -37,11 +39,16 @@ class CaseHandler(object):
             status(str)
             phenotype_terms(bool): Fetch all cases with phenotype terms
             pinned(bool): Fetch all cases with pinned variants
-            name_query(str): Could be hpo term, user, part of display name, 
+            name_query(str): Could be hpo term, HPO-group, user, part of display name,
                              part of inds or part of synopsis
+            yield_query(bool): If true, only return mongo query dict for use in
+                                compound querying.
 
-        Yields:
-            Cases ordered by date
+        Returns:
+            Cases ordered by date.
+            If yield_query is True, does not pose query to db;
+                instead returns corresponding query dict
+                that can be reused in compound queries or for testing.
         """
         LOG.debug("Fetch all cases")
         query = query or {}
@@ -49,6 +56,10 @@ class CaseHandler(object):
         if collaborator:
             LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
+
+        if owner:
+            LOG.debug("Use owner {0}".format(owner))
+            query['owner'] = owner
 
         if skip_assigned:
             query['assignees'] = {'$exists': False}
@@ -87,26 +98,40 @@ class CaseHandler(object):
             elif name_query.startswith('HP:'):
                 LOG.debug("HPO case query")
                 query['phenotype_terms.phenotype_id'] = name_query
+            elif name_query.startswith('PG:'):
+                LOG.debug("PG case query")
+                phenotype_group_query = name_query.replace('PG:', 'HP:')
+                query['phenotype_groups.phenotype_id'] = phenotype_group_query
             elif name_query.startswith('synopsis:'):
                 synopsis_query=name_query.replace('synopsis:','')
                 query['$text']={'$search':synopsis_query}
+            elif name_query.startswith('cohort:'):
+                cohort_query = name_query.replace('cohort:','')
+                query['cohorts'] = cohort_query
+            elif name_query.startswith('panel:'):
+                panel_name_query = name_query.replace('panel:','')
+                query['panels'] = {'$elemMatch': {'panel_name': panel_name_query,
+                                    'is_default': True }}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
 
+        if yield_query:
+            return query
+
         LOG.info("Get cases with query {0}".format(query))
         return self.case_collection.find(query).sort('updated_at', -1)
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases
-        
+
         This function will change when we migrate to 3.7.1
-        
+
         Args:
             collaborator(str): Institute id
-        
+
         Returns:
             nr_cases(int)
         """
@@ -114,12 +139,12 @@ class CaseHandler(object):
 
         if institute_id:
             query['collaborators'] = institute_id
-        
+
         LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = self.case_collection.find(query).count()
 
         return nr_cases
-    
+
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
                                  phenotype_ids=None, build='37'):

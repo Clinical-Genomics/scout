@@ -2,34 +2,38 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-def get_dashboard_info(adapter, institute_id=None):
+def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     """Returns cases with phenotype
-    
+
         If phenotypes are provided search for only those
-    
+
     Args:
         adapter(adapter.MongoAdapter)
         institute_id(str)
-    
+        slice_query(str):   Query to filter cases to obtain statistics for.
+
     Returns:
         data(dict): Dictionary with relevant information
     """
-    general_info = get_general_case_info(adapter, institute_id)
+    general_info = get_general_case_info(adapter, institute_id=institute_id,
+                                                    slice_query=slice_query)
     total_cases = general_info['total_cases']
-    
+
     data = {'total_cases': total_cases}
     if total_cases == 0:
         return data
-    
+
     data['pedigree'] = []
     for ped_info in general_info['pedigree'].values():
         ped_info['percent'] = ped_info['count'] / total_cases
         data['pedigree'].append(ped_info)
-        
-    
-    data['cases'] = get_case_groups(adapter, total_cases, institute_id)
-    
-    data['analysis_types'] = get_analysis_types(adapter, total_cases, institute_id)
+
+
+    data['cases'] = get_case_groups(adapter, total_cases,
+                        institute_id=institute_id, slice_query=slice_query)
+
+    data['analysis_types'] = get_analysis_types(adapter, total_cases,
+                                institute_id=institute_id, slice_query=slice_query)
 
     # Fetch variant information
     LOG.info("Fetch sanger variants")
@@ -38,12 +42,12 @@ def get_dashboard_info(adapter, institute_id=None):
     # Case level information
     validation_cases = set()
     validated_cases = set()
-    
+
     # Variant level information
     validated_tp = set()
     validated_fp = set()
 
-    LOG.info("Find all validated variants with query {}".format(institute_id))
+    LOG.info("Find all validated variants with query {}".format(validation_query))
     validation_ordered = adapter.variant_collection.find(validation_query)
 
     case_ids = general_info['case_ids']
@@ -65,7 +69,7 @@ def get_dashboard_info(adapter, institute_id=None):
         elif validation == 'False positive':
             validated_fp.add(variant_id)
             validated_cases.add(case_id)
-    
+
     nr_validation_cases = len(validation_cases)
 
     overview = [
@@ -73,17 +77,17 @@ def get_dashboard_info(adapter, institute_id=None):
             'title': 'Phenotype terms',
             'count': general_info['phenotype_cases'],
             'percent': general_info['phenotype_cases'] / total_cases,
-        }, 
+        },
         {
             'title': 'Causative variants',
             'count': general_info['causative_cases'],
             'percent': general_info['causative_cases'] / total_cases,
-        }, 
+        },
         {
             'title': 'Pinned variants',
             'count': general_info['pinned_cases'],
             'percent': general_info['pinned_cases'] / total_cases,
-        }, 
+        },
         {
             'title': 'Cohort tag',
             'count': general_info['cohort_cases'],
@@ -105,7 +109,7 @@ def get_dashboard_info(adapter, institute_id=None):
         })
 
     data['overview'] = overview
-    
+
     variants = []
     nr_validated = len(validated_tp) + len(validated_fp)
     if nr_ordered:
@@ -124,7 +128,7 @@ def get_dashboard_info(adapter, institute_id=None):
                     'percent': len(validated_tp) / nr_validated,
                 }
             )
-            
+
             variants.append(
                 {
                     'title': 'Validated False Positive',
@@ -132,30 +136,41 @@ def get_dashboard_info(adapter, institute_id=None):
                     'percent': len(validated_fp) / nr_validated,
                 }
             )
-    
+
     data['variants'] = variants
-    
+
     return data
 
-def get_general_case_info(adapter, institute_id=None):
+def get_general_case_info(adapter, institute_id=None, slice_query=None):
     """Return general information about cases
-    
+
     Args:
         adapter(adapter.MongoAdapter)
         institute_id(str)
-    
+        slice_query(str):   Query to filter cases to obtain statistics for.
+
+
     Returns:
         general(dict)
     """
     general = {}
     # Fetch information about cases with certain activities
-    cases = adapter.cases(collaborator=institute_id)
-    
+    cases = {}
+
+    if institute_id and slice_query:
+        cases = adapter.cases(owner=institute_id, name_query=slice_query)
+    elif institute_id:
+        cases = adapter.cases(owner=institute_id)
+    elif slice_query:
+        cases = adapter.cases(name_query=slice_query)
+    else:
+        cases = adapter.cases()
+
     phenotype_cases = 0
     causative_cases = 0
     pinned_cases = 0
     cohort_cases = 0
-    
+
     pedigree = {
         1: {
             'title': 'Single',
@@ -174,9 +189,9 @@ def get_general_case_info(adapter, institute_id=None):
             'count': 0
         },
     }
-    
+
     case_ids = set()
-    
+
     total_cases = 0
     for total_cases,case in enumerate(cases,1):
         # If only looking at one institute we need to save the case ids
@@ -190,7 +205,7 @@ def get_general_case_info(adapter, institute_id=None):
             pinned_cases += 1
         if case.get('cohorts'):
             cohort_cases += 1
-        
+
         nr_individuals = len(case.get('individuals',[]))
         if nr_individuals == 0:
             continue
@@ -198,7 +213,7 @@ def get_general_case_info(adapter, institute_id=None):
             pedigree['many']['count'] += 1
         else:
             pedigree[nr_individuals]['count'] += 1
-    
+
     general['total_cases'] = total_cases
     general['phenotype_cases'] = phenotype_cases
     general['causative_cases'] = causative_cases
@@ -208,15 +223,16 @@ def get_general_case_info(adapter, institute_id=None):
     general['case_ids'] = case_ids
 
     return general
-    
 
-def get_case_groups(adapter, total_cases, institute_id=None):
+
+def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
     """Return the information about case groups
-    
+
     Args:
         store(adapter.MongoAdapter)
         total_cases(int): Total number of cases
-    
+        slice_query(str): Query to filter cases to obtain statistics for.
+
     Returns:
         cases(dict):
     """
@@ -225,37 +241,65 @@ def get_case_groups(adapter, total_cases, institute_id=None):
     # Group the cases based on their status
     pipeline = []
     group = {'$group' : {'_id': '$status', 'count': {'$sum': 1}}}
-    query = {}
-    if institute_id:
-        query = {'$match': {'owner': institute_id}}
-    
+
+
+    subquery = {}
+    if institute_id and slice_query:
+        subquery = adapter.cases(owner=institute_id, name_query=slice_query,
+                              yield_query=True)
+    elif institute_id:
+        subquery = adapter.cases(owner=institute_id, yield_query=True)
+    elif slice_query:
+        subquery = adapter.cases(name_query=slice_query, yield_query=True)
+
+    query = {'$match': subquery} if subquery else {}
+
     if query:
         pipeline.append(query)
 
     pipeline.append(group)
     res = adapter.case_collection.aggregate(pipeline)
-    
+
     for status_group in res:
         cases.append({'status': status_group['_id'],
                       'count': status_group['count'],
                       'percent': status_group['count'] / total_cases})
-    
+
     return cases
 
-def get_analysis_types(adapter, total_cases, institute_id=None):
-    """Return information about case status"""
+def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None):
+    """ Return information about analysis types.
+        Group cases based on analysis type for the individuals.
+    Args:
+        adapter(adapter.MongoAdapter)
+        total_cases(int): Total number of cases
+        institute_id(str)
+        slice_query(str): Query to filter cases to obtain statistics for.
+    Returns:
+        analysis_types array of hashes with name: analysis_type(str), count: count(int)
+
+    """
     # Group cases based on analysis type of the individuals
     query = {}
-    if institute_id:
-        query = {'$match': {'owner': institute_id}}
-    
+
+    subquery = {}
+    if institute_id and slice_query:
+        subquery = adapter.cases(owner=institute_id, name_query=slice_query,
+                              yield_query=True)
+    elif institute_id:
+        subquery = adapter.cases(owner=institute_id, yield_query=True)
+    elif slice_query:
+        subquery = adapter.cases(name_query=slice_query, yield_query=True)
+
+    query = {'$match': subquery}
+
     pipeline = []
     if query:
         pipeline.append(query)
-    
+
     pipeline.append({'$unwind': '$individuals'})
     pipeline.append({'$group': {'_id': '$individuals.analysis_type', 'count': {'$sum': 1}}})
     analysis_query = adapter.case_collection.aggregate(pipeline)
     analysis_types = [{'name': group['_id'], 'count': group['count']} for group in analysis_query]
-    
+
     return analysis_types
