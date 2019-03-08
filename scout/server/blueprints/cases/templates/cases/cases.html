@@ -11,13 +11,16 @@
     <a href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="active">
-    <span class="navbar-text">{{ institute.display_name }}</span>
+    <span class="navbar-text">{{ institute.display_name }} Cases</span>
   </li>
   {% if config.SHOW_CAUSATIVES %}
     <li>
       <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
     </li>
    {% endif %}
+    <li>
+      <a href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
+    </li>
    <li>
      <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
    </li>
@@ -116,7 +119,7 @@
       </div>
     </div>
     <div class="bottom-align-text">
-      <br>Example: case_id=<strong>18201</strong>, HPO-term=<strong>HP:0001166</strong>, synopsis=<strong>synopsis:epilepsy</strong>
+      <br>Examples: case_id=<strong>18201</strong>, HPO-term=<strong>HP:0001166</strong>, synopsis=<strong>synopsis:epilepsy</strong>, panel=<strong>panel:NMD</strong>, phenotype group=<strong>PG:0100022</strong>, cohort=<strong>cohort:pedhep</strong>.
     </div>
   </form>
 {% endmacro %}

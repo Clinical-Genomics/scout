@@ -44,7 +44,7 @@ class VariantHandler(VariantLoader):
             gene_panels(list(dict)): List of panels from database
         """
         gene_panels = gene_panels or []
-        
+
         # Add a variable that checks if there are any refseq transcripts
         variant_obj['has_refseq'] = False
 
@@ -251,6 +251,36 @@ class VariantHandler(VariantLoader):
                                                variant_obj['position'])
         return variant_obj
 
+    def gene_variants(self, query=None,
+                   category='snv', variant_type=['clinical'],
+                   nr_of_variants=50, skip=0):
+        """Return all variants seen in a given gene.
+
+        If skip not equal to 0 skip the first n variants.
+
+        Arguments:
+            query(dict): A dictionary with querys for the database, including
+            variant_type: 'clinical', 'research'
+            category(str): 'sv', 'str', 'snv' or 'cancer'
+            nr_of_variants(int): if -1 return all variants
+            skip(int): How many variants to skip
+        """
+
+        mongo_variant_query = self.build_variant_query(query=query,
+                                   category=category, variant_type=variant_type)
+
+        sorting = [('rank_score', pymongo.DESCENDING)]
+
+        if nr_of_variants == -1:
+            nr_of_variants = 0 # This will return all variants
+        else:
+            nr_of_variants = skip + nr_of_variants
+
+        result = self.variant_collection.find(
+            mongo_variant_query
+            ).sort(sorting).skip(skip).limit(nr_of_variants)
+
+        return result
 
     def verified(self, institute_id):
         """Return all verified variants for a given institute
@@ -280,7 +310,6 @@ class VariantHandler(VariantLoader):
             res.append(var_obj)
 
         return res
-
 
     def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute

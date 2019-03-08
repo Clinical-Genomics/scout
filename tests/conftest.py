@@ -384,6 +384,10 @@ def database_name(request):
     """Get the name of the test database"""
     return DATABASE
 
+@pytest.fixture(scope='function')
+def real_database_name(request):
+    """Get the name of the test database"""
+    return REAL_DATABASE
 
 @pytest.fixture(scope='function')
 def pymongo_client(request):
