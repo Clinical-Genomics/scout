@@ -25,7 +25,7 @@ from scout.utils.matchmaker import matchmaker_request
 from scout.server.blueprints.variants.controllers import get_predictions
 from scout.server.blueprints.genes.controllers import gene
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
@@ -447,13 +447,13 @@ def gene_variants(store, variants_query, page=1, per_page=50):
 
     my_institutes = list(inst['_id'] for inst in user_institutes(store, current_user))
 
-    log.debug("Institutes allowed: {}.".format(my_institutes))
+    LOG.debug("Institutes allowed: {}.".format(my_institutes))
 
     variants = []
     for variant_obj in variant_res:
         # hide other institutes for now
         if (variant_obj['institute'] not in my_institutes):
-            log.debug("Institute {} not allowed.".format(variant_obj['institute']))
+            LOG.debug("Institute {} not allowed.".format(variant_obj['institute']))
             continue
 
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
@@ -484,7 +484,7 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                 hgvs_c.append(hgvs_nucleotide)
                 hgvs_p.append(hgvs_protein)
 
-            log.debug("HGVS: {} {} {}.".format(gene_symbols, hgvs_c, hgvs_p))
+            LOG.debug("HGVS: {} {} {}.".format(gene_symbols, hgvs_c, hgvs_p))
 
             if len(gene_symbols) == 1:
                 if(hgvs_p[0] != "None"):
