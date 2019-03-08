@@ -151,6 +151,26 @@
       <span class="glyphicon glyphicon-comment"></span>
     </a>
   {% endif %}
+
+
+  {% if variant.panels|count > 0 %}
+    <a href="#"
+       class="badge pull-right"
+       data-toggle="popover"
+       data-placement="right"
+       data-html="true"
+       data-trigger="hover click"
+       data-content="{{variant.panels|join('<br>')|safe}}"
+       title=""
+       >
+      {{ variant.panels|count }} panels
+    </a>
+  {% endif %}
+
+  {% if variant._id in case.suspects %}
+    <span class="label label-info pull-right">Pin!</span>
+  {% endif %}
+    
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
