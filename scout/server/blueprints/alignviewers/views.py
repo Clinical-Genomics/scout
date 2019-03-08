@@ -132,7 +132,9 @@ def igv():
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
         if bam_files[counter]:
-            sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter], 'indexURL' : bai_files[counter] })
+            sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter],
+                                   'indexURL' : bai_files[counter],
+                                   height=700, maxHeight=2000})
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
