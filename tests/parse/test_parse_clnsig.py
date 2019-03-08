@@ -46,7 +46,7 @@ def test_parse_clnsig_():
         transcripts=[]
     )
 
-    ## THEN assert that they where parsed correct
+    ## assert that they where parsed correct
     assert len(clnsig_annotations) == 2
 
     for entry in clnsig_annotations:
