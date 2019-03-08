@@ -17,6 +17,9 @@ Add stuff here
 - Display cases with number of variants from CLI
 - Only display cases with number of variants above certain treshold. (Also CLI)
 - Export of verified variants by CLI or from the dashboard
+- Extend case level queries with default panels, cohorts and phenotype groups.
+- Slice dashboard statistics display using case level queries
+- Add a view where all variants for an institute can be searched across cases, filtering on gene and rank score. Allows searching research variants for cases that have research open.
 
 ### Fixed
 - Fixed code to extract variant conservation (gerp, phyloP, phastCons)

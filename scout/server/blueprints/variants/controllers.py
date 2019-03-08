@@ -54,7 +54,6 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         'more_variants': more_variants,
     }
 
-
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
     skip_count = (per_page * max(page - 1, 0))
@@ -404,7 +403,7 @@ def get_predictions(genes):
         'sift_predictions': [],
         'polyphen_predictions': [],
         'region_annotations': [],
-        'functional_annotations': [],
+        'functional_annotations': []
     }
     for gene_obj in genes:
         for pred_key in data:
@@ -866,8 +865,6 @@ def callers(variant_obj, category='snv'):
     for caller in CALLERS[category]:
         if variant_obj.get(caller['id']):
             calls.add((caller['name'], variant_obj[caller['id']]))
-        else:
-            calls.add((caller['name'], 'Not available'))
 
     return list(calls)
 

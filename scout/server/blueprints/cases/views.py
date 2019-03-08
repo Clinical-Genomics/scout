@@ -22,11 +22,12 @@ from scout.server.extensions import store, mail
 from scout.server.utils import templated, institute_and_case, user_institutes
 from . import controllers
 
+from .forms import GeneVariantFiltersForm
+
 log = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
-
 
 @cases_bp.route('/institutes')
 @templated('cases/index.html')
@@ -145,6 +146,62 @@ def causatives(institute_id):
         all_variants[variant_obj['variant_id']].append((case_obj, variant_obj))
 
     return dict(institute=institute_obj, variant_groups=all_variants)
+
+@cases_bp.route('/<institute_id>/gene_variants', methods=['GET','POST'])
+@templated('cases/gene_variants.html')
+def gene_variants(institute_id):
+    """Display a list of SNV variants."""
+    page = int(request.form.get('page', 1))
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    # populate form, conditional on request method
+    if(request.method == "POST"):
+            form = GeneVariantFiltersForm(request.form)
+    else:
+        form = GeneVariantFiltersForm(request.args)
+
+    variant_type = form.data.get('variant_type', 'clinical')
+
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+                not_found_symbols.append(hgnc_symbol)
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+        if (not_found_ids):
+            flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+        if (not_found_symbols):
+            flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+        if (non_clinical_symbols):
+            flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
+        form.hgnc_symbols.data = hgnc_symbols
+
+    log.debug("query {}".format(form.data))
+
+    variants_query = store.gene_variants(query=form.data, category='snv',
+                            variant_type=variant_type)
+    data = {}
+
+    data = controllers.gene_variants(store, variants_query, page)
+
+    return dict(institute=institute_obj, form=form, page=page, **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>/synopsis', methods=['POST'])
