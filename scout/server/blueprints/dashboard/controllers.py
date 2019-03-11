@@ -1,6 +1,5 @@
 import logging
 from flask_login import current_user
-from scout.server.utils import user_institutes
 
 LOG = logging.getLogger(__name__)
 
@@ -157,15 +156,11 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
         general(dict)
     """
     general = {}
-    # Fetch information about cases with certain activities
-    cases = {}
-    # Collect available institute IDs for current_user
-    institute_ids = [ inst['_id'] for inst in list(user_institutes(adapter, current_user))]
 
     cases_owner = None
     name_query = None
 
-    if institute_id and institute_id in institute_ids: # OK to filter for a given institute
+    if institute_id and institute_id in current_user.institutes: # OK to filter for a given institute
         LOG.debug('Dashboard with stats for an institute')
         cases_owner = institute_id
     if slice_query:
