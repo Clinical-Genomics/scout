@@ -107,11 +107,11 @@
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
           </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="Enter query to filter cases summarized below"></input>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="Enter query to filter cases summarized below" onchange="updateSelect(this.value)"></input>
           </div>
       </div>
       <div class="col-md-2 col-xs-2">
-      <select name="institute" onchange="this.form.submit()">
+      <select name="institute" id="institute" onchange="this.form.submit()">
         {% for inst in institutes %}
           <option value="{{ inst._id }}" {{ "selected" if inst._id == choice }} >{{ inst.display_name }}</option>
         {% endfor %}
@@ -126,3 +126,17 @@
     </div>
   </form>
 {% endmacro %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    function updateSelect(query_text){
+      var sel = document.getElementById("institute");
+      if(query_text) {
+        sel.children[0].disabled = "disabled"
+      }
+      else{
+        sel.children[0].disabled = ""
+      }
+    }
+  </script>
+{% endblock %}
