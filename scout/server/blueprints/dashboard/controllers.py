@@ -1,4 +1,6 @@
 import logging
+from flask_login import current_user
+from scout.server.utils import user_institutes
 
 LOG = logging.getLogger(__name__)
 
@@ -157,21 +159,22 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     general = {}
     # Fetch information about cases with certain activities
     cases = {}
+    # Collect available institute IDs for current_user
+    institute_ids = [ inst['_id'] for inst in list(user_institutes(adapter, current_user))]
 
-    if institute_id and slice_query:
-        cases = adapter.cases(owner=institute_id, name_query=slice_query)
-    elif institute_id:
-        LOG.debug("Ordinary dashboard query with set institute_id.")
-        if institute_id == "None":
-            cases = adapter.cases()
-        else:
-            cases = adapter.cases(owner=institute_id)
-    elif slice_query:
-        LOG.debug("Slice query with no institute_id.")
-        cases = adapter.cases(name_query=slice_query)
-    else:
-        LOG.debug("Ordinary dashboard query with no institute_id.")
+    cases_owner = None
+    name_query = None
 
+    if institute_id and institute_id in institute_ids: # OK to filter for a given institute
+        LOG.debug('Dashboard with stats for an institute')
+        cases_owner = institute_id
+    if slice_query:
+        if cases_owner: # sensitive-data query will work only if user is institute owner
+            LOG.debug('Filter dashboard stats for a specific institute')
+            name_query = slice_query
+
+    # if institute_id == 'None' or None, all cases and general stats will be returned
+    cases = adapter.cases(owner=cases_owner, name_query=name_query)
 
     phenotype_cases = 0
     causative_cases = 0
