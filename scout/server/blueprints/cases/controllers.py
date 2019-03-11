@@ -476,6 +476,7 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                     if not hgnc_gene:
                         continue
                     gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+                    gene_obj['description'] = hgnc_gene['description']
 
         # Populate variant HGVS and predictions
         gene_ids = []
