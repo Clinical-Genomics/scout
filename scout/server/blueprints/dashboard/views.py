@@ -39,7 +39,7 @@ def index():
         institute_id = request.args.get('institute')
         slice_query = request.args.get('query')
 
-    if not institute_id or not institute_id='None' or not institute_id in accessible_institutes:
+    if not institute_id or not institute_id=='None' or not institute_id in accessible_institutes:
         institute_id = accessible_institutes[0]
 
     LOG.info("Fetch all cases with institute: %s", institute_id)
