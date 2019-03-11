@@ -471,7 +471,7 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                 if not gene_obj['hgnc_id']:
                     continue
                 # Else we collect the gene object and check the id
-                if gene_obj.get('hgnc_symbol') is None:
+                if gene_obj.get('hgnc_symbol') is None or gene_obj.get('description') is None:
                     hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=genome_build)
                     if not hgnc_gene:
                         continue
