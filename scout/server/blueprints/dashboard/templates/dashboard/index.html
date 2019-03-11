@@ -131,7 +131,7 @@
   <script type="text/javascript">
     function updateSelect(query_text){
       var sel = document.getElementById("institute");
-      if(query_text) {
+      if(query_text and not {{current_user.is_admin}}) {
         sel.children[0].disabled = "disabled"
         if(sel.options[0].selected) {
           sel.options[0].selected = false;
