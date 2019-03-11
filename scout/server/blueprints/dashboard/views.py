@@ -39,7 +39,11 @@ def index():
         institute_id = request.args.get('institute')
         slice_query = request.args.get('query')
 
-    if not institute_id or not institute_id=='None' or not institute_id in accessible_institutes:
+    # User should be restricted to their own institute if:
+    #1) Their default institute when the page is first loaded
+    #2) if they ask for an institute that they don't belong to
+    #3) if they want perform a query on all institutes
+    if not institute_id or (institute_id not in accessible_institutes) or ( slice_query and institute_id=='None' ) :
         institute_id = accessible_institutes[0]
 
     LOG.info("Fetch all cases with institute: %s", institute_id)
