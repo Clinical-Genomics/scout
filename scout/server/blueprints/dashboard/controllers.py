@@ -157,19 +157,15 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     """
     general = {}
 
-    cases_owner = None
     name_query = None
 
-    if institute_id and institute_id in current_user.institutes: # OK to filter for a given institute
-        LOG.debug('Dashboard with stats for an institute')
-        cases_owner = institute_id
     if slice_query:
-        if cases_owner: # sensitive-data query will work only if user is institute owner
+        if institute_id: # sensitive-data query will work only if user is institute owner
             LOG.debug('Filter dashboard stats for a specific institute')
             name_query = slice_query
 
     # if institute_id == 'None' or None, all cases and general stats will be returned
-    cases = adapter.cases(owner=cases_owner, name_query=name_query)
+    cases = adapter.cases(owner=institute_id, name_query=name_query)
 
     phenotype_cases = 0
     causative_cases = 0
@@ -246,7 +242,6 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
     # Group the cases based on their status
     pipeline = []
     group = {'$group' : {'_id': '$status', 'count': {'$sum': 1}}}
-
 
     subquery = {}
     if institute_id and slice_query:
