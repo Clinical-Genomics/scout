@@ -133,6 +133,10 @@
       var sel = document.getElementById("institute");
       if(query_text) {
         sel.children[0].disabled = "disabled"
+        if(sel.options[0].selected) {
+          sel.options[0].selected = false;
+          sel.options[1].selected = true;
+        }
       }
       else{
         sel.children[0].disabled = ""
