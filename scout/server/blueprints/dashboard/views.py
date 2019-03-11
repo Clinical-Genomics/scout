@@ -46,10 +46,9 @@ def index():
     if not institute_id:
         institute_id = accessible_institutes[0]
     elif not institute_id =='None' and not institute_id in accessible_institutes:
-        institute_id = accessible_insstitutes[0]
-    elif slice_query and institute_id=='None' and not current_user.is_admin:
         institute_id = accessible_institutes[0]
-
+    elif slice_query and institute_id == 'None' and not current_user.is_admin:
+        institute_id = accessible_institutes[0]
 
     LOG.info("Fetch all cases with institute: %s", institute_id)
 
