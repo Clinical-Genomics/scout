@@ -26,8 +26,9 @@ def index():
 
     LOG.debug('User accessible institutes: {}'.format(accessible_institutes))
     institutes = [inst for inst in store.institutes(accessible_institutes)]
-    # Insert a entry that displays all institutes in the beginning of the array
-    institutes.insert(0, {'_id': None, 'display_name': 'All institutes'})
+    if current_user.is_admin:
+        # Insert a entry that displays all institutes in the beginning of the array
+        institutes.insert(0, {'_id': None, 'display_name': 'All institutes'})
 
     institute_id = None
     slice_query = None

@@ -15,6 +15,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     Returns:
         data(dict): Dictionary with relevant information
     """
+    LOG.debug("General query with institute_id {}.".format(institute_id))
     general_info = get_general_case_info(adapter, institute_id=institute_id,
                                                     slice_query=slice_query)
     total_cases = general_info['total_cases']
@@ -160,11 +161,17 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     if institute_id and slice_query:
         cases = adapter.cases(owner=institute_id, name_query=slice_query)
     elif institute_id:
-        cases = adapter.cases(owner=institute_id)
+        LOG.debug("Ordinary dashboard query with set institute_id.")
+        if institute_id == "None":
+            cases = adapter.cases()
+        else:
+            cases = adapter.cases(owner=institute_id)
     elif slice_query:
+        LOG.debug("Slice query with no institute_id.")
         cases = adapter.cases(name_query=slice_query)
     else:
-        cases = adapter.cases()
+        LOG.debug("Ordinary dashboard query with no institute_id.")
+
 
     phenotype_cases = 0
     causative_cases = 0
