@@ -102,7 +102,7 @@
 
 {% macro cell_rank(variant) %}
 <a class="variants-row-item flex-small layout"
-   href="{{ url_for('variants.variant', institute_id=institute._id,
+   href="{{ url_for('variants.variant', institute_id=variant.institute,
         case_name=variant.case_display_name, variant_id=variant._id) }}">
   {{ variant.case_display_name}} : {{ variant.rank_score|int }}
 </a>
@@ -145,7 +145,7 @@
         </div>
         <div class="col-xs-2">
           <label class="control-label">Rank Score</label>
-          <input type="number" class="form-control" id="rank_score" name="rank_score" min="5">
+          <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
         </div>
         <div class="col-xs-2">
           {{ form.variant_type.label(class="control-label") }}

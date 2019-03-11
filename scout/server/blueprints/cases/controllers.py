@@ -447,12 +447,14 @@ def gene_variants(store, variants_query, page=1, per_page=50):
     variants = []
     for variant_obj in variant_res:
         # hide other institutes for now
-        if (variant_obj['institute'] not in my_institutes):
+        if variant_obj['institute'] not in my_institutes:
             log.debug("Institute {} not allowed.".format(variant_obj['institute']))
             continue
 
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
-        case_display_name = variant_case_obj['display_name']
+        if not variant_case_obj:
+            continue
+        case_display_name = variant_case_obj.get('display_name')
         variant_obj['case_display_name'] = case_display_name
 
         gene_ids = []
