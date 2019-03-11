@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 
-
 {% block content_main %}
 {{ dashboard_search_form() }}
 
@@ -107,7 +106,7 @@
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
           </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="Enter query to filter cases summarized below" onchange="updateSelect(this.value, {% if current_user.is_admin %}true{% else %}false{% endif %})"></input>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="Enter query to filter cases summarized below" onchange="update_select(this.value, {% if current_user.is_admin %}true{% else %}false{% endif %})"></input>
           </div>
       </div>
       <div class="col-md-2 col-xs-2">
@@ -128,18 +127,19 @@
 {% endmacro %}
 
 {% block scripts %}
+  {{ super() }}
   <script type="text/javascript">
-    function updateSelect(query_text, admin_user){
+    function update_select(query_text, admin_user){
       var sel = document.getElementById("institute");
       if(query_text && !admin_user) {
-        sel.children[0].disabled = "disabled"
+        sel.children[0].disabled = "disabled";
         if(sel.options[0].selected) {
           sel.options[0].selected = false;
           sel.options[1].selected = true;
         }
       }
       else{
-        sel.children[0].disabled = ""
+        sel.children[0].disabled = "";
       }
     }
   </script>
