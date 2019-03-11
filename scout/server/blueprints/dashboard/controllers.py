@@ -16,7 +16,13 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     Returns:
         data(dict): Dictionary with relevant information
     """
+
     LOG.debug("General query with institute_id {}.".format(institute_id))
+
+    # if institute_id == 'None' or None, all cases and general stats will be returned
+    if institute_id == 'None':
+        institute_id = None
+
     general_info = get_general_case_info(adapter, institute_id=institute_id,
                                                     slice_query=slice_query)
     total_cases = general_info['total_cases']
@@ -157,14 +163,9 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     """
     general = {}
 
-    name_query = None
+    # Potentially sensitive slice queries are assumed allowed if we have got this far
+    name_query = slice_query
 
-    if slice_query:
-        if institute_id: # sensitive-data query will work only if user is institute owner
-            LOG.debug('Filter dashboard stats for a specific institute')
-            name_query = slice_query
-
-    # if institute_id == 'None' or None, all cases and general stats will be returned
     cases = adapter.cases(owner=institute_id, name_query=name_query)
 
     phenotype_cases = 0
