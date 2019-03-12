@@ -180,6 +180,8 @@
               - Alignment:
               <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
               <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
+            {% elif case.bam_files %}
+              - Complex rearrangement: check breakpoints alignments.
             {% else %}
               - BAM file(s) missing
             {% endif %}
