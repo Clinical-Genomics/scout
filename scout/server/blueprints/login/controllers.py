@@ -22,7 +22,10 @@ def users(store):
     user_objs = list(store.users())
     total_events = store.user_events().count()
     for user_obj in user_objs:
-        user_obj['institutes'] = [store.institute(inst_id) for inst_id in user_obj.get('institutes')]
+        if user_obj.get('institutes'):
+            user_obj['institutes'] = [store.institute(inst_id) for inst_id in user_obj.get('institutes')]
+        else:
+            user_obj['institutes'] = []
         user_obj['events'] = store.user_events(user_obj).count()
         user_obj['events_rank'] = event_rank(user_obj['events'])
     return dict(
