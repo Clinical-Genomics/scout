@@ -110,6 +110,14 @@
 
 {% macro cell_cadd(variant) %}
   <div>
+    <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class='text-left'>
+      <strong>Sift</strong>
+      {{ variant.sift_predictions|join(',') }} <br>
+      <strong>PolyPhen</strong>
+      {{ (variant.polyphen_predictions or ['-'])|join(',') }}		
+    </div>
+    ">
     {{ variant.cadd_score }}
   </div>
 {% endmacro %}
@@ -174,6 +182,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        container: 'body',
+      });
+
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
