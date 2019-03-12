@@ -9,10 +9,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Add stuff here
 
 
+## [4.3.2]
+
+### Added
+- Dashboard data can be filtered using filters available in cases page
+- Causatives for each institute are displayed on a dedicated page
+- SNVs and and SVs are searchable across cases by gene and rank score
+- A more complete report with validated variants is downloadable from dashboard
+
 ### Fixed
 - Clinsig filter is fixed so clinsig numerical values are returned
 - Split multi clinsig string values in different elements of clinsig array
 - Regex to search in multi clinsig string values or multi revstat string values
+- It works to upload vcf files with no variants now
+- Combined Pileup and IGV alignments for SVs having variant start and stop on the same chromosome
 
 
 ## [4.3.1]
