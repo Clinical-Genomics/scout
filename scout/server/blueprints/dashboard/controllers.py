@@ -66,6 +66,8 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     validated_cases = set()
 
     # Variant level information
+    our_validated_positives = 0
+    our_validated_negatives = 0
     validated_tp = set()
     validated_fp = set()
 
