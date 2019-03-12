@@ -1,6 +1,6 @@
 {% macro gene_cell(variant) %}
   {% for gene in variant.genes %}
-    <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div data-toggle="tooltip" data-placement="right" data-html="true" title="
     <div class='text-left'>
         <div>
           <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}

@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 
-
 {% block content_main %}
 {{ dashboard_search_form() }}
 
@@ -107,13 +106,17 @@
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
           </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="Enter query to filter cases summarized below"></input>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" id="query" placeholder="Enter query to filter cases summarized below" onchange="update_select({% if current_user.is_admin %}true{% else %}false{% endif %})"></input>
           </div>
       </div>
       <div class="col-md-2 col-xs-2">
-      <select name="institute" onchange="this.form.submit()">
+      <select name="institute" id="institute" onchange="this.form.submit()">
         {% for inst in institutes %}
-          <option value="{{ inst._id }}" {{ "selected" if inst._id == choice }} >{{ inst.display_name }}</option>
+          {% if inst.display_name == 'All institutes' and query and not current_user.is_admin %}
+            <option value="{{ inst._id }}" disabled>{{ inst.display_name }}</option>
+          {% else %}
+            <option value="{{ inst._id }}" {{ "selected" if inst._id == choice }} >{{ inst.display_name }}</option>
+          {% endif %}
         {% endfor %}
       </select>
       </div>
@@ -126,3 +129,23 @@
     </div>
   </form>
 {% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    function update_select(admin_user){
+      var query_text = document.getElementById("query").value;
+      var sel = document.getElementById("institute");
+      if(query_text && !admin_user) {
+        sel.children[0].disabled = "disabled";
+        if(sel.options[0].selected) {
+          sel.options[0].selected = false;
+          sel.options[1].selected = true;
+        }
+      }
+      else{
+        sel.children[0].disabled = "";
+      }
+    }
+  </script>
+{% endblock %}
