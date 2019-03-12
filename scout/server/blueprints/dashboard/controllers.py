@@ -43,20 +43,41 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     data['analysis_types'] = get_analysis_types(adapter, total_cases,
                                 institute_id=institute_id, slice_query=slice_query)
 
+    # VARIANTS
+
+    # Here we disregard any slice query.
+    general_info = get_general_case_info(adapter, institute_id=institute_id)
+
+    total_cases = general_info['total_cases']
     # Fetch variant information
     LOG.info("Fetch sanger variants")
-    validation_query = {'sanger_ordered': True}
+    order_query = {'sanger_ordered': True}
+    # NOTE: this will not find all verified variants. Any pinned variant can
+    #       be tagged true or false positive. Generally speaking all
+    #       causatives were true positives.
+
+    # validation_query = {'validation': {'$in'}} #unused
+    # Also actually query for TPs and FPs
+    tp_query = {'validation': "True positive"}
+    fp_query = {'validation': "False positive"}
 
     # Case level information
-    validation_cases = set()
+    ordered_validation_cases = set()
     validated_cases = set()
 
     # Variant level information
     validated_tp = set()
     validated_fp = set()
 
-    LOG.info("Find all validated variants with query {}".format(validation_query))
-    validation_ordered = adapter.variant_collection.find(validation_query)
+    LOG.info("Find all validated variants with query {}".format(order_query))
+    validation_ordered = adapter.variant_collection.find(order_query)
+
+# If you want the full collection:
+#    validation_status_set = adapter.variant_collection.find(
+#                    {'validation': {'$in': ["False positive", "True positive"]}})
+
+    validated_tp_cursor = adapter.variant_collection.find(tp_query)
+    validated_fp_cursor = adapter.variant_collection.find(fp_query)
 
     case_ids = general_info['case_ids']
     nr_ordered = 0
@@ -65,20 +86,38 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
         if institute_id:
             if not case_id in case_ids:
                 continue
-        variant_id = variant['_id']
+    #    variant_id = variant['_id']
         # Add case id to validation cases
-        validation_cases.add(case_id)
+        if case_id not in ordered_validation_cases:
+            ordered_validation_cases.add(case_id)
 
+    for our_validated_positives, variant in enumerate(validated_tp_cursor, 1):
+        case_id = variant['case_id']
+        if institute_id:
+            if not case_id in case_ids:
+                continue
+
+        variant_id = variant['_id']
         validation = variant.get('validation')
         if validation == 'True positive':
             validated_tp.add(variant_id)
-            validated_cases.add(case_id)
+            if case_id not in validated_cases:
+                validated_cases.add(case_id)
 
-        elif validation == 'False positive':
+    for our_validated_negatives, variant in enumerate(validated_fp_cursor, 1):
+        case_id = variant['case_id']
+        if institute_id:
+            if not case_id in case_ids:
+                continue
+
+        variant_id = variant['_id']
+        validation = variant.get('validation')
+        if validation == 'False positive':
             validated_fp.add(variant_id)
-            validated_cases.add(case_id)
+            if case_id not in validated_cases:
+                validated_cases.add(case_id)
 
-    nr_validation_cases = len(validation_cases)
+    nr_validation_cases = len(ordered_validation_cases)
 
     overview = [
         {
@@ -102,7 +141,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
             'percent': general_info['cohort_cases'] / total_cases,
         }
     ]
-    if nr_validation_cases:
+    if nr_validation_cases or validated_cases:
         overview.append(
         {
             'title': 'Validation ordered',
@@ -111,15 +150,15 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
         })
         overview.append(
         {
-            'title': 'Validated',
+            'title': 'Validated cases',
             'count': len(validated_cases),
-            'percent': len(validated_cases) / nr_validation_cases,
+            'percent': len(validated_cases) / total_cases,
         })
 
     data['overview'] = overview
 
     variants = []
-    nr_validated = len(validated_tp) + len(validated_fp)
+    nr_validated = our_validated_positives + our_validated_negatives
     if nr_ordered:
         variants.append(
             {
