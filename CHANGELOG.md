@@ -22,7 +22,7 @@ Add stuff here
 - Split multi clinsig string values in different elements of clinsig array
 - Regex to search in multi clinsig string values or multi revstat string values
 - It works to upload vcf files with no variants now
-
+- Combined Pileup and IGV alignments for SVs having variant start and stop on the same chromosome
 
 
 ## [4.3.1]
