@@ -243,8 +243,10 @@ def parse_hpo_obo(hpo_lines):
         line = line.rstrip()
         # New term starts with [Term]
         if line == '[Term]':
+            # Return prevoious term if it exists
             if term:
                 yield term
+            # Initialize empty term
             term = {}
         
         elif line.startswith('id'):
@@ -264,13 +266,31 @@ def parse_hpo_obo(hpo_lines):
             ancestor = line[6:16]
             if ancestor.startswith('HP:'):
                 term['ancestors'].append(ancestor)
-            else:
-                print(ancestor)
-                print(line)
 
     if term:
         yield term
         
+
+def get_all_ancestors(hpo_tree, term, res=set()):
+    """Return a set with all ancestors in the tree"""
+    
+    # If we reach the top of the tree we return the result
+    if term.get('ancestors',[]) == []:
+        return res
+
+    if 'HP:0000001' in term['ancestors']:
+        return res
+
+    # Loop over all ancestor terms
+    for ancestor_id in term['ancestors']:
+        # Add the ancestor to res
+        res.add(ancestor_id)
+        if ancestor_id not in hpo_tree:
+            LOG.debug("Term %s does not exist!", ancestor_id)
+            return res
+        # If there is a ancestor we collect that term
+        ancestor_term = hpo_tree[ancestor_id]
+        return get_all_ancestors(hpo_tree, ancestor_term, res)
 
 def build_hpo_tree(hpo_lines):
     """Build a tree with all hpo terms
@@ -282,20 +302,26 @@ def build_hpo_tree(hpo_lines):
     hpo_tree = {term['hpo_id']: term for term in parse_hpo_obo(hpo_lines)}
     for hpo_id in hpo_tree:
         term = hpo_tree[hpo_id]
-        
+
+        # Fill the children sections
         # Loop over all ancestors
         for ancestor_id in term.get('ancestors',[]):
             if ancestor_id not in hpo_tree:
-                print("Term %s does not exist!", ancestor_id)
+                LOG.debug("Term %s does not exist!", ancestor_id)
                 continue
             # If there is a ancestor we collect that term
             ancestor_term = hpo_tree[ancestor_id]
             
-            # Add a new 'children' field
+            # Add a new 'children' field on the ancestor term
             if 'children' not in ancestor_term:
                 ancestor_term['children'] = set()
             
             ancestor_term['children'].add(hpo_id)
+        
+        all_ancestors = get_all_ancestors(hpo_tree, term, set())
+        
+        term['all_ancestors'] = all_ancestors
+    
     return hpo_tree
             
     
@@ -304,18 +330,31 @@ if __name__ == "__main__":
     import sys
     from pprint import pprint as pp
     from scout.utils.handle import get_file_handle
+    from scout.utils.requests import fetch_hpo_terms
     
-    file_handle = get_file_handle(sys.argv[1])
+    if not len(sys.argv) > 1:
+        file_handle = fetch_hpo_terms()
+    else:
+        file_handle = get_file_handle(sys.argv[1])
+
+    hpo_tree = build_hpo_tree(file_handle)
+    
+    my_term = hpo_tree['HP:0200024']
+    pp(my_term)
+    
+    # print(get_all_ancestors(hpo_tree, my_term))
+    for term in hpo_tree:
+        pp(hpo_tree[term])
     
     # phenotypes = parse_hpo_phenotypes(file_handle)
     # for hpo_id in phenotypes:
     #     hpo_term = phenotypes[hpo_id]
     #     pp(hpo_term)
 
-    diseases = parse_hpo_diseases(file_handle)
-    for mim_id in diseases:
-        disease = diseases[mim_id]
-        pp(disease)
+    # diseases = parse_hpo_diseases(file_handle)
+    # for mim_id in diseases:
+    #     disease = diseases[mim_id]
+    #     pp(disease)
 
     # incomplete_genes = get_incomplete_penetrance_genes(file_handle)
     # for gene in incomplete_genes:
