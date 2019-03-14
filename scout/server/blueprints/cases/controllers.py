@@ -452,14 +452,38 @@ def gene_variants(store, variants_query, page=1, per_page=50):
     variants = []
     for variant_obj in variant_res:
         # hide other institutes for now
-        if (variant_obj['institute'] not in my_institutes):
+        if variant_obj['institute'] not in my_institutes:
             LOG.debug("Institute {} not allowed.".format(variant_obj['institute']))
             continue
 
+        # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
-        case_display_name = variant_case_obj['display_name']
+        if not variant_case_obj:
+            # A variant with missing case was encountered
+            continue
+        case_display_name = variant_case_obj.get('display_name')
         variant_obj['case_display_name'] = case_display_name
 
+        genome_build = variant_case_obj.get('genome_build', '37')
+        if genome_build not in ['37','38']:
+            genome_build = '37'
+
+        # Update the HGNC symbols if they are not set
+        variant_genes = variant_obj.get('genes')
+        if variant_genes is not None:
+            for gene_obj in variant_genes:
+                # If there is no hgnc id there is nothin we can do
+                if not gene_obj['hgnc_id']:
+                    continue
+                # Else we collect the gene object and check the id
+                if gene_obj.get('hgnc_symbol') is None or gene_obj.get('description') is None:
+                    hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=genome_build)
+                    if not hgnc_gene:
+                        continue
+                    gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+                    gene_obj['description'] = hgnc_gene['description']
+
+        # Populate variant HGVS and predictions
         gene_ids = []
         gene_symbols = []
         hgvs_c = []
@@ -468,6 +492,7 @@ def gene_variants(store, variants_query, page=1, per_page=50):
 
         if variant_genes is not None:
             functional_annotation = ''
+
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj['hgnc_id']
                 gene_symbol = gene(store, hgnc_id)['symbol']
@@ -494,7 +519,10 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                 else:
                     hgvs = "-"
                 variant_obj['hgvs'] = hgvs
+
+            # populate variant predictions for display
             variant_obj.update(get_predictions(variant_genes))
+
         variants.append(variant_obj)
 
     return {
