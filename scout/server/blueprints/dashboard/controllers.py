@@ -1,4 +1,5 @@
 import logging
+from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
 
@@ -15,6 +16,13 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     Returns:
         data(dict): Dictionary with relevant information
     """
+
+    LOG.debug("General query with institute_id {}.".format(institute_id))
+
+    # if institute_id == 'None' or None, all cases and general stats will be returned
+    if institute_id == 'None':
+        institute_id = None
+
     general_info = get_general_case_info(adapter, institute_id=institute_id,
                                                     slice_query=slice_query)
     total_cases = general_info['total_cases']
@@ -154,17 +162,11 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
         general(dict)
     """
     general = {}
-    # Fetch information about cases with certain activities
-    cases = {}
 
-    if institute_id and slice_query:
-        cases = adapter.cases(owner=institute_id, name_query=slice_query)
-    elif institute_id:
-        cases = adapter.cases(owner=institute_id)
-    elif slice_query:
-        cases = adapter.cases(name_query=slice_query)
-    else:
-        cases = adapter.cases()
+    # Potentially sensitive slice queries are assumed allowed if we have got this far
+    name_query = slice_query
+
+    cases = adapter.cases(owner=institute_id, name_query=name_query)
 
     phenotype_cases = 0
     causative_cases = 0
@@ -241,7 +243,6 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
     # Group the cases based on their status
     pipeline = []
     group = {'$group' : {'_id': '$status', 'count': {'$sum': 1}}}
-
 
     subquery = {}
     if institute_id and slice_query:
