@@ -2,6 +2,7 @@
 from copy import deepcopy
 import logging
 import datetime
+import operator
 
 from pprint import pprint as pp
 
@@ -10,6 +11,7 @@ import pymongo
 from scout.parse.case import parse_case
 from scout.build.case import build_case
 from scout.parse.variant.ids import parse_document_id
+from scout.utils.algorithms import ui_score
 
 from scout.exceptions import IntegrityError, ConfigError
 
@@ -18,6 +20,29 @@ LOG = logging.getLogger(__name__)
 
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
+    
+    def get_similar_cases(self, case_obj):
+        """Take a case obj and return a iterable with the most phenotypically similar cases"""
+        scores = {}
+        set_1 = set()
+        set_2 = set()
+        # Add all ancestors if all terms
+        for hpo_id in case_obj.phenotype_terms:
+            hpo_term = self.hpo_term(hpo_id)
+            if not hpo_term:
+                continue
+            set_1.union(set(hpo_term.get('all_ancestors',[])))
+        # Need to controll what cases to look for here
+        for case in self.cases(phenotype_terms=True):
+            # Add all ancestors if all terms
+            for hpo_id in case.phenotype_terms:
+                hpo_term = self.hpo_term(hpo_id)
+                if not hpo_term:
+                    continue
+                set_2.union(set(hpo_term.get('all_ancestors',[])))
+            scores[case['case_id']] = ui_score(set_1, set_2)
+        # Returns a list of tuples with highest score first
+        return sorted(scores.items(), key=operator.itemgetter(1))
 
     def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
