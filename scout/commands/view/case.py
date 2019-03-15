@@ -45,7 +45,9 @@ def cases(context, institute, display_name, case_id, nr_variants, variants_tresh
             if not similar:
                 LOG.info("No more cases with phenotypes found")
                 return
-            pp(similar)
+            click.echo("#case_id\tscore")
+            for i in similar:
+                click.echo('\t'.join([i[0], str(i[1])]))
             return
 
     else:
