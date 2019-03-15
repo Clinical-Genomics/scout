@@ -22,25 +22,39 @@ class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
     
     def get_similar_cases(self, case_obj):
-        """Take a case obj and return a iterable with the most phenotypically similar cases"""
+        """Take a case obj and return a iterable with the most phenotypically similar cases
+        
+        Args:
+            case_obj(models.Case)
+        
+        Returns:
+            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most 
+                                 similar case first
+        """
         scores = {}
         set_1 = set()
         set_2 = set()
-        # Add all ancestors if all terms
-        for hpo_id in case_obj.phenotype_terms:
-            hpo_term = self.hpo_term(hpo_id)
+        if not case_obj.get('phenotype_terms'):
+            LOG.warning("No phenotypes could be found for case %s", case_obj['_id'])
+            return None
+        # Add all ancestors of all terms
+        for term in case_obj['phenotype_terms']:
+            hpo_term = self.hpo_term(term['phenotype_id'])
             if not hpo_term:
                 continue
-            set_1.union(set(hpo_term.get('all_ancestors',[])))
-        # Need to controll what cases to look for here
+            set_1 = set_1.union(set(hpo_term.get('all_ancestors',[])))
+        # Need to control what cases to look for here
+        # Fetch all cases with phenotypes
         for case in self.cases(phenotype_terms=True):
+            if case['_id'] == case_obj['_id']:
+                continue
             # Add all ancestors if all terms
-            for hpo_id in case.phenotype_terms:
-                hpo_term = self.hpo_term(hpo_id)
+            for term in case['phenotype_terms']:
+                hpo_term = self.hpo_term(term['phenotype_id'])
                 if not hpo_term:
                     continue
-                set_2.union(set(hpo_term.get('all_ancestors',[])))
-            scores[case['case_id']] = ui_score(set_1, set_2)
+                set_2 = set_2.union(set(hpo_term.get('all_ancestors',[])))
+            scores[case['_id']] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1))
 
