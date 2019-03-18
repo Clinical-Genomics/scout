@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 Add stuff here
+### Fixed
+- Dashboard collects validated variants from verification events instead of using 'sanger' field
 
 
 ## [4.3.2]
