@@ -118,7 +118,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     })
     overview.append(
     {
-        'title': 'Validated cases',
+        'title': 'Validated cases (TP + FP)',
         'count': n_validated_cases,
         'percent': n_validated_cases / total_sliced_cases,
     })
@@ -136,18 +136,18 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     )
 
     # taking into account that var_valid_orders might be 0:
-    percent_validable = 0
-    percent_validated = 0
+    percent_validated_tp = 0
+    percent_validated_fp = 0
 
     if var_valid_orders:
-        percent_validable = len(validated_tp) / var_valid_orders
-        percent_validated = len(validated_fp) / var_valid_orders
+        percent_validated_tp = len(validated_tp) / var_valid_orders
+        percent_validated_fp = len(validated_fp) / var_valid_orders
 
     variants.append(
         {
             'title': 'Validated True Positive',
             'count': len(validated_tp),
-            'percent': percent_validable,
+            'percent': percent_validated_tp,
         }
     )
 
@@ -155,8 +155,8 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
         {
             'title': 'Validated False Positive',
             'count': len(validated_fp),
-            'percent': percent_validated,
-            }
+            'percent': percent_validated_fp,
+        }
     )
 
     data['variants'] = variants
