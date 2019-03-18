@@ -1263,13 +1263,27 @@ def match_objs():
                 }
             },
             'results' : [
-                {'patient' : { 'patient_data' : 'test_stuff'},
-                 'score' : {'patient' : 0.425}
+                {
+                    'node' : 'external_test_node',
+                    'patients' : [
+                        {'patient' : {
+                            'id' : 'match_1_id'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test External User'
+                            },
+                            'score' : {'patient' : 0.425},
+                        },
+                        {'patient' : {
+                            'id' : 'match_2_id'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test External User'
+                            },
+                            'score' : {'patient' :  0.333},
+                        },
+                    ]
                 }
-                ,
-                {'patient' : { 'patient_data2' : 'test_stuff2'},
-                 'score' : {'patient' : 0.333}
-                },
             ],
             'match_type' : 'external'
         },
@@ -1286,14 +1300,31 @@ def match_objs():
                 }
             },
             'results' : [
-                {'patient' : {
-                    'id' : 'internal_id.ADM1059A2',
-                    'contact' : {
-                        'href' : 'mailto:test_contact2@email.com'
-                    },
-                    'score' : {'patient' : 0.367}    
-                }},
-            ],
+                {
+                    'node' : 'internal_node',
+                    'patients' : [
+                        {
+                            'patient' : {
+                            'id' : 'internal_id.ADM1059A2'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test Internal User'
+                            },
+                            'score' : {'patient' :  0.87},
+                        },
+                        {
+                            'patient' : {
+                            'id' : 'external_patient_y'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test Internal User'
+                            },
+                            'score' : {'patient' :  0.76},
+                        }
+                    ]
+                }
+            ]
+            ,
             'match_type' : 'internal'
         },
     ]
