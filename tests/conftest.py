@@ -1244,6 +1244,44 @@ def mme_submission():
     }
     return mme_subm_obj
 
+@pytest.fixture(scope='function')
+def mme_patient():
+    json_patient = {
+        "contact": {
+          "href": "mailto:contact_email@email.com",
+          "name": "A contact at an institute"
+        },
+        "features": [
+          {
+            "id": "HP:0001644",
+            "label": "Dilated cardiomyopathy",
+            "observed": "yes"
+          },
+        ],
+        "genomicFeatures": [
+          {
+            "gene": {
+              "id": "LIMS2"
+            },
+            "type": {
+              "id": "SO:0001583",
+              "label": "MISSENSE"
+            },
+            "variant": {
+              "alternateBases": "C",
+              "assembly": "GRCh37",
+              "end": 128412081,
+              "referenceBases": "G",
+              "referenceName": "2",
+              "start": 128412080
+            },
+            "zygosity": 1
+          },
+        ],
+        "id": "internal_id.ADM1059A2",
+        "label": "A patient for testing"
+    }
+
 
 @pytest.fixture(scope='function')
 def match_objs():
