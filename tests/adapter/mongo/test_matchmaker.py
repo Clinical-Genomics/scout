@@ -1,20 +1,15 @@
 
-def test_case_mme_update(populated_database, case_obj, user_obj, mme_patient):
+def test_case_mme_update(populated_database, case_obj, user_obj, mme_patient, mme_submission):
     """ Test the function that registers an effected individual as submitted to MatchMaker """
     adapter = populated_database
 
-    mme_subm_obj = {
-        'features' : [],
-        'disorders' : [],
-        'genes_only' : True,
-        'sex' : 'Male',
-        'server_responses' : [ {'patient': mme_patient }]
-    }
+    mme_submission['server_responses'] = [ {'patient': mme_patient }]
+    
     # Make sure no case has MME submission:
     assert adapter.case_collection.find({'mme_submission' : { '$exists' : True}}).count() == 0
 
 
-    updated_case = adapter.case_mme_update(case_obj, user_obj, mme_subm_obj)
+    updated_case = adapter.case_mme_update(case_obj, user_obj, mme_submission)
 
     # One case has MME submission now
     assert updated_case['mme_submission']
