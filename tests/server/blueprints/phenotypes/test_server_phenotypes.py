@@ -16,6 +16,7 @@ def test_phenotypes(app, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
+# Needs a populated hpo db..
 #def test_search_phenotypes(app, real_variant_database):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
