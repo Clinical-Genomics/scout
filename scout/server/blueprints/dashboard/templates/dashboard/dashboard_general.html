@@ -2,13 +2,12 @@
 
 {% block content_main %}
 {% set panel = panel|int %}
-Panel:{{ panel }}
   <div>
     <div id="statsTab" class="container">
       <ul class="nav nav-tabs">
-        <li class="{% if panel == 1 %}active{% endif %}"><a href="#1" data-toggle="tab" id="toggle_1" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
-        <li class="{% if panel == 2 %}active{% endif %}"><a href="#2" data-toggle="tab" id="toggle_2" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
-        <li class="{% if panel == 3 %}active{% endif %}"><a href="#3" data-toggle="tab" id="toggle_3" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
+        <li class="{% if panel == 1 %}active{% endif %}"><a href="#" data-toggle="tab" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
+        <li class="{% if panel == 2 %}active{% endif %}"><a href="#" data-toggle="tab" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
+        <li class="{% if panel == 3 %}active{% endif %}"><a href="#" data-toggle="tab" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
       </ul>
     </div>
     <div class="tab-content" id="tabs">
@@ -47,7 +46,7 @@ Panel:{{ panel }}
 {% macro variants_stats() %}
 <div class="panel panel-default">
   <div class="panel-body">
-    {{ dashboard_search_form(3) }}
+    {{ dashboard_search_form(3) }}<br><br>
     {{ variants_stats_panels() }}
   </div>
 </div>
@@ -191,17 +190,34 @@ Panel:{{ panel }}
 {% block scripts %}
   {{ super() }}
   <script type="text/javascript">
-    var div_e = document.getElementById({{panel}});
     $(document).ready(function() {
-      div_e.style.display = "block";
+      hide_div({{panel}})
     });
 
     function hide_div(show_div){
-      if(show_div != {{panel}} && show_div>1) {
-        div_e.style.display = "none";
+      for (i=1; i<4; i++) {
+        var div_el = document.getElementById(i);
+        if (i==show_div){ //show div
+          div_el.style.display = "block";
+        }
+        else{ //hode other divs
+          div_el.style.display = "none";
+        }
+      }
+    }
+
+    function update_select(admin_user){
+      var query_text = document.getElementById("query").value;
+      var sel = document.getElementById("institute");
+      if(query_text && !admin_user) {
+        sel.children[0].disabled = "disabled";
+        if(sel.options[0].selected) {
+          sel.options[0].selected = false;
+          sel.options[1].selected = true;
+        }
       }
       else{
-        div_e.style.display = "block";
+        sel.children[0].disabled = "";
       }
     }
   </script>
