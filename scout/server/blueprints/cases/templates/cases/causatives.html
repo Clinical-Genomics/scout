@@ -31,7 +31,6 @@
 {% block content_main %}
   {% for _, group in variant_groups.items() %}
     <div class="panel panel-default">
-
       {% set variant = group[0][1] %}
       <div class="panel-heading">
         {{ variant.hgnc_symbols|join(', ') }}
@@ -56,9 +55,12 @@
                   </a>
                 </div>
                 <div class="col-xs-8 col-md-2">
-                  <span class="label label-default">{{ variant.category|upper }}</span>   
+                  <span class="label label-default">{{ variant.category|upper }}</span>
                 </div>
-                <div class="col-xs-8 col-md-3">
+                <div class="col-xs-8 col-md-2">
+                  <a href="#">Rank score <span class="badge">{{ variant.rank_score }}</span></a>
+                </div>
+                <div class="col-xs-8 col-md-2">
                   zygosity:
                   {% for sample in variant.samples %}
                     {% for ind in case.individuals %}
@@ -72,13 +74,12 @@
                     {% endfor %}
                   {% endfor %}
                 </div>
-                <div class="col-xs-8 col-md-3">
+                <div class="col-xs-8 col-md-2">
                   inheritance:
                   {% for model in variant.genetic_models %}
                     <span class="label label-info">{{model}}</span>
                   {% endfor %}
                 </div>
-
                 <div class="col-md-2">
                   <a href="{{ url_for('cases.case',
                                       institute_id=institute._id,
