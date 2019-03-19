@@ -1,6 +1,6 @@
 import logging
 import re
-from constants import SECONDARY_CRITERIA
+from scout.constants import SECONDARY_CRITERIA
 
 LOG = logging.getLogger(__name__)
 
@@ -105,28 +105,29 @@ class QueryHandler(object):
         LOG.debug("Querying category %s" % category)
         mongo_query['category'] = category
 
-        LOG.debug("Set variant type to %s", mongo_query['variant_type'])
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
+        LOG.debug("Set variant type to %s", mongo_query['variant_type'])
+
 
         # Requests to filter based on gene panels, hgnc_symbols or
         # coordinate ranges must always be honored. They are always added to
         # query as top level, implicit '$and'. When both hgnc_symbols and a
         # panel is used, addition of this is delayed until after the rest of
         # the query content is clear.
-        gene_query = gene_filter(query, mongo_query)
+        gene_query = self.gene_filter(query, mongo_query)
 
-        if if query.get('chrom'):
-            coordinate_filter(query, mongo_query)
+        if query.get('chrom'):
+            self.coordinate_filter(query, mongo_query)
         ##### end of base query params
 
-        # A minor, excluding filter criteria will hide variants in general,
+        # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
         # such as a Pathogenic ClinSig.
-        # If there are no major criteria given, all minor criteria are added as a
+        # If there are no primary criteria given, all secondary criteria are added as a
         # top level '$and' to the query.
-        # If there is only one major criteria given without any minor, it will also be
+        # If there is only one primary criteria given without any minor, it will also be
         # added as a top level '$and'.
-        # Otherwise, major criteria are added as a high level '$or' and all minor criteria
+        # Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
         # are joined together with them as a single lower level '$and'.
 
         # check if any of the secondary criteria was specified in the query:
@@ -137,12 +138,13 @@ class QueryHandler(object):
                 secondary_terms = True
 
         if secondary_terms:
-            secondary_filter = secondary_query(query, mongo_query)
+            secondary_filter = self.secondary_query(query, mongo_query)
 
         # clinsig is a primary criterion in the query (the only one for now)
         if query.get('clinsig'):
-            clinsig_filter = clinsig_query(query, mongo_query)
+            clinsig_filter = self.clinsig_query(query, mongo_query)
 
+            # clinsig criterion with clinsig_confident_always_returned + secondary query terms
             if query.get('clinsig_confident_always_returned') == True and secondary_terms:
                 if gene_query:
                     mongo_query['$and'] = [
@@ -157,8 +159,8 @@ class QueryHandler(object):
                     mongo_query['$or'] = [ {'$and': secondary_filter},
                                           {'clinsig': clinsig_filter} ]
 
+            # clinsig_confident_always_returned false + with secondary criteria
             elif secondary_terms:
-
                 if gene_query:
                     mongo_query['$and'] = [
                         {'$or': gene_query},
@@ -172,10 +174,10 @@ class QueryHandler(object):
                     mongo_query['$or'] = [ {'$and': secondary_filter},
                                            {'clinsig' : clinsig_filter} ]
 
-            else: # only clinsig parameter, no other secondary filters
-                mongo_query['clnsig'] = clnsig_query
+            else: # only clinsig parameter, no other secondary filters, no clinsig_confident_always_returned
+                mongo_query['clnsig'] = clinsig_filter
 
-        elif secondary_terms: # Only secondary parameters available
+        elif secondary_terms: # Only secondary parameters available, no clinsig filter
             if gene_query:
                 mongo_query['$and'] = [ {'$or': gene_query},
                                         {'$and': secondary_filter} ]
@@ -183,8 +185,9 @@ class QueryHandler(object):
                 mongo_query['$and'] = secondary_filter
 
         elif gene_query:
-
             mongo_query['$and'] = [{ '$or': gene_query }]
+
+        return mongo_query
 
 
 
@@ -292,7 +295,7 @@ class QueryHandler(object):
             if query.get('hgnc_symbols'):
                 hgnc_symbols = query['hgnc_symbols']
                 mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
-                logger.debug("Adding hgnc_symbols: %s to query" %
+                LOG.debug("Adding hgnc_symbols: %s to query" %
                              ', '.join(hgnc_symbols))
 
             if query.get('gene_panels'):
@@ -336,7 +339,7 @@ class QueryHandler(object):
                         ]
                     }
                 )
-            logger.debug("Adding gnomad_frequency to query")
+            LOG.debug("Adding gnomad_frequency to query")
 
         local_obs = query.get('local_obs')
         if  local_obs is not None:
@@ -384,7 +387,7 @@ class QueryHandler(object):
         if query.get('cadd_score') is not None:
             cadd = query['cadd_score']
             cadd_query = {'cadd_score': {'$gt': float(cadd)}}
-            logger.debug("Adding cadd_score: %s to query", cadd)
+            LOG.debug("Adding cadd_score: %s to query", cadd)
 
             if query.get('cadd_inclusive') is True:
                 cadd_query = {
@@ -392,7 +395,7 @@ class QueryHandler(object):
                         cadd_query,
                         {'cadd_score': {'$exists': False}}
                         ]}
-                logger.debug("Adding cadd inclusive to query")
+                LOG.debug("Adding cadd inclusive to query")
 
             mongo_query_minor.append(cadd_query)
 
@@ -400,27 +403,27 @@ class QueryHandler(object):
             models = query['genetic_models']
             mongo_query_minor.append({'genetic_models': {'$in': models}})
 
-            logger.debug("Adding genetic_models: %s to query" %
+            LOG.debug("Adding genetic_models: %s to query" %
                          ', '.join(models))
 
         if query.get('functional_annotations'):
             functional = query['functional_annotations']
             mongo_query_minor.append({'genes.functional_annotation': {'$in': functional}})
 
-            logger.debug("Adding functional_annotations %s to query" %
+            LOG.debug("Adding functional_annotations %s to query" %
                          ', '.join(functional))
 
         if query.get('region_annotations'):
             region = query['region_annotations']
             mongo_query_minor.append({'genes.region_annotation': {'$in': region}})
 
-            logger.debug("Adding region_annotations %s to query" %
+            LOG.debug("Adding region_annotations %s to query" %
                          ', '.join(region))
 
         if query.get('size'):
             size = query['size']
             size_query = {'length': {'$gt': int(size)}}
-            logger.debug("Adding length: %s to query" % size)
+            LOG.debug("Adding length: %s to query" % size)
 
             if query.get('size_shorter'):
                 size_query = {
@@ -428,22 +431,22 @@ class QueryHandler(object):
                         {'length': {'$lt': int(size)}},
                         {'length': {'$exists': False}}
                     ]}
-                logger.debug("Adding size less than, undef inclusive to query.")
+                LOG.debug("Adding size less than, undef inclusive to query.")
 
             mongo_query_minor.append(size_query)
 
         if query.get('svtype'):
             svtype = query['svtype']
             mongo_query_minor.append({'sub_category': {'$in': svtype}})
-            logger.debug("Adding SV_type %s to query" %
+            LOG.debug("Adding SV_type %s to query" %
                          ', '.join(svtype))
 
         if query.get('decipher'):
             mongo_query['decipher'] = {'$exists': True}
-            logger.debug("Adding decipher to query")
+            LOG.debug("Adding decipher to query")
 
         if query.get('depth'):
-            logger.debug("add depth filter")
+            LOG.debug("add depth filter")
             mongo_query_minor.append({
                 'tumor.read_depth': {
                     '$gt': query.get('depth'),
@@ -451,7 +454,7 @@ class QueryHandler(object):
             })
 
         if query.get('alt_count'):
-            logger.debug("add min alt count filter")
+            LOG.debug("add min alt count filter")
             mongo_query_minor.append({
                 'tumor.alt_depth': {
                     '$gt': query.get('alt_count'),
@@ -459,7 +462,7 @@ class QueryHandler(object):
             })
 
         if query.get('control_frequency'):
-            logger.debug("add minimum control frequency filter")
+            LOG.debug("add minimum control frequency filter")
             mongo_query_minor.append({
                 'normal.alt_freq': {
                     '$lt': float(query.get('control_frequency')),
@@ -467,7 +470,7 @@ class QueryHandler(object):
             })
 
         if query.get('mvl_tag'):
-            logger.debug("add managed variant list filter")
+            LOG.debug("add managed variant list filter")
             mongo_query_minor.append({
                 'mvl_tag': {
                     '$exists': True,
