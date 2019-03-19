@@ -31,13 +31,14 @@
 {% block content_main %}
   {% for _, group in variant_groups.items() %}
     <div class="panel panel-default">
+      {{group}}
       {% set variant = group[0][1] %}
       <div class="panel-heading">
         {{ variant.hgnc_symbols|join(', ') }}
         <span class="text-muted">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
           <span class="label label-info">PAR</span>
-          {% endif %} {{ variant.reference }} → {{ variant.alternative }}
+          {% endif %} {{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}
         </span>
       </div>
       <ul class="list-group">
@@ -49,7 +50,7 @@
                                     institute_id=institute._id,
                                     case_name=case.display_name,
                                     variant_id=variant._id) }}">
-                  {{ variant.display_name }}
+                  {{ variant.display_name|truncate(30, True) }}
                 </a>
                 {% set is_marked = variant._id in case.causatives %}
                 <span class="label {{ 'label-success' if is_marked else 'label-warning' }} pull-right">
