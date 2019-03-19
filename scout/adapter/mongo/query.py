@@ -1,7 +1,8 @@
 import logging
 import re
+from constants import SECONDARY_CRITERIA
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 
@@ -32,7 +33,7 @@ class QueryHandler(object):
         query = query or {}
         mongo_variant_query = {}
 
-        logger.debug("Building a mongo query for %s" % query)
+        LOG.debug("Building a mongo query for %s" % query)
 
         if query.get('hgnc_symbols'):
             mongo_variant_query['hgnc_symbols'] = {'$in': query['hgnc_symbols']}
@@ -44,9 +45,10 @@ class QueryHandler(object):
         rank_score = query.get('rank_score') or 15
 
         mongo_variant_query['rank_score'] = {'$gte': rank_score}
-        logger.debug("Querying %s" % mongo_variant_query)
+        LOG.debug("Querying %s" % mongo_variant_query)
 
         return mongo_variant_query
+
 
     def build_query(self, case_id, query=None, variant_ids=None, category='snv'):
         """Build a mongo query
@@ -80,7 +82,7 @@ class QueryHandler(object):
 
         Arguments:
             case_id(str)
-            query(dict): A dictionary with querys for the database
+            query(dict): a dictionary of query filters specified by the users
             variant_ids(list(str)): A list of md5 variant ids
 
         Returns:
@@ -89,20 +91,196 @@ class QueryHandler(object):
         """
         query = query or {}
         mongo_query = {}
-        logger.debug("Building a mongo query for %s" % case_id)
+
+        ##### Base query params
+
+        # set up the basic query params: case_id, category, type and restrict to list of variants (if var list is provided)
+        LOG.debug("Building a mongo query for %s" % case_id)
         mongo_query['case_id'] = case_id
-        logger.debug("Querying category %s" % category)
+
+        if variant_ids:
+            LOG.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
+            mongo_query['variant_id'] = {'$in': variant_ids}
+
+        LOG.debug("Querying category %s" % category)
         mongo_query['category'] = category
 
-        # We need to check if there is any query specified in the input query
+        LOG.debug("Set variant type to %s", mongo_query['variant_type'])
         mongo_query['variant_type'] = query.get('variant_type', 'clinical')
-        logger.debug("Set variant type to %s", mongo_query['variant_type'])
 
         # Requests to filter based on gene panels, hgnc_symbols or
         # coordinate ranges must always be honored. They are always added to
         # query as top level, implicit '$and'. When both hgnc_symbols and a
         # panel is used, addition of this is delayed until after the rest of
         # the query content is clear.
+        gene_query = gene_filter(query, mongo_query)
+
+        if if query.get('chrom'):
+            coordinate_filter(query, mongo_query)
+        ##### end of base query params
+
+        # A minor, excluding filter criteria will hide variants in general,
+        # but can be overridden by an including, major filter criteria
+        # such as a Pathogenic ClinSig.
+        # If there are no major criteria given, all minor criteria are added as a
+        # top level '$and' to the query.
+        # If there is only one major criteria given without any minor, it will also be
+        # added as a top level '$and'.
+        # Otherwise, major criteria are added as a high level '$or' and all minor criteria
+        # are joined together with them as a single lower level '$and'.
+
+        # check if any of the secondary criteria was specified in the query:
+        secondary_terms = False
+        secondary_filter = None
+        for term in SECONDARY_CRITERIA:
+            if query.get(term):
+                secondary_terms = True
+
+        if secondary_terms:
+            secondary_filter = secondary_query(query, mongo_query)
+
+        # clinsig is a primary criterion in the query (the only one for now)
+        if query.get('clinsig'):
+            clinsig_filter = clinsig_query(query, mongo_query)
+
+            if query.get('clinsig_confident_always_returned') == True and secondary_terms:
+                if gene_query:
+                    mongo_query['$and'] = [
+                        {'$or': gene_query},
+                        {
+                            '$or': [
+                                {'$and': secondary_filter}, {'clinsig': clinsig_filter}
+                            ]
+                        }
+                    ]
+                else:
+                    mongo_query['$or'] = [ {'$and': secondary_filter},
+                                          {'clinsig': clinsig_filter} ]
+
+            elif secondary_terms:
+
+                if gene_query:
+                    mongo_query['$and'] = [
+                        {'$or': gene_query},
+                        {
+                            '$or': [
+                                {'$and': secondary_filter}, {'clinsig' : clinsig_filter}
+                            ]
+                        }
+                    ]
+                else:
+                    mongo_query['$or'] = [ {'$and': secondary_filter},
+                                           {'clinsig' : clinsig_filter} ]
+
+            else: # only clinsig parameter, no other secondary filters
+                mongo_query['clnsig'] = clnsig_query
+
+        elif secondary_terms: # Only secondary parameters available
+            if gene_query:
+                mongo_query['$and'] = [ {'$or': gene_query},
+                                        {'$and': secondary_filter} ]
+            else:
+                mongo_query['$and'] = secondary_filter
+
+        elif gene_query:
+
+            mongo_query['$and'] = [{ '$or': gene_query }]
+
+
+
+    def clinsig_query(self, query, mongo_query):
+        """ Add clinsig filter values to the mongo query object
+
+            Args:
+                query(dict): a dictionary of query filters specified by the users
+                mongo_query(dict): the query that is going to be submitted to the database
+
+            Returns:
+                clinsig_query(dict): a dictionary with clinsig key-values
+
+        """
+        LOG.info('Clinsig is a query parameter')
+        rank = []
+        str_rank = []
+        trusted_revision_level = ['mult', 'single', 'exp', 'guideline']
+        clinsig_query = {}
+
+        for item in query['clinsig']:
+            rank.append(int(item))
+            # search for human readable clinsig values in newer cases
+            rank.append(CLINSIG_MAP[int(item)])
+            str_rank.append(CLINSIG_MAP[int(item)])
+
+        if query.get('clinsig_confident_always_returned') == True:
+            clinsig_query = {
+                        '$elemMatch': {
+                            '$or' : [
+                                {
+                                    '$and' : [
+                                         {'value' : { '$in': rank }},
+                                         {'revstat': { '$in': trusted_revision_level }}
+                                    ]
+                                },
+                                {
+                                    '$and': [
+                                        {'value' : re.compile('|'.join(str_rank))},
+                                        {'revstat' : re.compile('|'.join(trusted_revision_level))}
+                                    ]
+                                }
+                            ]
+                        }
+                     }
+        else:
+            LOG.debug("add CLINSIG filter for rank: %s" %', '.join(str(query['clinsig'])))
+
+            clnsig_query = {
+                    '$elemMatch': {
+                            '$or' : [
+                                { 'value' : { '$in': rank }},
+                                { 'value' : re.compile('|'.join(str_rank)) }
+                            ]
+                    }
+                }
+
+        return clinsig_query
+
+
+
+    def coordinate_filter(self, query, mongo_query):
+        """ Adds genomic coordinated-related filters to the query object
+
+        Args:
+            query(dict): a dictionary of query filters specified by the users
+            mongo_query(dict): the query that is going to be submitted to the database
+
+        Returns:
+            mongo_query(dict): returned object contains coordinate filters
+
+        """
+        LOG.info('Adding genomic coordinates to the query')
+        chromosome = query['chrom']
+        mongo_query['chromosome'] = chromosome
+
+        if (query.get('start') and query.get('end')):
+            mongo_query['position'] = {'$lte': int(query['end'])}
+            mongo_query['end'] = {'$gte': int(query['start'])}
+
+        return mongo_query
+
+
+
+    def gene_filter(self, query, mongo_query):
+        """ Adds gene-related filters to the query object
+
+        Args:
+            query(dict): a dictionary of query filters specified by the users
+            mongo_query(dict): the query that is going to be submitted to the database
+
+        Returns:
+            mongo_query(dict): returned object contains gene and panel-related filters
+
+        """
+        LOG.info('Adding panel and genes-related parameters to the query')
 
         gene_query = []
 
@@ -121,26 +299,21 @@ class QueryHandler(object):
                 gene_panels = query['gene_panels']
                 mongo_query['panels'] = {'$in': gene_panels}
 
-        if query.get('chrom'):
-            chromosome = query['chrom']
-            mongo_query['chromosome'] = chromosome
-            #Only check coordinates if there is a chromosome
-            if (query.get('start') and query.get('end')):
-                mongo_query['position'] = {'$lte': int(query['end'])}
+        return gene_query
 
-                mongo_query['end'] = {'$gte': int(query['start'])}
 
-        mongo_query_minor = []
+    def secondary_query(self, query, mongo_query, secondary_filter=None):
+        """Creates a secondary query object based on secondary parameters specified by user
 
-        # A minor, excluding filter criteria will hide variants in general,
-        # but can be overridden by an including, major filter criteria
-        # such as a Pathogenic ClinSig.
-        # If there are no major criteria given, all minor criteria are added as a
-        # top level '$and' to the query.
-        # If there is only one major criteria given without any minor, it will also be
-        # added as a top level '$and'.
-        # Otherwise, major criteria are added as a high level '$or' and all minor criteria
-        # are joined together with them as a single lower level '$and'.
+            Args:
+                query(dict): a dictionary of query filters specified by the users
+                mongo_query(dict): the query that is going to be submitted to the database
+
+            Returns:
+                mongo_query_minor(list): a dictionary with secondary query parameters
+
+        """
+        LOG.info('Creating a query object with secondary parameters')
 
         mongo_query_minor = []
 
@@ -301,102 +474,4 @@ class QueryHandler(object):
                 }
             })
 
-        mongo_query_major = None
-
-        # Given a request to always return confident clinical variants,
-        # add the clnsig query as a major criteria, but only
-        # trust clnsig entries with trusted revstat levels.
-
-        if query.get('clinsig'):
-            rank = []
-            str_rank = []
-
-            for item in query['clinsig']:
-                rank.append(int(item))
-                # search for human readable clinsig values in newer cases
-                rank.append(CLINSIG_MAP[int(item)])
-                str_rank.append(CLINSIG_MAP[int(item)])
-
-            if query.get('clinsig_confident_always_returned') == True:
-
-                trusted_revision_level = ['mult', 'single', 'exp', 'guideline']
-
-                mongo_query_major = { "clnsig":
-                        {
-                            '$elemMatch': {
-                                '$or' : [
-                                    {
-                                        '$and' : [
-                                             {'value' : { '$in': rank }},
-                                             {'revstat': { '$in': trusted_revision_level }}
-                                        ]
-                                    },
-                                    {
-                                        '$and': [
-                                            {'value' : re.compile('|'.join(str_rank))},
-                                            {'revstat' : re.compile('|'.join(trusted_revision_level))}
-                                        ]
-                                    }
-                                ]
-                            }
-                         }
-                    }
-
-            else:
-                logger.debug("add CLINSIG filter for rank: %s" %
-                             ', '.join(str(query['clinsig'])))
-                clnsig_query = {
-                    "clnsig":
-                        {
-                            '$elemMatch': {
-                                '$or' : [
-                                    { 'value' : { '$in': rank }},
-                                    { 'value' : re.compile('|'.join(str_rank)) }
-                                ]
-                            }
-                        }
-                }
-                if mongo_query_minor:
-                    #mongo_query_minor.append({'clnsig.value': {'$in': rank}})
-                    mongo_query_minor.append(clnsig_query)
-
-                else:
-                    # if this is the only minor critera, use implicit and.
-                    mongo_query['clnsig'] = clnsig_query['clnsig']
-
-        if mongo_query_minor and mongo_query_major:
-            if gene_query:
-                mongo_query['$and'] = [
-                    {'$or': gene_query},
-                    {
-                        '$or': [
-                            {'$and': mongo_query_minor}, mongo_query_major
-                        ]
-                    }
-                ]
-            else:
-                mongo_query['$or'] = [ {'$and': mongo_query_minor},
-                                       mongo_query_major ]
-        elif mongo_query_minor:
-            if gene_query:
-                mongo_query['$and'] = [ {'$or': gene_query},
-                                        {'$and': mongo_query_minor} ]
-            else:
-                mongo_query['$and'] = mongo_query_minor
-        elif mongo_query_major:
-            # Restructure if more than ClinVar clnsig in the major category
-            mongo_query['clnsig'] = mongo_query_major['clnsig']
-            if gene_query:
-                mongo_query['$and'] = [{ '$or': gene_query }]
-        elif gene_query:
-                mongo_query['$and'] = [{ '$or': gene_query }]
-
-        if variant_ids:
-            mongo_query['variant_id'] = {'$in': variant_ids}
-
-            logger.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
-
-
-        logger.debug("mongo query: %s", mongo_query)
-
-        return mongo_query
+        return mongo_query_minor
