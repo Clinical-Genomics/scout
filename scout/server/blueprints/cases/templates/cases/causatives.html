@@ -54,7 +54,7 @@
                     {{ variant.display_name|truncate(30, True) }}
                   </a>
                 </div>
-                <div class="col-xs-8 col-md-2">
+                <div class="col-xs-8 col-md-1">
                   <span class="label label-default">{{ variant.category|upper }}</span>
                 </div>
                 <div class="col-xs-8 col-md-2">
@@ -74,7 +74,7 @@
                     {% endfor %}
                   {% endfor %}
                 </div>
-                <div class="col-xs-8 col-md-2">
+                <div class="col-xs-8 col-md-3">
                   inheritance:
                   {% for model in variant.genetic_models %}
                     <span class="label label-info">{{model}}</span>
