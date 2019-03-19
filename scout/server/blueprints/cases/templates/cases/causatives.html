@@ -34,7 +34,6 @@
       {{group}}
       {% set variant = group[0][1] %}
       <div class="panel-heading">
-        <span class="badge">{{variant.category}}</span>
         {{ variant.hgnc_symbols|join(', ') }}
         <span class="text-muted">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
@@ -47,30 +46,38 @@
         {% for case, variant in group %}
           <li class="list-group-item">
             <div class="row">
-              <div class="col-xs-8 col-md-4">
+              <div class="col-xs-8 col-md-3">
                 <a href="{{ url_for('variants.variant',
                                     institute_id=institute._id,
                                     case_name=case.display_name,
                                     variant_id=variant._id) }}">
                   {{ variant.display_name|truncate(30, True) }}
                 </a>
-                {% set is_marked = variant._id in case.causatives %}
-                <span class="label {{ 'label-success' if is_marked else 'label-warning' }} pull-right">
-                  {{ 'Causative' if is_marked else 'Not causative' }}
-                </span>
               </div>
-              <div class="col-md-4"></div>
-              <div class="col-xs-4">
-                <a href="{{ url_for('cases.case',
-                                    institute_id=institute._id,
-                                    case_name=case.display_name) }}">
-                  {{ case.display_name }}
-                </a>
-                <span class="label label-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
-                  {{ case.status }}
-                </span>
+              <div class="col-xs-8 col-md-3">
+                zygosity:
+                {% for sample in variant.samples %}
+                  {% for ind in case.individuals %}
+                    {% if sample.sample_id == ind.individual_id %}
+                        {% if ind.phenotype == 2%}
+                          <span class="label label-danger">{{sample.genotype_call}}</span>
+                        {% else %}
+                          <span class="label label-info">{{sample.genotype_call}}</span>
+                        {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
 
-              </div>
+
+
+
+
+
+
+
+
+
             </div>
           </li>
         {% endfor %}
