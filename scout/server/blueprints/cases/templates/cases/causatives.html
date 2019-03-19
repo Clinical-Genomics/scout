@@ -34,11 +34,13 @@
       {{group}}
       {% set variant = group[0][1] %}
       <div class="panel-heading">
+        <span class="badge">{{variant.category}}</span>
         {{ variant.hgnc_symbols|join(', ') }}
         <span class="text-muted">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
           <span class="label label-info">PAR</span>
-          {% endif %} {{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}
+          {% endif %}
+          {{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}
         </span>
       </div>
       <ul class="list-group">
