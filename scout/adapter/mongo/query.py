@@ -170,7 +170,6 @@ class QueryHandler(object):
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
                 if query.get('clinsig_confident_always_returned') == True:
-
                     if gene_query:
                         mongo_query['$and'] = [
                             {'$or': gene_query},
@@ -182,21 +181,20 @@ class QueryHandler(object):
                         ]
                     else:
                         mongo_query['$or'] = [ {'$and': secondary_filter}, clising_filter ]
-                else:
+                else: # clisig terms are provided but no need for trusted revstat levels
                     secondary_filter.append(clising_filter)
                     if gene_query:
                         mongo_query['$and'] = [ {'$or': gene_query}, {'$and': secondary_filter}]
                     else:
                         mongo_query['$and'] = secondary_filter
 
-
-        elif primary_terms is True: # No secondary terms query
-            # use implicit and.
+        elif primary_terms is True: # clisig is provided without secondary terms query
+            # use implicit and
             mongo_query['clnsig'] = clising_filter['clnsig']
             if gene_query:
                 mongo_query['$and'] = [{ '$or': gene_query }]
 
-        elif gene_query:
+        elif gene_query: # no primary or secondary filters provided
             mongo_query['$and'] = [{ '$or': gene_query }]
 
         LOG.info("mongo query: %s", mongo_query)
