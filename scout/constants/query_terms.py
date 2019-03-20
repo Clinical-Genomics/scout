@@ -20,3 +20,7 @@ SECONDARY_CRITERIA = [
     'control_frequency',
     'mvl_tag'
 ]
+
+PRIMARY_CRITERIA = [
+    'clinsig'
+]
