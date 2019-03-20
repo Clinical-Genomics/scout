@@ -2,7 +2,7 @@
 SECRET_KEY = 'this is not secret...'
 REMEMBER_COOKIE_NAME = 'scout_remember_me'
 
-MONGO_DBNAME = 'scoutTest'
+MONGO_DBNAME = 'scout-demo'
 
 BOOTSTRAP_SERVE_LOCAL = True
 TEMPLATES_AUTO_RELOAD = True

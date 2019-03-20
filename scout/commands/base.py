@@ -8,7 +8,10 @@ import click
 import coloredlogs
 import yaml
 
+from flask.cli import FlaskGroup
+
 # Adapter stuff
+from scout.server.app import create_app
 from scout.adapter.mongo import MongoAdapter
 from scout.adapter.client import get_connection
 from pymongo.errors import (ConnectionFailure, OperationFailure)
@@ -35,6 +38,8 @@ try:
     from scoutconfig import *
 except ImportError:
     pass
+
+app_cli = FlaskGroup(create_app=create_app)
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
@@ -98,7 +103,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
         mongo_config['client'] = client
         adapter = MongoAdapter(database)
         mongo_config['adapter'] = adapter
-        
+
         LOG.info("Check if authenticated...")
         try:
             for ins_obj in adapter.institutes():
@@ -106,7 +111,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
         except OperationFailure as err:
             LOG.info("User not authenticated")
             context.abort()
-        
+
 
     context.obj = mongo_config
 
@@ -116,7 +121,7 @@ cli.add_command(wipe)
 cli.add_command(setup_command)
 cli.add_command(export)
 cli.add_command(convert)
-cli.add_command(query_command)
+app_cli.add_command(query_command)
 cli.add_command(view_command)
 cli.add_command(delete)
 cli.add_command(serve)

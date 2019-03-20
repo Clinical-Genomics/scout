@@ -108,7 +108,7 @@ setup(
     ),
     entry_points=dict(
         console_scripts=[
-            'scout = scout.commands:cli',
+            'scout = scout.commands:app_cli',
         ]
     ),
     test_suite='tests',
@@ -126,5 +126,5 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
-    
+
 )
