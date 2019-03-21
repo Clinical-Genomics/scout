@@ -2,7 +2,10 @@ import logging
 from pprint import pprint as pp
 
 import click
+from flask.cli import with_appcontext
+from scout.server.extensions import store
 
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command(short_help='Upload variants to existing case')
@@ -23,18 +26,18 @@ LOG = logging.getLogger(__name__)
 @click.option('--hgnc-symbol', help='If all variants from a gene, specify the gene symbol')
 @click.option('--rank-treshold', default=5, help='Specify the rank score treshold',
                 show_default=True)
-@click.pass_context
-def variants(context, case_id, institute, force, cancer, cancer_research, sv, 
-             sv_research, snv, snv_research, str_clinical, chrom, start, end, hgnc_id, 
+@with_appcontext
+def variants(case_id, institute, force, cancer, cancer_research, sv,
+             sv_research, snv, snv_research, str_clinical, chrom, start, end, hgnc_id,
              hgnc_symbol, rank_treshold):
     """Upload variants to a case
 
-        Note that the files has to be linked with the case, 
+        Note that the files has to be linked with the case,
         if they are not use 'scout update case'.
     """
     LOG.info("Running scout load variants")
-    adapter = context.obj['adapter']
-    
+    adapter = store
+
     if institute:
         case_id = "{0}-{1}".format(institute, case_id)
     else:
@@ -42,7 +45,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
     case_obj = adapter.case(case_id=case_id)
     if case_obj is None:
         LOG.info("No matching case found")
-        context.abort()
+        raise click.Abort()
 
     files = [
         {'category': 'cancer', 'variant_type': 'clinical', 'upload': cancer},
@@ -53,7 +56,7 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
         {'category': 'snv', 'variant_type': 'research', 'upload': snv_research},
         {'category': 'str', 'variant_type': 'clinical', 'upload': str_clinical},
     ]
-    
+
     gene_obj = None
     if (hgnc_id or hgnc_symbol):
         if hgnc_id:
@@ -63,42 +66,42 @@ def variants(context, case_id, institute, force, cancer, cancer_research, sv,
                 gene_obj = res
         if not gene_obj:
             LOG.warning("The gene could not be found")
-            context.abort()
-        
+            raise click.Abort()
+
     i = 0
     for file_type in files:
         variant_type = file_type['variant_type']
         category = file_type['category']
-        
+
         if file_type['upload']:
             i += 1
             if variant_type == 'research':
                 if not (force or case_obj['research_requested']):
                     LOG.warn("research not requested, use '--force'")
-                    context.abort()
-            
+                    raise click.Abort()
+
             LOG.info("Delete {0} {1} variants for case {2}".format(
                          variant_type, category, case_id))
-            adapter.delete_variants(case_id=case_obj['_id'], 
+            adapter.delete_variants(case_id=case_obj['_id'],
                                     variant_type=variant_type,
                                     category=category)
-            
+
             LOG.info("Load {0} {1} variants for case {2}".format(
                          variant_type, category, case_id))
-            
+
             try:
                 adapter.load_variants(
-                    case_obj=case_obj, 
-                    variant_type=variant_type, 
+                    case_obj=case_obj,
+                    variant_type=variant_type,
                     category=category,
-                    rank_threshold=rank_treshold, 
-                    chrom=chrom, 
-                    start=start, 
+                    rank_threshold=rank_treshold,
+                    chrom=chrom,
+                    start=start,
                     end=end,
                     gene_obj=gene_obj
                 )
             except Exception as e:
                 LOG.warning(e)
-                context.abort()
+                raise click.Abort()
     if i == 0:
         LOG.info("No files where specified to upload variants from")
