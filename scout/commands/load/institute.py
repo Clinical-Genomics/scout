@@ -1,10 +1,13 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+LOG = logging.getLogger(__name__)
 
 from scout.load import load_institute
+from scout.server.extensions import store
 
 
 @click.command('institute', short_help='Load a institute')
@@ -12,17 +15,17 @@ from scout.load import load_institute
               required=True)
 @click.option('-d', '--display-name')
 @click.option('-s', '--sanger-recipients', multiple=True)
-@click.pass_context
-def institute(ctx, internal_id, display_name, sanger_recipients):
+@with_appcontext
+def institute(internal_id, display_name, sanger_recipients):
     """
     Create a new institute and add it to the database
 
     """
-    adapter = ctx.obj['adapter']
+    adapter = store
 
     if not internal_id:
-        logger.warning("A institute has to have an internal id")
-        ctx.abort()
+        LOG.warning("A institute has to have an internal id")
+        raise click.Abort()
 
     if not display_name:
         display_name = internal_id
@@ -38,5 +41,5 @@ def institute(ctx, internal_id, display_name, sanger_recipients):
             sanger_recipients=sanger_recipients
         )
     except Exception as e:
-        logger.warning(e)
-        ctx.abort()
+        LOG.warning(e)
+        raise click.Abort()

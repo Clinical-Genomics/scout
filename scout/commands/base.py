@@ -116,8 +116,8 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     context.obj = mongo_config
 
 
-app_cli.add_command(query_command)
-app_cli.add_command(load_command)
+app_cli.add_command(query_command) # Done!
+app_cli.add_command(load_command)  # In progress
 cli.add_command(wipe)
 cli.add_command(setup_command)
 cli.add_command(export)

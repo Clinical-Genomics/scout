@@ -4,7 +4,7 @@ from scout.commands import app_cli
 from scout.server.extensions import store
 
 def test_hgnc(mock_app):
-    #Testing the CLI that queries for hgnc aliases
+    """Testing the CLI that queries for hgnc aliases"""
 
     runner = mock_app.test_cli_runner()
     assert runner
