@@ -117,8 +117,8 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
 
 
 app_cli.add_command(query_command) # Done!
-app_cli.add_command(load_command)  # In progress
-cli.add_command(wipe)
+app_cli.add_command(load_command)  # Done!
+app_cli.add_command(wipe)
 cli.add_command(setup_command)
 cli.add_command(export)
 cli.add_command(convert)
