@@ -23,11 +23,11 @@ def load():
     pass
 
 
-load.add_command(case_command) # ---> Done!
-load.add_command(institute_command) # ---> Done!
-load.add_command(region_command) # ---> Done!
-load.add_command(panel_command) # ---> Done!
-load.add_command(user_command) # ---> Done!
-load.add_command(research_command)  # ---> Done!
-load.add_command(variants_command) # ---> Done!
+load.add_command(case_command)
+load.add_command(institute_command)
+load.add_command(region_command)
+load.add_command(panel_command)
+load.add_command(user_command)
+load.add_command(research_command)
+load.add_command(variants_command)
 load.add_command(delivery_report_command)
