@@ -3,7 +3,7 @@ import logging
 
 from pprint import pprint as pp
 
-from flask.cli import with_appcontext, current_app
+from flask.cli import with_appcontext
 import click
 import yaml
 

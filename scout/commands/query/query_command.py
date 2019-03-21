@@ -1,5 +1,5 @@
 import logging
-from flask.cli import with_appcontext, current_app
+from flask.cli import with_appcontext
 from scout.server.extensions import store
 import click
 
