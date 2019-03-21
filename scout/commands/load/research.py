@@ -3,15 +3,19 @@ from functools import partial
 import logging
 
 import click
+from flask.cli import with_appcontext
 
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command(short_help='Upload research variants')
 @click.option('-c', '--case-id', help='family or case id')
 @click.option('-i', '--institute', help='institute id of related cases')
 @click.option('-f', '--force', is_flag=True, help='upload without request')
-@click.pass_context
-def research(context, case_id, institute, force):
+@with_appcontext
+def research(case_id, institute, force):
     """Upload research variants to cases
 
         If a case is specified, all variants found for that case will be
@@ -21,7 +25,7 @@ def research(context, case_id, institute, force):
         will have there research variants uploaded
     """
     LOG.info("Running scout load research")
-    adapter = context.obj['adapter']
+    adapter = store
 
     if case_id:
         if not institute:
@@ -37,7 +41,7 @@ def research(context, case_id, institute, force):
         case_obj = adapter.case(institute_id=institute, case_id=case_id)
         if case_obj is None:
             LOG.warning("No matching case found")
-            context.abort()
+            raise click.Abort()
         else:
             case_objs = [case_obj]
     else:
@@ -93,7 +97,7 @@ def research(context, case_id, institute, force):
                     )
             if not files:
                 LOG.warning("No research files found for case %s", case_id)
-                context.abort()
+                raise click.Abort()
             case_obj['is_research'] = True
             case_obj['research_requested'] = False
             adapter.update_case(case_obj)
