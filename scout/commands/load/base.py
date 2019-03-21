@@ -29,5 +29,5 @@ load.add_command(region_command) # ---> Done!
 load.add_command(panel_command) # ---> Done!
 load.add_command(user_command) # ---> Done!
 load.add_command(research_command)  # ---> Done!
-load.add_command(variants_command)
+load.add_command(variants_command) # ---> Done!
 load.add_command(delivery_report_command)
