@@ -13,6 +13,7 @@ def query():
     """
     pass
 
+
 @query.command('hgnc', short_help='Check if a gene exist')
 @click.option('--hgnc-symbol', '-s',
                 help="A valid hgnc symbol",
@@ -36,7 +37,7 @@ def hgnc(hgnc_symbol, hgnc_id, build):
 
     if not (hgnc_symbol or hgnc_id):
         log.warning("Please provide a hgnc symbol or hgnc id")
-        click.Abort()
+        raise click.Abort()
 
     if hgnc_id:
         result = adapter.hgnc_gene(hgnc_id, build=build)
@@ -44,7 +45,7 @@ def hgnc(hgnc_symbol, hgnc_id, build):
             hgnc_symbol = result['hgnc_symbol']
         else:
             log.warning("Gene with id %s could not be found", hgnc_id)
-            click.Abort()
+            raise click.Abort()
 
     result = adapter.hgnc_genes(hgnc_symbol, build=build)
 

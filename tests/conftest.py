@@ -16,6 +16,7 @@ import pymongo
 from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
+
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 
 from scout.utils.handle import get_file_handle
@@ -63,43 +64,14 @@ LOG = logging.getLogger(__name__)
 #############################################################
 ###################### App fixtures #########################
 #############################################################
- # use this fixture to test views that require login
-@pytest.fixture
-def app(real_database_name, user_obj):
+ # use this app object to test CLI commands which use a test database
 
-    app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=real_database_name,
+@pytest.fixture
+def mock_app(real_populated_database):
+
+    mock_app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=REAL_DATABASE,
                                  DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
-
-    @app.route('/auto_login')
-    def auto_login():
-        LOG.debug('Got request for auto login for {}'.format(user_obj))
-        user_inst = LoginUser(user_obj)
-        assert login_user(user_inst, remember=True)
-        return "ok"
-
-    return app
-
-# use this app object to test CLI commands which use a test database
-@pytest.fixture
-def mock_app(database_name, user_obj):
-
-    app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=database_name,
-                                 DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
-    return app
-
-
-@pytest.fixture
-def institute_info():
-    _institute_info = dict(internal_id='cust000', display_name='test_institute')
-    return _institute_info
-
-
-@pytest.fixture
-def user_info(institute_info):
-    _user_info = dict(email='john@doe.com', name='John Doe', roles=['admin'],
-                      institutes=[institute_info['internal_id']])
-    return _user_info
-
+    return mock_app
 
 ##################### Gene fixtures #####################
 
