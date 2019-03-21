@@ -24,7 +24,7 @@ def load():
 
 
 load.add_command(case_command) # ---> Done!
-load.add_command(institute_command)
+load.add_command(institute_command) # ---> Done!
 load.add_command(region_command)
 load.add_command(panel_command)
 load.add_command(user_command)
