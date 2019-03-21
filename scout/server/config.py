@@ -22,3 +22,6 @@ ACCEPT_LANGUAGES = ['en', 'sv']
 
 # FEATURE FLAGS
 SHOW_CAUSATIVES = True
+
+# OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
+OMIM_API_KEY = 'omim_api_key'
