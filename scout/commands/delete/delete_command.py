@@ -63,11 +63,11 @@ def index():
 
 @click.command('user', short_help='Delete a user')
 @click.option('-m', '--mail', required=True)
-@click.pass_context
-def user(context, mail):
+@with_appcontext
+def user(mail):
     """Delete a user from the database"""
     LOG.info("Running scout delete user")
-    adapter = context.obj['adapter']
+    adapter = store
     user_obj = adapter.user(mail)
     if not user_obj:
         LOG.warning("User {0} could not be found in database".format(mail))

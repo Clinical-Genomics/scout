@@ -52,4 +52,27 @@ def test_delete_index(mock_app):
 
     # And the index should be gone
     indexes = list(store.case_collection.list_indexes())
-    assert len(indexes) == 1 # _id index is the index left
+    assert len(indexes) == 1 # _id index is the only index left
+
+
+def test_delete_user(mock_app, user_obj):
+    "Test the CLI command that will delete a user"
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # There is one user in populated database
+    assert store.user_collection.find().count() == 1
+
+    # Test the CLI command to remove users with a random email
+    result =  runner.invoke(app_cli, ['delete', 'user', '-m', 'unknown_email@email.com'])
+
+    # and the function should return error
+    assert 'User unknown_email@email.com could not be found in database' in result.output
+
+    # Try with a valid email
+    result =  runner.invoke(app_cli, ['delete', 'user', '-m', user_obj['email']])
+
+    # And the user should be gone
+    assert result.exit_code == 0
+    assert store.user_collection.find().count() == 0
