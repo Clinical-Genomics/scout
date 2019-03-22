@@ -3,8 +3,8 @@
 from scout.commands import app_cli
 from scout.server.extensions import store
 
-def test_load_institute(mock_app, institute_obj):
-    """Test the CLI commands that loads a gene panel"""
+def test_load_panel(mock_app, institute_obj):
+    """Test the CLI command that loads a gene panel"""
 
     runner = mock_app.test_cli_runner()
     assert runner

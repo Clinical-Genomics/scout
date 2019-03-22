@@ -1,27 +1,29 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
 @click.command('panel', short_help='Delete a gene panel')
-@click.option('--panel-id', 
+@click.option('--panel-id',
     help="The panel identifier name",
     required=True
 )
 @click.option('-v', '--version',
     type=float,
 )
-@click.pass_context
-def panel(context, panel_id, version):
+@with_appcontext
+def panel(panel_id, version):
     """Delete a version of a gene panel or all versions of a gene panel"""
     LOG.info("Running scout delete panel")
-    adapter = context.obj['adapter']
+    adapter = store
 
     panel_objs = adapter.gene_panels(panel_id=panel_id, version=version)
     if panel_objs.count() == 0:
         LOG.info("No panels found")
-        
+
     for panel_obj in panel_objs:
         adapter.delete_panel(panel_obj)
 
@@ -48,12 +50,12 @@ def panel(context, panel_id, version):
 
 
 @click.command('index', short_help='Delete all indexes')
-@click.pass_context
-def index(context):
+@with_appcontext
+def index():
     """Delete all indexes in the database"""
     LOG.info("Running scout delete index")
-    adapter = context.obj['adapter']
-    
+    adapter = store
+
     for collection in adapter.db.collection_names():
         adapter.db[collection].drop_indexes()
     LOG.info("All indexes deleted")
@@ -169,9 +171,9 @@ def delete(context):
     pass
 
 
+delete.add_command(panel) # done
 delete.add_command(genes)
 delete.add_command(case)
 delete.add_command(user)
 delete.add_command(index)
-delete.add_command(panel)
 delete.add_command(exons)
