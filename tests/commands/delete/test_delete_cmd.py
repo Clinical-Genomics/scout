@@ -76,3 +76,36 @@ def test_delete_user(mock_app, user_obj):
     # And the user should be gone
     assert result.exit_code == 0
     assert store.user_collection.find().count() == 0
+
+
+def test_delete_genes(mock_app):
+    "Test the CLI command that will delete genes"
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # There are genes in genes collection in populated database
+    assert store.hgnc_collection.find().count() > 0
+
+    # Test the CLI command to remove them with build option
+    result =  runner.invoke(app_cli, ['delete', 'genes', '-b', '37'])
+
+    # It should print "Dropping genes" message without actually dropping them (why??)
+    assert result.exit_code == 0
+    assert 'ropping genes collection for build: 37' in result.output
+    assert store.hgnc_collection.find().count() > 0
+
+    # Test the CLI command to remove them without genome build
+    result =  runner.invoke(app_cli, ['delete', 'genes'])
+
+    # And it should actually drop them
+    assert result.exit_code == 0
+    assert store.hgnc_collection.find().count() == 0
+
+
+
+
+
+
+    #
+    #assert store.hgnc_collection.find().count() == 0

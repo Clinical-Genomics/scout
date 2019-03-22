@@ -77,11 +77,11 @@ def user(mail):
 
 @click.command('genes', short_help='Delete genes')
 @click.option('-b', 'build', type=click.Choice(['37', '38']))
-@click.pass_context
-def genes(context, build):
+@with_appcontext
+def genes(build):
     """Delete all genes in the database"""
     LOG.info("Running scout delete genes")
-    adapter = context.obj['adapter']
+    adapter = store
 
     if build:
         LOG.info("Dropping genes collection for build: %s", build)
@@ -174,6 +174,6 @@ def delete(context):
 delete.add_command(panel) # done
 delete.add_command(genes)
 delete.add_command(case)
-delete.add_command(user)
-delete.add_command(index)
+delete.add_command(user) # done
+delete.add_command(index) # done
 delete.add_command(exons)
