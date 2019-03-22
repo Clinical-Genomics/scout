@@ -14,7 +14,6 @@ import datetime
 
 import pymongo
 import click
-from flask import g
 from flask.cli import with_appcontext, current_app
 
 from pprint import pprint as pp
@@ -129,7 +128,7 @@ def setup(context, institute, user_mail, user_name):
     client = current_app.config['MONGO_CLIENT']
 
     if context.invoked_subcommand == 'demo':
-        # Update app context object g.mongodb here
+        # Modify the name of the database that will be created
         LOG.debug("Change database name to scout-demo")
         mongodb = 'scout-demo'
 
