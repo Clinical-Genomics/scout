@@ -103,9 +103,97 @@ def test_delete_genes(mock_app):
     assert store.hgnc_collection.find().count() == 0
 
 
+def test_delete_exons(mock_app):
+    "Test the CLI command that will delete exons"
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # Exon collection in populated database is empty
+    # Insert a mock exon object in database
+    exon_objs = [
+        {
+            '_id' : 'mock_exon_1',
+            'build' : '37'
+        },
+        {
+            '_id' : 'mock_exon_2',
+            'build' : '37'
+        },
+        {
+            '_id' : 'mock_exon_3',
+            'build' : '38'
+        }
+    ]
+    store.exon_collection.insert_many(exon_objs)
+    assert store.exon_collection.find().count() == 3
+
+    # Then use CLI to remove all exons with build == 38
+    result =  runner.invoke(app_cli, ['delete', 'exons',
+        '-b', '38'
+        ])
+
+    # the command should not exit with error
+    # and one exon should be removed
+    assert result.exit_code == 0
+    assert store.exon_collection.find().count() == 2
+
+    # Use the CLI to remove all exons regardless:
+    result =  runner.invoke(app_cli, ['delete', 'exons'])
+
+    # and all exons should be removed
+    assert result.exit_code == 0
+    assert store.exon_collection.find().count() == 0
 
 
+def test_delete_case(mock_app, case_obj):
+    "Test the CLI command that will delete a case"
 
+    runner = mock_app.test_cli_runner()
+    assert runner
 
-    #
-    #assert store.hgnc_collection.find().count() == 0
+    # Try to delete a case using CLI with no case_id or display_name
+    result =  runner.invoke(app_cli, ['delete', 'case'])
+    assert 'Please specify what case to delete' in result.output
+
+    # try to delete case using CLI and case_id that doesn't exist in database
+    result =  runner.invoke(app_cli, ['delete', 'case',
+        '-i', case_obj['owner'],
+        '-c', 'unknown_id'
+        ])
+
+    # and the program should terminate with error
+    assert 'Case does not exist in database' in result.output
+
+    # One case is available in database
+    assert store.case_collection.find().count() == 1
+
+    # Provide right right case_id and institute
+    result =  runner.invoke(app_cli, ['delete', 'case',
+        '-c', case_obj['_id']
+        ])
+    assert result.exit_code == 0
+
+    # and the case should be gone
+    assert store.case_collection.find().count() == 0
+
+    # Re-insert case into database
+    store.case_collection.insert_one(case_obj)
+    assert store.case_collection.find().count() == 1
+
+    # Provide right display_name but not institute
+    result =  runner.invoke(app_cli, ['delete', 'case',
+        '-d', case_obj['display_name']
+        ])
+    assert result.exit_code == 1
+    assert 'Please specify the owner of the case that should be deleted' in result.output
+
+    # Provide right display_name and right institute
+    result =  runner.invoke(app_cli, ['delete', 'case',
+        '-d', case_obj['display_name'],
+        '-i', case_obj['owner']
+        ])
+
+    # and the case should have been removed again
+    assert result.exit_code == 0
+    assert store.case_collection.find().count() == 0

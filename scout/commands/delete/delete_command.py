@@ -91,11 +91,11 @@ def genes(build):
 
 @click.command('exons', short_help='Delete exons')
 @click.option('-b', 'build', type=click.Choice(['37', '38']))
-@click.pass_context
-def exons(context, build):
+@with_appcontext
+def exons(build):
     """Delete all exons in the database"""
     LOG.info("Running scout delete exons")
-    adapter = context.obj['adapter']
+    adapter = store
 
     adapter.drop_exons(build)
 
@@ -104,20 +104,19 @@ def exons(context, build):
 @click.option('-i', '--institute', help='institute id of related cases')
 @click.option('-c', '--case-id')
 @click.option('-d', '--display-name')
-@click.pass_context
-def case(context, institute, case_id, display_name):
+@with_appcontext
+def case(institute, case_id, display_name):
     """Delete a case and it's variants from the database"""
-    adapter = context.obj['adapter']
+    adapter = store
     if not (case_id or display_name):
         click.echo("Please specify what case to delete")
-        context.abort()
+        raise click.Abort()
 
     if display_name:
         if not institute:
             click.echo("Please specify the owner of the case that should be "
                        "deleted with flag '-i/--institute'.")
-            context.abort()
-        case_id = "{0}-{1}".format(institute, display_name)
+            raise click.Abort()
 
     LOG.info("Running deleting case {0}".format(case_id))
     case = adapter.delete_case(
@@ -131,7 +130,7 @@ def case(context, institute, case_id, display_name):
         adapter.delete_variants(case_id=case_id, variant_type='research')
     else:
         LOG.warning("Case does not exist in database")
-        context.abort()
+        raise click.Abort()
 
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context

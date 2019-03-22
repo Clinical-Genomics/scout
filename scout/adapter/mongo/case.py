@@ -321,7 +321,7 @@ class CaseHandler(object):
                     category=category,
                     rank_threshold=case_obj.get('rank_score_threshold', 0),
                 )
-            
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
