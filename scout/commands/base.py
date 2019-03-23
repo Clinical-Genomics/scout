@@ -120,7 +120,7 @@ app_cli.add_command(query_command) # Done!
 app_cli.add_command(load_command)  # Done!
 app_cli.add_command(wipe) # Done!
 app_cli.add_command(setup_command) # Done!
-app_cli.add_command(delete) # In progress
+app_cli.add_command(delete) # Done!
 cli.add_command(export)
 cli.add_command(convert)
 cli.add_command(view_command)

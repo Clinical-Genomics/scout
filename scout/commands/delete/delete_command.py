@@ -162,17 +162,17 @@ def case(institute, case_id, display_name):
 
 
 @click.group()
-@click.pass_context
-def delete(context):
+@with_appcontext
+def delete():
     """
     Delete objects from the database.
     """
     pass
 
 
-delete.add_command(panel) # done
+delete.add_command(panel)
 delete.add_command(genes)
 delete.add_command(case)
-delete.add_command(user) # done
-delete.add_command(index) # done
+delete.add_command(user)
+delete.add_command(index)
 delete.add_command(exons)
