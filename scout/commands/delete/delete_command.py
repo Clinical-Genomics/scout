@@ -4,6 +4,7 @@ import click
 from flask.cli import with_appcontext
 from scout.server.extensions import store
 
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('panel', short_help='Delete a gene panel')
@@ -162,7 +163,6 @@ def case(institute, case_id, display_name):
 
 
 @click.group()
-@with_appcontext
 def delete():
     """
     Delete objects from the database.
