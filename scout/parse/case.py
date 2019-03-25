@@ -91,7 +91,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
 
     config_data['track'] = config_data.get('track', 'rare')
-    if (config_data['vcf_cancer']:
+    if config_data['vcf_cancer']:
         config_data['track'] = 'cancer'
 
     return config_data
