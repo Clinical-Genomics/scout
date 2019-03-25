@@ -79,13 +79,13 @@ def mock_app(real_populated_database):
 def transcript_info(request):
     transcript = dict(
         chrom = '1',
-        hgnc_id = 23143,
-        ensembl_transcript_id = 'ENST00000367019',
-        start = 210111576,
-        end = 210335568,
-        build = '37',
-        length = 223992,
-        is_primary = False
+        ens_gene_id = 'ENSG00000176022',
+        ens_transcript_id = 'ENST00000379198',
+        start = 1167629,
+        end = 1170421,
+        refseq_mrna = 'NM_080605',
+        refseq_mrna_pred = '',
+        refseq_ncrna = '',
     )
 
     return transcript
