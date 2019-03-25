@@ -24,9 +24,9 @@ samples:
     bam_file: str(optional) # path to bam file
 
     tumor_type: str(optional)
-    tmb: str(optional) # Tumor mutational burder
-    msi: str(optional) # Microsatellite instability
-    tumor_purity: str(optional)
+    tmb: str(optional) # Tumor mutational burder [0,1000]
+    msi: str(optional) # Microsatellite instability [0,60]
+    tumor_purity: str(optional) # [0,1]
 
 vcf_snv: str(optional)
 vcf_sv: str(optional)
