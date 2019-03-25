@@ -36,7 +36,7 @@ def export():
 
 export.add_command(panel) # done
 export.add_command(genes) # done
-export.add_command(transcripts)
+export.add_command(transcripts) # in progress
 export.add_command(variants)
 export.add_command(verified)
 export.add_command(hpo_genes)
