@@ -34,7 +34,7 @@ cases_bp = Blueprint('cases', __name__, template_folder='templates',
 def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
-    institutes_count = ((institute_obj, store.cases(collaborator=institute_obj['_id']).count())
+    institutes_count = ((institute_obj, store.cases(collaborators=institute_obj['_id']).count())
                         for institute_obj in institute_objs if institute_obj)
     return dict(institutes=institutes_count)
 
@@ -43,16 +43,20 @@ def index():
 @templated('cases/cases.html')
 def cases(institute_id):
     """Display a list of cases for an institute."""
+    query = request.args.get('query')
     institute_obj = institute_and_case(store, institute_id)
 
-    query = request.args.get('query')
+    collaborators = []
+    user_institute_objs = user_institutes(store, current_user)
+    for user_institute in user_institute_objs:
+        collaborators.append(user_institute['_id'])
 
     limit = 100
     if request.args.get('limit'):
         limit = int(request.args.get('limit'))
 
     skip_assigned = request.args.get('skip_assigned')
-    all_cases = store.cases(institute_id, collaborator=institute_obj['_id'],
+    all_cases = store.cases(institute_id, collaborators=collaborators,
         name_query=query, skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases, limit)
 

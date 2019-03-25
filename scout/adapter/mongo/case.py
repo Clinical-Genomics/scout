@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
-    def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
+    def cases(self, owner=None, collaborators=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
               phenotype_terms=False, pinned=False, cohort=False, name_query=None,
@@ -27,7 +27,7 @@ class CaseHandler(object):
         """Fetches all cases from the backend.
 
         Args:
-            collaborator(str): If collaborator should be considered
+            collaborator(str or list): If collaborator(s) should be considered
             owner(str): Query cases for specified case owner only
             query(dict): If a specific query is used
             skip_assigned(bool)
@@ -53,9 +53,12 @@ class CaseHandler(object):
         LOG.debug("Fetch all cases")
         query = query or {}
 
-        if collaborator:
-            LOG.debug("Use collaborator {0}".format(collaborator))
-            query['collaborators'] = collaborator
+        if collaborators:
+            LOG.debug("Use collaborators {0}".format(collaborators))
+            if isinstance(collaborators, str):
+                query['collaborators'] = collaborators
+            elif isinstance(collaborators, list):
+                query['collaborators'] = {'$in' : collaborators}
 
         if owner:
             LOG.debug("Use owner {0}".format(owner))
@@ -321,7 +324,7 @@ class CaseHandler(object):
                     category=category,
                     rank_threshold=case_obj.get('rank_score_threshold', 0),
                 )
-            
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
