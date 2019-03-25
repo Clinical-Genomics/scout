@@ -44,6 +44,7 @@ def index():
 def cases(institute_id):
     """Display a list of cases for an institute."""
     institute_obj = institute_and_case(store, institute_id)
+
     query = request.args.get('query')
 
     limit = 100
