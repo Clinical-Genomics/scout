@@ -53,6 +53,6 @@ def test_export_panel(mock_app):
         '--bed'
         ])
 
-    # The CLI command shoud return gene panel formatted in the expexted way
+    # The CLI command shoud return gene panel formatted in the expected way
     assert result.exit_code == 0
     assert '22\t26995242\t27014052\t2397\tCRYBB1\n22\t38452318\t38471708\t9394\tPICK1\n' in result.output
