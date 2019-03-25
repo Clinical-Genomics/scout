@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
-    def cases(self, owner=None, collaborators=None, query=None, skip_assigned=False,
+    def cases(self, collaborators=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
               phenotype_terms=False, pinned=False, cohort=False, name_query=None,
@@ -28,7 +28,6 @@ class CaseHandler(object):
 
         Args:
             collaborator(str or list): If collaborator(s) should be considered
-            owner(str): Query cases for specified case owner only
             query(dict): If a specific query is used
             skip_assigned(bool)
             has_causatives(bool)
@@ -59,10 +58,6 @@ class CaseHandler(object):
                 query['collaborators'] = collaborators
             elif isinstance(collaborators, list):
                 query['collaborators'] = {'$in' : collaborators}
-
-        if owner:
-            LOG.debug("Use owner {0}".format(owner))
-            query['owner'] = owner
 
         if skip_assigned:
             query['assignees'] = {'$exists': False}

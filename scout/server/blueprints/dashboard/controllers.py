@@ -179,7 +179,7 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     # Potentially sensitive slice queries are assumed allowed if we have got this far
     name_query = slice_query
 
-    cases = adapter.cases(owner=institute_id, name_query=name_query)
+    cases = adapter.cases(collaborators=institute_id, name_query=name_query)
 
     phenotype_cases = 0
     causative_cases = 0
@@ -259,10 +259,10 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
 
     subquery = {}
     if institute_id and slice_query:
-        subquery = adapter.cases(owner=institute_id, name_query=slice_query,
+        subquery = adapter.cases(collaborators=institute_id, name_query=slice_query,
                               yield_query=True)
     elif institute_id:
-        subquery = adapter.cases(owner=institute_id, yield_query=True)
+        subquery = adapter.cases(collaborators=institute_id, yield_query=True)
     elif slice_query:
         subquery = adapter.cases(name_query=slice_query, yield_query=True)
 
@@ -298,10 +298,10 @@ def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None
 
     subquery = {}
     if institute_id and slice_query:
-        subquery = adapter.cases(owner=institute_id, name_query=slice_query,
+        subquery = adapter.cases(collaborators=institute_id, name_query=slice_query,
                               yield_query=True)
     elif institute_id:
-        subquery = adapter.cases(owner=institute_id, yield_query=True)
+        subquery = adapter.cases(collaborators=institute_id, yield_query=True)
     elif slice_query:
         subquery = adapter.cases(name_query=slice_query, yield_query=True)
 
