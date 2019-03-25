@@ -91,6 +91,8 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
 
     config_data['track'] = config_data.get('track', 'rare')
+    if (config_data['vcf_cancer']:
+        config_data['track'] = 'cancer'
 
     return config_data
 
@@ -338,7 +340,10 @@ def parse_case(config):
             raise ValueError("madeline path not found: {}".format(mad_path))
         with mad_path.open('r') as in_handle:
             case_data['madeline_info'] = in_handle.read()
-
+    
+    if (case_data['vcf_files']['vcf_cancer'] or case_data['vcf_files']['vcf_cancer_research']):
+        case_data['track'] = 'cancer'
+    
     return case_data
 
 
