@@ -278,7 +278,7 @@
         <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <div class="input-group">
             <select class="form-control" name="collaborator">
-              <option>Select institute</option>
+              <option class="placeholder" selected disabled value="">Select institute</option>
               {% for collab_id, collab_name in collaborators %}
                 <option value="{{ collab_id }}">{{ collab_name }}</option>
               {% endfor %}
