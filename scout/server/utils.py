@@ -4,7 +4,6 @@ from functools import wraps
 from flask import render_template, request, abort, flash
 from flask_login import current_user
 
-
 def templated(template=None):
     """Template decorator.
 

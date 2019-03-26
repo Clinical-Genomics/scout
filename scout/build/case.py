@@ -233,4 +233,7 @@ def build_case(case_data, adapter):
 
     case_obj['is_migrated'] = False
 
+    case_obj['track'] = case_data.get('track', 'rare')
+
+
     return case_obj

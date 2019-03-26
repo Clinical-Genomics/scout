@@ -40,14 +40,18 @@
         </div>
 
         <div class="row">
-          <div class="col-xs-12 col-md-8">{{ individuals_table() }}</div>
-          <div class="col-xs-12 col-md-4">
-            {% if case.madeline_info and case.individuals|length > 1 %}
-              {{ pedigree_panel() }}
-            {% else %}
-              <p>No pedigree picture available.</p>
-            {% endif %}
-          </div>
+          {% if case.track == 'cancer' %}
+            <div class="col-xs-12 col-md-8">{{ cancer_individuals_table() }}</div>
+          {% else %}
+            <div class="col-xs-12 col-md-8">{{ individuals_table() }}</div>
+            <div class="col-xs-12 col-md-4">
+              {% if case.madeline_info and case.individuals|length > 1 %}
+                {{ pedigree_panel() }}
+              {% else %}
+                <p>No pedigree picture available.</p>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
 
         <div class="row">
@@ -190,6 +194,41 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro cancer_individuals_table() %}
+  <div class="panel panel-default">
+    <div class="panel-heading">Individuals</div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sample</th>
+            <th>Tumor Type</th>
+            <th>Phenotype</th>
+            <th>Sequencing</th>
+            <th>TMB</th>
+            <th>MSI</th>
+            <th>Tumor Purity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ind in case.individuals %}
+            <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger" {% endif %}>
+              <td>{{ ind.display_name }}</td>
+              <td>{{ ind.tumor_type or 'Unknown'}}</td>
+              <td>{{ ind.phenotype_human }}</td>
+              <td>{{ ind.analysis_type|upper }}</td>
+              <td>{{ ind.tmb or 'N/A' }}</td>
+              <td>{{ ind.msi or 'N/A' }}</td>
+              <td>{{ ind.tumor_purity or 'N/A' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
 
 {% macro pedigree_panel() %}
   <div class="panel panel-default">
