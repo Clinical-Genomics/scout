@@ -53,6 +53,10 @@ class CaseHandler(object):
         LOG.debug("Fetch all cases")
         query = query or {}
 
+        # Prioritize when both owner and collaborator params are present
+        if collaborator and owner:
+            collaborator = None
+
         if collaborator:
             LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
@@ -321,7 +325,7 @@ class CaseHandler(object):
                     category=category,
                     rank_threshold=case_obj.get('rank_score_threshold', 0),
                 )
-            
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
