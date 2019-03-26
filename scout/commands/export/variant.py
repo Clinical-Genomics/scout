@@ -8,7 +8,7 @@ from xlsxwriter import Workbook
 
 from scout.export.variant import export_variants, export_verified_variants
 from .utils import json_option
-
+from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.server.extensions import store
 
@@ -52,7 +52,12 @@ def verified(collaborator, test, outpath=None):
         LOG.warning('There are no verified variants for institute {} in database!'.format(collaborator))
         return None
 
-    document_lines = export_verified_variants(verified_vars)
+    unique_callers = set()
+    for var_type, var_callers in CALLERS.items():
+        for caller in var_callers:
+            unique_callers.add(caller.get('id'))
+
+    document_lines = export_verified_variants(verified_vars, unique_callers)
 
     today = datetime.datetime.now().strftime('%Y-%m-%d')
     document_name = '.'.join(['verified_variants', collaborator, today]) + '.xlsx'
@@ -62,6 +67,9 @@ def verified(collaborator, test, outpath=None):
         written_files +=1
         LOG.info('Success. Verified variants file contains {} lines'.format(len(document_lines)))
         return written_files
+    elif test:
+        LOG.info('Could not create document lines. Verified variants not found for customer {}'.format(collaborator))
+        return
 
     # create workbook and new sheet
     # set up outfolder
