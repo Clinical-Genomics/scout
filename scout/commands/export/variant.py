@@ -2,7 +2,7 @@ import os
 import click
 import logging
 import datetime
-
+from flask.cli import with_appcontext
 from bson.json_util import dumps
 from xlsxwriter import Workbook
 
@@ -10,9 +10,10 @@ from scout.export.variant import export_variants, export_verified_variants
 from .utils import json_option
 
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.server.extensions import store
 
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
-
 
 @click.command('verified', short_help='Export validated variants')
 @click.option('-c', '--collaborator',
@@ -25,8 +26,8 @@ LOG = logging.getLogger(__name__)
               help='Use this flag to test the function',
               is_flag=True
 )
-@click.pass_context
-def verified(context, collaborator, test, outpath=None):
+@with_appcontext
+def verified(collaborator, test, outpath=None):
     """Export variants which have been verified for an institute
         and write them to an excel file.
 
@@ -42,7 +43,7 @@ def verified(context, collaborator, test, outpath=None):
     collaborator = collaborator or 'cust000'
     LOG.info('Exporting verified variants for cust {}'.format(collaborator))
 
-    adapter = context.obj['adapter']
+    adapter = store
     verified_vars = adapter.verified(institute_id=collaborator)
     LOG.info('FOUND {} verified variants for institute {}'.format(len(verified_vars), collaborator))
 
@@ -98,11 +99,11 @@ def verified(context, collaborator, test, outpath=None):
         help="Find causative variants for case",
 )
 @json_option
-@click.pass_context
-def variants(context, collaborator, document_id, case_id, json):
+@with_appcontext
+def variants(collaborator, document_id, case_id, json):
     """Export causatives for a collaborator in .vcf format"""
     LOG.info("Running scout export variants")
-    adapter = context.obj['adapter']
+    adapter = store
     collaborator = collaborator or 'cust000'
 
     variants = export_variants(
