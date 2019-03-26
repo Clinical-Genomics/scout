@@ -13,7 +13,8 @@ from flask_mail import Message
 import query_phenomizer
 from flask_login import current_user
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, 
+                             CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
@@ -30,6 +31,10 @@ LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
+TRACKS = {
+    'rare': 'Rare Disease',
+    'cancer': 'Cancer',
+}
 
 def cases(store, case_query, limit=100):
     """Preprocess case objects.
@@ -55,6 +60,8 @@ def cases(store, case_query, limit=100):
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
+        case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
@@ -85,7 +92,12 @@ def case(store, institute_obj, case_obj):
         except ValueError as err:
             sex = 0
         individual['sex_human'] = SEX_MAP[sex]
-        individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
+        
+        pheno_map = PHENOTYPE_MAP
+        if case_obj.get('track', 'rare') == 'cancer': 
+            pheno_map = CANCER_PHENOTYPE_MAP
+        
+        individual['phenotype_human'] = pheno_map.get(individual['phenotype'])
         case_obj['individual_ids'].append(individual['individual_id'])
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
