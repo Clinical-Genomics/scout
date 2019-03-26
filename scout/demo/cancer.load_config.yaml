@@ -1,0 +1,42 @@
+---
+
+owner: cust000
+
+family: 'cancer_test'
+family_name: 'cancer'
+samples:
+  - analysis_type: panel
+    sample_id: 999-99
+    tumor_type: Chordoma
+    capture_kit: Twist.V1
+    sample_name: 999-99
+    phenotype: affected
+    sex: male
+    expected_coverage: 90
+    mt_bam: scout/demo/reduced_mt.bam
+    tmb: 7
+    msi: 15
+    tumor_purity: 90/90
+
+  - analysis_type: panel
+    sample_id: 998-99
+    capture_kit: Twist.V1
+    sample_name: 998-99
+    phenotype: unaffected
+    sex: male
+    expected_coverage: 90
+    mt_bam: scout/demo/reduced_mt.bam
+
+vcf_cancer: scout/demo/cancer_test.vcf.gz
+
+delivery_report: scout/demo/delivery_report.html
+
+default_gene_panels: [panel1]
+gene_panels: [panel1]
+
+# meta data
+rank_model_version: '1.1'
+rank_score_threshold: -100
+analysis_date: 2018-10-12 14:00:46
+human_genome_build: 37
+track: cancer
