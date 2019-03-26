@@ -51,7 +51,7 @@ def cases(institute_id):
         limit = int(request.args.get('limit'))
 
     skip_assigned = request.args.get('skip_assigned')
-    all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
+    all_cases = store.cases(collaborator=institute_id, name_query=query, skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases, limit)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
