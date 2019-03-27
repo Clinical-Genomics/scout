@@ -5,9 +5,13 @@ import datetime
 
 from xlsxwriter import Workbook
 
+from flask.cli import with_appcontext
+
 from scout.constants import MT_EXPORT_HEADER
 from scout.export.variant import export_mt_variants
+from scout.server.extensions import store
 
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('mt_report', short_help='Mitochondrial variants Excel report')
@@ -22,8 +26,8 @@ LOG = logging.getLogger(__name__)
               help='Use this flag to test the function',
               is_flag=True
 )
-@click.pass_context
-def mt_report(context, case_id, test, outpath=None):
+@with_appcontext
+def mt_report(case_id, test, outpath=None):
     """Export all mitochondrial variants for each sample of a case
        and write them to an excel file
 
@@ -38,20 +42,20 @@ def mt_report(context, case_id, test, outpath=None):
     """
     LOG.info('exporting mitochondrial variants for case "{}"'.format(case_id))
 
-    adapter = context.obj['adapter']
+    adapter = store
     query = {'chrom':'MT'}
 
     case_obj = adapter.case(case_id=case_id)
 
     if not case_obj:
         LOG.warning('Could not find a scout case with id "{}". No report was created.'.format(case_id))
-        context.abort()
+        raise click.Abort()
 
     samples = case_obj.get('individuals')
     mt_variants = list(adapter.variants(case_id=case_id, query=query, nr_of_variants= -1, sort_key='position'))
     if not mt_variants:
         LOG.warning('There are no MT variants associated to case {} in database!'.format(case_id))
-        context.abort()
+        raise click.Abort()
 
     today = datetime.datetime.now().strftime('%Y-%m-%d')
 
