@@ -121,8 +121,8 @@ app_cli.add_command(load_command)  # Done!
 app_cli.add_command(wipe) # Done!
 app_cli.add_command(setup_command) # Done!
 app_cli.add_command(delete) # Done!
-app_cli.add_command(export) # in progress
-cli.add_command(convert)
+app_cli.add_command(export) # Done!
+app_cli.add_command(convert) # Done!
 cli.add_command(view_command)
 
 cli.add_command(serve)

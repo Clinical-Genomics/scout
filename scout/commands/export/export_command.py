@@ -34,11 +34,11 @@ def export():
     LOG.info("Running scout export")
     pass
 
-export.add_command(panel) # done
-export.add_command(genes) # done
-export.add_command(transcripts) # done
-export.add_command(variants) # done
-export.add_command(verified) # done
-export.add_command(hpo_genes) # done
-export.add_command(cases) # done
+export.add_command(panel)
+export.add_command(genes)
+export.add_command(transcripts)
+export.add_command(variants)
+export.add_command(verified)
+export.add_command(hpo_genes)
+export.add_command(cases)
 export.add_command(mt_report)
