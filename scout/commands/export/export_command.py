@@ -40,5 +40,5 @@ export.add_command(transcripts) # done
 export.add_command(variants) # done
 export.add_command(verified) # done
 export.add_command(hpo_genes) # done
-export.add_command(cases)
+export.add_command(cases) # done
 export.add_command(mt_report)
