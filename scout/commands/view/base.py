@@ -40,5 +40,5 @@ view.add_command(individuals) # done!
 view.add_command(index) # done!
 view.add_command(intervals) # done!
 view.add_command(collections) # done!
-view.add_command(transcripts)
+view.add_command(transcripts) # done!
 view.add_command(cases)

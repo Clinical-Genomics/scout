@@ -2,6 +2,11 @@ import logging
 import click
 from pprint import pprint as pp
 
+from flask.cli import with_appcontext
+
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
@@ -9,11 +14,11 @@ LOG = logging.getLogger(__name__)
 @click.option('-b', '--build', default='37', type=click.Choice(['37', '38']))
 @click.option('-i', '--hgnc-id', type=int)
 @click.option('--json', is_flag=True)
-@click.pass_context
-def transcripts(context, build, hgnc_id, json):
+@with_appcontext
+def transcripts(build, hgnc_id, json):
     """Show all transcripts in the database"""
     LOG.info("Running scout view transcripts")
-    adapter = context.obj['adapter']
+    adapter = store
 
     if not json:
         click.echo("Chromosome\tstart\tend\ttranscript_id\thgnc_id\trefseq\tis_primary")
@@ -30,4 +35,3 @@ def transcripts(context, build, hgnc_id, json):
             tx_obj.get('refseq_id', ''),
             tx_obj.get('is_primary') or '',
         ))
-        
