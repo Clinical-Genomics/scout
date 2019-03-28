@@ -8,10 +8,18 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
+### Fixed
+
+
+## [4.3.3]
+
+### Added
 - Different individual table for cancer cases
 
 ### Fixed
 - Dashboard collects validated variants from verification events instead of using 'sanger' field
+- Cases shared with collaborators are visible again in cases page
+- Force users to select a real institute to share cases with (actionbar select fix)
 
 
 ## [4.3.2]
