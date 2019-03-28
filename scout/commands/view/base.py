@@ -31,7 +31,7 @@ def view():
 
 view.add_command(panels) # done!
 view.add_command(users) # done!
-view.add_command(institutes)
+view.add_command(institutes) # done!
 view.add_command(diseases)
 view.add_command(hpo)
 view.add_command(whitelist)

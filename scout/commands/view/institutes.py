@@ -1,8 +1,12 @@
 import logging
 import click
 
-LOG = logging.getLogger(__name__)
+from flask.cli import with_appcontext
 
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
+LOG = logging.getLogger(__name__)
 
 @click.command('institutes', short_help='Display institutes')
 @click.option('-i', '--institute-id',
@@ -12,31 +16,31 @@ LOG = logging.getLogger(__name__)
     help="Show json format",
     is_flag=True
 )
-@click.pass_context
-def institutes(context, institute_id, json):
+@with_appcontext
+def institutes(institute_id, json):
     """Show all institutes in the database"""
     LOG.info("Running scout view institutes")
-    adapter = context.obj['adapter']
+    adapter = store
 
     if institute_id:
         institute_objs = []
         institute_obj = adapter.institute(institute_id)
         if not institute_obj:
-            LOG.info("Institute %s does not exost", institute_id)
+            LOG.info("Institute %s does not exist", institute_id)
             return
         institute_objs.append(institute_obj)
     else:
         institute_objs = [ins_obj for ins_obj in adapter.institutes()]
-    
+
     if len(institute_objs) == 0:
         click.echo("No institutes found")
-        context.abort()
+        raise click.Abort()
 
     header = ''
     if not json:
         for key in institute_objs[0].keys():
             header = header + "{0}\t".format(key)
-        
+
         click.echo(header)
 
     for institute_obj in institute_objs:

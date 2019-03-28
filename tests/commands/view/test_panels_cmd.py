@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from scout.commands import app_cli
 
 def test_view_panes(mock_app):
