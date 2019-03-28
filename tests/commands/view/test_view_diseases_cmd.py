@@ -17,7 +17,7 @@ def test_view_diseases(mock_app):
     assert "No diseases found" in result.output
 
     # insert one in database
-    hpo_term = {
+    omim_term = {
         '_id' : 'OMIM:193040',
         'disease_id' : 'OMIM:193040',
         'description' : 'Cholestasis progressive canalicular',
@@ -26,7 +26,7 @@ def test_view_diseases(mock_app):
         'inheritance' : None,
         'hpo_terms' : None
     }
-    store.disease_term_collection.insert(hpo_term)
+    store.disease_term_collection.insert(omim_term)
 
     # Test CLI
     result =  runner.invoke(app_cli, ['view', 'diseases'])

@@ -33,7 +33,7 @@ view.add_command(panels) # done!
 view.add_command(users) # done!
 view.add_command(institutes) # done!
 view.add_command(diseases) # done!
-view.add_command(hpo)
+view.add_command(hpo) # done!
 view.add_command(whitelist)
 view.add_command(aliases)
 view.add_command(individuals)
