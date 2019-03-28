@@ -21,16 +21,15 @@ LOG = logging.getLogger(__name__)
 
 
 @click.group()
-@click.pass_context
-def view(context):
+def view():
     """
-    View objects from the database. This command is used to get a overview of objects in the 
+    View objects from the database. This command is used to get a overview of objects in the
     database. To get serialisable things use `scout export`
     """
     pass
 
 
-view.add_command(panels)
+view.add_command(panels) # done!
 view.add_command(users)
 view.add_command(institutes)
 view.add_command(diseases)
