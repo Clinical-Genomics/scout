@@ -1,19 +1,24 @@
 import logging
 import click
 
+from flask.cli import with_appcontext
+
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
 @click.command('diseases', short_help='Display all diseases')
-@click.pass_context
-def diseases(context):
+@with_appcontext
+def diseases():
     """Show all diseases in the database"""
     LOG.info("Running scout view diseases")
-    adapter = context.obj['adapter']
+    adapter = store
 
     disease_objs = adapter.disease_terms()
 
-    nr_diseases = disease_objs.count()
+    nr_diseases = len(disease_objs)
     if nr_diseases == 0:
         click.echo("No diseases found")
     else:

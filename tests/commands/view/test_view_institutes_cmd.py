@@ -6,7 +6,7 @@ from scout.server.extensions import store
 
 
 def test_view_institutes(mock_app, institute_obj):
-    """Test CLI that show all institutes in the database"""
+    """Test CLI that shows all institutes in the database"""
 
     runner = mock_app.test_cli_runner()
     assert runner
