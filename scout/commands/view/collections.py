@@ -2,16 +2,21 @@ import logging
 
 import click
 
+from flask.cli import with_appcontext
+
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
 @click.command('collections', short_help='Display all collections')
-@click.pass_context
-def collections(context):
+@with_appcontext
+def collections():
     """Show all collections in the database"""
     LOG.info("Running scout view collections")
 
-    adapter = context.obj['adapter']
+    adapter = store
 
     for collection_name in adapter.collections():
         click.echo(collection_name)
