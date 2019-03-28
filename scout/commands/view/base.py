@@ -37,7 +37,7 @@ view.add_command(hpo) # done!
 view.add_command(whitelist) # done!
 view.add_command(aliases) # done!
 view.add_command(individuals) # done!
-view.add_command(index)
+view.add_command(index) # done!
 view.add_command(intervals)
 view.add_command(collections)
 view.add_command(transcripts)
