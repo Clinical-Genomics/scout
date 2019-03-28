@@ -1,9 +1,12 @@
 import logging
 import click
 
-LOG = logging.getLogger(__name__)
-
+from flask.cli import with_appcontext
+from scout.server.extensions import store
 from scout.constants import (SEX_MAP, PHENOTYPE_MAP)
+
+logging.basicConfig(level=logging.DEBUG)
+LOG = logging.getLogger(__name__)
 
 
 @click.command('individuals', short_help='Display individuals')
@@ -15,11 +18,11 @@ from scout.constants import (SEX_MAP, PHENOTYPE_MAP)
               help='Has causative variants'
               )
 @click.option('-c', '--case-id')
-@click.pass_context
-def individuals(context, institute, causatives, case_id):
+@with_appcontext
+def individuals(institute, causatives, case_id):
     """Show all individuals from all cases in the database"""
     LOG.info("Running scout view individuals")
-    adapter = context.obj['adapter']
+    adapter = store
     individuals = []
 
     if case_id:
@@ -50,7 +53,3 @@ def individuals(context, institute, causatives, case_id):
                 ind_obj['father']
             ]
             click.echo('\t'.join(ind_info))
-
-
-
-
