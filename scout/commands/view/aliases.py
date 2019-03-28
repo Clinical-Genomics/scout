@@ -1,18 +1,22 @@
 import logging
 import click
 
+from flask.cli import with_appcontext
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
 @click.command('aliases', short_help='Display genes by aliases')
 @click.option('-b', '--build', default='37', type=click.Choice(['37', '38']))
 @click.option('-s', '--symbol', help='hgnc symbol')
-@click.pass_context
-def aliases(context, build, symbol):
+@with_appcontext
+def aliases(build, symbol):
     """Show all alias symbols and how they map to ids"""
     LOG.info("Running scout view aliases")
-    adapter = context.obj['adapter']
-    
+    adapter = store
+
     if symbol:
         alias_genes = {}
         res = adapter.gene_by_alias(symbol, build=build)
@@ -39,7 +43,7 @@ def aliases(context, build, symbol):
 
     else:
         alias_genes = adapter.genes_by_alias(build=build)
-    
+
     if len(alias_genes) == 0:
         LOG.info("No gene found for build %s", build)
         return
@@ -54,4 +58,3 @@ def aliases(context, build, symbol):
             ', '.join([str(gene_id) for gene_id in alias_genes[alias_symbol]['ids']])
         )
         )
-
