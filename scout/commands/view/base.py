@@ -29,16 +29,16 @@ def view():
     pass
 
 
-view.add_command(panels) # done!
-view.add_command(users) # done!
-view.add_command(institutes) # done!
-view.add_command(diseases) # done!
-view.add_command(hpo) # done!
-view.add_command(whitelist) # done!
-view.add_command(aliases) # done!
-view.add_command(individuals) # done!
-view.add_command(index) # done!
-view.add_command(intervals) # done!
-view.add_command(collections) # done!
-view.add_command(transcripts) # done!
+view.add_command(panels)
+view.add_command(users)
+view.add_command(institutes)
+view.add_command(diseases)
+view.add_command(hpo)
+view.add_command(whitelist)
+view.add_command(aliases)
+view.add_command(individuals)
+view.add_command(index)
+view.add_command(intervals)
+view.add_command(collections)
+view.add_command(transcripts)
 view.add_command(cases)
