@@ -1,9 +1,11 @@
 import logging
-
 from pprint import pprint as pp
-
 import click
+from flask.cli import with_appcontext
 
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
@@ -11,11 +13,11 @@ LOG = logging.getLogger(__name__)
 @click.argument('institute-id')
 @click.option('-c', '--coverage-cutoff',
     type=int,
-    help="Set a new coverage cutoff for a institute", 
+    help="Set a new coverage cutoff for a institute",
 )
 @click.option('-f', '--frequency-cutoff',
     type=float,
-    help="Set a new frequency cutoff for a institute", 
+    help="Set a new frequency cutoff for a institute",
 )
 @click.option('-s', '--sanger-recipient',
     help="Specify email adress for a existing user that should be added to the institute",
@@ -26,24 +28,24 @@ LOG = logging.getLogger(__name__)
 @click.option('-r', '--remove-sanger',
     help="Specify email adress for a existing user that should be removed from sanger recipients",
 )
-@click.pass_context
-def institute(context, institute_id, sanger_recipient, coverage_cutoff, frequency_cutoff, 
+@with_appcontext
+def institute(institute_id, sanger_recipient, coverage_cutoff, frequency_cutoff,
               display_name, remove_sanger):
     """
     Update an institute
     """
-    adapter = context.obj['adapter']
+    adapter = store
     LOG.info("Running scout update institute")
-    
+
     try:
         adapter.update_institute(
-            internal_id=institute_id, 
-            sanger_recipient=sanger_recipient, 
-            coverage_cutoff=coverage_cutoff, 
-            frequency_cutoff=frequency_cutoff, 
+            internal_id=institute_id,
+            sanger_recipient=sanger_recipient,
+            coverage_cutoff=coverage_cutoff,
+            frequency_cutoff=frequency_cutoff,
             display_name=display_name,
             remove_sanger=remove_sanger,
             )
     except Exception as err:
         LOG.warning(err)
-        context.abort()
+        raise click.Abort()

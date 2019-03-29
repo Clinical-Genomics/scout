@@ -29,7 +29,7 @@ def update(context):
     pass
 
 
-update.add_command(institute_command)
+update.add_command(institute_command) #done!
 update.add_command(user_command)
 update.add_command(panel_command)
 update.add_command(case_command)
