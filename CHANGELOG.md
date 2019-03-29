@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- Displaying more info on the Causatives page and hiding those not causative at the case level
 
 ### Fixed
 
