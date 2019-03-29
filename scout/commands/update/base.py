@@ -31,7 +31,7 @@ def update(context):
 
 update.add_command(institute_command) #done!
 update.add_command(user_command) #done!
-update.add_command(panel_command)
+update.add_command(panel_command) #done!
 update.add_command(case_command)
 update.add_command(omim_command)
 update.add_command(compound_command)
