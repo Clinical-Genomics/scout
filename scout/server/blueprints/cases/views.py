@@ -179,9 +179,15 @@ def matchmaker_match(institute_id, case_name, target):
 def matchmaker_add(institute_id, case_name):
     """Add or update a case in MatchMaker"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    causatives = False
+    features = False
     if case_obj.get('suspects') and len(case_obj.get('suspects'))>3:
         flash('At the moment it is not possible to save to MatchMaker more than 3 pinned variants', 'warning')
         return redirect(request.referrer)
+    elif case_obj.get('suspects'):
+        causatives = True
+    if case_obj.get('phenotype_terms'):
+        features = True
 
     mme_save_options = ['sex', 'features', 'disorders']
     for index, item in enumerate(mme_save_options):
@@ -195,7 +201,7 @@ def matchmaker_add(institute_id, case_name):
         genes_only = False # upload to matchmaker both variants and gene names
 
     # If there are no genomic features nor HPO terms to share for this case, abort
-    if not case_obj.get('suspects') and not mme_save_options[1]:
+    if (not case_obj.get('suspects') and not mme_save_options[1]) or (causatives is False and features is False):
         flash('In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)', 'danger')
         return redirect(request.referrer)
 
