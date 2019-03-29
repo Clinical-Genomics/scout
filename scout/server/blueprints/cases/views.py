@@ -135,7 +135,7 @@ def matchmaker_matches(institute_id, case_name):
     mme_base_url = current_app.config.get('MME_URL')
     mme_token = current_app.config.get('MME_TOKEN')
 
-    if not mme_base_url or not mme_token:
+    if not mme_base_url or not xmme_token:
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -147,7 +147,7 @@ def matchmaker_matches(institute_id, case_name):
     return dict(data)
 
 
-@cases_bp.route('/<institute_id>/<case_name>/<target>', methods=['GET','POST'])
+@cases_bp.route('/<institute_id>/<case_name>/mme_match/<target>', methods=['GET','POST'])
 def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
