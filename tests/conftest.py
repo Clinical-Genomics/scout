@@ -1235,8 +1235,8 @@ def hpo_genes(request, hpo_genes_handle):
 def mme_submission():
     mme_subm_obj = {
         'patients' : [ {'id' : 'internal_id.ADM1059A2'} ],
-        'created_at' : 'sometime',
-        'updated_at' : 'sometime',
+        'created_at' : datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
+        'updated_at' : datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
         'sex' : True,
         'features' : [],
         'disorders' : [],

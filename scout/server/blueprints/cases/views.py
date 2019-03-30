@@ -134,17 +134,19 @@ def matchmaker_matches(institute_id, case_name):
     # Required params for getting matches from MME server:
     mme_base_url = current_app.config.get('MME_URL')
     mme_token = current_app.config.get('MME_TOKEN')
-
     if not mme_base_url or not mme_token:
         flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
-    if data['server_errors']:
+    if data and data.get('server_errors'):
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
         return redirect(request.referrer)
-
-    return dict(data)
+    elif not data:
+        data = {}
+        data['institute'] = institute_obj
+        data['case'] = case_obj
+    return data
 
 
 @cases_bp.route('/<institute_id>/<case_name>/mme_match/<target>', methods=['GET','POST'])
@@ -192,6 +194,7 @@ def matchmaker_add(institute_id, case_name):
     mme_save_options = ['sex', 'features', 'disorders']
     for index, item in enumerate(mme_save_options):
         if item in request.form:
+            log.info('item {} is in request form'.format(item))
             mme_save_options[index] = True
         else:
             mme_save_options[index] = False
