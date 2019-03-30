@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import url_for, current_app
+from flask import url_for
 from scout.server.extensions import store
 
 def test_cases(app, user_obj, institute_obj):
