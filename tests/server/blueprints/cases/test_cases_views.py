@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import url_for
+from flask import url_for, current_app
 from scout.server.extensions import store
 
 def test_cases(app, user_obj, institute_obj):
@@ -139,6 +139,10 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
             }}
         )
         assert store.case_collection.find({'mme_submission':{'$exists' : True}}).count() == 1
+
+        current_app.config['MME_ACCEPTS'] = 'application/vnd.ga4gh.matchmaker.v1.0+json'
+        current_app.config['MME_URL'] = 'http://localhost:9020'
+        current_app.config['MME_TOKEN'] = 'test_token'
 
         # WHEN accessing the case page
         resp = client.get(url_for('cases.matchmaker_matches',
