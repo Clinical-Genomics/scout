@@ -7,6 +7,7 @@ from scout.utils.date import get_date
 from scout.update.panel import update_panel
 from scout.server.extensions import store
 
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
@@ -48,7 +49,7 @@ def panel(panel, version, update_date, update_version):
         except Exception as err:
             LOG.warning(err)
             click.Abort()
-        
+
     update_panel(
         adapter,
         panel,
