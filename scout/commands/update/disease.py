@@ -12,41 +12,45 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 import logging
 
 import click
+from flask.cli import with_appcontext, current_app
 
 from scout.load.hpo import load_disease_terms
 from scout.utils.handle import get_file_handle
 
 from scout.utils.requests import fetch_mim_files
+from scout.server.extensions import store
+
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('diseases', short_help='Update disease terms')
 @click.option('--api-key', help='Specify the api key')
-@click.pass_context
-def diseases(context, api_key):
+@with_appcontext
+def diseases(api_key):
     """
     Update disease terms in mongo database.
     """
-    adapter = context.obj['adapter']
-    
+    adapter = store
+
     # Fetch the omim information
-    api_key = api_key or context.obj.get('omim_api_key')
+    api_key = api_key or current_app.config.get('OMIM_API_KEY')
     if not api_key:
         LOG.warning("Please provide a omim api key to load the omim gene panel")
-        context.abort()
+        raise click.Abort()
 
     try:
         mim_files = fetch_mim_files(api_key, genemap2=True)
     except Exception as err:
         LOG.warning(err)
-        context.abort()
-    
+        raise click.Abort()
+
     LOG.info("Dropping DiseaseTerms")
     adapter.disease_term_collection.drop()
     LOG.debug("DiseaseTerms dropped")
 
     load_disease_terms(
         adapter=adapter,
-        genemap_lines=mim_files['genemap2'], 
+        genemap_lines=mim_files['genemap2'],
     )
 
     LOG.info("Successfully loaded all disease terms")
