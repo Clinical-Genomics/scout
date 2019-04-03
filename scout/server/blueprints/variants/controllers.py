@@ -947,10 +947,6 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
                         transcript_line.append(urllib.parse.unquote(tx_obj['protein_sequence_name']))
                     else:
                         transcript_line.append('')
-                    if refseq_id in gene_obj.get('common',{}).get('primary_transcripts',{}):
-                        transcript_line.append('<b>primary</b>')
-                    else:
-                        transcript_line.append('')
 
                     tx_changes.append("<li>{}</li>".format(':'.join(transcript_line)))
 
