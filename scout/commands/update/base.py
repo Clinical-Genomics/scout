@@ -36,6 +36,6 @@ update.add_command(case_command) #done!
 update.add_command(omim_command) #done!
 update.add_command(compound_command) #done!
 update.add_command(hpo_command) #done!
-update.add_command(gene_command)
-update.add_command(disease_command)
+update.add_command(gene_command) #done!
+update.add_command(disease_command) #done!
 update.add_command(groups_command)

@@ -16,6 +16,6 @@ def test_load_panel(mock_app, institute_obj):
 
     # Test CLI by passing the panel 'OMIM-AUTO':
     result =  runner.invoke(app_cli, ['load', 'panel',
-        '--api-key', mock_app.config.get('OMIM_API_KEY'),
+        '--api-key', 'not_a_valid_key',
         '--omim'])
     assert 'OMIM-AUTO already exists in database' in result.output
