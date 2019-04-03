@@ -520,7 +520,9 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
                 continue
             default_panels.append(panel_obj)
 
+        # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id, gene_panels=default_panels)
+
 
     genome_build = case_obj.get('genome_build', '37')
     if genome_build not in ['37','38']:

@@ -13,7 +13,8 @@ from flask_mail import Message
 import query_phenomizer
 from flask_login import current_user
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, 
+                             CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
@@ -27,6 +28,10 @@ log = logging.getLogger(__name__)
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
+TRACKS = {
+    'rare': 'Rare Disease',
+    'cancer': 'Cancer',
+}
 
 def cases(store, case_query, limit=100):
     """Preprocess case objects.
@@ -52,6 +57,8 @@ def cases(store, case_query, limit=100):
         case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
+        case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
@@ -82,7 +89,12 @@ def case(store, institute_obj, case_obj):
         except ValueError as err:
             sex = 0
         individual['sex_human'] = SEX_MAP[sex]
-        individual['phenotype_human'] = PHENOTYPE_MAP.get(individual['phenotype'])
+        
+        pheno_map = PHENOTYPE_MAP
+        if case_obj.get('track', 'rare') == 'cancer': 
+            pheno_map = CANCER_PHENOTYPE_MAP
+        
+        individual['phenotype_human'] = pheno_map.get(individual['phenotype'])
         case_obj['individual_ids'].append(individual['individual_id'])
 
     case_obj['assignees'] = [store.user(user_email) for user_email in
@@ -112,8 +124,11 @@ def case(store, institute_obj, case_obj):
                                 .format(hpo_term['phenotype_id']))
 
     # other collaborators than the owner of the case
-    o_collaborators = [store.institute(collab_id) for collab_id in case_obj['collaborators'] if
-                       collab_id != case_obj['owner']]
+    o_collaborators = []
+    for collab_id in case_obj['collaborators']:
+        if collab_id != case_obj['owner'] and store.institute(collab_id):
+            o_collaborators.append(store.institute(collab_id))
+            
     case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
                                    collab_obj in o_collaborators]
 
@@ -447,14 +462,38 @@ def gene_variants(store, variants_query, page=1, per_page=50):
     variants = []
     for variant_obj in variant_res:
         # hide other institutes for now
-        if (variant_obj['institute'] not in my_institutes):
+        if variant_obj['institute'] not in my_institutes:
             log.debug("Institute {} not allowed.".format(variant_obj['institute']))
             continue
 
+        # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
-        case_display_name = variant_case_obj['display_name']
+        if not variant_case_obj:
+            # A variant with missing case was encountered
+            continue
+        case_display_name = variant_case_obj.get('display_name')
         variant_obj['case_display_name'] = case_display_name
 
+        genome_build = variant_case_obj.get('genome_build', '37')
+        if genome_build not in ['37','38']:
+            genome_build = '37'
+
+        # Update the HGNC symbols if they are not set
+        variant_genes = variant_obj.get('genes')
+        if variant_genes is not None:
+            for gene_obj in variant_genes:
+                # If there is no hgnc id there is nothin we can do
+                if not gene_obj['hgnc_id']:
+                    continue
+                # Else we collect the gene object and check the id
+                if gene_obj.get('hgnc_symbol') is None or gene_obj.get('description') is None:
+                    hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=genome_build)
+                    if not hgnc_gene:
+                        continue
+                    gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+                    gene_obj['description'] = hgnc_gene['description']
+
+        # Populate variant HGVS and predictions
         gene_ids = []
         gene_symbols = []
         hgvs_c = []
@@ -463,6 +502,7 @@ def gene_variants(store, variants_query, page=1, per_page=50):
 
         if variant_genes is not None:
             functional_annotation = ''
+
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj['hgnc_id']
                 gene_symbol = gene(store, hgnc_id)['symbol']
@@ -489,7 +529,10 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                 else:
                     hgvs = "-"
                 variant_obj['hgvs'] = hgvs
+
+            # populate variant predictions for display
             variant_obj.update(get_predictions(variant_genes))
+
         variants.append(variant_obj)
 
     return {

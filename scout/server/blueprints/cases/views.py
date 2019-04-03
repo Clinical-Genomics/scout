@@ -19,7 +19,7 @@ from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
 from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
 from scout.server.extensions import store, mail
-from scout.server.utils import templated, institute_and_case, user_institutes
+from scout.server.utils import (templated, institute_and_case, user_institutes)
 from . import controllers
 
 from .forms import GeneVariantFiltersForm
@@ -51,7 +51,7 @@ def cases(institute_id):
         limit = int(request.args.get('limit'))
 
     skip_assigned = request.args.get('skip_assigned')
-    all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
+    all_cases = store.cases(collaborator=institute_id, name_query=query, skip_assigned=skip_assigned)
     data = controllers.cases(store, all_cases, limit)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
@@ -168,6 +168,7 @@ def gene_variants(institute_id):
     non_clinical_symbols = []
     not_found_symbols = []
     not_found_ids = []
+    data = {}
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
         clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
@@ -193,13 +194,12 @@ def gene_variants(institute_id):
             flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
         form.hgnc_symbols.data = hgnc_symbols
 
-    log.debug("query {}".format(form.data))
+        log.debug("query {}".format(form.data))
 
-    variants_query = store.gene_variants(query=form.data, category='snv',
+        variants_query = store.gene_variants(query=form.data, category='snv',
                             variant_type=variant_type)
-    data = {}
 
-    data = controllers.gene_variants(store, variants_query, page)
+        data = controllers.gene_variants(store, variants_query, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
 
