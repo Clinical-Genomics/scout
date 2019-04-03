@@ -140,7 +140,6 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
         )
         assert store.case_collection.find({'mme_submission':{'$exists' : True}}).count() == 1
 
-        current_app.config['MME_ACCEPTS'] = 'application/vnd.ga4gh.matchmaker.v1.0+json'
         current_app.config['MME_URL'] = 'http://localhost:9020'
         current_app.config['MME_TOKEN'] = 'test_token'
 
@@ -149,8 +148,9 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
                                 institute_id=institute_obj['internal_id'],
                                 case_name=case_obj['display_name']))
 
-        # THEN it should return a page
-        assert resp.status_code == 200
+        # page will redirect because controllers.mme_matches
+        # will not be able to contact a MME server
+        assert resp.status_code == 302
 
 
 def test_matchmaker_match(app, institute_obj, case_obj, mme_submission):

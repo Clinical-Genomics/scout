@@ -143,9 +143,10 @@ def matchmaker_matches(institute_id, case_name):
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
         return redirect(request.referrer)
     elif not data:
-        data = {}
-        data['institute'] = institute_obj
-        data['case'] = case_obj
+        data = {
+            'institute' : institute_obj,
+            'case' : case_obj
+        }
     return data
 
 
