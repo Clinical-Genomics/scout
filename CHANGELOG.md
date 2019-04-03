@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- Displaying more info on the Causatives page and hiding those not causative at the case level
+- Add a comment text field to Sanger order request form, allowing a message to be included in the email
 
 ### Fixed
 
