@@ -1091,7 +1091,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print('')
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle)
+    data = yaml.load(in_handle, Loader=yaml.FullLoader)
     return data
 
 

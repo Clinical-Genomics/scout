@@ -174,7 +174,7 @@ def setup_scout(adapter, institute_id='cust000', user_name='Clark Kent',
         adapter.load_panel(parsed_panel)
 
         case_handle = get_file_handle(load_path)
-        case_data = yaml.load(case_handle)
+        case_data = yaml.load(case_handle, Loader=yaml.FullLoader)
 
         adapter.load_case(case_data)
 
