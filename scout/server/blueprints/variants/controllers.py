@@ -871,7 +871,7 @@ def callers(variant_obj, category='snv'):
     return list(calls)
 
 
-def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, url_builder=url_for):
+def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, comment, url_builder=url_for):
     """Sand a verification email and register the verification in the database
 
         Args:
@@ -884,6 +884,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
             sender(str): current_app.config['MAIL_USERNAME']
             variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
             order(str): False == cancel order, True==order verification
+            comment(str): sender's entered comment from form
             url_builder(flask.url_for): for testing purposes, otherwise test verification email fails because out of context
     """
 
@@ -900,7 +901,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     breakpoint_1 = ':'.join([chromosome, str(variant_obj['position'])])
     breakpoint_2 = ':'.join([end_chrom, str(variant_obj.get('end'))])
     variant_size = variant_obj.get('length')
-    panels = ', '.join(variant_obj['panels'])
+    panels = ', '.join(variant_obj.get('panels', []))
     hgnc_symbol = ', '.join(variant_obj['hgnc_symbols'])
     email_subj_gene_symbol = None
     if len(variant_obj['hgnc_symbols']) > 3:
@@ -966,7 +967,8 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
         panels = panels,
         gtcalls = ''.join(gtcalls),
         tx_changes = ''.join(tx_changes) or 'Not available',
-        name = user_obj['name'].encode('utf-8')
+        name = user_obj['name'].encode('utf-8'),
+        comment = comment
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
@@ -995,7 +997,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     mail.send(message)
 
 
-def verification_email_body(case_name, url, display_name, category, subcategory, breakpoint_1, breakpoint_2, hgnc_symbol, panels, gtcalls, tx_changes, name):
+def verification_email_body(case_name, url, display_name, category, subcategory, breakpoint_1, breakpoint_2, hgnc_symbol, panels, gtcalls, tx_changes, name, comment):
     """
         Builds the html code for the variant verification emails (order verification and cancel verification)
 
@@ -1012,6 +1014,7 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
             gtcalls(str): genotyping calls of any sample in the family
             tx_changes(str): amino acid changes caused by the variant, only for snvs otherwise 'Not available'
             name(str): user_obj['name'], uft-8 encoded
+            comment(str): sender's comment from form
 
         Returns:
             html(str): the html body of the variant verification email
@@ -1031,6 +1034,7 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
          {gtcalls}
          <li><strong>Amino acid changes</strong></li>
          {tx_changes}
+         <li><strong>Comment</strong>: {comment}</li>
          <li><strong>Ordered by</strong>: {name}</li>
        </ul>
     """.format(
@@ -1045,7 +1049,8 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
         panels=panels,
         gtcalls=gtcalls,
         tx_changes=tx_changes,
-        name=name)
+        name=name,
+        comment=comment)
 
     return html
 

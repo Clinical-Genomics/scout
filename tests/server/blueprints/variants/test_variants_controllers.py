@@ -5,7 +5,7 @@ def url_for(param, institute_id, case_name, variant_id):
 
 
 def test_sanger_mail_sent(mock_mail, real_variant_database, institute_obj, case_obj, user_obj,
-                          mock_sender):
+                          mock_sender, mock_comment):
     adapter = real_variant_database
     ## GIVEN we have a variant the we want to order sanger for
     variant_obj = adapter.variant_collection.find_one()
@@ -13,7 +13,7 @@ def test_sanger_mail_sent(mock_mail, real_variant_database, institute_obj, case_
     variant_obj['panels'] = ''
 
     ## WHEN calling variant_verification method with order==True
-    variant_verification(adapter, mock_mail, institute_obj, case_obj, user_obj, variant_obj, mock_sender, 'complete_variant_url', True, url_builder=url_for)
+    variant_verification(adapter, mock_mail, institute_obj, case_obj, user_obj, variant_obj, mock_sender, 'complete_variant_url', True, mock_comment, url_builder=url_for)
 
     ## THEN the supplied mail objects send method should have been called
     assert mock_mail._send_was_called
@@ -21,7 +21,7 @@ def test_sanger_mail_sent(mock_mail, real_variant_database, institute_obj, case_
     assert mock_mail._message
 
 def test_cancel_sanger_mail_sent(mock_mail, real_variant_database, institute_obj, case_obj, user_obj,
-                                  mock_sender):
+                                  mock_sender, mock_comment):
     adapter = real_variant_database
     ## GIVEN we have a variant the we want to order sanger for
     variant_obj = adapter.variant_collection.find_one()
@@ -29,7 +29,7 @@ def test_cancel_sanger_mail_sent(mock_mail, real_variant_database, institute_obj
     variant_obj['panels'] = ''
 
     ## WHEN calling variant_verification method with order==False
-    variant_verification(adapter, mock_mail, institute_obj, case_obj, user_obj, variant_obj, mock_sender, 'complete_variant_url', False, url_builder=url_for)
+    variant_verification(adapter, mock_mail, institute_obj, case_obj, user_obj, variant_obj, mock_sender, 'complete_variant_url', False, mock_comment, url_builder=url_for)
 
     ## THEN the supplied mail objects send method should have been called
     assert mock_mail._send_was_called
