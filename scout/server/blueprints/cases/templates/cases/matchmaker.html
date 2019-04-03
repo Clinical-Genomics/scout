@@ -184,16 +184,18 @@
                                     <div class="panel panel-default">
                                       <div class="panel-body">
                                         {% for key, value in g_feat.items() %}
-                                          {% if key == 'gene' %}
+                                          {% if key == 'gene' %} <!-- genomic feature gene-->
                                             {{key}}:&nbsp;<span class="label label-default">{{value.id}}</span>
                                             <hr>
-                                          {% elif key == 'variant' %}
+                                          {% elif key == 'variant' %} <!-- genomic feature variant-->
                                             {% for ikey, item in value.items() %}
                                               {% if not ikey == 'shareVariantLevelData' %}
                                                 {{ikey}}:<strong>{{item}}</strong><br>
                                               {% endif %}
                                             {% endfor %}
-                                          {% else %} 
+                                          {% elif key == 'zygosity' %} <!-- genomic feature zygosity-->
+                                            {{key}}:<strong>{{value}}</strong>
+                                          {% else %} <!-- genomic feature type-->
                                             {{key}}:<strong>{{value.label}}</strong>
                                             <br>
                                           {% endif %}

@@ -140,7 +140,7 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
         )
         assert store.case_collection.find({'mme_submission':{'$exists' : True}}).count() == 1
 
-        current_app.config['MME_URL'] = 'http://localhost:9020'
+        current_app.config['MME_URL'] = 'http://fakey_mme_url:9020'
         current_app.config['MME_TOKEN'] = 'test_token'
 
         # WHEN accessing the case page

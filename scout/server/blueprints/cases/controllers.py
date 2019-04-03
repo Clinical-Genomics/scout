@@ -13,7 +13,7 @@ from flask_mail import Message
 import query_phenomizer
 from flask_login import current_user
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP, 
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
@@ -61,7 +61,7 @@ def cases(store, case_query, limit=100):
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
-        
+
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
         'found_cases': case_query.count(),
@@ -92,11 +92,11 @@ def case(store, institute_obj, case_obj):
         except ValueError as err:
             sex = 0
         individual['sex_human'] = SEX_MAP[sex]
-        
+
         pheno_map = PHENOTYPE_MAP
-        if case_obj.get('track', 'rare') == 'cancer': 
+        if case_obj.get('track', 'rare') == 'cancer':
             pheno_map = CANCER_PHENOTYPE_MAP
-        
+
         individual['phenotype_human'] = pheno_map.get(individual['phenotype'])
         case_obj['individual_ids'].append(individual['individual_id'])
 
@@ -130,7 +130,7 @@ def case(store, institute_obj, case_obj):
     for collab_id in case_obj['collaborators']:
         if collab_id != case_obj['owner'] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
-            
+
     case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
                                    collab_obj in o_collaborators]
 
@@ -462,13 +462,11 @@ def gene_variants(store, variants_query, page=1, per_page=50):
 
     my_institutes = list(inst['_id'] for inst in user_institutes(store, current_user))
 
-    LOG.debug("Institutes allowed: {}.".format(my_institutes))
-
     variants = []
     for variant_obj in variant_res:
         # hide other institutes for now
         if variant_obj['institute'] not in my_institutes:
-            LOG.debug("Institute {} not allowed.".format(variant_obj['institute']))
+            LOG.warning("Institute {} not allowed.".format(variant_obj['institute']))
             continue
 
         # Populate variant case_display_name
@@ -523,8 +521,6 @@ def gene_variants(store, variants_query, page=1, per_page=50):
                         hgvs_protein = str(transcript_obj.get('protein_sequence_name'))
                 hgvs_c.append(hgvs_nucleotide)
                 hgvs_p.append(hgvs_protein)
-
-            LOG.debug("HGVS: {} {} {}.".format(gene_symbols, hgvs_c, hgvs_p))
 
             if len(gene_symbols) == 1:
                 if(hgvs_p[0] != "None"):
@@ -768,7 +764,7 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
                 pat_matches = parse_matches(patient_id, server_resp['matches'])
             matches[patient_id] = pat_matches
         else:
-            LOG.info('Server returned error message: {}'.format(server_resp['message']))
+            LOG.warning('Server returned error message: {}'.format(server_resp['message']))
             data['server_errors'].append(server_resp['message'])
 
     data['matches'] = matches
