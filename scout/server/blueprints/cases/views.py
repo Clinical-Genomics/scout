@@ -131,6 +131,11 @@ def clinvar_submissions(institute_id):
 @templated('cases/matchmaker.html')
 def matchmaker_matches(institute_id, case_name):
     """Show all MatchMaker matches for a given case"""
+    # check that only authorized users can access MME patients matches
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
     # Required params for getting matches from MME server:
     mme_base_url = current_app.config.get('MME_URL')
     mme_token = current_app.config.get('MME_TOKEN')
@@ -154,6 +159,12 @@ def matchmaker_matches(institute_id, case_name):
 def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # check that only authorized users can run matches
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
 
     # Required params for sending an add request to MME:
     mme_base_url = current_app.config.get('MME_URL')
@@ -181,6 +192,13 @@ def matchmaker_match(institute_id, case_name, target):
 @cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
 def matchmaker_add(institute_id, case_name):
     """Add or update a case in MatchMaker"""
+
+    # check that only authorized users can add patients to MME
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     causatives = False
     features = False
@@ -255,6 +273,13 @@ def matchmaker_add(institute_id, case_name):
 @cases_bp.route('/<institute_id>/<case_name>/mme_delete', methods=['POST'])
 def matchmaker_delete(institute_id, case_name):
     """Remove a case from MatchMaker"""
+
+    # check that only authorized users can delete patients from MME
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Required params for sending a delete request to MME:
     mme_base_url = current_app.config.get('MME_URL')
