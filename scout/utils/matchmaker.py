@@ -47,6 +47,8 @@ def matchmaker_request(url, token, method, content_type=None, accept=None, data=
             json_response = {
                 'message' : json_response,
             }
+        elif isinstance(json_response, list): #asking for connected nodes
+            return json_response
         json_response['status_code'] = resp.status_code
     except Exception as err:
         LOG.info('An error occurred while sending HTTP request to server ({})'.format(err))
@@ -71,6 +73,5 @@ def mme_nodes(mme_base_url, token):
         return nodes
     url = ''.join([mme_base_url, '/nodes'])
     nodes = matchmaker_request(url=url, token=token, method='GET')
-    if isinstance(nodes,dict):
-        return []
+    LOG.info('Matchmaker has the following connected nodes:{}'.format(nodes))
     return nodes
