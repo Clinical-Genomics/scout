@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+
+from scout.commands import app_cli
+from scout.server.extensions import store
+
+def test_update_hpo(mock_app):
+    """Tests the CLI that updates HPO terms in the database"""
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # Test CLI base, no arguments provided
+    result =  runner.invoke(app_cli, ['update', 'hpo'])
+    assert result.exit_code == 1
+    assert 'Are you sure you want to drop the hpo terms?' in result.output
+
+    # test propt confirm
+    result =  runner.invoke(app_cli, ['update', 'hpo'],input='y')
+    assert result.exit_code == 0
+    assert 'HPO terms dropped' in result.output
