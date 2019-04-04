@@ -119,7 +119,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Librariesxs',
         'Programming Language :: Python :: 3.6',
     ],
     # $ setup.py publish support.
