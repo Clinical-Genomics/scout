@@ -1,9 +1,10 @@
 import logging
 
 from pprint import pprint as pp
-
+from flask.cli import with_appcontext
 import click
 
+logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
@@ -25,13 +26,13 @@ LOG = logging.getLogger(__name__)
     help="If groups should be added instead of replacing existing groups",
     is_flag=True,
 )
-@click.pass_context
-def groups(context, institute_id, phenotype_group, group_abbreviation, group_file, add):
+@with_appcontext
+def groups(institute_id, phenotype_group, group_abbreviation, group_file, add):
     """
     Update the phenotype for a institute.
     If --add the groups will be added to the default groups. Else the groups will be replaced.
     """
-    adapter = context.obj['adapter']
+    adapter = store
     LOG.info("Running scout update institute")
     if group_file:
         phenotype_group = []
@@ -45,7 +46,7 @@ def groups(context, institute_id, phenotype_group, group_abbreviation, group_fil
             phenotype_group.append(line[0])
             if line[1]:
                 group_abbreviation.append(line[1])
-    
+
     if not phenotype_group:
         LOG.info("Please provide some groups")
         return
@@ -57,7 +58,7 @@ def groups(context, institute_id, phenotype_group, group_abbreviation, group_fil
 
     # try:
     adapter.update_institute(
-        internal_id=institute_id, 
+        internal_id=institute_id,
         phenotype_groups=phenotype_group,
         group_abbreviations=group_abbreviation,
         add_groups = add,
