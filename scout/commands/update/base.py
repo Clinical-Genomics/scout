@@ -29,13 +29,13 @@ def update(context):
     pass
 
 
-update.add_command(institute_command) #done!
-update.add_command(user_command) #done!
-update.add_command(panel_command) #done!
-update.add_command(case_command) #done!
-update.add_command(omim_command) #done!
-update.add_command(compound_command) #done!
-update.add_command(hpo_command) #done!
-update.add_command(gene_command) #done!
-update.add_command(disease_command) #done!
+update.add_command(institute_command)
+update.add_command(user_command)
+update.add_command(panel_command)
+update.add_command(case_command)
+update.add_command(omim_command)
+update.add_command(compound_command)
+update.add_command(hpo_command)
+update.add_command(gene_command)
+update.add_command(disease_command)
 update.add_command(groups_command)

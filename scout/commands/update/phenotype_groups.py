@@ -3,6 +3,7 @@ import logging
 from pprint import pprint as pp
 from flask.cli import with_appcontext
 import click
+from scout.server.extensions import store
 
 logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ LOG = logging.getLogger(__name__)
     help="CSV file with phenotype groups",
     type=click.File('r'),
 )
-@click.option('-a', '--add',
+@click.option('-add', '--add',
     help="If groups should be added instead of replacing existing groups",
     is_flag=True,
 )
@@ -63,6 +64,3 @@ def groups(institute_id, phenotype_group, group_abbreviation, group_file, add):
         group_abbreviations=group_abbreviation,
         add_groups = add,
         )
-    # except Exception as err:
-    #     LOG.warning(err)
-    #     context.abort()

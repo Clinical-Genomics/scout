@@ -125,5 +125,5 @@ app_cli.add_command(export) # Done!
 app_cli.add_command(convert) # Done!
 app_cli.add_command(index_command) # Done!
 app_cli.add_command(view_command) # Done!
-app_cli.add_command(update_command)
+app_cli.add_command(update_command) # Done!
 cli.add_command(serve)
