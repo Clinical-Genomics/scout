@@ -21,5 +21,4 @@ def test_version(mock_app):
 
     # test setting the database to scout-demo using the CLI
     result = runner.invoke(app_cli, ['--demo', 'view', 'institutes'])
-    assert result.exit_code == 0
-    assert 'setting up connection to use database:"scout-demo"'
+    assert 'setting up connection to use database:"scout-demo"' in result.output
