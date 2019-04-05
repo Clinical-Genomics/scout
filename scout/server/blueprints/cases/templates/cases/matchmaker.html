@@ -98,6 +98,11 @@
                         <br>
                       {% else %} <!-- this will be zygosity -->
                         {{key}}:<strong>{{value}}</strong>
+                        {% if value == 1 %}
+                          (heteroz. or hemiz. if on X in males)
+                        {% elif value == 2 %}
+                          (homozygous)
+                        {% endif %}
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -195,6 +200,11 @@
                                             {% endfor %}
                                           {% elif key == 'zygosity' %} <!-- genomic feature zygosity-->
                                             {{key}}:<strong>{{value}}</strong>
+                                            {% if value == 1 %}
+                                              (heteroz. or hemiz. if on X in males)
+                                            {% elif value == 2 %}
+                                              (homozygous)
+                                            {% endif %}
                                           {% else %} <!-- genomic feature type-->
                                             {{key}}:<strong>{{value.label}}</strong>
                                             <br>
