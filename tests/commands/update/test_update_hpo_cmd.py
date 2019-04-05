@@ -17,4 +17,4 @@ def test_update_hpo(mock_app):
     # test propt confirm
     result =  runner.invoke(app_cli, ['update', 'hpo'],input='y')
     assert result.exit_code == 0
-    assert 'HPO terms dropped' in result.output
+    assert 'INFO Time to load terms' in result.output

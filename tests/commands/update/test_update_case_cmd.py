@@ -35,7 +35,6 @@ def test_update_case(mock_app, case_obj):
         '-c', 'cust000'
         ])
     assert 'INFO Fetching case {}'.format(case_obj['_id']) in result.output
-    assert 'DEBUG Fetch institute cust000' in result.output
 
     # try first to remove collaborator from case object and to add it via the CLI
     store.case_collection.find_one_and_update(

@@ -79,4 +79,4 @@ def test_view_cases(mock_app):
         ])
     assert result.exit_code == 0
     # number of variants should be shown in output
-    assert 'Case internal_id had to few variants, skipping' in result.output
+    assert 'Displaying number of variants for each case' in result.output

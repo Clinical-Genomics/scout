@@ -40,4 +40,4 @@ def test_export_hpo(mock_app):
     result =  runner.invoke(app_cli, ['export', 'hpo_genes', 'HP:0000003'])
 
     assert result.exit_code == 0
-    assert 'Fetching hpo term HP:0000003\n17582\t1\n1151\t1\n' in result.output
+    assert '17582\t1\n1151\t1\n' in result.output

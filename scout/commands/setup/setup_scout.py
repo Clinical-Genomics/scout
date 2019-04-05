@@ -40,13 +40,14 @@ def abort_if_false(ctx, param, value):
     callback=abort_if_false,
     expose_value=False,
     prompt='This will delete existing database, do you wish to continue?')
+@with_appcontext
 @click.pass_context
 def database(context, institute_name, user_name, user_mail, api_key):
     """Setup a scout database."""
 
     LOG.info("Running scout setup database")
     # Fetch the omim information
-    api_key = api_key or context.obj.get('omim_api_key')
+    api_key = api_key or current_app.config.get('OMIM_API_KEY')
     if not api_key:
         LOG.warning("Please provide a omim api key with --api-key")
         raise click.Abort()
@@ -116,12 +117,10 @@ def setup(context, institute, user_mail, user_name):
     Setup scout instances: a demo database or a production database, according to the
     according to the subcommand specified by user.
     """
-
     setup_config = {
         'institute_name' : institute,
         'user_name' : user_name,
-        'user_mail' : user_mail,
-        'omim_api_key' : current_app.config.get('OMIM_API_KEY')
+        'user_mail' : user_mail
     }
 
     mongodb = current_app.config["MONGO_DBNAME"]
