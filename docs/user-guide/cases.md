@@ -42,17 +42,17 @@ The case can be moved to "Research" which means all variants will be made visibl
 
 ### MatchMaker Exchange integration
 
-Starting with software release 4.4 Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in this paper [this link](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
+Starting with release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
 
-Authorized users (contact Scout admins if you wish to start sharing cases using this network) will have access to a MatchMaker submission form present on the case page:
+Authorized users (contact Scout admins if you wish to start sharing cases using this network!) will have access to a MatchMaker submission form present on the case page:
  <p align="center"><img height="300" src="../img/mme_subm_form.png"></p>
 
 
 #### Requisites to share patient data using MatchMaker (MME):
 - There must be **at least one HPO term specified at the case level AND/OR one pinned variant**.
 - A **maximum number of 3 variants** can be exported to MatchMaker Exchange for a case.
-- Submitting users is willing to be contacted (via email) by users from external MatchMaker nodes in case of positive patient matching.
-- MatchMaker Exchange network discourages the submission of variants which are already known to case a certain phenotype and welcomes instead the submission of novel or unknown but strongly suspected variants for the condition.
+- Submitting users are willing to be contacted (via email) by users from external MatchMaker nodes in case of positive patient matching.
+- MatchMaker Exchange network discourages the submission of variants which are already known to case a certain phenotype and **welcomes instead the submission of novel or unknown but strongly suspected variants for the condition**.
 
 #### Patient sharing options
 - Including **patient gender** is optional
