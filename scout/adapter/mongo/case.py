@@ -84,7 +84,7 @@ class CaseHandler(object):
             query['research_requested'] = True
 
         if is_research:
-            query['is_research'] = True
+            query['is_research'] = {'$exists': True, '$eq': True}
 
         if phenotype_terms:
             query['phenotype_terms'] = {'$exists': True, '$ne': []}
@@ -496,7 +496,7 @@ class CaseHandler(object):
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
-        
+
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

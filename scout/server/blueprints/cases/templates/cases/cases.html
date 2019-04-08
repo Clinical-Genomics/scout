@@ -92,7 +92,7 @@
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
     <div class="row">
-      <div class="col-md-6 col-xs-6">
+      <div class="col-md-4 col-xs-4">
         <div class="input-group">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
@@ -114,6 +114,13 @@
         <div class="checkbox">
           <label>
             <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
+          </label>
+        </div>
+      </div>
+      <div class="col-md-2 col-xs-2">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="is_research" {% if is_research %}checked{% endif %}> Hide non-research
           </label>
         </div>
       </div>
