@@ -11,4 +11,5 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Annotations](./annotations.md)
   * [Server](./server.md)
   * [Chanjo coverage integration](./chanjo_coverage_integration.md)
+  * [MatchMaker Exchange integration](./matchmaker_exchange_integration.md)
   * [Indexes](./indexes.md)

@@ -37,39 +37,63 @@
         <span class="text-muted">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
           <span class="label label-info">PAR</span>
-          {% endif %} {{ variant.reference }} → {{ variant.alternative }}
+          {% endif %}
+          {{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}
         </span>
       </div>
       <ul class="list-group">
         {% for case, variant in group %}
-          <li class="list-group-item">
-            <div class="row">
-              <div class="col-xs-8 col-md-4">
-                <a href="{{ url_for('variants.variant',
-                                    institute_id=institute._id,
-                                    case_name=case.display_name,
-                                    variant_id=variant._id) }}">
-                  {{ variant.display_name }}
-                </a>
-                {% set is_marked = variant._id in case.causatives %}
-                <span class="label {{ 'label-success' if is_marked else 'label-warning' }} pull-right">
-                  {{ 'Causative' if is_marked else 'Not causative' }}
-                </span>
-              </div>
-              <div class="col-md-4"></div>
-              <div class="col-xs-4">
-                <a href="{{ url_for('cases.case',
-                                    institute_id=institute._id,
-                                    case_name=case.display_name) }}">
-                  {{ case.display_name }}
-                </a>
-                <span class="label label-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
-                  {{ case.status }}
-                </span>
+          {% if variant._id in case.causatives %}
+            <li class="list-group-item">
+              <div class="row">
+                <div class="col-xs-8 col-md-2">
+                  <a href="{{ url_for('variants.variant',
+                                      institute_id=institute._id,
+                                      case_name=case.display_name,
+                                      variant_id=variant._id) }}">
+                    {{ variant.display_name|truncate(20, True) }}
+                  </a>
+                </div>
+                <div class="col-xs-8 col-md-1">
+                  <span class="label label-default">{{ variant.category|upper }}</span>
+                </div>
+                <div class="col-xs-8 col-md-2">
+                  <a href="#">Rank score <span class="badge">{{ variant.rank_score }}</span></a>
+                </div>
+                <div class="col-xs-8 col-md-2">
+                  zygosity:
+                  {% for sample in variant.samples %}
+                    {% for ind in case.individuals %}
+                      {% if sample.sample_id == ind.individual_id %}
+                          {% if ind.phenotype == 2%}
+                            <span class="label label-danger">{{sample.genotype_call}}</span>
+                          {% else %}
+                            <span class="label label-success">{{sample.genotype_call}}</span>
+                          {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                </div>
+                <div class="col-xs-8 col-md-3">
+                  inheritance:
+                  {% for model in variant.genetic_models %}
+                    <span class="label label-info">{{model}}</span>
+                  {% endfor %}
+                </div>
+                <div class="col-md-2">
+                  <a href="{{ url_for('cases.case',
+                                      institute_id=institute._id,
+                                      case_name=case.display_name) }}">
+                    {{ case.display_name }}
+                  </a>
+                  <span class="label label-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+                    {{ case.status }}
+                  </span>
+                </div>
 
               </div>
-            </div>
-          </li>
+            </li>
+          {% endif %}
         {% endfor %}
       </ul>
     </div>

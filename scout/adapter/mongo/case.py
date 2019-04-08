@@ -92,6 +92,10 @@ class CaseHandler(object):
         LOG.debug("Fetch all cases")
         query = query or {}
 
+        # Prioritize when both owner and collaborator params are present
+        if collaborator and owner:
+            collaborator = None
+
         if collaborator:
             LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
@@ -360,7 +364,7 @@ class CaseHandler(object):
                     category=category,
                     rank_threshold=case_obj.get('rank_score_threshold', 0),
                 )
-            
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
@@ -371,6 +375,7 @@ class CaseHandler(object):
             self._add_case(case_obj)
 
         return case_obj
+
 
     def _add_case(self, case_obj):
         """Add a case to the database
@@ -403,6 +408,7 @@ class CaseHandler(object):
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
+            - mme_submission: If case was submitted to MatchMaker Exchange
 
             Args:
                 case_obj(dict): The new case information
@@ -443,6 +449,7 @@ class CaseHandler(object):
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
+                    'mme_submission': case_obj.get('mme_submission'),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
@@ -528,7 +535,7 @@ class CaseHandler(object):
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
-
+        
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

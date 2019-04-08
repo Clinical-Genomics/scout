@@ -39,6 +39,6 @@ def institute_info():
 
 @pytest.fixture
 def user_info(institute_info):
-    _user_info = dict(email='john@doe.com', name='John Doe', roles=['admin'],
+    _user_info = dict(email='john@doe.com', name='John Doe', roles=['admin','mme_submitter'],
                       institutes=[institute_info['internal_id']])
     return _user_info

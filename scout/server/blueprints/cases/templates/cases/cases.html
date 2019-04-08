@@ -129,10 +129,11 @@
     <thead>
       <tr>
         <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
-        <th class="col-xs-2">Status</th>
-        <th class="col-xs-2">Analysis date</th>
+        <th class="col-xs-1">Status</th>
+        <th class="col-xs-1">Analysis date</th>
         <th class="col-xs-2">Link</th>
         <th class="col-xs-2">Sequencing</th>
+        <th class="col-xs-2">Track</th>
         <th class="col-xs-2">Clinvar</th>
       </tr>
     </thead>
@@ -203,6 +204,8 @@
           {% set label_class = 'warning' %}
         {% elif analysis_type == 'tga' %}
           {% set label_class = 'info' %}
+        {% elif analysis_type == 'panel' %}
+          {% set label_class = 'info' %}
         {% else %}
           {% set label_class = 'default' %}
         {% endif %}
@@ -211,6 +214,9 @@
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
+    </td>
+    <td>
+      {{ case.display_track }}
     </td>
     <td>
       {% if case.clinvar_variants %}
