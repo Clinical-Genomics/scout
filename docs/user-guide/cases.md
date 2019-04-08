@@ -61,7 +61,7 @@ Authorized users (contact Scout admins if you wish to start sharing cases using 
 - Submitting users can decide to share **specific variant data** (chromosome, position, specific change, zygosity) **or only gene name**. Providing complete information will of course improve matching power.
 
 Submitted patients can be modified or removed from MatchMaker any time from the Scout case page:
-  <p align="center"><img height="300" src="../img/mme_modify_submission.png"></p>
+  <p align="center"><img height="300" src="../img/mme_modiy_submission.png"></p>
 
 From the same interface, by clicking on 'match against', users will be able to run matches against Scout patients already submitted to MatchMaker or patients present in connected external nodes:
   <p align="center"><img height="300" src="../img/mme_match.png"></p>
