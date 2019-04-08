@@ -40,4 +40,43 @@ The case can be moved to "Research" which means all variants will be made visibl
 
 **Comment**: You can leave comments in the activity log by writing a message in the input box next to the feed. Click "COMMENT" to submit the comment.
 
+### MatchMaker Exchange integration
+
+Starting with software release 4.4 Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in this paper [this link](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
+
+Authorized users (contact Scout admins if you wish to start sharing cases using this network) will have access to a MatchMaker submission form present on the case page:
+ ![MatchMaker submission](/img/mme_subm_form.png)
+
+
+#### Requisites to share patient data using MatchMaker (MME):
+- There must be **at least one HPO term specified at the case level AND/OR one pinned variant**.
+- A **maximum number of 3 variants** can be exported to MatchMaker Exchange for a case.
+- Submitting users is willing to be contacted (via email) by users from external MatchMaker nodes in case of positive patient matching.
+- MatchMaker Exchange network discourages the submission of variants which are already known to case a certain phenotype and welcomes instead the submission of novel or unknown but strongly suspected variants for the condition.
+
+#### Patient sharing options
+- Including **patient gender** is optional
+- Including an **HPO term** is required if there is no pinned variant at the case level
+- Including **OMIM diagnosis** is not mandatory, but could be of help to the matching algorithm when looking for similar patients on MME.
+- Submitting users can decide to share **specific variant data** (chromosome, position, specific change, zygosity) **or only gene name**. Providing complete information will of course improve matching power.
+
+Submitted patients can be modified or removed from MatchMaker any time from the Scout case page:
+ ![MatchMaker modify submission](/img/mme_modify_submission.png)  
+
+From the same interface, by clicking on 'match against', users will be able to run matches against Scout patients already submitted to MatchMaker or patients present in connected external nodes:
+  ![MatchMaker match](/img/mme_match.png)
+
+By clicking on 'Matches', users can review the submitted data for a case (**Patient Overview** tab) and all **positive** match results for a case against patients from external nodes (**External Matches**) or other Scout patients in MatchMaker server (**Internal Matches**):
+  ![MatchMaker match](/img/mme_match.png)
+
+Matches will be ordered by date and each single match object will display matching patients by score, from the highest (most similar to the case) to the lowest(least similar to the case).
+
+
+
+
+
+
+
+
+
 ----------
