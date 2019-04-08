@@ -144,7 +144,7 @@ class QueryHandler(object):
                 secondary_terms = True
 
         if primary_terms is True:
-            clising_filter = self.clinsig_query(query, mongo_query)
+            clinsign_filter = self.clinsig_query(query, mongo_query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -175,14 +175,14 @@ class QueryHandler(object):
                             {'$or': gene_query},
                             {
                                 '$or': [
-                                    {'$and': secondary_filter}, clising_filter
+                                    {'$and': secondary_filter}, clinsign_filter
                                 ]
                             }
                         ]
                     else:
-                        mongo_query['$or'] = [ {'$and': secondary_filter}, clising_filter ]
+                        mongo_query['$or'] = [ {'$and': secondary_filter}, clinsign_filter ]
                 else: # clisig terms are provided but no need for trusted revstat levels
-                    secondary_filter.append(clising_filter)
+                    secondary_filter.append(clinsign_filter)
                     if gene_query:
                         mongo_query['$and'] = [ {'$or': gene_query}, {'$and': secondary_filter}]
                     else:
@@ -190,7 +190,7 @@ class QueryHandler(object):
 
         elif primary_terms is True: # clisig is provided without secondary terms query
             # use implicit and
-            mongo_query['clnsig'] = clising_filter['clnsig']
+            mongo_query['clnsig'] = clinsign_filter['clnsig']
             if gene_query:
                 mongo_query['$and'] = [{ '$or': gene_query }]
 
@@ -202,7 +202,7 @@ class QueryHandler(object):
         return mongo_query
 
 
-    def clinsig_query(self, query, mongo_query, ):
+    def clinsig_query(self, query, mongo_query):
         """ Add clinsig filter values to the mongo query object
 
             Args:
@@ -332,12 +332,12 @@ class QueryHandler(object):
                 mongo_query(dict): the query that is going to be submitted to the database
 
             Returns:
-                mongo_query_minor(list): a dictionary with secondary query parameters
+                mongo_secondary_query(list): a dictionary with secondary query parameters
 
         """
         LOG.debug('Creating a query object with secondary parameters')
 
-        mongo_query_minor = []
+        mongo_secondary_query = []
 
         gnomad = query.get('gnomad_frequency')
         if gnomad is not None:
@@ -346,7 +346,7 @@ class QueryHandler(object):
                 mongo_query['gnomad_frequency'] = {'$exists': False}
             else:
                 # Replace comma with dot
-                mongo_query_minor.append(
+                mongo_secondary_query.append(
                     {
                         '$or': [
                             {
@@ -362,7 +362,7 @@ class QueryHandler(object):
 
         local_obs = query.get('local_obs')
         if  local_obs is not None:
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 '$or': [
                     {'local_obs_old': None},
                     {'local_obs_old': {'$lt': local_obs + 1}},
@@ -370,7 +370,7 @@ class QueryHandler(object):
             })
 
         if query.get('clingen_ngi') is not None:
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 '$or': [
                     {'clingen_ngi': {'$exists': False}},
                     {'clingen_ngi': {'$lt': query['clingen_ngi'] + 1}},
@@ -378,7 +378,7 @@ class QueryHandler(object):
             })
 
         if query.get('swegen') is not None:
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 '$or': [
                     {'swegen': {'$exists': False}},
                     {'swegen': {'$lt': query['swegen'] + 1}},
@@ -401,7 +401,7 @@ class QueryHandler(object):
                                 {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['pos'][0]}},
                                           {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['pos'][1]}} ]} ]})
 
-            mongo_query_minor.append({'$or': spidex_query_or_part })
+            mongo_secondary_query.append({'$or': spidex_query_or_part })
 
         if query.get('cadd_score') is not None:
             cadd = query['cadd_score']
@@ -416,25 +416,25 @@ class QueryHandler(object):
                         ]}
                 LOG.debug("Adding cadd inclusive to query")
 
-            mongo_query_minor.append(cadd_query)
+            mongo_secondary_query.append(cadd_query)
 
         if query.get('genetic_models'):
             models = query['genetic_models']
-            mongo_query_minor.append({'genetic_models': {'$in': models}})
+            mongo_secondary_query.append({'genetic_models': {'$in': models}})
 
             LOG.debug("Adding genetic_models: %s to query" %
                          ', '.join(models))
 
         if query.get('functional_annotations'):
             functional = query['functional_annotations']
-            mongo_query_minor.append({'genes.functional_annotation': {'$in': functional}})
+            mongo_secondary_query.append({'genes.functional_annotation': {'$in': functional}})
 
             LOG.debug("Adding functional_annotations %s to query" %
                          ', '.join(functional))
 
         if query.get('region_annotations'):
             region = query['region_annotations']
-            mongo_query_minor.append({'genes.region_annotation': {'$in': region}})
+            mongo_secondary_query.append({'genes.region_annotation': {'$in': region}})
 
             LOG.debug("Adding region_annotations %s to query" %
                          ', '.join(region))
@@ -452,11 +452,11 @@ class QueryHandler(object):
                     ]}
                 LOG.debug("Adding size less than, undef inclusive to query.")
 
-            mongo_query_minor.append(size_query)
+            mongo_secondary_query.append(size_query)
 
         if query.get('svtype'):
             svtype = query['svtype']
-            mongo_query_minor.append({'sub_category': {'$in': svtype}})
+            mongo_secondary_query.append({'sub_category': {'$in': svtype}})
             LOG.debug("Adding SV_type %s to query" %
                          ', '.join(svtype))
 
@@ -466,7 +466,7 @@ class QueryHandler(object):
 
         if query.get('depth'):
             LOG.debug("add depth filter")
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 'tumor.read_depth': {
                     '$gt': query.get('depth'),
                 }
@@ -474,7 +474,7 @@ class QueryHandler(object):
 
         if query.get('alt_count'):
             LOG.debug("add min alt count filter")
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 'tumor.alt_depth': {
                     '$gt': query.get('alt_count'),
                 }
@@ -482,7 +482,7 @@ class QueryHandler(object):
 
         if query.get('control_frequency'):
             LOG.debug("add minimum control frequency filter")
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 'normal.alt_freq': {
                     '$lt': float(query.get('control_frequency')),
                 }
@@ -490,10 +490,10 @@ class QueryHandler(object):
 
         if query.get('mvl_tag'):
             LOG.debug("add managed variant list filter")
-            mongo_query_minor.append({
+            mongo_secondary_query.append({
                 'mvl_tag': {
                     '$exists': True,
                 }
             })
 
-        return mongo_query_minor
+        return mongo_secondary_query
