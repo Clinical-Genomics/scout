@@ -337,6 +337,7 @@ class CaseHandler(object):
 
         return case_obj
 
+
     def _add_case(self, case_obj):
         """Add a case to the database
            If the case already exists exception is raised
@@ -368,6 +369,7 @@ class CaseHandler(object):
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
+            - mme_submission: If case was submitted to MatchMaker Exchange
 
             Args:
                 case_obj(dict): The new case information
@@ -408,6 +410,7 @@ class CaseHandler(object):
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
+                    'mme_submission': case_obj.get('mme_submission'),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
@@ -493,7 +496,7 @@ class CaseHandler(object):
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
-
+        
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

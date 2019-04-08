@@ -151,6 +151,14 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfi
 
 > The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
 
+
+### Integration with MatchMaker Exchange
+
+Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
+For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its integration with Scout follow this [link](docs/admin-guide/matchmaker_exchange_integration.md).  
+A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can be found [here](docs/user-guide/cases.md#matchmaker-exchange-integration).
+
+
 ## Example of analysis config
 
 TODO.
