@@ -156,7 +156,7 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfi
 
 Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in this paper [this link](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
 For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its integration with Scout follow this [link](docs/admin-guide/matchmaker_exchange_integration.md).  
-A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can be found [here](docs/user-guide/cases.md).
+A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can be found [here](docs/user-guide/cases.md#matchmaker-exchange-integration).
 
 
 ## Example of analysis config
