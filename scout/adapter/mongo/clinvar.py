@@ -302,7 +302,7 @@ class ClinVarHandler(object):
         """Get all variants included in clinvar submissions for a case
 
         Args:
-            case_id(str): a case display_name
+            case_id(str): a case _id
 
         Returns:
             submission_variants(dict): keys are variant ids and values are variant submission objects

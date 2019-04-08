@@ -48,6 +48,7 @@ from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
 
 from scout.models.hgnc_map import HgncGene
 
+
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
@@ -1224,3 +1225,145 @@ def hpo_genes(request, hpo_genes_handle):
     """Get the exac genes"""
     print('')
     return parse_hpo_genes(hpo_genes_handle)
+
+
+#############################################################
+#################### MatchMaker Fixtures ####################
+#############################################################
+
+@pytest.fixture(scope='function')
+def mme_submission():
+    mme_subm_obj = {
+        'patients' : [ {'id' : 'internal_id.ADM1059A2'} ],
+        'created_at' : datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
+        'updated_at' : datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
+        'sex' : True,
+        'features' : [],
+        'disorders' : [],
+        'genes_only' : False
+    }
+    return mme_subm_obj
+
+@pytest.fixture(scope='function')
+def mme_patient():
+    json_patient = {
+        "contact": {
+          "href": "mailto:contact_email@email.com",
+          "name": "A contact at an institute"
+        },
+        "features": [
+          {
+            "id": "HP:0001644",
+            "label": "Dilated cardiomyopathy",
+            "observed": "yes"
+          },
+        ],
+        "genomicFeatures": [
+          {
+            "gene": {
+              "id": "LIMS2"
+            },
+            "type": {
+              "id": "SO:0001583",
+              "label": "MISSENSE"
+            },
+            "variant": {
+              "alternateBases": "C",
+              "assembly": "GRCh37",
+              "end": 128412081,
+              "referenceBases": "G",
+              "referenceName": "2",
+              "start": 128412080
+            },
+            "zygosity": 1
+          },
+        ],
+        "id": "internal_id.ADM1059A2",
+        "label": "A patient for testing"
+    }
+
+
+@pytest.fixture(scope='function')
+def match_objs():
+    """Mock the results of an internal and an external match"""
+    matches = [
+        {    # External match where test_patient is the query and with results
+
+            '_id' : {'$oid':'match_1'},
+            'created' : {'$date': 1549964103911},
+            'has_matches' : True,
+            'data' : {
+                'patient' : {
+                    'id' : 'internal_id.ADM1059A2',
+                    'contact' : {
+                        'href' : 'mailto:test_contact@email.com'
+                    }
+                }
+            },
+            'results' : [
+                {
+                    'node' : 'external_test_node',
+                    'patients' : [
+                        {'patient' : {
+                            'id' : 'match_1_id'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test External User'
+                            },
+                            'score' : {'patient' : 0.425},
+                        },
+                        {'patient' : {
+                            'id' : 'match_2_id'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test External User'
+                            },
+                            'score' : {'patient' :  0.333},
+                        },
+                    ]
+                }
+            ],
+            'match_type' : 'external'
+        },
+        {    #  Internal match where test_patient is among results
+            '_id' : {'$oid':'match_2'},
+            'created' : {'$date': 1549964103911},
+            'has_matches' : True,
+            'data' : {
+                'patient' : {
+                    'id' : 'external_patient_x',
+                    'contact' : {
+                        'href' : 'mailto:test_contact@email.com'
+                    }
+                }
+            },
+            'results' : [
+                {
+                    'node' : 'internal_node',
+                    'patients' : [
+                        {
+                            'patient' : {
+                            'id' : 'internal_id.ADM1059A2'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test Internal User'
+                            },
+                            'score' : {'patient' :  0.87},
+                        },
+                        {
+                            'patient' : {
+                            'id' : 'external_patient_y'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test Internal User'
+                            },
+                            'score' : {'patient' :  0.76},
+                        }
+                    ]
+                }
+            ]
+            ,
+            'match_type' : 'internal'
+        },
+    ]
+    return matches
