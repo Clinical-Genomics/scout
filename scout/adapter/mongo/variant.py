@@ -586,3 +586,31 @@ class VariantHandler(VariantLoader):
                 temp.write(str(variant))
 
         return file_name
+
+
+    def sample_variants(self, variants, sample_name, category = 'snv'):
+        """Given a list of variants get variant objects found in a specific patient
+
+        Args:
+            variants(list): a list of variant ids
+            sample_name(str): a sample display name
+            category(str): 'snv', 'sv' ..
+
+        Returns:
+            result(iterable(Variant))
+        """
+        LOG.info('Retrieving variants for subject : {0}'.format(sample_name))
+        has_allele = re.compile('1|2') # a non wild-type allele is called at least once in this sample
+
+        query = {
+            '$and': [
+                {'_id' : { '$in' : variants}},
+                {'category' : category},
+                {'samples': {
+                    '$elemMatch': { 'display_name' : sample_name, 'genotype_call': { '$regex' : has_allele } }
+                }}
+            ]
+        }
+
+        result = self.variant_collection.find(query)
+        return result
