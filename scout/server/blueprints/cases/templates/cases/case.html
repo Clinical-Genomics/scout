@@ -76,11 +76,21 @@
           <div class="col-md-6">{{ hpo_genelist_panel() }}</div>
         </div>
 
+        <!-- data sharing panels -->
         <div class="row">
-          <div class="col-md-6">{{ activity_panel(events) }}</div>
           {% if case.clinvar_variants %}
             <div class="col-md-6">{{ clinvar_panel() }}</div>
           {% endif %}
+          {% if 'mme_submitter' in current_user.roles %}
+            <div class="col-md-6">{{ matchmaker_panel() }}</div>
+          {% endif %}
+        </div>
+        <!-- end of data sharing panels -->
+
+        <div class="row">
+          <div class="col-md-12">{{ activity_panel(events) }}</div>
+        </div>
+
         </div>
       </div>
     </div>
@@ -121,7 +131,7 @@
 
 {% macro related_causatives_list() %}
   <div class="panel panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case 
+    <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
       that have been marked as causative in another case for this insitute">
       Matching causatives from other cases
     </div>
@@ -278,7 +288,7 @@
 
 {% macro candidates_list() %}
   <div class="panel panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that has been 
+    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been
                                                             marked causative for this case">
       Causative variants
     </div>
@@ -325,7 +335,7 @@
         <div class="panel-body">No variants marked causative</div>
       {% endfor %}
     </ul>
-    <div data-toggle='tooltip' class="panel-heading panel-heading-secondary" 
+    <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
          title="Displays all variants that has been pinned for this case">
       Pinned variants
     </div>
@@ -500,18 +510,155 @@
 {% macro clinvar_panel() %}
   <div class="panel panel-default">
     <div class="panel-heading">Variants in Clinvar submissions</div>
-    <ul>
-      {% for var_id, submission_data in case.clinvar_variants.items() %}
-        <li>
-          {% if submission_data.category == 'snv' %}
-            <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
-          {% else %}
-            <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
+    <div class="panel-body">
+      <ul>
+        {% for var_id, submission_data in case.clinvar_variants.items() %}
+          <li>
+            {% if submission_data.category == 'snv' %}
+              <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
+            {% else %}
+              <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div> <!--end of <div class="panel-body">-->
   </div>
+{% endmacro %}
+
+{% macro matchmaker_panel() %}
+<div class="panel panel-default">
+    <div class="panel-heading">Matching patients</div>
+    <div class="panel-body">
+      {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
+        <p>This case is in MatchMaker!</p>
+        <p>
+          <div class="text-center">
+            <div class="btn-group" role="group" aria-label="...">
+              <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-default" role="button">Matches</a>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Match against&nbsp;<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</a></li>
+                  {% if mme_nodes|length >1 %}
+                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
+                  {% endif %}
+                  {% for node in mme_nodes %}
+                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">External node-> {{node.description}}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <a class="btn btn-default" href="#mme_form" data-toggle="collapse">Modify submission</a>
+            </div>
+          </div>
+        </p>
+      {% else %} <!-- display option to submit case to MatchMaker -->
+        <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
+      {% endif %}
+      <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
+          <div id="mme_form" class="collapse">
+            <div class="d-flex justify-content-between">
+              <div class="flex-1">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="hpo">
+                        Include patient gender
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
+                        <label for="sex"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="hpo">
+                        Include HPO terms
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
+                        <label for="features"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="disorders">
+                        Include OMIM diagnoses
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
+                        <label for="disorders"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="genomicfeatures">
+                        Share variants
+                      </div>
+                      <div>
+                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
+                        <label for="genomicfeatures"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="genomicfeatures">
+                        Gene names only
+                      </div>
+                      <div>
+                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
+                        <label for="genomicfeatures"></label>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-default form-control" data-toggle="modal" type="submit">
+                {% if case.mme_submission %}
+                  Update case in MatchMaker
+                {% else %}
+                  Share to MatchMaker
+                {% endif %}</button>
+            </div>
+          </div>
+        </form>
+        {% if case.mme_submission %}
+          {{ modal_mme_delete() }}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+
+{% macro modal_mme_delete() %}
+  <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#mme_delete_confirm">
+    Remove case from MatchMaker
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          Confirm delete case from Matchmaker?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </form>
 {% endmacro %}
 
 
