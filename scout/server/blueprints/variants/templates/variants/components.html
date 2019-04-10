@@ -1,7 +1,8 @@
 {% macro gene_cell(variant) %}
-  {% for gene in variant.genes %}
-    <div data-toggle="tooltip" data-placement="right" data-html="true" title="
-    <div class='text-left'>
+  <div class="pull-left">
+    {% for gene in variant.genes %}
+      <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+      <div class='text-left'>
         <div>
           <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
         </div>
@@ -10,13 +11,29 @@
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
           </div>
         {% endif %}
+      </div>
+      ">
+        <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+          {{ gene.hgnc_symbol or gene.hgnc_id }}
+        </a>
+      </div>
+   
+    {% endfor %}
+  </div>
+  {% if variant.panels|count > 0 %}
+    <div
+       class="badge pull-right"
+       data-toggle="popover"
+       data-placement="right"
+       data-html="true"
+       data-trigger="hover click"
+       data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+       title=""
+       >
+      {{ variant.panels|count }}
     </div>
-    ">
-      <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-        {{ gene.hgnc_symbol or gene.hgnc_id }}
-      </a>
-    </div>
-  {% endfor %}
+  {% endif %}    
+    
 {% endmacro %}
 
 {% macro frequency_cell(variant) %}
