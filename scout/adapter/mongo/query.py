@@ -324,6 +324,7 @@ class QueryHandler(object):
         return gene_query
 
 
+
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
 
@@ -339,161 +340,147 @@ class QueryHandler(object):
 
         mongo_secondary_query = []
 
-        gnomad = query.get('gnomad_frequency')
-        if gnomad is not None:
-            # -1 means to exclude all variants that exists in gnomad
-            if gnomad == '-1':
-                mongo_query['gnomad_frequency'] = {'$exists': False}
-            else:
-                # Replace comma with dot
-                mongo_secondary_query.append(
-                    {
+        # loop over secondary query criteria
+        for criterion in SECONDARY_CRITERIA:
+            if not criterion in query:
+                continue
+
+            if criterion == 'gnomad_frequency':
+                gnomad = query.get('gnomad_frequency')
+                if gnomad == '-1':
+                    # -1 means to exclude all variants that exists in gnomad
+                    mongo_query['gnomad_frequency'] = {'$exists': False}
+                else:
+                    # Replace comma with dot
+                    mongo_secondary_query.append(
+                        {
+                            '$or': [
+                                {
+                                    'gnomad_frequency': {'$lt': float(gnomad)}
+                                },
+                                {
+                                    'gnomad_frequency': {'$exists': False}
+                                }
+                            ]
+                        }
+                    )
+                LOG.debug("Adding gnomad_frequency to query")
+
+            if criterion == 'local_obs':
+                local_obs = query.get('local_obs')
+                mongo_secondary_query.append({
+                    '$or': [
+                        {'local_obs_old': None},
+                        {'local_obs_old': {'$lt': local_obs + 1}},
+                    ]
+                })
+
+            if criterion in ['clingen_ngi', 'swegen']:
+                mongo_secondary_query.append({
+                    '$or': [
+                        { criterion : {'$exists': False}},
+                        { criterion : {'$lt': query[criterion] + 1}},
+                    ]
+                })
+
+            if criterion == 'spidex_human':
+                # construct spidex query. Build the or part starting with empty SPIDEX values
+                spidex_human = query['spidex_human']
+
+                spidex_query_or_part = []
+                if ( 'not_reported' in spidex_human):
+                    spidex_query_or_part.append({'spidex': {'$exists': False}})
+
+                for spidex_level in SPIDEX_HUMAN:
+                    if ( spidex_level in spidex_human ):
+                        spidex_query_or_part.append({'$or': [
+                                    {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['neg'][0]}},
+                                              {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['neg'][1]}}]},
+                                    {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['pos'][0]}},
+                                              {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['pos'][1]}} ]} ]})
+
+                mongo_secondary_query.append({'$or': spidex_query_or_part })
+
+            if criterion == 'cadd_score':
+                cadd = query['cadd_score']
+                cadd_query = {'cadd_score': {'$gt': float(cadd)}}
+                LOG.debug("Adding cadd_score: %s to query", cadd)
+
+                if query.get('cadd_inclusive') is True:
+                    cadd_query = {
                         '$or': [
-                            {
-                                'gnomad_frequency': {'$lt': float(gnomad)}
-                            },
-                            {
-                                'gnomad_frequency': {'$exists': False}
-                            }
-                        ]
-                    }
-                )
-            LOG.debug("Adding gnomad_frequency to query")
+                            cadd_query,
+                            {'cadd_score': {'$exists': False}}
+                            ]}
+                    LOG.debug("Adding cadd inclusive to query")
 
-        local_obs = query.get('local_obs')
-        if  local_obs is not None:
-            mongo_secondary_query.append({
-                '$or': [
-                    {'local_obs_old': None},
-                    {'local_obs_old': {'$lt': local_obs + 1}},
-                ]
-            })
+                mongo_secondary_query.append(cadd_query)
 
-        if query.get('clingen_ngi') is not None:
-            mongo_secondary_query.append({
-                '$or': [
-                    {'clingen_ngi': {'$exists': False}},
-                    {'clingen_ngi': {'$lt': query['clingen_ngi'] + 1}},
-                ]
-            })
+            if criterion in ['genetic_models', 'functional_annotations', 'region_annotations']:
+                criterion_values = query[criterion]
+                if criterion == 'genetic_models':
+                    mongo_secondary_query.append({criterion: {'$in': criterion_values}})
+                else:
+                    # filter key will be genes.[criterion (minus final char)] 
+                    mongo_secondary_query.append({ '.'.join(['genes', criterion[:-1]]) : {'$in': criterion_values}})
 
-        if query.get('swegen') is not None:
-            mongo_secondary_query.append({
-                '$or': [
-                    {'swegen': {'$exists': False}},
-                    {'swegen': {'$lt': query['swegen'] + 1}},
-                ]
-            })
+                LOG.debug("Adding {0}: {1} to query".format(criterion, ', '.join(criterion_values)))
 
-        if query.get('spidex_human'):
-            # construct spidex query. Build the or part starting with empty SPIDEX values
-            spidex_human = query['spidex_human']
+            if criterion == 'size':
+                size = query['size']
+                size_query = {'length': {'$gt': int(size)}}
+                LOG.debug("Adding length: %s to query" % size)
 
-            spidex_query_or_part = []
-            if ( 'not_reported' in spidex_human):
-                spidex_query_or_part.append({'spidex': {'$exists': False}})
-
-            for spidex_level in SPIDEX_HUMAN:
-                if ( spidex_level in spidex_human ):
-                    spidex_query_or_part.append({'$or': [
-                                {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['neg'][0]}},
-                                          {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['neg'][1]}}]},
-                                {'$and': [{'spidex': {'$gt': SPIDEX_HUMAN[spidex_level]['pos'][0]}},
-                                          {'spidex': {'$lt': SPIDEX_HUMAN[spidex_level]['pos'][1]}} ]} ]})
-
-            mongo_secondary_query.append({'$or': spidex_query_or_part })
-
-        if query.get('cadd_score') is not None:
-            cadd = query['cadd_score']
-            cadd_query = {'cadd_score': {'$gt': float(cadd)}}
-            LOG.debug("Adding cadd_score: %s to query", cadd)
-
-            if query.get('cadd_inclusive') is True:
-                cadd_query = {
-                    '$or': [
-                        cadd_query,
-                        {'cadd_score': {'$exists': False}}
+                if query.get('size_shorter'):
+                    size_query = {
+                        '$or': [
+                            {'length': {'$lt': int(size)}},
+                            {'length': {'$exists': False}}
                         ]}
-                LOG.debug("Adding cadd inclusive to query")
+                    LOG.debug("Adding size less than, undef inclusive to query.")
 
-            mongo_secondary_query.append(cadd_query)
+                mongo_secondary_query.append(size_query)
 
-        if query.get('genetic_models'):
-            models = query['genetic_models']
-            mongo_secondary_query.append({'genetic_models': {'$in': models}})
+            if criterion == 'svtype':
+                svtype = query['svtype']
+                mongo_secondary_query.append({'sub_category': {'$in': svtype}})
+                LOG.debug("Adding SV_type %s to query" %
+                             ', '.join(svtype))
 
-            LOG.debug("Adding genetic_models: %s to query" %
-                         ', '.join(models))
+            if criterion == 'decipher':
+                mongo_query['decipher'] = {'$exists': True}
+                LOG.debug("Adding decipher to query")
 
-        if query.get('functional_annotations'):
-            functional = query['functional_annotations']
-            mongo_secondary_query.append({'genes.functional_annotation': {'$in': functional}})
+            if criterion == 'depth':
+                LOG.debug("add depth filter")
+                mongo_secondary_query.append({
+                    'tumor.read_depth': {
+                        '$gt': query.get('depth'),
+                    }
+                })
 
-            LOG.debug("Adding functional_annotations %s to query" %
-                         ', '.join(functional))
+            if criterion == 'alt_count':
+                LOG.debug("add min alt count filter")
+                mongo_secondary_query.append({
+                    'tumor.alt_depth': {
+                        '$gt': query.get('alt_count'),
+                    }
+                })
 
-        if query.get('region_annotations'):
-            region = query['region_annotations']
-            mongo_secondary_query.append({'genes.region_annotation': {'$in': region}})
+            if criterion == 'control_frequency':
+                LOG.debug("add minimum control frequency filter")
+                mongo_secondary_query.append({
+                    'normal.alt_freq': {
+                        '$lt': float(query.get('control_frequency')),
+                    }
+                })
 
-            LOG.debug("Adding region_annotations %s to query" %
-                         ', '.join(region))
-
-        if query.get('size'):
-            size = query['size']
-            size_query = {'length': {'$gt': int(size)}}
-            LOG.debug("Adding length: %s to query" % size)
-
-            if query.get('size_shorter'):
-                size_query = {
-                    '$or': [
-                        {'length': {'$lt': int(size)}},
-                        {'length': {'$exists': False}}
-                    ]}
-                LOG.debug("Adding size less than, undef inclusive to query.")
-
-            mongo_secondary_query.append(size_query)
-
-        if query.get('svtype'):
-            svtype = query['svtype']
-            mongo_secondary_query.append({'sub_category': {'$in': svtype}})
-            LOG.debug("Adding SV_type %s to query" %
-                         ', '.join(svtype))
-
-        if query.get('decipher'):
-            mongo_query['decipher'] = {'$exists': True}
-            LOG.debug("Adding decipher to query")
-
-        if query.get('depth'):
-            LOG.debug("add depth filter")
-            mongo_secondary_query.append({
-                'tumor.read_depth': {
-                    '$gt': query.get('depth'),
-                }
-            })
-
-        if query.get('alt_count'):
-            LOG.debug("add min alt count filter")
-            mongo_secondary_query.append({
-                'tumor.alt_depth': {
-                    '$gt': query.get('alt_count'),
-                }
-            })
-
-        if query.get('control_frequency'):
-            LOG.debug("add minimum control frequency filter")
-            mongo_secondary_query.append({
-                'normal.alt_freq': {
-                    '$lt': float(query.get('control_frequency')),
-                }
-            })
-
-        if query.get('mvl_tag'):
-            LOG.debug("add managed variant list filter")
-            mongo_secondary_query.append({
-                'mvl_tag': {
-                    '$exists': True,
-                }
-            })
+            if criterion == 'mvl_tag':
+                LOG.debug("add managed variant list filter")
+                mongo_secondary_query.append({
+                    'mvl_tag': {
+                        '$exists': True,
+                    }
+                })
 
         return mongo_secondary_query
