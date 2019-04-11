@@ -15,6 +15,7 @@ from flask import (abort, Blueprint, current_app, redirect, render_template,
                    request, url_for, send_from_directory, jsonify, Response, flash, send_file)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+import weasyprint
 from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
 from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
@@ -24,6 +25,7 @@ from . import controllers
 
 from .forms import GeneVariantFiltersForm
 
+weasyprint.LOGGER.warning = lambda *a, **kw: None
 log = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',

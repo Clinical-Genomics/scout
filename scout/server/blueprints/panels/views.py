@@ -4,6 +4,8 @@ import datetime
 
 from flask import abort, Blueprint, request, redirect, url_for, flash, render_template
 from flask_weasyprint import HTML, render_pdf
+import weasyprint
+
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -11,6 +13,7 @@ from scout.server.utils import templated, user_institutes
 from .forms import PanelGeneForm
 from . import controllers
 
+weasyprint.LOGGER.warning = lambda *a, **kw: None
 log = logging.getLogger(__name__)
 panels_bp = Blueprint('panels', __name__, template_folder='templates')
 
