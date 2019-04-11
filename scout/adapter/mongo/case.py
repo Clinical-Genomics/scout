@@ -105,14 +105,14 @@ class CaseHandler(object):
                 if name_value:
                     query['phenotype_terms.phenotype_id'] = name_query
                 else: # query for cases with no HPO terms
-                    query['phenotype_terms'] = {'$size' : 0}
+                    query['$or'] = [ {'phenotype_terms' : {'$size' : 0}}, {'phenotype_terms' : {'$exists' : False}} ]
             elif name_query.startswith('PG:'):
                 LOG.debug("PG case query")
                 if name_value:
                     phenotype_group_query = name_query.replace('PG:', 'HP:')
                     query['phenotype_groups.phenotype_id'] = phenotype_group_query
                 else: # query for cases with no phenotype groups
-                    query['phenotype_groups'] = {'$size' : 0}
+                    query['$or'] = [ {'phenotype_groups' : {'$size' : 0}}, {'phenotype_groups' : {'$exists' : False}} ]
             elif name_query.startswith('synopsis:'):
                 query['$text']={'$search':name_value}
             elif name_query.startswith('cohort:'):
