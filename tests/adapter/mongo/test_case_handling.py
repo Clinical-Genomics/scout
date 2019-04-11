@@ -58,6 +58,47 @@ def test_get_cases(adapter, case_obj):
     assert result.count() == 1
 
 
+def test_get_cases_no_HPO(adapter, case_obj):
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN providing an empty value for term HP:
+    name_query='HP:'
+    # Then case should be returned
+    cases = list(adapter.cases(owner=case_obj['owner'], name_query=name_query))
+    assert cases == [case_obj]
+
+    # WHEN providing an empty value for phenotype group:
+    name_query='PG:'
+    # Then case should be returned
+    cases = list(adapter.cases(owner=case_obj['owner'], name_query=name_query))
+    assert cases == [case_obj]
+
+    # Add phenotype group and HPO term to case object:
+    adapter.case_collection.find_one_and_update({
+        '_id' : case_obj['_id']
+        },
+        {
+            '$set' : {
+                'phenotype_groups': [{'phenotype_id' : 'test_pg'}],
+                'phenotype_terms' : [{'phenotype_id' : 'test_hp'}],
+            }
+        }
+    )
+    # WHEN providing an empty value for term HP:
+    name_query='HP:'
+    # Then case should NOT be returned
+    cases = list(adapter.cases(owner=case_obj['owner'], name_query=name_query))
+    assert cases == []
+
+    # WHEN providing an empty value for phenotype group:
+    name_query='PG:'
+    # Then case should NOT be returned
+    cases = list(adapter.cases(owner=case_obj['owner'], name_query=name_query))
+    assert cases == []
+
+
 def test_get_cases_no_assignees(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
@@ -74,12 +115,12 @@ def test_get_cases_display_name(real_adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
-    
+
     other_case = case_obj
     other_case['_id'] = 'other_case'
     other_case['display_name'] = 'other_case'
     adapter.case_collection.insert_one(other_case)
-    
+
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query='643')
     # THEN we should get the correct case
@@ -103,7 +144,7 @@ def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     assert adapter.cases().count() == 0
 
     adapter.user_collection.insert_one(user_obj)
-    
+
     user_obj = adapter.user_collection.find_one()
     case_obj['assignees'] = [user_obj['email']]
     adapter.case_collection.insert_one(case_obj)
@@ -152,7 +193,7 @@ def test_get_cases_causatives_no_causatives(adapter, case_obj):
     # Insert a case without causatives
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN retreiving all cases that have causatives 
+    # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should get the correct case
     assert result.count() == 0
@@ -166,7 +207,7 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     # Insert the case
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN retreiving all cases that have causatives 
+    # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should not find any cases
     assert result.count() == 0
