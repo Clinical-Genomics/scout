@@ -1,7 +1,31 @@
 # -*- coding: utf-8 -*-
 
-# These terms are used by the function that creates a variant query dictionary in adapter
+# These terms are used by the function that creates a variant query dictionary in adapters
 
+# Always respected. Always added as top level,
+# with implicit '$and'
+FUNDAMENTAL_CRITERIA = [
+    'case_id',
+    'variant_ids',
+    'category',
+    'variant_type',
+    'hgnc_symbols',
+    'gene_panels',
+    'chrom',
+    'variant_ids'
+]
+
+# If there is only one primary criterion given without any secondary, it will also be
+# added as a top level '$and'.
+# Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
+# are joined together with them as a single lower level '$and'.
+PRIMARY_CRITERIA = [
+    'clinsig'
+]
+
+# Secondary, excluding filter criteria will hide variants in general,
+# but can be overridden by an including, major filter criteria
+# such as a Pathogenic ClinSig.
 SECONDARY_CRITERIA = [
     'gnomad_frequency',
     'local_obs',
@@ -19,8 +43,4 @@ SECONDARY_CRITERIA = [
     'alt_count',
     'control_frequency',
     'mvl_tag'
-]
-
-PRIMARY_CRITERIA = [
-    'clinsig'
 ]

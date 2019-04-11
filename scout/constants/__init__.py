@@ -19,7 +19,7 @@ from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP, CAN
                         REV_PHENOTYPE_MAP, CASE_STATUSES, VERBS_MAP, VERBS)
 from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
 from .phenotype import (PHENOTYPE_GROUPS, COHORT_TAGS)
-from .query_terms import (PRIMARY_CRITERIA, SECONDARY_CRITERIA)
+from .query_terms import (FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA)
 from .file_types import FILE_TYPE_MAP
 from .clinvar import (CLINVAR_HEADER, CASEDATA_HEADER)
 from .variants_export import (EXPORT_HEADER, VCF_HEADER, MT_EXPORT_HEADER, VERIFIED_VARIANTS_HEADER)

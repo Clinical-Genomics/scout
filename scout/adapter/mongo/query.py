@@ -1,6 +1,6 @@
 import logging
 import re
-from scout.constants import PRIMARY_CRITERIA, SECONDARY_CRITERIA
+from scout.constants import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 
 LOG = logging.getLogger(__name__)
 
@@ -91,39 +91,46 @@ class QueryHandler(object):
         """
         query = query or {}
         mongo_query = {}
+        gene_query = None
 
         ##### Base query params
 
-        # set up the basic query params: case_id, category, type and restrict to list of variants (if var list is provided)
-        LOG.debug("Building a mongo query for %s" % case_id)
-        mongo_query['case_id'] = case_id
+        # set up the fundamental query params: case_id, category, type and
+        # restrict to list of variants (if var list is provided)
+        for criterion in FUNDAMENTAL_CRITERIA:
+            if criterion == 'case_id':
+                LOG.debug("Building a mongo query for %s" % case_id)
+                mongo_query['case_id'] = case_id
 
-        if variant_ids:
-            LOG.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
-            mongo_query['variant_id'] = {'$in': variant_ids}
+            elif criterion == 'variant_ids' and variant_ids:
+                LOG.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
+                mongo_query['variant_id'] = {'$in': variant_ids}
 
-        LOG.debug("Querying category %s" % category)
-        mongo_query['category'] = category
+            elif criterion == 'category':
+                LOG.debug("Querying category %s" % category)
+                mongo_query['category'] = category
 
-        mongo_query['variant_type'] = query.get('variant_type', 'clinical')
-        LOG.debug("Set variant type to %s", mongo_query['variant_type'])
+            elif criterion == 'variant_type':
+                mongo_query['variant_type'] = query.get('variant_type', 'clinical')
+                LOG.debug("Set variant type to %s", mongo_query['variant_type'])
 
-        # Requests to filter based on gene panels, hgnc_symbols or
-        # coordinate ranges must always be honored. They are always added to
-        # query as top level, implicit '$and'. When both hgnc_symbols and a
-        # panel is used, addition of this is delayed until after the rest of
-        # the query content is clear.
-        gene_query = self.gene_filter(query, mongo_query)
+            # Requests to filter based on gene panels, hgnc_symbols or
+            # coordinate ranges must always be honored. They are always added to
+            # query as top level, implicit '$and'. When both hgnc_symbols and a
+            # panel is used, addition of this is delayed until after the rest of
+            # the query content is clear.
 
-        if query.get('chrom'):
-            self.coordinate_filter(query, mongo_query)
+            elif criterion in ['hgnc_symbols', 'gene_panels'] and gene_query is None:
+                gene_query = self.gene_filter(query, mongo_query)
 
-        if variant_ids:
-            mongo_query['variant_id'] = {'$in': variant_ids}
+            elif criterion == 'chrom' and query.get('chrom'): # filter by coordinates
+                self.coordinate_filter(query, mongo_query)
 
-            LOG.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
-        ##### end of base query params
+            elif criterion == 'variant_ids' and variant_ids:
+                LOG.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
+                mongo_query['variant_id'] = {'$in': variant_ids}
 
+            ##### end of fundamental query params
 
         ##### start of the custom query params
         # there is only 'clinsig' criterion among the primary terms right now
@@ -421,7 +428,7 @@ class QueryHandler(object):
                 if criterion == 'genetic_models':
                     mongo_secondary_query.append({criterion: {'$in': criterion_values}})
                 else:
-                    # filter key will be genes.[criterion (minus final char)] 
+                    # filter key will be genes.[criterion (minus final char)]
                     mongo_secondary_query.append({ '.'.join(['genes', criterion[:-1]]) : {'$in': criterion_values}})
 
                 LOG.debug("Adding {0}: {1} to query".format(criterion, ', '.join(criterion_values)))
