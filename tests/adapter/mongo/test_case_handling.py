@@ -61,10 +61,10 @@ def test_get_cases(adapter, case_obj):
 def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 
     adapter = real_adapter
-    # GIVEN an empty database (no cases)
+    # GIVEN a real database with no cases
     assert real_adapter.cases().count() == 0
 
-    # Insert a case, an instutute and a user
+    # Insert a case
     adapter.case_collection.insert_one(case_obj)
     assert adapter.case_collection.find().count() == 1
 
