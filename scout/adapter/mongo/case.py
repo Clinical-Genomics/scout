@@ -96,7 +96,6 @@ class CaseHandler(object):
             query['cohorts'] = {'$exists': True, '$ne': []}
 
         if name_query:
-            LOG.info('name_query is:{}'.format(name_query))
             name_value = name_query.split(':')[-1] # capture ant value provided after query descriptor
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
