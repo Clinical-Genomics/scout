@@ -114,7 +114,10 @@ class CaseHandler(object):
                 else: # query for cases with no phenotype groups
                     query['$or'] = [ {'phenotype_groups' : {'$size' : 0}}, {'phenotype_groups' : {'$exists' : False}} ]
             elif name_query.startswith('synopsis:'):
-                query['$text']={'$search':name_value}
+                if name_value:
+                    query['$text']={'$search':name_value}
+                else: # query for cases with missing synopsis
+                    query['synopsis'] = ''
             elif name_query.startswith('cohort:'):
                 query['cohorts'] = name_value
             elif name_query.startswith('panel:'):
