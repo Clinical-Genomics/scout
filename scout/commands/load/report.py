@@ -8,7 +8,6 @@ LOG = logging.getLogger(__name__)
 
 @click.command()
 @click.argument('case_id')
-@click.argument('analysis_date')
 @click.argument('report_path', type=click.Path(exists=True))
 @click.argument('update', required=False)
 @click.pass_context
@@ -19,8 +18,8 @@ def delivery_report(context, case_id, analysis_date, report_path,
     adapter = context.obj['adapter']
 
     try:
-        load_delivery_report(adapter, case_id, analysis_date,
-                             report_path, update)
+        load_delivery_report(adapter=adapter, case_id=case_id,
+                             report_path=report_path, update=update)
         LOG.info("saved report to case!")
     except Exception as e:
         LOG.error(e)
