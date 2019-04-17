@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 @click.command('delivery-report')
 @click.argument('case_id')
 @click.argument('report_path', type=click.Path(exists=True))
-@click.argument('update', required=False)
+@click.option('-update', '--update', is_flag=True, help='update delivery report for a sample')
 @click.pass_context
 def delivery_report(context, case_id, report_path,
                     update):
