@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MatchMaker Exchange integration
 
 ### Fixed
+- Variant query builder split into several functions
 
 
 ## [4.3.3]
