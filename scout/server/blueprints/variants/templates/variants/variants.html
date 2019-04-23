@@ -151,6 +151,11 @@
       <span class="glyphicon glyphicon-comment"></span>
     </a>
   {% endif %}
+
+  {% if variant._id in case.suspects %}
+    <span class="glyphicon glyphicon-pushpin"></span>
+  {% endif %}
+    
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
