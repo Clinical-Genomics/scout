@@ -346,10 +346,11 @@ class QueryHandler(object):
         LOG.debug('Creating a query object with secondary parameters')
 
         mongo_secondary_query = []
+        LOG.info('query: {}'.format(query))
 
         # loop over secondary query criteria
         for criterion in SECONDARY_CRITERIA:
-            if not criterion in query:
+            if not query.get(criterion):
                 continue
 
             if criterion == 'gnomad_frequency':
