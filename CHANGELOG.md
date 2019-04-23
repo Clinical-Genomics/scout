@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - List cases with empty synopsis, missing HPO terms and phenotype groups.
 
 ### Fixed
+- Variant query builder split into several functions
 
 
 ## [4.3.3]
