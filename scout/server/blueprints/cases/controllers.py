@@ -375,7 +375,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     """Update synopsis."""
     # create event only if synopsis was actually changed
-    if new_synopsis and case_obj['synopsis'] != new_synopsis:
+    if case_obj['synopsis'] != new_synopsis:
         link = url_for('cases.case', institute_id=institute_obj['_id'],
                        case_name=case_obj['display_name'])
         store.update_synopsis(institute_obj, case_obj, user_obj, link,
