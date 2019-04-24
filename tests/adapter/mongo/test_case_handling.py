@@ -82,6 +82,24 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
     assert len(cases) == 0
 
+def test_get_research_case(real_adapter, case_obj, institute_obj):
+    adapter = real_adapter
+
+    # GIVEN a real database with no cases
+    assert real_adapter.cases().count() == 0
+
+    # WHEN flagging case_obj as research
+    case_obj['is_research'] = True
+
+    # AND WHEN inserting such case
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find().count() == 1
+
+    # THEN searching for reasearch cases should return one case
+    research_cases = list(adapter.cases(owner=case_obj['owner'], is_research=True))
+    assert len(research_cases) == 1
+
+
 def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 
     adapter = real_adapter
