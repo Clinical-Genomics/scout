@@ -14,7 +14,7 @@ def test_load_delivery_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    result =  runner.invoke(app_cli, ['load', 'delivery_report',
+    result =  runner.invoke(app_cli, ['load', 'delivery-report',
         case_obj['_id'],
         delivery_report_path,
         '-update'
