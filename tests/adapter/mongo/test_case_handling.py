@@ -4,10 +4,10 @@ import logging
 import datetime
 from pprint import pprint as pp
 
+from scout.constants import INDEXES
 from scout.exceptions import (IntegrityError)
 
 logger = logging.getLogger(__name__)
-
 
 def test_add_cases(adapter, case_obj):
     # GIVEN an empty database (no cases)
@@ -58,6 +58,90 @@ def test_get_cases(adapter, case_obj):
     assert result.count() == 1
 
 
+def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
+
+    adapter = real_adapter
+    # GIVEN a real database with no cases
+    assert real_adapter.cases().count() == 0
+
+    # Insert a case
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find().count() == 1
+
+    # WHEN providing an empty value for synopsis:
+    assert case_obj['synopsis'] == ''
+    name_query='synopsis:'
+    # Then case should be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert len(cases) == 1
+
+    # After adding synopsis to case
+    link = 'synopsislink'
+    synopsis = "Recurrent seizures"
+    updated_case = adapter.update_synopsis(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        content=synopsis
+    )
+
+    # WHEN providing an empty value for synopsis:
+    assert case_obj['synopsis'] == ''
+    name_query='synopsis:'
+    # Then case should NOT be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert len(cases) == 0
+
+    # but if a term contained in case synopsis is provided in name query:
+    name_query='synopsis:seizures'
+
+    # Then updated case should be returned
+    cases = list(adapter.cases(collaborator=updated_case['owner'], name_query=name_query))
+    assert len(cases) == 1
+
+
+def test_get_cases_no_HPO(adapter, case_obj):
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN providing an empty value for term HP:
+    name_query='HP:'
+    # Then case should be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert cases == [case_obj]
+
+    # WHEN providing an empty value for phenotype group:
+    name_query='PG:'
+    # Then case should be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert cases == [case_obj]
+
+    # Add phenotype group and HPO term to case object:
+    adapter.case_collection.find_one_and_update({
+        '_id' : case_obj['_id']
+        },
+        {
+            '$set' : {
+                'phenotype_groups': [{'phenotype_id' : 'test_pg'}],
+                'phenotype_terms' : [{'phenotype_id' : 'test_hp'}],
+            }
+        }
+    )
+    # WHEN providing an empty value for term HP:
+    name_query='HP:'
+    # Then case should NOT be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert cases == []
+
+    # WHEN providing an empty value for phenotype group:
+    name_query='PG:'
+    # Then case should NOT be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert cases == []
+
+
 def test_get_cases_no_assignees(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
@@ -74,12 +158,12 @@ def test_get_cases_display_name(real_adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
-    
+
     other_case = case_obj
     other_case['_id'] = 'other_case'
     other_case['display_name'] = 'other_case'
     adapter.case_collection.insert_one(other_case)
-    
+
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query='643')
     # THEN we should get the correct case
@@ -103,7 +187,7 @@ def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     assert adapter.cases().count() == 0
 
     adapter.user_collection.insert_one(user_obj)
-    
+
     user_obj = adapter.user_collection.find_one()
     case_obj['assignees'] = [user_obj['email']]
     adapter.case_collection.insert_one(case_obj)
@@ -152,7 +236,7 @@ def test_get_cases_causatives_no_causatives(adapter, case_obj):
     # Insert a case without causatives
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN retreiving all cases that have causatives 
+    # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should get the correct case
     assert result.count() == 0
@@ -166,7 +250,7 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     # Insert the case
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN retreiving all cases that have causatives 
+    # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should not find any cases
     assert result.count() == 0
