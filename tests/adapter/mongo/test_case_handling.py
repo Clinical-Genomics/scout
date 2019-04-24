@@ -57,6 +57,30 @@ def test_get_cases(adapter, case_obj):
     # THEN we should get the correct case
     assert result.count() == 1
 
+def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
+    adapter = real_adapter
+
+    # GIVEN a real database with no cases
+    assert real_adapter.cases().count() == 0
+
+    # Insert a case
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find().count() == 1
+
+    # WHEN flagging the case as active
+    adapter.update_status(institute_obj, case_obj, user_obj, 'active', 'blank')
+
+    # WHEN querying for active cases,
+    name_query='status:active'
+    # THEN a case should be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert len(cases) == 1
+
+    # BUT WHEN querying for inactive cases
+    name_query='status:inactive'
+    # THEN no case should be returned.
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert len(cases) == 0
 
 def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 
