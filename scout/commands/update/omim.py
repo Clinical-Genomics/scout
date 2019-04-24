@@ -7,7 +7,6 @@ from pprint import pprint as pp
 from scout.parse.omim import (parse_genemap2, parse_mim2gene, parse_omim_morbid, parse_mim_titles,
                               get_mim_genes, get_mim_phenotypes)
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('omim', short_help='Update omim gene panel')

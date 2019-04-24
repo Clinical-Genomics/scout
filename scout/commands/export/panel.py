@@ -8,7 +8,6 @@ from scout.commands.utils import builds_option
 from scout.export.panel import (export_gene_panels, export_panels)
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('panel', short_help='Export gene panels')

@@ -3,7 +3,6 @@ from flask.cli import with_appcontext
 from scout.server.extensions import store
 import click
 
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 @click.group()

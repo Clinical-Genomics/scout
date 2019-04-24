@@ -12,7 +12,6 @@ from scout.server.extensions import store
 
 from .utils import (build_option, json_option)
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('genes', short_help='Export genes')

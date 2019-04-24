@@ -8,7 +8,6 @@ from scout.commands.utils import builds_option
 from scout.export.transcript import export_transcripts
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('transcripts', short_help='Export transcripts')

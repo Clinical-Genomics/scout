@@ -14,7 +14,6 @@ from scout.parse.case import (parse_case_data)
 from scout.exceptions import IntegrityError, ConfigError
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('case', short_help='Load a case')

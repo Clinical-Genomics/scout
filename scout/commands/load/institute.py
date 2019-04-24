@@ -3,7 +3,6 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 from scout.load import load_institute

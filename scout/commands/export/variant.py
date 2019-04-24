@@ -12,7 +12,6 @@ from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('verified', short_help='Export validated variants')

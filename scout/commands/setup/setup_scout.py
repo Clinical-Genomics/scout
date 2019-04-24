@@ -23,7 +23,6 @@ from scout.adapter import MongoAdapter
 
 from scout.load.setup import setup_scout
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 def abort_if_false(ctx, param, value):

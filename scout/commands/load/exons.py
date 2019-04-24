@@ -12,7 +12,6 @@ from scout.utils.handle import get_file_handle
 from scout.utils.requests import (fetch_ensembl_exons)
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('exons', short_help='Load exons')

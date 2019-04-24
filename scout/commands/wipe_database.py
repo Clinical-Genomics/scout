@@ -15,9 +15,7 @@ import click
 
 from flask.cli import with_appcontext, current_app
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
-
 
 def abort_if_false(ctx, param, value):
     if not value:

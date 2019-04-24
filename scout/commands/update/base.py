@@ -19,7 +19,6 @@ from .phenotype_groups import groups as groups_command
 LOG = logging.getLogger(__name__)
 
 
-
 @click.group()
 @click.pass_context
 def update(context):

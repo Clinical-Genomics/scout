@@ -20,7 +20,6 @@ from scout.utils.handle import get_file_handle
 from scout.utils.requests import fetch_mim_files
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('diseases', short_help='Update disease terms')

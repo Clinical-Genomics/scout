@@ -11,7 +11,6 @@ from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes)
 from scout.commands.utils import abort_if_false
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('hpo', short_help='Update hpo terms')

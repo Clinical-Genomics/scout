@@ -28,7 +28,7 @@ from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
 from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes, fetch_hgnc, fetch_ensembl_genes,
                                   fetch_exac_constraint, fetch_ensembl_transcripts)
-logging.basicConfig(level=logging.DEBUG)
+
 LOG = logging.getLogger(__name__)
 
 @click.command('genes', short_help='Update all genes')

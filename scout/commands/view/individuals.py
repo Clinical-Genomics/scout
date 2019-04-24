@@ -5,7 +5,6 @@ from flask.cli import with_appcontext
 from scout.server.extensions import store
 from scout.constants import (SEX_MAP, PHENOTYPE_MAP)
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 

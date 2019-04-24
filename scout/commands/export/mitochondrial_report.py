@@ -11,7 +11,6 @@ from scout.constants import MT_EXPORT_HEADER
 from scout.export.variant import export_mt_variants
 from scout.server.extensions import store
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('mt_report', short_help='Mitochondrial variants Excel report')

@@ -13,7 +13,6 @@ from scout.constants import CASE_STATUSES
 from scout.server.extensions import store
 from .utils import json_option
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 @click.command('cases', short_help='Fetch cases')

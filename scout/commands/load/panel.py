@@ -14,7 +14,6 @@ from scout.load.panel import (load_panel_app, load_panel)
 
 from scout.exceptions import IntegrityError
 
-logging.basicConfig(level=logging.DEBUG)
 LOG = logging.getLogger(__name__)
 
 
