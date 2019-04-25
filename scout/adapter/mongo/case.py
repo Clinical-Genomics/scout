@@ -15,7 +15,6 @@ from scout.exceptions import IntegrityError, ConfigError
 
 LOG = logging.getLogger(__name__)
 
-
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
@@ -84,7 +83,7 @@ class CaseHandler(object):
             query['research_requested'] = True
 
         if is_research:
-            query['is_research'] = True
+            query['is_research'] = {'$exists': True, '$eq': True}
 
         if phenotype_terms:
             query['phenotype_terms'] = {'$exists': True, '$ne': []}
@@ -123,6 +122,11 @@ class CaseHandler(object):
             elif name_query.startswith('panel:'):
                 query['panels'] = {'$elemMatch': {'panel_name': name_value,
                                     'is_default': True }}
+            elif name_query.startswith('status:'):
+                status_query = name_query.replace('status:','')
+                query['status'] = status_query
+            elif name_query.startswith('is_research'):
+                query['is_research'] = {'$exists': True, '$eq': True}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
