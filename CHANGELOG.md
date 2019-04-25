@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a comment text field to Sanger order request form, allowing a message to be included in the email
 - MatchMaker Exchange integration
 - List cases with empty synopsis, missing HPO terms and phenotype groups.
+- Search for cases with open research list, or a given case status (active, inactive, archived)
 
 ### Fixed
 - Variant query builder split into several functions
