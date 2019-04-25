@@ -97,7 +97,13 @@
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
           </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"></input>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"
+          data-toggle="tooltip" data-placement="right" data-html="true" title="
+            <div class='text-left'>
+              Examples: case_id=<strong>18201</strong>, HPO-term=<strong>HP:0001166</strong>, synopsis=<strong>synopsis:epilepsy</strong>, panel=<strong>panel:NMD</strong>, status=<strong>status:active</strong>, phenotype group=<strong>PG:0100022</strong>, cohort=<strong>cohort:pedhep</strong>.<br>
+              Use key without value to search for cases with missing info (<strong>HP:</strong>,<strong>PG:</strong>,<strong>synopsis:</strong>).
+            </div>
+          "></input>
         </div>
       </div>
       <div class="col-md-2 col-xs-2">
@@ -124,10 +130,6 @@
           </label>
         </div>
       </div>
-    </div>
-    <div class="bottom-align-text">
-      <br>Examples: case_id=<strong>18201</strong>, HPO-term=<strong>HP:0001166</strong>, synopsis=<strong>synopsis:epilepsy</strong>, panel=<strong>panel:NMD</strong>, status=<strong>status:active</strong>, phenotype group=<strong>PG:0100022</strong>, cohort=<strong>cohort:pedhep</strong>.<br>
-      Use key without value to search for cases with missing info (<strong>HP:</strong>,<strong>PG:</strong>,<strong>synopsis:</strong>).
     </div>
   </form>
 {% endmacro %}
@@ -267,6 +269,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script>
     $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
