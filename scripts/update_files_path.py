@@ -66,7 +66,7 @@ def do_replace(db_uri, old_path, new_path, test):
             click.echo('fixing case {0}/{1} [{2},{3}] --> updated {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
 
             # update case object in database
-            if test is False:
+            if updates and test is False:
                 match_condition = {'_id' : case['_id']}
                 updated_case = db.case.find_one_and_update(match_condition,
                     {'$set':set_command}, return_document=pymongo.ReturnDocument.AFTER)
