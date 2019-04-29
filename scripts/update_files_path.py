@@ -63,9 +63,10 @@ def do_replace(db_uri, old_path, new_path, test):
             if case_individuals:
                 set_command['individuals'] = case['individuals']
 
-            click.echo('fixing case {0}/{1} [{2},{3}] --> updated {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
-
             if i < 5:
+                click.echo('fixing case {0}/{1} [{2},{3}] --> update {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
+
+
                 # update case object in database
                 if updates and test is False:
                     match_condition = {'_id' : case['_id']}
