@@ -63,7 +63,7 @@ def do_replace(db_uri, old_path, new_path, test):
             if case_individuals:
                 set_command['individuals'] = case['individuals']
 
-            if i < 5:
+            if i >= 1750 and i < 1756:
                 click.echo('fixing case {0}/{1} [{2},{3}] --> update {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
 
 
