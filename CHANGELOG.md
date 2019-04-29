@@ -7,6 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+
+### Fixed
+
+
+## [4.4.0]
+
+### Added
 - Displaying more info on the Causatives page and hiding those not causative at the case level
 - Add a comment text field to Sanger order request form, allowing a message to be included in the email
 - MatchMaker Exchange integration
@@ -15,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Variant query builder split into several functions
+- Fixed delivery report load bug
 
 
 ## [4.3.3]
