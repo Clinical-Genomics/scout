@@ -446,7 +446,7 @@ class CaseHandler(object):
         LOG.info("Saving case %s", case_obj['_id'])
         # update updated_at of case to "today"
 
-        case_obj['updated_at'] = datetime.datetime.now(),
+        case_obj['updated_at'] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
             {'_id': case_obj['_id']},
