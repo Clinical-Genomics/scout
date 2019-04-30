@@ -67,6 +67,8 @@ case = dict(
     rank_model_version=str,
     rank_score_threshold=int,  # default=8
 
+    sv_rank_model_version=str,
+
     phenotype_terms=list,  # List of dictionaries with phenotype information
     phenotype_groups=list,  # List of dictionaries with phenotype information
 

@@ -37,7 +37,8 @@ def test_load_case_rank_model_version(case_obj, panel_database):
     loaded_case = adapter.case(case_obj['_id'])
 
     assert loaded_case['rank_model_version'] == case_obj['rank_model_version']
-
+    assert loaded_case['sv_rank_model_version'] == case_obj['sv_rank_model_version']
+    
 
 def test_load_case_delivery_report(case_obj, panel_database):
     adapter = panel_database
