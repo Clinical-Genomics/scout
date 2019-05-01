@@ -145,6 +145,10 @@ def case(store, institute_obj, case_obj):
 
     case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
 
+    # if updated_at is a list, set it to the last update datetime
+    if case_obj.get('updated_at') and isinstance(case_obj['updated_at'], list):
+        case_obj['updated_at'] = max(case_obj['updated_at'])
+
     # Phenotype groups can be specific for an institute, there are some default groups
     pheno_groups = institute_obj.get('phenotype_groups') or PHENOTYPE_GROUPS
 
