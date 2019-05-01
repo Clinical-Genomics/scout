@@ -15,7 +15,6 @@ from scout.exceptions import IntegrityError, ConfigError
 
 LOG = logging.getLogger(__name__)
 
-
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
@@ -53,6 +52,10 @@ class CaseHandler(object):
         LOG.debug("Fetch all cases")
         query = query or {}
 
+        # Prioritize when both owner and collaborator params are present
+        if collaborator and owner:
+            collaborator = None
+
         if collaborator:
             LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
@@ -80,7 +83,7 @@ class CaseHandler(object):
             query['research_requested'] = True
 
         if is_research:
-            query['is_research'] = True
+            query['is_research'] = {'$exists': True, '$eq': True}
 
         if phenotype_terms:
             query['phenotype_terms'] = {'$exists': True, '$ne': []}
@@ -92,26 +95,38 @@ class CaseHandler(object):
             query['cohorts'] = {'$exists': True, '$ne': []}
 
         if name_query:
+            name_value = name_query.split(':')[-1] # capture ant value provided after query descriptor
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
             elif name_query.startswith('HP:'):
                 LOG.debug("HPO case query")
-                query['phenotype_terms.phenotype_id'] = name_query
+                if name_value:
+                    query['phenotype_terms.phenotype_id'] = name_query
+                else: # query for cases with no HPO terms
+                    query['$or'] = [ {'phenotype_terms' : {'$size' : 0}}, {'phenotype_terms' : {'$exists' : False}} ]
             elif name_query.startswith('PG:'):
                 LOG.debug("PG case query")
-                phenotype_group_query = name_query.replace('PG:', 'HP:')
-                query['phenotype_groups.phenotype_id'] = phenotype_group_query
+                if name_value:
+                    phenotype_group_query = name_query.replace('PG:', 'HP:')
+                    query['phenotype_groups.phenotype_id'] = phenotype_group_query
+                else: # query for cases with no phenotype groups
+                    query['$or'] = [ {'phenotype_groups' : {'$size' : 0}}, {'phenotype_groups' : {'$exists' : False}} ]
             elif name_query.startswith('synopsis:'):
-                synopsis_query=name_query.replace('synopsis:','')
-                query['$text']={'$search':synopsis_query}
+                if name_value:
+                    query['$text']={'$search':name_value}
+                else: # query for cases with missing synopsis
+                    query['synopsis'] = ''
             elif name_query.startswith('cohort:'):
-                cohort_query = name_query.replace('cohort:','')
-                query['cohorts'] = cohort_query
+                query['cohorts'] = name_value
             elif name_query.startswith('panel:'):
-                panel_name_query = name_query.replace('panel:','')
-                query['panels'] = {'$elemMatch': {'panel_name': panel_name_query,
+                query['panels'] = {'$elemMatch': {'panel_name': name_value,
                                     'is_default': True }}
+            elif name_query.startswith('status:'):
+                status_query = name_query.replace('status:','')
+                query['status'] = status_query
+            elif name_query.startswith('is_research'):
+                query['is_research'] = {'$exists': True, '$eq': True}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
@@ -321,7 +336,7 @@ class CaseHandler(object):
                     category=category,
                     rank_threshold=case_obj.get('rank_score_threshold', 0),
                 )
-            
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
@@ -332,6 +347,7 @@ class CaseHandler(object):
             self._add_case(case_obj)
 
         return case_obj
+
 
     def _add_case(self, case_obj):
         """Add a case to the database
@@ -364,6 +380,7 @@ class CaseHandler(object):
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
+            - mme_submission: If case was submitted to MatchMaker Exchange
 
             Args:
                 case_obj(dict): The new case information
@@ -404,6 +421,7 @@ class CaseHandler(object):
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
+                    'mme_submission': case_obj.get('mme_submission'),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER

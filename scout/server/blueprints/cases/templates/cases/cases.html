@@ -92,12 +92,24 @@
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
     <div class="row">
-      <div class="col-md-6 col-xs-6">
+      <div class="col-md-4 col-xs-4">
         <div class="input-group">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
           </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"></input>
+          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"
+          data-toggle="tooltip" data-placement="right" data-html="true" title="
+            <div class='text-left'>
+              <u>Examples:</u><br>case_id=<strong>18201</strong>,
+              HPO&nbsp;term=<strong>HP:0001166</strong>,
+              synopsis=<strong>synopsis:epilepsy</strong>,
+              panel=<strong>panel:NMD</strong>,
+              status=<strong>status:active</strong>,
+              phenotype&nbsp;group=<strong>PG:0100022</strong>,
+              cohort=<strong>cohort:pedhep</strong>.<br><br>
+              Use key without value to search for cases with missing info (<strong>HP:</strong>, <strong>PG:</strong>, <strong>synopsis:</strong>).
+            </div>
+          "></input>
         </div>
       </div>
       <div class="col-md-2 col-xs-2">
@@ -117,9 +129,13 @@
           </label>
         </div>
       </div>
-    </div>
-    <div class="bottom-align-text">
-      <br>Examples: case_id=<strong>18201</strong>, HPO-term=<strong>HP:0001166</strong>, synopsis=<strong>synopsis:epilepsy</strong>, panel=<strong>panel:NMD</strong>, phenotype group=<strong>PG:0100022</strong>, cohort=<strong>cohort:pedhep</strong>.
+      <div class="col-md-2 col-xs-2">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="is_research" {% if is_research %}checked{% endif %}> Hide non-research
+          </label>
+        </div>
+      </div>
     </div>
   </form>
 {% endmacro %}
@@ -129,10 +145,11 @@
     <thead>
       <tr>
         <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
-        <th class="col-xs-2">Status</th>
-        <th class="col-xs-2">Analysis date</th>
+        <th class="col-xs-1">Status</th>
+        <th class="col-xs-1">Analysis date</th>
         <th class="col-xs-2">Link</th>
         <th class="col-xs-2">Sequencing</th>
+        <th class="col-xs-2">Track</th>
         <th class="col-xs-2">Clinvar</th>
       </tr>
     </thead>
@@ -203,6 +220,8 @@
           {% set label_class = 'warning' %}
         {% elif analysis_type == 'tga' %}
           {% set label_class = 'info' %}
+        {% elif analysis_type == 'panel' %}
+          {% set label_class = 'info' %}
         {% else %}
           {% set label_class = 'default' %}
         {% endif %}
@@ -211,6 +230,9 @@
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
+    </td>
+    <td>
+      {{ case.display_track }}
     </td>
     <td>
       {% if case.clinvar_variants %}
@@ -253,6 +275,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script>
     $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });

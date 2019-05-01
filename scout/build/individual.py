@@ -79,5 +79,17 @@ def build_individual(ind):
     if not analysis_type in ANALYSIS_TYPES:
         raise PedigreeError("Analysis type %s not allowed", analysis_type)
     ind_obj['analysis_type'] = analysis_type
+    
+    if 'tmb' in ind:
+        ind_obj['tmb'] = ind['tmb']
+
+    if 'msi' in ind:
+        ind_obj['msi'] = ind['msi']
+
+    if 'tumor_purity' in ind:
+        ind_obj['tumor_purity'] = ind['tumor_purity']
+
+    if 'tumor_type' in ind:
+        ind_obj['tumor_type'] = ind['tumor_type']
 
     return ind_obj
