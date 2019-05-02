@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display SV rank model version when available
 
 ### Fixed
+- Fixed upload of delivery report via API 
 
 
 ## [4.4.0]

@@ -20,23 +20,23 @@
       </tr>
     </thead>
     <tbody>
-      {% for comment in comments %}    
+      {% for comment in comments %}
       <tr>
-	<td>
-	  <small> 
-	    <strong> {{ comment.user_name }} </strong>
-	    on {{ comment.created_at.date() }}
-	    {% if comment.level == 'global' %}
-              <span class='label label-info'>GLOBAL</span>
-            {% endif %}
-	    {% if comment.created_at < case.updated_at %}
-              <span class='label label-warning'>OLD</span>
-            {% endif %}
-	  </small>
-	</td>
-	<td>
-	  {{ comment.content }}
-	</td>
+      	<td>
+      	  <small>
+      	    <strong> {{ comment.user_name }} </strong>
+      	    on {{ comment.created_at.date() }}
+      	    {% if comment.level == 'global' %}
+                    <span class='label label-info'>GLOBAL</span>
+                  {% endif %}
+      	    {% if comment.created_at < case.updated_at %}
+                    <span class='label label-warning'>OLD</span>
+                  {% endif %}
+      	  </small>
+      	</td>
+      	<td>
+      	  {{ comment.content }}
+      	</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -140,4 +140,3 @@
     </div>
   </div>
 {% endmacro %}
-
