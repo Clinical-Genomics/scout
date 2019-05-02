@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-- Use the last case update date when multiple dates are available
+- Fixed upload of delivery report via API 
 
 
 ## [4.4.0]
