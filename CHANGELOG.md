@@ -4,13 +4,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [4.x.x]
+
+### Added
+
+
+### Fixed
+
+
+
+## [4.4.1]
 
 ### Added
 - Display SV rank model version when available
 
 ### Fixed
-- Fixed upload of delivery report via API 
+- Fixed upload of delivery report via API
 
 
 ## [4.4.0]
