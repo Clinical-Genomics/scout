@@ -248,6 +248,7 @@
       Rank model
     </h5>
     Version {{ case.rank_model_version }}
+    {% if case.sv_rank_model_version %} <br>SV Version {{ case.sv_rank_model_version }} {% endif %}
   </div>
 {% endmacro %}
 

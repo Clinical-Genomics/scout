@@ -414,6 +414,7 @@ class CaseHandler(object):
             - genome_build: If there is a new genome build
             - genome_version: - || -
             - rank_model_version: If there is a new rank model
+            - sv_rank_model_version: If there is a new sv rank model
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - has_svvariants: If there are new svvariants
@@ -453,6 +454,7 @@ class CaseHandler(object):
                     'genome_build': case_obj.get('genome_build', '37'),
                     'genome_version': case_obj.get('genome_version'),
                     'rank_model_version': case_obj.get('rank_model_version'),
+                    'sv_rank_model_version': case_obj.get('sv_rank_model_version'),
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
