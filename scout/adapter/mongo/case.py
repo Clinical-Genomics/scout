@@ -32,7 +32,6 @@ class CaseHandler(object):
         """
         scores = {}
         set_1 = set()
-        set_2 = set()
         if not case_obj.get('phenotype_terms'):
             LOG.warning("No phenotypes could be found for case %s", case_obj['_id'])
             return None
@@ -45,6 +44,7 @@ class CaseHandler(object):
         # Need to control what cases to look for here
         # Fetch all cases with phenotypes
         for case in self.cases(phenotype_terms=True, owner=case_obj['owner']):
+            set_2 = set()
             if case['_id'] == case_obj['_id']:
                 continue
             # Add all ancestors if all terms
@@ -53,9 +53,10 @@ class CaseHandler(object):
                 if not hpo_term:
                     continue
                 set_2 = set_2.union(set(hpo_term.get('all_ancestors',[])))
+            LOG.debug("Check phenotypic similarity of %s and %s", case_obj['_id'], case['_id'])
             scores[case['_id']] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
-        return sorted(scores.items(), key=operator.itemgetter(1))
+        return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
     def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,

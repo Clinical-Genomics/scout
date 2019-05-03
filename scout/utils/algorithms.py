@@ -24,6 +24,7 @@ def ui_score(set_1, set_2):
     if not (set_1 and set_2):
         return 0
     ui_score = len(set_1.intersection(set_2)) / len(set_1.union(set_2))
+    LOG.debug("Found ui score: %s", ui_score)
     
     return ui_score
     
