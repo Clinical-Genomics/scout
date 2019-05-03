@@ -102,8 +102,8 @@ def test_view_cases(real_populated_database, case_obj, test_hpo_terms):
     # and return INFO message
     assert 'INFO No more cases with phenotypes found' in result.output
 
-    # update test case using the above phenotype features
-    updated_case = adapter.case_collection.find_one_and_update(
+    # update test case using test HPO terms
+    adapter.case_collection.find_one_and_update(
         { '_id' : case_obj['_id'] },
         { '$set' : {'phenotype_terms' : test_hpo_terms }},
         return_document=pymongo.ReturnDocument.AFTER)

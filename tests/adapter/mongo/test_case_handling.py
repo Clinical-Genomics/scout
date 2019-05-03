@@ -6,7 +6,6 @@ import logging
 import datetime
 from pprint import pprint as pp
 
-from scout.demo.resources.generate_test_data import generate_hpo_files
 from scout.constants import INDEXES
 from scout.exceptions import (IntegrityError)
 
