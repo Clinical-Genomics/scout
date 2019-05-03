@@ -2,7 +2,6 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-
 def ui_score(set_1, set_2):
     """Get the ui score of two sets
     
