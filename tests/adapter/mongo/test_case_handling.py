@@ -439,4 +439,4 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     assert isinstance(similar_cases[0], tuple)
 
     # and the first element of the list has a score higher or equal than the second
-    assert similar_cases[0][1] >= similar_cases[1][1]
+    assert similar_cases[0][1] > similar_cases[1][1]
