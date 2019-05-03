@@ -401,7 +401,7 @@ def test_update_case_rerun_status(adapter, case_obj):
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
 
-    # load test HPO files to database
+    # Make sure database contains HPO terms
     assert adapter.hpo_terms().count()
 
     # update test case using test HPO terms
@@ -428,11 +428,11 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     case_3['_id']='case_3'
     case_3['phenotype_terms'] = [{'phenotype_id':'HP:0000533',
         'feature':'Recurrent skin infections'}]
-    
+
     # insert this case in database:
     adapter.case_collection.insert_one(case_3)
     assert adapter.case_collection.find().count() == 3
-    
+
 
     similar_cases = adapter.get_similar_cases(case_obj)
     # make sure that the function returns a list of tuples
