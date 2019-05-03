@@ -1092,7 +1092,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print('')
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle)
+    data = yaml.load(in_handle, Loader=yaml.FullLoader)
     return data
 
 
@@ -1108,6 +1108,7 @@ def minimal_config(request, scout_config):
     config.pop('default_gene_panels')
     config.pop('rank_model_version')
     config.pop('rank_score_threshold')
+    config.pop('sv_rank_model_version')
     config.pop('human_genome_build')
 
     return config

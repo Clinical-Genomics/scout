@@ -17,7 +17,6 @@ from scout.exceptions import IntegrityError, ConfigError
 
 LOG = logging.getLogger(__name__)
 
-
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
     
@@ -123,7 +122,7 @@ class CaseHandler(object):
             query['research_requested'] = True
 
         if is_research:
-            query['is_research'] = True
+            query['is_research'] = {'$exists': True, '$eq': True}
 
         if phenotype_terms:
             query['phenotype_terms'] = {'$exists': True, '$ne': []}
@@ -135,26 +134,38 @@ class CaseHandler(object):
             query['cohorts'] = {'$exists': True, '$ne': []}
 
         if name_query:
+            name_value = name_query.split(':')[-1] # capture ant value provided after query descriptor
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
             elif name_query.startswith('HP:'):
                 LOG.debug("HPO case query")
-                query['phenotype_terms.phenotype_id'] = name_query
+                if name_value:
+                    query['phenotype_terms.phenotype_id'] = name_query
+                else: # query for cases with no HPO terms
+                    query['$or'] = [ {'phenotype_terms' : {'$size' : 0}}, {'phenotype_terms' : {'$exists' : False}} ]
             elif name_query.startswith('PG:'):
                 LOG.debug("PG case query")
-                phenotype_group_query = name_query.replace('PG:', 'HP:')
-                query['phenotype_groups.phenotype_id'] = phenotype_group_query
+                if name_value:
+                    phenotype_group_query = name_query.replace('PG:', 'HP:')
+                    query['phenotype_groups.phenotype_id'] = phenotype_group_query
+                else: # query for cases with no phenotype groups
+                    query['$or'] = [ {'phenotype_groups' : {'$size' : 0}}, {'phenotype_groups' : {'$exists' : False}} ]
             elif name_query.startswith('synopsis:'):
-                synopsis_query=name_query.replace('synopsis:','')
-                query['$text']={'$search':synopsis_query}
+                if name_value:
+                    query['$text']={'$search':name_value}
+                else: # query for cases with missing synopsis
+                    query['synopsis'] = ''
             elif name_query.startswith('cohort:'):
-                cohort_query = name_query.replace('cohort:','')
-                query['cohorts'] = cohort_query
+                query['cohorts'] = name_value
             elif name_query.startswith('panel:'):
-                panel_name_query = name_query.replace('panel:','')
-                query['panels'] = {'$elemMatch': {'panel_name': panel_name_query,
+                query['panels'] = {'$elemMatch': {'panel_name': name_value,
                                     'is_default': True }}
+            elif name_query.startswith('status:'):
+                status_query = name_query.replace('status:','')
+                query['status'] = status_query
+            elif name_query.startswith('is_research'):
+                query['is_research'] = {'$exists': True, '$eq': True}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
@@ -403,6 +414,7 @@ class CaseHandler(object):
             - genome_build: If there is a new genome build
             - genome_version: - || -
             - rank_model_version: If there is a new rank model
+            - sv_rank_model_version: If there is a new sv rank model
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - has_svvariants: If there are new svvariants
@@ -442,6 +454,7 @@ class CaseHandler(object):
                     'genome_build': case_obj.get('genome_build', '37'),
                     'genome_version': case_obj.get('genome_version'),
                     'rank_model_version': case_obj.get('rank_model_version'),
+                    'sv_rank_model_version': case_obj.get('sv_rank_model_version'),
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
@@ -474,7 +487,7 @@ class CaseHandler(object):
         LOG.info("Saving case %s", case_obj['_id'])
         # update updated_at of case to "today"
 
-        case_obj['updated_at'] = datetime.datetime.now(),
+        case_obj['updated_at'] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
             {'_id': case_obj['_id']},
@@ -535,7 +548,7 @@ class CaseHandler(object):
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
-        
+
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

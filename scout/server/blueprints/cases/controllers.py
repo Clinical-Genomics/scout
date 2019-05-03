@@ -145,6 +145,10 @@ def case(store, institute_obj, case_obj):
 
     case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
 
+    # if updated_at is a list, set it to the last update datetime
+    if case_obj.get('updated_at') and isinstance(case_obj['updated_at'], list):
+        case_obj['updated_at'] = max(case_obj['updated_at'])
+
     # Phenotype groups can be specific for an institute, there are some default groups
     pheno_groups = institute_obj.get('phenotype_groups') or PHENOTYPE_GROUPS
 
@@ -375,7 +379,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     """Update synopsis."""
     # create event only if synopsis was actually changed
-    if new_synopsis and case_obj['synopsis'] != new_synopsis:
+    if case_obj['synopsis'] != new_synopsis:
         link = url_for('cases.case', institute_id=institute_obj['_id'],
                        case_name=case_obj['display_name'])
         store.update_synopsis(institute_obj, case_obj, user_obj, link,

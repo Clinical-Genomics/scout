@@ -34,6 +34,7 @@ def test_build_case(parsed_case, panel_database):
 
     assert case_obj['rank_model_version'] == parsed_case['rank_model_version']
     assert case_obj['rank_score_threshold'] == parsed_case['rank_score_threshold']
+    assert case_obj['sv_rank_model_version'] == parsed_case['sv_rank_model_version']
 
     assert case_obj['madeline_info'] == parsed_case['madeline_info']
 
