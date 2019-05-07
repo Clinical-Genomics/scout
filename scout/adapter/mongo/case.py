@@ -2,6 +2,7 @@
 from copy import deepcopy
 import logging
 import datetime
+import operator
 
 from pprint import pprint as pp
 
@@ -10,6 +11,7 @@ import pymongo
 from scout.parse.case import parse_case
 from scout.build.case import build_case
 from scout.parse.variant.ids import parse_document_id
+from scout.utils.algorithms import ui_score
 
 from scout.exceptions import IntegrityError, ConfigError
 
@@ -17,6 +19,44 @@ LOG = logging.getLogger(__name__)
 
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
+    
+    def get_similar_cases(self, case_obj):
+        """Take a case obj and return a iterable with the most phenotypically similar cases
+        
+        Args:
+            case_obj(models.Case)
+        
+        Returns:
+            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most 
+                                 similar case first
+        """
+        scores = {}
+        set_1 = set()
+        if not case_obj.get('phenotype_terms'):
+            LOG.warning("No phenotypes could be found for case %s", case_obj['_id'])
+            return None
+        # Add all ancestors of all terms
+        for term in case_obj['phenotype_terms']:
+            hpo_term = self.hpo_term(term['phenotype_id'])
+            if not hpo_term:
+                continue
+            set_1 = set_1.union(set(hpo_term.get('all_ancestors',[])))
+        # Need to control what cases to look for here
+        # Fetch all cases with phenotypes
+        for case in self.cases(phenotype_terms=True, owner=case_obj['owner']):
+            set_2 = set()
+            if case['_id'] == case_obj['_id']:
+                continue
+            # Add all ancestors if all terms
+            for term in case['phenotype_terms']:
+                hpo_term = self.hpo_term(term['phenotype_id'])
+                if not hpo_term:
+                    continue
+                set_2 = set_2.union(set(hpo_term.get('all_ancestors',[])))
+            LOG.debug("Check phenotypic similarity of %s and %s", case_obj['_id'], case['_id'])
+            scores[case['_id']] = ui_score(set_1, set_2)
+        # Returns a list of tuples with highest score first
+        return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
     def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,

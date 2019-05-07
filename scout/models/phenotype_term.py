@@ -5,18 +5,27 @@ class HpoTerm(dict):
     """Represents a hpo term
     
     _id = str, # Same as hpo_id
-   hpo_id = str, # Required
-   hpo_number = int, # Required
-   description = str,
-   genes = list, # List with integers that are hgnc_ids 
-    
+    hpo_id = str, # Required
+    hpo_number = int, # Required
+    description = str,
+    genes = list, # List with integers that are hgnc_ids 
+    ancestors = list # list with direct ancestors
+    all_ancestors = list # list with all ancestors ancestors in the whole tree
+    children = list
+
     """
-    def __init__(self, hpo_id, description, genes=None):
+    def __init__(self, hpo_id, description, genes=None, ancestors=None, all_ancestors=None, 
+                children=None):
         super(HpoTerm, self).__init__()
         self['_id'] = hpo_id
         self['hpo_id'] = hpo_id
         self['hpo_number'] = int(hpo_id.split(':')[-1])
         self['description'] = description
+        # These are the direct ancestors
+        self['ancestors'] = ancestors or []
+        # This all ancestors of all ancestors
+        self['all_ancestors'] = all_ancestors or []
+        self['children'] = children or []
         self['genes'] = genes or []
 
 # Disease terms represent diseases collected from omim, orphanet and decipher.

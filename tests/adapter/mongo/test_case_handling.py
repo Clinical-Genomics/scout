@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
+import copy
+import pymongo
 import logging
 import datetime
 from pprint import pprint as pp
@@ -394,3 +396,48 @@ def test_update_case_rerun_status(adapter, case_obj):
 
     # THEN assert that 'rerun_requested' is set to False
     assert res['rerun_requested'] is False
+
+
+def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
+    adapter = hpo_database
+
+    # Make sure database contains HPO terms
+    assert adapter.hpo_terms().count()
+
+    # update test case using test HPO terms
+    case_obj['phenotype_terms'] = test_hpo_terms
+    adapter.case_collection.find_one_and_update(
+        { '_id' : case_obj['_id'] },
+        { '$set' : {'phenotype_terms' : test_hpo_terms }},
+        return_document=pymongo.ReturnDocument.AFTER)
+    # insert case into database
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find().count() == 1
+
+    # Add another case with slightly different phenotype
+    case_2 = copy.deepcopy(case_obj)
+    case_2['_id']='case_2'
+    case_2['phenotype_terms'] = test_hpo_terms[:-1] # exclude last term
+
+    # insert this case in database:
+    adapter.case_collection.insert_one(case_2)
+    assert adapter.case_collection.find().count() == 2
+
+    # Add another case with phenotype very different from case_obj
+    case_3 = copy.deepcopy(case_obj)
+    case_3['_id']='case_3'
+    case_3['phenotype_terms'] = [{'phenotype_id':'HP:0000533',
+        'feature':'Recurrent skin infections'}]
+
+    # insert this case in database:
+    adapter.case_collection.insert_one(case_3)
+    assert adapter.case_collection.find().count() == 3
+
+
+    similar_cases = adapter.get_similar_cases(case_obj)
+    # make sure that the function returns a list of tuples
+    assert isinstance(similar_cases, list)
+    assert isinstance(similar_cases[0], tuple)
+
+    # and the first element of the list has a score higher or equal than the second
+    assert similar_cases[0][1] > similar_cases[1][1]

@@ -219,12 +219,33 @@ def hpo_disease_handle(request, hpo_disease_file):
 
 
 @pytest.fixture
-def hpo_diseases(request, hpo_disease_file):
+def test_pheno_terms(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
     hpo_disease_handle = get_file_handle(hpo_disease_file)
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
+
+
+@pytest.fixture
+def test_hpo_terms(request):
+    """Return a list with 3 HPO terms formatted
+    as case_obj.phenotyope terms"""
+    pheno_terms = [
+        {
+            'phenotype_id' : 'HP:0000533',
+            'feature' : 'Chorioretinal atrophy',
+        },
+        {
+            'phenotype_id' : 'HP:0000529',
+            'feature' : 'Progressive visual loss'
+        },
+        {
+            'phenotype_id' : 'HP:0000543',
+            'feature' : 'Optic disc pallor'
+        },
+    ]
+    return pheno_terms
 
 
 #############################################################
