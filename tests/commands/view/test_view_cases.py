@@ -18,14 +18,14 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert runner
 
     # and test the CLI base, no arguments provided
-    result = runner.invoke(cli, DB_PARAMS+['view', 'cases'])
+    result = runner.invoke(app_cli, ['view', 'cases'])
     # Command should not exit with error
     assert result.exit_code == 0
     # and the test case should be returned
     assert '643594' in result.output
 
     # Test CLI base providing an institute not in database
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-i', 'cust666'
         ])
     assert result.exit_code == 0
@@ -33,7 +33,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert 'No cases could be found' in result.output
 
     # Test CLI base providing an existing institute
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-i', 'cust000'
         ])
     assert result.exit_code == 0
@@ -41,7 +41,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert '643594' in result.output
 
     # Test CLI base providing display name
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-d', '643594'
         ])
     assert result.exit_code == 0
@@ -49,7 +49,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert '643594' in result.output
 
     # Test CLI base providing case _id
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-c', 'internal_id'
         ])
     assert result.exit_code == 0
@@ -57,7 +57,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert '643594' in result.output
 
     # load research variants for this case:
-    result =  runner.invoke(cli, DB_PARAMS+['load', 'variants',
+    result =  runner.invoke(app_cli, ['load', 'variants',
         'internal_id',
         '--snv',
         ])
@@ -67,7 +67,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert n_vars > 0
 
     # Test CLI with --nr-variants flag
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-c', 'internal_id',
         '--nr-variants',
         ])
@@ -76,7 +76,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert str(n_vars) in result.output
 
     # Test CLI with --variants-treshold param
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '--variants-treshold', n_vars
         ])
     assert result.exit_code == 0
@@ -84,7 +84,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert str(n_vars) in result.output
 
     # Test CLI with --variants-treshold param
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '--variants-treshold', n_vars+1,
         ])
     assert result.exit_code == 0
@@ -93,7 +93,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
 
     # Testing CLI command to get similar cases when no other case
     # with phenotype is available
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-c', 'internal_id',
         '--similar'
         ])
@@ -117,7 +117,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
     assert adapter.case_collection.find().count() == 2
 
     # Test CLI to get similar cases to test patient
-    result =  runner.invoke(cli, DB_PARAMS+['view', 'cases',
+    result =  runner.invoke(app_cli, ['view', 'cases',
         '-c', 'internal_id',
         '--similar'
         ])
