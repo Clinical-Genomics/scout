@@ -116,15 +116,14 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
             return_document=pymongo.ReturnDocument.AFTER
         )
         rankscore_treshold = rankscore_treshold or updated_case.get("rank_score_threshold", 5)
-        click.echo('----->rankscore-treshold:{}'.format(rankscore_treshold))
         # Delete and reload the clinical SV variants
         if updated_case['vcf_files'].get('vcf_sv'):
             adapter.delete_variants(case_id, variant_type='clinical', category='sv')
             adapter.load_variants(updated_case, variant_type='clinical',
-                                  category='sv', rank_threshold=float(rankscore_treshold))
+                                  category='sv', rank_threshold=int(rankscore_treshold))
         # Delete and reload research SV variants
         if updated_case['vcf_files'].get('vcf_sv_research'):
             adapter.delete_variants(case_id, variant_type='research', category='sv')
             if updated_case.get('is_research'):
                 adapter.load_variants(updated_case, variant_type='research',
-                                      category='sv', rank_threshold=float(rankscore_treshold))
+                                      category='sv', rank_threshold=int(rankscore_treshold))
