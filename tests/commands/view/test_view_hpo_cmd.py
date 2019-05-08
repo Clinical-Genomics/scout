@@ -3,7 +3,7 @@
 from scout.commands import app_cli
 from scout.server.extensions import store
 
-def test_view_diseases(mock_app):
+def test_view_hpo(mock_app):
     """Test CLI that shows all HPO terms in the database"""
 
     runner = mock_app.test_cli_runner()
@@ -32,7 +32,7 @@ def test_view_diseases(mock_app):
         ])
     assert result.exit_code == 0
     # Term should be found
-    assert "Found 1 terms with search word HP:0000311" in result.output
+    assert "Found 1 terms" in result.output
 
     # Test CLI by providing HPO term not starting with 'HP00..'
     result =  runner.invoke(app_cli, ['view', 'hpo',
@@ -40,7 +40,7 @@ def test_view_diseases(mock_app):
         ])
     assert result.exit_code == 0
     # Term should be found
-    assert "Found 1 terms with search word HP:0000311" in result.output
+    assert "Found 1 terms" in result.output
 
     # Test CLI by providing HPO term description
     result =  runner.invoke(app_cli, ['view', 'hpo',
@@ -48,4 +48,4 @@ def test_view_diseases(mock_app):
         ])
     assert result.exit_code == 0
     # Term should be found
-    assert "Found 1 terms with search word face" in result.output
+    assert "Found 1 terms" in result.output
