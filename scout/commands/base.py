@@ -18,7 +18,6 @@ from scout.commands.export import export
 from scout.commands.wipe_database import wipe
 from scout.commands.setup import setup as setup_command
 from scout.commands.convert import convert
-from scout.commands.query import query as query_command
 from scout.commands.view import view as view_command
 from scout.commands.delete import delete
 from scout.commands.serve import serve

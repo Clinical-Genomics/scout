@@ -1,4 +1,7 @@
 import logging
+
+from pprint import pprint as pp
+
 import click
 
 from flask.cli import with_appcontext
@@ -22,12 +25,16 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Show number of clinical and research variants"
 )
+@click.option('--similar',
+    is_flag=True,
+    help="Show the cases that are phenotypic similar to a given case"
+)
 @click.option('--variants-treshold',
     default=0,
     help="Only show cases with more variants than treshold"
 )
 @with_appcontext
-def cases(institute, display_name, case_id, nr_variants, variants_treshold):
+def cases(institute, display_name, case_id, nr_variants, variants_treshold, similar):
     """Display cases from the database"""
     LOG.info("Running scout view institutes")
     adapter = store
@@ -37,6 +44,15 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold):
         case_obj = adapter.case(case_id=case_id)
         if case_obj:
             models.append(case_obj)
+        if similar:
+            similar = adapter.get_similar_cases(case_obj)
+            if not similar:
+                LOG.info("No more cases with phenotypes found")
+                return
+            click.echo("#case_id\tscore")
+            for i in similar:
+                click.echo('\t'.join([i[0], str(i[1])]))
+            return
 
     else:
         models = adapter.cases(collaborator=institute, name_query=display_name)

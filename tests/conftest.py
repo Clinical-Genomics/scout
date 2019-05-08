@@ -236,12 +236,33 @@ def hpo_disease_handle(request, hpo_disease_file):
 
 
 @pytest.fixture
-def hpo_diseases(request, hpo_disease_file):
+def test_pheno_terms(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
     hpo_disease_handle = get_file_handle(hpo_disease_file)
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
+
+
+@pytest.fixture
+def test_hpo_terms(request):
+    """Return a list with 3 HPO terms formatted
+    as case_obj.phenotyope terms"""
+    pheno_terms = [
+        {
+            'phenotype_id' : 'HP:0000533',
+            'feature' : 'Chorioretinal atrophy',
+        },
+        {
+            'phenotype_id' : 'HP:0000529',
+            'feature' : 'Progressive visual loss'
+        },
+        {
+            'phenotype_id' : 'HP:0000543',
+            'feature' : 'Optic disc pallor'
+        },
+    ]
+    return pheno_terms
 
 
 #############################################################
@@ -1109,7 +1130,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print('')
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle)
+    data = yaml.load(in_handle, Loader=yaml.FullLoader)
     return data
 
 
@@ -1125,6 +1146,7 @@ def minimal_config(request, scout_config):
     config.pop('default_gene_panels')
     config.pop('rank_model_version')
     config.pop('rank_score_threshold')
+    config.pop('sv_rank_model_version')
     config.pop('human_genome_build')
 
     return config

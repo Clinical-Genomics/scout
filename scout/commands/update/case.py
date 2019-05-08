@@ -37,9 +37,13 @@ LOG = logging.getLogger(__name__)
               help='Set a new rank score treshold if desired')
 @click.option('--rankmodel-version',
               help='Update the rank model version')
-def case(case_id, case_name, institute, collaborator, vcf, vcf_sv,
-         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research,
-         reupload_sv, rankscore_treshold, rankmodel_version):
+@click.option('--sv-rankmodel-version',
+              help='Update the SV rank model version')
+
+@click.pass_context
+def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
+         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research, peddy_ped,
+         reupload_sv, rankscore_treshold, rankmodel_version, sv_rankmodel_version):
     """
     Update a case in the database
     """
@@ -52,9 +56,9 @@ def case(case_id, case_name, institute, collaborator, vcf, vcf_sv,
     # Check if the case exists
     case_obj = adapter.case(case_id)
 
-    if case_obj is None:
+    if not case_obj:
         LOG.warning("Case %s could not be found", case_id)
-        return
+        context.abort()
 
     case_changed = False
     if collaborator:
@@ -97,8 +101,8 @@ def case(case_id, case_name, institute, collaborator, vcf, vcf_sv,
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)
         updates = {'needs_check': True}
-        if rankscore_treshold:
-            updates['sv_rank_model_version'] = rankmodel_version
+        if sv_rankmodel_version:
+            updates['sv_rank_model_version'] = sv_rankmodel_version
         if vcf_sv:
             updates['vcf_files.vcf_sv'] = vcf_sv
         if vcf_sv:

@@ -4,7 +4,8 @@ from datetime import datetime
 
 from click import progressbar
 
-from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases, parse_hpo_obo, parse_hpo_to_genes)
+from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases, parse_hpo_obo,
+                             parse_hpo_to_genes, build_hpo_tree)
 from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes, fetch_hpo_phenotype_to_terms)
 
 from scout.parse.omim import get_mim_phenotypes
@@ -56,9 +57,6 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
         hpo_gene_lines(iterable(str))
     """
 
-    # Store the hpo terms
-    hpo_terms = {}
-
     # Fetch the hpo terms if no file
     if not hpo_lines:
         hpo_lines = fetch_hpo_terms()
@@ -68,10 +66,8 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
         hpo_gene_lines = fetch_hpo_to_genes()
 
     # Parse the terms
-    # This will yield dictionaries with information about the terms
     LOG.info("Parsing hpo terms")
-    for term in parse_hpo_obo(hpo_lines):
-        hpo_terms[term['hpo_id']] = term
+    hpo_terms = build_hpo_tree(hpo_lines)
 
     # Get a map with hgnc symbols to hgnc ids from scout
     if not alias_genes:
