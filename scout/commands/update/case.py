@@ -31,6 +31,8 @@ LOG = logging.getLogger(__name__)
               help='path to research VCF with SV variants to be added')
 @click.option('--vcf-cancer-research', type=click.Path(exists=True),
               help='path to research VCF with cancer variants to be added')
+@click.option('--peddy-ped', type=click.Path(exists=True),
+              help='path to outfile .peddy.ped from peddy')
 @click.option('--reupload-sv', is_flag=True,
               help='Remove all SVs and re upload from existing files')
 @click.option('--rankscore-treshold',
@@ -39,7 +41,6 @@ LOG = logging.getLogger(__name__)
               help='Update the rank model version')
 @click.option('--sv-rankmodel-version',
               help='Update the SV rank model version')
-
 @click.pass_context
 def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
          vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research, peddy_ped,
@@ -115,14 +116,15 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
             return_document=pymongo.ReturnDocument.AFTER
         )
         rankscore_treshold = rankscore_treshold or updated_case.get("rank_score_threshold", 5)
+        click.echo('----->rankscore-treshold:{}'.format(rankscore_treshold))
         # Delete and reload the clinical SV variants
         if updated_case['vcf_files'].get('vcf_sv'):
             adapter.delete_variants(case_id, variant_type='clinical', category='sv')
             adapter.load_variants(updated_case, variant_type='clinical',
-                                  category='sv', rank_threshold=rankscore_treshold)
+                                  category='sv', rank_threshold=float(rankscore_treshold))
         # Delete and reload research SV variants
         if updated_case['vcf_files'].get('vcf_sv_research'):
             adapter.delete_variants(case_id, variant_type='research', category='sv')
             if updated_case.get('is_research'):
                 adapter.load_variants(updated_case, variant_type='research',
-                                      category='sv', rank_threshold=rankscore_treshold)
+                                      category='sv', rank_threshold=float(rankscore_treshold))

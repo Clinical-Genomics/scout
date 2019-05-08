@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
-from click.testing import CliRunner
-from scout.commands import cli
+from scout.commands import app_cli
+from scout.server.extensions import store
 
 DB_PARAMS = ['-db', 'realtestdb']
 
-def test_view_cases(real_populated_database, case_obj, test_hpo_terms):
+def test_view_cases(mock_app, case_obj, test_hpo_terms):
     """Tests the CLI that displays cases from the database"""
 
-    adapter = real_populated_database
+    adapter = store
     # Given a real populated database with a case
     assert adapter.case_collection.find().count() == 1
 
     # Create a test CLI runner
-    runner = CliRunner()
+    runner = mock_app.test_cli_runner()
     assert runner
 
     # and test the CLI base, no arguments provided

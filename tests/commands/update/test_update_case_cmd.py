@@ -137,12 +137,13 @@ def test_update_case(mock_app, case_obj):
         ])
     result.exit_code == 0
     assert 'INFO Case updated' in result.output
+
     # then lauch the --reupload-sv command
     result =  runner.invoke(app_cli, ['update', 'case',
         case_obj['_id'],
         '--reupload-sv',
         '--rankscore-treshold', 10,
-        '--rankmodel-version', 12.1
+        '--sv-rankmodel-version', 1.5
         ])
     result.exit_code == 0
     assert '0 variants deleted' in result.output # there were no variants in variant collection
@@ -151,4 +152,4 @@ def test_update_case(mock_app, case_obj):
         'category':'sv',
         'variant_rank' : {'$gt' : 10}
         }).count() == 0
-    assert store.case_collection.find({'sv_rank_model_version' : 12.1}).count() >0
+    assert store.case_collection.find({'sv_rank_model_version' : 1.5}).count() >0

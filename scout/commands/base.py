@@ -55,7 +55,6 @@ def app_cli(loglevel, demo, config):
         extensions.store.init_app(current_app)
 
 
-app_cli.add_command(query_command)
 app_cli.add_command(load_command)
 app_cli.add_command(wipe)
 app_cli.add_command(setup_command)
