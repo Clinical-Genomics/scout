@@ -36,7 +36,7 @@ LOG = logging.getLogger(__name__)
 @click.option('-v', 'versn', is_flag=True, help="display version of Scout")
 @with_appcontext
 def app_cli(loglevel, demo, config, versn):
-    """Entry point of Scout CLI"""
+    """Scout CLI:  manage interactions with a scout instance."""
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
