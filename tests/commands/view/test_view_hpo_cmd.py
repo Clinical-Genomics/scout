@@ -49,3 +49,9 @@ def test_view_hpo(mock_app):
     assert result.exit_code == 0
     # Term should be found
     assert "Found 1 terms" in result.output
+
+    # Test CLI with --json flag
+    result =  runner.invoke(app_cli, ['view', 'hpo','-j'])
+    assert result.exit_code == 0
+    # Output should be in json format
+    assert '{"_id": "HP:0000311", "hpo_id": "HP:0000311"' in result.output
