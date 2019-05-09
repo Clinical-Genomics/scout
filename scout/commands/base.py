@@ -33,14 +33,14 @@ LOG = logging.getLogger(__name__)
               help="Set the level of log output.", show_default=True)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
 @click.option('-c', '--config', type=click.Path(exists=True))
-@click.option('-v', 'versn', is_flag=True, help="display version of Scout")
+@click.option('-v', 'vers_num', is_flag=True, help="display version of Scout")
 @with_appcontext
-def app_cli(loglevel, demo, config, versn):
+def app_cli(loglevel, demo, config, vers_num):
     """Entry point of Scout CLI"""
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
-    if versn:
+    if vers_num:
         return
     LOG.debug("Debug logging enabled.")
     # the only parameter used in config file will be omim_api_key
