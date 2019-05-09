@@ -52,7 +52,7 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
     if not case_id:
         if not (case_name and institute):
             LOG.info("Please specify which case to update.")
-            return
+            raise click.Abort()
         case_id = "{0}-{1}".format(institute, case_name)
     # Check if the case exists
     case_obj = adapter.case(case_id)
