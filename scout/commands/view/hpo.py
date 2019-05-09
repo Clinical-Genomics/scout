@@ -1,20 +1,24 @@
 import logging
 import click
 
-from pprint import pprint as pp
-from operator import itemgetter
+from bson.json_util import dumps
 
 LOG = logging.getLogger(__name__)
 
 
-@click.command('hpo', short_help='Display all hpo terms')
+@click.command('hpo', short_help='Display hpo terms')
 @click.option('--term', '-t', help='Search for a single hpo term')
 @click.option('--description', '-d', help='Search for hpo terms with a description')
+@click.option('--json', '-j', 
+    is_flag=True,
+    help='Export terms in json format'
+)
 @click.pass_context
-def hpo(context, term, description):
+def hpo(context, term, description, json):
     """Show all hpo terms in the database"""
     LOG.info("Running scout view hpo")
     adapter = context.obj['adapter']
+    hpo_terms = None
     if term:
         term = term.upper()
         if not term.startswith('HP:'):
@@ -23,23 +27,27 @@ def hpo(context, term, description):
             term = 'HP:' + term
         LOG.info("Searching for term %s", term)
         hpo_terms = adapter.hpo_terms(hpo_term=term)
-    elif description:
-        sorted_terms = sorted(adapter.hpo_terms(query=description), key=itemgetter('hpo_number'))
-        for term in sorted_terms:
-            term.pop('genes')
-            print("name: {} | {} | {}".format(term['_id'], term['description'], term['hpo_number']))
-        # pp(hpo_terms)
-        context.abort()
-    else:
+
+    if description:
+        hpo_terms = adapter.hpo_terms(query=description)
+    
+    if hpo_terms is None:
         hpo_terms = adapter.hpo_terms()
+
     if hpo_terms.count() == 0:
         LOG.warning("No matching terms found")
         return
 
     click.echo("hpo_id\tdescription\tnr_genes")
-    for hpo_obj in hpo_terms:
+    if json:
+        click.echo(dumps(hpo_terms))
+        return
+    
+    i = 0
+    for i,hpo_obj in enumerate(hpo_terms,1):
         click.echo("{0}\t{1}\t{2}".format(
             hpo_obj['hpo_id'],
             hpo_obj['description'],
             len(hpo_obj.get('genes',[]))
         ))
+    LOG.info("Found %s terms", i)

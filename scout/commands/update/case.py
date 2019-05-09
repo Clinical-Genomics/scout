@@ -37,10 +37,13 @@ LOG = logging.getLogger(__name__)
               help='Set a new rank score treshold if desired')
 @click.option('--rankmodel-version',
               help='Update the rank model version')
+@click.option('--sv-rankmodel-version',
+              help='Update the SV rank model version')
+
 @click.pass_context
 def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
          vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research, peddy_ped,
-         reupload_sv, rankscore_treshold, rankmodel_version):
+         reupload_sv, rankscore_treshold, rankmodel_version, sv_rankmodel_version):
     """
     Update a case in the database
     """
@@ -52,11 +55,11 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         case_id = "{0}-{1}".format(institute, case_name)
     # Check if the case exists
     case_obj = adapter.case(case_id)
-    
+
     if not case_obj:
         LOG.warning("Case %s could not be found", case_id)
         context.abort()
-    
+
     case_changed = False
     if collaborator:
         if not adapter.institute(collaborator):
@@ -66,7 +69,7 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
             case_changed = True
             case_obj['collaborators'].append(collaborator)
             LOG.info("Adding collaborator %s", collaborator)
-    
+
     if vcf:
         LOG.info("Updating 'vcf_snv' to %s", vcf)
         case_obj['vcf_files']['vcf_snv'] = vcf
@@ -91,22 +94,22 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         LOG.info("Updating 'vcf_cancer_research' to %s", vcf_cancer_research)
         case_obj['vcf_files']['vcf_cancer_research'] = vcf_cancer_research
         case_changed = True
-    
+
     if case_changed:
         adapter.update_case(case_obj)
-    
+
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)
         updates = {'needs_check': True}
-        if rankscore_treshold:
-            updates['sv_rank_model_version'] = rankmodel_version
+        if sv_rankmodel_version:
+            updates['sv_rank_model_version'] = sv_rankmodel_version
         if vcf_sv:
             updates['vcf_files.vcf_sv'] = vcf_sv
         if vcf_sv:
             updates['vcf_files.vcf_sv_research'] = vcf_sv_research
-            
+
         updated_case = adapter.case_collection.find_one_and_update(
-            {'_id':case_id}, 
+            {'_id':case_id},
             {'$set': updates
             },
             return_document=pymongo.ReturnDocument.AFTER
@@ -115,11 +118,11 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         # Delete and reload the clinical SV variants
         if updated_case['vcf_files'].get('vcf_sv'):
             adapter.delete_variants(case_id, variant_type='clinical', category='sv')
-            adapter.load_variants(updated_case, variant_type='clinical', 
+            adapter.load_variants(updated_case, variant_type='clinical',
                                   category='sv', rank_threshold=rankscore_treshold)
         # Delete and reload research SV variants
         if updated_case['vcf_files'].get('vcf_sv_research'):
             adapter.delete_variants(case_id, variant_type='research', category='sv')
             if updated_case.get('is_research'):
-                adapter.load_variants(updated_case, variant_type='research', 
+                adapter.load_variants(updated_case, variant_type='research',
                                       category='sv', rank_threshold=rankscore_treshold)

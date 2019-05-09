@@ -15,6 +15,7 @@ from .intervals import intervals
 from .collections import collections
 from .transcripts import transcripts
 from .case import cases
+from .hgnc import hgnc
 
 
 LOG = logging.getLogger(__name__)
@@ -43,3 +44,4 @@ view.add_command(intervals)
 view.add_command(collections)
 view.add_command(transcripts)
 view.add_command(cases)
+view.add_command(hgnc)

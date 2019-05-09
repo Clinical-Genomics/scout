@@ -22,7 +22,6 @@ from scout.commands.export import export
 from scout.commands.wipe_database import wipe
 from scout.commands.setup import setup as setup_command
 from scout.commands.convert import convert
-from scout.commands.query import query as query_command
 from scout.commands.view import view as view_command
 from scout.commands.delete import delete
 from scout.commands.serve import serve
@@ -67,7 +66,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
     if config:
         LOG.debug("Use config file %s", config)
         with open(config, 'r') as in_handle:
-            cli_config = yaml.load(in_handle)
+            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
 
     mongo_config['mongodb'] = (mongodb or cli_config.get('mongodb') or 'scout')
     if demo:
@@ -98,7 +97,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
         mongo_config['client'] = client
         adapter = MongoAdapter(database)
         mongo_config['adapter'] = adapter
-        
+
         LOG.info("Check if authenticated...")
         try:
             for ins_obj in adapter.institutes():
@@ -106,7 +105,7 @@ def cli(context, mongodb, username, password, authdb, host, port, loglevel, conf
         except OperationFailure as err:
             LOG.info("User not authenticated")
             context.abort()
-        
+
 
     context.obj = mongo_config
 
@@ -116,7 +115,6 @@ cli.add_command(wipe)
 cli.add_command(setup_command)
 cli.add_command(export)
 cli.add_command(convert)
-cli.add_command(query_command)
 cli.add_command(view_command)
 cli.add_command(delete)
 cli.add_command(serve)
