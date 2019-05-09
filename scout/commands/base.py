@@ -28,18 +28,20 @@ from scout.server import extensions
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
-
-@click.group(cls=FlaskGroup, create_app=create_app)
+@click.group(cls=FlaskGroup, create_app=create_app, invoke_without_command=True)
 @click.option('--loglevel', default='INFO', type=click.Choice(LOG_LEVELS),
               help="Set the level of log output.", show_default=True)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
 @click.option('-c', '--config', type=click.Path(exists=True))
+@click.option('-v', 'versn', is_flag=True, help="display version of Scout")
 @with_appcontext
-def app_cli(loglevel, demo, config):
+def app_cli(loglevel, demo, config, versn):
     """Entry point of Scout CLI"""
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
+    if versn:
+        return
     LOG.debug("Debug logging enabled.")
     # the only parameter used in config file will be omim_api_key
     # the other parameters will be taken from the current_app object
