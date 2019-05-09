@@ -5,15 +5,8 @@ import click
 
 LOG = logging.getLogger(__name__)
 
-@click.group()
-def query():
-    """
-    View objects from the database.
-    """
-    pass
 
-
-@query.command('hgnc', short_help='Check if a gene exist')
+@click.command('hgnc', short_help='Check if a gene exist')
 @click.option('--hgnc-symbol', '-s',
                 help="A valid hgnc symbol",
 )
