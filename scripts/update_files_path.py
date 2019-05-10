@@ -9,14 +9,18 @@ INDIVIDUAL_FILES = ['bam_file', 'mt_bam', 'vcf2cytosure']
 
 
 @click.command()
-@click.option('-db_uri', required=True, help='mongodb://user:password@db_url:db_port/db_name')
-@click.option('-old_path', required=True, help='/old/path/to/files')
-@click.option('-new_path', required=True, help='/new/path/to/files')
+@click.option('--db_uri', required=True, help='mongodb://user:password@db_url:db_port/db_name')
+@click.option('-o','--old_path', required=True, help='/old/path/to/files')
+@click.option('-n','--new_path', required=True, help='/new/path/to/files')
 @click.option('--test',
               help='Use this flag to test the function',
               is_flag=True
 )
-def do_replace(db_uri, old_path, new_path, test):
+@click.option('-d','--discover',
+              help='Use this flag to create a list of keys where old path is found',
+              is_flag=True
+)
+def do_replace(db_uri, old_path, new_path, test, discover):
     """ This script replaces a substring of the path to files (delivery_report, vcf files
         and individual bam and vcf2cytosure files) with a new substring provided by the user.
         Useful when cases are moved to a new server"""
@@ -32,6 +36,15 @@ def do_replace(db_uri, old_path, new_path, test):
         case_objs = list(db.case.find())
         n_cases = len(case_objs)
         click.echo('Total number of cases in database:{}'.format(n_cases))
+
+        if discover: # print all keys which contain the old_path
+            matching_keys = set()
+            for i, case in enumerate(case_objs):
+                case_keys = list(level_down(old_path,case))
+                matching_keys.update(case_keys)
+
+            print(matching_keys)
+            return
 
         for i, case in enumerate(case_objs):
             updates = 0
@@ -63,22 +76,38 @@ def do_replace(db_uri, old_path, new_path, test):
             if case_individuals:
                 set_command['individuals'] = case['individuals']
 
-            if i >= 1751 and i < 1756:
-                click.echo('fixing case {0}/{1} [{2},{3}] --> update {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
+
+            click.echo('fixing case {0}/{1} [{2},{3}] --> update {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
 
 
-                # update case object in database
-                if updates and test is False:
-                    match_condition = {'_id' : case['_id']}
-                    updated_case = db.case.find_one_and_update(match_condition,
-                        {'$set':set_command}, return_document=pymongo.ReturnDocument.AFTER)
+            # update case object in database
+            if updates and test is False:
+                match_condition = {'_id' : case['_id']}
+                updated_case = db.case.find_one_and_update(match_condition,
+                    {'$set':set_command}, return_document=pymongo.ReturnDocument.AFTER)
 
-                    if updated_case:
-                        click.echo('---> case updated!')
+                if updated_case:
+                    click.echo('---> case updated!')
 
     except Exception as err:
         click.echo('Error {}'.format(err))
 
+
+def level_down(substring, dictionary):
+    for key, value in dictionary.items():
+        try:
+            if substring in value:
+                yield key
+                #yield value
+            elif isinstance(value, dict):
+                for result in level_down(substring, value):
+                    yield result
+            elif isinstance(value, list):
+                for list_item in value:
+                    for result in level_down(substring, list_item):
+                        yield result
+        except:
+            pass
 
 if __name__ == '__main__':
     do_replace()
