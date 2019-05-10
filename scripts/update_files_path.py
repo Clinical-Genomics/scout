@@ -46,6 +46,7 @@ def do_replace(db_uri, old_path, new_path, test, discover):
             print(matching_keys)
             return
 
+        """
         for i, case in enumerate(case_objs):
             updates = 0
             set_command = {}
@@ -88,23 +89,28 @@ def do_replace(db_uri, old_path, new_path, test, discover):
 
                 if updated_case:
                     click.echo('---> case updated!')
+        """
 
     except Exception as err:
         click.echo('Error {}'.format(err))
 
 
-def level_down(substring, dictionary):
+def level_down(substring, dictionary, path=''):
     for key, value in dictionary.items():
+        if path:
+            newpath = path + '.' +key
+        else:
+            newpath = key
         try:
             if substring in value:
-                yield key
+                yield newpath
                 #yield value
             elif isinstance(value, dict):
-                for result in level_down(substring, value):
+                for result in level_down(substring, value, newpath):
                     yield result
             elif isinstance(value, list):
                 for list_item in value:
-                    for result in level_down(substring, list_item):
+                    for result in level_down(substring, list_item, newpath):
                         yield result
         except:
             pass
