@@ -41,6 +41,8 @@ def do_replace(db_uri, old_path, new_path, test, discover):
             matching_keys = set()
             for i, case in enumerate(case_objs):
                 case_keys = list(level_down(old_path,case))
+                unique_keys = list(set(case_keys))
+                print('\nn:{}\tcase:{}. Matching keys:{}\n'.format(i+1,case['_id'],unique_keys))
                 matching_keys.update(case_keys)
 
             print(matching_keys)
