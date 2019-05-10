@@ -7,7 +7,6 @@ from pymongo import MongoClient
 VCF_FILES = ['vcf_snv', 'vcf_sv', 'vcf_str', 'vcf_cancer', 'vcf_snv_research', 'vcf_sv_research', 'vcf_cancer_research']
 INDIVIDUAL_FILES = ['bam_file', 'mt_bam', 'vcf2cytosure']
 
-
 @click.command()
 @click.option('--db_uri', required=True, help='mongodb://user:password@db_url:db_port/db_name')
 @click.option('-o','--old_path', required=True, help='/old/path/to/files')
@@ -37,18 +36,17 @@ def do_replace(db_uri, old_path, new_path, test, discover):
         n_cases = len(case_objs)
         click.echo('Total number of cases in database:{}'.format(n_cases))
 
-        if discover: # print all keys which contain the old_path
+        if discover: # print all keys which contain the old_path and should be updated, then exit
             matching_keys = set()
             for i, case in enumerate(case_objs):
                 case_keys = list(level_down(old_path,case))
                 unique_keys = list(set(case_keys))
-                print('\nn:{}\tcase:{}. Matching keys:{}\n'.format(i+1,case['_id'],unique_keys))
+                print('\nn:{}\tcase:{}. Matching keys:{}'.format(i+1,case['_id'],unique_keys))
                 matching_keys.update(case_keys)
 
-            print(matching_keys)
+            print('Unique paths to be updated:{}'.format(matching_keys))
             return
 
-        """
         for i, case in enumerate(case_objs):
             updates = 0
             set_command = {}
@@ -57,6 +55,16 @@ def do_replace(db_uri, old_path, new_path, test, discover):
             if d_report:
                 updates += 1
                 set_command['delivery_report'] = d_report.replace(old_path, new_path)
+
+            # fix delivery report when there are analysis-specific reports
+            analyses = case.get('analyses')
+            for n, analysis in enumerate(analyses):
+                d_report = analysis.get('delivery_report')
+                if d_report:
+                    updates += 1
+                    analyses[n]['delivery_report'] = d_report.replace(old_path, new_path)
+            if analyses:
+                set_command['analyses'] =  analyses
 
             # fix links to VCF files:
             if case.get('vcf_files'):
@@ -91,7 +99,6 @@ def do_replace(db_uri, old_path, new_path, test, discover):
 
                 if updated_case:
                     click.echo('---> case updated!')
-        """
 
     except Exception as err:
         click.echo('Error {}'.format(err))
