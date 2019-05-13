@@ -36,7 +36,7 @@ def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
     if os.environ.get('SCOUT_CONFIG'):
-         app.config.from_envvar('PMATCHER_CONFIG')
+         app.config.from_envvar('SCOUT_CONFIG')
     elif config:
         app.config.update(config)
     elif config_file:
