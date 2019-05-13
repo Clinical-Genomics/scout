@@ -35,12 +35,15 @@ from .blueprints import (alignviewers, public, genes, cases, login, variants, pa
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
-    app.config.from_pyfile('config.py')
-    app.jinja_env.add_extension('jinja2.ext.do')
-    if config:
+    if os.environ.get('SCOUT_CONFIG'):
+         app.config.from_envvar('PMATCHER_CONFIG')
+    elif config:
         app.config.update(config)
-    if config_file:
+    elif config_file:
         app.config.from_pyfile(config_file)
+    else:
+        app.config.from_pyfile('config.py')
+    app.jinja_env.add_extension('jinja2.ext.do')
 
     # If there is a MatchMaker Exchange server
     # collect the connected external nodes
