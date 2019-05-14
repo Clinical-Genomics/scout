@@ -3,6 +3,7 @@
 import click
 import pymongo
 from pymongo import MongoClient
+import pandas as pd
 
 VCF_FILES = ['vcf_snv', 'vcf_sv', 'vcf_str', 'vcf_cancer', 'vcf_snv_research', 'vcf_sv_research', 'vcf_cancer_research']
 INDIVIDUAL_FILES = ['bam_file', 'mt_bam', 'vcf2cytosure']
@@ -41,65 +42,100 @@ def do_replace(db_uri, old_path, new_path, test, discover):
             for i, case in enumerate(case_objs):
                 case_keys = list(level_down(old_path,case))
                 unique_keys = list(set(case_keys))
-                print('\nn:{}\tcase:{}. Matching keys:{}'.format(i+1,case['_id'],unique_keys))
+                click.echo('\nn:{}\tcase:{}. Matching keys:{}'.format(i+1,case['_id'],unique_keys))
                 matching_keys.update(case_keys)
 
-            print('Unique paths to be updated:{}'.format(matching_keys))
+            click.echo('Unique paths to be updated:{}'.format(matching_keys))
             return
 
         for i, case in enumerate(case_objs):
-            updates = 0
+            fields = []
+            replace_fields = []
+
             set_command = {}
             # fix delivery report path
             d_report = case.get('delivery_report')
-            if d_report:
-                updates += 1
+            if d_report and old_path in d_report:
+                replace_fields.append(('case[delivery_report]',d_report))
                 set_command['delivery_report'] = d_report.replace(old_path, new_path)
+            elif d_report:
+                fields.append(('case[delivery_report]',d_report))
+                click.echo('Case[delivery_report]:{}'.format(d_report))
 
             # fix delivery report when there are analysis-specific reports
             analyses = case.get('analyses')
-            for n, analysis in enumerate(analyses):
-                d_report = analysis.get('delivery_report')
-                if d_report:
-                    updates += 1
-                    analyses[n]['delivery_report'] = d_report.replace(old_path, new_path)
+            update=False
             if analyses:
+                for n, analysis in enumerate(analyses):
+                    d_report = analysis.get('delivery_report')
+                    if d_report and old_path in d_report:
+                        replace_fields.append(('case[analyses][{}][delivery_report]'.format(n),d_report))
+                        analyses[n]['delivery_report'] = d_report.replace(old_path, new_path)
+                        update=True
+                    elif d_report:
+                        fields.append(('case[analyses][{}][delivery_report]'.format(n),d_report))
+
+            if update:
                 set_command['analyses'] =  analyses
 
+            # fix delivery report path when 'delivery_path' key exists in case object:
+            d_path = case.get('delivery_path')
+            if d_path and old_path in d_path:
+                replace_fields.append(('case[delivery_path]',d_path))
+                set_command['delivery_path'] = d_path.replace(old_path, new_path)
+            elif d_path:
+                fields.append(('case[delivery_path]',d_path))
+
             # fix links to VCF files:
+            update=False
             if case.get('vcf_files'):
                 for vcf_type in VCF_FILES:
                     path_to_vcf_type = case['vcf_files'].get(vcf_type)
-                    if path_to_vcf_type:
-                        updates += 1
+                    if path_to_vcf_type and old_path in path_to_vcf_type:
+                        replace_fields.append(('case[vcf_files][{}]'.format(vcf_type),path_to_vcf_type))
                         case['vcf_files'][vcf_type] = path_to_vcf_type.replace(old_path, new_path)
+                        update=True
+                    elif path_to_vcf_type:
+                        fields.append(('case[vcf_files][{}]'.format(vcf_type),path_to_vcf_type))
+            if update:
                 set_command['vcf_files'] = case['vcf_files']
 
             # fix path to case individual specific files:
             case_individuals = case.get('individuals')
-            for z, ind_obj in enumerate(case_individuals):
-                for ind_file in INDIVIDUAL_FILES:
-                    ind_file_path = ind_obj.get(ind_file)
-                    if ind_file_path:
-                        updates += 1
-                        ind_obj[ind_file] = ind_file_path.replace(old_path, new_path)
-                case['individuals'][z] = ind_obj
+            update = False
             if case_individuals:
+                for z, ind_obj in enumerate(case_individuals):
+                    for ind_file in INDIVIDUAL_FILES:
+                        ind_file_path = ind_obj.get(ind_file)
+                        if ind_file_path and old_path in ind_file_path:
+                            update = True
+                            ind_obj[ind_file] = ind_file_path.replace(old_path, new_path)
+                            replace_fields.append(('case[individuals][{}][{}]'.format(z,ind_file),ind_file_path))
+                        elif ind_file_path:
+                            fields.append(('case[individuals][{}][{}]'.format(z,ind_file),ind_file_path))
+
+                    case['individuals'][z] = ind_obj
+            if update:
                 set_command['individuals'] = case['individuals']
 
-
-            click.echo('fixing case {0}/{1} [{2},{3}] --> update {4} paths'.format(i+1, n_cases, case['owner'], case['display_name'], updates))
-
-
+            click.echo('################################## fixing case {0}/{1} [{2},{3}] ##############################'.format(i+1, n_cases, case['owner'], case['display_name']))
+            if replace_fields:
+                click.echo('Replace n={} fields with new path.'.format(len(replace_fields)))
+            if fields:
+                df = pd.DataFrame(fields, columns=["key", "path"])
+                click.echo('other paths:')
+                click.echo(df)
+            click.echo('#'*100+'\n')
+            """
             # update case object in database
-            if updates and test is False:
+            if replace_fields and test is False:
                 match_condition = {'_id' : case['_id']}
                 updated_case = db.case.find_one_and_update(match_condition,
                     {'$set':set_command}, return_document=pymongo.ReturnDocument.AFTER)
 
                 if updated_case:
                     click.echo('---> case updated!')
-
+            """
     except Exception as err:
         click.echo('Error {}'.format(err))
 
