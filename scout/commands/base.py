@@ -32,10 +32,9 @@ LOG = logging.getLogger(__name__)
 @click.option('--loglevel', default='INFO', type=click.Choice(LOG_LEVELS),
               help="Set the level of log output.", show_default=True)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
-@click.option('-c', '--config', type=click.Path(exists=True))
 @click.option('-v', 'vers_num', is_flag=True, help="display version of Scout")
 @with_appcontext
-def app_cli(loglevel, demo, config, vers_num):
+def app_cli(loglevel, demo, vers_num):
     """Entry point of Scout CLI"""
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
@@ -43,19 +42,11 @@ def app_cli(loglevel, demo, config, vers_num):
     if vers_num:
         return
     LOG.debug("Debug logging enabled.")
-    # the only parameter used in config file will be omim_api_key
-    # the other parameters will be taken from the current_app object
-    if config:
-        LOG.debug("Use config file %s", config)
-        with open(config, 'r') as in_handle:
-            cli_config = yaml.load(in_handle)
-        current_app.config["OMIM_API_KEY"] = cli_config.get('omim_api_key')
     if demo:
         LOG.info('setting up connection to use database:"scout-demo"')
         client = current_app.config['MONGO_CLIENT']
         current_app.config["MONGO_DATABASE"] = client['scout-demo']
         extensions.store.init_app(current_app)
-
 
 app_cli.add_command(load_command)
 app_cli.add_command(wipe)

@@ -31,24 +31,24 @@ from . import extensions
 from .blueprints import (alignviewers, public, genes, cases, login, variants, panels, dashboard,
                          api, phenotypes, institutes)
 
-
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
-    app = Flask(__name__)
-    if os.environ.get('SCOUT_CONFIG'):
-         app.config.from_envvar('SCOUT_CONFIG')
-    elif config:
-        app.config.update(config)
-    elif config_file:
-        app.config.from_pyfile(config_file)
-    else:
+    try: # try to configure from environmental variable
+        app = Flask(__name__)
+        app.config.from_envvar('SCOUT_CONFIG')
+        LOG.info('Configuring app from env variable')
+    except: # configure from file
+        LOG.info('Configuring app from config file')
         app.config.from_pyfile('config.py')
-    app.jinja_env.add_extension('jinja2.ext.do')
+        if config_file:
+            app.config.from_pyfile(config_file)
+    if config:
+        app.config.update(config)
 
+    app.jinja_env.add_extension('jinja2.ext.do')
     # If there is a MatchMaker Exchange server
     # collect the connected external nodes
     app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
-
 
     app.config["JSON_SORT_KEYS"] = False
     current_log_level = logger.getEffectiveLevel()
