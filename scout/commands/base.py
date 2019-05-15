@@ -33,8 +33,9 @@ LOG = logging.getLogger(__name__)
               help="Set the level of log output.", show_default=True)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
 @click.option('-v', 'vers_num', is_flag=True, help="display version of Scout")
+@click.option('-c', '--config', type=click.Path(exists=True))
 @with_appcontext
-def cli(loglevel, demo, vers_num):
+def cli(loglevel, demo, vers_num, config):
     """Entry point of Scout CLI"""
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
