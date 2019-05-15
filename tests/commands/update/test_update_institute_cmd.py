@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_update_institute(mock_app):
@@ -10,12 +10,12 @@ def test_update_institute(mock_app):
     assert runner
 
     # Test CLI base, no arguments provided
-    result =  runner.invoke(app_cli, ['update', 'institute'])
+    result =  runner.invoke(cli, ['update', 'institute'])
     # it should return error message
     assert 'Error: Missing argument "institute-id"' in result.output
 
     # Test CLI passing institute id that is not in database
-    result =  runner.invoke(app_cli, ['update', 'institute',
+    result =  runner.invoke(cli, ['update', 'institute',
         'cust666'])
     # it should return error message
     assert 'WARNING Institute cust666 does not exist in database' in result.output
@@ -29,7 +29,7 @@ def test_update_institute(mock_app):
         'sanger_recipients' : None
     }
     # Test CLI to update coverage cutoff
-    result =  runner.invoke(app_cli, ['update', 'institute',
+    result =  runner.invoke(cli, ['update', 'institute',
         'cust000',
         '-c', updates['coverage_cutoff'],
         ])
@@ -38,7 +38,7 @@ def test_update_institute(mock_app):
     assert 'INFO Institute updated' in result.output
 
     # Test CLI to update display_name
-    result =  runner.invoke(app_cli, ['update', 'institute',
+    result =  runner.invoke(cli, ['update', 'institute',
         'cust000',
         '-d', updates['display_name'],
         ])
@@ -47,7 +47,7 @@ def test_update_institute(mock_app):
     assert 'INFO Institute updated' in result.output
 
     # Test CLI to update frequency_cutoff
-    result =  runner.invoke(app_cli, ['update', 'institute',
+    result =  runner.invoke(cli, ['update', 'institute',
         'cust000',
         '-f', updates['frequency_cutoff'],
         ])
@@ -56,7 +56,7 @@ def test_update_institute(mock_app):
     assert 'INFO Institute updated' in result.output
 
     # Test CLI to remove a sanger recipient
-    result =  runner.invoke(app_cli, ['update', 'institute',
+    result =  runner.invoke(cli, ['update', 'institute',
         'cust000',
         '-r', institute_obj['sanger_recipients'][0]
         ])
@@ -71,7 +71,7 @@ def test_update_institute(mock_app):
 
 
     # Test CLI to update sanger recipients
-    result =  runner.invoke(app_cli, ['update', 'institute',
+    result =  runner.invoke(cli, ['update', 'institute',
         'cust000',
         '-s', institute_obj['sanger_recipients'][0]
         ])

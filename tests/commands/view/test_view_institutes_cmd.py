@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 
 from scout.server.extensions import store
 
@@ -12,20 +12,20 @@ def test_view_institutes(mock_app, institute_obj):
     assert runner
 
     # Test CLI without arguments
-    result =  runner.invoke(app_cli, ['view', 'institutes'])
+    result =  runner.invoke(cli, ['view', 'institutes'])
     assert result.exit_code == 0
     # an institute should be found
     assert '\t'.join([institute_obj['internal_id'], institute_obj['internal_id'],
         institute_obj['display_name']]) in result.output
 
     # Test CLI with --json flag
-    result =  runner.invoke(app_cli, ['view', 'institutes', '--json'])
+    result =  runner.invoke(cli, ['view', 'institutes', '--json'])
     assert result.exit_code == 0
     # Make sure right formatting is returned
     assert "'internal_id': 'cust000'" in result.output
 
     # Test the app by providing an institute that does not exist in database
-    result =  runner.invoke(app_cli, ['view', 'institutes',
+    result =  runner.invoke(cli, ['view', 'institutes',
         '-i', 'cust666'
         ])
     # istitute is not found
@@ -36,6 +36,6 @@ def test_view_institutes(mock_app, institute_obj):
     assert store.institute_collection.find().count() == 0
 
     # Test cli again with no institutes in database
-    result =  runner.invoke(app_cli, ['view', 'institutes'])
+    result =  runner.invoke(cli, ['view', 'institutes'])
     # No institute should be found
     assert 'No institutes found' in result.output

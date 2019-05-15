@@ -1,1 +1,1 @@
-from .base import app_cli
+from .base import cli

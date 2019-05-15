@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_variants(mock_app, case_obj):
@@ -13,7 +13,7 @@ def test_export_variants(mock_app, case_obj):
     assert store.variant_collection.find().count() == 0
 
     # Load snv variants using the cli
-    result =  runner.invoke(app_cli, ['load', 'variants', case_obj['_id'],
+    result =  runner.invoke(cli, ['load', 'variants', case_obj['_id'],
         '--snv',
         ])
     assert store.variant_collection.find().count() > 0
@@ -27,7 +27,7 @@ def test_export_variants(mock_app, case_obj):
     assert store.case_collection.find({'causatives':{'$exists': True}}).count() == 1
 
     # Test the cli by not providing any options or arguments
-    result =  runner.invoke(app_cli, ['export', 'variants'])
+    result =  runner.invoke(cli, ['export', 'variants'])
     assert result.exit_code == 0
     assert '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO' in result.output
     # variant should be returned
@@ -35,7 +35,7 @@ def test_export_variants(mock_app, case_obj):
 
 
     # Test the cli by providing wrong collaborator
-    result =  runner.invoke(app_cli, ['export', 'variants',
+    result =  runner.invoke(cli, ['export', 'variants',
         '-c', 'cust666'
     ])
     assert result.exit_code == 0
@@ -45,7 +45,7 @@ def test_export_variants(mock_app, case_obj):
 
 
     # Test the cli by providing the right collaborator
-    result =  runner.invoke(app_cli, ['export', 'variants',
+    result =  runner.invoke(cli, ['export', 'variants',
         '-c', case_obj['owner']
     ])
     assert result.exit_code == 0
@@ -55,7 +55,7 @@ def test_export_variants(mock_app, case_obj):
 
 
     # Test the cli by providing the document_id of the variant
-    result =  runner.invoke(app_cli, ['export', 'variants',
+    result =  runner.invoke(cli, ['export', 'variants',
         '-d', variant_obj['document_id']
     ])
     assert result.exit_code == 0
@@ -65,7 +65,7 @@ def test_export_variants(mock_app, case_obj):
 
 
     # Test the cli by providing the case_id of the variant
-    result =  runner.invoke(app_cli, ['export', 'variants',
+    result =  runner.invoke(cli, ['export', 'variants',
         '--case-id', case_obj['_id']
     ])
     assert result.exit_code == 0
@@ -75,7 +75,7 @@ def test_export_variants(mock_app, case_obj):
 
 
     # Test the cli by providing the case_id of the variantand and json option
-    result =  runner.invoke(app_cli, ['export', 'variants',
+    result =  runner.invoke(cli, ['export', 'variants',
         '--case-id', case_obj['_id'],
         '--json'
     ])
@@ -93,13 +93,13 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     assert runner
 
     # Load snv variants using the cli
-    result =  runner.invoke(app_cli, ['load', 'variants', case_obj['_id'],
+    result =  runner.invoke(cli, ['load', 'variants', case_obj['_id'],
         '--snv',
         ])
     assert store.variant_collection.find().count() > 0
 
     # Test the cli without verified variants available
-    result =  runner.invoke(app_cli, ['export', 'verified'])
+    result =  runner.invoke(cli, ['export', 'verified'])
     assert result.exit_code == 0
     assert 'There are no verified variants for institute cust000 in database!' in result.output
 
@@ -114,14 +114,14 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
 
 
     # Test the cli without parameters
-    result =  runner.invoke(app_cli, ['export', 'verified', '--test'])
+    result =  runner.invoke(cli, ['export', 'verified', '--test'])
     assert result.exit_code == 0
     # Variant should be found now
     assert 'Success. Verified variants file contains' in result.output
 
 
     # Test the cli with with a wrong collaborator param
-    result =  runner.invoke(app_cli, ['export', 'verified',
+    result =  runner.invoke(cli, ['export', 'verified',
         '--test',
         '-c', 'cust666'
     ])
@@ -131,7 +131,7 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
 
 
     # Test the cli with the right collaborator param
-    result =  runner.invoke(app_cli, ['export', 'verified',
+    result =  runner.invoke(cli, ['export', 'verified',
         '--test',
         '-c', case_obj['owner']
     ])

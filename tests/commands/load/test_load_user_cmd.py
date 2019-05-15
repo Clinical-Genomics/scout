@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_load_user(mock_app, user_obj):
@@ -17,7 +17,7 @@ def test_load_user(mock_app, user_obj):
     assert store.user_collection.find().count() == 0
 
     # and re-load it using the CLI command:
-    result =  runner.invoke(app_cli, ['load', 'user',
+    result =  runner.invoke(cli, ['load', 'user',
         '-i', user_obj['institutes'][0],
         '-u', user_obj['name'],
         '-m', user_obj['email'],

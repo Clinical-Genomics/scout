@@ -2,7 +2,7 @@
 import os
 
 from scout.demo import delivery_report_path
-from scout.commands import app_cli
+from scout.commands import cli
 
 def test_load_delivery_report(mock_app, case_obj):
     """Testing the load delivery report cli command"""
@@ -14,7 +14,7 @@ def test_load_delivery_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    result =  runner.invoke(app_cli, ['load', 'delivery-report',
+    result =  runner.invoke(cli, ['load', 'delivery-report',
         case_obj['_id'],
         delivery_report_path,
         '-update'

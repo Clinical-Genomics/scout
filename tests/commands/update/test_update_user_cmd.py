@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_update_user(mock_app, user_obj):
@@ -10,12 +10,12 @@ def test_update_user(mock_app, user_obj):
     assert runner
 
     # Test CLI base, no arguments provided
-    result =  runner.invoke(app_cli, ['update', 'user'])
+    result =  runner.invoke(cli, ['update', 'user'])
     # it should return error message
     assert 'Missing option "--user-id"' in result.output
 
     # Test CLI with wrong user
-    result =  runner.invoke(app_cli, ['update', 'user',
+    result =  runner.invoke(cli, ['update', 'user',
         '-u', 'unknown_user_id',
     ])
     # it should return error message
@@ -23,7 +23,7 @@ def test_update_user(mock_app, user_obj):
 
     # Test CLI with right user, update user role
     # remove admin role first:
-    result =  runner.invoke(app_cli, ['update', 'user',
+    result =  runner.invoke(cli, ['update', 'user',
         '-u', user_obj['_id'],
         '--remove-admin'
     ])
@@ -32,7 +32,7 @@ def test_update_user(mock_app, user_obj):
     assert 'admin' not in updated_user['roles']
 
     # Test CLI to add admin role to user
-    result =  runner.invoke(app_cli, ['update', 'user',
+    result =  runner.invoke(cli, ['update', 'user',
         '-u', user_obj['_id'],
         '-r', 'admin'
     ])
@@ -41,7 +41,7 @@ def test_update_user(mock_app, user_obj):
     assert 'admin' in updated_user['roles']
 
     # Test CLI to remove an institute from a user
-    result =  runner.invoke(app_cli, ['update', 'user',
+    result =  runner.invoke(cli, ['update', 'user',
         '-u', user_obj['_id'],
         '--remove-institute', 'cust000'
     ])
@@ -50,7 +50,7 @@ def test_update_user(mock_app, user_obj):
     assert 'cust000' not in updated_user['institutes']
 
     # Test CLI to add a institute to user's institutes
-    result =  runner.invoke(app_cli, ['update', 'user',
+    result =  runner.invoke(cli, ['update', 'user',
         '-u', user_obj['_id'],
         '-i', 'cust000'
     ])

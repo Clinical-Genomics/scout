@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_view_cases(mock_app):
@@ -10,13 +10,13 @@ def test_view_cases(mock_app):
     assert runner
 
     # Test CLI base, no arguments provided
-    result =  runner.invoke(app_cli, ['view', 'cases'])
+    result =  runner.invoke(cli, ['view', 'cases'])
     assert result.exit_code == 0
     # test case should be returned
     assert '643594' in result.output
 
     # Test CLI base providing an institute not in database
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '-i', 'cust666'
         ])
     assert result.exit_code == 0
@@ -24,7 +24,7 @@ def test_view_cases(mock_app):
     assert 'No cases could be found' in result.output
 
     # Test CLI base providing an existing institute
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '-i', 'cust000'
         ])
     assert result.exit_code == 0
@@ -32,7 +32,7 @@ def test_view_cases(mock_app):
     assert '643594' in result.output
 
     # Test CLI base providing display name
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '-d', '643594'
         ])
     assert result.exit_code == 0
@@ -40,7 +40,7 @@ def test_view_cases(mock_app):
     assert '643594' in result.output
 
     # Test CLI base providing case _id
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '-c', 'internal_id'
         ])
     assert result.exit_code == 0
@@ -48,7 +48,7 @@ def test_view_cases(mock_app):
     assert '643594' in result.output
 
     # load research variants for this case:
-    result =  runner.invoke(app_cli, ['load', 'variants',
+    result =  runner.invoke(cli, ['load', 'variants',
         'internal_id',
         '--snv',
         ])
@@ -57,7 +57,7 @@ def test_view_cases(mock_app):
     assert n_vars > 0
 
     # Test CLI with --nr-variants flag
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '-c', 'internal_id',
         '--nr-variants',
         ])
@@ -66,7 +66,7 @@ def test_view_cases(mock_app):
     assert str(n_vars) in result.output
 
     # Test CLI with --variants-treshold param
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '--variants-treshold', n_vars
         ])
     assert result.exit_code == 0
@@ -74,7 +74,7 @@ def test_view_cases(mock_app):
     assert str(n_vars) in result.output
 
     # Test CLI with --variants-treshold param
-    result =  runner.invoke(app_cli, ['view', 'cases',
+    result =  runner.invoke(cli, ['view', 'cases',
         '--variants-treshold', n_vars+1,
         ])
     assert result.exit_code == 0

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_update_groups(mock_app, tmpdir):
@@ -11,11 +11,11 @@ def test_update_groups(mock_app, tmpdir):
     assert runner
 
     # Test CLI base, no arguments provided
-    result =  runner.invoke(app_cli, ['update', 'groups'])
+    result =  runner.invoke(cli, ['update', 'groups'])
     assert 'Error: Missing argument "institute-id"' in result.output
 
      # Test CLI base with istitute id argument
-    result =  runner.invoke(app_cli, ['update', 'groups',
+    result =  runner.invoke(cli, ['update', 'groups',
         'cust000'])
     assert 'INFO Please provide some groups' in result.output
 
@@ -37,7 +37,7 @@ def test_update_groups(mock_app, tmpdir):
     store.hpo_term_collection.insert(hpo_terms)
 
     # Test CLI with new phenotype group
-    result =  runner.invoke(app_cli, ['update', 'groups',
+    result =  runner.invoke(cli, ['update', 'groups',
         'cust000',
         '-p', 'HP:0000003'
         ])
@@ -47,7 +47,7 @@ def test_update_groups(mock_app, tmpdir):
     assert updated_institute['phenotype_groups']['HP:0000003']['abbr'] == None
 
     # Test CLI with new phenotype group and abbreviation
-    result =  runner.invoke(app_cli, ['update', 'groups',
+    result =  runner.invoke(cli, ['update', 'groups',
         'cust000',
         '-p', 'HP:0000003',
         '-a', 'ABBR1'
@@ -64,7 +64,7 @@ def test_update_groups(mock_app, tmpdir):
     assert p.read() == phenotype_group_text
 
     # Pass the file to the CLI with -add flag
-    result =  runner.invoke(app_cli, ['update', 'groups',
+    result =  runner.invoke(cli, ['update', 'groups',
         'cust000',
         '-f', str(p),
         '-add'
@@ -76,7 +76,7 @@ def test_update_groups(mock_app, tmpdir):
     assert updated_institute['phenotype_groups']['HP:0000331']['abbr'] == 'ABBR2'
 
     # Pass the same file to CLI with no add flag (if should replace the phenotype_groups object)
-    result =  runner.invoke(app_cli, ['update', 'groups',
+    result =  runner.invoke(cli, ['update', 'groups',
         'cust000',
         '-f', str(p),
     ])

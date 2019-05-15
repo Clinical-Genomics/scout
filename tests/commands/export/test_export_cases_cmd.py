@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_cases(mock_app, case_obj):
@@ -10,13 +10,13 @@ def test_export_cases(mock_app, case_obj):
     assert runner
 
     # Test the command with no options
-    result =  runner.invoke(app_cli, ['export', 'cases'])
+    result =  runner.invoke(cli, ['export', 'cases'])
     assert result.exit_code == 0
     assert 'scout/demo/643594' in result.output
 
     # Test the command with --case-id option
     assert store.case_collection.find().count() > 0
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--case-id', case_obj['_id']
         ])
 
@@ -27,7 +27,7 @@ def test_export_cases(mock_app, case_obj):
 
     # Test the command with -institute option
     assert store.case_collection.find().count() > 0
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '-i', case_obj['owner']
         ])
 
@@ -38,7 +38,7 @@ def test_export_cases(mock_app, case_obj):
 
     # Test the command with -reruns option
     assert store.case_collection.find().count() > 0
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '-r'
         ])
     # Test case should NOT be found
@@ -51,7 +51,7 @@ def test_export_cases(mock_app, case_obj):
         {'$set' : {'rerun_requested' : True} }
     )
     # repeat command
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '-r'
         ])
     # Test case should be found
@@ -61,7 +61,7 @@ def test_export_cases(mock_app, case_obj):
 
     # Test the command with -finished option
     assert store.case_collection.find().count() > 0
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '-f'
         ])
     # Test case should NOT be found
@@ -73,7 +73,7 @@ def test_export_cases(mock_app, case_obj):
         {'$set' : {'status' : 'solved'} }
     )
     # repeat command
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '-f'
         ])
     # Test case should be found
@@ -82,7 +82,7 @@ def test_export_cases(mock_app, case_obj):
 
 
     # Test cli querying for cases with a specifi status (solved)
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '-s', 'solved'
         ])
     # Test case should be found
@@ -90,7 +90,7 @@ def test_export_cases(mock_app, case_obj):
     assert 'scout/demo/643594' in result.output
 
     # Use CLI to get cases with causative variants
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--causatives'
         ])
     # Test case should NOT be found
@@ -103,7 +103,7 @@ def test_export_cases(mock_app, case_obj):
         {'$set' : {'causatives' : ['causative_variant_id']} }
     )
     # repeat command
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--causatives'
         ])
     # Test case should be found
@@ -111,7 +111,7 @@ def test_export_cases(mock_app, case_obj):
     assert 'scout/demo/643594' in result.output
 
     # Use CLI to get cases with research requested
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--research-requested'
         ])
     # Test case should NOT be found
@@ -120,7 +120,7 @@ def test_export_cases(mock_app, case_obj):
 
     # Use CLI to get research cases
     # Use CLI to get cases with research requested
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--is-research'
         ])
     # Test case should NOT be found
@@ -134,13 +134,13 @@ def test_export_cases(mock_app, case_obj):
     )
 
     # Case should be found now using both params
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--is-research'
         ])
     assert result.exit_code == 0
     assert 'scout/demo/643594' in result.output
 
-    result =  runner.invoke(app_cli, ['export', 'cases',
+    result =  runner.invoke(cli, ['export', 'cases',
         '--research-requested'
         ])
     assert result.exit_code == 0

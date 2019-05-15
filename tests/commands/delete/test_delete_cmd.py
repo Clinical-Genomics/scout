@@ -2,7 +2,7 @@
 
 from pymongo import IndexModel, ASCENDING
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_delete_panel(mock_app):
@@ -16,14 +16,14 @@ def test_delete_panel(mock_app):
     assert db_panel['panel_name']
 
     # Test the CLI that removes it by giving a wrong version
-    result =  runner.invoke(app_cli, ['delete', 'panel',
+    result =  runner.invoke(cli, ['delete', 'panel',
         '--panel-id', db_panel['panel_name'],
         '-v', 5.0 # db_panel version is 1.0
         ])
     assert 'No panels found' in result.output
 
     # Test the CLI by using panel name without version
-    result =  runner.invoke(app_cli, ['delete', 'panel',
+    result =  runner.invoke(cli, ['delete', 'panel',
         '--panel-id', db_panel['panel_name'],
         ])
 
@@ -44,7 +44,7 @@ def test_delete_index(mock_app):
     assert len(indexes) > 1
 
     # Then remove all indexes using the CLI
-    result =  runner.invoke(app_cli, ['delete', 'index'])
+    result =  runner.invoke(cli, ['delete', 'index'])
 
     # The function should not exit with error
     assert result.exit_code == 0
@@ -65,13 +65,13 @@ def test_delete_user(mock_app, user_obj):
     assert store.user_collection.find().count() == 1
 
     # Test the CLI command to remove users with a random email
-    result =  runner.invoke(app_cli, ['delete', 'user', '-m', 'unknown_email@email.com'])
+    result =  runner.invoke(cli, ['delete', 'user', '-m', 'unknown_email@email.com'])
 
     # and the function should return error
     assert 'User unknown_email@email.com could not be found in database' in result.output
 
     # Try with a valid email
-    result =  runner.invoke(app_cli, ['delete', 'user', '-m', user_obj['email']])
+    result =  runner.invoke(cli, ['delete', 'user', '-m', user_obj['email']])
 
     # And the user should be gone
     assert result.exit_code == 0
@@ -88,7 +88,7 @@ def test_delete_genes(mock_app):
     assert store.hgnc_collection.find().count() > 0
 
     # Test the CLI command to remove them with build option
-    result =  runner.invoke(app_cli, ['delete', 'genes', '-b', '37'])
+    result =  runner.invoke(cli, ['delete', 'genes', '-b', '37'])
 
     # It should print "Dropping genes" message without actually dropping them (why??)
     assert result.exit_code == 0
@@ -96,7 +96,7 @@ def test_delete_genes(mock_app):
     assert store.hgnc_collection.find().count() > 0
 
     # Test the CLI command to remove them without genome build
-    result =  runner.invoke(app_cli, ['delete', 'genes'])
+    result =  runner.invoke(cli, ['delete', 'genes'])
 
     # And it should actually drop them
     assert result.exit_code == 0
@@ -129,7 +129,7 @@ def test_delete_exons(mock_app):
     assert store.exon_collection.find().count() == 3
 
     # Then use CLI to remove all exons with build == 38
-    result =  runner.invoke(app_cli, ['delete', 'exons',
+    result =  runner.invoke(cli, ['delete', 'exons',
         '-b', '38'
         ])
 
@@ -139,7 +139,7 @@ def test_delete_exons(mock_app):
     assert store.exon_collection.find().count() == 2
 
     # Use the CLI to remove all exons regardless:
-    result =  runner.invoke(app_cli, ['delete', 'exons'])
+    result =  runner.invoke(cli, ['delete', 'exons'])
 
     # and all exons should be removed
     assert result.exit_code == 0
@@ -153,11 +153,11 @@ def test_delete_case(mock_app, case_obj):
     assert runner
 
     # Try to delete a case using CLI with no case_id or display_name
-    result =  runner.invoke(app_cli, ['delete', 'case'])
+    result =  runner.invoke(cli, ['delete', 'case'])
     assert 'Please specify what case to delete' in result.output
 
     # try to delete case using CLI and case_id that doesn't exist in database
-    result =  runner.invoke(app_cli, ['delete', 'case',
+    result =  runner.invoke(cli, ['delete', 'case',
         '-i', case_obj['owner'],
         '-c', 'unknown_id'
         ])
@@ -169,7 +169,7 @@ def test_delete_case(mock_app, case_obj):
     assert store.case_collection.find().count() == 1
 
     # Provide right right case_id and institute
-    result =  runner.invoke(app_cli, ['delete', 'case',
+    result =  runner.invoke(cli, ['delete', 'case',
         '-c', case_obj['_id']
         ])
     assert result.exit_code == 0
@@ -182,14 +182,14 @@ def test_delete_case(mock_app, case_obj):
     assert store.case_collection.find().count() == 1
 
     # Provide right display_name but not institute
-    result =  runner.invoke(app_cli, ['delete', 'case',
+    result =  runner.invoke(cli, ['delete', 'case',
         '-d', case_obj['display_name']
         ])
     assert result.exit_code == 1
     assert 'Please specify the owner of the case that should be deleted' in result.output
 
     # Provide right display_name and right institute
-    result =  runner.invoke(app_cli, ['delete', 'case',
+    result =  runner.invoke(cli, ['delete', 'case',
         '-d', case_obj['display_name'],
         '-i', case_obj['owner']
         ])

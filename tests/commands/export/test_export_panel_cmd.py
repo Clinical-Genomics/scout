@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_panel(mock_app):
@@ -13,21 +13,21 @@ def test_export_panel(mock_app):
     assert panel_obj
 
     # Test the export panel cli without passing any data
-    result =  runner.invoke(app_cli, ['export', 'panel'])
+    result =  runner.invoke(cli, ['export', 'panel'])
 
     # The CLI command should return an error message then return abort code
     assert result.exit_code == 1
     assert 'Please provide at least one gene panel' in result.output
 
     # Try to pass a non-valid panel name
-    result =  runner.invoke(app_cli, ['export', 'panel', 'unknown_panel'])
+    result =  runner.invoke(cli, ['export', 'panel', 'unknown_panel'])
 
     # The CLI command should not return abort code but error message
     assert result.exit_code == 0
     assert 'WARNING Panel unknown_panel could not be found' in result.output
 
     # Try to pass a valid panel name, without a valid version
-    result =  runner.invoke(app_cli, ['export', 'panel',
+    result =  runner.invoke(cli, ['export', 'panel',
         panel_obj['panel_name'],
         '--version', 5.0
         ])
@@ -37,7 +37,7 @@ def test_export_panel(mock_app):
     assert 'WARNING Panel {} could not be found'.format(panel_obj['panel_name']) in result.output
 
     # Pass a valid panel name, valid version
-    result =  runner.invoke(app_cli, ['export', 'panel',
+    result =  runner.invoke(cli, ['export', 'panel',
         panel_obj['panel_name'],
         '--version', 1.0
         ])
@@ -47,7 +47,7 @@ def test_export_panel(mock_app):
     assert '2397\tCRYBB1\t\t\t\t\n9394\tPICK1\t\t\t\t\n' in result.output
 
     # Pass a valid panel name, valid version, bed file format option
-    result =  runner.invoke(app_cli, ['export', 'panel',
+    result =  runner.invoke(cli, ['export', 'panel',
         panel_obj['panel_name'],
         '--version', 1.0,
         '--bed'

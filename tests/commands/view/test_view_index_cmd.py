@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 
 from scout.server.extensions import store
 
@@ -11,13 +11,13 @@ def test_view_index(mock_app):
     assert runner
 
     # Test CLI base, no arguments provided
-    result =  runner.invoke(app_cli, ['view', 'index'])
+    result =  runner.invoke(cli, ['view', 'index'])
     assert result.exit_code == 0
     # no term shold be returned
     assert "event\tvariant_id" in result.output
 
     # Test CLI base with argument collection name
-    result =  runner.invoke(app_cli, ['view', 'index',
+    result =  runner.invoke(cli, ['view', 'index',
         '-n', 'variant'])
     assert result.exit_code == 0
     # this time indexes in event collection should not be found

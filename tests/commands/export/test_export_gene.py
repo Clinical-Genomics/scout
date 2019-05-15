@@ -2,7 +2,7 @@
 
 import json
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_genes(mock_app):
@@ -12,7 +12,7 @@ def test_export_genes(mock_app):
     assert runner
 
     # Test the export panel cli without passing any data to get all genes (build 37)
-    result =  runner.invoke(app_cli, ['export', 'genes'])
+    result =  runner.invoke(cli, ['export', 'genes'])
     # assert that genes are returned
     assert result.exit_code == 0
     assert 'Y\t14813160\t14972764\t12633\tUSP9Y\n' in result.output
@@ -31,7 +31,7 @@ def test_export_genes(mock_app):
     assert store.hgnc_collection.find({'build':'38'}).count() == 1
 
     # Test the export panel cli by passing build=38
-    result =  runner.invoke(app_cli, ['export', 'genes',
+    result =  runner.invoke(cli, ['export', 'genes',
         '-b', '38'
         ])
     # assert that gene is returned
@@ -39,7 +39,7 @@ def test_export_genes(mock_app):
     assert '1\t147629652\t147670496\t29609\tACP6\n' in result.output
 
     # Test CLI to return json-formatted genes
-    result =  runner.invoke(app_cli, ['export', 'genes',
+    result =  runner.invoke(cli, ['export', 'genes',
         '-b', '38',
         '--json'
         ])

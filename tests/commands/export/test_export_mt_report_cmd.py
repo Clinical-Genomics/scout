@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_mt_report(mock_app, case_obj):
@@ -10,12 +10,12 @@ def test_export_mt_report(mock_app, case_obj):
     assert runner
 
     # Thy the CLI without parameters
-    result =  runner.invoke(app_cli, ['export', 'mt_report'])
+    result =  runner.invoke(cli, ['export', 'mt_report'])
     # it should return error
     assert 'Missing option "--case_id"' in result.output
 
     # Test the CLI providing case_id
-    result = runner.invoke(app_cli, ['export', 'mt_report',
+    result = runner.invoke(cli, ['export', 'mt_report',
         '--case_id', case_obj['_id'],
         '--test'
         ])
@@ -24,14 +24,14 @@ def test_export_mt_report(mock_app, case_obj):
 
     # load case variants into database
     assert store.variant_collection.find().count() == 0
-    result = runner.invoke(app_cli, ['load', 'variants',
+    result = runner.invoke(cli, ['load', 'variants',
         case_obj['_id'], '--snv'
         ])
     assert 'INFO Updating variant_rank done' in result.output
     assert store.variant_collection.find({'chromosome':'MT'}).count() > 0
 
     # Test the CLI providing case_id
-    result = runner.invoke(app_cli, ['export', 'mt_report',
+    result = runner.invoke(cli, ['export', 'mt_report',
         '--case_id', case_obj['_id'],
         '--test'
         ])

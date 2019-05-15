@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_hpo(mock_app):
@@ -10,7 +10,7 @@ def test_export_hpo(mock_app):
     assert runner
 
     # Test CLI without providing HPO terms
-    result =  runner.invoke(app_cli, ['export', 'hpo_genes'])
+    result =  runner.invoke(cli, ['export', 'hpo_genes'])
 
     # The CLI command should return an error message then return abort code
     assert result.exit_code == 1
@@ -31,13 +31,13 @@ def test_export_hpo(mock_app):
 
 
     # Test CLI with a non-valid HPO term
-    result =  runner.invoke(app_cli, ['export', 'hpo_genes', 'non_HPO_term'])
+    result =  runner.invoke(cli, ['export', 'hpo_genes', 'non_HPO_term'])
 
     assert result.exit_code == 0
     assert 'WARNING Term non_HPO_term could not be found' in result.output
 
     # Test CLI with a valid HPO term
-    result =  runner.invoke(app_cli, ['export', 'hpo_genes', 'HP:0000003'])
+    result =  runner.invoke(cli, ['export', 'hpo_genes', 'HP:0000003'])
 
     assert result.exit_code == 0
     assert '17582\t1\n1151\t1\n' in result.output

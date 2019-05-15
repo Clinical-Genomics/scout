@@ -3,7 +3,7 @@
 import os
 from scout.demo import load_path
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_load_case(mock_app, institute_obj, case_obj):
@@ -21,6 +21,6 @@ def test_load_case(mock_app, institute_obj, case_obj):
     assert os.path.exists(load_path)
 
     # Test command to upload case using demo resources:
-    result =  runner.invoke(app_cli, ['load', 'case', load_path ])
+    result =  runner.invoke(cli, ['load', 'case', load_path ])
     assert result.exit_code == 0
     assert store.case_collection.find().count() == 1

@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
 @click.option('-v', 'vers_num', is_flag=True, help="display version of Scout")
 @with_appcontext
-def app_cli(loglevel, demo, vers_num):
+def cli(loglevel, demo, vers_num):
     """Entry point of Scout CLI"""
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
@@ -48,13 +48,13 @@ def app_cli(loglevel, demo, vers_num):
         current_app.config["MONGO_DATABASE"] = client['scout-demo']
         extensions.store.init_app(current_app)
 
-app_cli.add_command(load_command)
-app_cli.add_command(wipe)
-app_cli.add_command(setup_command)
-app_cli.add_command(delete)
-app_cli.add_command(export)
-app_cli.add_command(convert)
-app_cli.add_command(index_command)
-app_cli.add_command(view_command)
-app_cli.add_command(update_command)
-app_cli.add_command(serve)
+cli.add_command(load_command)
+cli.add_command(wipe)
+cli.add_command(setup_command)
+cli.add_command(delete)
+cli.add_command(export)
+cli.add_command(convert)
+cli.add_command(index_command)
+cli.add_command(view_command)
+cli.add_command(update_command)
+cli.add_command(serve)

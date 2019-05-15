@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_update_hpo(mock_app):
@@ -10,11 +10,11 @@ def test_update_hpo(mock_app):
     assert runner
 
     # Test CLI base, no arguments provided
-    result =  runner.invoke(app_cli, ['update', 'hpo'])
+    result =  runner.invoke(cli, ['update', 'hpo'])
     assert result.exit_code == 1
     assert 'Are you sure you want to drop the hpo terms?' in result.output
 
     # test propt confirm
-    result =  runner.invoke(app_cli, ['update', 'hpo'],input='y')
+    result =  runner.invoke(cli, ['update', 'hpo'],input='y')
     assert result.exit_code == 0
     assert 'INFO Time to load terms' in result.output

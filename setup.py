@@ -108,7 +108,7 @@ setup(
     ),
     entry_points=dict(
         console_scripts=[
-            'scout = scout.commands:app_cli',
+            'scout = scout.commands:cli',
         ]
     ),
     test_suite='tests',

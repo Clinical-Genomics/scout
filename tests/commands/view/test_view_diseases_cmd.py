@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 
 from scout.server.extensions import store
 
@@ -11,7 +11,7 @@ def test_view_diseases(mock_app):
     assert runner
 
     # Test CLI
-    result =  runner.invoke(app_cli, ['view', 'diseases'])
+    result =  runner.invoke(cli, ['view', 'diseases'])
     assert result.exit_code == 0
     # NO OMIM term should be preloaded in database
     assert "No diseases found" in result.output
@@ -29,7 +29,7 @@ def test_view_diseases(mock_app):
     store.disease_term_collection.insert(omim_term)
 
     # Test CLI
-    result =  runner.invoke(app_cli, ['view', 'diseases'])
+    result =  runner.invoke(cli, ['view', 'diseases'])
     assert result.exit_code == 0
     # OMIM disease should now be found
     assert 'OMIM:193040' in result.output

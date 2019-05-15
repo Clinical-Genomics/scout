@@ -1,6 +1,6 @@
 import pytest
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout import __version__
 from flask.cli import current_app
 
@@ -11,10 +11,10 @@ def test_base_cmd(mock_app):
     assert runner
 
     # test scout -v command
-    result =  runner.invoke(app_cli, ['--loglevel', 'DEBUG', '-v'])
+    result =  runner.invoke(cli, ['--loglevel', 'DEBUG', '-v'])
     assert result.exit_code == 0
     assert 'Running scout version {}'.format(__version__) in result.output
 
     # test setting the database to scout-demo using the CLI
-    result = runner.invoke(app_cli, ['--demo', 'view', 'institutes'])
+    result = runner.invoke(cli, ['--demo', 'view', 'institutes'])
     assert 'setting up connection to use database:"scout-demo"' in result.output

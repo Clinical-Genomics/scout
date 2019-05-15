@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_export_transcripts(mock_app):
@@ -28,7 +28,7 @@ def test_export_transcripts(mock_app):
 
 
     # Test the export panel cli without passing any data (default will be build 38)
-    result =  runner.invoke(app_cli, ['export', 'transcripts'])
+    result =  runner.invoke(cli, ['export', 'transcripts'])
 
     # The commannd should return the transcript
     assert result.exit_code == 0
@@ -36,7 +36,7 @@ def test_export_transcripts(mock_app):
 
 
     # Test the export panel cli by passing chromosome buil 38
-    result =  runner.invoke(app_cli, ['export', 'transcripts',
+    result =  runner.invoke(cli, ['export', 'transcripts',
         '-b', '38'
     ])
 
@@ -46,7 +46,7 @@ def test_export_transcripts(mock_app):
 
 
     # Test the export panel cli by passing chromosome buil 37 (same as in transcript_obj)
-    result =  runner.invoke(app_cli, ['export', 'transcripts',
+    result =  runner.invoke(cli, ['export', 'transcripts',
         '-b', '37'
     ])
 

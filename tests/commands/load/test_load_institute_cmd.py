@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 from scout.server.extensions import store
 
 def test_load_institute(mock_app, institute_obj):
@@ -17,7 +17,7 @@ def test_load_institute(mock_app, institute_obj):
     assert store.institute_collection.find().count() == 0
 
     # and re-load it using the CLI command:
-    result =  runner.invoke(app_cli, ['load', 'institute',
+    result =  runner.invoke(cli, ['load', 'institute',
         '-i', institute_obj['_id'], '-d', institute_obj['display_name'],
         '-s', institute_obj['sanger_recipients']])
 

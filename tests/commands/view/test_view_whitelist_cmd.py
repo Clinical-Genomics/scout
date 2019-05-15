@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import app_cli
+from scout.commands import cli
 
 from scout.server.extensions import store
 
@@ -12,7 +12,7 @@ def test_view_witelist(mock_app):
     assert runner
 
     # Test CLI
-    result =  runner.invoke(app_cli, ['view', 'whitelist'])
+    result =  runner.invoke(cli, ['view', 'whitelist'])
     assert result.exit_code == 0
     assert 'INFO Running scout view users' in result.output
 
@@ -20,7 +20,7 @@ def test_view_witelist(mock_app):
     store.whitelist_collection.insert({'_id' : 'fake_whitelist_id'})
 
     # Test CLI
-    result =  runner.invoke(app_cli, ['view', 'whitelist'])
+    result =  runner.invoke(cli, ['view', 'whitelist'])
     assert result.exit_code == 0
     # mock obj should be returned
     assert 'fake_whitelist_id' in result.output
