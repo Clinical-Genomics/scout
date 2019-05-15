@@ -39,7 +39,7 @@ def create_app(config_file=None, config=None):
     if config:
         app.config.update(config)
     if 'SCOUT_CONFIG' in os.environ:
-        app.config.from_envvar('SCOUT_CONFIG')
+        app.config.from_pyfile(os.environ['SCOUT_CONFIG'])
     if config_file:
         app.config.from_pyfile(config_file)
 
