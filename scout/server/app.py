@@ -33,19 +33,14 @@ from .blueprints import (alignviewers, public, genes, cases, login, variants, pa
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
-    try: # try to configure from environmental variable
-        app = Flask(__name__)
-        app.config.from_envvar('SCOUT_CONFIG')
-        LOG.info('Configuring app from env variable')
-    except: # configure from file
-        LOG.info('Configuring app from config file')
-        app.config.from_pyfile('config.py')
-        if config_file:
-            app.config.from_pyfile(config_file)
+    app = Flask(__name__)
+    app.config.from_pyfile('config.py')
+    app.jinja_env.add_extension('jinja2.ext.do')
     if config:
         app.config.update(config)
+    if config_file:
+        app.config.from_pyfile(config_file)
 
-    app.jinja_env.add_extension('jinja2.ext.do')
     # If there is a MatchMaker Exchange server
     # collect the connected external nodes
     app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
