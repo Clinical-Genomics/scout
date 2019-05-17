@@ -8,7 +8,6 @@ import yaml
 
 from flask.cli import FlaskGroup, current_app, with_appcontext
 from scout.server.app import create_app
-from scout.server import extensions
 
 # General, logging
 from scout import __version__
