@@ -3,7 +3,6 @@ import pytest
 from click.testing import CliRunner
 from scout.commands import cli
 from scout import __version__
-from flask.cli import current_app
 
 #Sanity check for cli
 def test_base_cmd():
