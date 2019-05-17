@@ -2,10 +2,13 @@ import logging
 import click
 import urllib.request
 
+from flask.cli import with_appcontext, current_app
+
 from pprint import pprint as pp
 
 from scout.parse.omim import (parse_genemap2, parse_mim2gene, parse_omim_morbid, parse_mim_titles,
                               get_mim_genes, get_mim_phenotypes)
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -16,27 +19,27 @@ LOG = logging.getLogger(__name__)
     default='cust002',
     show_default=True,
 )
-@click.pass_context
-def omim(context, api_key, institute):
+@with_appcontext
+def omim(api_key, institute):
     """
     Update the automate generated omim gene panel in the database.
     """
     LOG.info("Running scout update omim")
-    adapter = context.obj['adapter']
+    adapter = store
 
-    api_key = api_key or context.obj.get('omim_api_key')
+    api_key = api_key or current_app.config.get('OMIM_API_KEY')
     if not api_key:
         LOG.warning("Please provide a omim api key to load the omim gene panel")
-        context.abort()
+        raise click.Abort()
 
     institute_obj = adapter.institute(institute)
     if not institute_obj:
         LOG.info("Institute %s could not be found in database", institute)
         LOG.warning("Please specify an existing institute")
-        context.abort()
+        raise click.Abort()
 
     try:
         adapter.load_omim_panel(api_key, institute=institute)
     except Exception as err:
         LOG.error(err)
-        context.abort()
+        raise click.Abort()

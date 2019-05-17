@@ -47,24 +47,28 @@ def loglevel(ctx):
 @click.version_option(__version__)
 def get_app(ctx):
     """Create an app with the correct config or with default app params"""
-    # if a .yaml config file was provided use its params to intiate the app
-    if ctx.find_root().params["config"]:
-        cli_config = {}
-        with open(ctx.find_root().params["config"], 'r') as in_handle:
-            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
-            app = create_app(config=dict(
-                DEBUG=True,
-                MONGO_DBNAME = cli_config.get('mongodb'),
-                MONGO_PORT = cli_config.get('port'),
-                MONGO_USERNAME = cli_config.get('username'),
-                MONGO_PASSWORD = cli_config.get('password'),
-                ))
-        return app
 
-    # Otherwise intialize app using SCOUT_CONF envvar or default config file
-    if ctx.find_root().params["demo"]:
-        return create_app(config=dict(MONGO_DBNAME='scout-demo', DEBUG=True))
-    return create_app()
+    # store provided params into a options variable
+    options = ctx.find_root()
+    cli_config = {}
+    # if a .yaml config file was provided use its params to intiate the app
+    if options.params["config"]:
+        with open(options.params["config"], 'r') as in_handle:
+            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
+
+    if options.params["demo"]:
+        cli_config['demo'] = 'scout-demo'
+
+    app = create_app(config=dict(
+        DEBUG=True,
+        MONGO_DBNAME = cli_config.get('demo') or options.params["mongodb"] or cli_config.get('mongodb') or 'scout',
+        MONGO_HOST = options.params["host"] or cli_config.get('host') or 'localhost',
+        MONGO_PORT = options.params["port"] or cli_config.get('port') or 27017,
+        MONGO_USERNAME = options.params["username"] or cli_config.get('username'),
+        MONGO_PASSWORD = options.params["password"] or cli_config.get('password'),
+        OMIM_API_KEY = cli_config.get('omim_api_key'),
+    ))
+    return app
 
 
 @click.group(cls=FlaskGroup, create_app=get_app, invoke_without_command=True, add_default_commands=False)
@@ -74,6 +78,12 @@ def get_app(ctx):
               help="Set the level of log output.", show_default=True)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
 @click.option('-v', 'scout_version', is_flag=True, help="Display version of Scout")
+@click.option('-db', '--mongodb', help='Name of mongo database [scout]')
+@click.option('-u', '--username')
+@click.option('-p', '--password')
+@click.option('-a', '--authdb', help='database to use for authentication')
+@click.option('-port', '--port', help="Specify on what port to listen for the mongod")
+@click.option('-h', '--host', help="Specify the host for the mongo database.")
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""
