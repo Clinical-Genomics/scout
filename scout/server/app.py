@@ -36,13 +36,11 @@ def create_app(config_file=None, config=None):
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     app.jinja_env.add_extension('jinja2.ext.do')
-    if 'SCOUT_CONFIG' in os.environ:
-        app.config.from_envvar(os.environ['SCOUT_CONFIG'])
-    if config_file:
-        app.config.from_pyfile(config_file)
     if config:
         app.config.update(config)
-
+    if config_file:
+        app.config.from_pyfile(config_file)
+        
     # If there is a MatchMaker Exchange server
     # collect the connected external nodes
     app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
