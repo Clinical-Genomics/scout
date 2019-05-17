@@ -17,4 +17,4 @@ def test_base_cmd(mock_app):
 
     # test setting the database to scout-demo using the CLI
     result = runner.invoke(cli, ['--demo', 'view', 'institutes'])
-    assert 'setting up connection to use database:"scout-demo"' in result.output
+    assert result.exit_code == 0

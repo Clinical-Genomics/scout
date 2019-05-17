@@ -8,6 +8,7 @@ import yaml
 
 from flask.cli import FlaskGroup, current_app, with_appcontext
 from scout.server.app import create_app
+from scout.server import extensions
 
 # General, logging
 from scout import __version__
@@ -28,26 +29,58 @@ from scout.server import extensions
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
-@click.group(cls=FlaskGroup, create_app=create_app, invoke_without_command=True)
-@click.option('--loglevel', default='INFO', type=click.Choice(LOG_LEVELS),
-              help="Set the level of log output.", show_default=True)
-@click.option('--demo', is_flag=True, help="If the demo database should be used")
-@click.option('-v', 'vers_num', is_flag=True, help="display version of Scout")
-@click.option('-c', '--config', type=click.Path(exists=True))
-@with_appcontext
-def cli(loglevel, demo, vers_num, config):
-    """Entry point of Scout CLI"""
+@click.pass_context
+def loglevel(ctx):
+    """Set app cli log level"""
+    loglevel = ctx.find_root().params["loglevel"]
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
-    if vers_num:
+
+    if ctx.find_root().params["scout_version"]:
+        # display version and exit
         return
+
     LOG.debug("Debug logging enabled.")
-    if demo:
-        LOG.info('setting up connection to use database:"scout-demo"')
-        client = current_app.config['MONGO_CLIENT']
-        current_app.config["MONGO_DATABASE"] = client['scout-demo']
-        extensions.store.init_app(current_app)
+
+
+@click.pass_context
+@click.version_option(__version__)
+def get_app(ctx):
+    """Create an app with the correct config or with default app params"""
+    # if a .yaml config file was provided use its params to intiate the app
+    if ctx.find_root().params["config"]:
+        cli_config = {}
+        with open(ctx.find_root().params["config"], 'r') as in_handle:
+            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
+            app = create_app(config=dict(
+                DEBUG=True,
+                MONGO_DBNAME = cli_config.get('mongodb'),
+                MONGO_PORT = cli_config.get('port'),
+                MONGO_USERNAME = cli_config.get('username'),
+                MONGO_PASSWORD = cli_config.get('password'),
+                ))
+        return app
+
+    # Otherwise intialize app using SCOUT_CONF envvar or default config file
+    if ctx.find_root().params["demo"]:
+        return create_app(config=dict(MONGO_DBNAME='scout-demo', DEBUG=True))
+    return create_app()
+
+
+@click.group(cls=FlaskGroup, create_app=get_app, invoke_without_command=True, add_default_commands=False)
+@click.option('-c', '--config', type=click.Path(exists=True),
+              help="Specify the path to a config file with database info.")
+@click.option('--loglevel', default='DEBUG', type=click.Choice(LOG_LEVELS),
+              help="Set the level of log output.", show_default=True)
+@click.option('--demo', is_flag=True, help="If the demo database should be used")
+@click.option('-v', 'scout_version', is_flag=True, help="Display version of Scout")
+@with_appcontext
+def cli(**_):
+    """scout: manage interactions with a scout instance."""
+    loglevel()
+    pass
+
 
 cli.add_command(load_command)
 cli.add_command(wipe)
