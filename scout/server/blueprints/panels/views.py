@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import datetime
+import weasyprint
 
 from flask import abort, Blueprint, request, redirect, url_for, flash, render_template
 from flask_weasyprint import HTML, render_pdf

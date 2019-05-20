@@ -6,6 +6,7 @@ import datetime
 import zipfile
 import io
 import pathlib
+import weasyprint
 
 import logging
 
