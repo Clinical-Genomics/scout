@@ -20,7 +20,8 @@ INDIVIDUAL_FILES = ['bam_file', 'mt_bam', 'vcf2cytosure']
               help='Use this flag to create a list of keys where old path is found',
               is_flag=True
 )
-def do_replace(db_uri, old_path, new_path, test, discover):
+@click.option('-c','--case_id', help='id of a case that needs fixing')
+def do_replace(db_uri, old_path, new_path, test, discover, case_id):
     """ This script replaces a substring of the path to files (delivery_report, vcf files
         and individual bam and vcf2cytosure files) with a new substring provided by the user.
         Useful when cases are moved to a new server"""
@@ -32,8 +33,11 @@ def do_replace(db_uri, old_path, new_path, test, discover):
         # test connection
         click.echo('database connection info:{}'.format(db))
 
+        query={}
+        if case_id:
+            query['_id'] = case_id
         # get all cases
-        case_objs = list(db.case.find())
+        case_objs = list(db.case.find(query))
         n_cases = len(case_objs)
         click.echo('Total number of cases in database:{}'.format(n_cases))
 
@@ -123,7 +127,7 @@ def do_replace(db_uri, old_path, new_path, test, discover):
             print(tabulate(replace_fields, ['key','path'], tablefmt="grid"))
 
             # update case object in database
-            if replace_fields and test is False and case['display_name'] in ['F0025330','14026','36']:
+            if replace_fields and test is False:
                 match_condition = {'_id' : case['_id']}
                 updated_case = db.case.find_one_and_update(match_condition,
                     {'$set':set_command}, return_document=pymongo.ReturnDocument.AFTER)
