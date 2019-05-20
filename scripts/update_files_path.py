@@ -123,7 +123,7 @@ def do_replace(db_uri, old_path, new_path, test, discover):
             print(tabulate(replace_fields, ['key','path'], tablefmt="grid"))
 
             # update case object in database
-            if replace_fields and test is False:
+            if replace_fields and test is False and case['display_name'] in ['F0025330','14026','36']:
                 match_condition = {'_id' : case['_id']}
                 updated_case = db.case.find_one_and_update(match_condition,
                     {'$set':set_command}, return_document=pymongo.ReturnDocument.AFTER)
