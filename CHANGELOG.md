@@ -8,6 +8,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+
+### Fixed
+
+
+
+## [4.5.0]
+
+### Added
 - Search for similar cases from scout view CLI
 - Scout cli is now invoked from the app object and works under the app context
 
