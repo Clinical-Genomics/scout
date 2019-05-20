@@ -1,7 +1,9 @@
 import logging
 import click
+from flask.cli import with_appcontext
 
 from scout.load.report import load_delivery_report
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -10,12 +12,11 @@ LOG = logging.getLogger(__name__)
 @click.argument('case_id')
 @click.argument('report_path', type=click.Path(exists=True))
 @click.option('-update', '--update', is_flag=True, help='update delivery report for a sample')
-@click.pass_context
-def delivery_report(context, case_id, report_path,
-                    update):
+@with_appcontext
+def delivery_report(case_id, report_path, update):
     """Add delivery report to an existing case."""
 
-    adapter = context.obj['adapter']
+    adapter = store
 
     try:
         load_delivery_report(adapter=adapter, case_id=case_id,

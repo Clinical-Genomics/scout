@@ -1,14 +1,12 @@
 """
-Cli functions to setup scout
+CLI functions to setup scout
 
-There are two options. 
-`scout setup demo` will setup a database that are loaded with more example 
+There are two options.
+`scout setup demo` will setup a database that are loaded with more example
 data but the gene definitions etc are reduced.
 
-`scout setup database` will create a full scale instance of scout. There will not be any cases 
+`scout setup database` will create a full scale instance of scout. There will not be any cases
 and one admin user is added.
-
-
 
 """
 import logging
@@ -16,13 +14,12 @@ import datetime
 
 import pymongo
 import click
+from flask.cli import with_appcontext, current_app
 
 from pprint import pprint as pp
 
 # Adapter stuff
-from scout.adapter.mongo import MongoAdapter
-from scout.adapter.client import get_connection
-from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
+from scout.adapter import MongoAdapter
 
 from scout.load.setup import setup_scout
 
@@ -37,35 +34,35 @@ def abort_if_false(ctx, param, value):
 @click.option('-u', '--user-name', type=str)
 @click.option('-m', '--user-mail', type=str)
 @click.option('--api-key', help='Specify the api key')
-@click.option('--yes', 
-    is_flag=True, 
+@click.option('--yes',
+    is_flag=True,
     callback=abort_if_false,
     expose_value=False,
     prompt='This will delete existing database, do you wish to continue?')
+@with_appcontext
 @click.pass_context
 def database(context, institute_name, user_name, user_mail, api_key):
     """Setup a scout database."""
-    LOG.info("Running scout setup database")
 
+    LOG.info("Running scout setup database")
     # Fetch the omim information
-    api_key = api_key or context.obj.get('omim_api_key')
+    api_key = api_key or current_app.config.get('OMIM_API_KEY')
     if not api_key:
         LOG.warning("Please provide a omim api key with --api-key")
-        context.abort()
+        raise click.Abort()
 
     institute_name = institute_name or context.obj['institute_name']
     user_name = user_name or context.obj['user_name']
     user_mail = user_mail or context.obj['user_mail']
 
     adapter = context.obj['adapter']
-
     LOG.info("Setting up database %s", context.obj['mongodb'])
-    
+
     setup_scout(
         adapter=adapter,
-        institute_id=institute_name, 
-        user_name=user_name, 
-        user_mail = user_mail, 
+        institute_id=institute_name,
+        user_name=user_name,
+        user_mail = user_mail,
         api_key=api_key
     )
 
@@ -82,17 +79,15 @@ def demo(context):
 
     adapter = context.obj['adapter']
 
-    LOG.info("Setting up database %s", context.obj['mongodb'])
-    
     setup_scout(
         adapter=adapter,
-        institute_id=institute_name, 
-        user_name=user_name, 
-        user_mail = user_mail, 
+        institute_id=institute_name,
+        user_name=user_name,
+        user_mail = user_mail,
         demo=True
     )
 
-from scout.demo.resources.generate_test_data import (generate_hgnc, generate_genemap2, generate_mim2genes, 
+from scout.demo.resources.generate_test_data import (generate_hgnc, generate_genemap2, generate_mim2genes,
 generate_exac_genes, generate_ensembl_genes, generate_ensembl_transcripts, generate_hpo_files)
 from scout.demo import panel_path
 
@@ -114,49 +109,39 @@ from scout.parse.panel import parse_gene_panel
     show_default=True,
     help='Name of initial user',
 )
+@with_appcontext
 @click.pass_context
 def setup(context, institute, user_mail, user_name):
     """
-    Setup scout instances.
+    Setup scout instances: a demo database or a production database, according to the
+    according to the subcommand specified by user.
     """
+    setup_config = {
+        'institute_name' : institute,
+        'user_name' : user_name,
+        'user_mail' : user_mail
+    }
 
-    context.obj['institute_name'] = institute
-    context.obj['user_name'] = user_name
-    context.obj['user_mail'] = user_mail
+    mongodb = current_app.config["MONGO_DBNAME"]
+    client = current_app.config['MONGO_CLIENT']
 
     if context.invoked_subcommand == 'demo':
-        # Update context.obj settings here
+        # Modify the name of the database that will be created
         LOG.debug("Change database name to scout-demo")
-        context.obj['mongodb'] = 'scout-demo'
+        mongodb = 'scout-demo'
 
-    LOG.info("Setting database name to %s", context.obj['mongodb'])
-    LOG.debug("Setting host to %s", context.obj['host'])
-    LOG.debug("Setting port to %s", context.obj['port'])
-    try:
-        client = get_connection(
-                    host=context.obj['host'],
-                    port=context.obj['port'],
-                    username=context.obj['username'],
-                    password=context.obj['password'],
-                    mongodb = context.obj['mongodb']
-                )
-    except ConnectionFailure:
-        context.abort()
-
-    LOG.info("connecting to database %s", context.obj['mongodb'])
-    database = client[context.obj['mongodb']]
+    database = client[mongodb]
     LOG.info("Test if mongod is running")
     try:
-        LOG.info("Test if mongod is running")
         database.test.find_one()
     except ServerSelectionTimeoutError as err:
         LOG.warning("Connection could not be established")
         LOG.warning("Please check if mongod is running")
-        context.abort()
+        raise click.Abort()
 
-    LOG.info("Setting up a mongo adapter")
-    mongo_adapter = MongoAdapter(database)
-    context.obj['adapter'] = mongo_adapter
+    setup_config['mongodb'] = mongodb
+    setup_config['adapter'] = MongoAdapter(database)
+    context.obj = setup_config
 
 
 setup.add_command(database)

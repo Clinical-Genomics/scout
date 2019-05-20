@@ -1,10 +1,11 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
 
 from scout.utils.date import get_date
 from scout.update.panel import update_panel
-
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -26,19 +27,19 @@ LOG = logging.getLogger(__name__)
               type=float,
               help="Change the version of a panel",
               )
-@click.pass_context
-def panel(context, panel, version, update_date, update_version):
+@with_appcontext
+def panel(panel, version, update_date, update_version):
     """
     Update a panel in the database
     """
-    adapter = context.obj['adapter']
+    adapter = store
 
     # Check that the panel exists
     panel_obj = adapter.gene_panel(panel, version=version)
 
     if not panel_obj:
         LOG.warning("Panel %s (version %s) could not be found" % (panel, version))
-        context.abort()
+        click.Abort()
 
     date_obj = None
     if update_date:
@@ -46,7 +47,7 @@ def panel(context, panel, version, update_date, update_version):
             date_obj = get_date(update_date)
         except Exception as err:
             LOG.warning(err)
-            context.abort()
+            click.Abort()
 
     update_panel(
         adapter,

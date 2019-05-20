@@ -5,10 +5,12 @@ import json
 from pprint import pprint as pp
 
 from bson.json_util import dumps
+from flask.cli import with_appcontext
 
 import click
 
 from scout.constants import CASE_STATUSES
+from scout.server.extensions import store
 from .utils import json_option
 
 LOG = logging.getLogger(__name__)
@@ -45,11 +47,11 @@ LOG = logging.getLogger(__name__)
               help='Specify what status to look for'
 )
 @json_option
-@click.pass_context
-def cases(context, case_id, institute, reruns, finished, causatives, research_requested,
+@with_appcontext
+def cases(case_id, institute, reruns, finished, causatives, research_requested,
           is_research, status, json):
     """Interact with cases existing in the database."""
-    adapter = context.obj['adapter']
+    adapter = store
 
     models = []
     if case_id:
