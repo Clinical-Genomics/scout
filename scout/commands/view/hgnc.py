@@ -1,8 +1,10 @@
 import logging
-
+from flask.cli import with_appcontext
+from scout.server.extensions import store
 import click
 
 LOG = logging.getLogger(__name__)
+
 
 @click.command('hgnc', short_help='Check if a gene exist')
 @click.option('--hgnc-symbol', '-s',
@@ -17,16 +19,17 @@ LOG = logging.getLogger(__name__)
                 default='37',
                 help="Specify the genome build",
 )
-@click.pass_context
-def hgnc(ctx, hgnc_symbol, hgnc_id, build):
+@with_appcontext
+def hgnc(hgnc_symbol, hgnc_id, build):
     """
     Query the hgnc aliases
     """
-    adapter = ctx.obj['adapter']
-    
+
+    adapter = store
+
     if not (hgnc_symbol or hgnc_id):
         LOG.warning("Please provide a hgnc symbol or hgnc id")
-        ctx.abort()
+        raise click.Abort()
 
     if hgnc_id:
         result = adapter.hgnc_gene(hgnc_id, build=build)
@@ -34,13 +37,13 @@ def hgnc(ctx, hgnc_symbol, hgnc_id, build):
             LOG.warning("Gene with id %s could not be found", hgnc_id)
             return
         hgnc_symbol = result['hgnc_symbol']
-    
+
     result = adapter.hgnc_genes(hgnc_symbol, build=build)
-    
+
     if result.count() == 0:
         LOG.info("No results found")
         return
-    
+
     click.echo("#hgnc_id\thgnc_symbol\taliases")
     for gene in result:
         click.echo("{0}\t{1}\t{2}".format(

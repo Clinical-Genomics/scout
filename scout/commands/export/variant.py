@@ -2,17 +2,17 @@ import os
 import click
 import logging
 import datetime
-
+from flask.cli import with_appcontext
 from bson.json_util import dumps
 from xlsxwriter import Workbook
 
 from scout.export.variant import export_variants, export_verified_variants
 from .utils import json_option
-
+from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
-
 
 @click.command('verified', short_help='Export validated variants')
 @click.option('-c', '--collaborator',
@@ -25,8 +25,8 @@ LOG = logging.getLogger(__name__)
               help='Use this flag to test the function',
               is_flag=True
 )
-@click.pass_context
-def verified(context, collaborator, test, outpath=None):
+@with_appcontext
+def verified(collaborator, test, outpath=None):
     """Export variants which have been verified for an institute
         and write them to an excel file.
 
@@ -42,7 +42,7 @@ def verified(context, collaborator, test, outpath=None):
     collaborator = collaborator or 'cust000'
     LOG.info('Exporting verified variants for cust {}'.format(collaborator))
 
-    adapter = context.obj['adapter']
+    adapter = store
     verified_vars = adapter.verified(institute_id=collaborator)
     LOG.info('FOUND {} verified variants for institute {}'.format(len(verified_vars), collaborator))
 
@@ -51,7 +51,12 @@ def verified(context, collaborator, test, outpath=None):
         LOG.warning('There are no verified variants for institute {} in database!'.format(collaborator))
         return None
 
-    document_lines = export_verified_variants(verified_vars)
+    unique_callers = set()
+    for var_type, var_callers in CALLERS.items():
+        for caller in var_callers:
+            unique_callers.add(caller.get('id'))
+
+    document_lines = export_verified_variants(verified_vars, unique_callers)
 
     today = datetime.datetime.now().strftime('%Y-%m-%d')
     document_name = '.'.join(['verified_variants', collaborator, today]) + '.xlsx'
@@ -61,6 +66,9 @@ def verified(context, collaborator, test, outpath=None):
         written_files +=1
         LOG.info('Success. Verified variants file contains {} lines'.format(len(document_lines)))
         return written_files
+    elif test:
+        LOG.info('Could not create document lines. Verified variants not found for customer {}'.format(collaborator))
+        return
 
     # create workbook and new sheet
     # set up outfolder
@@ -98,11 +106,11 @@ def verified(context, collaborator, test, outpath=None):
         help="Find causative variants for case",
 )
 @json_option
-@click.pass_context
-def variants(context, collaborator, document_id, case_id, json):
+@with_appcontext
+def variants(collaborator, document_id, case_id, json):
     """Export causatives for a collaborator in .vcf format"""
     LOG.info("Running scout export variants")
-    adapter = context.obj['adapter']
+    adapter = store
     collaborator = collaborator or 'cust000'
 
     variants = export_variants(

@@ -1,6 +1,9 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
+
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -27,18 +30,18 @@ LOG = logging.getLogger(__name__)
               multiple=True,
               help="Specify the institutes to remove",
               )
-@click.pass_context
-def user(context, user_id, update_role, add_institute, remove_admin, remove_institute):
+@with_appcontext
+def user(user_id, update_role, add_institute, remove_admin, remove_institute):
     """
     Update a user in the database
     """
-    adapter = context.obj['adapter']
+    adapter = store
 
     user_obj = adapter.user(user_id)
 
     if not user_obj:
         LOG.warning("User %s could not be found", user_id)
-        context.abort()
+        click.Abort()
 
     existing_roles = set(user_obj.get('roles',[]))
     if update_role:
