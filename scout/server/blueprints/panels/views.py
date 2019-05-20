@@ -11,6 +11,7 @@ from scout.server.utils import templated, user_institutes
 from .forms import PanelGeneForm
 from . import controllers
 
+weasyprint.LOGGER.warning = lambda *a, **kw: None
 log = logging.getLogger(__name__)
 panels_bp = Blueprint('panels', __name__, template_folder='templates')
 

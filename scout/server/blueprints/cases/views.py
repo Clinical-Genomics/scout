@@ -24,6 +24,7 @@ from . import controllers
 
 from .forms import GeneVariantFiltersForm
 
+weasyprint.LOGGER.warning = lambda *a, **kw: None
 log = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
