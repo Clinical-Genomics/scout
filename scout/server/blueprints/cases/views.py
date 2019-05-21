@@ -6,7 +6,6 @@ import datetime
 import zipfile
 import io
 import pathlib
-import weasyprint
 
 import logging
 
@@ -25,7 +24,6 @@ from . import controllers
 
 from .forms import GeneVariantFiltersForm
 
-weasyprint.LOGGER.warning = lambda *a, **kw: None
 log = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
