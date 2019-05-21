@@ -63,6 +63,14 @@ def test_create_submission(adapter, user_obj, institute_obj):
     # Check that submission is returned when collecting submissions by user_id and institute_id
     submissions = adapter.clinvar_submissions(user_obj['_id'], institute_obj['_id'])
     assert submissions[0]['_id'] == submission_id
+    assert 'status' in submissions[0]
+    assert 'user_id' in submissions[0]
+    assert 'institute_id' in submissions[0]
+    assert 'created_at' in submissions[0]
+    assert 'updated_at' in submissions[0]
+    assert 'cases' in submissions[0]
+
+
 
 
 def test_delete_submission(adapter, user_obj, institute_obj):
