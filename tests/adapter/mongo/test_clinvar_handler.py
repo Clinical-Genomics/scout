@@ -4,13 +4,13 @@ from scout.parse.clinvar import clinvar_submission_header,clinvar_submission_lin
 
 LOG = logging.getLogger(__name__)
 
-def get_test_submission_variant():
+def get_test_submission_variant(case_obj):
     """Returns a test clinvar variant submission object"""
 
     variant_subm_obj = {
-        '_id' : "case1_a99ab86f2cb3bc18b993d740303ba27f",
+        '_id' : "{}_a99ab86f2cb3bc18b993d740303ba27f".format(case_obj['_id']),
         'csv_type' : "variant",
-        'case_id' : "case1",
+        'case_id' : case_obj['_id'],
         'category' : "snv",
         'local_id' : "a99ab86f2cb3bc18b993d740303ba27f",
         'linking_id' : "a99ab86f2cb3bc18b993d740303ba27f",
@@ -24,13 +24,13 @@ def get_test_submission_variant():
     return variant_subm_obj
 
 
-def get_test_submission_case():
+def get_test_submission_case(case_obj):
     """Returns a test casedata submission object"""
 
     casedata_subm_obj = {
-        '_id' : "case1_a99ab86f2cb3bc18b993d740303ba27f_subj1",
+        '_id' : "{}_a99ab86f2cb3bc18b993d740303ba27f_subj1".format(case_obj['_id']),
         'csv_type': "casedata",
-        'case_id' : "case1",
+        'case_id' : case_obj['_id'],
         'linking_id' : "a99ab86f2cb3bc18b993d740303ba27f",
         'individual_id' : "subj1",
         'clin_features' : "HP:0001392"
@@ -53,12 +53,23 @@ def get_new_submission(adapter, user_obj, institute_obj):
     return new_submission_id
 
 
-def test_create_submission(adapter, user_obj, institute_obj):
+def test_create_submission(adapter, user_obj, institute_obj, case_obj):
     """Test create a clinvar submission"""
 
     # Assert that a new submission can be created
     submission_id = get_new_submission(adapter, user_obj, institute_obj)
     assert submission_id
+
+    # Given a test variant and its associated casedata
+    variant_data = [ get_test_submission_variant(case_obj) ] # a list of 1 dictionary element
+    case_data = [ get_test_submission_case(case_obj) ] # a list of 1 dictionary element
+    subm_objs = (variant_data, case_data)
+
+    # Add objects to submission
+    updated_subm = adapter.add_to_submission( submission_id, subm_objs)
+
+    # Insert case test case in database
+    adapter.case_collection.insert_one(case_obj)
 
     # Check that submission is returned when collecting submissions by user_id and institute_id
     submissions = adapter.clinvar_submissions(user_obj['_id'], institute_obj['_id'])
@@ -69,8 +80,8 @@ def test_create_submission(adapter, user_obj, institute_obj):
     assert 'created_at' in submissions[0]
     assert 'updated_at' in submissions[0]
     assert 'cases' in submissions[0]
-
-
+    assert 'variant_data' in submissions[0]
+    assert 'case_data' in submissions[0]
 
 
 def test_delete_submission(adapter, user_obj, institute_obj):
@@ -115,15 +126,15 @@ def test_update_clinvar_id(adapter, user_obj, institute_obj):
     assert adapter.get_clinvar_id(submission_id) == "SUB0001"
 
 
-def test_add_remove_subm_objects(adapter, user_obj, institute_obj):
+def test_add_remove_subm_objects(adapter, user_obj, institute_obj, case_obj):
     """Test adding variant and casedata objects to a submission"""
 
     # Get the ID of an existing submission
     submission_obj = adapter.get_open_clinvar_submission( user_id=user_obj['_id'], institute_id=institute_obj['_id'])
 
     # Given a test variant and its associated casedata
-    variant_data = [ get_test_submission_variant() ] # a list of 1 dictionary element
-    case_data = [ get_test_submission_case() ] # a list of 1 dictionary element
+    variant_data = [ get_test_submission_variant(case_obj) ] # a list of 1 dictionary element
+    case_data = [ get_test_submission_case(case_obj) ] # a list of 1 dictionary element
     subm_objs = (variant_data, case_data)
 
     # assert that clinvar collection in database is empty
@@ -161,8 +172,8 @@ def test_add_remove_subm_objects(adapter, user_obj, institute_obj):
     # assert that one of these objects is the case data object
     assert case_data == adapter.clinvar_objs(submission_obj['_id'], 'case_data')
 
-    # assert that a variant is present for case 'case1'
-    assert adapter.case_to_clinVars('case1') == {variant_data[0]['local_id'] : variant_data[0]}
+    # assert that a variant is present for test case
+    assert adapter.case_to_clinVars(case_obj['_id']) == {variant_data[0]['local_id'] : variant_data[0]}
 
     # Removal of clinvar objects from submission and from clinvar collection in database
     # remove case_data object
