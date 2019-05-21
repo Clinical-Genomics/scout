@@ -52,20 +52,20 @@ def get_app(ctx):
     options = ctx.find_root()
     cli_config = {}
     # if a .yaml config file was provided use its params to intiate the app
-    if options.params["config"]:
+    if options.params.get("config"):
         with open(options.params["config"], 'r') as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
 
-    if options.params["demo"]:
+    if options.params.get("demo"):
         cli_config['demo'] = 'scout-demo'
 
     app = create_app(config=dict(
         DEBUG=True,
-        MONGO_DBNAME = cli_config.get('demo') or options.params["mongodb"] or cli_config.get('mongodb') or 'scout',
-        MONGO_HOST = options.params["host"] or cli_config.get('host') or 'localhost',
-        MONGO_PORT = options.params["port"] or cli_config.get('port') or 27017,
-        MONGO_USERNAME = options.params["username"] or cli_config.get('username'),
-        MONGO_PASSWORD = options.params["password"] or cli_config.get('password'),
+        MONGO_DBNAME = cli_config.get('demo') or options.params.get("mongodb") or cli_config.get('mongodb') or 'scout',
+        MONGO_HOST = options.params.get("host") or cli_config.get('host') or 'localhost',
+        MONGO_PORT = options.params.get("port") or cli_config.get('port') or 27017,
+        MONGO_USERNAME = options.params.get("username") or cli_config.get('username'),
+        MONGO_PASSWORD = options.params.get("password") or cli_config.get('password'),
         OMIM_API_KEY = cli_config.get('omim_api_key'),
     ))
     return app
