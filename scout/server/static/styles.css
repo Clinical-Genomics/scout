@@ -1,7 +1,7 @@
 :root {
   --bg-color: #eee;
   --border-color: #ccc;
-  --main-color: #00bcd4;
+  --main-color: #07689F;
 }
 
 *, :after, :before {
@@ -74,7 +74,8 @@ body {
 	overflow-y: auto;
 	border-right: 1px solid var(--border-color);
 
-	background-color: #fff;
+	background-color: #DDEDF4;
+  color: #212221;
 	box-shadow: -1px 2px 2px 0 rgba(0, 0, 0, 0.14),
 				0 1px 5px 0 rgba(0, 0, 0, 0.12),
 				-1px 3px 1px -2px rgba(0, 0, 0, 0.2);
@@ -107,19 +108,19 @@ body {
 }
 
 .navbar-inverse {
-	background-color: #00bcd4;
-	border-color: rgb(0, 153, 172);
+  background-color: #1181B2;
+	border-color: #1181B2;
 }
 
 .navbar-inverse .navbar-brand,
 .navbar-inverse .navbar-text,
 .navbar-inverse .navbar-nav>li>a {
-	color: #fff;
+	color: #DDEDF4;
 }
 
 @media (max-width: 767px) {
 	.navbar-inverse .navbar-nav .open .dropdown-menu>li>a {
-		color: #fff;
+		color: #DDEDF4;
 	}
 }
 
@@ -127,34 +128,36 @@ body {
 .navbar-inverse .navbar-nav>.open>a:focus,
 .navbar-inverse .navbar-nav>.open>a:hover,
 .navbar-inverse .navbar-nav>.active {
-	background-color: rgb(0, 171, 193);
+	background-color: #44449B;
 }
 
 .navbar-inverse .navbar-collapse,
 .navbar-inverse .navbar-form {
-	border-color: rgb(0, 153, 172);
+	border-color: rgb(60, 75, 84);
 }
 
 .navbar-inverse .navbar-toggle {
-	border-color: rgb(0, 153, 172);
+	border-color: rgb(60, 75, 84);
 }
 
 .navbar-inverse .navbar-toggle:focus, .navbar-inverse .navbar-toggle:hover {
-	background-color: #00bcd4;
+	background-color: #07689F;
 }
 
 .navbar-btn,
 .navbar-btn:hover,
 .navbar-btn:active {
 	margin-right: 5px;
-	border-color: rgb(0, 153, 172);
+	border-color: rgb(60, 75, 84);
 }
 
 .panel-default > .panel-heading {
 	padding: 5px 10px;
 	font-weight: 500;
-	background-color: #a5ecf5;
-	border-color: #85c7d0;
+	color: #DDEDF4;
+  background: #1181B2;
+
+
 }
 
 .panel-heading-secondary {
@@ -202,12 +205,17 @@ th {
 
 .bg-warning {
 	/* light red */
-	background-color: #f0d8d8;
+	background-color: #F67280;
 }
 
 .bg-success {
 	/* light green */
-	background-color: #dff0d8 !important;
+	background-color: #11D3BC !important;
+}
+
+.bg-info {
+  /* light blue  */
+	background-color: #A2D5F2;
 }
 
 .rank-shield {
@@ -225,7 +233,7 @@ th {
 }
 
 .warning {
-	 background-color: #ff6666;
+	 background-color: #F67280;
 }
 
 
@@ -325,9 +333,14 @@ input[type="checkbox"].ios8-switch:checked + label:before {
 	padding: 1rem;
 	z-index: 99;
 	background-color: var(--main-color);
-	border-bottom: 1px solid rgb(0, 153, 172);
+	border-bottom: 1px solid rgb(60, 75, 84);
 }
 
 .float-top-secondary + .container {
 	margin-top: 60px;
+}
+
+.alert-custom{
+  background-color: #DDEDF4;
+  color: #44449B;
 }
