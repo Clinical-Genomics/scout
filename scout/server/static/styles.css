@@ -205,17 +205,22 @@ th {
 
 .bg-warning {
 	/* light red */
-	background-color: #F67280;
+	background-color: #f0d8d8;
 }
 
 .bg-success {
 	/* light green */
-	background-color: #11D3BC !important;
+	background-color: #dff0d8 !important;
 }
 
 .bg-info {
   /* light blue  */
 	background-color: #A2D5F2;
+}
+
+.bg-secondary {
+  /* light blue  */
+	background-color: #f4f4f4;
 }
 
 .rank-shield {

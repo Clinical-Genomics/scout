@@ -29,7 +29,7 @@ from scout.server.blueprints.genes.controllers import gene
 LOG = logging.getLogger(__name__)
 
 
-STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
+STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-secondary'}
 
 TRACKS = {
     'rare': 'Rare Disease',
