@@ -2,9 +2,9 @@
 {% from "utils.html" import flash_messages %}
 
 {% block title %}
-  {% if title %} 
+  {% if title %}
     {{ title }} - Scout
-  {% else %} 
+  {% else %}
     Welcome to Scout
   {% endif %}
 {% endblock title %}
@@ -43,6 +43,20 @@
             </div>
           </li>
           {% block top_nav %}{% endblock %}
+        </ul>
+        <ul class="navbar-nav navbar-right">
+          {% block top_nav_right %}
+            {% if current_user.is_authenticated %}
+              <li class="nav-item active dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="{{ url_for('login.logout') }}">Logout</a>
+                  </li>
+                </ul>
+              </li>
+            {% endif %}
+          {% endblock %}
         </ul>
 
       </div>
