@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
 from functools import wraps
 
 from flask import render_template, request, abort, flash
 from flask_login import current_user
+
+LOG = logging.getLogger(__name__)
+
 
 def templated(template=None):
     """Template decorator.
@@ -33,7 +37,7 @@ def public_endpoint(function):
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
     institute_obj = store.institute(institute_id)
-    if institute_obj is None and institute_id != 'favicon.ico':
+    if institute_obj is None:
         flash("Can't find institute: {}".format(institute_id), 'warning')
         return abort(404)
 
