@@ -1,7 +1,17 @@
+:root {
+  --bg-color: #eee;
+}
+
 .container {
-	margin-top: 30px;
+	margin-top: 10px;
+	width: 100%;
 }
 
 .container-float {
-	margin-top: 30px;
+	margin-top: 10px;
+}
+
+body {
+	background-color: var(--bg-color);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }

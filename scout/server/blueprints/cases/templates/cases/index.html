@@ -13,19 +13,20 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="container pull-left" style="margin-top:30px">
+  <div class="container pull-left" style="margin-top:20px ">
     <ul class="list-group">
       {% for institute, case_count in institutes %}
-      <li class="list-group-item d-flex align-items-center">
-        <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-          {{ institute.display_name }}
-        </a>
-        {% if current_user.is_admin %}
-          <span class="text-muted">({{ institute._id }})</span>
-        {% endif %}
-          <span class="badge badge-primary badge-pill">{{ case_count }} cases </span>
-      </li>
+        <li class="list-group-item align-items-center">
+          <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+            {{ institute.display_name }}
+          </a>
+          {% if current_user.is_admin %}
+            <span class="text-muted">({{ institute._id }})</span>
+          {% endif %}
+            <span class="badge badge-secondary badge-pill pull-right">{{ case_count }} cases </span>
+        </li>
       {% endfor %}
+
     </ul>
   </div>
 {% endblock %}
