@@ -1,4 +1,21 @@
 from scout.constants import CLINSIG_MAP
+import re
+
+def test_build_gene_variant_query(adapter):
+    hgnc_symbols = ['POT1']
+
+    # GIVEN a empty database
+
+    # WHEN building a query
+    symbol_query = {}
+    symbol_query['hgnc_symbols'] = hgnc_symbols
+    gene_variant_query = adapter.build_variant_query(query=symbol_query)
+
+    # THEN the query should be on the right format
+    assert gene_variant_query['variant_type'] == {'$in': ['clinical']} # default
+    assert gene_variant_query['category'] == 'snv' # default
+    assert gene_variant_query['rank_score'] == {'$gte': 15} # default
+    assert gene_variant_query['hgnc_symbols'] == {'$in': hgnc_symbols} # given
 
 def test_build_query(adapter):
     case_id = 'cust000'
@@ -95,27 +112,36 @@ def test_build_gnomad_and_cadd(adapter):
 def test_build_clinsig(adapter):
     case_id = 'cust000'
     clinsig_items = [ 3, 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
 
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     query = {'clinsig': clinsig_items}
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert mongo_query['clnsig.value'] == {
-            '$in': all_clinsig
-            }
+    assert mongo_query['clnsig'] == {
+                            '$elemMatch': {
+                                '$or' : [
+                                    { 'value' : { '$in': all_clinsig }},
+                                    { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
+                                ]
+                            }
+                        }
 
-def test_build_clinsig_filter(adapter):
+def test_build_clinsig_filter(adapter, real_variant_database):
     case_id = 'cust000'
     clinsig_items = [ 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     region_annotation = ['exonic', 'splicing']
 
@@ -128,19 +154,82 @@ def test_build_clinsig_filter(adapter):
         { 'genes.region_annotation':
               {'$in': region_annotation }
           },
-        { 'clnsig.value':
-              { '$in': all_clinsig }
-          }
+        { 'clnsig': {
+            '$elemMatch': {
+                '$or' : [
+                    { 'value' : { '$in': all_clinsig }},
+                    { 'value' : re.compile('|'.join(clinsig_mapped_items)) }
+                ]
+            }
+         }}
         ]
 
-def test_build_clinsig_always(adapter):
+
+    assert real_variant_database.variant_collection.find_one()
+
+    # Test that the query works with real data:
+
+    case_obj = real_variant_database.case_collection.find_one()
+    case_id = case_obj['_id']
+
+    # Execute a raw query to collect variants that should pass the filter
+    n_results_raw_query = real_variant_database.variant_collection.find({
+        '$and' : [
+            {'genes.region_annotation' : {'$in' : region_annotation}},
+            {'clnsig.value' : {'$in' : [4, 'Likely pathogenic', 5, 'Pathogenic']}},
+            {'case_id' : case_id},
+            {'category' : 'snv'},
+            {'variant_type' : 'clinical'}
+        ]}).count()
+    assert n_results_raw_query
+
+    adapter = real_variant_database
+
+    # filter real variants using query:
+    filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
+
+    # number of variants returned by raw query and filtered variants should be the same:
+    assert filtered_variants.count() == n_results_raw_query
+
+    # Check if query works on clnsig.value that comma separated values:
+    a_variant = list(filtered_variants)[0]
+    assert a_variant['_id']
+
+    # there should be no variant with clnsig.value=='Pathogenic, Likely pathogenic'
+    assert real_variant_database.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'}).count() == 0
+
+    # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
+    real_variant_database.variant_collection.update_one({'_id' : a_variant['_id']}, {'$set' : {'clnsig.0.value': 'Pathogenic, Likely pathogenic'}})
+
+    # One variant has multiple clssig now:
+    real_variant_database.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'}).count() == 1
+
+    # Update raw query to find this variant as well
+    n_results_raw_query = real_variant_database.variant_collection.find({
+        '$and' : [
+            {'genes.region_annotation' : {'$in' : region_annotation}},
+            {'clnsig.value' : {'$in' : [4, 'Likely pathogenic', 5, 'Pathogenic', 'Pathogenic, Likely pathogenic']}},
+            {'case_id' : case_id},
+            {'category' : 'snv'},
+            {'variant_type' : 'clinical'}
+        ]}).count()
+
+    # Makes sure that the variant is found anyway by the query:
+    n_filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query).count()
+    assert n_results_raw_query == n_filtered_variants
+
+
+def test_build_clinsig_always(adapter, real_variant_database):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
+    trusted_revstat_lev = ['mult', 'single', 'exp', 'guideline']
     clinsig_items = [ 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     region_annotation = ['exonic', 'splicing']
     freq=0.01
@@ -167,18 +256,63 @@ def test_build_clinsig_always(adapter):
              ]},
         { 'clnsig':
               {
-                '$elemMatch': { 'value':
-                                    { '$in' : all_clinsig },
-                                'revstat':
-                                    { '$in' : ['mult',
-                                               'single',
-                                               'exp',
-                                               'guideline']
-                                      }
-                                }
+                '$elemMatch' : {
+                    '$or': [
+                        {
+                            '$and' : [
+                                 {'value' : { '$in': all_clinsig }},
+                                 {'revstat': { '$in': trusted_revstat_lev }}
+                            ]
+                        },
+                        {
+                            '$and': [
+                                {'value' : re.compile('|'.join(clinsig_mapped_items))},
+                                {'revstat' : re.compile('|'.join(trusted_revstat_lev))}
+                            ]
+                        }
+                    ]
                 }
-          }
+            }
+         }
         ]
+
+    # Test that the query works with real data
+
+    case_obj = real_variant_database.case_collection.find_one()
+    case_id = case_obj['_id']
+
+    adapter = real_variant_database
+    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count()
+
+    # filter variants using query:
+    filtered_variants = list(adapter.variants(case_id=case_id, nr_of_variants=-1, query=query))
+    assert filtered_variants
+
+    # Make sure that variants are filtered as they should:
+    for var in filtered_variants:
+
+        gnomad_filter = False
+        anno_filter = False
+        clisig_filter = False
+
+        if 'gnomad_frequency' in var:
+            if var['gnomad_frequency'] < freq:
+                gnomad_filter = True
+        else:
+            gnomad_filter = True
+
+        for gene in var['genes']:
+            if gene['region_annotation'] in region_annotation:
+                anno_filter = True
+
+        if 'clnsig' in var:
+            for clnsig in var['clnsig']:
+                if clnsig['value'] in [4, 'Likely pathogenic', 5, 'Pathogenic']:
+                    clisig_filter = True
+
+        # Assert that variant passes gnomad filter + anno_filter or has the required clinsig
+        assert (gnomad_filter and anno_filter) or clisig_filter
+
 
 def test_build_spidex_not_reported(adapter):
     case_id = 'cust000'
@@ -208,11 +342,14 @@ def test_build_spidex_high(adapter):
 def test_build_clinsig_always_only(adapter):
     case_id = 'cust000'
     clinsig_confident_always_returned = True
+    trusted_revstat_lev = ['mult', 'single', 'exp', 'guideline']
     clinsig_items = [ 4, 5 ]
+    clinsig_mapped_items = []
     all_clinsig = [] # both numerical and human readable values
     for item in clinsig_items:
         all_clinsig.append(item)
         all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
 
     query = {'clinsig': clinsig_items,
              'clinsig_confident_always_returned': clinsig_confident_always_returned
@@ -220,17 +357,24 @@ def test_build_clinsig_always_only(adapter):
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert mongo_query['clnsig'] == {
-        '$elemMatch': { 'value':
-                            { '$in' : all_clinsig },
-                        'revstat':
-                            { '$in' : ['mult',
-                                       'single',
-                                       'exp',
-                                       'guideline']
-                              }
-                        }
-        }
+    assert mongo_query['clnsig'] ==  {
+       '$elemMatch' : {
+           '$or': [
+               {
+                   '$and' : [
+                        {'value' : { '$in': all_clinsig }},
+                        {'revstat': { '$in': trusted_revstat_lev }}
+                   ]
+               },
+               {
+                   '$and': [
+                       {'value' : re.compile('|'.join(clinsig_mapped_items))},
+                       {'revstat' : re.compile('|'.join(trusted_revstat_lev))}
+                   ]
+               }
+           ]
+       }
+   }
 
 def test_build_chrom(adapter):
     case_id = 'cust000'

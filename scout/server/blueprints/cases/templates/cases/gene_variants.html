@@ -1,0 +1,205 @@
+{% extends "layout.html" %}
+{% from "variants/components.html" import gene_cell, frequency_cell %}
+{% from "utils.html" import flash_messages, comments_table %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }} Cases
+    </a>
+  </li>
+  {% if config.SHOW_CAUSATIVES %}
+    <li>
+      <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+    </li>
+   {% endif %}
+   <li class="active">
+     <span class="navbar-text">All SNVs and INDELs</span>
+   </li>
+   <li>
+     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+   </li>
+
+{% endblock %}
+
+{% block content_main %}
+  <form method="POST" id="filters_form" action="{{url_for('cases.gene_variants', institute_id=institute._id)}}" enctype="multipart/form-data">
+    <div class="container-fluid main">
+      <div class="panel-group" id="accordion">
+	<div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+		Filters
+              </a>
+            </h4>
+          </div>
+          <div id="collapseFilters" class="panel-collapse collapse">
+            <div class="panel-body">{{ filters_form() }}</div>
+          </div>
+	</div>
+      </div>
+      {{ flash_messages() }}
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+	<thead>
+          <tr>
+            <th class="col-xs-1" title="Rank score">Case : Score</th>
+            <th class="col-xs-2" title="HGNC symbols">Gene</th>
+            <th class="col-xs-1" title="PopFreq">PopFreq</th>
+            <th class="col-xs-1" title="CADD score">CADD</th>
+            <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
+            <th class="col-xs-2" title="Functional annotation">Func. annotation</th>
+            <th class="col-xs-3" title="HGVS">HGVS</th>
+          </tr>
+	</thead>
+	<tbody>
+          {% for variant in variants %}
+            {% if variant.dismiss_variant %}
+              <tr class="dismiss">
+	    {% else %}
+	      <tr>
+	    {% endif %}
+              <td class="text-right">{{ cell_rank(variant) }}</td>
+              <td>{{ gene_cell(variant) }}</td>
+              <td class="text-right">{{ frequency_cell(variant) }}</td>
+              <td class="text-right">{{ cell_cadd(variant) }}</td>
+              <td>
+                {% for annotation in variant.region_annotations %}
+                  <div>{{ annotation }}</div>
+                {% endfor %}
+              </td>
+              <td>
+                {% for annotation in variant.functional_annotations %}
+                  <div>{{ annotation }}</div>
+                {% endfor %}
+              </td>
+              <td> {{ variant.hgvs }}</td>
+            </tr>
+          {% else %}
+          <tr>
+            <td colspan=7>
+              No matching variants
+            </td>
+          </tr>
+          {% endfor %}
+	</tbody>
+      </table>
+      {{ footer() }}
+    </div>
+  </form>
+{% endblock %}
+
+{% macro cell_rank(variant) %}
+<a class="variants-row-item flex-small layout"
+   href="{{ url_for('variants.variant', institute_id=variant.institute,
+        case_name=variant.case_display_name, variant_id=variant._id) }}">
+  {{ variant.case_display_name}} : {{ variant.rank_score|int }}
+</a>
+{% endmacro %}
+
+{% macro cell_cadd(variant) %}
+  <div>
+    <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class='text-left'>
+      <strong>Sift</strong>
+      {{ variant.sift_predictions|join(',') }} <br>
+      <strong>PolyPhen</strong>
+      {{ (variant.polyphen_predictions or ['-'])|join(',') }}		
+    </div>
+    ">
+    {{ variant.cadd_score }}
+  </div>
+{% endmacro %}
+
+{% macro footer() %}
+  <div class="container-fluid">
+    <div class="form-group text-center">
+      {% if more_variants %}
+        <div class="row">
+	  <div class="col-xs-6">
+             <button name="page" type="submit" class="btn btn-default" value={{ page + 1 }}>Next page</button>
+	  </div>
+	  <div class="col-xs-6">
+            <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
+	  </div>
+	</div>
+      {% else %}
+        <i class="text-muted">No more variants to display</i>
+        <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro filters_form() %}
+    {{ form.csrf_token }}
+
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-6">
+          {{ form.hgnc_symbols.label(class="control-label") }}
+          {{ form.hgnc_symbols(class="form-control") }}
+        </div>
+        <div class="col-xs-2">
+          <label class="control-label">Rank Score</label>
+          <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
+        </div>
+        <div class="col-xs-2">
+          {{ form.variant_type.label(class="control-label") }}
+          {{ form.variant_type(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-6">
+          <label class="control-label">Submit</label>
+          <div class="row">
+            <div class="col-xs-6">
+              {{ form.filter_variants(class_="btn btn-primary form-control") }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        container: 'body',
+      });
+
+      $('table').stickyTableHeaders({
+        fixedOffset: $(".navbar-fixed-top")
+      });
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
+
+      document.getElementById('symbol_file').onchange = function() {
+        var the_form = document.forms['filters_form'];
+        the_form.submit();
+      };
+    })
+
+  </script>
+{% endblock %}

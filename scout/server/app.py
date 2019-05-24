@@ -13,8 +13,9 @@ from flask import current_app, Flask, redirect, request, url_for
 from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
+from scout.utils.matchmaker import mme_nodes
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 try:
     from chanjo_report.server.app import configure_template_filters
@@ -24,12 +25,11 @@ except ImportError:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    logger.info('chanjo report not installed!')
+    LOG.info('chanjo report not installed!')
 
 from . import extensions
-from .blueprints import (alignviewers, public, genes, cases, login, variants, panels, dashboard, 
+from .blueprints import (alignviewers, public, genes, cases, login, variants, panels, dashboard,
                          api, phenotypes, institutes)
-
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
@@ -40,9 +40,13 @@ def create_app(config_file=None, config=None):
         app.config.update(config)
     if config_file:
         app.config.from_pyfile(config_file)
+        
+    # If there is a MatchMaker Exchange server
+    # collect the connected external nodes
+    app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
 
     app.config["JSON_SORT_KEYS"] = False
-    current_log_level = logger.getEffectiveLevel()
+    current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level='DEBUG' if app.debug else current_log_level)
     configure_extensions(app)
     register_blueprints(app)

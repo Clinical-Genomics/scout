@@ -19,14 +19,15 @@ from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
 from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
 from scout.server.extensions import store, mail
-from scout.server.utils import templated, institute_and_case, user_institutes
+from scout.server.utils import (templated, institute_and_case, user_institutes)
 from . import controllers
+
+from .forms import GeneVariantFiltersForm
 
 log = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
-
 
 @cases_bp.route('/institutes')
 @templated('cases/index.html')
@@ -50,14 +51,17 @@ def cases(institute_id):
         limit = int(request.args.get('limit'))
 
     skip_assigned = request.args.get('skip_assigned')
-    all_cases = store.cases(institute_id, name_query=query, skip_assigned=skip_assigned)
+    is_research = request.args.get('is_research')
+    all_cases = store.cases(collaborator=institute_id, name_query=query,
+                        skip_assigned=skip_assigned, is_research=is_research)
     data = controllers.cases(store, all_cases, limit)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
     if len(sanger_unevaluated)> 0:
         data['sanger_unevaluated'] = sanger_unevaluated
 
-    return dict(institute=institute_obj, skip_assigned=skip_assigned, query=query, **data)
+    return dict(institute=institute_obj, skip_assigned=skip_assigned,
+                is_research=is_research, query=query, **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>')
@@ -126,6 +130,187 @@ def clinvar_submissions(institute_id):
     return data
 
 
+@cases_bp.route('/<institute_id>/<case_name>/mme_matches', methods=['GET', 'POST'])
+@templated('cases/matchmaker.html')
+def matchmaker_matches(institute_id, case_name):
+    """Show all MatchMaker matches for a given case"""
+    # check that only authorized users can access MME patients matches
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
+    # Required params for getting matches from MME server:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_token = current_app.config.get('MME_TOKEN')
+    if not mme_base_url or not mme_token:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
+    if data and data.get('server_errors'):
+        flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
+        return redirect(request.referrer)
+    elif not data:
+        data = {
+            'institute' : institute_obj,
+            'case' : case_obj
+        }
+    return data
+
+
+@cases_bp.route('/<institute_id>/<case_name>/mme_match/<target>', methods=['GET','POST'])
+def matchmaker_match(institute_id, case_name, target):
+    """Starts an internal match or a match against one or all MME external nodes"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # check that only authorized users can run matches
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
+
+    # Required params for sending an add request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_accepts = current_app.config.get('MME_ACCEPTS')
+    mme_token = current_app.config.get('MME_TOKEN')
+    nodes = current_app.mme_nodes
+
+    if not mme_base_url or not mme_token or not mme_accepts:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+
+    match_results = controllers.mme_match(case_obj, target, mme_base_url, mme_token, nodes, mme_accepts)
+    ok_responses = 0
+    for match_results in match_results:
+        match_results['status_code'] == 200
+        ok_responses +=1
+    if ok_responses:
+        flash("Match request sent. Look for eventual matches in 'Matches' page.", 'info')
+    else:
+        flash('An error occurred while sending match request.', 'danger')
+
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/mme_add', methods=['POST'])
+def matchmaker_add(institute_id, case_name):
+    """Add or update a case in MatchMaker"""
+
+    # check that only authorized users can add patients to MME
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    causatives = False
+    features = False
+    if case_obj.get('suspects') and len(case_obj.get('suspects'))>3:
+        flash('At the moment it is not possible to save to MatchMaker more than 3 pinned variants', 'warning')
+        return redirect(request.referrer)
+    elif case_obj.get('suspects'):
+        causatives = True
+    if case_obj.get('phenotype_terms'):
+        features = True
+
+    mme_save_options = ['sex', 'features', 'disorders']
+    for index, item in enumerate(mme_save_options):
+        if item in request.form:
+            log.info('item {} is in request form'.format(item))
+            mme_save_options[index] = True
+        else:
+            mme_save_options[index] = False
+    genomic_features = request.form.get('genomicfeatures')
+    genes_only = True # upload to matchmaker only gene names
+    if genomic_features == 'variants':
+        genes_only = False # upload to matchmaker both variants and gene names
+
+    # If there are no genomic features nor HPO terms to share for this case, abort
+    if (not case_obj.get('suspects') and not mme_save_options[1]) or (causatives is False and features is False):
+        flash('In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)', 'danger')
+        return redirect(request.referrer)
+
+    user_obj = store.user(current_user.email)
+
+    # Required params for sending an add request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_accepts = current_app.config.get('MME_ACCEPTS')
+    mme_token = current_app.config.get('MME_TOKEN')
+
+    if not mme_base_url or not mme_accepts or not mme_token:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+
+    add_result = controllers.mme_add(store=store, user_obj=user_obj, case_obj=case_obj,
+        add_gender=mme_save_options[0], add_features=mme_save_options[1],
+            add_disorders=mme_save_options[2], genes_only=genes_only,
+            mme_base_url = mme_base_url, mme_accepts=mme_accepts, mme_token=mme_token)
+
+    # flash MME responses (one for each patient posted)
+    n_succes_response = 0
+    n_inserted = 0
+    n_updated = 0
+    category = 'warning'
+
+    for resp in add_result['server_responses']:
+        message = resp.get('message')
+        if resp.get('status_code') == 200:
+            n_succes_response += 1
+        else:
+            flash('an error occurred while adding patient to matchmaker: {}'.format(message), 'warning')
+        if message == 'Patient was successfully updated.':
+            n_updated +=1
+        elif message == 'Patient was successfully inserted into database.':
+            n_inserted +=1
+
+    # if at least one patient was inserted or updated into matchmaker, save submission at the case level:
+    if n_inserted or n_updated:
+        category = 'success'
+        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
+    flash('Number of new patients in matchmaker:{0}, number of updated records:{1}, number of failed requests:{2}'.format(
+            n_inserted, n_updated, len(add_result.get('server_responses')) - n_succes_response), category)
+
+    return redirect(request.referrer)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/mme_delete', methods=['POST'])
+def matchmaker_delete(institute_id, case_name):
+    """Remove a case from MatchMaker"""
+
+    # check that only authorized users can delete patients from MME
+    user_obj = store.user(current_user.email)
+    if 'mme_submitter' not in user_obj['roles']:
+        flash('unauthorized request', 'warning')
+        return redirect(request.referrer)
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    # Required params for sending a delete request to MME:
+    mme_base_url = current_app.config.get('MME_URL')
+    mme_token = current_app.config.get('MME_TOKEN')
+    if not mme_base_url or not mme_token:
+        flash('An error occurred reading matchmaker connection parameters. Please check config file!', 'danger')
+        return redirect(request.referrer)
+
+    delete_result = controllers.mme_delete(case_obj, mme_base_url, mme_token)
+
+    n_deleted = 0
+    category = 'warning'
+
+    for resp in delete_result:
+        if resp['status_code'] == 200:
+            n_deleted += 1
+        else:
+            flash(resp['message'], category)
+    if n_deleted:
+        category = 'success'
+        # update case by removing mme submission
+        # and create events for patients deletion from MME
+        user_obj = store.user(current_user.email)
+        store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
+    flash('Number of patients deleted from Matchmaker: {} out of {}'.format(n_deleted, len(delete_result)), category)
+    return redirect(request.referrer)
+
+
 @cases_bp.route('/<institute_id>/causatives')
 @templated('cases/causatives.html')
 def causatives(institute_id):
@@ -145,6 +330,62 @@ def causatives(institute_id):
         all_variants[variant_obj['variant_id']].append((case_obj, variant_obj))
 
     return dict(institute=institute_obj, variant_groups=all_variants)
+
+@cases_bp.route('/<institute_id>/gene_variants', methods=['GET','POST'])
+@templated('cases/gene_variants.html')
+def gene_variants(institute_id):
+    """Display a list of SNV variants."""
+    page = int(request.form.get('page', 1))
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    # populate form, conditional on request method
+    if(request.method == "POST"):
+            form = GeneVariantFiltersForm(request.form)
+    else:
+        form = GeneVariantFiltersForm(request.args)
+
+    variant_type = form.data.get('variant_type', 'clinical')
+
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    data = {}
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+                not_found_symbols.append(hgnc_symbol)
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+        if (not_found_ids):
+            flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+        if (not_found_symbols):
+            flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+        if (non_clinical_symbols):
+            flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
+        form.hgnc_symbols.data = hgnc_symbols
+
+        log.debug("query {}".format(form.data))
+
+        variants_query = store.gene_variants(query=form.data, category='snv',
+                            variant_type=variant_type)
+
+        data = controllers.gene_variants(store, variants_query, page)
+
+    return dict(institute=institute_obj, form=form, page=page, **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>/synopsis', methods=['POST'])

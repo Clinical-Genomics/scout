@@ -28,3 +28,7 @@ def mock_mail():
 @pytest.fixture
 def mock_sender():
     return 'mock_sender'
+
+@pytest.fixture
+def mock_comment():
+    return 'mock_comment'

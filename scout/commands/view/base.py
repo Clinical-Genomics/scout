@@ -15,16 +15,16 @@ from .intervals import intervals
 from .collections import collections
 from .transcripts import transcripts
 from .case import cases
+from .hgnc import hgnc
 
 
 LOG = logging.getLogger(__name__)
 
 
 @click.group()
-@click.pass_context
-def view(context):
+def view():
     """
-    View objects from the database. This command is used to get a overview of objects in the 
+    View objects from the database. This command is used to get a overview of objects in the
     database. To get serialisable things use `scout export`
     """
     pass
@@ -43,3 +43,4 @@ view.add_command(intervals)
 view.add_command(collections)
 view.add_command(transcripts)
 view.add_command(cases)
+view.add_command(hgnc)

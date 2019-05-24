@@ -4,9 +4,74 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [4.x.x]
 
-Add stuff here
+### Added
+
+### Fixed
+- Safer code when loading config params in cli base
+
+
+
+## [4.5.0]
+
+### Added
+- Search for similar cases from scout view CLI
+- Scout cli is now invoked from the app object and works under the app context
+
+### Fixed
+
+
+
+## [4.4.1]
+
+### Added
+- Display SV rank model version when available
+
+### Fixed
+- Fixed upload of delivery report via API
+
+
+## [4.4.0]
+
+### Added
+- Displaying more info on the Causatives page and hiding those not causative at the case level
+- Add a comment text field to Sanger order request form, allowing a message to be included in the email
+- MatchMaker Exchange integration
+- List cases with empty synopsis, missing HPO terms and phenotype groups.
+- Search for cases with open research list, or a given case status (active, inactive, archived)
+
+### Fixed
+- Variant query builder split into several functions
+- Fixed delivery report load bug
+
+
+## [4.3.3]
+
+### Added
+- Different individual table for cancer cases
+
+### Fixed
+- Dashboard collects validated variants from verification events instead of using 'sanger' field
+- Cases shared with collaborators are visible again in cases page
+- Force users to select a real institute to share cases with (actionbar select fix)
+
+
+## [4.3.2]
+
+### Added
+- Dashboard data can be filtered using filters available in cases page
+- Causatives for each institute are displayed on a dedicated page
+- SNVs and and SVs are searchable across cases by gene and rank score
+- A more complete report with validated variants is downloadable from dashboard
+
+### Fixed
+- Clinsig filter is fixed so clinsig numerical values are returned
+- Split multi clinsig string values in different elements of clinsig array
+- Regex to search in multi clinsig string values or multi revstat string values
+- It works to upload vcf files with no variants now
+- Combined Pileup and IGV alignments for SVs having variant start and stop on the same chromosome
 
 
 ## [4.3.1]
@@ -17,6 +82,9 @@ Add stuff here
 - Display cases with number of variants from CLI
 - Only display cases with number of variants above certain treshold. (Also CLI)
 - Export of verified variants by CLI or from the dashboard
+- Extend case level queries with default panels, cohorts and phenotype groups.
+- Slice dashboard statistics display using case level queries
+- Add a view where all variants for an institute can be searched across cases, filtering on gene and rank score. Allows searching research variants for cases that have research open.
 
 ### Fixed
 - Fixed code to extract variant conservation (gerp, phyloP, phastCons)

@@ -98,9 +98,7 @@ class HpoHandler(object):
 
         limit = limit or int(10e10)
         res = self.hpo_term_collection.find(query_dict).limit(limit).sort('hpo_number',ASCENDING)
-        
 
-        LOG.info("Found {0} terms with search word {1}".format(res.count(), search_term))
         return res
 
     def disease_term(self, disease_identifier):

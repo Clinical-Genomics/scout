@@ -1,0 +1,248 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li>
+    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name ) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="active">
+    <span class="navbar-text">MatchMaker</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <ol class="breadcrumb">
+        <li>Submitted: <strong>{{case.mme_submission.created_at.strftime('%Y-%m-%d %H:%M')}}</strong></li>
+        <li>Last updated: <strong>{{case.mme_submission.updated_at.strftime('%Y-%m-%d %H:%M')}}</strong></li>
+      </ol>
+      <div id="patientTab" class="container">
+        <ul class="nav nav-tabs">
+  			<li class="active">
+          <a  href="#1" data-toggle="tab">Patient Overview</a>
+  			</li>
+  			<li><a href="#2" data-toggle="tab">External Matches</a>
+  			</li>
+  			<li><a href="#3" data-toggle="tab">Internal Matches</a>
+  			</li>
+  		</ul>
+  			<div class="tab-content ">
+  			  <div class="tab-pane active" id="1">
+            {{patient_data()}}
+  				</div>
+  				<div class="tab-pane" id="2">
+            {{show_matches('external')}}
+  				</div>
+          <div class="tab-pane" id="3">
+            {{show_matches('internal')}}
+  				</div>
+  			</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% macro patient_data() %}
+<hr></hr>
+<div>
+  <p>Features (HPO terms):
+    {% for hpo in case.mme_submission.features %}
+      <span class="label label-primary">{{hpo.id}}</span>
+    {% endfor %}
+  </p>
+  <p>Disorders (OMIM terms):
+    {% for omim in case.mme_submission.disorders %}
+      <span class="label label-info">{{omim.id}}</span>
+    {% endfor %}
+  </p>
+  <p>Submitted patients:
+    {% for patient in case.mme_submission.patients %}
+      <ul>
+        <li>Patient id: <strong>{{patient.id}}</strong></li>
+        <li>Patient label: <strong>{{patient.label}}</strong></li>
+        <li>Sex: <strong>{{patient.sex}}</strong></li>
+        <li>genomic features:
+          <div class="container-fluid">
+            <div class="row">
+            {% for g_feat in patient.genomicFeatures %}
+              <div class="col-lg-4">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    {% for key, value in g_feat.items() %}
+                      {% if key == 'gene' %}
+                        {{key}}:&nbsp;<span class="label label-default">{{value.id}}</span>
+                        <hr>
+                      {% elif key == 'variant' %}
+                        {% for ikey, item in value.items() %}
+                          {{ikey}}:<strong>{{item}}</strong><br>
+                        {% endfor %}
+                      {% elif key == 'type' %} <!-- this will be variant effect -->
+                        {{key}}:<strong>{{value.label}}</strong>
+                        <br>
+                      {% else %} <!-- this will be zygosity -->
+                        {{key}}:<strong>{{value}}</strong>
+                        {% if value == 1 %}
+                          (heteroz. or hemiz. if on X in males)
+                        {% elif value == 2 %}
+                          (homozygous)
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            </div>
+          </div>
+        </li>
+      </ul>
+    {% endfor %}
+  </p>
+</div>
+{% endmacro %}
+
+{% macro show_matches(type) %}
+<!-- show matches of the selected type from the most recent -->
+<hr></hr>
+{% set matching_patients = [] %}
+  {% for patient, match_objs in matches.items() %}
+    <div class = "panel-group">
+    {% set p_name = patient.split('.') %}
+    <h4> Showing {{type}} matches for patient {{ p_name[1] }}:</h4>
+    {% for match_obj in match_objs %}
+      {% if match_obj.match_type == type %}
+        {% do matching_patients.append(match_obj.patient_id) %}
+          <div class = "panel panel-info">
+            <div class = "panel-heading">
+               <h4 class = "panel-title">
+                  <a data-toggle = "collapse" href = "#{{match_obj.match_oid}}">Match {{match_obj.match_date.strftime('%Y-%m-%d %H:%M')}}</a>
+               </h4>
+            </div> <!--end of panel heading -->
+              <div id = "{{match_obj.match_oid}}" class = "panel-collapse collapse">
+                 <div class = "panel-body">
+                   {% for match_result in match_obj.patients %}
+                      <table class="table table-condensed">
+                        <thead>
+                          <tr>
+                            <th scope="col">Score</th>
+                            <th scope="col">Patient ID</th>
+                            <th scope="col">MME node</th>
+                            <th scope="col">Contact</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
+                            <td><strong>{{match_result.patient_id}}</strong></td>
+                            <td>{{match_result.node.label}}</td>
+                            <td>{{match_result.patient.contact.name}}
+                              {% if match_result.patient.contact.institution %}
+                                <br>{{match_result.patient.contact.institution}}
+                              {% endif %}
+                              <br>{{match_result.patient.contact.href}}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-condensed">
+                        <thead>
+                          <tr>
+                            <th scope="col">Diagnoses</th>
+                            <th scope="col">Features</th>
+                            <th scope="col">Genomic Features</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="col-md-1">
+                              {% for omim in match_result.patient.disorders %}
+                                <span data-toggle="tooltip" title="{{omim.label or 'description not available'}}" class="label label-info">{{omim.id}}</span>
+                              {% endfor %}
+                            </td>
+                            <td class="col-md-3">
+                              {% for feature in match_result.patient.features %}
+                                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="label label-primary">{{feature.label}}({{feature.id}})</span>
+                              {% endfor %}
+                            </td>
+                            <td class="col-md-6">
+                              <div class="container-fluid">
+                                <div class="row">
+                                {% for g_feat in match_result.patient.genomicFeatures %}
+                                  <div class="col-lg-4">
+                                    <div class="panel panel-default">
+                                      <div class="panel-body">
+                                        {% for key, value in g_feat.items() %}
+                                          {% if key == 'gene' %} <!-- genomic feature gene-->
+                                            {{key}}:&nbsp;<span class="label label-default">{{value.id}}</span>
+                                            <hr>
+                                          {% elif key == 'variant' %} <!-- genomic feature variant-->
+                                            {% for ikey, item in value.items() %}
+                                              {% if not ikey == 'shareVariantLevelData' %}
+                                                {{ikey}}:<strong>{{item}}</strong><br>
+                                              {% endif %}
+                                            {% endfor %}
+                                          {% elif key == 'zygosity' %} <!-- genomic feature zygosity-->
+                                            {{key}}:<strong>{{value}}</strong>
+                                            {% if value == 1 %}
+                                              (heteroz. or hemiz. if on X in males)
+                                            {% elif value == 2 %}
+                                              (homozygous)
+                                            {% endif %}
+                                          {% else %} <!-- genomic feature type-->
+                                            {{key}}:<strong>{{value.label}}</strong>
+                                            <br>
+                                          {% endif %}
+                                        {% endfor %}
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% endfor %}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <br>
+                      <br>
+                      <hr>
+                   {% endfor %} <!-- end of for patient in match_obj.patients -->
+                 </div><!-- end of class = "panel-body" -->
+              </div> <!-- end of <div id = "{{match_obj.match_oid}}" class = "panel-collapse collapse"> -->
+
+          </div> <!-- end of div class = "panel panel-default"-->
+          <br>
+      {% endif %} <!-- end of if match_obj.match_type == type -->
+    {% endfor %} <!-- end of for match_obj in match_objs -->
+    {% if not matching_patients %}
+      No matches available for this patient.
+    {% endif %} <!-- end of if not matching_patients -->
+    </div>
+  {% endfor %} <!--end of for patient, match_objs in matches.items() -->
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  };
+  </script>
+{% endblock %}

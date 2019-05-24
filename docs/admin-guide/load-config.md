@@ -23,6 +23,11 @@ samples:
     vcf2cytosure: str(optional) # path to CGH file
     bam_file: str(optional) # path to bam file
 
+    tumor_type: str(optional)
+    tmb: str(optional) # Tumor mutational burder [0,1000]
+    msi: str(optional) # Microsatellite instability [0,60]
+    tumor_purity: str(optional) # [0,1]
+
 vcf_snv: str(optional)
 vcf_sv: str(optional)
 vcf_cancer: str(optional)
@@ -41,8 +46,12 @@ multiqc: str(optional)
 default_gene_panels: list[str](optional)
 gene_panels: list[str](optional)
 
+# ATM rare or cancer
+track: list[str][optional]
+
 # meta data
 rank_model_version: str(optional)
+sv_rank_model_version: str(optional)
 rank_score_threshold: float(optional)
 analysis_date: datetime(optional)
 human_genome_build: str(optional)
@@ -62,7 +71,12 @@ Let's go through each field:
 	- *sex* specifies the sex of the sample in human readable format
 	- *expected_coverage* the level of expected coverage
 	- *bam_file* Path to bam file to view alignments
-  - *vcf2cytosure* Path to CGH file to allow download per individual
+    - *vcf2cytosure* Path to CGH file to allow download per individual
+    - *tumor_type* Type of tumor
+    - *tmb* Tumor mutational burden
+    - *msi* Microsatellite instability
+    - *tumor_purity* Purity of tumor sample
+
 - **vcf_snv** path to snv vcf file
 - **vcf_sv**
 - **vcf_snv_research** path to vcf file with all variants
@@ -77,6 +91,7 @@ Let's go through each field:
 - **default_gene_panels** list of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
 - **gene_panels** list of gene panels. This will specify what panels the case has been run with
 - **rank model version** which rank model that was used when scoring the variants
+- **SV rank model version** the SV rank model version used when scoring SV variants
 - **rank_score_treshold** only include variants with a rank score above this treshold
 - **analysis_date** time for analysis in datetime format. Defaults to time of uploading
 - **human_genome_build** what genome version was used.

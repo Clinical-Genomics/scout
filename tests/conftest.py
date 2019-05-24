@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 import pytest
 import logging
 import datetime
+
+from flask_login import login_user, logout_user
+from scout.server.blueprints.login.models import LoginUser
 
 from pprint import pprint as pp
 
@@ -9,10 +13,10 @@ from cyvcf2 import VCF
 import yaml
 import pymongo
 
-
 from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
+
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 
 from scout.utils.handle import get_file_handle
@@ -36,6 +40,7 @@ from scout.build.user import build_user
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
+from scout.server.app import create_app
 
 # These are the reduced data files
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
@@ -48,13 +53,26 @@ from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
 
 from scout.models.hgnc_map import HgncGene
 
+
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
 root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
+
+#############################################################
+###################### App fixtures #########################
+#############################################################
+ # use this app object to test CLI commands which use a test database
+
+@pytest.fixture
+def mock_app(real_populated_database):
+
+    mock_app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=REAL_DATABASE,
+                                 DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
+    return mock_app
 
 ##################### Gene fixtures #####################
 
@@ -218,12 +236,33 @@ def hpo_disease_handle(request, hpo_disease_file):
 
 
 @pytest.fixture
-def hpo_diseases(request, hpo_disease_file):
+def test_pheno_terms(request, hpo_disease_file):
     """Get a file handle to a hpo disease file"""
     print('')
     hpo_disease_handle = get_file_handle(hpo_disease_file)
     diseases = parse_hpo_diseases(hpo_disease_handle)
     return diseases
+
+
+@pytest.fixture
+def test_hpo_terms(request):
+    """Return a list with 3 HPO terms formatted
+    as case_obj.phenotyope terms"""
+    pheno_terms = [
+        {
+            'phenotype_id' : 'HP:0000533',
+            'feature' : 'Chorioretinal atrophy',
+        },
+        {
+            'phenotype_id' : 'HP:0000529',
+            'feature' : 'Progressive visual loss'
+        },
+        {
+            'phenotype_id' : 'HP:0000543',
+            'feature' : 'Optic disc pallor'
+        },
+    ]
+    return pheno_terms
 
 
 #############################################################
@@ -258,7 +297,7 @@ def parsed_case(request, scout_config):
 @pytest.fixture(scope='function')
 def case_obj(request, parsed_case):
 
-    logger.info("Create a case obj")
+    LOG.info("Create a case obj")
     case = parsed_case
     case['_id'] = parsed_case['case_id']
     case['owner'] = parsed_case['owner']
@@ -333,7 +372,7 @@ def parsed_institute(request):
 @pytest.fixture(scope='function')
 def institute_obj(request, parsed_institute):
     print('')
-    logger.info('Building a institute')
+    LOG.info('Building a institute')
     institute = build_institute(
         internal_id=parsed_institute['institute_id'],
         display_name=parsed_institute['display_name'],
@@ -383,21 +422,25 @@ def database_name(request):
     """Get the name of the test database"""
     return DATABASE
 
+@pytest.fixture(scope='function')
+def real_database_name(request):
+    """Get the name of the test database"""
+    return REAL_DATABASE
 
 @pytest.fixture(scope='function')
 def pymongo_client(request):
     """Get a client to the mongo database"""
 
-    logger.info("Get a mongomock client")
+    LOG.info("Get a mongomock client")
     start_time = datetime.datetime.now()
     mock_client = MongoClient()
 
     def teardown():
         print('\n')
-        logger.info("Deleting database")
+        LOG.info("Deleting database")
         mock_client.drop_database(DATABASE)
-        logger.info("Database deleted")
-        logger.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
+        LOG.info("Database deleted")
+        LOG.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
 
     request.addfinalizer(teardown)
 
@@ -408,16 +451,16 @@ def pymongo_client(request):
 def real_pymongo_client(request):
     """Get a client to the mongo database"""
 
-    logger.info("Get a real pymongo client")
+    LOG.info("Get a real pymongo client")
     start_time = datetime.datetime.now()
     mongo_client = pymongo.MongoClient()
 
     def teardown():
         print('\n')
-        logger.info("Deleting database")
+        LOG.info("Deleting database")
         mongo_client.drop_database(REAL_DATABASE)
-        logger.info("Database deleted")
-        logger.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
+        LOG.info("Database deleted")
+        LOG.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
 
     request.addfinalizer(teardown)
 
@@ -427,17 +470,17 @@ def real_pymongo_client(request):
 @pytest.fixture(scope='function')
 def real_adapter(request, real_pymongo_client):
     """Get an adapter connected to mongo database"""
-    logger.info("Connecting to database...")
+    LOG.info("Connecting to database...")
     mongo_client = real_pymongo_client
 
-    logger.info("Connecting to database %s", REAL_DATABASE)
+    LOG.info("Connecting to database %s", REAL_DATABASE)
 
     database = mongo_client[REAL_DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
     mongo_adapter.load_indexes()
 
-    logger.info("Connected to database")
+    LOG.info("Connected to database")
 
     return mongo_adapter
 
@@ -445,13 +488,13 @@ def real_adapter(request, real_pymongo_client):
 @pytest.fixture(scope='function')
 def adapter(request, pymongo_client):
     """Get an adapter connected to mongo database"""
-    logger.info("Connecting to database...")
+    LOG.info("Connecting to database...")
     mongo_client = pymongo_client
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
 
-    logger.info("Connected to database")
+    LOG.info("Connected to database")
 
     return mongo_adapter
 
@@ -499,7 +542,7 @@ def gene_database(request, institute_database, genes):
         build='37'
     )
 
-    logger.info("Creating index on hgnc collection")
+    LOG.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
 
@@ -509,7 +552,7 @@ def gene_database(request, institute_database, genes):
     adapter.transcript_collection.create_index([('build', pymongo.ASCENDING),
                                                 ('hgnc_id', pymongo.ASCENDING)])
 
-    logger.info("Index done")
+    LOG.info("Index done")
 
     return adapter
 
@@ -532,10 +575,10 @@ def real_gene_database(request, real_institute_database, genes37_handle, hgnc_ha
 
     )
 
-    logger.info("Creating index on hgnc collection")
+    LOG.info("Creating index on hgnc collection")
     adapter.hgnc_collection.create_index([('build', pymongo.ASCENDING),
                                           ('hgnc_symbol', pymongo.ASCENDING)])
-    logger.info("Index done")
+    LOG.info("Index done")
 
     return adapter
 
@@ -578,7 +621,7 @@ def real_hpo_database(request, real_gene_database, hpo_terms_handle, hpo_to_gene
 def panel_database(request, gene_database, parsed_panel):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = gene_database
-    logger.info("Adding panel to adapter")
+    LOG.info("Adding panel to adapter")
 
     adapter.load_panel(
         parsed_panel=parsed_panel,
@@ -591,7 +634,7 @@ def panel_database(request, gene_database, parsed_panel):
 def real_panel_database(request, real_gene_database, parsed_panel):
     "Returns an adapter to a database populated with user, institute and case"
     adapter = real_gene_database
-    logger.info("Adding panel to real adapter")
+    LOG.info("Adding panel to real adapter")
 
     adapter.load_panel(
         parsed_panel=parsed_panel,
@@ -615,7 +658,7 @@ def populated_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
 
-    logger.info("Adding case to adapter")
+    LOG.info("Adding case to adapter")
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
     return adapter
@@ -626,7 +669,7 @@ def real_populated_database(request, real_panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
 
-    logger.info("Adding case to real adapter")
+    LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
     adapter._add_case(case_obj)
 
@@ -770,7 +813,7 @@ def basic_variant_dict(request):
 
 @pytest.fixture(scope='function')
 def one_variant(request, variant_clinical_file):
-    logger.info("Return one parsed variant")
+    LOG.info("Return one parsed variant")
     variant_parser = VCF(variant_clinical_file)
 
     for variant in variant_parser:
@@ -781,7 +824,7 @@ def one_variant(request, variant_clinical_file):
 
 @pytest.fixture(scope='function')
 def one_sv_variant(request, sv_clinical_file):
-    logger.info("Return one parsed SV variant")
+    LOG.info("Return one parsed SV variant")
     variant_parser = VCF(sv_clinical_file)
 
     for variant in variant_parser:
@@ -792,7 +835,7 @@ def one_sv_variant(request, sv_clinical_file):
 
 @pytest.fixture(scope='function')
 def rank_results_header(request, variant_clinical_file):
-    logger.info("Return a VCF parser with one variant")
+    LOG.info("Return a VCF parser with one variant")
     variants = VCF(variant_clinical_file)
     rank_results = parse_rank_results_header(variants)
 
@@ -801,14 +844,14 @@ def rank_results_header(request, variant_clinical_file):
 
 @pytest.fixture(scope='function')
 def sv_variants(request, sv_clinical_file):
-    logger.info("Return a VCF parser many svs")
+    LOG.info("Return a VCF parser many svs")
     variants = VCF(sv_clinical_file)
     return variants
 
 
 @pytest.fixture(scope='function')
 def variants(request, variant_clinical_file):
-    logger.info("Return a VCF parser many svs")
+    LOG.info("Return a VCF parser many svs")
     variants = VCF(variant_clinical_file)
     return variants
 
@@ -1087,7 +1130,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print('')
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle)
+    data = yaml.load(in_handle, Loader=yaml.FullLoader)
     return data
 
 
@@ -1103,6 +1146,7 @@ def minimal_config(request, scout_config):
     config.pop('default_gene_panels')
     config.pop('rank_model_version')
     config.pop('rank_score_threshold')
+    config.pop('sv_rank_model_version')
     config.pop('human_genome_build')
 
     return config
@@ -1220,3 +1264,145 @@ def hpo_genes(request, hpo_genes_handle):
     """Get the exac genes"""
     print('')
     return parse_hpo_genes(hpo_genes_handle)
+
+
+#############################################################
+#################### MatchMaker Fixtures ####################
+#############################################################
+
+@pytest.fixture(scope='function')
+def mme_submission():
+    mme_subm_obj = {
+        'patients' : [ {'id' : 'internal_id.ADM1059A2'} ],
+        'created_at' : datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
+        'updated_at' : datetime.datetime(2018, 4, 25, 15, 43, 44, 823465),
+        'sex' : True,
+        'features' : [],
+        'disorders' : [],
+        'genes_only' : False
+    }
+    return mme_subm_obj
+
+@pytest.fixture(scope='function')
+def mme_patient():
+    json_patient = {
+        "contact": {
+          "href": "mailto:contact_email@email.com",
+          "name": "A contact at an institute"
+        },
+        "features": [
+          {
+            "id": "HP:0001644",
+            "label": "Dilated cardiomyopathy",
+            "observed": "yes"
+          },
+        ],
+        "genomicFeatures": [
+          {
+            "gene": {
+              "id": "LIMS2"
+            },
+            "type": {
+              "id": "SO:0001583",
+              "label": "MISSENSE"
+            },
+            "variant": {
+              "alternateBases": "C",
+              "assembly": "GRCh37",
+              "end": 128412081,
+              "referenceBases": "G",
+              "referenceName": "2",
+              "start": 128412080
+            },
+            "zygosity": 1
+          },
+        ],
+        "id": "internal_id.ADM1059A2",
+        "label": "A patient for testing"
+    }
+
+
+@pytest.fixture(scope='function')
+def match_objs():
+    """Mock the results of an internal and an external match"""
+    matches = [
+        {    # External match where test_patient is the query and with results
+
+            '_id' : {'$oid':'match_1'},
+            'created' : {'$date': 1549964103911},
+            'has_matches' : True,
+            'data' : {
+                'patient' : {
+                    'id' : 'internal_id.ADM1059A2',
+                    'contact' : {
+                        'href' : 'mailto:test_contact@email.com'
+                    }
+                }
+            },
+            'results' : [
+                {
+                    'node' : 'external_test_node',
+                    'patients' : [
+                        {'patient' : {
+                            'id' : 'match_1_id'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test External User'
+                            },
+                            'score' : {'patient' : 0.425},
+                        },
+                        {'patient' : {
+                            'id' : 'match_2_id'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test External User'
+                            },
+                            'score' : {'patient' :  0.333},
+                        },
+                    ]
+                }
+            ],
+            'match_type' : 'external'
+        },
+        {    #  Internal match where test_patient is among results
+            '_id' : {'$oid':'match_2'},
+            'created' : {'$date': 1549964103911},
+            'has_matches' : True,
+            'data' : {
+                'patient' : {
+                    'id' : 'external_patient_x',
+                    'contact' : {
+                        'href' : 'mailto:test_contact@email.com'
+                    }
+                }
+            },
+            'results' : [
+                {
+                    'node' : 'internal_node',
+                    'patients' : [
+                        {
+                            'patient' : {
+                            'id' : 'internal_id.ADM1059A2'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test Internal User'
+                            },
+                            'score' : {'patient' :  0.87},
+                        },
+                        {
+                            'patient' : {
+                            'id' : 'external_patient_y'},
+                            'contact' : {
+                                'href': 'mailto:match_user@mail.com',
+                                'name' : 'Test Internal User'
+                            },
+                            'score' : {'patient' :  0.76},
+                        }
+                    ]
+                }
+            ]
+            ,
+            'match_type' : 'internal'
+        },
+    ]
+    return matches

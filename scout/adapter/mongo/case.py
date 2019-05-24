@@ -2,6 +2,7 @@
 from copy import deepcopy
 import logging
 import datetime
+import operator
 
 from pprint import pprint as pp
 
@@ -10,23 +11,63 @@ import pymongo
 from scout.parse.case import parse_case
 from scout.build.case import build_case
 from scout.parse.variant.ids import parse_document_id
+from scout.utils.algorithms import ui_score
 
 from scout.exceptions import IntegrityError, ConfigError
 
 LOG = logging.getLogger(__name__)
 
-
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
+    
+    def get_similar_cases(self, case_obj):
+        """Take a case obj and return a iterable with the most phenotypically similar cases
+        
+        Args:
+            case_obj(models.Case)
+        
+        Returns:
+            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most 
+                                 similar case first
+        """
+        scores = {}
+        set_1 = set()
+        if not case_obj.get('phenotype_terms'):
+            LOG.warning("No phenotypes could be found for case %s", case_obj['_id'])
+            return None
+        # Add all ancestors of all terms
+        for term in case_obj['phenotype_terms']:
+            hpo_term = self.hpo_term(term['phenotype_id'])
+            if not hpo_term:
+                continue
+            set_1 = set_1.union(set(hpo_term.get('all_ancestors',[])))
+        # Need to control what cases to look for here
+        # Fetch all cases with phenotypes
+        for case in self.cases(phenotype_terms=True, owner=case_obj['owner']):
+            set_2 = set()
+            if case['_id'] == case_obj['_id']:
+                continue
+            # Add all ancestors if all terms
+            for term in case['phenotype_terms']:
+                hpo_term = self.hpo_term(term['phenotype_id'])
+                if not hpo_term:
+                    continue
+                set_2 = set_2.union(set(hpo_term.get('all_ancestors',[])))
+            LOG.debug("Check phenotypic similarity of %s and %s", case_obj['_id'], case['_id'])
+            scores[case['_id']] = ui_score(set_1, set_2)
+        # Returns a list of tuples with highest score first
+        return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-    def cases(self, collaborator=None, query=None, skip_assigned=False,
+    def cases(self, owner=None, collaborator=None, query=None, skip_assigned=False,
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
-              phenotype_terms=False, pinned=False, cohort=False, name_query=None):
+              phenotype_terms=False, pinned=False, cohort=False, name_query=None,
+              yield_query=False):
         """Fetches all cases from the backend.
 
         Args:
             collaborator(str): If collaborator should be considered
+            owner(str): Query cases for specified case owner only
             query(dict): If a specific query is used
             skip_assigned(bool)
             has_causatives(bool)
@@ -37,18 +78,31 @@ class CaseHandler(object):
             status(str)
             phenotype_terms(bool): Fetch all cases with phenotype terms
             pinned(bool): Fetch all cases with pinned variants
-            name_query(str): Could be hpo term, user, part of display name, 
+            name_query(str): Could be hpo term, HPO-group, user, part of display name,
                              part of inds or part of synopsis
+            yield_query(bool): If true, only return mongo query dict for use in
+                                compound querying.
 
-        Yields:
-            Cases ordered by date
+        Returns:
+            Cases ordered by date.
+            If yield_query is True, does not pose query to db;
+                instead returns corresponding query dict
+                that can be reused in compound queries or for testing.
         """
         LOG.debug("Fetch all cases")
         query = query or {}
 
+        # Prioritize when both owner and collaborator params are present
+        if collaborator and owner:
+            collaborator = None
+
         if collaborator:
             LOG.debug("Use collaborator {0}".format(collaborator))
             query['collaborators'] = collaborator
+
+        if owner:
+            LOG.debug("Use owner {0}".format(owner))
+            query['owner'] = owner
 
         if skip_assigned:
             query['assignees'] = {'$exists': False}
@@ -69,7 +123,7 @@ class CaseHandler(object):
             query['research_requested'] = True
 
         if is_research:
-            query['is_research'] = True
+            query['is_research'] = {'$exists': True, '$eq': True}
 
         if phenotype_terms:
             query['phenotype_terms'] = {'$exists': True, '$ne': []}
@@ -81,32 +135,58 @@ class CaseHandler(object):
             query['cohorts'] = {'$exists': True, '$ne': []}
 
         if name_query:
+            name_value = name_query.split(':')[-1] # capture ant value provided after query descriptor
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
             if users.count() > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
             elif name_query.startswith('HP:'):
                 LOG.debug("HPO case query")
-                query['phenotype_terms.phenotype_id'] = name_query
+                if name_value:
+                    query['phenotype_terms.phenotype_id'] = name_query
+                else: # query for cases with no HPO terms
+                    query['$or'] = [ {'phenotype_terms' : {'$size' : 0}}, {'phenotype_terms' : {'$exists' : False}} ]
+            elif name_query.startswith('PG:'):
+                LOG.debug("PG case query")
+                if name_value:
+                    phenotype_group_query = name_query.replace('PG:', 'HP:')
+                    query['phenotype_groups.phenotype_id'] = phenotype_group_query
+                else: # query for cases with no phenotype groups
+                    query['$or'] = [ {'phenotype_groups' : {'$size' : 0}}, {'phenotype_groups' : {'$exists' : False}} ]
             elif name_query.startswith('synopsis:'):
-                synopsis_query=name_query.replace('synopsis:','')
-                query['$text']={'$search':synopsis_query}
+                if name_value:
+                    query['$text']={'$search':name_value}
+                else: # query for cases with missing synopsis
+                    query['synopsis'] = ''
+            elif name_query.startswith('cohort:'):
+                query['cohorts'] = name_value
+            elif name_query.startswith('panel:'):
+                query['panels'] = {'$elemMatch': {'panel_name': name_value,
+                                    'is_default': True }}
+            elif name_query.startswith('status:'):
+                status_query = name_query.replace('status:','')
+                query['status'] = status_query
+            elif name_query.startswith('is_research'):
+                query['is_research'] = {'$exists': True, '$eq': True}
             else:
                 query['$or'] = [
                     {'display_name': {'$regex': name_query}},
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
 
+        if yield_query:
+            return query
+
         LOG.info("Get cases with query {0}".format(query))
         return self.case_collection.find(query).sort('updated_at', -1)
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases
-        
+
         This function will change when we migrate to 3.7.1
-        
+
         Args:
             collaborator(str): Institute id
-        
+
         Returns:
             nr_cases(int)
         """
@@ -114,12 +194,12 @@ class CaseHandler(object):
 
         if institute_id:
             query['collaborators'] = institute_id
-        
+
         LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = self.case_collection.find(query).count()
 
         return nr_cases
-    
+
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
                                  phenotype_ids=None, build='37'):
@@ -296,7 +376,7 @@ class CaseHandler(object):
                     category=category,
                     rank_threshold=case_obj.get('rank_score_threshold', 0),
                 )
-            
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
@@ -307,6 +387,7 @@ class CaseHandler(object):
             self._add_case(case_obj)
 
         return case_obj
+
 
     def _add_case(self, case_obj):
         """Add a case to the database
@@ -334,11 +415,13 @@ class CaseHandler(object):
             - genome_build: If there is a new genome build
             - genome_version: - || -
             - rank_model_version: If there is a new rank model
+            - sv_rank_model_version: If there is a new sv rank model
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
+            - mme_submission: If case was submitted to MatchMaker Exchange
 
             Args:
                 case_obj(dict): The new case information
@@ -372,6 +455,7 @@ class CaseHandler(object):
                     'genome_build': case_obj.get('genome_build', '37'),
                     'genome_version': case_obj.get('genome_version'),
                     'rank_model_version': case_obj.get('rank_model_version'),
+                    'sv_rank_model_version': case_obj.get('sv_rank_model_version'),
                     'madeline_info': case_obj.get('madeline_info'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
@@ -379,6 +463,7 @@ class CaseHandler(object):
                     'is_research': case_obj.get('is_research', False),
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
+                    'mme_submission': case_obj.get('mme_submission'),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
@@ -403,7 +488,7 @@ class CaseHandler(object):
         LOG.info("Saving case %s", case_obj['_id'])
         # update updated_at of case to "today"
 
-        case_obj['updated_at'] = datetime.datetime.now(),
+        case_obj['updated_at'] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
             {'_id': case_obj['_id']},

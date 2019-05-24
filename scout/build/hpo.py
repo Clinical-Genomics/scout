@@ -33,13 +33,12 @@ def build_hpo_term(hpo_info):
 
     hpo_obj = HpoTerm(
         hpo_id = hpo_id,
-        description = description
+        description = description,
+        genes = list(hpo_info.get('genes', set())),
+        ancestors = list(hpo_info.get('ancestors', set())),
+        all_ancestors = list(hpo_info.get('all_ancestors', set())),
+        children = list(hpo_info.get('children', set())),
     )
-    
-    # Add links to hgnc genes if any
-    hgnc_ids = hpo_info.get('genes', set())
-    if hgnc_ids:
-        hpo_obj['genes'] = list(hgnc_ids)
-    
+
     return hpo_obj
 

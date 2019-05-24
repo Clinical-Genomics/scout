@@ -18,8 +18,7 @@ LOG = logging.getLogger(__name__)
 
 
 @click.group()
-@click.pass_context
-def load(context):
+def load():
     """Load the Scout database."""
     pass
 
