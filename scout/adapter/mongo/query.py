@@ -172,7 +172,6 @@ class QueryHandler(object):
             # Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
             # are joined together with them as a single lower level '$and'.
             if primary_terms is True: # clinsig is specified
-
                 # Given a request to always return confident clinical variants,
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
@@ -316,7 +315,6 @@ class QueryHandler(object):
         if query.get('hgnc_symbols') and query.get('gene_panels'):
             gene_query.append({'hgnc_symbols': {'$in': query['hgnc_symbols']}})
             gene_query.append({'panels': {'$in': query['gene_panels']}})
-            mongo_query['$or']=gene_query
         else:
             if query.get('hgnc_symbols'):
                 hgnc_symbols = query['hgnc_symbols']
