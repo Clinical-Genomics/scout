@@ -30,7 +30,7 @@ Flask-Login
 
 # Parsing
 cyvcf2<0.10.0
-PyYaml
+PyYaml>=5.1
 ped_parser
 
 # extras
