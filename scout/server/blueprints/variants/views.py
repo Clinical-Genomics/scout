@@ -135,6 +135,19 @@ def variants(institute_id, case_name):
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
         form.hgnc_symbols.data = hpo_symbols
+    elif 'hpo' in form.data['gene_panels']:
+        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
+                               case_obj['dynamic_gene_list']))
+
+        if len(hgnc_symbols) == 0:
+            form.hgnc_symbols.data = hpo_symbols
+        else:
+            #log.debug("Current hgnc for update {}", hgnc_symbols)
+            #log.debug("Current hpo for update {}", hpo_symbols)
+            #log.debug("Current form data hgnc symbols are {}", form.hgnc_symbols.data)
+            current_symbols = set(hgnc_symbols)
+            current_symbols.update(hpo_symbols)
+            form.hgnc_symbols.data = list(current_symbols)
 
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = {}
