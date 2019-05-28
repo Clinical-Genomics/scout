@@ -10,8 +10,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-- Safer code when loading config params in cli base
 
+
+## [4.5.1]
+
+### Added
+
+### Fixed
+- update requirement to use PyYaml version >= 5.1
+- Safer code when loading config params in cli base
 
 
 ## [4.5.0]
@@ -21,7 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Scout cli is now invoked from the app object and works under the app context
 
 ### Fixed
-
+- PyYaml dependency fixed to use version >= 5.1
 
 
 ## [4.4.1]
