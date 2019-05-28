@@ -21,7 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Scout cli is now invoked from the app object and works under the app context
 
 ### Fixed
-
+- PyYaml dependency fixed to use version >= 5.1
 
 
 ## [4.4.1]
