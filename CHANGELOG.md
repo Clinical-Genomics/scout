@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-- Checking HPO query together with other panel did not extend query.
+- Fixed variants query by panel (hpo panel + gene panel).
 
 ## [4.5.1]
 
