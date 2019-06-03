@@ -14,12 +14,75 @@
   width: 100%;
 }
 
+/* Custom theme */
+/* push the hamburger-menu icon to the left */
+.navbar-left {
+	margin-left: -15px;
+}
+
+.navbar-inverse {
+  background-color: #1181B2;
+	border-color: #1181B2;
+}
+
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-text,
+.navbar-inverse .navbar-nav>li>a {
+	color: #DDEDF4;
+}
+
+@media (max-width: 767px) {
+	.navbar-inverse .navbar-nav .open .dropdown-menu>li>a {
+		color: #DDEDF4;
+	}
+}
+
+.navbar-inverse .navbar-nav>.open>a,
+.navbar-inverse .navbar-nav>.open>a:focus,
+.navbar-inverse .navbar-nav>.open>a:hover,
+.navbar-inverse .navbar-nav>.active {
+	background-color: #44449B;
+  
+}
+
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+	border-color: rgb(60, 75, 84);
+}
+
+.navbar-inverse .navbar-toggle {
+	border-color: rgb(60, 75, 84);
+}
+
+.navbar-inverse .navbar-toggle:focus, .navbar-inverse .navbar-toggle:hover {
+	background-color: #07689F;
+}
+
+.navbar-btn,
+.navbar-btn:hover,
+.navbar-btn:active {
+	margin-right: 5px;
+	border-color: rgb(60, 75, 84);
+}
+
+.panel-default > .panel-heading {
+	padding: 5px 10px;
+	font-weight: 500;
+	color: #DDEDF4;
+  background: #1181B2;
+}
+
 a:visited {
 	/* faded pink */
-	color: hsl(314, 31%, 61%);
+  color: rgb(40, 90, 146);
 }
 
 body {
 	background-color: var(--bg-color);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.bg-success {
+	/* light green */
+	background-color: #dff0d8 !important;
 }
