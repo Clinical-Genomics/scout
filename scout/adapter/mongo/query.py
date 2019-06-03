@@ -320,7 +320,7 @@ class QueryHandler(object):
             mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
             LOG.debug("Adding hgnc_symbols: %s to query" %
                             ', '.join(hgnc_symbols))
-        elif query.get('gene_panels'): #gene_panels
+        elif gene_panels: #gene_panels
             mongo_query['panels'] = {'$in': gene_panels}
 
         return gene_query
