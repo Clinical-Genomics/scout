@@ -131,20 +131,13 @@ def variants(institute_id, case_name):
     form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
-    if form.data['gene_panels'] == ['hpo']:
-        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
-                               case_obj['dynamic_gene_list']))
-        form.hgnc_symbols.data = hpo_symbols
-    elif 'hpo' in form.data['gene_panels']:
+    if 'hpo' in form.data['gene_panels']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
 
-        if len(hgnc_symbols) == 0:
-            form.hgnc_symbols.data = hpo_symbols
-        else:
-            current_symbols = set(hgnc_symbols)
-            current_symbols.update(hpo_symbols)
-            form.hgnc_symbols.data = list(current_symbols)
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
 
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = {}
@@ -296,21 +289,13 @@ def sv_variants(institute_id, case_name):
 
 
     # handle HPO gene list separately
-    if form.data['gene_panels'] == ['hpo']:
-        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
-                               case_obj['dynamic_gene_list']))
-        form.hgnc_symbols.data = hpo_symbols
-    elif 'hpo' in form.data['gene_panels']:
+    if 'hpo' in form.data['gene_panels']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
 
-        if len(hgnc_symbols) == 0:
-            form.hgnc_symbols.data = hpo_symbols
-        else:
-            current_symbols = set(hgnc_symbols)
-            current_symbols.update(hpo_symbols)
-            form.hgnc_symbols.data = list(current_symbols)
-
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
 
 
     # update status of case if vistited for the first time
