@@ -1,31 +1,26 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - Institutes
 {% endblock %}
 
 {% block top_nav %}
-  {{ super() }}
-
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }} Cases
-    </a>
-  </li>
-  <li class="active">
-    <span class="navbar-text">Causatives</span>
-  </li>
-  <li>
-      <a href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
-    </li>
-   <li>
-     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-   </li>
-
-
+{{ super() }}
+<li class="nav-item">
+  <a class="nav-link" href="#">Institutes</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="#">{{ institute.display_name }} Cases</a>
+</li>
+<li class="nav-item active">
+  <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+</li>
 {% endblock %}
 
 {% block content_main %}

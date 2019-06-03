@@ -15,10 +15,6 @@
 }
 
 /* Custom theme */
-/* push the hamburger-menu icon to the left */
-.navbar-left {
-	margin-left: -15px;
-}
 
 .navbar-inverse {
   background-color: #1181B2;
@@ -42,7 +38,7 @@
 .navbar-inverse .navbar-nav>.open>a:hover,
 .navbar-inverse .navbar-nav>.active {
 	background-color: #44449B;
-  
+
 }
 
 .navbar-inverse .navbar-collapse,
