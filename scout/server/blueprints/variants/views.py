@@ -131,10 +131,13 @@ def variants(institute_id, case_name):
     form.hgnc_symbols.data = hgnc_symbols
 
     # handle HPO gene list separately
-    if form.data['gene_panels'] == ['hpo']:
+    if 'hpo' in form.data['gene_panels']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
-        form.hgnc_symbols.data = hpo_symbols
+
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
 
     variants_query = store.variants(case_obj['_id'], query=form.data)
     data = {}
@@ -254,10 +257,46 @@ def sv_variants(institute_id, case_name):
                      for panel in available_panels]
     form.gene_panels.choices = panel_choices
 
-    if form.data['gene_panels'] == ['hpo']:
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+                  not_found_symbols.append(hgnc_symbol)
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                 non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
+    form.hgnc_symbols.data = hgnc_symbols
+
+
+    # handle HPO gene list separately
+    if 'hpo' in form.data['gene_panels']:
         hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
                                case_obj['dynamic_gene_list']))
-        form.hgnc_symbols.data = hpo_symbols
+
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
+
 
     # update status of case if vistited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
@@ -372,7 +411,7 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
     user_obj = store.user(current_user.email)
 
     comment = request.form.get('verification_comment')
-    
+
     try:
         controllers.variant_verification(store=store, mail=mail, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj, comment=comment,
                            variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order, url_builder=url_for)

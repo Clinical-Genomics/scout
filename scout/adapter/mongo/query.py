@@ -172,7 +172,6 @@ class QueryHandler(object):
             # Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
             # are joined together with them as a single lower level '$and'.
             if primary_terms is True: # clinsig is specified
-
                 # Given a request to always return confident clinical variants,
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
@@ -310,23 +309,19 @@ class QueryHandler(object):
 
         """
         LOG.debug('Adding panel and genes-related parameters to the query')
-
         gene_query = []
+        hgnc_symbols = query.get('hgnc_symbols')
+        gene_panels = query.get('gene_panels')
 
-        if query.get('hgnc_symbols') and query.get('gene_panels'):
-            gene_query.append({'hgnc_symbols': {'$in': query['hgnc_symbols']}})
-            gene_query.append({'panels': {'$in': query['gene_panels']}})
-            mongo_query['$or']=gene_query
-        else:
-            if query.get('hgnc_symbols'):
-                hgnc_symbols = query['hgnc_symbols']
-                mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
-                LOG.debug("Adding hgnc_symbols: %s to query" %
-                             ', '.join(hgnc_symbols))
-
-            if query.get('gene_panels'):
-                gene_panels = query['gene_panels']
-                mongo_query['panels'] = {'$in': gene_panels}
+        if hgnc_symbols and gene_panels:
+            gene_query.append({'hgnc_symbols': {'$in': hgnc_symbols}})
+            gene_query.append({'panels': {'$in': gene_panels}})
+        elif hgnc_symbols:
+            mongo_query['hgnc_symbols'] = {'$in': hgnc_symbols}
+            LOG.debug("Adding hgnc_symbols: %s to query" %
+                            ', '.join(hgnc_symbols))
+        elif gene_panels: #gene_panels
+            mongo_query['panels'] = {'$in': gene_panels}
 
         return gene_query
 
