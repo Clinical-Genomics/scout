@@ -3,21 +3,24 @@ import click
 
 from bson.json_util import dumps
 
+from flask.cli import with_appcontext
+from scout.server.extensions import store
+
 LOG = logging.getLogger(__name__)
 
 
 @click.command('hpo', short_help='Display hpo terms')
 @click.option('--term', '-t', help='Search for a single hpo term')
 @click.option('--description', '-d', help='Search for hpo terms with a description')
-@click.option('--json', '-j', 
+@click.option('--json', '-j',
     is_flag=True,
     help='Export terms in json format'
 )
-@click.pass_context
-def hpo(context, term, description, json):
+@with_appcontext
+def hpo(term, description, json):
     """Show all hpo terms in the database"""
     LOG.info("Running scout view hpo")
-    adapter = context.obj['adapter']
+    adapter = store
     hpo_terms = None
     if term:
         term = term.upper()
@@ -30,7 +33,7 @@ def hpo(context, term, description, json):
 
     if description:
         hpo_terms = adapter.hpo_terms(query=description)
-    
+
     if hpo_terms is None:
         hpo_terms = adapter.hpo_terms()
 
@@ -42,7 +45,7 @@ def hpo(context, term, description, json):
     if json:
         click.echo(dumps(hpo_terms))
         return
-    
+
     i = 0
     for i,hpo_obj in enumerate(hpo_terms,1):
         click.echo("{0}\t{1}\t{2}".format(

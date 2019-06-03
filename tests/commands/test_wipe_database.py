@@ -1,52 +1,18 @@
-# from scout.commands import cli
-# from click.testing import CliRunner
+# -*- coding: utf-8 -*-
 
-# def test_delete_database(setup_loaded_database, database_setup):
-#     #Check that a case have been added
-#     case = setup_loaded_database.case(
-#         institute_id='cust000',
-#         case_id='337334'
-#     )
-#     assert case
-#     case_id = case.case_id
-#     nr_of_variants = 0
-#     variants = setup_loaded_database.variants(
-#         case_id=case_id,
-#         query=None,
-#         variant_ids=None,
-#         nr_of_variants=10000,
-#         skip=0
-#     )
-#     #Check that the variants are added
-#     for variant in variants:
-#         nr_of_variants += 1
-#     assert nr_of_variants == 207
-#
-#     #Test to delete the case
-#     runner = CliRunner()
-#     args = open(database_setup, 'r')
-#     result = runner.invoke(cli, [
-#             '-c', database_setup,
-#             'wipe',
-#             '--yes'
-#         ])
-#     assert result.exit_code == 0
-#     case = setup_loaded_database.case(
-#         institute_id='cust000',
-#         case_id='337334'
-#     )
-#     assert case == None
-#
-#     variants = setup_loaded_database.variants(
-#         case_id=case_id,
-#         query=None,
-#         variant_ids=None,
-#         nr_of_variants=10,
-#         skip=0
-#     )
-#     #Check that the variants are deleted
-#     nr_of_variants = 0
-#     for variant in variants:
-#         nr_of_variants += 1
-#     assert nr_of_variants == 0
-#
+from scout.commands import cli
+from scout.server.extensions import store
+
+def test_wipe_database_cmd(mock_app):
+    """Testing the wipe database cli command"""
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    database_name = mock_app.config["MONGO_DBNAME"]
+    assert database_name
+
+    # test CLI to wipe out database
+    result =  runner.invoke(cli, ['wipe'], input='y')
+    assert result.exit_code == 0
+    assert 'Dropped whole database' in result.output

@@ -1,9 +1,11 @@
 import logging
 import click
 
-LOG = logging.getLogger(__name__)
-
+from flask.cli import with_appcontext
+from scout.server.extensions import store
 from scout.constants import (BUILDS, CHROMOSOMES)
+
+LOG = logging.getLogger(__name__)
 
 
 @click.command('intervals', short_help='Show how many intervals that exists for each chromosome')
@@ -11,12 +13,18 @@ from scout.constants import (BUILDS, CHROMOSOMES)
               default='37',
               type=click.Choice(BUILDS)
               )
-@click.pass_context
-def intervals(context, build):
-    """Show all indexes in the database"""
+@with_appcontext
+def intervals(build):
+    """Show all coding intervals in the database"""
     LOG.info("Running scout view index")
-    adapter = context.obj['adapter']
+    adapter = store
 
+    if adapter.hgnc_collection.find().count() == 0:
+        LOG.error('There are no genes in database to calculate intervals')
+        return
+    elif adapter.hgnc_collection.find({'build':build}).count() == 0:
+        LOG.error('No genes in database with build {}'.format(build))
+        return
     intervals = adapter.get_coding_intervals(build)
     nr_intervals = 0
     longest = 0

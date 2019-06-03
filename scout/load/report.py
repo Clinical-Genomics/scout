@@ -22,7 +22,7 @@ def load_delivery_report(adapter: MongoAdapter,
         report_path (string):       Path to delivery report
         case_id     (string):       Optional case identifier
         update      (bool):         If an existing report should be replaced
-        
+
     Returns:
         updated_case(dict)
 

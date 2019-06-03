@@ -3,6 +3,7 @@ import logging
 
 from pprint import pprint as pp
 
+from flask.cli import with_appcontext
 import click
 import yaml
 
@@ -11,6 +12,7 @@ from cyvcf2 import VCF
 from scout.load import load_scout
 from scout.parse.case import (parse_case_data)
 from scout.exceptions import IntegrityError, ConfigError
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -59,18 +61,18 @@ LOG = logging.getLogger(__name__)
     type=click.Path(exists=True),
     help='path to a ped_check.csv file'
 )
-@click.pass_context
-def case(context, vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
+@with_appcontext
+def case(vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
          no_variants, peddy_ped, peddy_sex, peddy_check):
     """Load a case into the database.
 
     A case can be loaded without specifying vcf files and/or bam files
     """
-    adapter = context.obj['adapter']
+    adapter = store
 
     if config is None and ped is None:
         LOG.warning("Please provide either scout config or ped file")
-        context.abort()
+        raise click.Abort()
 
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
@@ -91,7 +93,7 @@ def case(context, vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
         )
     except SyntaxError as err:
         LOG.warning(err)
-        context.abort()
+        raise click.Abort()
 
     LOG.info("Use family %s" % config_data['family'])
 
@@ -100,4 +102,4 @@ def case(context, vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
     except Exception as err:
         LOG.error("Something went wrong during loading")
         LOG.warning(err)
-        context.abort()
+        raise click.Abort()

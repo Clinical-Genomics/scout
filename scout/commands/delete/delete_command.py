@@ -1,27 +1,29 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
 @click.command('panel', short_help='Delete a gene panel')
-@click.option('--panel-id', 
+@click.option('--panel-id',
     help="The panel identifier name",
     required=True
 )
 @click.option('-v', '--version',
     type=float,
 )
-@click.pass_context
-def panel(context, panel_id, version):
+@with_appcontext
+def panel(panel_id, version):
     """Delete a version of a gene panel or all versions of a gene panel"""
     LOG.info("Running scout delete panel")
-    adapter = context.obj['adapter']
+    adapter = store
 
     panel_objs = adapter.gene_panels(panel_id=panel_id, version=version)
     if panel_objs.count() == 0:
         LOG.info("No panels found")
-        
+
     for panel_obj in panel_objs:
         adapter.delete_panel(panel_obj)
 
@@ -48,12 +50,12 @@ def panel(context, panel_id, version):
 
 
 @click.command('index', short_help='Delete all indexes')
-@click.pass_context
-def index(context):
+@with_appcontext
+def index():
     """Delete all indexes in the database"""
     LOG.info("Running scout delete index")
-    adapter = context.obj['adapter']
-    
+    adapter = store
+
     for collection in adapter.db.collection_names():
         adapter.db[collection].drop_indexes()
     LOG.info("All indexes deleted")
@@ -61,11 +63,11 @@ def index(context):
 
 @click.command('user', short_help='Delete a user')
 @click.option('-m', '--mail', required=True)
-@click.pass_context
-def user(context, mail):
+@with_appcontext
+def user(mail):
     """Delete a user from the database"""
     LOG.info("Running scout delete user")
-    adapter = context.obj['adapter']
+    adapter = store
     user_obj = adapter.user(mail)
     if not user_obj:
         LOG.warning("User {0} could not be found in database".format(mail))
@@ -75,11 +77,11 @@ def user(context, mail):
 
 @click.command('genes', short_help='Delete genes')
 @click.option('-b', 'build', type=click.Choice(['37', '38']))
-@click.pass_context
-def genes(context, build):
+@with_appcontext
+def genes(build):
     """Delete all genes in the database"""
     LOG.info("Running scout delete genes")
-    adapter = context.obj['adapter']
+    adapter = store
 
     if build:
         LOG.info("Dropping genes collection for build: %s", build)
@@ -89,11 +91,11 @@ def genes(context, build):
 
 @click.command('exons', short_help='Delete exons')
 @click.option('-b', 'build', type=click.Choice(['37', '38']))
-@click.pass_context
-def exons(context, build):
+@with_appcontext
+def exons(build):
     """Delete all exons in the database"""
     LOG.info("Running scout delete exons")
-    adapter = context.obj['adapter']
+    adapter = store
 
     adapter.drop_exons(build)
 
@@ -102,20 +104,19 @@ def exons(context, build):
 @click.option('-i', '--institute', help='institute id of related cases')
 @click.option('-c', '--case-id')
 @click.option('-d', '--display-name')
-@click.pass_context
-def case(context, institute, case_id, display_name):
+@with_appcontext
+def case(institute, case_id, display_name):
     """Delete a case and it's variants from the database"""
-    adapter = context.obj['adapter']
+    adapter = store
     if not (case_id or display_name):
         click.echo("Please specify what case to delete")
-        context.abort()
+        raise click.Abort()
 
     if display_name:
         if not institute:
             click.echo("Please specify the owner of the case that should be "
                        "deleted with flag '-i/--institute'.")
-            context.abort()
-        case_id = "{0}-{1}".format(institute, display_name)
+            raise click.Abort()
 
     LOG.info("Running deleting case {0}".format(case_id))
     case = adapter.delete_case(
@@ -129,7 +130,7 @@ def case(context, institute, case_id, display_name):
         adapter.delete_variants(case_id=case_id, variant_type='research')
     else:
         LOG.warning("Case does not exist in database")
-        context.abort()
+        raise click.Abort()
 
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context
@@ -161,17 +162,16 @@ def case(context, institute, case_id, display_name):
 
 
 @click.group()
-@click.pass_context
-def delete(context):
+def delete():
     """
     Delete objects from the database.
     """
     pass
 
 
+delete.add_command(panel)
 delete.add_command(genes)
 delete.add_command(case)
 delete.add_command(user)
 delete.add_command(index)
-delete.add_command(panel)
 delete.add_command(exons)

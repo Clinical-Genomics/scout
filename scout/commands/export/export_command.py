@@ -27,12 +27,12 @@ from .mitochondrial_report import mt_report
 
 
 @click.group()
-@click.pass_context
-def export(ctx):
+def export():
     """
     Export objects from the mongo database.
     """
     LOG.info("Running scout export")
+    pass
 
 export.add_command(panel)
 export.add_command(genes)

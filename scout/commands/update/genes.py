@@ -19,14 +19,13 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 import logging
 
 import click
-
+from flask.cli import with_appcontext, current_app
 from pprint import pprint as pp
 
 from scout.load import (load_hgnc_genes, load_transcripts, load_exons)
-
+from scout.server.extensions import store
 from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
-
 from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes, fetch_hgnc, fetch_ensembl_genes,
                                   fetch_exac_constraint, fetch_ensembl_transcripts)
 
@@ -38,25 +37,25 @@ LOG = logging.getLogger(__name__)
                 help="What genome build should be used. If no choice update 37 and 38."
 )
 @click.option('--api-key', help='Specify the api key')
-@click.pass_context
-def genes(context, build, api_key):
+@with_appcontext
+def genes(build, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
     LOG.info("Running scout update genes")
-    adapter = context.obj['adapter']
+    adapter = store
 
     # Fetch the omim information
-    api_key = api_key or context.obj.get('omim_api_key')
+    api_key = api_key or current_app.config.get('OMIM_API_KEY')
     if not api_key:
         LOG.warning("Please provide a omim api key to load the omim gene panel")
-        context.abort()
+        raise click.Abort()
 
     try:
         mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
     except Exception as err:
         LOG.warning(err)
-        context.abort()
+        raise click.Abort()
 
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
@@ -66,19 +65,19 @@ def genes(context, build, api_key):
     LOG.info("transcripts dropped")
 
     hpo_genes = fetch_hpo_genes()
-    
+
     if build:
         builds = [build]
     else:
         builds = ['37', '38']
-    
+
     hgnc_lines = fetch_hgnc()
     exac_lines = fetch_exac_constraint()
-    
-    
+
+
     for build in builds:
         ensembl_genes = fetch_ensembl_genes(build=build)
-        
+
         # load the genes
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
@@ -98,9 +97,9 @@ def genes(context, build, api_key):
 
         # Fetch the transcripts from ensembl
         ensembl_transcripts = fetch_ensembl_transcripts(build=build)
-        
+
         transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
     adapter.update_indexes()
-        
+
     LOG.info("Genes, transcripts and Exons loaded")
