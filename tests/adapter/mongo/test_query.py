@@ -17,6 +17,7 @@ def test_build_gene_variant_query(adapter):
     assert gene_variant_query['rank_score'] == {'$gte': 15} # default
     assert gene_variant_query['hgnc_symbols'] == {'$in': hgnc_symbols} # given
 
+
 def test_build_query(adapter):
     case_id = 'cust000'
 
@@ -29,6 +30,101 @@ def test_build_query(adapter):
     assert query['case_id'] == case_id
     assert query['category'] == 'snv'
     assert query['variant_type'] == 'clinical'
+
+
+def test_panel_query(real_populated_database, case_obj, variant_objs):
+    """Test variants query using a gene panel, an HPO panel and gene panel + HPO panel"""
+
+    adapter = real_populated_database
+
+    # Test HPO panel query
+    ## HPO panels works differently from normal gene panels:
+    ## the list of genes from the HPO panel is built interactively
+    ## and provided as such to the query builder function.
+    hpo_term = dict(
+        _id = 'HP1',
+        hpo_id = 'HP1',
+        description = 'First term',
+        genes = [ 17284 ] # POT1 gene
+    )
+    adapter.load_hpo_term(hpo_term)
+    assert adapter.hpo_term_collection.find().count() == 1
+
+    # no variants in database
+    assert adapter.variant_collection.find().count() == 0
+    # add snv variants to database
+    for variant_obj in variant_objs:
+        adapter.load_variant(variant_obj)
+
+    # grab a variant and add the above gene to it:
+    adapter.variant_collection.find_one_and_update(
+        {'_id':'4c7d5c70d955875504db72ef8e1abe77'},
+        {'$set': {
+                'genes' : [ {'hgnc_id': 17284} ],
+                'hgnc_ids': [17284],
+                'hgnc_symbols': [ 'POT1' ]
+            }
+        }
+    )
+    # test generate HPO gene list for the above term
+    hpo_genes = adapter.generate_hpo_gene_list(*['HP1'])
+    assert hpo_genes
+
+    # Test query by hpo panel
+    query = {
+        'gene_panels' : ['hpo'],
+        'hgnc_symbols' : ['POT1']
+    }
+    # Test build panel query:
+    mongo_query = adapter.build_query(case_obj['_id'], query=query)
+    # expected query fields should be found in query object
+    assert mongo_query['case_id'] == case_obj['_id']
+    assert mongo_query['category'] == 'snv'
+    assert mongo_query['variant_type'] == 'clinical'
+    # gene panel filter part of the query should look like this:
+    # '$and': [{'$or': [{'hgnc_symbols': {'$in': ['POT1']}}, {'panels': {'$in': ['hpo']}}]}]
+    gene_filters = mongo_query['$and'][0]['$or']
+    assert {'hgnc_symbols': {'$in': ['POT1']}} in gene_filters
+
+    # Use query on variant data
+    hpo_filtered_vars = list(adapter.variants(case_obj['_id'], query=query, nr_of_variants=-1))
+    assert len(hpo_filtered_vars) == 1
+
+    # Test query for a gene panel (not HPO-based)
+    # get 5 variants and label them as belonging to a panel 'test_panel':
+    test_vars = list(adapter.variant_collection.find().limit(5))
+    for test_var in test_vars:
+        adapter.variant_collection.find_one_and_update(
+            { '_id' : test_var['_id'] },
+            { '$set' : {'panels' : ['test_panel'] }}
+        )
+    # test query by panel:
+    query = {
+        'gene_panels' : ['test_panel']
+    }
+    # Test build panel query:
+    mongo_query = adapter.build_query(case_obj['_id'], query=query)
+    # expected query fields should be found in query object
+    assert mongo_query['case_id'] == case_obj['_id']
+    assert mongo_query['category'] == 'snv'
+    assert mongo_query['variant_type'] == 'clinical'
+    assert mongo_query['panels'] == {'$in': ['test_panel']}
+
+    # Use panel query to get variants occurring in genes from test_panel:
+    test_panel_vars = list(adapter.variants(case_obj['_id'], query=query, nr_of_variants=-1))
+    # The 5 variants should be returned as a query result
+    assert len(test_panel_vars) == 5
+
+
+    # Test combine the 2 panels: hpo panel and test_panel
+    query = {
+        'gene_panels' : ['test_panel', 'hpo'],
+        'hgnc_symbols' : ['POT1']
+    }
+    combined_panels_vars = list(adapter.variants(case_obj['_id'], query=query, nr_of_variants=-1))
+    # 5 (test panel) + 1 (hpo panel) variants should be returned
+    assert len(combined_panels_vars) == 6
+
 
 def test_build_gnomad_query(adapter):
     case_id = 'cust000'
