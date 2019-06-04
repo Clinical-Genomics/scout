@@ -15,7 +15,6 @@
 }
 
 /* Custom theme */
-
 .navbar-inverse {
   background-color: #1181B2;
 	border-color: #1181B2;
@@ -71,6 +70,12 @@
 a:visited {
 	/* faded pink */
   color: rgb(40, 90, 146);
+}
+
+/* Introduce small space in between list elements */
+.list-group-item {
+    border: 0 !important;
+    margin: 2px;
 }
 
 body {

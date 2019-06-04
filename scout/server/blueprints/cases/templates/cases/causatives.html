@@ -7,10 +7,10 @@
 {% block top_nav %}
 {{ super() }}
 <li class="nav-item">
-  <a class="nav-link" href="#">Institutes</a>
+  <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="#">{{ institute.display_name }} Cases</a>
+  <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }} Cases</a>
 </li>
 <li class="nav-item active">
   <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
@@ -24,73 +24,80 @@
 {% endblock %}
 
 {% block content_main %}
+<div class="list-group" style="margin-top: 25px">
   {% for _, group in variant_groups.items() %}
-    <div class="panel panel-default">
-      {% set variant = group[0][1] %}
-      <div class="panel-heading">
-        {{ variant.hgnc_symbols|join(', ') }}
-        <span class="text-muted">
+  {% set variant = group[0][1] %}
+  <li class="list-group-item">
+    <div class="d-flex">
+      <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') }}</h5>
+      <span class="text-muted" style="display: inline-block; margin-left: 10px;">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
           <span class="label label-info">PAR</span>
           {% endif %}
           {{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}
         </span>
-      </div>
-      <ul class="list-group">
-        {% for case, variant in group %}
-          {% if variant._id in case.causatives %}
-            <li class="list-group-item">
-              <div class="row">
-                <div class="col-xs-8 col-md-2">
-                  <a href="{{ url_for('variants.variant',
-                                      institute_id=institute._id,
-                                      case_name=case.display_name,
-                                      variant_id=variant._id) }}">
-                    {{ variant.display_name|truncate(20, True) }}
-                  </a>
-                </div>
-                <div class="col-xs-8 col-md-1">
-                  <span class="label label-default">{{ variant.category|upper }}</span>
-                </div>
-                <div class="col-xs-8 col-md-2">
-                  <a href="#">Rank score <span class="badge">{{ variant.rank_score }}</span></a>
-                </div>
-                <div class="col-xs-8 col-md-2">
-                  zygosity:
-                  {% for sample in variant.samples %}
-                    {% for ind in case.individuals %}
-                      {% if sample.sample_id == ind.individual_id %}
-                          {% if ind.phenotype == 2%}
-                            <span class="label label-danger">{{sample.genotype_call}}</span>
-                          {% else %}
-                            <span class="label label-success">{{sample.genotype_call}}</span>
-                          {% endif %}
-                      {% endif %}
-                    {% endfor %}
-                  {% endfor %}
-                </div>
-                <div class="col-xs-8 col-md-3">
-                  inheritance:
-                  {% for model in variant.genetic_models %}
-                    <span class="label label-info">{{model}}</span>
-                  {% endfor %}
-                </div>
-                <div class="col-md-2">
-                  <a href="{{ url_for('cases.case',
-                                      institute_id=institute._id,
-                                      case_name=case.display_name) }}">
-                    {{ case.display_name }}
-                  </a>
-                  <span class="label label-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
-                    {{ case.status }}
-                  </span>
-                </div>
-
-              </div>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
     </div>
+    <ul class="list-group ist-group-flush">
+    {% for case, variant in group %}
+      {% if variant._id in case.causatives %}
+      {% for case, variant in group %}
+        {% if variant._id in case.causatives %}
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-xs-8 col-md-2">
+                <a href="{{ url_for('variants.variant',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+                  {{ variant.display_name|truncate(20, True) }}
+                </a>
+              </div>
+              <div class="col-xs-8 col-md-1">
+                <span class="badge badge-secondary">{{ variant.category|upper }}</span>
+              </div>
+              <div class="col-xs-8 col-md-2">
+                <a href="#">Rank score <span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a>
+              </div>
+              <div class="col-xs-8 col-md-2">
+                zygosity:
+                {% for sample in variant.samples %}
+                  {% for ind in case.individuals %}
+                    {% if sample.sample_id == ind.individual_id %}
+                        {% if ind.phenotype == 2%}
+                          <span class="badge badge-danger">{{sample.genotype_call}}</span>
+                        {% else %}
+                          <span class="badge badge-success">{{sample.genotype_call}}</span>
+                        {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+              <div class="col-xs-8 col-md-3">
+                inheritance:
+                {% for model in variant.genetic_models %}
+                  <span class="badge badge-info">{{model}}</span>
+                {% endfor %}
+              </div>
+              <div class="col-md-2">
+                <a href="{{ url_for('cases.case',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name) }}">
+                  {{ case.display_name }}
+                </a>
+                <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+                  {{ case.status }}
+                </span>
+              </div>
+
+            </div>
+          </li>
+        {% endif %}
+      {% endfor %}
+      {% endif %}
+    {% endfor %}
+    </ul>
+  </li>
   {% endfor %}
+</div>
+
 {% endblock %}
