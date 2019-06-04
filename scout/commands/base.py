@@ -60,7 +60,6 @@ def get_app(ctx):
         cli_config['demo'] = 'scout-demo'
 
     app = create_app(config=dict(
-        DEBUG=True,
         MONGO_DBNAME = cli_config.get('demo') or options.params.get("mongodb") or cli_config.get('mongodb') or 'scout',
         MONGO_HOST = options.params.get("host") or cli_config.get('host') or 'localhost',
         MONGO_PORT = options.params.get("port") or cli_config.get('port') or 27017,
