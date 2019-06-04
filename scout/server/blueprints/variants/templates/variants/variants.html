@@ -155,7 +155,7 @@
   {% if variant._id in case.suspects %}
     <span class="glyphicon glyphicon-pushpin"></span>
   {% endif %}
-    
+
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
@@ -177,8 +177,8 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left" 
-    data-html="true" data-trigger="hover click" 
+    <a href="#" class="label label-primary" data-toggle="popover" data-placement="left"
+    data-html="true" data-trigger="hover click"
     data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
   {% endif %}
   {% if variant.mosaic_tags %}
@@ -188,13 +188,13 @@
 
 {% macro overlapping_cell(variant) %}
   {% if variant.overlapping %}
-    <a href="#" class="label label-warning" data-toggle="popover" data-placement="left" 
-    data-html="true" data-trigger="hover click" 
+    <a href="#" class="label label-warning" data-toggle="popover" data-placement="left"
+    data-html="true" data-trigger="hover click"
     data-content="{{ svs_table(institute, case, variant.overlapping[:20]) }}">Overlapping SVs</a>
   {% else %}
     -
   {% endif %}
-  
+
 {% endmacro %}
 
 

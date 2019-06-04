@@ -6,7 +6,7 @@
 
 {% block top_nav %}
   {{ super() }}
-  
+
   <li class="nav-item active">
     <a class="nav-link" href="#">Institutes</a>
   </li>
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="container" style="margin-top:20px">
+  <div class="container-fluid" style="margin-top:20px">
     <ul class="list-group">
       {% for institute, case_count in institutes %}
         <li class="list-group-item align-items-center">
