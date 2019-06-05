@@ -87,3 +87,11 @@ body {
 	/* light green */
 	background-color: #dff0d8 !important;
 }
+
+/* define extra small buttons since the property is missing in Boostrap 4 */
+.btn-xs {
+    padding  : .25rem .4rem;
+    font-size  : .875rem;
+    line-height  : .5;
+    border-radius : .2rem;
+}
