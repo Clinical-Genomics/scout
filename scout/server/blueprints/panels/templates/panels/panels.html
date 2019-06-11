@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 {% from "utils.html" import flash_messages %}
 
 {% block title %}
@@ -7,10 +7,10 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="active">
+  <li class="nav-item active">
     <span class="navbar-text">Gene Panels</span>
   </li>
 {% endblock %}
@@ -30,7 +30,7 @@
 
 {% macro new_panel() %}
 <div id="newpaneldiv_{{panel_id}}">
-  <div class="panel panel-default">
+  <div class="panel panel-default mt-3">
     <div class="panel-body">
       <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
         <div class="form-group row">
@@ -53,11 +53,12 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">CSV file</label>
             <div class="col-sm-6">
-              <input type="file" name="csv_file" class="form-control" required>
+              <input type="file" name="csv_file" class="custom-file-input" required>
+              <label class="custom-file-label" for="csv_file">Choose file</label><br>
               <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
             </div>
             <div class="col-sm-4">
-              <button type="submit" class="btn btn-default">Upload</button>
+              <button type="submit" class="btn btn-outline-secondary">Upload</button>
             </div>
         </div>
       </form>
@@ -67,8 +68,8 @@
 {% endmacro %}
 
 {% macro panel_view(institute,panels) %}
-  <div class="panel panel-default">
-    <div class="panel-heading">
+  <div class="card w-100 mt-3 justify-content-center">
+    <div class="card-header bg-primary">
       <strong>{{ institute.display_name }}</strong> - Panels
     </div>
     <div>
@@ -88,9 +89,9 @@
           <tr>
             <td><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a></td>
             <td>{{ panel.version }} ({{ panel.date.date()}})</td>
-            <td><span class="badge">{{ panel.genes|length}}</span></td>
-            <td><button id="{{panel._id}}" type="button" class="btn btn-primary btn-xs history_btn"><span class="glyphicon glyphicon-zoom-in"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
-            <td><button id="{{panel._id}}" type="button" class="btn btn-warning btn-xs modify_btn"><span class="glyphicon glyphicon-pencil"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td><span class="badge badge-pill badge-secondary">{{ panel.genes|length}}</span></td>
+            <td><button id="{{panel._id}}" type="button" class="btn btn-primary btn-xs history_btn"><span class="fa fa-search-plus"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td><button id="{{panel._id}}" type="button" class="btn btn-warning btn-xs modify_btn"><span class="fa fa-pencil-square-o"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
           </tr>
           {{ modify_panel(panel._id, panel) }}
         </tbody>
@@ -122,25 +123,25 @@
   <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
     <input type="hidden" name="panel_name" value="{{panel_obj.panel_name}}">
     <div class="form-group">
-      <div class="col-sm-3">
-        <div class="radio">
-          <label><input type="radio" name="modify_option" value="add" checked>Add genes from CSV file</label>
-        </div>
-        <div class="radio">
-          <label><input type="radio" name="modify_option" value="replace">Replace genes using CSV file</label>
-        </div>
-      </div><!--end of <div class="col-sm-3">-->
-
-      <div class="form-group">
-          <div class="col-sm-6">
-            <input type="file" name="csv_file" class="form-control" required>
-            <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
-          </div>
-          <div class="col-sm-2">
-            <button id="submit" type="submit">submit</button>
-          </div>
+      <div class="custom-control custom-radio">
+        <input type="radio" id="add" name="modify_option" class="custom-control-input" value="add" checked>
+        <label class="custom-control-label" for="add">Add genes from CSV file</label>
       </div>
-    </div><!--end of form-group-->
+      <div class="custom-control custom-radio">
+        <input type="radio" id="replace" name="modify_option" class="custom-control-input" value="replace">
+        <label class="custom-control-label" for="replace">Replace genes using CSV file</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-6">
+        <input type="file" name="csv_file" class="custom-file-input" required>
+        <label class="custom-file-label" for="csv_file">Choose file</label><br>
+        <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
+      </div>
+      <div class="col-sm-2">
+        <button id="submit" type="submit" class="btn btn-outline-secondary">submit</button>
+      </div>
+    </div>
   </form>
   <br>
 {% endmacro %}
