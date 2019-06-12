@@ -62,7 +62,6 @@ def test_build_individual_no_display_name():
     assert ind_obj['display_name'] == ind_info['individual_id']
 
 def test_build_individual_no_sex():
-    
     ## GIVEN information about a individual without sex
     ind_info = {
         'individual_id': '1',
@@ -155,3 +154,113 @@ def test_build_individuals(parsed_case):
         assert ind_obj['individual_id'] == ind_info['individual_id']
         assert ind_obj['display_name'] == ind_info['display_name']
         assert ind_obj['capture_kits'] == ind_info['capture_kits']
+
+# Cancer stuff
+
+def test_build_individual_tmb():
+    ## GIVEN information about a individual
+    ind_info = {
+        'individual_id': '1',
+        'father': '2',
+        'mother': '3',
+        'display_name': '1-1',
+        'sex': 'male',
+        'phenotype': 'affected',
+        'bam_file': 'a.bam',
+        'capture_kits': ['Agilent'],
+        'tmb': '0.1',
+    }
+    
+    ## WHEN parsing the information
+    ind_obj = build_individual(ind_info)
+
+    ## THEN assert that information was parsed in the correct way
+    assert ind_obj['tmb'] == ind_info['tmb']
+
+def test_build_individual_msi():
+    ## GIVEN information about a individual
+    ind_info = {
+        'individual_id': '1',
+        'father': '2',
+        'mother': '3',
+        'display_name': '1-1',
+        'sex': 'male',
+        'phenotype': 'affected',
+        'bam_file': 'a.bam',
+        'capture_kits': ['Agilent'],
+        'tmb': '0.1',
+        'msi': '13',
+    }
+    
+    ## WHEN parsing the information
+    ind_obj = build_individual(ind_info)
+
+    ## THEN assert that information was parsed in the correct way
+    assert ind_obj['msi'] == ind_info['msi']
+
+def test_build_individual_tumor_purity():
+    ## GIVEN information about a individual
+    ind_info = {
+        'individual_id': '1',
+        'father': '2',
+        'mother': '3',
+        'display_name': '1-1',
+        'sex': 'male',
+        'phenotype': 'affected',
+        'bam_file': 'a.bam',
+        'capture_kits': ['Agilent'],
+        'tmb': '0.1',
+        'msi': '13',
+        'tumor_purity': '0.013',
+    }
+    
+    ## WHEN parsing the information
+    ind_obj = build_individual(ind_info)
+
+    ## THEN assert that information was parsed in the correct way
+    assert ind_obj['tumor_purity'] == ind_info['tumor_purity']
+
+def test_build_individual_tumor_type():
+    ## GIVEN information about a individual
+    ind_info = {
+        'individual_id': '1',
+        'father': '2',
+        'mother': '3',
+        'display_name': '1-1',
+        'sex': 'male',
+        'phenotype': 'affected',
+        'bam_file': 'a.bam',
+        'capture_kits': ['Agilent'],
+        'tmb': '0.1',
+        'msi': '13',
+        'tumor_type': 'melanoma',
+    }
+    
+    ## WHEN parsing the information
+    ind_obj = build_individual(ind_info)
+
+    ## THEN assert that information was parsed in the correct way
+    assert ind_obj['tumor_type'] == ind_info['tumor_type']
+    assert ind_obj['tissue_type'] == 'unknown'
+
+def test_build_individual_tissue_type():
+    ## GIVEN information about a individual
+    ind_info = {
+        'individual_id': '1',
+        'father': '2',
+        'mother': '3',
+        'display_name': '1-1',
+        'sex': 'male',
+        'phenotype': 'affected',
+        'bam_file': 'a.bam',
+        'capture_kits': ['Agilent'],
+        'tmb': '0.1',
+        'msi': '13',
+        'tissue_type': 'blood',
+    }
+    
+    ## WHEN parsing the information
+    ind_obj = build_individual(ind_info)
+
+    ## THEN assert that information was parsed in the correct way
+    assert ind_obj['tissue_type'] == ind_info['tissue_type']
