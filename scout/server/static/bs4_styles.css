@@ -25,12 +25,13 @@
 /* Custom navbar theme */
 .navbar{
   background-color:#1181B2;
+  padding: 0px 0px;
+  height: 50px;
 }
 
 .navbar-inverse, .navbar-nav > li > a{
   color:white;
   font-size:16px;
-  display: block;
   background-color:#1181B2;
 }
 
@@ -60,7 +61,17 @@
   background: #1181B2;
 }
 
-
+ul {
+  padding: 0;
+  list-style: none;
+  font-size: 0;
+}
+ul li {
+  font-size: 16px;
+  display: inline-block;
+  padding: 5px 15px;
+  height: 50px;
+}
 
 a:visited {
 	/* faded pink */
