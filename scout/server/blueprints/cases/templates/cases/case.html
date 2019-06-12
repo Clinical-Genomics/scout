@@ -157,13 +157,20 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Sample</th>
-            <th>Sex</th>
-            <th>Phenotype</th>
-            <th>Sequencing</th>
-            <th>Ancestry (pred.)</th>
-            <th>Parenthood</th>
-            <th>CGH</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Display name of sample">Sample</th>
+            <th class="col-xs-1" title="Sample sex">Sex</th>
+            <th class="col-xs-1" title="Phenotype of sample">Phenotype</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+             title="Type of sequencing (e.g wes, wgs)">Sequencing</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+             title="Ancestry prediction from peddy">Ancestry (pred.)</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+             title="If parenthood is confirmed by peddy">Parenthood</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+             title="Downloadable cytosure file ">CGH</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Tissue origin for the sample">Tissue</th>
           </tr>
         </thead>
         <tbody>
@@ -197,6 +204,7 @@
                 {% else %}
                   N/A
                 {% endif %}
+                <td>{{ ind.tissue_type or 'unknown' }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -212,13 +220,20 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Sample</th>
-            <th>Tumor Type</th>
-            <th>Phenotype</th>
-            <th>Sequencing</th>
-            <th>TMB</th>
-            <th>MSI</th>
-            <th>Tumor Purity</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+             title="Sample display name">Sample</th>
+            <th class="col-xs-1" title="Tumor type">Tumor Type</th>
+            <th class="col-xs-1" title="Phenotype">Phenotype</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+             title="Type of sequencing (e.g panel, wes)">Sequencing</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Measure of the tumor mutational burden">TMB</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Measure of micro satellite instability">MSI</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Measure of tumor purity">Tumor Purity</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Tissue origin for the sample">Tissue</th>
           </tr>
         </thead>
         <tbody>
@@ -231,6 +246,7 @@
               <td>{{ ind.tmb or 'N/A' }}</td>
               <td>{{ ind.msi or 'N/A' }}</td>
               <td>{{ ind.tumor_purity or 'N/A' }}</td>
+              <td>{{ ind.tissue_type or 'unknown' }}</td>
             </tr>
           {% endfor %}
         </tbody>
