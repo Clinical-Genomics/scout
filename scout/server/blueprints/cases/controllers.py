@@ -352,10 +352,11 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     written_files = 0
     for sample in samples:
         sample_id = sample['individual_id']
+        display_name = sample['display_name']
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
 
         # set up document name
-        document_name = '.'.join([case_obj['display_name'], sample_id, today]) + '.xlsx'
+        document_name = '.'.join([case_obj['display_name'], display_name, today]) + '.xlsx'
         workbook = Workbook(os.path.join(temp_excel_dir,document_name))
         Report_Sheet = workbook.add_worksheet()
 
