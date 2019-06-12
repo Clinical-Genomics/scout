@@ -27,10 +27,6 @@
   background-color:#1181B2;
 }
 
-.navbar-brand > li > a{
-  color:white;
-}
-
 .navbar-inverse, .navbar-nav > li > a{
   color:white;
   font-size:16px;
@@ -38,14 +34,15 @@
   background-color:#1181B2;
 }
 
-.navbar-nav > li > a:hover{
+.navbar-brand > li > a{
   color:white;
-  background-color: #44449B; !important;
 }
 
-.navbar-default .navbar-nav > li > a:focus {
-  color:blue;
-  background-color:#44449B;;
+.navbar-nav > li > a:hover, .navbar-nav>.active,
+.navbar-default, .navbar-nav > li > a:focus,
+.navbar-inverse>.active, .navbar-nav li.active > a {
+  color:white;
+  background-color: #44449B; !important;
 }
 
 .dropdown {
