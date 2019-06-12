@@ -120,9 +120,9 @@ def test_mt_report(app, user_obj, institute_obj, case_obj):
                                   institute_id=institute_obj['internal_id'],
                                   case_name=case_obj['display_name']),
                                   )
-        # THEN it should return a page
+        # a successful response should be returned
         assert resp.status_code == 200
-        # This file should be a zipped file and not a web page
+        # and it should contain a zipped file, not HTML code
         assert resp.mimetype == 'application/zip'
 
 
