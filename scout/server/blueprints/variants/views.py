@@ -561,7 +561,8 @@ def download_verified():
             data,
             mimetype='application/zip',
             as_attachment=True,
-            attachment_filename='_'.join(['scout', 'verified_variants', today])+'.zip'
+            attachment_filename='_'.join(['scout', 'verified_variants', today])+'.zip',
+            cache_timeout=0
         )
     else:
         flash("No verified variants could be exported for user's institutes", 'warning')
