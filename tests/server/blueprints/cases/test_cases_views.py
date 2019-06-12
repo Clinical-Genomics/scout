@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import url_for, current_app
+
 from scout.server.extensions import store
 
 def test_cases(app, user_obj, institute_obj):
@@ -103,6 +104,26 @@ def test_causatives(app, user_obj, institute_obj):
 
             # THEN it should return a page
             assert resp.status_code == 200
+
+
+def test_mt_report(app, user_obj, institute_obj, case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # When clicking on 'mtDNA report' on case page
+        resp = client.get(url_for('cases.mt_report',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']),
+                                  )
+        # a successful response should be returned
+        assert resp.status_code == 200
+        # and it should contain a zipped file, not HTML code
+        assert resp.mimetype == 'application/zip'
 
 
 def test_matchmaker_add(app, institute_obj, case_obj):
