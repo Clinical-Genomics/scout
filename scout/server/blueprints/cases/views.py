@@ -455,7 +455,8 @@ def mt_report(institute_id, case_name):
             data,
             mimetype='application/zip',
             as_attachment=True,
-            attachment_filename='_'.join(['scout', case_name, 'MT_report', today])+'.zip'
+            attachment_filename='_'.join(['scout', case_name, 'MT_report', today])+'.zip',
+            cache_timeout=0
         )
     else:
         flash('No MT report excel file could be exported for this sample', 'warning')
