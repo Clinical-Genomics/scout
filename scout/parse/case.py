@@ -251,6 +251,10 @@ def parse_individual(sample):
     if tumor_purity:
         ind_info['tumor_purity'] = tumor_purity
 
+    tissue_type = sample.get('tissue_type')
+    if tissue_type:
+        ind_info['tissue_type'] = tissue_type
+
     return ind_info
 
 

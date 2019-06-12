@@ -38,6 +38,7 @@ def build_individual(ind):
     except KeyError as err:
         raise PedigreeError("Individual is missing individual_id")
 
+    # Use individual_id if display_name does not exist
     ind_obj['display_name'] = ind.get('display_name', ind_obj['individual_id'])
 
     sex = ind.get('sex', 'unknown')
@@ -91,5 +92,7 @@ def build_individual(ind):
 
     if 'tumor_type' in ind:
         ind_obj['tumor_type'] = ind['tumor_type']
+
+    ind_obj['tissue_type'] = ind.get('tissue_type', 'unknown')
 
     return ind_obj
