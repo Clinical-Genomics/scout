@@ -15,31 +15,29 @@
 <div class="container">
   <div class="card-columns">
     {% for institute in institutes %}
-      <div class="card">
-        <div class="card-header">
-        <a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}">{{ institute.display_name }}</a>
+      <div class="card mt-3">
+        <h5 class="card-title"><a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a></h5>
         {% if current_user.is_admin %}
-          <span class="text-muted">({{ institute.internal_id }})</span>
+          <h6 class="card-subtitle mb-2 text-muted"> ({{ institute.internal_id }})</h6>
         {% endif %}
-        </div>
         <div class="card-body">
           <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            Coverage Cutoff
-            <span class="pull-right">{{ institute.coverage_cutoff }}</span>
-          </li>
-          <li class="list-group-item">
-            Sanger Recipients
-            <span class="pull-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
-          </li>
-          <li class="list-group-item">
-            Frequency Cutoff
-            <span class="pull-right">{{ institute.frequency_cutoff }}</span>
-          </li>
-          <li class="list-group-item">
-            Number of Cases
-            <span class="pull-right">{{ institute.case_count }}</span>
-          </li>
+            <li class="list-group-item">
+              Coverage Cutoff
+              <span class="pull-right">{{ institute.coverage_cutoff }}</span>
+            </li>
+            <li class="list-group-item">
+              Sanger Recipients
+              <span class="pull-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
+            </li>
+            <li class="list-group-item">
+              Frequency Cutoff
+              <span class="pull-right">{{ institute.frequency_cutoff }}</span>
+            </li>
+            <li class="list-group-item">
+              Number of Cases
+              <span class="pull-right">{{ institute.case_count }}</span>
+            </li>
           </ul>
         </div>
       </div>

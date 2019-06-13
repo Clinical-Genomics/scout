@@ -61,6 +61,19 @@
   background: #1181B2;
 }
 
+.card {
+  border-radius: 15px;
+}
+
+.card-title {
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.card-subtitle {
+  padding-left: 15px;
+}
+
 ul {
   padding: 0;
   list-style: none;
