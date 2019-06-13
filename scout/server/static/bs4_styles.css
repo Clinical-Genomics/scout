@@ -89,6 +89,10 @@ body {
 	background-color: #dff0d8 !important;
 }
 
+.rank-shield {
+	height: 50px;
+}
+
 /* define extra small buttons since the property is missing in Boostrap 4 */
 .btn-xs {
     padding  : .25rem .4rem;
@@ -118,7 +122,6 @@ body {
   background-color: #265a88;
   border-color: #245580;
 }
-
 
 /* Override primary button colors */
 .btn-primary {
