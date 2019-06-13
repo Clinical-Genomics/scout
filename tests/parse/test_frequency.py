@@ -62,3 +62,14 @@ def test_parse_sv_frequencies_clingen_benign(cyvcf2_variant):
     # THEN the frequencies should be returned in a dictionary
     assert frequencies['clingen_cgh_benignAF'] == float(variant.INFO['clingen_cgh_benignAF'])
     assert frequencies['clingen_cgh_benign'] == int(variant.INFO['clingen_cgh_benign'])
+
+def test_parse_sv_gnomad(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN a variant dict with a differenct frequencies
+    variant.INFO['gnomad_svAF'] = '0.01'
+    
+    # WHEN frequencies are parsed    
+    frequencies = parse_frequencies(variant, [])
+    
+    # THEN the frequencies should be returned in a dictionary
+    assert frequencies['gnomad'] == float(variant.INFO['gnomad_svAF'])

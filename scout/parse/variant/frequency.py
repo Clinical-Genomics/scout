@@ -2,7 +2,7 @@
 def parse_frequencies(variant, transcripts):
     """Add the frequencies to a variant
 
-    Frequencies are parsed either directly from keys in info fieds or from the
+    Frequencies are parsed either directly from keys in info fields or from the
     transcripts is they are annotated there.
 
     Args:
@@ -20,7 +20,8 @@ def parse_frequencies(variant, transcripts):
     exac_keys = ['EXACAF']
     exac_max_keys = ['ExAC_MAX_AF', 'EXAC_MAX_AF']
 
-    gnomad_keys = ['GNOMADAF', 'GNOMAD_AF']
+    # Gnomad have both snv and sv frequencies
+    gnomad_keys = ['GNOMADAF', 'GNOMAD_AF', 'gnomad_svAF']
     gnomad_max_keys = ['GNOMADAF_POPMAX', 'GNOMADAF_MAX']
 
     for test_key in thousand_genomes_keys:
@@ -114,7 +115,7 @@ def parse_sv_frequencies(variant):
     """Parsing of some custom sv frequencies
     
     These are very specific at the moment, this will hopefully get better over time when the
-    field of structural variants is more developed.
+    field of structural variants are more developed.
 
     Args:
         variant(cyvcf2.Variant)
