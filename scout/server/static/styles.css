@@ -210,6 +210,11 @@ th {
 	background-color: #dff0d8 !important;
 }
 
+/* Create a purple label to be used for spans, buttons etc. */
+.label-mixed {
+background-color:#800080;
+}
+
 .rank-shield {
 	height: 50px;
 }
