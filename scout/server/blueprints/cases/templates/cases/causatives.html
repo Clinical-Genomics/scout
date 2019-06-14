@@ -74,11 +74,19 @@
                     {% endfor %}
                   {% endfor %}
                 </div>
-                <div class="col-xs-8 col-md-3">
+                <div class="col-xs-8 col-md-2">
                   inheritance:
                   {% for model in variant.genetic_models %}
                     <span class="label label-info">{{model}}</span>
                   {% endfor %}
+                </div>
+                <div class="col-xs-8 col-md-1">
+                  ACMG:
+                  {% if 'acmg_classification' in variant %}
+                    <span class="label label-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+                  {% else %}
+                  -
+                  {% endif %}
                 </div>
                 <div class="col-md-2">
                   <a href="{{ url_for('cases.case',
