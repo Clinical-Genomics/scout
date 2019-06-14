@@ -54,7 +54,7 @@ def cases(store, case_query, limit=100):
     for case_obj in case_query.limit(limit):
             
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
-        LOG.debug("Analysis typed found in %s: %s", case_obj['_id'], ','.join(analysis_types))
+        LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
         if len(analysis_types) > 1:
             LOG.debug("Set analysis types to {'mixed'}")
             analysis_types = set(['mixed'])
