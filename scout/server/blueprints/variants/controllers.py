@@ -163,6 +163,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         ('ClinGen NGI', variant_obj.get('clingen_ngi')),
         ('SweGen', variant_obj.get('swegen')),
         ('Decipher', variant_obj.get('decipher')),
+        ('GnomAD', variant_obj.get('gnomad_frequency')),
     ]
 
     variant_obj['callers'] = callers(variant_obj, category='sv')
