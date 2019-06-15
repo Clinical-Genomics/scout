@@ -315,7 +315,13 @@ def matchmaker_delete(institute_id, case_name):
 @templated('cases/causatives.html')
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)
-    variants = store.check_causatives(institute_obj=institute_obj)
+    query = request.args.get('query', '')
+    hgnc_id = None
+    if '|' in query:
+        # filter accepts an array of IDs. Provide an array with one ID element
+        hgnc_id = [int(query.split(' | ', 1)[0])]
+
+    variants = store.check_causatives(institute_obj=institute_obj,limit_genes=hgnc_id)
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
