@@ -96,12 +96,13 @@
                   {% endfor %}
                 </div>
                 <div class="col-xs-8 col-md-1">
-                  <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:</a>
+                  <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:
                   {% if 'acmg_classification' in variant %}
                     <span class="label label-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
                   {% else %}
                   -
                   {% endif %}
+                  </a>
                 </div>
                 <div class="col-md-2">
                   <a href="{{ url_for('cases.case',
