@@ -11,7 +11,7 @@ owner: str(mandatory)
 
 family: str(mandatory)
 samples:
-  - analysis_type: str(optional), [wgs,wes]
+  - analysis_type: str(optional), [wgs,wes,panel,external]
     sample_id: str(mandatory)
     capture_kit: str(optional)
     father: str(mandatory)
@@ -23,6 +23,7 @@ samples:
     vcf2cytosure: str(optional) # path to CGH file
     bam_file: str(optional) # path to bam file
 
+    tissue_type: str(optional)
     tumor_type: str(optional)
     tmb: str(optional) # Tumor mutational burder [0,1000]
     msi: str(optional) # Microsatellite instability [0,60]
@@ -73,6 +74,7 @@ Let's go through each field:
 	- *bam_file* Path to bam file to view alignments
     - *vcf2cytosure* Path to CGH file to allow download per individual
     - *tumor_type* Type of tumor
+    - *tissue_type* What tissue the sample originates from
     - *tmb* Tumor mutational burden
     - *msi* Microsatellite instability
     - *tumor_purity* Purity of tumor sample
