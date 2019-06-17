@@ -320,8 +320,11 @@ def causatives(institute_id):
     hgnc_id = None
     if '|' in query:
         # filter accepts an array of IDs. Provide an array with one ID element
-        hgnc_id = [int(query.split(' | ', 1)[0])]
-
+        try:
+            hgnc_id = [int(query.split(' | ', 1)[0])]
+        except ValueError:
+            flash('Provided gene info could not be parsed!', 'warning')
+            
     variants = store.check_causatives(institute_obj=institute_obj,limit_genes=hgnc_id)
     all_variants = {}
     all_cases = {}
