@@ -19,8 +19,8 @@ Usage:
 python --db_uri mongodb_connection_uri -o /old/path/to/files -n /new/path/to/files
 ```
 
-options:
---test : Use this flag to test the function
+options:  
+--test : Use this flag to test the function  
 -d: Use this flag to create a list of keys where old path is found
 
 
