@@ -13,3 +13,4 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Chanjo coverage integration](./chanjo_coverage_integration.md)
   * [MatchMaker Exchange integration](./matchmaker_exchange_integration.md)
   * [Indexes](./indexes.md)
+  * [Scripts folder](./scripts.md)

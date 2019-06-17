@@ -225,6 +225,10 @@
           {% set label_class = 'info' %}
         {% elif analysis_type == 'panel' %}
           {% set label_class = 'info' %}
+        {% elif analysis_type == 'mixed' %}
+          {% set label_class = 'mixed' %}
+        {% elif analysis_type == 'external' %}
+          {% set label_class = 'danger' %}
         {% else %}
           {% set label_class = 'default' %}
         {% endif %}
