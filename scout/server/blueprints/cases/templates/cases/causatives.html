@@ -96,7 +96,7 @@
                   {% endfor %}
                 </div>
                 <div class="col-xs-8 col-md-1">
-                  ACMG:
+                  <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:</a>
                   {% if 'acmg_classification' in variant %}
                     <span class="label label-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
                   {% else %}
@@ -128,6 +128,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 
   <script>
+
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+
     $(function () {
       function getTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
