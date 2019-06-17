@@ -172,9 +172,16 @@ def parse_individual(sample):
                 'sex': str,
                 'phenotype': str,
                 'bam_file': str,
-                'vcf2cytosure': str,
+                'mt_bam': str,
                 'analysis_type': str,
+                'vcf2cytosure': str,
                 'capture_kits': list(str),
+
+                'tumor_type': str,
+                'tmb': str,
+                'msi': str,
+                'tumor_purity': str,
+                'tissue_type': str,
             }
 
     """
