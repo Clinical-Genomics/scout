@@ -24,7 +24,7 @@ from . import controllers
 
 from .forms import GeneVariantFiltersForm
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
@@ -54,6 +54,7 @@ def cases(institute_id):
     is_research = request.args.get('is_research')
     all_cases = store.cases(collaborator=institute_id, name_query=query,
                         skip_assigned=skip_assigned, is_research=is_research)
+    LOG.debug("Prepare all cases")
     data = controllers.cases(store, all_cases, limit)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
@@ -216,7 +217,7 @@ def matchmaker_add(institute_id, case_name):
     mme_save_options = ['sex', 'features', 'disorders']
     for index, item in enumerate(mme_save_options):
         if item in request.form:
-            log.info('item {} is in request form'.format(item))
+            LOG.info('item {} is in request form'.format(item))
             mme_save_options[index] = True
         else:
             mme_save_options[index] = False
@@ -390,7 +391,7 @@ def gene_variants(institute_id):
             flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
         form.hgnc_symbols.data = hgnc_symbols
 
-        log.debug("query {}".format(form.data))
+        LOG.debug("query {}".format(form.data))
 
         variants_query = store.gene_variants(query=form.data, category='snv',
                             variant_type=variant_type)
@@ -786,7 +787,7 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
     filename = os.path.basename(vcf2cytosure)
 
-    log.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
+    LOG.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
 
     attachment_filename = display_name + ".vcf2cytosure.cgh"
 
