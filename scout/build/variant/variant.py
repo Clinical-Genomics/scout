@@ -223,7 +223,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if 'genetic_models' in variant:
         variant_obj['genetic_models'] = variant['genetic_models']
 
-    # Add the compounds
+    ##### Add the compounds #####
     compounds = []
     for compound in variant.get('compounds', []):
         compound_obj = build_compound(compound)
@@ -232,7 +232,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if compounds:
         variant_obj['compounds'] = compounds
 
-    # Add the genes with transcripts
+    ##### Add the genes with transcripts #####
     genes = []
     for index, gene in enumerate(variant.get('genes', [])):
         if gene.get('hgnc_id'):
@@ -263,7 +263,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if hgnc_symbols:
         variant_obj['hgnc_symbols'] = hgnc_symbols
 
-    # link gene panels
+    ##### link gene panels #####
     panel_names = set()
     for hgnc_id in variant_obj['hgnc_ids']:
         gene_panels = gene_to_panels.get(hgnc_id, set())
@@ -272,7 +272,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if panel_names:
         variant_obj['panels'] = list(panel_names)
 
-    # Add the clnsig ocbjects
+    ##### Add the clnsig objects from clinvar #####
     clnsig_objects = []
     for entry in variant.get('clnsig', []):
         clnsig_obj = build_clnsig(entry)
@@ -281,14 +281,14 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if clnsig_objects:
         variant_obj['clnsig'] = clnsig_objects
 
-    # Add the callers
+    ##### Add the callers #####
     call_info = variant.get('callers', {})
 
     for caller in call_info:
         if call_info[caller]:
             variant_obj[caller] = call_info[caller]
 
-    # Add the conservation
+    ##### Add the conservation #####
     conservation_info = variant.get('conservation', {})
     if conservation_info.get('phast'):
         variant_obj['phast_conservation'] = conservation_info['phast']
@@ -299,14 +299,14 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if conservation_info.get('phylop'):
         variant_obj['phylop_conservation'] = conservation_info['phylop']
 
-    # Add autozygosity calls
+    ##### Add autozygosity calls #####
     if variant.get('azlength'):
         variant_obj['azlength'] = variant['azlength']
 
     if variant.get('azqual'):
         variant_obj['azqual'] = variant['azqual']
 
-    # Add the frequencies
+    ##### Add the frequencies #####
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):
         variant_obj['thousand_genomes_frequency'] = float(frequencies['thousand_g'])
@@ -340,23 +340,22 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         variant_obj['local_obs_hom_old'] = variant['local_obs_hom_old']
 
     # Add the sv counts:
-    if frequencies.get('clingen_cgh_benign'):
-        variant_obj['clingen_cgh_benign'] = frequencies['clingen_cgh_benign']
-    if frequencies.get('clingen_cgh_pathogenic'):
-        variant_obj['clingen_cgh_pathogenic'] = frequencies['clingen_cgh_pathogenic']
+    if frequencies.get('clingen_benign'):
+        variant_obj['clingen_cgh_benign'] = frequencies['clingen_benign']
+    if frequencies.get('clingen_pathogenic'):
+        variant_obj['clingen_cgh_pathogenic'] = frequencies['clingen_pathogenic']
     if frequencies.get('clingen_ngi'):
         variant_obj['clingen_ngi'] = frequencies['clingen_ngi']
     if frequencies.get('swegen'):
-            variant_obj['swegen'] = frequencies['swegen']
+        variant_obj['swegen'] = frequencies['swegen']
+    if frequencies.get('clingen_mip'):
+        variant_obj['clingen_mip'] = frequencies['clingen_mip']
     # Decipher is never a frequency, it will ony give 1 if variant exists in decipher
     # Check if decipher exists
     if frequencies.get('decipher'):
         variant_obj['decipher'] = frequencies['decipher']
-    # If not check if field decipherAF exists
-    elif frequencies.get('decipherAF'):
-        variant_obj['decipher'] = frequencies['decipherAF']
 
-    # Add the severity predictors
+    ##### Add the severity predictors #####
 
     if variant.get('cadd_score'):
         variant_obj['cadd_score'] = variant['cadd_score']

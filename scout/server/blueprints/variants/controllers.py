@@ -158,13 +158,21 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         ('1000G', variant_obj.get('thousand_genomes_frequency')),
         ('1000G (left)', variant_obj.get('thousand_genomes_frequency_left')),
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
-        ('ClinGen CGH (benign)', variant_obj.get('clingen_cgh_benign')),
-        ('ClinGen CGH (pathogenic)', variant_obj.get('clingen_cgh_pathogenic')),
-        ('ClinGen NGI', variant_obj.get('clingen_ngi')),
-        ('SweGen', variant_obj.get('swegen')),
-        ('Decipher', variant_obj.get('decipher')),
         ('GnomAD', variant_obj.get('gnomad_frequency')),
     ]
+
+    if 'clingen_cgh_benign' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen CGH (benign)', variant_obj['clingen_cgh_benign']))
+    if 'clingen_cgh_pathogenic' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen CGH (pathogenic)', variant_obj['clingen_cgh_pathogenic']))
+    if 'clingen_ngi' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen NGI', variant_obj['clingen_ngi']))
+    if 'clingen_mip' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen MIP', variant_obj['clingen_mip']))
+    if 'swegen' in variant_obj:
+        variant_obj['frequencies'].append(('SweGen', variant_obj['swegen']))
+    if 'decipher' in variant_obj:
+        variant_obj['frequencies'].append(('Decipher', variant_obj['decipher']))
 
     variant_obj['callers'] = callers(variant_obj, category='sv')
 
