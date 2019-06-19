@@ -31,8 +31,6 @@ LOG = logging.getLogger(__name__)
               help='path to research VCF with SV variants to be added')
 @click.option('--vcf-cancer-research', type=click.Path(exists=True),
               help='path to research VCF with cancer variants to be added')
-@click.option('--peddy-ped', type=click.Path(exists=True),
-              help='path to outfile .peddy.ped from peddy')
 @click.option('--reupload-sv', is_flag=True,
               help='Remove all SVs and re upload from existing files')
 @click.option('--rankscore-treshold',
@@ -43,7 +41,7 @@ LOG = logging.getLogger(__name__)
               help='Update the SV rank model version')
 @click.pass_context
 def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
-         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research, peddy_ped,
+         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research,
          reupload_sv, rankscore_treshold, rankmodel_version, sv_rankmodel_version):
     """
     Update a case in the database

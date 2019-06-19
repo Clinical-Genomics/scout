@@ -172,9 +172,16 @@ def parse_individual(sample):
                 'sex': str,
                 'phenotype': str,
                 'bam_file': str,
-                'vcf2cytosure': str,
+                'mt_bam': str,
                 'analysis_type': str,
+                'vcf2cytosure': str,
                 'capture_kits': list(str),
+
+                'tumor_type': str,
+                'tmb': str,
+                'msi': str,
+                'tumor_purity': str,
+                'tissue_type': str,
             }
 
     """
@@ -250,6 +257,10 @@ def parse_individual(sample):
     tumor_purity = sample.get('tumor_purity')
     if tumor_purity:
         ind_info['tumor_purity'] = tumor_purity
+
+    tissue_type = sample.get('tissue_type')
+    if tissue_type:
+        ind_info['tissue_type'] = tissue_type
 
     return ind_info
 

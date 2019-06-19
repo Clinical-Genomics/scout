@@ -233,6 +233,7 @@ def build_case(case_data, adapter):
 
     case_obj['is_migrated'] = False
 
+    # What experiment is used, alternatives are rare (rare disease) or cancer
     case_obj['track'] = case_data.get('track', 'rare')
 
 

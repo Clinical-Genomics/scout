@@ -1,4 +1,4 @@
-ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown', 'panel')
+ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown', 'panel', 'external')
 
 SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown', 0: 'unknown',
           '1': 'male', '2': 'female', '0': 'unknown'}

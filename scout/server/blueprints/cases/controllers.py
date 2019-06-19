@@ -52,7 +52,12 @@ def cases(store, case_query, limit=100):
 
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
+            
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
+        LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
+        if len(analysis_types) > 1:
+            LOG.debug("Set analysis types to {'mixed'}")
+            analysis_types = set(['mixed'])
 
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
@@ -352,10 +357,11 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     written_files = 0
     for sample in samples:
         sample_id = sample['individual_id']
+        display_name = sample['display_name']
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
 
         # set up document name
-        document_name = '.'.join([case_obj['display_name'], sample_id, today]) + '.xlsx'
+        document_name = '.'.join([case_obj['display_name'], display_name, today]) + '.xlsx'
         workbook = Workbook(os.path.join(temp_excel_dir,document_name))
         Report_Sheet = workbook.add_worksheet()
 
