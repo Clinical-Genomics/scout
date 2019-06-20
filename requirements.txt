@@ -41,3 +41,6 @@ python-dateutil
 
 # Requesting resources
 pybiomart
+
+# Required by scripts
+tabulate
