@@ -1,6 +1,8 @@
 import copy
 import logging
 import datetime
+import pdb
+
 
 from pprint import pprint as pp
 
@@ -81,7 +83,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_str'] = vcf_str if vcf_str else config_data.get('vcf_str')
-    log.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))
+    log.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))  
 
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
 
@@ -173,8 +175,9 @@ def parse_individual(sample):
                 'phenotype': str,
                 'bam_file': str,
                 'mt_bam': str,
-                'analysis_type': str,
                 'vcf2cytosure': str,
+                'coverage_analysis': str,    
+                'analysis_type': str,
                 'capture_kits': list(str),
 
                 'tumor_type': str,
@@ -186,6 +189,8 @@ def parse_individual(sample):
 
     """
     ind_info = {}
+
+    
     if 'sample_id' not in sample:
         raise PedigreeError("One sample is missing 'sample_id'")
     sample_id = sample['sample_id']
@@ -221,48 +226,30 @@ def parse_individual(sample):
     ind_info['confirmed_sex'] = sample.get('confirmed_sex')
     ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
-    bam_file = sample.get('bam_path')
-    if bam_file:
-        ind_info['bam_file'] = bam_file
+    ind_info['bam_file'] = sample.get('bam_path')
+        
+    ind_info['mt_bam'] = sample.get('mt_bam')
+    ind_info['analysis_type'] = sample.get('analysis_type')
 
-    mt_bam = sample.get('mt_bam')
-    if mt_bam:
-        ind_info['mt_bam'] = mt_bam
-
-    analysis_type = sample.get('analysis_type')
-    if analysis_type:
-        ind_info['analysis_type'] = analysis_type
+    # Path to downloadable vcf2cytosure file
+    ind_info['vcf2cytosure'] = sample.get('vcf2cytosure')
 
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
-
-    # Path to downloadable vcf2cytosure file
-    vcf2cytosure = sample.get('vcf2cytosure')
-    if vcf2cytosure:
-        ind_info['vcf2cytosure'] = vcf2cytosure
+    
+    # Path to downloadable coverage file
+    ind_info['coverage_analysis'] = sample.get('coverage_analysis')
 
     # Cancer specific values
-    tumor_type = sample.get('tumor_type')
-    if tumor_type:
-        ind_info['tumor_type'] = tumor_type
+    ind_info['tumor_type'] = sample.get('tumor_type')
+    # tumor_mutational_burden
+    ind_info['tmb'] = sample.get('tmb')
+    ind_info['msi'] = sample.get('msi')
+    ind_info['tumor_purity'] = sample.get('tumor_purity')
+    ind_info['tissue_type'] = sample.get('tissue_type')
 
-    tumor_mutational_burden = sample.get('tmb')
-    if tumor_mutational_burden:
-        ind_info['tmb'] = tumor_mutational_burden
-
-    msi = sample.get('msi')
-    if msi:
-        ind_info['msi'] = msi
-
-    tumor_purity = sample.get('tumor_purity')
-    if tumor_purity:
-        ind_info['tumor_purity'] = tumor_purity
-
-    tissue_type = sample.get('tissue_type')
-    if tissue_type:
-        ind_info['tissue_type'] = tissue_type
-
-    return ind_info
+    # Remove key-value pairs from ind_info where key==None and return
+    return removeNoneValues(ind_info)
 
 
 def parse_individuals(samples):
@@ -389,3 +376,16 @@ def parse_ped(ped_stream, family_type='ped'):
     } for ind_id, individual in family.individuals.items()]
 
     return family_id, samples
+
+
+
+
+def removeNoneValues(dict):
+    """ If value = None for key:k, k is removed
+
+    Python >3
+    """
+    
+    return {k:v for k,v in dict.items() if v is not None}
+
+
