@@ -324,8 +324,8 @@ def causatives(institute_id):
             hgnc_id = [int(query.split(' | ', 1)[0])]
         except ValueError:
             flash('Provided gene info could not be parsed!', 'warning')
-            
-    variants = store.check_causatives(institute_obj=institute_obj,limit_genes=hgnc_id)
+
+    variants = store.check_causatives(institute_obj=institute_obj,limit_genes=hgnc_id).sort('genes.hgnc_symbol')
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
@@ -336,7 +336,6 @@ def causatives(institute_id):
             case_obj = all_cases[variant_obj['case_id']]
 
         if variant_obj['variant_id'] not in all_variants:
-
             # capture ACMG classification for this variant
             if isinstance(variant_obj.get('acmg_classification'), int):
                 acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
