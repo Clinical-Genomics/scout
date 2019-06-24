@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
-- Causatives: display ACMG classification and filter by gene.
+- Causatives in alphabetical order, display ACMG classification and filter by gene.
 - Added 'external' to the list of analysis type options
 - Adds functionality to display "Tissue type". Passed via load config.
 
