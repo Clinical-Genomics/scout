@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 import pkg_resources
-from path import Path
 import os.path
 import urllib.parse
 
