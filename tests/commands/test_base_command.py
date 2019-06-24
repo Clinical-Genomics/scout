@@ -24,9 +24,9 @@ def test_base_cmd():
     assert 'Debug logging enabled.' not in result.output
 
     # test the cli with -v (version) option
-    result =  runner.invoke(cli, ['-v'])
+    result =  runner.invoke(cli, ['--version'])
     assert result.exit_code == 0
-    assert 'INFO Running scout version {}'.format( __version__) in result.output
+    assert __version__ in result.output
 
     # test the cli with --demo option
     result =  runner.invoke(cli, ['--demo'])
