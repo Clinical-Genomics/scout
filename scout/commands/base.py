@@ -35,16 +35,10 @@ def loglevel(ctx):
     log_format = None
     coloredlogs.install(level=loglevel, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
-
-    if ctx.find_root().params["scout_version"]:
-        # display version and exit
-        return
-
     LOG.debug("Debug logging enabled.")
 
 
 @click.pass_context
-@click.version_option(__version__)
 def get_app(ctx):
     """Create an app with the correct config or with default app params"""
 
@@ -70,13 +64,13 @@ def get_app(ctx):
     return app
 
 
+@click.version_option(__version__)
 @click.group(cls=FlaskGroup, create_app=get_app, invoke_without_command=True, add_default_commands=False)
 @click.option('-c', '--config', type=click.Path(exists=True),
               help="Specify the path to a config file with database info.")
 @click.option('--loglevel', default='DEBUG', type=click.Choice(LOG_LEVELS),
               help="Set the level of log output.", show_default=True)
 @click.option('--demo', is_flag=True, help="If the demo database should be used")
-@click.option('-v', 'scout_version', is_flag=True, help="Display version of Scout")
 @click.option('-db', '--mongodb', help='Name of mongo database [scout]')
 @click.option('-u', '--username')
 @click.option('-p', '--password')
