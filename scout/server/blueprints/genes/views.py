@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import abort, Blueprint, request, jsonify, redirect, url_for
+from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 
 from scout.server.extensions import store
 from scout.server.utils import templated, public_endpoint
@@ -13,8 +13,13 @@ genes_bp = Blueprint('genes', __name__, template_folder='templates')
 def genes():
     """Render seach box for genes."""
     query = request.args.get('query', '')
+    hgnc_id = None
     if '|' in query:
-        hgnc_id = int(query.split(' | ', 1)[0])
+        try:
+            hgnc_id = int(query.split(' | ', 1)[0])
+        except ValueError:
+            flash('Provided gene info could not be parsed!', 'warning')
+    if hgnc_id:
         return redirect(url_for('.gene', hgnc_id=hgnc_id))
     gene_q = store.all_genes().limit(20)
     return dict(genes=gene_q)
