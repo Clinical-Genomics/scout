@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds functionality to display "Tissue type". Passed via load config.
 
 ### Fixed
+- Fixed alinment visualization for demo sample
 - Fixed variants query by panel (hpo panel + gene panel).
 - Downloaded MT report contains excel files with individuals' display name
 
