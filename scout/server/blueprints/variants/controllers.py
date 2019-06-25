@@ -439,13 +439,16 @@ def variant_case(store, case_obj, variant_obj):
         case_obj['sample_names'].append(individual.get('display_name'))
         if bam_path and os.path.exists(bam_path):
             case_obj['bam_files'].append(individual['bam_file'])
-            case_obj['bai_files'].append(find_bai_file(individual['bam_file']))
+            case_obj['bai_files'].append(find_mandatory_index_file(individual['bam_file']))
+        else:
+            LOG.warning("%s: no bam file found", individual['individual_id'])
+
         if mt_bam and os.path.exists(mt_bam):
             case_obj['mt_bams'].append(individual['mt_bam'])
-            case_obj['mt_bais'].append(find_bai_file(individual['mt_bam']))
-
+            case_obj['mt_bais'].append(find_optional_index_file(individual['mt_bam']))
         else:
-            LOG.debug("%s: no bam file found", individual['individual_id'])
+            LOG.warning("%s: no mt_bam file found", individual['individual_id'])            
+
 
     try:
         genes = variant_obj.get('genes', [])
@@ -467,13 +470,39 @@ def variant_case(store, case_obj, variant_obj):
         LOG.warning("skip VCF region for alignment view")
 
 
-def find_bai_file(bam_file):
-    """Find out BAI file by extension given the BAM file."""
-    bai_file = bam_file.replace('.bam', '.bai')
-    if not os.path.exists(bai_file):
-        # try the other convention
-        bai_file = "{}.bai".format(bam_file)
-    return bai_file
+
+def find_optional_index_file(path):
+     """Find out index file by extension given from path
+     """
+     try:
+        return find_index(path)
+     except:
+        LOG.warning("Index file not found, for {}".format(path) )
+        return []
+
+
+    
+def find_mandatory_index_file(path):
+     """Find out index file by extension given path
+        Raises exception if no file is found
+
+     """
+     return find_index(path)
+
+
+
+def find_index(path):
+    if path.endswith("bam"):
+        alternative_paths = [path.replace('.bam', '.bai'),  "{}.bai".format(path) ]
+    if path.endswith("wig"):
+        alternative_paths = [path.replace('.wig', '.idx'),  "{}.idx".format(path) ]
+    for file in alternative_paths:
+        if os.path.exists(file):
+            return file
+
+    # no index found was found, raise exception
+    raise Exception('index file not found - in paths: {}'.format(alternative_paths))
+
 
 
 def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, add_case=True,
