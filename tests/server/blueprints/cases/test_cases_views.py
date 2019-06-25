@@ -89,21 +89,58 @@ def test_case(app, user_obj, case_obj, institute_obj):
             # THEN it should return a page
             assert resp.status_code == 200
 
-def test_causatives(app, user_obj, institute_obj):
+def test_causatives(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
+    # There should be no causative variants for test case:
+    assert 'causatives' not in case_obj
+    var1_id = '4c7d5c70d955875504db72ef8e1abe77' # in POT1 gene
+    var2_id = 'e24b65bf27feacec6a81c8e9e19bd5f1' # in TBX1 gene
+    var_ids = [var1_id, var2_id]
 
-        with app.test_client() as client:
-            # GIVEN that the user could be logged in
-            resp = client.get(url_for('auto_login'))
-            assert resp.status_code == 200
+    # for each variant
+    for var_id in var_ids:
+        # update case by marking variant as causative:
+        variant_obj = store.variant(document_id=var_id)
+        store.mark_causative(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link='causative_var_link',
+            variant=variant_obj
+        )
+    updated_case = store.case_collection.find_one({'_id':case_obj['_id']})
+    # The above variants should be registered as causatives in case object
+    assert updated_case['causatives'] == var_ids
 
-            # WHEN accessing the case page
-            resp = client.get(url_for('cases.causatives',
-                                      institute_id=institute_obj['internal_id']))
+    # Call scout causatives view and check if the above causatives are displayed
+    with app.test_client() as client:
 
-            # THEN it should return a page
-            assert resp.status_code == 200
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # WHEN accessing the case page
+        resp = client.get(url_for('cases.causatives',
+                                  institute_id=institute_obj['internal_id']))
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+        # with variant 1
+        assert var1_id in str(resp.data)
+        # and variant 2
+        assert var2_id in str(resp.data)
+
+        # Filter causatives by gene (POT1)
+        resp = client.get(url_for('cases.causatives',
+                                  institute_id=institute_obj['internal_id'],
+                                  query='17284 | POT1 (DKFZp586D211, hPot1, POT1)'))
+        # THEN it should return a page
+        assert resp.status_code == 200
+        # with variant 1
+        assert var1_id in str(resp.data)
+        # but NOT variant 2
+        assert var2_id not in str(resp.data)
 
 
 def test_mt_report(app, user_obj, institute_obj, case_obj):
