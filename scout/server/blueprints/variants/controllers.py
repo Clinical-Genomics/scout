@@ -443,11 +443,6 @@ def variant_case(store, case_obj, variant_obj):
             if bam_path and os.path.exists(bam_path):
                 case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
                 case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
-            elif bam_path: # path to bam file does not exists. Check if it's a demo bam file (either bam or mt_bam)
-                demo_path = pkg_resources.resource_filename('scout', os.path.join('demo', bam_path))
-                if os.path.exists(demo_path):
-                    case_obj[bam[1]].append(demo_path) # either bam_files or mt_bams
-                    case_obj[bam[2]].append(find_bai_file(demo_path)) # either bai_files or mt_bais
             else:
                 LOG.debug("%s: no bam file found", individual['individual_id'])
 

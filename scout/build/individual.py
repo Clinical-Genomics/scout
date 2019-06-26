@@ -1,4 +1,5 @@
 import logging
+import os
 
 from scout.constants import (REV_PHENOTYPE_MAP, REV_SEX_MAP, ANALYSIS_TYPES)
 from scout.exceptions import PedigreeError
@@ -64,11 +65,18 @@ def build_individual(ind):
     except KeyError as err:
         raise(PedigreeError("Unknown phenotype: %s" % phenotype))
 
+    # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
+    bam_files = ('bam_file', 'mt_bam')
+    for bam in bam_files:
+        file_path = ind.get(bam)
+        if file_path and os.path.exists(file_path):
+            ind_obj[bam] = os.path.abspath(file_path)
+        else:
+            ind_obj[bam] = None
+
     ind_obj['father'] = ind.get('father')
     ind_obj['mother'] = ind.get('mother')
     ind_obj['capture_kits'] = ind.get('capture_kits', [])
-    ind_obj['bam_file'] = ind.get('bam_file')
-    ind_obj['mt_bam'] = ind.get('mt_bam')
     ind_obj['vcf2cytosure'] = ind.get('vcf2cytosure')
     ind_obj['confirmed_sex'] = ind.get('confirmed_sex')
     ind_obj['confirmed_parent'] = ind.get('confirmed_parent')
@@ -80,7 +88,7 @@ def build_individual(ind):
     if not analysis_type in ANALYSIS_TYPES:
         raise PedigreeError("Analysis type %s not allowed", analysis_type)
     ind_obj['analysis_type'] = analysis_type
-    
+
     if 'tmb' in ind:
         ind_obj['tmb'] = ind['tmb']
 
