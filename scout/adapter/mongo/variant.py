@@ -343,7 +343,7 @@ class VariantHandler(VariantLoader):
         return causatives
 
 
-    def check_causatives(self, case_obj=None, institute_obj=None):
+    def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants that are previously marked causative
 
             Loop through all variants that are marked 'causative' for an
@@ -353,6 +353,7 @@ class VariantHandler(VariantLoader):
             Args:
                 case_obj (dict): A Case object
                 institute_obj (dict): check across the whole institute
+                limit_genes (list): list of gene hgnc_ids to limit the search to
 
             Returns:
                 causatives(iterable(Variant))
@@ -381,6 +382,9 @@ class VariantHandler(VariantLoader):
             filters['case_id'] = case_obj['_id']
         else:
             filters['institute'] = institute_obj['_id']
+        if limit_genes:
+            filters['genes.hgnc_id'] = {'$in':limit_genes}
+
         return self.variant_collection.find(filters)
 
 

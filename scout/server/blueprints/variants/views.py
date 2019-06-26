@@ -224,7 +224,7 @@ def sv_variants(institute_id, case_name):
 
     default_panels = []
     for panel in case_obj['panels']:
-        if panel['is_default']:
+        if (panel.get('is_default') and panel['is_default'] is True) or ('default_panels' in case_obj and panel['panel_id'] in case_obj['default_panels']):
             default_panels.append(panel['panel_name'])
 
     request.form.get('gene_panels')

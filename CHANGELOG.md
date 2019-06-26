@@ -8,11 +8,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
-
+- Causatives in alphabetical order, display ACMG classification and filter by gene.
+- Added 'external' to the list of analysis type options
 - Adds functionality to display "Tissue type". Passed via load config.
 
 ### Fixed
-- Fixed alinment visualization for demo sample
+- Fixed alignnment visualization for demo case samples
+- Fixed 3 bugs affecting SV pages visualization
+- Reintroduced the --version cli option
 - Fixed variants query by panel (hpo panel + gene panel).
 - Downloaded MT report contains excel files with individuals' display name
 

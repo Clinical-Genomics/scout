@@ -368,6 +368,7 @@
         <tbody>
           {% for gene in variant.genes %}
             <tr>
+              {% if gene.common %}
               <td>
                 <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">
                   {{ gene.common.hgnc_symbol }}
@@ -388,6 +389,18 @@
                   </a>
                 {% endif %}
               </td>
+              {% else %}
+                <td>
+                  <a href="https://www.genenames.org/tools/search/#!/all?query={{ gene.hgnc_id }}" target="_blank">
+                    {{ gene.hgnc_id }}
+                  </a>
+                </td>
+                <td></td>
+                <td>{{ gene.region_annotation }}</td>
+                <td>{{ gene.functional_annotation }}</td>
+                <td></td>
+                <td></td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
