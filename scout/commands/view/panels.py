@@ -1,6 +1,10 @@
 import logging
 import click
 
+from flask.cli import with_appcontext
+
+from scout.server.extensions import store
+
 LOG = logging.getLogger(__name__)
 
 
@@ -8,16 +12,16 @@ LOG = logging.getLogger(__name__)
 @click.option('-i', '--institute',
               help='institute id'
               )
-@click.pass_context
-def panels(context, institute):
+@with_appcontext
+def panels(institute):
     """Show all gene panels in the database"""
     LOG.info("Running scout view panels")
-    adapter = context.obj['adapter']
+    adapter = store
 
     panel_objs = adapter.gene_panels(institute_id=institute)
     if panel_objs.count() == 0:
         LOG.info("No panels found")
-        context.abort()
+        raise click.Abort()
     click.echo("#panel_name\tversion\tnr_genes\tdate")
 
     for panel_obj in panel_objs:
@@ -27,4 +31,3 @@ def panels(context, institute):
             len(panel_obj['genes']),
             str(panel_obj['date'].strftime('%Y-%m-%d'))
         ))
-

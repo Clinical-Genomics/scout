@@ -2,6 +2,7 @@
 import os.path
 import shutil
 import datetime
+import pymongo
 
 import zipfile
 import io
@@ -17,14 +18,14 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
-from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
+from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP
 from scout.server.extensions import store, mail
 from scout.server.utils import (templated, institute_and_case, user_institutes)
 from . import controllers
 
 from .forms import GeneVariantFiltersForm
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 cases_bp = Blueprint('cases', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/cases/static')
@@ -54,6 +55,7 @@ def cases(institute_id):
     is_research = request.args.get('is_research')
     all_cases = store.cases(collaborator=institute_id, name_query=query,
                         skip_assigned=skip_assigned, is_research=is_research)
+    LOG.debug("Prepare all cases")
     data = controllers.cases(store, all_cases, limit)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
@@ -216,7 +218,7 @@ def matchmaker_add(institute_id, case_name):
     mme_save_options = ['sex', 'features', 'disorders']
     for index, item in enumerate(mme_save_options):
         if item in request.form:
-            log.info('item {} is in request form'.format(item))
+            LOG.info('item {} is in request form'.format(item))
             mme_save_options[index] = True
         else:
             mme_save_options[index] = False
@@ -315,7 +317,16 @@ def matchmaker_delete(institute_id, case_name):
 @templated('cases/causatives.html')
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)
-    variants = store.check_causatives(institute_obj=institute_obj)
+    query = request.args.get('query', '')
+    hgnc_id = None
+    if '|' in query:
+        # filter accepts an array of IDs. Provide an array with one ID element
+        try:
+            hgnc_id = [int(query.split(' | ', 1)[0])]
+        except ValueError:
+            flash('Provided gene info could not be parsed!', 'warning')
+
+    variants = store.check_causatives(institute_obj=institute_obj,limit_genes=hgnc_id).sort("hgnc_symbols", pymongo.ASCENDING)
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
@@ -326,6 +337,11 @@ def causatives(institute_id):
             case_obj = all_cases[variant_obj['case_id']]
 
         if variant_obj['variant_id'] not in all_variants:
+            # capture ACMG classification for this variant
+            if isinstance(variant_obj.get('acmg_classification'), int):
+                acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+                variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+
             all_variants[variant_obj['variant_id']] = []
         all_variants[variant_obj['variant_id']].append((case_obj, variant_obj))
 
@@ -378,7 +394,7 @@ def gene_variants(institute_id):
             flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
         form.hgnc_symbols.data = hgnc_symbols
 
-        log.debug("query {}".format(form.data))
+        LOG.debug("query {}".format(form.data))
 
         variants_query = store.gene_variants(query=form.data, category='snv',
                             variant_type=variant_type)
@@ -455,7 +471,8 @@ def mt_report(institute_id, case_name):
             data,
             mimetype='application/zip',
             as_attachment=True,
-            attachment_filename='_'.join(['scout', case_name, 'MT_report', today])+'.zip'
+            attachment_filename='_'.join(['scout', case_name, 'MT_report', today])+'.zip',
+            cache_timeout=0
         )
     else:
         flash('No MT report excel file could be exported for this sample', 'warning')
@@ -773,7 +790,7 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
     filename = os.path.basename(vcf2cytosure)
 
-    log.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
+    LOG.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
 
     attachment_filename = display_name + ".vcf2cytosure.cgh"
 

@@ -6,7 +6,6 @@ from flask_login import current_user
 
 def templated(template=None):
     """Template decorator.
-
     Ref: http://flask.pocoo.org/docs/patterns/viewdecorators/
     """
     def decorator(f):

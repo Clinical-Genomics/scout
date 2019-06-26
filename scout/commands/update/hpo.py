@@ -3,11 +3,13 @@ import click
 import urllib.request
 
 from pprint import pprint as pp
+from flask.cli import with_appcontext
 
 from scout.load.hpo import load_hpo_terms
 from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes)
 
 from scout.commands.utils import abort_if_false
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -15,13 +17,13 @@ LOG = logging.getLogger(__name__)
 @click.option('--yes', is_flag=True, callback=abort_if_false,
               expose_value=False,
               prompt='Are you sure you want to drop the hpo terms?')
-@click.pass_context
-def hpo(context):
+@with_appcontext
+def hpo():
     """
     Update the hpo terms in the database. Fetch the latest release and update terms.
     """
     LOG.info("Running scout update hpo")
-    adapter = context.obj['adapter']
+    adapter = store
 
     LOG.info("Dropping HPO terms")
     adapter.hpo_term_collection.drop()

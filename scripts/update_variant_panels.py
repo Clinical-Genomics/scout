@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 def update_panels(context, mongodb, username, password, authdb, host, port, loglevel, config):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
-    
+
     LOG.info("Running scout version %s", __version__)
     LOG.debug("Debug logging enabled.")
 
@@ -52,7 +52,7 @@ def update_panels(context, mongodb, username, password, authdb, host, port, logl
     if config:
         LOG.debug("Use config file %s", config)
         with open(config, 'r') as in_handle:
-            cli_config = yaml.load(in_handle)
+            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
 
     mongo_config['mongodb'] = (mongodb or cli_config.get('mongodb') or 'scout')
 
@@ -90,27 +90,27 @@ def update_panels(context, mongodb, username, password, authdb, host, port, logl
     LOG.info("Setting up a mongo adapter")
     mongo_config['client'] = client
     adapter = MongoAdapter(database)
-    
+
     requests = []
-    
+
     for case_obj in adapter.case_collection.find():
         # pp(case_obj)
-        
+
         gene_to_panels = adapter.gene_to_panels(case_obj)
-        
+
         variants = adapter.variant_collection.find({
             'case_id': case_obj['_id'],
             'category': 'snv',
             'variant_type': 'clinical',
         })
-        
+
         for variant_obj in variants:
-        
+
             panel_names = set()
             for hgnc_id in variant_obj['hgnc_ids']:
                 gene_panels = gene_to_panels.get(hgnc_id, set())
                 panel_names = panel_names.union(gene_panels)
-            
+
             if panel_names:
                 operation = pymongo.UpdateOne(
                     {'_id': variant_obj['_id']},
@@ -120,11 +120,11 @@ def update_panels(context, mongodb, username, password, authdb, host, port, logl
                         }
                     })
                 requests.append(operation)
-            
+
             if len(requests) > 5000:
                 adapter.variant_collection.bulk_write(requests, ordered=False)
                 requests = []
-        
+
         if requests:
             adapter.variant_collection.bulk_write(requests, ordered=False)
             requests = []

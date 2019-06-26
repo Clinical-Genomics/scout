@@ -3,8 +3,10 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
 
 from scout.load.all import load_region
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -16,10 +18,10 @@ LOG = logging.getLogger(__name__)
 @click.option('-c', '--chromosome')
 @click.option('-s', '--start', type=int)
 @click.option('-e', '--end', type=int)
-@click.pass_context
-def region(context, hgnc_id, case_id, chromosome, start, end):
+@with_appcontext
+def region(hgnc_id, case_id, chromosome, start, end):
     """Load all variants in a region to a existing case"""
-    adapter = context.obj['adapter']
+    adapter = store
     load_region(
         adapter=adapter, case_id=case_id, hgnc_id=hgnc_id, chrom=chromosome, start=start, end=end
     )

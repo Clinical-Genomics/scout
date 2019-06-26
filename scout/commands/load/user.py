@@ -3,8 +3,10 @@
 import logging
 
 import click
+from flask.cli import with_appcontext
 
 from scout.build.user import build_user
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -20,10 +22,10 @@ LOG = logging.getLogger(__name__)
               is_flag=True,
               help="If user should be admin",
               )
-@click.pass_context
-def user(context, institute_id, user_name, user_mail, admin):
+@with_appcontext
+def user(institute_id, user_name, user_mail, admin):
     """Add a user to the database."""
-    adapter = context.obj['adapter']
+    adapter = store
 
     institutes = []
     for institute in institute_id:
@@ -31,7 +33,7 @@ def user(context, institute_id, user_name, user_mail, admin):
 
         if not institute_obj:
             LOG.warning("Institute % does not exist", institute)
-            context.abort()
+            raise click.Abort()
 
         institutes.append(institute)
 
@@ -48,4 +50,4 @@ def user(context, institute_id, user_name, user_mail, admin):
         adapter.add_user(user_obj)
     except Exception as err:
         LOG.warning(err)
-        context.abort()
+        raise click.Abort()

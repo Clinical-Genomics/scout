@@ -4,12 +4,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [4.x.x]
+
+### Added
+- Causatives in alphabetical order, display ACMG classification and filter by gene.
+- Added 'external' to the list of analysis type options
+- Adds functionality to display "Tissue type". Passed via load config.
+
+### Fixed
+- Fixed 3 bugs affecting SV pages visualization
+- Reintroduced the --version cli option
+- Fixed variants query by panel (hpo panel + gene panel).
+- Downloaded MT report contains excel files with individuals' display name
+
+## [4.5.1]
 
 ### Added
 
 ### Fixed
-- Use the last case update date when multiple dates are available
+- update requirement to use PyYaml version >= 5.1
+- Safer code when loading config params in cli base
+
+
+## [4.5.0]
+
+### Added
+- Search for similar cases from scout view CLI
+- Scout cli is now invoked from the app object and works under the app context
+
+### Fixed
+- PyYaml dependency fixed to use version >= 5.1
+
+
+## [4.4.1]
+
+### Added
+- Display SV rank model version when available
+
+### Fixed
+- Fixed upload of delivery report via API
 
 
 ## [4.4.0]
