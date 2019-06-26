@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import pkg_resources
 import os.path
 import urllib.parse
 
