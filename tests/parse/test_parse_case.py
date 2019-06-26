@@ -2,7 +2,8 @@ import pytest
 
 from pprint import pprint as pp
 from scout.parse.case import (parse_case, parse_ped, parse_individuals,
-                              parse_individual, parse_case_data)
+                              parse_individual, parse_case_data,
+                              removeNoneValues)
 from scout.exceptions import PedigreeError
 from scout.constants import REV_SEX_MAP
 
@@ -261,3 +262,20 @@ def test_wrong_relations():
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
         parse_individuals(samples)
+
+
+
+
+def test_removeNoneValues():
+    d = {"a":"1", "b":2, "c":3}
+
+    assert d == removeNoneValues(d)
+
+
+def test_removeNoneValues():
+    d = {"a":"1", "b":2, "c":None}
+
+    d_ = {"a":"1", "b":2}
+    
+    assert d_ == removeNoneValues(d)
+
