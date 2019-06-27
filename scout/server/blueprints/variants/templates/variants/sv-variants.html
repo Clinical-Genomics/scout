@@ -258,14 +258,18 @@
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
     <td>{{ variant.length }}</td>
     <td>
-      {% for annotation in variant.region_annotations[:3] %}
-        <div>{{ annotation }}</div>
-      {% endfor %}
+      {% if 'region_annotations' in variant %}
+        {% for annotation in variant.region_annotations[:3] %}
+          <div>{{ annotation }}</div>
+        {% endfor %}
+      {% endif %}
     </td>
     <td>
-      {% for annotation in variant.functional_annotations[:3] %}
-        <div>{{ annotation }}</div>
-      {% endfor %}
+      {% if 'functional_annotations' in variant %}
+        {% for annotation in variant.functional_annotations[:3] %}
+          <div>{{ annotation }}</div>
+        {% endfor %}
+      {% endif %}
     </td>
     <td>
       {% if variant.gnomad_frequency %}

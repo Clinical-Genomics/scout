@@ -24,6 +24,27 @@
 {% endblock %}
 
 {% block content_main %}
+<div class="container-float">
+  <div class="card panel-default">
+    <div class="card-body">
+      <form action="{{ url_for('cases.causatives', institute_id=institute._id) }}">
+        <div class="row">
+          <div class="col-md-4 col-xs-4">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-search"></span>
+              </span>
+              <input name="query" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search gene">
+            </div>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-default form-control">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <div class="list-group" style="margin-top: 25px">
   {% for _, group in variant_groups.items() %}
   {% set variant = group[0][1] %}
@@ -72,12 +93,21 @@
                   {% endfor %}
                 {% endfor %}
               </div>
-              <div class="col-xs-8 col-md-3">
+              <div class="col-xs-8 col-md-2">
                 inheritance:
                 {% for model in variant.genetic_models %}
                   <span class="badge badge-info">{{model}}</span>
                 {% endfor %}
               </div>
+              <div class="col-xs-8 col-md-1">
+                  <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:
+                  {% if 'acmg_classification' in variant %}
+                    <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+                  {% else %}
+                  -
+                  {% endif %}
+                  </a>
+                </div>
               <div class="col-md-2">
                 <a href="{{ url_for('cases.case',
                                     institute_id=institute._id,
@@ -100,4 +130,25 @@
   {% endfor %}
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+    $(function () {
+      function getTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+      $(".typeahead").typeahead({
+        source: getTerms,
+        minLength: 2,
+      });
+    })
+  </script>
 {% endblock %}
