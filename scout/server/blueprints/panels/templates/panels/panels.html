@@ -29,16 +29,10 @@
 {% endblock %} <!-- end of content_main -->
 
 {% macro new_panel() %}
-<div id="newpaneldiv_{{panel_id}}">
+<div class="container-float">
   <div class="panel panel-default mt-3">
     <div class="panel-body">
       <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
-
-
-
-
-
-
         <div class="form-row">
           <div class="form-group col-sm-1">
             <label for="" class="col-form-label">New panel</label>
