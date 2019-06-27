@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update to IGV 2.
 
 ### Fixed
+- Fixed alignment visualization and vcf2cytosure availability for demo case samples
 - Fixed 3 bugs affecting SV pages visualization
 - Reintroduced the --version cli option
 - Fixed variants query by panel (hpo panel + gene panel).
