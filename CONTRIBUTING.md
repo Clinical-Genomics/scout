@@ -11,11 +11,17 @@ For bug reports try to include error messages if there are any.
 
 ## Contributor Guidelines
 
+### Scout Git branching strategy
+
+Scout development is organized on a flexible Git ["Release Flow"] (https://www.nebbiatech.com/2019/03/15/git-branching-strategies-which-one-should-i-pick/) branching system. Our workflow is similar to the [GitHub Flow system](https://guides.github.com/introduction/flow/), but it differs from it for the fact we don't deploy master to production immediately after a pull request is merged. Instead we plan each new release of the software together with production team at our Facility. Before releasing a new Scout version we create a release branch and a [GitHub Release with a tag](https://github.blog/2013-07-02-release-your-software/). This tag points to the head branch of the repository.
+
+The easiest way to create a pull request to Scout would be to clone the repository and create your own feature branch, based on an updated master branch.
+
 ### Pull requests
 
-1. The pull request should include tests if any code has been updated
-1. If the pull request add functionality the docs should be updated
-1. Update the CHANGELOG.md
+1. We have included an automatic pull request template to help you defining the proposed changes/fixes and how to test the code.
+1. If the pull request add functionality the docs should be updated.
+1. Don't forget to update the CHANGELOG.md document.
 
 ### Coding standards
 
