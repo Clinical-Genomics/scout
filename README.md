@@ -168,7 +168,7 @@ TODO.
 
 If you want to contribute and make Scout better, you help is very appreciated! Bug reports or feature requests are really helpful and can be submitted via github issues.
 Feel free to open a pull request to add a new functionality or fixing a bug, we welcome any help, regardless of the amount of code provided or your skills as a programmer.
-More info on how to contribute to the project and a description of the Scout branching workflow can be found [here](CONTRIBUTING.md)
+More info on how to contribute to the project and a description of the Scout branching workflow can be found [here](CONTRIBUTING.md).
 
 
 
