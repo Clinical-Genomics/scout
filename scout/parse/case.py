@@ -221,48 +221,27 @@ def parse_individual(sample):
     ind_info['confirmed_sex'] = sample.get('confirmed_sex')
     ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
-    bam_file = sample.get('bam_path')
-    if bam_file:
-        ind_info['bam_file'] = bam_file
+    ind_info['bam_file'] = sample.get('bam_path')
+        
+    ind_info['mt_bam'] = sample.get('mt_bam')
+    ind_info['analysis_type'] = sample.get('analysis_type')
 
-    mt_bam = sample.get('mt_bam')
-    if mt_bam:
-        ind_info['mt_bam'] = mt_bam
-
-    analysis_type = sample.get('analysis_type')
-    if analysis_type:
-        ind_info['analysis_type'] = analysis_type
+    # Path to downloadable vcf2cytosure file
+    ind_info['vcf2cytosure'] = sample.get('vcf2cytosure')
 
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
-
-    # Path to downloadable vcf2cytosure file
-    vcf2cytosure = sample.get('vcf2cytosure')
-    if vcf2cytosure:
-        ind_info['vcf2cytosure'] = vcf2cytosure
-
+    
     # Cancer specific values
-    tumor_type = sample.get('tumor_type')
-    if tumor_type:
-        ind_info['tumor_type'] = tumor_type
+    ind_info['tumor_type'] = sample.get('tumor_type')
+    # tumor_mutational_burden
+    ind_info['tmb'] = sample.get('tmb')
+    ind_info['msi'] = sample.get('msi')
+    ind_info['tumor_purity'] = sample.get('tumor_purity')
+    ind_info['tissue_type'] = sample.get('tissue_type')
 
-    tumor_mutational_burden = sample.get('tmb')
-    if tumor_mutational_burden:
-        ind_info['tmb'] = tumor_mutational_burden
-
-    msi = sample.get('msi')
-    if msi:
-        ind_info['msi'] = msi
-
-    tumor_purity = sample.get('tumor_purity')
-    if tumor_purity:
-        ind_info['tumor_purity'] = tumor_purity
-
-    tissue_type = sample.get('tissue_type')
-    if tissue_type:
-        ind_info['tissue_type'] = tissue_type
-
-    return ind_info
+    # Remove key-value pairs from ind_info where key==None and return
+    return removeNoneValues(ind_info)
 
 
 def parse_individuals(samples):
@@ -389,3 +368,21 @@ def parse_ped(ped_stream, family_type='ped'):
     } for ind_id, individual in family.individuals.items()]
 
     return family_id, samples
+
+
+
+
+def removeNoneValues(dict):
+    """ If value = None in key/value pair, the pair is removed.
+        Python >3
+    Args:
+        dict: dictionary
+
+    Returns:
+        dictionary
+
+    """
+    
+    return {k:v for k,v in dict.items() if v is not None}
+
+
