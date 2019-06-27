@@ -39,9 +39,11 @@
   color:white;
 }
 
-.navbar-nav > li > a:hover, .navbar-nav>.active,
-.navbar-default, .navbar-nav > li > a:focus,
-.navbar-inverse>.active, .navbar-nav li.active > a {
+/*.navbar-nav > li > a:hover,*/
+/*.navbar-nav > li > a:focus,*/
+
+ .navbar-nav>.active, .navbar-default,
+ .navbar-inverse>.active, .navbar-nav li.active > a {
   color:white;
   background-color: #44449B; !important;
 }
