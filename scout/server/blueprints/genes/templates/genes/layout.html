@@ -2,14 +2,16 @@
 
 {% block content_main %}
   <div class="container-float">
-    <div class="card-body">
-      <form class="form-inline" action="{{ url_for('genes.genes') }}">
-        <label for="query">Search for genes</label>
-        <div class="form-group">
-          <input name="query" class="typeahead form-control mx-sm-3" data-provide="typeahead" autocomplete="off" placeholder="Search...">
-          <button class="btn btn-outline-secondary form-control">Search</button>
-        </div>
-      </form>
+    <div class="card mt-3">
+      <div class="card-body">
+        <form class="form-inline" action="{{ url_for('genes.genes') }}">
+          <label for="query">Search for genes</label>
+          <div class="form-group">
+            <input name="query" class="typeahead form-control mx-sm-5" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+            <button class="btn btn-outline-secondary form-control">Search</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 {% endblock %}

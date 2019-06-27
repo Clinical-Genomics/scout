@@ -30,8 +30,8 @@
 
 {% macro new_panel() %}
 <div class="container-float">
-  <div class="panel panel-default mt-3">
-    <div class="panel-body">
+  <div class="card mt-3">
+    <div class="card-body">
       <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
         <div class="form-row">
           <div class="form-group col-sm-1">
@@ -77,7 +77,7 @@
     <div class="card-header bg-primary">
       <strong>{{ institute.display_name }}</strong> - Panels
     </div>
-    <div>
+    <div class="card-body">
         <table class="table table-striped">
         <thead>
           <tr>
