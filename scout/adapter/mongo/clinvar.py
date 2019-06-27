@@ -206,6 +206,7 @@ class ClinVarHandler(object):
         submissions = []
         for result in results:
             submission = {}
+            cases = {}
             submission['_id'] =  result.get('_id')
             submission['status'] = result.get('status')
             submission['user_id'] = result.get('user_id')
@@ -218,8 +219,16 @@ class ClinVarHandler(object):
 
             if result.get('variant_data'):
                 submission['variant_data'] = self.clinvar_collection.find({'_id': { "$in": result['variant_data'] } })
+                for var_data_id in list(result['variant_data']):
+                    # get case_id from variant id (caseID_variant_ID)
+                    case_id = var_data_id.rsplit('_',1)[0]
+                    case_obj = self.case(case_id=case_id)
+                    cases[case_id] = case_obj.get('display_name')
+            submission['cases'] = cases
+
             if result.get('case_data'):
                 submission['case_data'] = self.clinvar_collection.find({'_id' : { "$in": result['case_data'] } })
+
 
             submissions.append(submission)
 
