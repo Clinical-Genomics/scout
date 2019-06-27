@@ -267,15 +267,17 @@ def test_wrong_relations():
 
 
 def test_removeNoneValues():
+    # WHEN a dict *not* containing a value which is None
     d = {"a":"1", "b":2, "c":3}
 
+    # THEN calling removeNoneValues(dict) will not change dict
     assert d == removeNoneValues(d)
 
 
 def test_removeNoneValues():
+    # WHEN a dict containing a value which is None
     d = {"a":"1", "b":2, "c":None}
-
-    d_ = {"a":"1", "b":2}
     
-    assert d_ == removeNoneValues(d)
-
+    # THEN calling removeNoneValues(dict) will remove key-value pair
+    # where value=None
+    assert {"a":"1", "b":2} == removeNoneValues(d)
