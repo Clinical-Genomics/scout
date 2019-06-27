@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Causatives in alphabetical order, display ACMG classification and filter by gene.
 - Added 'external' to the list of analysis type options
 - Adds functionality to display "Tissue type". Passed via load config.
+- Update to IGV 2.
 
 ### Fixed
 - Fixed alignment visualization and vcf2cytosure availability for demo case samples
@@ -18,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced the --version cli option
 - Fixed variants query by panel (hpo panel + gene panel).
 - Downloaded MT report contains excel files with individuals' display name
+- Refactored code in parsing of config files.
 
 ## [4.5.1]
 
