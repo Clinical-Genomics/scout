@@ -8,6 +8,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+
+### Fixed
+
+
+## [4.6.0]
+
+### Added
 - Description of Scout branching model in CONTRIBUTING doc
 - Causatives in alphabetical order, display ACMG classification and filter by gene.
 - Added 'external' to the list of analysis type options
@@ -21,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed variants query by panel (hpo panel + gene panel).
 - Downloaded MT report contains excel files with individuals' display name
 - Refactored code in parsing of config files.
+
 
 ## [4.5.1]
 
