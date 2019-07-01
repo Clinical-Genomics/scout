@@ -197,8 +197,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
   <script type="text/javascript">
 
-    var bkgColors = [ "#FDB45C", "#949FB1", "#F7464A", "#44449B", "#46BFBD"];
-    var hoverColors = [ "#FFC870", "#A8B3C5", "#FF5A5E", "#616774", "#5AD3D1"];
+    var bkgColors = [ "#FDB45C", "#949FB1", "#00b0f0", "#F7464A", "#44449B", "#46BFBD"];
+    var hoverColors = [ "#FFC870", "#A8B3C5", "#0287b8", "#FF5A5E", "#353578", "#5AD3D1"];
     //create analysis type chart
     createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData())
     //create cases types chart
@@ -207,8 +207,6 @@
     createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes())
     // create case detailed stats panel
     createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed())
-
-
 
 
 
@@ -242,15 +240,17 @@
 
 
 
-
     function pedigreeTypes(){
       var labels = [{% for topic in pedigree %} '{{topic.title}}', {% endfor %}];
       var bkg = []
       var hover = []
+      alert(bkgColors.reverse())
       labels.forEach(function (item, index) {
-        bkg.push(bkgColors.reverse()[index])
-        hover.push(hoverColors.reverse()[index])
+        alert(item+'-->'+index+'-->');
+        bkg.push(bkgColors.reverse()[index]);
+        hover.push(hoverColors.reverse()[index]);
       });
+      alert(bkg)
       var chart_data = {
         type: 'pie',
         data: {
