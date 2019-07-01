@@ -126,17 +126,15 @@
 
 
 
-
-
-
-
 {% macro cases_stats_panels() %}
 <div class="container-float mt-3 text-center">
   <div class="row">
-    <div class="card w-75">
-      <div>
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
         <h1>Cases with...</h1>
-        <canvas id="cases-bar-horiz"></canvas>
+        <canvas id="cases-bar-horiz" height="80"></canvas>
+        </div>
       </div>
     </div>
 </div>
@@ -229,16 +227,32 @@
         data: {
           labels: labels,
           datasets: [{
-            data: [{% for topic in overview %} {{topic.count}}, {% endfor %}],
+            data: [{% for topic in overview %} {{topic.count*100}}, {% endfor %}],
             backgroundColor: bkg,
             hoverBackgroundColor: hover
           }],
         },
+        options: {
+          scales: {
+            xAxes: [{
+                 ticks: {
+                     min: 0,
+                     max: 100,
+                     callback: function(value) {
+                         return value + "%"
+                     }
+                 },
+                 scaleLabel: {
+                     display: true,
+                     labelString: "Percentage"
+                 }
+             }]
+          },
+          legend: {display: false}
+        }
       };
       return chart_data;
     }
-
-
 
     function pedigreeTypes(){
       var labels = [{% for topic in pedigree %} '{{topic.title}}', {% endfor %}];
