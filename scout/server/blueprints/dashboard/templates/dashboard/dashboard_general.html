@@ -274,6 +274,13 @@
           }],
         },
         options: {
+          tooltips: {
+            callbacks: {
+                label: function(tooltipItems) {
+                    return Number(tooltipItems.value) * all_cases / 100
+                }
+            }
+          },
           scales: {
             xAxes: [{
                  ticks: {
