@@ -232,13 +232,14 @@
           scales: {
             xAxes: [{ stacked: true }],
             yAxes: [
-              { stacked: true },
-              { ticks: {
+              {
+                stacked: true ,
+                ticks: {
                   min: 0,
                   max: 100,
                   callback: function(value) {
                       return value + "%"
-                  }
+                  },
               }},
             ]
           },
@@ -254,7 +255,6 @@
       return myChart;
     }
 
-
     function casesDetailed(){
       var labels = [{% for topic in overview %} '{{topic.title}}', {% endfor %}];
       var bkg = []
@@ -268,7 +268,7 @@
         data: {
           labels: labels,
           datasets: [{
-            data: [{% for topic in overview %} Math.round({{topic.count*100}}/all_cases, 1), {% endfor %}],
+            data: [{% for topic in overview %} Math.round({{topic.count*100}}/all_cases, 2), {% endfor %}],
             backgroundColor: bkg,
             hoverBackgroundColor: hover
           }],
@@ -288,13 +288,6 @@
                      labelString: "Percentage"
                  }
              }],
-             tooltips: {
-               callbacks: {
-                 label: function(tooltipItem) {
-                   return (Number(tooltipItem.yLabel) * all_cases) / 100 + ' %';
-                 }
-               }
-             }
           },
           legend: {display: false}
         }
