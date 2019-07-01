@@ -155,6 +155,7 @@
         {% for topic in variants %}
           <li class="list-group-item">{{ topic.title }} Cases: : {{ topic.count }} <span class="text-muted">({{ (topic.percent * 100)|round(1) }}%)</span></li>
         {% endfor %}
+        <br>
         <div id="card mt-3">
           <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
             <button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-md">Download all verified variants for your cases</button>
@@ -254,13 +255,11 @@
     }
 
 
-
     function casesDetailed(){
       var labels = [{% for topic in overview %} '{{topic.title}}', {% endfor %}];
       var bkg = []
       var hover = []
       all_cases = {{cases[0].count}};
-      alert(all_cases);
       labels.forEach(function (item, index) {
         bkg.push(bkgColors[index])
       });
@@ -269,7 +268,7 @@
         data: {
           labels: labels,
           datasets: [{
-            data: [{% for topic in overview %} {{topic.count*100}}/all_cases, {% endfor %}],
+            data: [{% for topic in overview %} Math.round({{topic.count*100}}/all_cases, 1), {% endfor %}],
             backgroundColor: bkg,
             hoverBackgroundColor: hover
           }],
@@ -292,7 +291,7 @@
              tooltips: {
                callbacks: {
                  label: function(tooltipItem) {
-                   return '' + (Number(tooltipItem.yLabel) * all_cases) / 100;
+                   return (Number(tooltipItem.yLabel) * all_cases) / 100 + ' %';
                  }
                }
              }
@@ -302,10 +301,6 @@
       };
       return chart_data;
     }
-
-
-
-
 
     function pedigreeTypes(){
       var labels = [{% for topic in pedigree %} '{{topic.title}}', {% endfor %}];
