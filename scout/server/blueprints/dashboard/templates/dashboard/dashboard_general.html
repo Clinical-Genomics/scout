@@ -180,10 +180,12 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+
   <script type="text/javascript">
 
     var bkgColors = [ "#FDB45C", "#949FB1", "#00b0f0", "#F7464A", "#44449B", "#46BFBD"];
     var hoverColors = [ "#FFC870", "#A8B3C5", "#0287b8", "#FF5A5E", "#353578", "#5AD3D1"];
+    appo = ['120', '50', '70'];
     //create analysis type chart
     createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData())
     //create cases types chart
@@ -196,34 +198,60 @@
     createChart(document.getElementById("var-validations").getContext('2d'), varValidations())
 
 
-
-
     function createChart(ctx,chartData){
       //plots the chart
       new Chart(ctx, chartData);
     }
 
     function varValidations(){
-      var labels = [{% for topic in variants %} '{{topic.title}}', {% endfor %}];
-      var bkg = []
-      var hover = []
-      labels.forEach(function (item, index) {
-        bkg.push(bkgColors[index]);
-        hover.push(hoverColors[index]);
-      });
-      var chart_data = {
-        type: 'pie',
+      var dataSets = [];
+      var maxValidations = 0;
+      counter = 0
+      {% for topic in variants %}
+        if ('{{topic.title}}' === 'Validation ordered'){
+          maxValidations = parseInt('{{topic.count}}');
+        }
+        else {
+          percentValid = parseInt('{{topic.count}}');
+          if(maxValidations > 0){
+            percentValid = percentValid * 100 / maxValidations;
+          }
+          dataSets.push(percentValid);
+        }
+        counter++;
+      {% endfor %}
+
+      var myChart = {
+        type: 'bar',
         data: {
-          labels: labels,
-          datasets: [{
-            data: [{% for topic in variants %} {{topic.count}}, {% endfor %}],
-            backgroundColor: bkg,
-            hoverBackgroundColor: hover
-          }],
+          datasets: [
+            { //true positives
+              label: 'Validated True Positive',
+              data: [dataSets[0]],
+              backgroundColor: '#46bfbd',
+            },
+            { //false positives
+              label: 'Validated False Positive',
+              data: [dataSets[1]],
+              backgroundColor: '#f7464a',
+            }
+          ]
+        },
+        options: {
+          scales: {
+            xAxes: [{ stacked: true }],
+            yAxes: [{ stacked: true }]
+          },
+          tooltips: {
+            callbacks: {
+              label: function(tooltipItem) {
+                return "$" + Number(tooltipItem.yLabel) * maxValidations / 100;
+              }
+            }
+          }
         },
       };
-      return chart_data;
-
+      return myChart;
     }
 
     function casesDetailed(){
