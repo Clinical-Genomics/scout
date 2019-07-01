@@ -244,13 +244,10 @@
       var labels = [{% for topic in pedigree %} '{{topic.title}}', {% endfor %}];
       var bkg = []
       var hover = []
-      alert(bkgColors.reverse())
       labels.forEach(function (item, index) {
-        alert(item+'-->'+index+'-->');
-        bkg.push(bkgColors.reverse()[index]);
-        hover.push(hoverColors.reverse()[index]);
+        bkg.push(bkgColors[index]);
+        hover.push(hoverColors[index]);
       });
-      alert(bkg)
       var chart_data = {
         type: 'pie',
         data: {
