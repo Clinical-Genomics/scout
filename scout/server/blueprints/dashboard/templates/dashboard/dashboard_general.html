@@ -95,7 +95,7 @@
     <div class="col-md-4">
       <h1>Samples</h1>
       <div>
-        <canvas id="ngsType"></canvas>
+        <canvas id="ngsType" height="150"></canvas>
         {% for group in analysis_types %}
           Total {{ group.name|upper }} samples (not cases): {{ group.count }}<br>
         {% endfor %}
@@ -104,7 +104,7 @@
     <div class="col-md-4">
       <h1>Cases</h1>
       <div>
-          <canvas id="casesType"></canvas>
+          <canvas id="casesType" height="150"></canvas>
           {% for group in cases %}
             Cases {{ group.status|capitalize }}: {{ group.count }} <span class="text-muted">({{(group.percent * 100)|round(1)}}%)</span><br>
           {% endfor %}
@@ -113,7 +113,7 @@
     <div class="col-md-4">
       <h1>Pedigree info</h1>
       <div>
-        <canvas id="pedigreeTypes"></canvas>
+        <canvas id="pedigreeTypes" height="150"></canvas>
         {% for topic in pedigree %}
           {{ topic.title }} Cases: {{ (topic.percent * 100)|round(1) }}%<br>
         {% endfor %}
@@ -125,47 +125,33 @@
 {% endmacro %}
 
 
-
 {% macro cases_stats_panels() %}
 <div class="container-float mt-3 text-center">
   <div class="row">
     <div class="col-md-12">
-      <div class="card">
-        <div class="card-body">
         <h1>Cases with...</h1>
         <canvas id="cases-bar-horiz" height="80"></canvas>
-        </div>
-      </div>
     </div>
-</div>
-</div>
-
-
-
-    <!---
-    {% for topic in overview %}
-      <div class="col-xs-4 col-md-3">
-        <div class="panel panel-default">
-          <div class="panel-heading">{{ topic.title }}</div>
-          <div class="panel-body">
-            <h1 class="text-center">{{ topic.count }}</h1>
-            <div class="text-center">
-              <span class="text-muted">{{ (topic.percent * 100)|round(1) }}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    {% endfor %}
-    -->
   </div>
+</div>
 {% endmacro %}
 
 
-
-
-
-
 {% macro variants_stats_panels() %}
+<div class="container-float mt-3 text-center">
+  <div class="row">
+    <div class="col-md-12">
+        <canvas id="var-validations" height="70"></canvas>
+        {% for topic in variants %}
+          {{ topic.title }} Cases: {{ (topic.percent * 100)|round(1) }}%<br>
+        {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+
+<!--
   <div class="row">
     {% for topic in variants %}
       <div class="col-xs-4 col-md-3">
@@ -188,6 +174,7 @@
       </ol>
     </form>
   </div>
+-->
 {% endmacro %}
 
 {% block scripts %}
@@ -203,8 +190,11 @@
     createChart(document.getElementById("casesType").getContext('2d'), casesType())
     //create pedigree info chart
     createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes())
-    // create case detailed stats panel
+    // create cases detailed stats chart
     createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed())
+    // create variants detailed stats chart
+    createChart(document.getElementById("var-validations").getContext('2d'), varValidations())
+
 
 
 
@@ -213,7 +203,28 @@
       new Chart(ctx, chartData);
     }
 
+    function varValidations(){
+      var labels = [{% for topic in variants %} '{{topic.title}}', {% endfor %}];
+      var bkg = []
+      var hover = []
+      labels.forEach(function (item, index) {
+        bkg.push(bkgColors[index]);
+        hover.push(hoverColors[index]);
+      });
+      var chart_data = {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: [{% for topic in variants %} {{topic.count}}, {% endfor %}],
+            backgroundColor: bkg,
+            hoverBackgroundColor: hover
+          }],
+        },
+      };
+      return chart_data;
 
+    }
 
     function casesDetailed(){
       var labels = [{% for topic in overview %} '{{topic.title}}', {% endfor %}];
