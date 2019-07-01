@@ -268,7 +268,7 @@
         data: {
           labels: labels,
           datasets: [{
-            data: [{% for topic in overview %} Math.round({{topic.count*100}}/all_cases, 2), {% endfor %}],
+            data: [{% for topic in overview %} {{topic.count*100}}/all_cases, {% endfor %}],
             backgroundColor: bkg,
             hoverBackgroundColor: hover
           }],
