@@ -147,34 +147,12 @@
         {% endfor %}
     </div>
   </div>
-</div>
-
-
-
-<!--
-  <div class="row">
-    {% for topic in variants %}
-      <div class="col-xs-4 col-md-3">
-        <div class="panel panel-default">
-          <div class="panel-heading">{{ topic.title }}</div>
-          <div class="panel-body">
-            <h1 class="text-center">{{ topic.count }}</h1>
-          </div>
-          <div class="text-center"><span class="text-muted">
-            {{ (topic.percent * 100)|round(1) }}%</span>
-          </div>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-  <div>
+  <div id="card mt-3">
     <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
-      <ol class="breadcrumb">
-        <li><button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-xs">Download all verified variants for your cases</button></li>
-      </ol>
+      <button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-md">Download all verified variants for your cases</button>
     </form>
   </div>
--->
+</div>
 {% endmacro %}
 
 {% block scripts %}
@@ -241,7 +219,16 @@
         options: {
           scales: {
             xAxes: [{ stacked: true }],
-            yAxes: [{ stacked: true }]
+            yAxes: [
+              //{ stacked: true },
+              { ticks: {
+                  min: 0,
+                  max: 100,
+                  callback: function(value) {
+                      return value + "%"
+                  }
+              }},
+            ]
           },
           tooltips: {
             callbacks: {
