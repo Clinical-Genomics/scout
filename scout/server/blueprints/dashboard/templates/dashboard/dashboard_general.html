@@ -143,7 +143,7 @@
     <div class="col-md-12">
         <canvas id="var-validations" height="70"></canvas>
         {% for topic in variants %}
-          {{ topic.title }} Cases: {{ (topic.percent * 100)|round(1) }}%<br>
+          {{ topic.title }} Cases: : {{ topic.count }} <span class="text-muted">({{ (topic.percent * 100)|round(1) }}%)</span><br>
         {% endfor %}
     </div>
   </div>
@@ -185,7 +185,7 @@
 
     var bkgColors = [ "#FDB45C", "#949FB1", "#00b0f0", "#F7464A", "#44449B", "#46BFBD"];
     var hoverColors = [ "#FFC870", "#A8B3C5", "#0287b8", "#FF5A5E", "#353578", "#5AD3D1"];
-    appo = ['120', '50', '70'];
+
     //create analysis type chart
     createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData())
     //create cases types chart
@@ -245,7 +245,7 @@
           tooltips: {
             callbacks: {
               label: function(tooltipItem) {
-                return "$" + Number(tooltipItem.yLabel) * maxValidations / 100;
+                return '' + Number(tooltipItem.yLabel) * maxValidations / 100;
               }
             }
           }
