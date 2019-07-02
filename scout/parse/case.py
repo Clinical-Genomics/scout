@@ -222,7 +222,7 @@ def parse_individual(sample):
     ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
     ind_info['bam_file'] = sample.get('bam_path')
-        
+
     ind_info['mt_bam'] = sample.get('mt_bam')
     ind_info['analysis_type'] = sample.get('analysis_type')
 
@@ -231,7 +231,7 @@ def parse_individual(sample):
 
     ind_info['capture_kits'] = ([sample.get('capture_kit')]
                                 if 'capture_kit' in sample else [])
-    
+
     # Cancer specific values
     ind_info['tumor_type'] = sample.get('tumor_type')
     # tumor_mutational_burden
@@ -267,11 +267,11 @@ def parse_individuals(samples):
 
     # Check if relations are correct
     for parsed_ind in individuals:
-        father = parsed_ind['father']
+        father = parsed_ind.get('father')
         if (father and father != '0'):
             if father not in ind_ids:
                 raise PedigreeError('father %s does not exist in family' % father)
-        mother = parsed_ind['mother']
+        mother = parsed_ind.get('mother')
         if (mother and mother != '0'):
             if mother not in ind_ids:
                 raise PedigreeError('mother %s does not exist in family' % mother)
@@ -382,7 +382,5 @@ def removeNoneValues(dict):
         dictionary
 
     """
-    
+
     return {k:v for k,v in dict.items() if v is not None}
-
-

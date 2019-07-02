@@ -12,6 +12,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 
+## [4.6.1]
+
+### Added
+
+### Fixed
+- Missing 'father' and 'mother' keys when parsing single individual cases
+
+
 ## [4.6.0]
 
 ### Added
