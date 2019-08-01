@@ -55,6 +55,10 @@
         </div>
 
         <div class="row">
+          <div class="col-xs-12 col-md-12">{{ roh_panel() }}</div>
+        </div>
+        
+        <div class="row">
           <div class="col-xs-12 col-md-6">{{ synopsis_panel() }}</div>
           <div class="col-xs-12 col-md-6">
             {{ comments_panel(institute, case, current_user, comments) }}
@@ -279,6 +283,21 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro roh_panel() %}
+<div class="panel panel-default" id="rohPanel">
+  <div data-toggle='tooltip' class="panel-heading" title="down format" >
+    Ideogram, UPD, ROH
+  </div>
+  <div class="panel-body">
+    <svg id="roh_svg" width="1900" height="850"></canvas> 
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-default form-control" data-toggle="modal" data-target="#edit-synopsis">Edit</button>
+  </div>
+</div>
+{% endmacro %}
+
 
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
@@ -930,4 +949,327 @@
       });
     })
   </script>
+
+
+
+
+
+
+
+  <script>
+    const X_OFFSET = 45 // leftside offset whitespace in the PNGs
+    const Y_OFFSET = 5 // make room for arrows pointing at the cytoband
+
+    const IDEOGRAM_IMAGES = ['cytoband.txt.chr1.png', 'cytoband.txt.chr2.png', 
+                             'cytoband.txt.chr3.png', 'cytoband.txt.chr4.png', 
+                             'cytoband.txt.chr5.png', 'cytoband.txt.chr6.png', 
+                             'cytoband.txt.chr7.png', 'cytoband.txt.chr8.png', 
+                             'cytoband.txt.chr9.png', 'cytoband.txt.chr10.png',
+                             'cytoband.txt.chr11.png', 'cytoband.txt.chr12.png',
+                             'cytoband.txt.chr13.png', 'cytoband.txt.chr14.png',
+                             'cytoband.txt.chr15.png', 'cytoband.txt.chr16.png',
+                             'cytoband.txt.chr17.png', 'cytoband.txt.chr18.png',
+                             'cytoband.txt.chr19.png', 'cytoband.txt.chr20.png',
+                             'cytoband.txt.chr21.png', 'cytoband.txt.chr22.png',
+                             'cytoband.txt.chrX.png', 'cytoband.txt.chrY.png'];
+
+    const ROH_IMAGES = ['roh_chr1.png', 'roh_chr2.png', 'roh_chr3.png',
+                        'roh_chr4.png', 'roh_chr5.png', 'roh_chr6.png',
+                        'roh_chr7.png', 'roh_chr8.png', 'roh_chr9.png',
+                        'roh_chr10.png', 'roh_chr11.png', 'roh_chr12.png',
+                        'roh_chr13.png', 'roh_chr14.png', 'roh_chr15.png',
+                        'roh_chr16.png', 'roh_chr17.png', 'roh_chr18.png',
+                        'roh_chr19.png', 'roh_chr20.png', 'roh_chr21.png',
+                        'roh_chr22.png', 'roh_chrX.png', 'roh_chrY.png'];
+
+    const UPD_IMAGES = ['upd_chr1.png', 'upd_chr2.png', 'upd_chr3.png',
+                        'upd_chr4.png', 'upd_chr5.png', 'upd_chr6.png', 
+                        'upd_chr7.png', 'upd_chr8.png', 'upd_chr9.png',
+                        'upd_chr10.png', 'upd_chr11.png', 'upd_chr12.png',
+                        'upd_chr13.png', 'upd_chr14.png', 'upd_chr15.png',
+                        'upd_chr16.png', 'upd_chr17.png', 'upd_chr18.png',
+                        'upd_chr19.png', 'upd_chr20.png', 'upd_chr21.png',
+                        'upd_chr22.png', 'upd_chrX.png', 'upd_chrY.png'];
+
+
+    // TODO: Handle trisomy
+    const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+                         '11', '12', '13', '14', '15', '16', '17', '18',
+                         '19', '20', '21', '22', 'X',' Y'];
+
+
+
+
+    const NUMBER_OF_COLUMNS = 3        
+    const OFFSET_X = 60;
+    const OFFSET_Y = 30;
+
+    // skära ut kromosom
+    // "M 300 150 L 300 500 L 500 500 A 50 50 0 1 1 500 150 L 300 150"
+
+    
+
+    // Draw ROH call pictures -coverage- and UPOD pictures -color coded
+    // genome regions- onto the dashboard.
+    //
+    //
+    function draw_tracks(){
+        const CYT_HEIGHT = 50 ;
+        const CYT_WIDTH = 500 ;
+        const ROH_IMGPATH = '/public/static/roh_images/'
+        const IDEO_IMGPATH = '/public/static/chr_images/'
+        
+        console.log("draw roh") 
+        var roh_svg = document.getElementById("roh_svg");
+
+        var roh_imgObj = new Image();
+        
+        var upd_imgPath = '/public/static/upd_images/'
+        var upd_imgObj = new Image();
+        // Loop through to add ROH and UPD images
+
+        var chrom1 = {name: '1', length: 482, cent_start: 245, cent_length: 13 }
+        var chrom2 = {name: '2', length: 470, cent_start: 185, cent_length: 13 }
+        var chrom3 = {name: '3', length: 387, cent_start: 180, cent_length: 13 }
+        var chrom4 = {name: '4', length: 372, cent_start: 105, cent_length: 13 }
+        var chrom5 = {name: '5', length: 353, cent_start: 105, cent_length: 10 }
+        var chrom6 = {name: '6', length: 336, cent_start: 121, cent_length: 13 }
+        var chrom7 = {name: '7', length: 313, cent_start: 125, cent_length: 13 }
+        var chrom8 = {name: '8', length: 290, cent_start: 100, cent_length: 8 }
+        var chrom9 = {name: '9', length: 280, cent_start: 103, cent_length: 8 }
+        var chrom10 = {name: '10', length: 270, cent_start: 90, cent_length: 10 }
+        var chrom11 = {name: '11', length: 267, cent_start: 115, cent_length: 10 }
+        var chrom12 = {name: '12', length: 265, cent_start: 80, cent_length: 13 }
+        var chrom13 = {name: '13', length: 232, cent_start: 47, cent_length: 8 }
+        var chrom14 = {name: '14', length: 217, cent_start: 47, cent_length: 8 }
+        var chrom15 = {name: '15', length: 207, cent_start: 47, cent_length: 8 }
+        var chrom16 = {name: '16', length: 184, cent_start: 82, cent_length: 8 }
+        var chrom17 = {name: '17', length: 167, cent_start: 57, cent_length: 8 }
+        var chrom18 = {name: '18', length: 162, cent_start: 46, cent_length: 8 }
+        var chrom19 = {name: '19', length: 127, cent_start: 64, cent_length: 8 }
+        var chrom20 = {name: '20', length: 132, cent_start: 64, cent_length: 8 }
+        var chrom21 = {name: '21', length: 107, cent_start: 38, cent_length: 8 }
+        var chrom22 = {name: '22', length: 114, cent_start: 42, cent_length: 8 }
+        var chromX = {name: 'X', length: 305, cent_start: 127, cent_length: 8 }
+        var chromY = {name: 'Y', length: 127, cent_start: 39, cent_length: 4 }
+        
+        chrom_list = [chrom1, chrom2, chrom3, chrom4,
+                      chrom5, chrom6, chrom7, chrom8,
+                      chrom9, chrom10, chrom11, chrom12,
+                      chrom13, chrom14, chrom15, chrom16, 
+                      chrom17, chrom18, chrom19, chrom20,
+                      chrom21, chrom22, chromX, chromY]
+
+
+        
+        // for(i = 0; i< CHROMOSOMES.length; i++){
+        for(i = 0; i< chrom_list.length; i++){
+            roh_imgObj.src = ROH_IMGPATH + ROH_IMAGES[i]
+            upd_imgObj.src = upd_imgPath + UPD_IMAGES[i]
+            x_pos = i % NUMBER_OF_COLUMNS == 0? 0 : CYT_WIDTH * (i% NUMBER_OF_COLUMNS) + OFFSET_X
+            y_pos =  Math.floor( i/NUMBER_OF_COLUMNS ) * 100;
+
+
+
+            
+            // console.log("x: %s y: %s", x_pos, y_pos);
+            var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+            var ideo_image = make_svgimage(IDEO_IMGPATH + IDEOGRAM_IMAGES[i],
+                                          x_pos,
+                                          y_pos,
+                                          "25px", "500px", );
+
+            var upd_image = make_svgimage(upd_imgPath + UPD_IMAGES[i],
+                                          x_pos,
+                                          y_pos + 30,
+                                          "25px", "500px", );
+
+            var roh_image = make_svgimage(ROH_IMGPATH + ROH_IMAGES[i],
+                                          x_pos + 17,  // compensate for image pixel start
+                                          y_pos + 55 , // place below UPD
+                                          "25px", "500px", );
+
+
+            var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos+17);
+
+            var clipPath = make_clipPath(chrom_list[i], x_pos, y_pos)
+            ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+chrom_list[i].name +")")
+            
+            g.appendChild(roh_image);
+            g.appendChild(upd_image);
+            g.appendChild(ideo_image);
+            g.appendChild(clipPath);
+            g.appendChild(t);
+
+            // console.log("test text: %s ", t);
+
+            roh_svg.append(g)
+        }
+    }
+
+        
+    function chromosome_text(text, x, y){
+        var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttributeNS(null, 'x', x);
+        t.setAttributeNS(null, 'y', y);
+        t.appendChild( document.createTextNode(text) );
+        return t;
+    }
+
+
+    function make_clipPath(chrom, x_offset, y_offset){
+        // console.log("chrom: " + chrom.name)
+        // console.log("x " + String(x_offset))
+        // console.log("y " + String(y_offset))
+
+
+        const c = 10
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+        clipPath.setAttributeNS(null, 'id', "clip-chr"+chrom.name)
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var centromere = {x: chrom.cent_start + x_offset,
+                          y: y_offset,
+                          length: chrom.cent_length,}
+        var m = "M " + String(chrom.length + x_offset) + " " + String( 25 + y_offset) + " " // path start
+
+        var start_l = {x: chrom.cent_start + chrom.cent_length +5 +5 + x_offset,
+                       y: 0 + 25 + y_offset,
+                       length: chrom.cent_length }
+        
+        var start_u = {x: chrom.cent_start + x_offset,
+                       y: y_offset,
+                       length: chrom.cent_length}
+
+        var r = 10
+        var cent_l = calc_centromere_lower(start_l)
+        var b_left = "L " + " " + String( 30 + x_offset) + " " + String(y_offset + 25) + " "
+
+        var c1 = "C " + " " + String(30 - r + x_offset) + " " + String(25 + y_offset) + " "
+            + String(30 - r + x_offset) + " " + String(y_offset) + " "
+            + String(30 + x_offset) + " " + String( y_offset) + " "
+
+        var cent_u = calc_centromere_upper(start_u)
+        var right = "L " + String(chrom.length + x_offset) + " " + String(y_offset) + " "
+
+        var c2 = "C " + " " + String(chrom.length + r + x_offset) + " " + String(y_offset) + " "
+            + String(chrom.length + r + x_offset) + " " + String(y_offset+25) + " "
+            + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
+        
+        path = m + cent_l + b_left + c1 + cent_u + right + c2
+        // console.log("*****")
+        // console.log(path)
+
+        // without_cent = start +  b_left + c1 + right + c2
+        p1.setAttributeNS(null, 'd', path)
+        // p1.setAttributeNS(null, 'd', "M 470 25 L 60 25 C 50 25 50 0 60 0 L 470 0 C 510 0 510 25 470 25");
+
+        clipPath.append(p1)
+        defs.append(clipPath)
+        return clipPath
+    }
+
+
+    
+
+    function calc_centromere_upper(pos){
+        // Upper waist of centromere
+        // ------(L1)      (L4)------
+        //          \_____/
+        //       (L2)      (L3)  
+        var l1 = "L " + String(pos['x']) + " " + String(pos['y']) + " ";
+        var l2 = "L " + String(pos['x']+5) + " " + String(pos['y']+3) + " ";
+        var l3 = "L " + String(pos['x']+5+pos.length) + " " + String(pos['y']+3) + " ";
+        var l4 = "L " + String(pos['x']+5+pos.length+5) + " " + String(pos['y']) + " ";
+        // console.log("upper centromere: %s ", l1 + l2 + l3 + l4);
+        return l1 + l2 + l3 + l4
+    }
+
+    
+    
+    function calc_centromere_lower(pos){
+        // Lower waist of centromere
+        //       (L3)-----(L2)
+        //        /         \
+        // ----(L4)         (L1)-----
+        var l1 = "L " + String(pos['x']) + " " + String(pos['y']) + " ";
+        var l2 = "L " + String(pos['x']-5) + " " + String(pos['y']-3) + " ";
+        var l3 = "L " + String(pos['x']-5-pos.length) + " " + String(pos['y']-3) + " ";
+        var l4 = "L " + String(pos['x']-5-pos.length-5) + " " + String(pos['y']) + " ";
+        // console.log("lower centromere: %s ", l1 + l2 + l3 + l4);
+        return l1 + l2 + l3 + l4
+    }
+    
+
+
+    
+    function make_svgimage(src, x, y, height, width){
+        var svgimg = document.createElementNS('http://www.w3.org/2000/svg','image');
+        svgimg.setAttributeNS('http://www.w3.org/1999/xlink','href', src);
+        svgimg.setAttributeNS(null, 'x', String(x));
+        svgimg.setAttributeNS(null, 'y', String(y));
+        svgimg.setAttributeNS(null, 'height', String(height));
+        svgimg.setAttributeNS(null, 'width', String(width));
+
+        // svgimg.setAttributeNS(null, 'clip-path', "url(#left)");
+       return svgimg;
+   }
+
+
+    // x_cyt: upper x coordinate of corresponding cytoband
+    // y_cyt: upper y coordinate of corresponding cytoband
+    //
+    //
+    //  (a_x, a_y) --------- (b_x, b_y)
+    //          \              /
+    //           \            /
+    //            \          /
+    //             (c_x, c_y)
+    //                 
+    function make_polygon(x_cyt, y_cyt, pos, link, ) {
+        const POLY_WIDTH = 10
+        var a = document.createElementNS('http://www.w3.org/2000/svg','a');
+        a.setAttribute('href', link)
+        var poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        var ax = String( x_cyt+pos+ X_OFFSET)
+        var ay = String( y_cyt -10 )
+        var bx = String( x_cyt+pos+POLY_WIDTH +X_OFFSET)
+        var by = String( y_cyt -10 )
+        var cx = String( x_cyt+pos+ Math.floor(POLY_WIDTH/2) + X_OFFSET )
+        var cy = String( y_cyt+Y_OFFSET )
+        
+        poly.setAttributeNS(null,'points', ax + ',' + ay + ' ' + bx + ',' + by + ' ' + cx + ',' + cy );
+        poly.setAttributeNS(null,'style', "fill:red;stroke:crimson;stroke-width:1");
+        a.appendChild(poly)
+        return a;
+    }
+
+   function urlExists(url){
+       var http = new XMLHttpRequest();
+       http.open('HEAD', url, false);
+       http.send();
+       return http.status!=404;
+   }
+  </script>
+
+
+  <script>
+    // Start when window is loaded!
+    window.onload=function(){
+        console.log("Window is loaded!")
+        console.log("Draw all cromosome data tracks to svg image area")
+        var testFile = "/public/static/chr_images/cytoband.txt.chr1.png"
+        if(urlExists(testFile)){
+            console.log("Draw images")
+            draw_tracks()
+        }
+        else{
+            console.log("*** Not drawing ROH/Ideograms/UPDs")
+            console.log("Check for '%s' failed", testFile)
+            // Hide div
+            document.getElementById('rohPanel').style.display = 'none';
+        }
+    }
+  </script>
+  
 {% endblock %}
