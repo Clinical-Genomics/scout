@@ -184,6 +184,7 @@ def variant(institute_id, case_name, variant_id):
 
     composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
                     "{this[alternative]}".format(this=data['variant']))
+    composite_id = {'_id' : composite_id}
     flash(composite_id, 'warning')
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
     flash(obs_data, 'info')
