@@ -182,12 +182,9 @@ def variant(institute_id, case_name, variant_id):
         flash('An error occurred while retrieving variant object', 'danger')
         return redirect(request.referrer)
 
-    flash(loqusdb, 'info')
-    
     if current_app.config.get('LOQUSDB_SETTINGS'):
         data['observations'] = controllers.observations(store, loqusdb,
             case_obj, data['variant'])
-        flash(data['observations'], 'info')
     data['cancer'] = request.args.get('cancer') == 'yes'
     return dict(institute=institute_obj, case=case_obj, **data)
 
