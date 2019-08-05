@@ -182,6 +182,11 @@ def variant(institute_id, case_name, variant_id):
         flash('An error occurred while retrieving variant object', 'danger')
         return redirect(request.referrer)
 
+    composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
+                    "{this[alternative]}".format(this=data['variant']))
+    obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
+    flash(obs_data, 'info')
+
     if current_app.config.get('LOQUSDB_SETTINGS'):
         data['observations'] = controllers.observations(store, loqusdb,
             case_obj, data['variant'])
