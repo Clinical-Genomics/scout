@@ -641,7 +641,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
             other_case = store.case(case_id)
             # display only variants which belong to the same institute or collaborators
             if other_case and (other_case.get('owner') == institute_id or institute_id in other_case.get('collaborators', [])):
-                other_variant = store.variant(variant_obj['variant_id'], case_id=case_id)
+                other_variant = store.variant(case_id=case_id, simple_id=composite_id)
                 obs_data['cases'].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
