@@ -236,7 +236,7 @@ class VariantHandler(VariantLoader):
         """
         query = {}
         if case_id and document_id:
-            # search for a variant in a case
+            # search for a variant in a case by variant_id
             query['case_id'] = case_id
             query['variant_id'] = document_id
         elif case_id and simple_id:
