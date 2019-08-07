@@ -188,6 +188,9 @@ class GeneHandler(object):
             Returns:
                 result()
         """
+        if build == 'GRCh38':
+            build = '38'
+
         LOG.info("Fetching all genes")
         return self.hgnc_collection.find({'build': build}).sort('chromosome', 1)
 
