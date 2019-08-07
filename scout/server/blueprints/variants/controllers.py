@@ -641,6 +641,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
             # other case might belong to same institute, collaborators or other institutes
             other_case = store.case(case_id)
             institute_objs = user_institutes(store, current_user)
+            flash('institute_objs:{} -- other case:{}'.format(institute_objs, other_case))
             if other_case and (other_case.get('owner') == institute_id # observation variant has same institute as first variant
                 or institute_id in other_case.get('collaborators', []) # or is in other case collaborators
                 or other_case.get('owner') in institute_objs): # or observation's institute belongs to users institutes
