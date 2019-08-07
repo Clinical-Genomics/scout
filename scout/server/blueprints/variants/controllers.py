@@ -20,7 +20,7 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.utils import institute_and_case
+from scout.server.utils import institute_and_case, user_institutes
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
