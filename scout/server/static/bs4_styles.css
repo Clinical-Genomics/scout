@@ -160,7 +160,7 @@ body {
   border-color: #245580;
 }
 
-/* sidebar */
+/* ------ sidebar ------ */
 #sidebar {
     overflow: hidden;
     z-index: 3;
@@ -188,6 +188,7 @@ body {
 /* highlight active menu */
 #sidebar .list-group-item:not(.collapsed) {
     background-color: #44449B;
+    color: #ccc;
 }
 
 /* closed state */
@@ -285,4 +286,4 @@ body {
   -webkit-transition-timing-function: ease-out;
   transition-timing-function: ease-out;
 }
-/* end of sidebar */
+/* ------ end of sidebar ------ */

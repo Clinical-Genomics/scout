@@ -2,9 +2,16 @@
 
 <div class="col-md-2 float-left pl-0 collapse width show" id="sidebar">
   <div class="list-group border-0 card text-center text-md-left">
-    <a href="#menu1" class="list-group-item d-inline-block collapsed" data-toggle="collapse" aria-expanded="false"><i class="fa fa-book"></i> <span class="d-none d-md-inline">Report</span> </a>
-    <div class="collapse" id="menu1" data-parent="#sidebar">
+    <a href="#menu_reports" class="list-group-item d-inline-block collapsed" data-toggle="collapse" aria-expanded="false"><i class="fa fa-book"></i> <span class="d-none d-md-inline">Report</span> </a>
+    <div class="collapse" id="menu_reports" data-parent="#sidebar">
       {{ reports(institute,case) }}
+    </div>
+    {{ analysis_date(case) }}
+    {{ genome_build(case) }}
+    {{ status(institute, case) }}
+
+
+    <div>
         <a href="#menu1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 1 </a>
         <div class="collapse" id="menu1sub1" data-parent="#menu1">
             <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem a</a>
@@ -23,7 +30,6 @@
         </div>
       </div>
 
-          <!--
           <a href="#menu1" class="list-group-item d-inline-block collapsed" data-toggle="collapse" aria-expanded="false"><i class="fa fa-dashboard"></i> <span class="d-none d-md-inline">Item 1</span> </a>
           <div class="collapse" id="menu1" data-parent="#sidebar">
               <a href="#menu1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 1 </a>
@@ -82,8 +88,124 @@
           <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-bar-chart-o"></i> <span class="d-none d-md-inline">Link</span></a>
           <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-star"></i> <span class="d-none d-md-inline">Link</span></a>
 
-          -->
+
   </div>
 </div>
 
+{% endmacro %}
+
+
+{% macro reports(institute, case) %}
+  <div class="nav-sidebar-item">
+      <a class="btn btn-light form-control" href="{{ url_for('cases.case_report', institute_id=institute._id,
+                case_name=case.display_name) }}" target="_blank" >General</a>
+  </div>
+  {% if case.multiqc %}
+    <div class="nav-sidebar-item">
+        <a class="btn btn-light form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id,
+                  case_name=case.display_name) }}">
+        MultiQC
+      </a>
+    </div>
+  {% endif %}
+  <div class="nav-sidebar-item">
+      <a class="btn btn-light form-control" href="{{ url_for('cases.mt_report', institute_id=institute._id,
+                case_name=case.display_name) }}">mtDNA report</a>
+  </div>
+  {% if case.delivery_report %}
+    <div class="nav-sidebar-item">
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                    case_name=case.display_name) }}" class="btn btn-default btn-light form-control" target="_blank">
+        Delivery
+      </a>
+      <hr>
+      {% for analysis in case.analyses %}
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                            case_name=case.display_name, date=analysis.date) }}" target="_blank">
+          {{ analysis.date.date() }}
+        </a>
+        <br />
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if config.SQLALCHEMY_DATABASE_URI %}
+  <div class="nav-sidebar-item">
+    <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+      <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-default btn-light form-control">Coverage report</button>
+      </div>
+    </form>
+    <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
+    <p>
+      <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
+        <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
+        <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
+        {% for sample_id in case.individual_ids %}
+				    <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
+			  {% endfor %}
+        <div class="form-group">
+          <button type="submit" class="btn btn-default btn-light form-control">
+            Download PDF (coverage)
+          </button>
+        </div>
+      </form>
+    </p>
+  </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro analysis_date(case) %}
+  <div class="list-group-item d-inline-block collapsed"><i class="fa fa-clock-o"></i> <span class="d-none d-md-inline">Analysis date</span>
+    <br>
+    <div class="text-center">
+    {{ case.analysis_date.date() }}
+    {% if case.is_migrated %}
+      <span class="label label-info ">migrated</span>
+    {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro genome_build(case) %}
+  <div class="list-group-item d-inline-block collapsed"><i class="fa fa-wrench"></i> <span class="d-none d-md-inline">Genome build</span>
+    <br>
+    <div class="text-center">
+    {{ case.genome_build }}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro status(institute, case) %}
+  <form method="POST"
+        action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+
+    <div class="nav-sidebar-item">
+      <h5>
+        <span class="glyphicon glyphicon-{{ 'star' if case.status == 'prioritized' else 'star-empty' }}"></span>
+        Status: {{ case.status|capitalize }}
+      </h5>
+
+      <div class="btn-group btn-group-justified">
+        <div class="btn-group">
+          {% if case.status != 'archived' %}
+            <button type="submit" class="btn btn-warning btn-sm" name="status" value="archived" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
+              Archive
+            </button>
+          {% else %}
+            <button type="submit" class="btn btn-default btn-sm" name="status" value="active">
+              Unarchive
+            </button>
+          {% endif %}
+        </div>
+        <div class="btn-group">
+          <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-default btn-sm">
+            {{ 'De-prioritize' if case.status == 'prioritized' else 'Prioritize' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
 {% endmacro %}
