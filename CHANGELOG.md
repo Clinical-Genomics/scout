@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-
+- Fixed bug affecting variant observations in other cases
 
 ## [4.6.1]
 

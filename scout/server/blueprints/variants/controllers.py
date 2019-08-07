@@ -9,6 +9,7 @@ from xlsxwriter import Workbook
 
 from datetime import date
 import datetime
+from flask_login import current_user
 from flask import url_for, flash, request
 from flask_mail import Message
 
@@ -639,8 +640,10 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if case_id != variant_obj['case_id']:
             # other case might belong to same institute, collaborators or other institutes
             other_case = store.case(case_id)
-            # display only variants which belong to the same institute or collaborators
-            if other_case and (other_case.get('owner') == institute_id or institute_id in other_case.get('collaborators', [])):
+            institute_objs = user_institutes(store, current_user)
+            if other_case and (other_case.get('owner') == institute_id # observation variant has same institute as first variant
+                or institute_id in other_case.get('collaborators', []) # or is in other case collaborators
+                or other_case.get('owner') in institute_objs): # or observation's institute belongs to users institutes
                 other_variant = store.variant(case_id=case_id, simple_id=composite_id)
                 obs_data['cases'].append(dict(case=other_case, variant=other_variant))
 
