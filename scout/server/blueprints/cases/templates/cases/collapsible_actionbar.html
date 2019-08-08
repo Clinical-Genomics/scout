@@ -52,11 +52,12 @@
               {% endfor %}
             {% endif %}
             {% if config.SQLALCHEMY_DATABASE_URI %}
+            <br>
             <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
               <div class="form-group">
-                <button type="submit" class="btn btn-default btn-light form-control btn-sm">Coverage report</button>
+                <button type="submit" class="btn btn-default btn-light form-control btn-sm col-10">Coverage report</button>
               </div>
             </form>
             <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
@@ -67,7 +68,7 @@
                     <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
                 {% endfor %}
                 <div class="form-group">
-                  <button type="submit" class="btn btn-default btn-light form-control btn-sm">
+                  <button type="submit" class="btn btn-default btn-light form-control btn-sm col-10">
                     Download PDF (coverage)
                   </button>
                 </div>
@@ -133,25 +134,28 @@
 <div class="list-group-item d-inline-block">
       <i class="fa fa-users"></i>
       Assignees
-    <div class="row">
-      <div class="btn-group-vertical col-10">
-      {% for user in case.assignees %}
-          <form method="POST"
-                action="{{ url_for('cases.assign', institute_id=institute._id,
-                                   case_name=case.display_name, user_id=user._id) }}">
-            <button name="action" value="DELETE" class="btn btn-warning btn-sm form-control col-10">
-              <i class="fa fa-remove"></i>
-              {{ user.name }}
-            </button>
-          </form>
-      {% endfor %}
-      <form method="POST"
-            action="{{ url_for('cases.assign', institute_id=institute._id,
-                               case_name=case.display_name) }}"
-            title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-        <button class="btn btn-light form-control btn-sm col-10">
-          <i class="fa fa-heart"></i>Assign yourself</button>
-      </form>
+    <br>
+    <div class="btn-group-vertical col-10">
+      <div class="row">
+        <div class="btn-group-vertical">
+        {% for user in case.assignees %}
+            <form method="POST"
+                  action="{{ url_for('cases.assign', institute_id=institute._id,
+                                     case_name=case.display_name, user_id=user._id) }}">
+              <button name="action" value="DELETE" class="btn btn-warning btn-sm form-control">
+                <i class="fa fa-remove"></i>
+                {{ user.name }}
+              </button>
+            </form>
+        {% endfor %}
+        <form method="POST"
+              action="{{ url_for('cases.assign', institute_id=institute._id,
+                                 case_name=case.display_name) }}"
+              title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+          <button class="btn btn-light form-control btn-sm">
+            <i class="fa fa-heart"></i>Assign yourself</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
@@ -167,7 +171,7 @@
         {% if case.research_requested %}
           <i>Research pending</i>
         {% else %}
-          <button type="button" class="btn btn-danger btn-sm form-control col-10" data-toggle="modal" data-target="#research-modal">Request research</button>
+          <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
         {% endif %}
       </div>
     </div>
@@ -178,13 +182,15 @@
 {% macro rerun(case) %}
 <div class="list-group-item d-inline-block">
   <div class="nav-sidebar-item">
-      <i class="fa fa-retweet"></i> Reruns<br>
+    <i class="fa fa-retweet"></i> Reruns<br>
       <div class="btn-group-vertical col-10">
-      {% if case.rerun_requested %}
-        <i>Rerun pending</i>
-      {% else %}
-        <button type="button" class="btn btn-warning form-control btn-sm col-10" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
-      {% endif %}
+        <div class="row">
+        {% if case.rerun_requested %}
+          <i>Rerun pending</i>
+        {% else %}
+          <button type="button" class="btn btn-warning form-control btn-sm" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
@@ -206,43 +212,46 @@
   <div class="nav-sidebar-item">
       <i class="fa fa-handshake-o"></i>
       Share case
+      <br>
         <div class="btn-group-vertical col-10">
-        {% if collaborators %}
-          <div class="form-group">
-            <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+          <div class="row">
+          {% if collaborators %}
+            <div class="form-group">
+              <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+                <div class="input-group">
+                  <select class="form-control" name="collaborator">
+                    <option class="placeholder" selected disabled value="">Select institute</option>
+                    {% for collab_id, collab_name in collaborators %}
+                      <option value="{{ collab_id }}">{{ collab_name }}</option>
+                    {% endfor %}
+                  </select>
+                  <br>
+                  <div class="input-group-btn">
+                    <button type="submit" class="btn btn-light btn-sm">Share</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          {% endif %}
+          {% if case.o_collaborators %}
+            <form method="POST" action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}">
+              <input type="hidden" name="revoke" />
               <div class="input-group">
-                <select class="form-control col-10" name="collaborator">
-                  <option class="placeholder" selected disabled value="">Select institute</option>
-                  {% for collab_id, collab_name in collaborators %}
+                <select class="form-control" name="collaborator">
+                  <option>Select institute</option>
+                  {% for collab_id, collab_name in case.o_collaborators %}
                     <option value="{{ collab_id }}">{{ collab_name }}</option>
                   {% endfor %}
                 </select>
-                <br>
                 <div class="input-group-btn">
-                  <button type="submit" class="btn btn-light btn-sm col-10">Share</button>
+                  <button type="submit" class="btn btn-light btn-sm">Revoke</button>
                 </div>
               </div>
             </form>
-          </div>
-        {% endif %}
-        {% if case.o_collaborators %}
-          <form method="POST" action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}">
-            <input type="hidden" name="revoke" />
-            <div class="input-group">
-              <select class="form-control" name="collaborator">
-                <option>Select institute</option>
-                {% for collab_id, collab_name in case.o_collaborators %}
-                  <option value="{{ collab_id }}">{{ collab_name }}</option>
-                {% endfor %}
-              </select>
-              <div class="input-group-btn">
-                <button type="submit" class="btn btn-light btn-sm col-10">Revoke</button>
-              </div>
-            </div>
-          </form>
+          {% endif %}
+        </div>
         {% endif %}
       </div>
-      {% endif %}
     </div>
 </div>
 {% endmacro %}
