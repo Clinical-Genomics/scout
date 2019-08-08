@@ -2,120 +2,50 @@
 
 <div class="col-md-2 float-left pl-0 collapse width show" id="sidebar">
   <div class="list-group border-0 card text-center text-md-left">
-    <a href="#menu_reports" class="list-group-item d-inline-block collapsed" data-toggle="collapse" aria-expanded="false"><i class="fa fa-book"></i> <span class="d-none d-md-inline">Report</span> </a>
+    <a href="#menu_reports" class="list-group-item d-inline-block" data-toggle="collapse" aria-expanded="false"><i class="fa fa-book"></i> <span class="d-none d-md-inline">Report files</span> </a>
     <div class="collapse" id="menu_reports" data-parent="#sidebar">
       {{ reports(institute,case) }}
     </div>
     {{ analysis_date(case) }}
     {{ genome_build(case) }}
+    {{ rank_model(case) }}
     {{ status(institute, case) }}
-
-
-    <div>
-        <a href="#menu1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 1 </a>
-        <div class="collapse" id="menu1sub1" data-parent="#menu1">
-            <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem a</a>
-            <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem b</a>
-            <a href="#menu1sub1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem c </a>
-            <div class="collapse" id="menu1sub1sub1">
-                <a href="#" class="list-group-item" data-parent="#menu1sub1sub1">Subitem c.1</a>
-                <a href="#" class="list-group-item" data-parent="#menu1sub1sub1">Subitem c.2</a>
-            </div>
-            <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem d</a>
-            <a href="#menu1sub1sub2" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem e </a>
-            <div class="collapse" id="menu1sub1sub2">
-                <a href="#" class="list-group-item">Subitem e.1</a>
-                <a href="#" class="list-group-item">Subitem e.2</a>
-            </div>
-        </div>
-      </div>
-
-          <a href="#menu1" class="list-group-item d-inline-block collapsed" data-toggle="collapse" aria-expanded="false"><i class="fa fa-dashboard"></i> <span class="d-none d-md-inline">Item 1</span> </a>
-          <div class="collapse" id="menu1" data-parent="#sidebar">
-              <a href="#menu1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 1 </a>
-              <div class="collapse" id="menu1sub1" data-parent="#menu1">
-                  <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem a</a>
-                  <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem b</a>
-                  <a href="#menu1sub1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem c </a>
-                  <div class="collapse" id="menu1sub1sub1">
-                      <a href="#" class="list-group-item" data-parent="#menu1sub1sub1">Subitem c.1</a>
-                      <a href="#" class="list-group-item" data-parent="#menu1sub1sub1">Subitem c.2</a>
-                  </div>
-                  <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem d</a>
-                  <a href="#menu1sub1sub2" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem e </a>
-                  <div class="collapse" id="menu1sub1sub2">
-                      <a href="#" class="list-group-item">Subitem e.1</a>
-                      <a href="#" class="list-group-item">Subitem e.2</a>
-                  </div>
-              </div>
-              <a href="#menu1sub2" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 2</a>
-              <div class="collapse" id="menu1sub2" data-parent="#menu1">
-                  <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem 1 a</a>
-                  <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem 2 b</a>
-                  <a href="#menu1sub1sub1" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 3 c </a>
-                  <div class="collapse" id="menu1sub1sub1">
-                      <a href="#" class="list-group-item" data-parent="#menu1sub1sub1">Subitem 3 c.1</a>
-                      <a href="#" class="list-group-item" data-parent="#menu1sub1sub1">Subitem 3 c.2</a>
-                  </div>
-                  <a href="#" class="list-group-item" data-parent="#menu1sub1">Subitem 4 d</a>
-                  <a href="#menu1sub1sub2" class="list-group-item" data-toggle="collapse" aria-expanded="false">Subitem 5 e </a>
-                  <div class="collapse" id="menu1sub1sub2">
-                      <a href="#" class="list-group-item" data-parent="#menu1sub1sub2">Subitem 5 e.1</a>
-                      <a href="#" class="list-group-item" data-parent="#menu1sub1sub2">Subitem 5 e.2</a>
-                  </div>
-              </div>
-              <a href="#" class="list-group-item">Subitem 3</a>
-          </div>
-          <a href="#" class="list-group-item d-inline-block collapsed"><i class="fa fa-film"></i> <span class="d-none d-md-inline">Item 2</span></a>
-          <a href="#menu3" class="list-group-item d-inline-block collapsed" data-toggle="collapse" aria-expanded="false"><i class="fa fa-book"></i> <span class="d-none d-md-inline">Item 3 </span></a>
-          <div class="collapse" id="menu3" data-parent="#sidebar">
-              <a href="#" class="list-group-item" data-parent="#menu3">3.1</a>
-              <a href="#menu3sub2" class="list-group-item" data-toggle="collapse" aria-expanded="false">3.2 </a>
-              <div class="collapse" id="menu3sub2">
-                  <a href="#" class="list-group-item" data-parent="#menu3sub2">3.2 a</a>
-                  <a href="#" class="list-group-item" data-parent="#menu3sub2">3.2 b</a>
-                  <a href="#" class="list-group-item" data-parent="#menu3sub2">3.2 c</a>
-              </div>
-              <a href="#" class="list-group-item" data-parent="#menu3">3.3</a>
-          </div>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-heart"></i> <span class="d-none d-md-inline">Item 4</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-list"></i> <span class="d-none d-md-inline">Item 5</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-clock-o"></i> <span class="d-none d-md-inline">Link</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-th"></i> <span class="d-none d-md-inline">Link</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-gear"></i> <span class="d-none d-md-inline">Link</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-calendar"></i> <span class="d-none d-md-inline">Link</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-envelope"></i> <span class="d-none d-md-inline">Link</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-bar-chart-o"></i> <span class="d-none d-md-inline">Link</span></a>
-          <a href="#" class="list-group-item d-inline-block collapsed" data-parent="#sidebar"><i class="fa fa-star"></i> <span class="d-none d-md-inline">Link</span></a>
-
-
+    {{ assign(institute, case) }}
+    {% if not (case.is_archived or case.is_research) %}
+      {{ research(case) }}
+    {% endif %}
+    {{ rerun(case) }}
+    {{ share_case(institute, case, collaborators) }}
+    {% if case.needs_check %}
+      {{ check_decipher(case, institute) }}
+    {% endif %}
   </div>
 </div>
-
 {% endmacro %}
 
 
 {% macro reports(institute, case) %}
+<div class="list-group-item">
   <div class="nav-sidebar-item">
       <a class="btn btn-light form-control" href="{{ url_for('cases.case_report', institute_id=institute._id,
                 case_name=case.display_name) }}" target="_blank" >General</a>
   </div>
   {% if case.multiqc %}
     <div class="nav-sidebar-item">
-        <a class="btn btn-light form-control" href="{{ url_for('cases.multiqc', institute_id=institute._id,
+        <a class="btn btn-light form-control btn-sm" href="{{ url_for('cases.multiqc', institute_id=institute._id,
                   case_name=case.display_name) }}">
         MultiQC
       </a>
     </div>
   {% endif %}
   <div class="nav-sidebar-item">
-      <a class="btn btn-light form-control" href="{{ url_for('cases.mt_report', institute_id=institute._id,
+      <a class="btn btn-light form-control btn-sm" href="{{ url_for('cases.mt_report', institute_id=institute._id,
                 case_name=case.display_name) }}">mtDNA report</a>
   </div>
   {% if case.delivery_report %}
     <div class="nav-sidebar-item">
         <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                    case_name=case.display_name) }}" class="btn btn-default btn-light form-control" target="_blank">
+                    case_name=case.display_name) }}" class="btn btn-default btn-light form-control btn-sm" target="_blank">
         Delivery
       </a>
       <hr>
@@ -135,11 +65,10 @@
       <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
       <div class="form-group">
-        <button type="submit" class="btn btn-default btn-light form-control">Coverage report</button>
+        <button type="submit" class="btn btn-default btn-light form-control btn-sm">Coverage report</button>
       </div>
     </form>
     <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
-    <p>
       <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
         <input type="hidden" name="panel_name" value="{{ case.panel_names|join(', ') }}" />
@@ -147,18 +76,18 @@
 				    <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
 			  {% endfor %}
         <div class="form-group">
-          <button type="submit" class="btn btn-default btn-light form-control">
+          <button type="submit" class="btn btn-default btn-light form-control btn-sm">
             Download PDF (coverage)
           </button>
         </div>
       </form>
-    </p>
   </div>
   {% endif %}
+</div>
 {% endmacro %}
 
 {% macro analysis_date(case) %}
-  <div class="list-group-item d-inline-block collapsed"><i class="fa fa-clock-o"></i> <span class="d-none d-md-inline">Analysis date</span>
+  <div class="list-group-item d-inline-block"><i class="fa fa-clock-o"></i> <span class="d-none d-md-inline">Analysis date</span>
     <br>
     <div class="text-center">
     {{ case.analysis_date.date() }}
@@ -170,7 +99,7 @@
 {% endmacro %}
 
 {% macro genome_build(case) %}
-  <div class="list-group-item d-inline-block collapsed"><i class="fa fa-wrench"></i> <span class="d-none d-md-inline">Genome build</span>
+  <div class="list-group-item d-inline-block"><i class="fa fa-wrench"></i> <span class="d-none d-md-inline">Genome build</span>
     <br>
     <div class="text-center">
     {{ case.genome_build }}
@@ -179,33 +108,157 @@
 {% endmacro %}
 
 {% macro status(institute, case) %}
-  <form method="POST"
-        action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
-
-    <div class="nav-sidebar-item">
-      <h5>
-        <span class="glyphicon glyphicon-{{ 'star' if case.status == 'prioritized' else 'star-empty' }}"></span>
-        Status: {{ case.status|capitalize }}
-      </h5>
-
-      <div class="btn-group btn-group-justified">
-        <div class="btn-group">
-          {% if case.status != 'archived' %}
-            <button type="submit" class="btn btn-warning btn-sm" name="status" value="archived" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
-              Archive
+  <div class="list-group-item d-inline-block">
+    <form method="POST"
+          action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+      <div class="nav-sidebar-item">
+          <i class="fa fa-star"></i>
+          Status: {{ case.status|capitalize }}<br>
+        <div class="btn-group btn-group-justified">
+          <div class="btn-group">
+            {% if case.status != 'archived' %}
+              <button type="submit" class="btn btn-warning btn-sm" name="status" value="archived" onclick="return confirm('Are you sure? This will disable the alignment view and delete analysis files. You will have to request a FULL rerun to continue evaluating e.g. research variants.')">
+                Archive
+              </button>
+            {% else %}
+              <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
+                Unarchive
+              </button>
+            {% endif %}
+          </div>
+          <div class="btn-group">
+            <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-light btn-sm">
+              {{ 'De-prioritize' if case.status == 'prioritized' else 'Prioritize' }}
             </button>
-          {% else %}
-            <button type="submit" class="btn btn-default btn-sm" name="status" value="active">
-              Unarchive
-            </button>
-          {% endif %}
-        </div>
-        <div class="btn-group">
-          <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-default btn-sm">
-            {{ 'De-prioritize' if case.status == 'prioritized' else 'Prioritize' }}
-          </button>
+          </div>
         </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
+{% endmacro %}
+
+{% macro assign(institute, case) %}
+<div class="list-group-item d-inline-block">
+  <div class="nav-sidebar-item">
+      <i class="fa fa-users"></i>
+      Assignees
+    {% for user in case.assignees %}
+      <div class="form-group">
+        <form method="POST"
+              action="{{ url_for('cases.assign', institute_id=institute._id,
+                                 case_name=case.display_name, user_id=user._id) }}">
+          <button name="action" value="DELETE" class="btn btn-warning btn-sm form-control">
+            <i class="fa fa-remove"></i>
+            {{ user.name }}
+          </button>
+        </form>
+      </div>
+    {% endfor %}
+    <form method="POST"
+          action="{{ url_for('cases.assign', institute_id=institute._id,
+                             case_name=case.display_name) }}"
+          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+      <button class="btn btn-light form-control btn-sm">
+        <i class="fa fa-heart"></i>Assign yourself</button>
+    </form>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro research(case) %}
+<div class="list-group-item d-inline-block">
+  <div class="nav-sidebar-item">
+      <i class="fa fa-graduation-cap"></i>
+      Research list<br>
+    {% if case.research_requested %}
+      <i>Research pending</i>
+    {% else %}
+      <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro rerun(case) %}
+<div class="list-group-item d-inline-block">
+  <div class="nav-sidebar-item">
+    <i class="fa fa-retweet"></i> Reruns<br>
+    {% if case.rerun_requested %}
+      <i>Rerun pending</i>
+    {% else %}
+      <button type="button" class="btn btn-warning form-control btn-sm" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro rank_model(case) %}
+<div class="list-group-item d-inline-block">
+  <div class="nav-sidebar-item">
+      Rank model
+    Version {{ case.rank_model_version }}
+    {% if case.sv_rank_model_version %} <br>SV Version {{ case.sv_rank_model_version }} {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro share_case(institute, case, collaborators) %}
+<div class="list-group-item d-inline-block">
+  {% if case.owner == institute._id %}
+  <div class="nav-sidebar-item">
+      <i class="fa fa-handshake-o"></i>
+      Share case
+    {% if collaborators %}
+      <div class="form-group">
+        <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+          <div class="input-group">
+            <select class="form-control" name="collaborator">
+              <option class="placeholder" selected disabled value="">Select institute</option>
+              {% for collab_id, collab_name in collaborators %}
+                <option value="{{ collab_id }}">{{ collab_name }}</option>
+              {% endfor %}
+            </select>
+            <div class="input-group-btn">
+              <button type="submit" class="btn btn-light btn-sm">Share</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+    {% if case.o_collaborators %}
+      <form method="POST" action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}">
+        <input type="hidden" name="revoke" />
+        <div class="input-group">
+          <select class="form-control" name="collaborator">
+            <option>Select institute</option>
+            {% for collab_id, collab_name in case.o_collaborators %}
+              <option value="{{ collab_id }}">{{ collab_name }}</option>
+            {% endfor %}
+          </select>
+          <div class="input-group-btn">
+            <button type="submit" class="btn btn-light btn-sm">Revoke</button>
+          </div>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro check_decipher(case, institute) %}
+<div class="list-group-item d-inline-block">
+  <div class="nav-sidebar-item">
+    <h5>
+      <i class="fa fa-check"></i>
+    </h5>
+      <form method="POST"
+            action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
+        <button name="action" value="DELETE" class="btn btn-success form-control">
+          <i class="fa fa-check-square-o"></i>
+          Decipher Checked
+        </button>
+      </form>
+  </div>
+</div>
 {% endmacro %}

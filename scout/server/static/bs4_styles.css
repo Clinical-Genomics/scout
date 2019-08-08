@@ -187,7 +187,7 @@ body {
 
 /* highlight active menu */
 #sidebar .list-group-item:not(.collapsed) {
-    background-color: #44449B;
+    background-color: #333;
     color: #ccc;
 }
 
