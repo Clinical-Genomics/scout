@@ -167,7 +167,6 @@ body {
 }
 #sidebar .list-group {
     max-width: 250px;
-    min-width: 250px;
     background-color: #333;
     min-height: 100vh;
 }
