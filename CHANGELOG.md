@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Fixed bug affecting variant observations in other cases
+- MT report only shows variants occurring in the specific individual of the excel sheet 
+
 
 ## [4.6.1]
 
