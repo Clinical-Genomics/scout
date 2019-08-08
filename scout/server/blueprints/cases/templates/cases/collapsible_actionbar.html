@@ -53,6 +53,7 @@
             {% endif %}
             {% if config.SQLALCHEMY_DATABASE_URI %}
             <br>
+            </div>
             <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
@@ -74,7 +75,6 @@
                 </div>
               </form>
             {% endif %}
-      </div>
     </div>
 </div>
 {% endmacro %}
@@ -225,10 +225,9 @@
                       <option value="{{ collab_id }}">{{ collab_name }}</option>
                     {% endfor %}
                   </select>
-                  <br>
-                  <div class="input-group-btn">
+                  <span class="input-group-btn">
                     <button type="submit" class="btn btn-light btn-sm">Share</button>
-                  </div>
+                  </span>>
                 </div>
               </form>
             </div>
@@ -238,7 +237,7 @@
               <input type="hidden" name="revoke" />
               <div class="input-group">
                 <select class="form-control" name="collaborator">
-                  <option>Select institute</option>
+                  <option>Institute</option>
                   {% for collab_id, collab_name in case.o_collaborators %}
                     <option value="{{ collab_id }}">{{ collab_name }}</option>
                   {% endfor %}
