@@ -56,7 +56,7 @@
           </div>
 
             {% if config.SQLALCHEMY_DATABASE_URI %}
-            <div class="row">
+            <div class="row justify-content-center">
               <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
                 <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
 
@@ -65,7 +65,7 @@
                 </div>
               </form>
             </div>
-
+            <br>
             <p>Based on: {{ case.panels|selectattr('is_default')|map(attribute='panel_name')|join(', ') }}</p>
               <form method="POST" action="{{ url_for('report.pdf', level=institute.coverage_cutoff, dl='yes') }}">
                 <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}" />
@@ -73,10 +73,12 @@
                 {% for sample_id in case.individual_ids %}
                     <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
                 {% endfor %}
-                <div class="form-group">
-                  <button type="submit" class="btn btn-default btn-light form-control btn-sm btn-block">
-                    Download PDF (coverage)
-                  </button>
+                <div class="row justify-content-center">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-default btn-light form-control btn-sm btn-block">
+                      Download PDF (coverage)
+                    </button>
+                  </div>
                 </div>
               </form>
             {% endif %}
