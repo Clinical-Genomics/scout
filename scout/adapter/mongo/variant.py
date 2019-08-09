@@ -269,8 +269,12 @@ class VariantHandler(VariantLoader):
             category(str): 'sv', 'str', 'snv' or 'cancer'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-        """
 
+            phenotype_terms=phenotype_terms,
+            phenotype_groups=phenotype_groups,
+            similar_case=similar_case,
+            cohorts=cohorts
+        """
         mongo_variant_query = self.build_variant_query(query=query,
                                    category=category, variant_type=variant_type)
 

@@ -19,15 +19,15 @@ LOG = logging.getLogger(__name__)
 
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
-    
+
     def get_similar_cases(self, case_obj):
         """Take a case obj and return a iterable with the most phenotypically similar cases
-        
+
         Args:
             case_obj(models.Case)
-        
+
         Returns:
-            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most 
+            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most
                                  similar case first
         """
         scores = {}
@@ -91,6 +91,7 @@ class CaseHandler(object):
         """
         LOG.debug("Fetch all cases")
         query = query or {}
+        order = None
 
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
@@ -152,6 +153,28 @@ class CaseHandler(object):
                     query['phenotype_groups.phenotype_id'] = phenotype_group_query
                 else: # query for cases with no phenotype groups
                     query['$or'] = [ {'phenotype_groups' : {'$size' : 0}}, {'phenotype_groups' : {'$exists' : False}} ]
+            elif name_query.startswith('similar:'):
+                LOG.debug("Case HPO similarity query")
+                if name_value:
+                    # first, see that we can find a unique case with the given display name to match against for owner
+                    if owner:
+                        search_institute_id=owner
+                    elif collaborator:
+                        search_institute_id=collaborator
+                    else:
+                        raise ValueError("No owner or collaborator institute_id given.")
+                    case_obj = self.case(display_name=name_value, institute_id=search_institute_id)
+                    if case_obj:
+                        LOG.debug("Search for cases similar to %s", case_obj.get('display_name'))
+                        similar_cases = self.get_similar_cases(case_obj)
+                        LOG.debug("Similar cases: %s",similar_cases)
+                        if similar_cases:
+                            similar_case_ids = []
+                            order = []
+                            for i in similar_cases:
+                                similar_case_ids.append(i[0])
+                                order.append(i[1])
+                            query['_id'] = {'$in': similar_case_ids}
             elif name_query.startswith('synopsis:'):
                 if name_value:
                     query['$text']={'$search':name_value}
@@ -177,7 +200,10 @@ class CaseHandler(object):
             return query
 
         LOG.info("Get cases with query {0}".format(query))
-        return self.case_collection.find(query).sort('updated_at', -1)
+        if(order):
+            return self.case_collection.find(query)
+        else:
+            return self.case_collection.find(query).sort('updated_at', -1)
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases

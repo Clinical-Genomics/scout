@@ -8,7 +8,8 @@ from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 
 class QueryHandler(object):
 
-    def build_variant_query(self, query=None, category='snv', variant_type=['clinical']):
+    def build_variant_query(self, query=None, institute_id=None, category='snv',
+                            variant_type=['clinical']):
         """Build a mongo query across multiple cases.
         Translate query options from a form into a complete mongo query dictionary.
 
@@ -26,6 +27,10 @@ class QueryHandler(object):
             category(str): 'snv', 'sv', 'str' or 'cancer'
             variant_type(str): 'clinical' or 'research'
 
+            phenotype_terms
+            phenotype_groups
+            cohorts
+
         Returns:
             mongo_query : A dictionary in the mongo query format.
         """
@@ -41,6 +46,23 @@ class QueryHandler(object):
         mongo_variant_query['variant_type'] = {'$in': variant_type}
 
         mongo_variant_query['category'] = category
+
+        if query.get('phenotype_terms'):
+            mongo_variant_query['phenotype_terms.phenotype_id'] = {'$in': query['phenotype_terms']}
+
+        if query.get('phenotype_groups'):
+            mongo_variant_query['phenotype_groups.phenotype_id'] = {'$in': query['phenotype_groups']}
+
+        if query.get('cohorts'):
+            mongo_variant_query['cohort'] = {'$in': query['cohorts']}
+
+        if query.get('similar_case'):
+            similar_case_display_name = query['similar_case']
+            case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
+            if case_obj:
+                LOG.debug("Search for cases similar to %s", case_obj.get('display_name'))
+                similar_cases = self.get_similar_cases(case_obj)
+                LOG.debug("Similar cases: %s",similar_cases)
 
         rank_score = query.get('rank_score') or 15
 

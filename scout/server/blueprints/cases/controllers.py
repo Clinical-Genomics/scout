@@ -463,7 +463,7 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
 
     return (individual_obj['display_name'], individual_obj['vcf2cytosure'])
 
-def gene_variants(store, variants_query, page=1, per_page=50):
+def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
