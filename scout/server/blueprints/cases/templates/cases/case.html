@@ -22,15 +22,267 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="row d-flex d-md-block flex-nowrap wrapper">
-  {{ action_bar(institute, case, collaborators) }}
-  <div class="col-md-9 float-left">
-    <a href="#" data-target="#sidebar" data-toggle="collapse"><i class="fa fa-navicon fa-2x py-2 p-1"></i></a>
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ action_bar(institute, case, collaborators) }} <!-- This is the sidebar -->
+    {{ case_page() }}
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+{% macro case_page() %}
+<div class="col"> <!-- This is the main container -->
       <div class="page-header">
-        <h2>Case blabla</h2>
+        <h2>Case {{case.display_name}}</h2>
       </div>
-      <p class="lead">dkljdklaj</p>
     <hr>
+    <div class="row"> <!--flash messages -->
+      <div class="col-sm-12">
+        {{ flash_messages() }}
+      </div>
+    </div>
+    <div class="row"> <!-- variants buttons -->
+      <div class="col-xs-12">{{ variants_buttons() }}</div>
+    </div>
+    <div class="row">
+      <div class="card col-md-12">
+        <div class="card-body">
+          <h5><i class="fa fa-bomb"></i> Causatives</h5>
+          <div class="col-xs-12 col-md-6">{{ candidates_list() }}</div>
+          <div class="col-xs-12 col-md-6">{{ related_causatives_list() }}</div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endmacro %}
+
+
+{% macro variants_buttons() %}
+<div class="form-group">
+  <div class="btn-group btn-group-justified">
+    {% if case.vcf_files.vcf_snv %}
+      <a class="btn btn-outline-primary" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+    {% endif %}
+    {% if case.vcf_files.vcf_sv %}
+      <a class="btn btn-outline-primary" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
+    {% endif %}
+    {% if case.vcf_files.vcf_str %}
+      <a class="btn btn-outline-primary" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
+    {% endif %}
+    {% if case.vcf_files.vcf_cancer %}
+      <a class="btn btn-outline-primary" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical cancer variants</a>
+    {% endif %}
+
   </div>
 </div>
+{% if case.is_research %}
+  <div class="form-group">
+    <div class="btn-group btn-group-justified">
+      <a class="btn btn-outline-primary" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
+      <a class="btn btn-outline-primary" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
+    </div>
+  </div>
+{% endif %}
+{% endmacro %}
+
+
+{% macro candidates_list() %}
+<div class="card">
+  <h5 class="card-title"><span title="My tip">Causative variants</span></h5>
+  <div data-toggle='tooltip' class="card-header" title="Displays all variants that have been                                                        marked causative for this case">
+    Causative variants
+  </div>
+  <ul class="list-group">
+    {% for variant in causatives %}
+      <li class="list-group-item">
+        {% if variant._id %}
+          <div class="row">
+            <div class="col-xs-8">
+              <span class="glyphicon glyphicon-ok-circle"></span>
+    {% if variant.category == "snv" %}
+              <a href="{{ url_for('variants.variant',
+                                  institute_id=variant.institute,
+                                  case_name=case.display_name,
+                                  variant_id=variant._id) }}">
+                    {{ variant.hgnc_symbols|join(', ') }}
+    {% else %}
+        <a href="{{ url_for('variants.sv_variant',
+                                  institute_id=variant.institute,
+                                  case_name=case.display_name,
+                                  variant_id=variant._id) }}">
+        {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+    {% endif %}
+              </a>
+              {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
+                <span class="label label-default">Verification ordered</span>
+              {% elif variant.sanger_ordered %}
+                <span class="label label-success">Validated</span>
+              {% endif %}
+            </div>
+            <div class="col-xs-4">
+              {{ remove_form(url_for('cases.mark_causative',
+                                     institute_id=institute._id,
+                                     case_name=case.display_name,
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
+            </div>
+          </div>
+        {% else %}
+          {{ variant }} <small class="text-muted">(not loaded)</small>
+        {% endif %}
+      </li>
+    {% else %}
+      <div class="panel-body">No variants marked causative</div>
+    {% endfor %}
+  </ul>
+  <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
+       title="Displays all variants that has been pinned for this case">
+    Pinned variants
+  </div>
+  <table class="table table-hover">
+    <colgroup>
+      <col class="col-xs-5">
+      <col class="col-xs-2">
+      <col class="col-xs-4">
+      <col class="col-xs-1">
+    </colgroup>
+    <tbody>
+      {% for variant in suspects %}
+        <tr>
+          {% if variant._id %}
+            <td>
+              <span class="glyphicon glyphicon-bookmark"></span>
+
+    {% if variant.category == "snv" %}
+              <a href="{{ url_for('variants.variant',
+                                  institute_id=variant.institute,
+                                  case_name=case.display_name,
+                                  variant_id=variant._id) }}">
+                    {{ variant.hgnc_symbols|join(', ') }}
+    {% else %}
+        <a href="{{ url_for('variants.sv_variant',
+                                  institute_id=variant.institute,
+                                  case_name=case.display_name,
+                                  variant_id=variant._id) }}">
+        {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+    {% endif %}
+              </a>
+            </td>
+            <td>
+              {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
+                <span class="label label-default">Verification ordered</span>
+              {% elif variant.sanger_ordered %}
+                <span class="label label-success">Validated</span>
+              {% elif variant.manual_rank %}
+                <span class="label label-default">{{ variant.manual_rank }}</span>
+              {% endif %}
+              {% if variant.mosaic_tags %}
+                <span class="label label-info">mosaic</span>
+              {% endif %}
+            </td>
+            <td>
+              <form action="{{ url_for('cases.mark_validation',
+                                       institute_id=variant.institute,
+                                       case_name=case.display_name,
+                                       variant_id=variant._id) }}"
+                    method="POST" accept-charset="utf-8">
+                <select class="form-control input-sm" onchange="this.form.submit()" name="type">
+                  {% for type in ('Not validated', 'True positive', 'False positive') %}
+                    <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+            <td>
+              {{ remove_form(url_for('cases.pin_variant',
+                                     institute_id=institute._id,
+                                     case_name=case.display_name,
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
+            </td>
+          {% else %}
+            <td colspan="4">{{ variant }} <small class="text-muted">(not loaded)</small></td>
+          {% endif %}
+        </tr>
+      {% else %}
+        <div class="panel-body">No variants suspected yet</div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %} <!-- end of candidates list -->
+
+
+{% macro related_causatives_list() %}
+<div class="panel panel-default">
+  <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
+    that have been marked as causative in another case for this insitute">
+    Matching causatives from other cases
+  </div>
+  <ul class="list-group">
+    {% for variant in other_causatives %}
+      <li class="list-group-item">
+        <a href="{{ url_for('variants.variant', institute_id=institute._id,
+                            case_name=case.display_name, variant_id=variant._id) }}">
+          {{ variant.hgnc_symbols|join(', ') }}
+        </a>
+      </li>
+    {% else %}
+      <li class="list-group-item">No matching causative variants.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro %} <!-- end of related_causatives_list -->
+
+
+{% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
+<form action="{{ url }}" method="POST">
+  {% if hidden_input %}
+    <input type="hidden"
+           name="{{ hidden_input[0] }}"
+           value="{{ hidden_input[1] }}">
+  {% endif %}
+  <div class="pull-right">
+    <button class="btn btn-link btn-sm"
+            name="{{ button_name if button_name }}"
+            value="{{ button_value if button_value }}"
+            type="submit">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+  </div>
+</form>
+{% endmacro %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  // Hide submenus
+$('#body-row .collapse').collapse('hide');
+
+// Collapse/Expand icon
+$('#collapse-icon').addClass('fa-angle-double-left');
+
+// Collapse click
+$('[data-toggle=sidebar-collapse]').click(function() {
+    SidebarCollapse();
+});
+
+function SidebarCollapse () {
+    $('.menu-collapsed').toggleClass('d-none');
+    $('.sidebar-submenu').toggleClass('d-none');
+    $('.submenu-icon').toggleClass('d-none');
+    $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
+
+    // Treating d-flex/d-none on separators with title
+    var SeparatorTitle = $('.sidebar-separator-title');
+    if ( SeparatorTitle.hasClass('d-flex') ) {
+        SeparatorTitle.removeClass('d-flex');
+    } else {
+        SeparatorTitle.addClass('d-flex');
+    }
+
+    // Collapse/Expand icon
+    $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
+}
+</script>
 {% endblock %}

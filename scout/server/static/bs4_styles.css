@@ -18,9 +18,9 @@
 }
 
 .container-float {
-	margin-top: 30px;
   width: 100%;
 }
+
 
 /* Custom navbar theme */
 .navbar{
@@ -47,6 +47,7 @@
   color:white;
   background-color: #44449B; !important;
 }
+
 
 .dropdown {
   margin-top: 0px;
@@ -76,11 +77,12 @@
   padding-left: 15px;
 }
 
-ul {
+.ul {
   padding: 0;
   list-style: none;
   font-size: 0;
 }
+
 ul li {
   font-size: 16px;
   display: inline-block;
@@ -160,129 +162,68 @@ body {
   border-color: #245580;
 }
 
-/* ------ sidebar ------ */
-#sidebar {
-    overflow: hidden;
-    z-index: 3;
+/* sidebar-related stuff */
+#body-row {
+    margin-left:0;
+    margin-right:0;
 }
-#sidebar .list-group {
-    max-width: 250px;
-    background-color: #333;
+#sidebar-container {
     min-height: 100vh;
-}
-#sidebar i {
-    margin-right: 6px;
-}
-
-#sidebar .list-group-item {
-    border-radius: 0;
     background-color: #333;
-    color: #ccc;
-    border-left: 0;
-    border-right: 0;
-    border-color: #2c2c2c;
-    white-space: nowrap;
+    padding: 0;
 }
 
-/* highlight active menu */
-#sidebar .list-group-item:not(.collapsed) {
+/* Sidebar sizes when expanded and expanded */
+.sidebar-expanded {
+    width: 230px;
+}
+.sidebar-collapsed {
+    width: 60px;
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+    height: 50px;
+    color: white;
+}
+
+/* Submenu item*/
+#sidebar-container .list-group .sidebar-submenu a {
+    height: 45px;
+    padding-left: 30px;
+}
+.sidebar-submenu {
+    font-size: 0.9rem;
+}
+
+/* Separators */
+.sidebar-separator-title {
     background-color: #333;
-    color: #ccc;
+    height: 35px;
+}
+.sidebar-separator {
+    background-color: #333;
+    height: 25px;
+}
+.logo-separator {
+    background-color: #333;
+    height: 60px;
 }
 
-/* closed state */
-#sidebar .list-group .list-group-item[aria-expanded="false"]::after {
+/* Closed submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
   content: " \f0d7";
   font-family: FontAwesome;
   display: inline;
   text-align: right;
-  padding-left: 5px;
+  padding-left: 10px;
 }
-
-/* open state */
-#sidebar .list-group .list-group-item[aria-expanded="true"] {
-  background-color: #222;
-}
-#sidebar .list-group .list-group-item[aria-expanded="true"]::after {
+/* Opened submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
   content: " \f0da";
   font-family: FontAwesome;
   display: inline;
   text-align: right;
-  padding-left: 5px;
+  padding-left: 10px;
 }
-
-/* level 1*/
-#sidebar .list-group .collapse .list-group-item,
-#sidebar .list-group .collapsing .list-group-item  {
-  padding-left: 20px;
-}
-
-/* level 2*/
-#sidebar .list-group .collapse > .collapse .list-group-item,
-#sidebar .list-group .collapse > .collapsing .list-group-item {
-  padding-left: 30px;
-}
-
-/* level 3*/
-#sidebar .list-group .collapse > .collapse > .collapse .list-group-item {
-  padding-left: 40px;
-}
-
-@media (max-width:765px) {
-    #sidebar {
-        min-width: 35px;
-        max-width: 40px;
-        overflow-y: auto;
-        overflow-x: visible;
-        transition: all 0.25s ease;
-        transform: translateX(-45px);
-        position: fixed;
-    }
-
-    #sidebar.show {
-        transform: translateX(0);
-    }
-
-    #sidebar::-webkit-scrollbar{ width: 0px; }
-
-    #sidebar, #sidebar .list-group {
-        min-width: 35px;
-        overflow: visible;
-    }
-    /* overlay sub levels on small screens */
-    #sidebar .list-group .collapse.show, #sidebar .list-group .collapsing {
-        position: relative;
-        z-index: 1;
-        width: 190px;
-        top: 0;
-    }
-    #sidebar .list-group > .list-group-item {
-        text-align: center;
-        padding: .75rem .5rem;
-    }
-    /* hide caret icons of top level when collapsed */
-    #sidebar .list-group > .list-group-item[aria-expanded="true"]::after,
-    #sidebar .list-group > .list-group-item[aria-expanded="false"]::after {
-        display:none;
-    }
-}
-.collapse.show {
-  visibility: visible;
-}
-.collapsing {
-  visibility: visible;
-  height: 0;
-  -webkit-transition-property: height, visibility;
-  transition-property: height, visibility;
-  -webkit-transition-timing-function: ease-out;
-  transition-timing-function: ease-out;
-}
-.collapsing.width {
-  -webkit-transition-property: width, visibility;
-  transition-property: width, visibility;
-  width: 0;
-  height: 100%;
-  -webkit-transition-timing-function: ease-out;
-  transition-timing-function: ease-out;
-}
-/* ------ end of sidebar ------ */
+/* end of sidebar-related stuff
