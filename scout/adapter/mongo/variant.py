@@ -272,10 +272,11 @@ class VariantHandler(VariantLoader):
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
 
-            phenotype_terms=phenotype_terms,
-            phenotype_groups=phenotype_groups,
-            similar_case=similar_case,
-            cohorts=cohorts
+        Query can contain:
+            phenotype_terms,
+            phenotype_groups,
+            similar_case,
+            cohorts
         """
         mongo_variant_query = self.build_variant_query(query=query,
                                    institute_id=institute_id,
