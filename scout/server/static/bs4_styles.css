@@ -45,7 +45,7 @@
  .navbar-nav>.active, .navbar-default,
  .navbar-inverse>.active, .navbar-nav li.active > a {
   color:white;
-  background-color: #44449B; !important;
+  background-color: #343a40; !important;
 }
 
 
