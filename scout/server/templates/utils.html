@@ -44,7 +44,7 @@
 {% endmacro %}
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Comments</div>
     <div class="list-group" style="max-height:200px; overflow-y: scroll;">
       {% for comment in comments %}
@@ -102,7 +102,7 @@
             </div>
           {% endif %}
           <div class="col-sm-{{ 6 if variant_id else 12 }}">
-            <button type="button" class="btn btn-outline-secondary form-control" type="submit">Comment</button>
+            <button class="btn btn-outline-secondary form-control" type="submit">Comment</button>
           </div>
         </div>
       </form>
@@ -111,14 +111,14 @@
 {% endmacro %}
 
 {% macro activity_panel(events) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Activity</div>
     <ul class="list-group" style="max-height:400px; overflow-y: scroll;">
       {% for event in events %}
         <li class="list-group-item">
           <strong>{{ event.user_name }}</strong>
           {{ event.verb }}
-          <a href="{{ event.link }}">{{ event.subject }}</a>
+          <a href="{{ event.link }}">{{ event.subject[0:30] }}</a>
           at <span class="timestamp">{{ event.created_at.date() }}</span>
         </li>
       {% else %}
@@ -129,9 +129,9 @@
 {% endmacro %}
 
 {% macro pedigree_panel(case) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Pedigree</div>
-    <div class="panel-body table-responsive">
+    <div class="card-body table-responsive">
       {% if case.individuals|length == 1 %}
         <p>Single sample case: {{ case.individuals.0.display_name }}</p>
       {% else %}
