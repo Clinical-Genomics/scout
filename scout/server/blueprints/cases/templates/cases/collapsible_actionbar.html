@@ -282,3 +282,50 @@
       </form>
 </div>
 {% endmacro %}
+
+{% macro research_modal(institute, case) %}
+  <form action="{{ url_for('cases.research', institute_id=institute._id,
+                           case_name=case.display_name) }}" method="POST">
+    <div class="modal fade" id="research-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Request research list</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please confirm that you want to <strong>upload research variants for {{ case.display_name }}</strong>.</p>
+            <p>You also confirm that you have the <strong>relevant consent</strong>.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro rerun_modal(institute, case) %}
+  <form action="{{ url_for('cases.rerun', institute_id=institute._id,
+                           case_name=case.display_name) }}" method="POST">
+    <div id="rerun-modal" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Request rerun</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
