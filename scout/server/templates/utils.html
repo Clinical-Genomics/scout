@@ -46,9 +46,9 @@
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
   <div class="panel panel-default">
     <div class="panel-heading">Comments</div>
-    <ul class="list-group list-group-scrollable">
+    <div class="list-group" style="max-height:200px; overflow-y: scroll;">
       {% for comment in comments %}
-        <li class="list-group-item">
+        <a class="list-group-item">
           <div class="row">
             <div class="col-xs-12">{{ comment.content }}</div>
           </div>
@@ -72,19 +72,19 @@
                 {% if comment.user_id == current_user.email %}
                   <div class="pull-right">
                     <button class="btn btn-link btn-sm no-padding" type="submit">
-                      <span class="glyphicon glyphicon-remove"></span>
+                      <i class="fa fa-remove"></i>
                     </button>
                   </div>
                 {% endif %}
               </form>
             </div>
           </div>
-        </li>
+        </a>
       {% else %}
-        <li class="list-group-item">No comments yet</li>
+        <a class="list-group-item">No comments yet</a>
       {% endfor %}
-    </ul>
-    <div class="panel-footer">
+    </div>
+    <div class="card-footer">
       <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) }}" method="POST">
         <input type="hidden" name="link" value="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
         <div class="form-group">
@@ -92,7 +92,7 @@
         </div>
         <div class="row">
           {% if variant_id %}
-            <div class="col-xs-6">
+            <div class="col-sm-6">
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="level" value="global">
@@ -101,8 +101,8 @@
               </div>
             </div>
           {% endif %}
-          <div class="col-xs-{{ 6 if variant_id else 12 }}">
-            <button class="btn btn-default form-control" type="submit">Comment</button>
+          <div class="col-sm-{{ 6 if variant_id else 12 }}">
+            <button type="button" class="btn btn-outline-secondary form-control" type="submit">Comment</button>
           </div>
         </div>
       </form>
@@ -113,7 +113,7 @@
 {% macro activity_panel(events) %}
   <div class="panel panel-default">
     <div class="panel-heading">Activity</div>
-    <ul class="list-group list-group-scrollable">
+    <ul class="list-group" style="max-height:400px; overflow-y: scroll;">
       {% for event in events %}
         <li class="list-group-item">
           <strong>{{ event.user_name }}</strong>
