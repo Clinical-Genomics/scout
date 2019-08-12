@@ -34,19 +34,17 @@
 <div class="col"> <!-- This is the main container -->
   <div class="container_spaced">
     <div class="card col-md-12">
-      <h5 class="card-title">Case {{case.display_name}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{case.status}}</H6>
-    <div class="row"> <!--flash messages -->
-      <div class="col-sm-12">
-        {{ flash_messages() }}
-      </div>
-    </div>
+      <h4 class="mt-3">Case: {{case.display_name}}</h4><p class="text-muted">status: <strong>{{case.status}}</strong></p>
     <div class="card-body">
-      <div class="row"> <!-- variants buttons -->
-        <div class="col-xs-12">{{ variants_buttons() }}</div>
+      <div class="row"> <!--flash messages -->
+        <div class="col-sm-12">
+          {{ flash_messages() }}
+        </div>
       </div>
-
-        <div class="row">
+      <div class="row text-center"> <!-- variants buttons -->
+        <div class="col-sm-12">{{ variants_buttons() }}</div>
+      </div>
+        <div class="row ">
           <div class="col-xs-12 col-md-6">{{ candidates_list() }}</div>
           <div class="col-xs-12 col-md-6">{{ related_causatives_list() }}</div>
         </div>
@@ -136,7 +134,7 @@
 {% endmacro %}
 
 {% macro related_causatives_list() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
       that have been marked as causative in another case for this insitute">
       Matching causatives from other cases
@@ -157,10 +155,10 @@
 {% endmacro %}
 
 {% macro individuals_table() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Individuals</div>
     <div class="table-responsive">
-      <table class="table">
+      <table class="table table-sm">
         <thead>
           <tr>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
@@ -220,10 +218,10 @@
 {% endmacro %}
 
 {% macro cancer_individuals_table() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Individuals</div>
     <div class="table-responsive">
-      <table class="table">
+      <table class="table table-sm">
         <thead>
           <tr>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
@@ -263,24 +261,24 @@
 
 
 {% macro pedigree_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Pedigree</div>
-    <div class="panel-body">
+    <div class="card-body">
       {{ case.madeline_info|safe }}
     </div>
   </div>
 {% endmacro %}
 
 {% macro synopsis_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
      the case! Markdown format">
       Synopsis
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
     </div>
-    <div class="panel-footer">
+    <div class="card-footer">
       <button class="btn btn-default form-control" data-toggle="modal" data-target="#edit-synopsis">Edit</button>
     </div>
   </div>
@@ -309,9 +307,8 @@
 {% endmacro %}
 
 {% macro candidates_list() %}
-  <div class="panel panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been
-                                                            marked causative for this case">
+  <div class="card panel-default">
+    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
       Causative variants
     </div>
     <ul class="list-group">
@@ -354,7 +351,7 @@
           {% endif %}
         </li>
       {% else %}
-        <div class="panel-body">No variants marked causative</div>
+        <div class="card-body">No variants marked causative</div>
       {% endfor %}
     </ul>
     <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
@@ -427,7 +424,7 @@
             {% endif %}
           </tr>
         {% else %}
-          <div class="panel-body">No variants suspected yet</div>
+          <div class="card-body">No variants suspected yet</div>
         {% endfor %}
       </tbody>
     </table>
@@ -435,9 +432,9 @@
 {% endmacro %}
 
 {% macro diagnosis_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Diagnosis phenotypes</div>
-    <div class="panel-body">{{ diagnosis_form('phenotype') }}</div>
+    <div class="card-body">{{ diagnosis_form('phenotype') }}</div>
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
         <li class="list-group-item">
@@ -455,7 +452,7 @@
       {% endfor %}
     </ul>
     <div class="panel-heading panel-heading-secondary">Diagnosis genes</div>
-    <div class="panel-body">{{ diagnosis_form('gene') }}</div>
+    <div class="card-body">{{ diagnosis_form('gene') }}</div>
     <ul class="list-group">
       {% for omim_id in case.diagnosis_genes %}
         <li class="list-group-item">
@@ -491,7 +488,7 @@
 {% endmacro %}
 
 {% macro cohort_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Cohort tag</div>
     <ul class="list-group">
       {% for cohort_tag in case.cohorts %}
@@ -507,7 +504,7 @@
         <li class="list-group-item">No cohort tags added yet.</li>
       {% endfor %}
     </ul>
-    <div class="panel-body">
+    <div class="card-body">
       <form method="POST"
             action="{{ url_for('cases.cohorts', institute_id=institute._id,
                                case_name=case.display_name) }}">
@@ -530,9 +527,9 @@
 {% endmacro %}
 
 {% macro clinvar_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Variants in Clinvar submissions</div>
-    <div class="panel-body">
+    <div class="card-body">
       <ul>
         {% for var_id, submission_data in case.clinvar_variants.items() %}
           <li>
@@ -549,9 +546,9 @@
 {% endmacro %}
 
 {% macro matchmaker_panel() %}
-<div class="panel panel-default">
+<div class="card panel-default">
     <div class="panel-heading">Matching patients</div>
-    <div class="panel-body">
+    <div class="card-body">
       {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
         <p>This case is in MatchMaker!</p>
         <p>
@@ -685,7 +682,7 @@
 
 
 {% macro phenotype_groups_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Phenotype groups</div>
     <ul class="list-group">
       {% for hpo_term in case.phenotype_groups %}
@@ -694,7 +691,7 @@
         <li class="list-group-item">No HPO groups added yet.</li>
       {% endfor %}
     </ul>
-    <div class="panel-body">
+    <div class="card-body">
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name, is_group='yes') }}">
@@ -719,7 +716,7 @@
     <div class="panel-heading panel-heading-secondary">
       Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name) }}">
@@ -755,7 +752,7 @@
 
 {% macro phenotypes_panel() %}
   <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="panel panel-default">
+    <div class="card panel-default">
       <div class="panel-heading">Added phenotypes</div>
       <ul class="list-group">
         {% for hpo_term in case.phenotype_terms %}
@@ -764,7 +761,7 @@
           <li class="list-group-item">No phenotypes added yet</li>
         {% endfor %}
       </ul>
-      <div class="panel-footer">
+      <div class="card-footer">
         <div class="row">
           <div class="col-xs-5">
             <div class="input-group">
@@ -820,7 +817,7 @@
 {% endmacro %}
 
 {% macro hpo_genelist_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">
       HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
       {%- if case.dynamic_panel_phenotypes %},
@@ -837,7 +834,7 @@
       {% endfor %}
     </ul>
     {% if case.dynamic_gene_list %}
-      <div class="panel-footer">
+      <div class="card-footer">
          <a class="btn btn-default form-control"
             href="{{ url_for('variants.variants', institute_id=institute._id,
                              case_name=case.display_name, variant_type='clinical',
@@ -850,7 +847,7 @@
 {% endmacro %}
 
 {% macro genepanels_table() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
     <div class="table-responsive fixed-panel">
       <table id="panel-table" class="table">
@@ -883,7 +880,7 @@
         </tbody>
       </table>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
         <div class="form-group">
           <label>Change default gene panels</label>
