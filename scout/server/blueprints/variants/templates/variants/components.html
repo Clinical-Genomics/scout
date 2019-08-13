@@ -17,12 +17,12 @@
           {{ gene.hgnc_symbol or gene.hgnc_id }}
         </a>
       </div>
-   
+
     {% endfor %}
   </div>
   {% if variant.panels|count > 0 %}
-    <div
-       class="badge pull-right"
+    <span
+       class="badge badge-secondary pull-right"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
@@ -31,9 +31,9 @@
        title=""
        >
       {{ variant.panels|count }}
-    </div>
-  {% endif %}    
-    
+    </span>
+  {% endif %}
+
 {% endmacro %}
 
 {% macro frequency_cell(variant) %}

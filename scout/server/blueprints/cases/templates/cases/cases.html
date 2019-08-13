@@ -6,7 +6,7 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item ">
+  <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item active">
@@ -84,7 +84,7 @@
   <div>
   {% for group_name, case_group in cases %}
     {% if case_group|length > 0 %}
-      <div>{{ cases_table(group_name, case_group) }}</div>
+      <div class="card mt-3">{{ cases_table(group_name, case_group) }}</div>
     {% endif %}
   {% endfor %}
   </div>

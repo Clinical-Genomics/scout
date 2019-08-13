@@ -87,6 +87,14 @@
   font-size: 0;
 }
 
+.popover {
+	max-width: none;
+}
+
+.popover-content > table {
+	margin-bottom: 0;
+}
+
 ul li {
   font-size: 16px;
   display: inline-block;
@@ -96,7 +104,7 @@ ul li {
 
 a:visited {
 	/* faded pink */
-  color: rgb(40, 90, 146);
+	color: hsl(314, 31%, 61%);
 }
 
 /* Introduce small space in between list elements */
@@ -122,6 +130,11 @@ body {
     border-radius : .2rem;
 }
 
+.badge_primary {
+  background-color: #265a88;
+  color: #ffffff;
+}
+
 /* Override primary button colors */
 .btn-primary {
   background-image: -webkit-linear-gradient(top, #337ab7 0%, #265a88 100%);
@@ -133,6 +146,7 @@ body {
   background-repeat: repeat-x;
   border-color: #245580;
 }
+
 .btn-primary:hover,
 .btn-primary:focus {
   background-color: #265a88;
