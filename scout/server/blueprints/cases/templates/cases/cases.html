@@ -175,23 +175,23 @@
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
-        <span class="label label-info">
+        <span class="badge badge-primary">
           {% for item in case.individuals %}
-            <span class="small glyphicon glyphicon-user"></span>
+            <i class="fa fa-user"></i>
           {% endfor %}
         </span>
       {% endif %}
       {% for user in case.assignees %}
-        <span class="badge pull-right">{{ user.name }}</span>
+        <span class="badge badge-secondary">{{ user.name }}</span>
       {% endfor %}
       {% if case.needs_check %}
-        <span class="label label-warning">decipher</span>
+        <span class="badge badge-warning">decipher</span>
       {% endif %}
     </td>
     <td>
-      <span class="label label-info">{{ case.status }}</span>
+      <span class="badge badge-primary">{{ case.status }}</span>
       {% if case.is_migrated %}
-        <span class="label label-info">migrated</span>
+        <span class="badge badge-primary">migrated</span>
       {% endif %}
     </td>
     <td>
