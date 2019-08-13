@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 {% from "utils.html" import flash_messages, comments_table %}
 
 {% block title %}
@@ -7,43 +7,40 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li class="active">
+  <li class="nav-item active">
     <span class="navbar-text">{{ variant_type|capitalize }}  Structural variants</span>
   </li>
 {% endblock %}
 
 {% block top_nav_right %}
-  <li><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
-  <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></a>
+  <li class="nav-item"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  <li class="nav-item dropdown">
+    <a class="nav-link" href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li>
-        <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+        <a class="dropdown-item" href="{{ url_for('variants.sv_variants', institute_id=institute._id,
                             case_name=case.display_name, variant_type=variant_type,
                             gene_panels=['hpo']) }}">
           HPO gene list
         </a>
       </li>
       <li>
-        <a href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
+        <a class="dropdown-item" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
       </li>
     </ul>
-  </li>
-  <li>
-    <a href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
   </li>
   {{ super() }}
 {% endblock %}
