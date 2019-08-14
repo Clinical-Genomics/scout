@@ -26,6 +26,11 @@
   width: 100%;
 }
 
+/* dismiss table row */
+.dismiss {
+   background-color: #C9C9C9;
+}
+
 /* Custom navbar theme */
 .navbar{
   background-color:#1181B2;
