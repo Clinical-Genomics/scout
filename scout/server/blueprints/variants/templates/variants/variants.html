@@ -225,7 +225,7 @@
       <div class="row">
         <div class="col-3">
           {{ form.gene_panels.label(class="control-label") }}
-          {{ form.gene_panels(class="form-control") }}
+          {{ form.gene_panels(class="form-control selectpicker") }}
         </div>
 	<div class="col-3">
 	  {{ form.symbol_file.label(class="control-label") }}
@@ -233,15 +233,15 @@
 	</div>
         <div class="col-2">
           {{ form.region_annotations.label(class="control-label") }}
-          {{ form.region_annotations(class="form-control") }}
+          {{ form.region_annotations(class="form-control selectpicker") }}
         </div>
         <div class="col-2">
           {{ form.functional_annotations.label(class="control-label") }}
-          {{ form.functional_annotations(class="form-control") }}
+          {{ form.functional_annotations(class="form-control selectpicker") }}
         </div>
         <div class="col-2">
           {{ form.genetic_models.label(class="control-label") }}
-          {{ form.genetic_models(class="form-control") }}
+          {{ form.genetic_models(class="form-control selectpicker") }}
         </div>
       </div>
     </div>
@@ -261,7 +261,7 @@
         </div>
         <div class="col-2">
           {{ form.clinsig.label(class="control-label") }}
-          {{ form.clinsig(class="form-control") }}
+          {{ form.clinsig(class="form-control selectpicker") }}
         </div>
 	<div class="col-2">
 	  {{ form.clinsig_confident_always_returned.label(class="control-label") }}
@@ -269,7 +269,7 @@
 	</div>
 	<div class="col-2">
 	  {{ form.spidex_human.label(class="control-label") }}
-	  {{ form.spidex_human(class="form-control") }}
+	  {{ form.spidex_human(class="form-control selectpicker") }}
 	</div>
       </div>
     </div>

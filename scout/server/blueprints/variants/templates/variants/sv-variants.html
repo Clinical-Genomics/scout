@@ -98,19 +98,19 @@
       <div class="row">
         <div class="col-3">
           {{ form.gene_panels.label(class="control-label") }}
-          {{ form.gene_panels(class="form-control") }}
+          {{ form.gene_panels(class="form-control selectpicker") }}
         </div>
         <div class="col-3">
           {{ form.region_annotations.label(class="control-label") }}
-          {{ form.region_annotations(class="form-control") }}
+          {{ form.region_annotations(class="form-control selectpicker") }}
         </div>
         <div class="col-3">
           {{ form.functional_annotations.label(class="control-label") }}
-          {{ form.functional_annotations(class="form-control") }}
+          {{ form.functional_annotations(class="form-control selectpicker") }}
         </div>
         <div class="col-3">
           {{ form.genetic_models.label(class="control-label") }}
-          {{ form.genetic_models(class="form-control") }}
+          {{ form.genetic_models(class="form-control selectpicker") }}
         </div>
       </div>
     </div>
@@ -134,7 +134,7 @@
         </div>
         <div class="col-3">
           {{ form.clinsig.label(class="control-label") }}
-          {{ form.clinsig(class="form-control") }}
+          {{ form.clinsig(class="form-control selectpicker") }}
         </div>
       </div>
     </div>
@@ -158,7 +158,7 @@
         </div>
         <div class="col-3">
           {{ form.svtype.label(class="control-label") }}
-          {{ form.svtype(class="form-control") }}
+          {{ form.svtype(class="form-control selectpicker") }}
         </div>
       </div>
     </div>
@@ -181,7 +181,6 @@
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
       $('[data-toggle="popover"]').popover({
