@@ -28,7 +28,7 @@
 {% block top_nav_right %}
   <li class="nav-item"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
   <li class="nav-item dropdown">
-    <a class="nav-link" href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></a>
+    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Actions <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li>
         <a class="dropdown-item" href="{{ url_for('variants.sv_variants', institute_id=institute._id,
@@ -45,28 +45,21 @@
   {{ super() }}
 {% endblock %}
 
-{% block content %}
+{% block content_main %}
 <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
-  <div class="container-fluid main">
-    <div class="panel-group" id="accordion">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
-              SvFilters
-            </a>
-          </h4>
-        </div>
-        <div id="collapseFilters" class="panel-collapse collapse">
-          <div class="panel-body">{{ filters_form() }}</div>
-        </div>
+  <div class="container-float">
+    <div class="card panel-default" id="accordion">
+      <div class="card-header">
+        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+      </div>
+      <div id="collapseFilters" class="card-body panel-collapse collapse">
+        <div class="card-body">{{ filters_form() }}</div>
       </div>
     </div>
     {{ flash_messages() }}
   </div>
-
-  <div class="table-responsive">
-    <table id="variantsTable" class="table table-bordered table-hover">
+  <div class="card mt-3">
+    <table id="variantsTable" class="table table-hover table-bordered">
       <thead>
         <tr>
           <th>Rank</th>
@@ -103,19 +96,19 @@
     <input type="hidden" name="variant_type" value="{{ variant_type }}">
     <div class="form-group">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.gene_panels.label(class="control-label") }}
           {{ form.gene_panels(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.region_annotations.label(class="control-label") }}
           {{ form.region_annotations(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.functional_annotations.label(class="control-label") }}
           {{ form.functional_annotations(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.genetic_models.label(class="control-label") }}
           {{ form.genetic_models(class="form-control") }}
         </div>
@@ -123,23 +116,23 @@
     </div>
     <div class="form-group">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col-2">
           {{ form.size.label(class="control-label") }}
           {{ form.size(class="form-control", type="number") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col-2">
           {{ form.size_shorter.label(class="control-label") }}
           <div>{{ form.size_shorter() }}</div>
         </div>
-        <div class="col-xs-2">
+        <div class="col-2">
           {{ form.decipher.label(class="control-label") }}
           <div>{{ form.decipher() }}</div>
         </div>
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.clinsig.label(class="control-label") }}
           {{ form.clinsig(class="form-control") }}
         </div>
@@ -147,46 +140,38 @@
     </div>
     <div class="form-group">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.chrom.label(class="control-label") }}
           {{ form.chrom(class="form-control") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col-2">
           {{ form.gnomad_frequency.label(class="control-label") }}
           {{ form.gnomad_frequency(class="form-control") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col-2">
 	         {{ form.clingen_ngi.label(class="control-label") }}
 	          {{ form.clingen_ngi(class="form-control") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col-2">
           {{ form.swegen.label(class="control-label") }}
           {{ form.swegen(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-3">
           {{ form.svtype.label(class="control-label") }}
           {{ form.svtype(class="form-control") }}
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <div class="row">
-	<div class="col-xs-3">
-	</div>
-	<div class="col-xs-3">
-	</div>
-        <div class="col-xs-6">
-          <div class="row">
-            <div class="col-xs-4">
-              {{ form.filter_variants(class_="btn btn-primary form-control") }}
-            </div>
-            <div class="col-xs-4">
-             {{ form.clinical_filter(class_="btn btn-default form-control") }}
-            </div>
-            <div class="col-xs-4">
-              {{ form.export(class_="btn btn-warning form-control") }}
-            </div>
-          </div>
+    <div class="form-group d-flex">
+      <div class="row d-flex justify-content-around">
+        <div class="col">
+          {{ form.filter_variants(class_="btn btn-primary form-control") }}
+        </div>
+        <div class="col">
+         {{ form.clinical_filter(class_="btn btn-outline-secondary form-control") }}
+        </div>
+        <div class="col">
+          {{ form.export(class_="btn btn-warning form-control") }}
         </div>
       </div>
     </div>
@@ -194,12 +179,15 @@
 
 {% block scripts %}
   {{ super() }}
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
       $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
         container: 'body',
       });
 
@@ -227,15 +215,18 @@
 
   {% if comment_count > 0 %}
     <a href="#"
-      class="badge pull-right"
+      class="badge badge-secondary"
       data-toggle="popover"
       data-placement="right"
       data-html="true"
       data-trigger="hover click"
       data-content="<small>{{ comments_table(institute, case, variant.comments, variant._id) }}</small>">
       {{ comment_count }}
-      <span class="glyphicon glyphicon-comment"></span>
+      <i class="fa fa-comment"></i>
     </a>
+  {% endif %}
+  {% if variant._id in case.suspects %}
+    <i class="fa fa-map-pin"></i>
   {% endif %}
 {% endmacro %}
 
@@ -286,7 +277,7 @@
         </div>
 
         {% if variant.hgnc_symbols %}
-          <span class="badge">{{ variant.hgnc_symbols|length }}</span>
+          <span class="badge badge-secondary">{{ variant.hgnc_symbols|length }}</span>
         {% endif %}
       </div>
     </td>
@@ -294,18 +285,20 @@
 {% endmacro %}
 
 {% macro pagination() %}
-  <nav>
-    <ul class="pager">
-      {% if more_variants %}
-        <li class="next">
-          <button name="page"  type="submit" class="btn btn-default" value={{ page + 1 }}>Next &rarr;</button>
-        </li>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-      {% endif %}
-      <li class="first">
-       <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
-      </li>
-    </ul>
-  </nav>
+  <div class="container-fluid">
+    {% if more_variants %}
+    <div class="d-flex justify-content-around">
+       <div>
+          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
+         </div>
+       <div>
+        <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+    </div>
+    </div>
+    {% else %}
+      <i class="text-muted">No more variants to display</i>
+      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+
+    {% endif %}
+  </div>
 {% endmacro %}

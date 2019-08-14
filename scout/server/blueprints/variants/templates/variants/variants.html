@@ -34,7 +34,7 @@
 {% block top_nav_right %}
   <li class="nav-item"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
   <li class="nav-item dropdown">
-    <a class="nav-link" href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <span class="caret"></span></a>
+    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Actions <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li>
         <a class="dropdown-item href="{{ url_for('variants.variants', institute_id=institute._id,
@@ -88,7 +88,7 @@
                 {% else %}
                   <tr>
                 {% endif %}
-                  <td>{{ cell_rank(variant) }}</td>
+                  <td class="d-flex align-items-center">{{ cell_rank(variant) }}</td>
                   <td class="text-right">{{ variant.rank_score|int }}</td>
                   <td>{{ variant.chromosome }}</td>
                   <td>{{ gene_cell(variant) }}</td>
@@ -129,20 +129,20 @@
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">
-    {{ variant.variant_rank }}
+    {{ variant.variant_rank }}&nbsp;
   </a>
   {% set comment_count = variant.comments.count() %}
   {% if variant.acmg_classification %}
-    <span class="badge pull-right" title="{{ variant.acmg_classification.label }}">
+    <span class="badge badge-secondary pull-right" title="{{ variant.acmg_classification.label }}">
       {{ variant.acmg_classification.short }}
     </span>
   {% elif variant.manual_rank %}
-    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge badge-secondary pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
 
   {% if comment_count > 0 %}
     <a href="#"
-       class="badge pull-right"
+       class="badge badge-secondary"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
@@ -151,12 +151,12 @@
        title=""
        >
       {{ comment_count }}
-      <span class="glyphicon glyphicon-comment"></span>
+      <i class="fa fa-comment"></i>
     </a>
   {% endif %}
 
   {% if variant._id in case.suspects %}
-    <span class="glyphicon glyphicon-pushpin"></span>
+    <i class="fa fa-map-pin"></i>
   {% endif %}
 
 {% endmacro %}
