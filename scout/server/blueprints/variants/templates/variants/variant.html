@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
 
@@ -13,28 +13,28 @@ $(document).ready(function(){
 </script>
 
 {% block top_nav %}
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li>
+  <li class="nav-item">
     {% if cancer %}
-      <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+      <a class="nav-link" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
         {{ variant.variant_type|capitalize }} cancer variants
       </a>
     {% else %}
-      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+      <a class="nav-link" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
         {{ variant.variant_type|capitalize }} SNV and INDELs
       </a>
     {% endif %}
   </li>
-  <li class="active">
+  <li class="nav-item active">
     <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
   </li>
 {% endblock %}
@@ -42,10 +42,10 @@ $(document).ready(function(){
 {% block top_nav_right %}
   {% if config['MAIL_USERNAME'] %}
     {# Email setting must be setup #}
-    <li>{{ sanger_button() }}</li>
+    <li class="nav-item">{{ sanger_button() }}</li>
   {% endif %}
-  <li>{{ pin_button() }}</li>
-  <li>{{ causative_button() }}</li>
+  <li class="nav-item">{{ pin_button() }}</li>
+  <li class="nav-item">{{ causative_button() }}</li>
   {{ super() }}
 {% endblock %}
 
@@ -128,12 +128,12 @@ $(document).ready(function(){
     {% if variant.validation in ['True positive', 'False positive']%}
       <p class="navbar-text">Sanger: {{ variant.validation }}</p>
     {% else %}
-      <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#cancelSangerModal">
+      <button class="btn btn-light" data-toggle="modal" data-target="#cancelSangerModal">
         Sanger pending...
       </button>
     {% endif %}
   {% else %}
-    <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#sangerModal">
+    <button class="btn btn-light" data-toggle="modal" data-target="#sangerModal">
       Sanger
     </button>
   {% endif %}
@@ -190,7 +190,7 @@ $(document).ready(function(){
                              case_name=case.display_name,
                              variant_id=variant._id) }}"
           method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-default navbar-btn" title="Pin variant">Pin</button>
+      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
     </form>
   {% else %}
     <form action="{{ url_for('cases.pin_variant',
@@ -198,7 +198,7 @@ $(document).ready(function(){
                              case_name=case.display_name,
                              variant_id=variant._id) }}"
           method="POST">
-      <button name="action" value="DELETE" type="submit" class="btn btn-default navbar-btn" title="Unpin variant">Unpin</button>
+      <button name="action" value="DELETE" type="submit" class="btn btn-light" title="Unpin variant">Unpin</button>
     </form>
   {% endif %}
 {% endmacro %}
@@ -220,7 +220,7 @@ $(document).ready(function(){
                              case_name=case.display_name,
                              variant_id=variant._id) }}"
           method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-default navbar-btn" title="Mark causative" onclick="return confirm('Are you sure?')">
+      <button name="action" value="ADD" type="submit" class="btn btn-light" title="Mark causative" onclick="return confirm('Are you sure?')">
         Mark causative
       </button>
     </form>
