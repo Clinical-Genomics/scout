@@ -235,8 +235,9 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro matching_variants() %}
-  <div class="card panel-default">
-      <div class="panel-heading">Matching causatives from other cases</div>
+  <div class="card mt-3">
+    <div class="card-body"
+      <h6>Matching causatives from other cases</h6>
       <ul class="list-group list-group-flush">
         {% for other_variant in causatives %}
           <li class="list-group-item">
@@ -251,6 +252,7 @@ $(document).ready(function(){
           <li class="list-group-item">No matching causative variants.</li>
         {% endfor %}
       </ul>
+    </div>
   </div>
 {% endmacro %}
 
