@@ -163,6 +163,10 @@ body {
   border-color: #245580;
 }
 
+.bg-info-light {
+  background-color: #b8d9e3;
+}
+
 /* sidebar-related stuff */
 #body-row {
     margin-left:0;

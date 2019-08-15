@@ -867,7 +867,7 @@
         </thead>
         <tbody>
           {% for panel in case.panels %}
-            <tr {% if panel.is_default %} class="bg-info" {% endif %}>
+            <tr {% if panel.is_default %} class="bg-info-light" {% endif %}>
               <td>
                 <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
                   {{ panel.display_name|truncate(30, True) }}
