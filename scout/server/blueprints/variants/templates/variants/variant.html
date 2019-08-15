@@ -73,19 +73,61 @@ $(document).ready(function(){
       <div class="col-sm">{{ severity_list() }}</div>
     </div>
     <div class="row">
-      <div class="col-12 col-6 {{ 'col-md-4' if has_pedigree }}">
+      <div class="col-sm-4">
         {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
       </div>
-      <div class="col-12 col-6 {{ 'col-md-5' if has_pedigree }}">{{ gtcall_panel() }}</div>
+      <div class="col-sm-5">{{ gtcall_panel() }}</div>
       {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
       {% if has_pedigree %}
-        <div class="col-12 col-md-3">{{ pedigree_panel(case) }}</div>
+        <div class="col-sm-3">{{ pedigree_panel(case) }}</div>
       {% endif %}
     </div>
+    {% if variant.compounds %}
+      <div class="row">
+        <div class="col-12">{{ compounds_panel() }}</div>
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-12">{{ rankscore_panel() }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ overlapping_panel() }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card ">
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
+            </div>
 
-  </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel() }}</div>
+            <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel() }}</div>
+            <div class="tab-pane fade" id="nav-proteins" role="tabpanel" aria-labelledby="nav-proteins-tab">{{ proteins_panel() }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ external_links() }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ activity_panel(events|reverse) }}</div>
+    </div>
+    {% if config['MAIL_USERNAME'] %}
+      {# Email setting must be setup #}
+      {{ modal_sanger() }}
+    {% endif %}
 
-
+    {% if config['MAIL_USERNAME'] %}
+      {# Email setting must be setup #}
+      {{ modal_cancel_sanger() }}
+    {% endif %}
+</div>
 {% endblock %}
 
 {% macro sanger_button() %}
@@ -194,8 +236,7 @@ $(document).ready(function(){
 
 {% macro matching_variants() %}
   <div class="card panel-default">
-    <div class="card-body">
-      <h6>Matching causatives from other cases</h6>
+      <div class="panel-heading">Matching causatives from other cases</div>
       <ul class="list-group list-group-flush">
         {% for other_variant in causatives %}
           <li class="list-group-item">
@@ -210,12 +251,12 @@ $(document).ready(function(){
           <li class="list-group-item">No matching causative variants.</li>
         {% endfor %}
       </ul>
-    </div>
   </div>
 {% endmacro %}
 
 {% macro panel_basics() %}
-  <div class="card mt-3">
+  <div class="card mt-3 panel-default">
+    <div class="panel-heading">Basics</div>
     <div class="card-body">
       <table class="table table-sm">
         <tbody>
@@ -346,9 +387,9 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro panel_summary() %}
-  <div class="card mt-3">
+  <div class="card mt-3 panel-default">
+      <div class="panel-heading">Summary</div>
     <div class="card-body">
-      <h6>Summary</h6>
       <table class="table table-bordered table-fixed table-sm">
         <tbody>
           <tr>
@@ -461,12 +502,11 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro transcript_overview() %}
-  <div class="card mt-3">
-    <div class="card-body">
-      <h6 data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</h6>
+  <div class="card mt-3 panel-default">
+    <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
         {{ variant.disease_associated_transcripts|join(', ')
           if variant.disease_associated_transcripts else '-' }}
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with refseq ids.
+    <div data-toggle='tooltip' class="panel-heading mt-3" title="Displays all transcripts with refseq ids.
       One ensembl transcript can have multiple refseq ids. Blue color indicates that the ensembl transcript is mapped
       to a transcript that is canonical according to HGNC">
       Transcript overview
@@ -539,14 +579,12 @@ $(document).ready(function(){
         {% endfor %}
       </tbody>
     </table>
-  </div> <!-- end of card body -->
 </div> <!-- end of card div -->
 {% endmacro %}
 
 {% macro frequency_list() %}
-  <div class="card mt-3">
-    <div class="card-body">
-      <h6>Frequency</h6>
+  <div class="card mt-3 panel-default">
+    <div class="panel-heading">Frequency</div>
     <ul class="list-group">
       <li class="list-group-item">
         {% if variant.dbsnp_id %}
@@ -655,14 +693,12 @@ $(document).ready(function(){
         </li>
       </ul>
     {% endif %}
-  </div>
 </div>
 {% endmacro %}
 
 {% macro severity_list() %}
-  <div class="card mt-3">
-    <div class="card-body">
-    <h6>Severity</h6>
+  <div class="card mt-3 panel-default">
+    <div class="panel-heading">Severity</div>
     <ul class="list-group">
       <li class="list-group-item">
         Sift
@@ -677,7 +713,7 @@ $(document).ready(function(){
         <span class="pull-right">{{ variant.spidex_human }}</span>
       </li>
     </ul>
-    <h6 class="mt-3">Conservation</h6>
+    <div class="panel-heading">Conservation</div>
     <ul class="list-group">
       <li class="list-group-item">
         PHAST
@@ -692,14 +728,12 @@ $(document).ready(function(){
         <span class="pull-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
-  </div>
 </div>
 {% endmacro %}
 
 {% macro inheritance_panel() %}
-  <div class="card mt-3">
-    <div class="card-body">
-      <h6>Gene annotations</h6>
+  <div class="card mt-3 panel-default">
+    <div class="panel-heading">Gene annotations</div>
       <ul class="list-group">
         <li class="list-group-item">
           Variant inheritance models
@@ -731,7 +765,7 @@ $(document).ready(function(){
       </table>
       {% endif %}
 
-      <div class="card-header">Gene models</div>
+      <h6 class="card-header">Gene models:</h6>
       <table class="table table-bordered table-sm">
         <thead>
           <tr>
@@ -778,14 +812,12 @@ $(document).ready(function(){
           {% endfor %}
         </tbody>
       </table>
-    </div>
   </div>
 {% endmacro %}
 
 {% macro omim_phenotypes() %}
-  <div class="card mt-3">
-    <div class="card-body">
-      <h6>OMIM</h6>
+  <div class="card mt-3 panel-default">
+      <div class="panel-heading">OMIM</div>
       <div class="table-responsive fixed-panel">
         <table class="table table-bordered table-condensed table-sm">
           <thead>
@@ -832,12 +864,11 @@ $(document).ready(function(){
           </tbody>
         </table>
       </div>
-    </div>
   </div>
 {% endmacro %}
 
 {% macro gtcall_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">
       GT call
       {% if variant.is_par %}
@@ -880,21 +911,21 @@ $(document).ready(function(){
     </div>
     <div class="panel-footer">
       {% for name, caller in variant.callers %}
-        <span class="label label-default">{{ name }}: {{ caller }}</span>
+        <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
       {% endfor %}
     </div>
   </div>
 {% endmacro %}
 
 {% macro compounds_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Compounds (top 20)</div>
     {{ compounds_table(institute, case, variant.compounds[:20]) }}
   </div>
 {% endmacro %}
 
 {% macro rankscore_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Rank score results</div>
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -920,7 +951,7 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro overlapping_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Overlapping SVs</div>
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -966,8 +997,8 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro genes_panel() %}
-  <div class="panel panel-default">
-    <table class="table table-bordered">
+  <div class="card panel-default">
+    <table class="table table-bordered table-sm">
       <thead>
         <tr>
           <th>Gene</th>
@@ -999,8 +1030,8 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro transcripts_panel() %}
-  <div class="panel panel-default table-responsive fixed-panel">
-    <table class="table table-bordered">
+  <div class="card panel-default table-responsive fixed-panel">
+    <table class="table table-bordered card-sm">
       <thead>
         <tr>
           <th>Gene</th>
@@ -1029,7 +1060,7 @@ $(document).ready(function(){
                   {{ transcript.transcript_id }}
                 </a>
                 {% if transcript.is_canonical %}
-                  <span class="badge pull-right">C</span>
+                  <span class="badge badge-secondary pull-right">C</span>
                 {% endif %}
               </td>
               <td>
@@ -1171,19 +1202,19 @@ $(document).ready(function(){
       </div>
       <div class="panel-body">
         <div class="btn-group">
-          <a href="{{ gene.ensembl_link }}" class="btn btn-default" target="_blank">Ensembl</a>
-          <a href="{{ gene.hpa_link }}" class="btn btn-default" target="_blank">HPA</a>
-          <a href="{{ gene.string_link }}" class="btn btn-default" target="_blank">STRING</a>
-          <a href="{{ variant.ucsc_link }}" class="btn btn-default" target="_blank">UCSC</a>
+          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
+          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
+          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
+          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
           {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-default" target="_blank">Entrez</a>
+            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
           {% endif %}
-          <a href="http://tools.genes.toronto.edu/" class="btn btn-default" target="_blank">SPANR</a>
-          <a href="{{ gene.reactome_link }}" class="btn btn-default" target="_blank">Reactome</a>
-          <a href="{{ gene.expression_atlas_link }}" class="btn btn-default" target="_blank">Expr. Atlas</a>
-          <a href="{{ gene.clingen_link }}" class="btn btn-default" target="_blank">ClinGen</a>
-          <a href="{{ variant.alamut_link }}" class="btn btn-default" target="_blank">Alamut</a>
-          <a href="{{ gene.ppaint_link }}" class="btn btn-default" target="_blank">Protein Paint</a>
+          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
+          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
+          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
+          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
+          <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
           {% if variant.chromosome == 'MT' %}
             <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
           {% endif %}
@@ -1191,7 +1222,7 @@ $(document).ready(function(){
       </div>
       <div class="panel-body">
         <form action="http://marrvel.org/search" method="POST" target="_blank">
-          <button type="submit" class="btn btn-default">MARRVEL</button>
+          <button type="submit" class="btn btn-outline-secondary">MARRVEL</button>
           <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
           <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol if gene.common }}">
           <input type="hidden" name="OMIMdbCheck" value="on">
