@@ -136,20 +136,19 @@ function casesDetailed(overview, all_cases){
 function varValidations(variants){
   let dataSets = [];
   let maxValidations = 0;
-  counter = 0
-  for (var topic in variants){
-    if (topic.title === 'Validation ordered'){
-      maxValidations = topic.count;
+
+  variants.forEach(function (arrayItem) {
+    if (arrayItem.title === 'Validation ordered'){
+      maxValidations = arrayItem.count;
     }
-    else {
-      percentValid = topic.count;
+    else{
+      percentValid = arrayItem.count;
       if(maxValidations > 0){
         percentValid = percentValid * 100 / maxValidations;
       }
       dataSets.push(percentValid);
     }
-    counter++;
-  }
+  });
 
   var myChart = {
     type: 'bar',
