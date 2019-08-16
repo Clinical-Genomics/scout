@@ -68,7 +68,6 @@
   background-color: #343a40; !important;
 }
 
-
 .dropdown {
   margin-top: 0px;
 }
@@ -120,7 +119,7 @@ ul li {
 
 a:visited {
 	/* faded pink */
-	color: hsl(314, 31%, 61%);
+	color: #8e60a6;
 }
 
 /* Introduce small space in between list elements */
@@ -163,11 +162,6 @@ body {
   border-color: #245580;
 }
 
-.btn-primary:hover,
-.btn-primary:focus {
-  background-color: #265a88;
-  background-position: 0 -15px;
-}
 .btn-primary:active,
 .btn-primary.active {
   background-color: #265a88;
