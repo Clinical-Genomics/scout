@@ -28,8 +28,8 @@
 {% endblock %}
 
 {% macro overview_panel() %}
-  <div class="card">
-    <div class="card-header bg-primary">Overview</div>
+  <div class="card panel-default">
+    <div class="panel-heading">Overview</div>
     <ul class="list-group">
       <li class="list-group-item">
         Full name
@@ -81,8 +81,8 @@
 {% endmacro %}
 
 {% macro genes_panel() %}
-  <div class="card mt-3">
-    <div class="card-header bg-primary">Included genes</div>
+  <div class="card panel-default mt-3">
+    <div class="panel-heading">Included genes</div>
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>
@@ -131,8 +131,8 @@
 {% endmacro %}
 
 {% macro pending_panel() %}
-  <div class="card">
-    <div class="card-header bg-primary">Pending changes</div>
+  <div class="card panel-default">
+    <div class="panel-heading">Pending changes</div>
     {% if not panel.is_archived %}
       <div class="card-body">
         <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">

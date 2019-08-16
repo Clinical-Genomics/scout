@@ -13,6 +13,7 @@ $(document).ready(function(){
 </script>
 
 {% block top_nav %}
+  {{ super() }}
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
