@@ -268,7 +268,7 @@ $(document).ready(function(){
               <span class="pull-right">
                 <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
                 {% if variant.is_par %}
-                  <span class="label label-info">PAR</span>
+                  <span class="badge badge-info">PAR</span>
                 {% endif %}
               </span>
             </td>
@@ -368,21 +368,21 @@ $(document).ready(function(){
         </div>
       </form>
       {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
-      <div>
-        <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Classify</a>
+      <div class="mt-3">
+        <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
         {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-          <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
+          <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Submit to ClinVar</a>
         {% endif %}
-        {% if variant.clinvar_clinsig%}
-          <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
+        {% if variant.clinvar_clinsig %}
+          <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
         {% endif %}
       </div>
       {% if evaluations %}
-        <ul class="list-group">
+        <div class="list-group mt-3">
           {% for evaluation in evaluations %}
             {{ acmg_classification_item(evaluation) }}
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     </div>
   </div>
