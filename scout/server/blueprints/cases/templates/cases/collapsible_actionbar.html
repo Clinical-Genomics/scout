@@ -146,38 +146,29 @@
 {% endmacro %}
 
 {% macro assign(institute, case) %}
-<a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+<div href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item text-white flex-column align-items-start">
+  <div class="d-flex w-100 justify-content-start align-items-center"
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-users fa-fw mr-3"></span>
     <span class="menu-collapsed">Assignees</span>
-    <span class="submenu-icon ml-auto"></span>
   </div>
-</a>
-<!-- Submenu content -->
-<div id='submenu2' class="collapse sidebar-submenu">
-      <div class="btn-group-vertical" style="display: flex; align-items: center;">
-        <div class="row">
-
-          {% for user in case.assignees %}
-              <form method="POST"
-                    action="{{ url_for('cases.assign', institute_id=institute._id,
-                                       case_name=case.display_name, user_id=user._id) }}">
-                <button name="action" value="DELETE" class="btn btn-warning btn-sm form-control">
-                  <i class="fa fa-remove"></i>
-                  {{ user.name }}
-                </button>
-              </form>
-          {% endfor %}
-          <form method="POST"
-                action="{{ url_for('cases.assign', institute_id=institute._id,
-                                   case_name=case.display_name) }}"
-                title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-            <button class="btn btn-light form-control btn-sm">
-              <i class="fa fa-heart"></i>Assign yourself</button>
-          </form>
-        </div>
-    </div>
-  </span>
+  {% for user in case.assignees %}
+      <form method="POST"
+            action="{{ url_for('cases.assign', institute_id=institute._id,
+                               case_name=case.display_name, user_id=user._id) }}">
+        <button name="action" value="DELETE" class="btn btn-warning btn-sm form-control">
+          <i class="fa fa-remove"></i>
+          {{ user.name }}
+        </button>
+      </form>
+  {% endfor %}
+  <form method="POST"
+        action="{{ url_for('cases.assign', institute_id=institute._id,
+                           case_name=case.display_name) }}"
+        title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+    <button class="btn btn-light form-control btn-sm">
+      <i class="fa fa-heart"></i>Assign yourself</button>
+  </form>
 </div>
 {% endmacro %}
 
