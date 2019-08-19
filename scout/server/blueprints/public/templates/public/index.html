@@ -15,7 +15,7 @@
 
     {% if current_user.is_authenticated %}
       <p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('cases.index') }}" role="button">
+        <a class="btn btn-primary btn-lg text-white" href="{{ url_for('cases.index') }}" role="button">
           Welcome <strong>{{ current_user.name }}!</strong>
         </a>
       </p>
@@ -31,7 +31,7 @@
               <input type="text" placeholder="email" class="form-control" name="email">
             </div>
             <div class="col-xs-4">
-              <button type="submit" class="btn btn-primary form-control">Login</button>
+              <button type="submit" class="btn btn-primary form-control text-white">Login</button>
             </div>
           </div>
         </form>

@@ -118,8 +118,8 @@ ul li {
 }
 
 a:visited {
-	/* faded pink */
-	color: #8e60a6;
+	/* purple */
+	color: #551A8B;
 }
 
 /* Introduce small space in between list elements */
@@ -147,7 +147,6 @@ body {
 
 .badge-primary {
   background-color: #1181B2;
-  color: #ffffff;
 }
 
 /* Override primary button colors */
@@ -162,7 +161,6 @@ body {
   border-color: #245580;
 }
 
-.btn-primary:active,
 .btn-primary.active {
   background-color: #265a88;
   border-color: #245580;
