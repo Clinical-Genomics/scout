@@ -71,19 +71,19 @@
 {% endmacro %}
 
 {% macro analysis_date(case) %}
-<a href="#" class="bg-dark list-group-item list-group-item-action">
+<div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-clock-o fa-fw mr-3"></span>
     <span class="menu-collapsed">{{ case.analysis_date.date() }}</span>
   </div>
-</a>
+</div>
 {% if case.is_migrated %}
-  <a href="#" class="bg-dark list-group-item list-group-item-action">
+  <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-info fa-fw mr-3"></span>
       <span class="menu-collapsed">migrated</span>
     </div>
-  </a>
+  </div>
 {% endif %}
 {% endmacro %}
 
@@ -97,19 +97,19 @@
 {% endmacro %}
 
 {% macro rank_model(case) %}
-<a href="#" class="bg-dark list-group-item list-group-item-action">
+<div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-barcode fa-fw mr-3"></span>
       <span class="menu-collapsed">Rank model v. {{ case.rank_model_version }}</span>
   </div>
-</a>
+</div>
 {% if case.sv_rank_model_version %}
-  <a href="#" class="bg-dark list-group-item list-group-item-action">
+  <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-barcode fa-fw mr-3"></span>
         <span class="menu-collapsed">SV rank model v. {{ case.sv_rank_model_version }}</span>
     </div>
-  </a>
+  </div>
 {% endif %}
 {% endmacro %}
 
