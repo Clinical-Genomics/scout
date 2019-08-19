@@ -10,6 +10,10 @@
   background-color: #F8E9A1 !important;
 }
 
+.bg-danger-light {
+    background-color: #f7bebc;
+}
+
 .container {
 	margin-top: 10px;
 	width: 100%;

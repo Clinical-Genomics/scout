@@ -182,7 +182,7 @@
         </thead>
         <tbody>
           {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger" {% endif %}>
+            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger-light" {% endif %}>
               <td>{{ ind.display_name }}</td>
               <td>
                 {{ ind.sex_human }}
@@ -245,7 +245,7 @@
         </thead>
         <tbody>
           {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger" {% endif %}>
+            <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
               <td>{{ ind.display_name }}</td>
               <td>{{ ind.tumor_type or 'Unknown'}}</td>
               <td>{{ ind.phenotype_human }}</td>
