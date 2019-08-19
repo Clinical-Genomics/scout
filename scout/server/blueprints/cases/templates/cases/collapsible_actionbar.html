@@ -156,7 +156,7 @@
       <form method="POST"
             action="{{ url_for('cases.assign', institute_id=institute._id,
                                case_name=case.display_name, user_id=user._id) }}">
-        <button name="action" value="DELETE" class="btn btn-warning btn-sm form-control">
+        <button name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
           <i class="fa fa-remove"></i>
           {{ user.name }}
         </button>
@@ -166,8 +166,8 @@
         action="{{ url_for('cases.assign', institute_id=institute._id,
                            case_name=case.display_name) }}"
         title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
-    <button class="btn btn-light form-control btn-sm">
-      <i class="fa fa-heart"></i>Assign yourself</button>
+    <button class="btn btn-light form-control btn-xs">
+      <i class="fa fa-heart"></i> Assign yourself</button>
   </form>
 </div>
 {% endmacro %}
@@ -191,7 +191,7 @@
 {% endmacro %}
 
 {% macro rerun(case) %}
-<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-retweet fa-fw mr-3"></span>
     <span class="menu-collapsed">Reruns</span>
