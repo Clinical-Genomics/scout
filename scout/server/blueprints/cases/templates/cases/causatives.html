@@ -49,7 +49,7 @@
   {% for _, group in variant_groups.items() %}
   {% set variant = group[0][1] %}
   <li class="list-group-item">
-    <div class="d-flex">
+    <div class="d-flex justify-content-between">
       <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') }}</h5>
       <span class="text-muted" style="display: inline-block; margin-left: 10px;">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
@@ -59,11 +59,9 @@
         </span>
     </div>
     <ul class="list-group ist-group-flush">
-    {% for case, variant in group %}
-      {% if variant._id in case.causatives %}
       {% for case, variant in group %}
         {% if variant._id in case.causatives %}
-          <li class="list-group-item">
+          <div class="list-group-item">
             <div class="row">
               <div class="col-xs-8 col-md-2">
                 <a href="{{ url_for('variants.variant',
@@ -120,16 +118,13 @@
               </div>
 
             </div>
-          </li>
+          </div>
         {% endif %}
       {% endfor %}
-      {% endif %}
-    {% endfor %}
     </ul>
   </li>
   {% endfor %}
 </div>
-
 {% endblock %}
 
 {% block scripts %}
