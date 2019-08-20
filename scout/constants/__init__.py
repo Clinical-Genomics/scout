@@ -40,7 +40,7 @@ COLLECTIONS = [
     'acmg',
 ]
 
-BUILDS = ['37', '38']
+BUILDS = ['37', '38', 'GRCh38']
 
 CYTOBANDS = parse_cytoband(cytobands_handle)
 
