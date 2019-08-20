@@ -110,7 +110,7 @@ class TranscriptHandler(object):
             identifier_transcripts(set)
 
         """
-        LOG.info("Fetching the id transcripts for all genes")
+        LOG.debug("Fetching the id transcripts for gene %s", hgnc_id)
         transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)
 
         identifier_transcripts = set()
