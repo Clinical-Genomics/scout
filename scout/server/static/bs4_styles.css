@@ -288,3 +288,7 @@ input[type="checkbox"].ios8-switch:checked + label:before {
     background: #55D069;
 }
 /* end of CHECKBOX ios8-switch*/
+
+option {
+  width: 100%;
+}

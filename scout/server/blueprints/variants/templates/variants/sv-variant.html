@@ -72,7 +72,7 @@
                   <label class="ml-3">Variant tag</label>
                   <div class="row">
                     <div class="col-8">
-                      <select name="manual_rank" class="form-control selectpicker ml-3">
+                      <select name="manual_rank" class="form-control ml-3">
                         <option>Select a tag</option>
                         {% for rank, data in manual_rank_options.items() %}
                           <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
@@ -94,7 +94,7 @@
                   <label class="ml-3">Dismiss variant</label>
                   <div class="row">
                     <div class="col-8">
-                      <select multiple name="dismiss_variant" class="form-control ml-3 selectpicker">
+                      <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="ml-3" style="display:block; width:90%;">
                         <option>Select a tag</option>
                         {% for rank, data in dismiss_variant_options.items() %}
                           <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
@@ -579,10 +579,11 @@
 
 {% block scripts %}
   {{ super() }}
-
   <script>
-    $(function () {
-      $('select').selectpicker();
+    $(document).ready(function() {
+        $('#dismiss_variant').multipleSelect({
+            filter: true
+        });
     });
   </script>
 {% endblock %}

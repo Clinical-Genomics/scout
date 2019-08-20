@@ -320,7 +320,7 @@ $(document).ready(function(){
         <label class="mt-3">Variant tag</label>
         <div class="row">
           <div class="col-8">
-            <select name="manual_rank" class="selectpicker">
+            <select name="manual_rank" class="form-control">
               <option value="-1">Select a tag...</option>
               {% for rank, data in manual_rank_options.items() %}
                 <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
@@ -338,7 +338,7 @@ $(document).ready(function(){
         <label class="mt-3">Dismiss variant</label>
         <div class="row">
           <div class="col-8">
-            <select multiple name="dismiss_variant" class="selectpicker form-control">
+            <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" style="width: 90%;">
               {% for rank, data in dismiss_variant_options.items() %}
                 <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                   {{ data.label }}
@@ -355,7 +355,7 @@ $(document).ready(function(){
         <label class="mt-3">Mosaic Tags</label>
         <div class="row">
           <div class="col-8">
-            <select multiple name="mosaic_tags" class="form-control selectpicker">
+            <select multiple="multiple" name="mosaic_tags" id="mosaic_tags" style="width: 90%;">
               {% for rank, data in mosaic_variant_options.items() %}
                 <option {% if rank~"" in variant.mosaic_tags %} selected {% endif %} value="{{ rank }}">
                   {{ data.label }}
@@ -1281,10 +1281,21 @@ $(document).ready(function(){
 
 {% block scripts %}
   {{ super() }}
+  <script src="dist/js/BsMultiSelect.js"></script>
+
   <script>
-    $(function () {
-      $('select').selectpicker();
+    // Initialize multiple select on your regular select
+    $(document).ready(function() {
+        $('#dismiss_variant').multipleSelect({
+            filter: true
+        });
+        $(document).ready(function() {
+            $('#mosaic_tags').multipleSelect({
+                filter: true
+            });
+        });
     });
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
