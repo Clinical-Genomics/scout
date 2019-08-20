@@ -160,10 +160,10 @@ $(document).ready(function(){
       <strong>HGNC symbols</strong>:
       {{ variant.hgnc_symbols|join(', ') }}
     </li>
-    <li class="list-group-item">
+    <div class="list-group-item">
       <strong>Gene panels</strong>:
       {{ variant.panels|join(', ') }}
-    </li>
+    </div>
     <li class="list-group-item disabled"><strong>Amino acid changes</strong></li>
     {% for gene in variant.genes %}
         {% for transcript in gene.primary_transcripts %}

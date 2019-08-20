@@ -56,7 +56,7 @@
               <span class="badge">{{ variant.sub_category|upper }}</span>
             </li>
 
-            <li class="list-group-item">
+            <div class="list-group-item">
               Gene panels
               <ul class="list-inline pull-right">
                 {% for panel_id in variant.panels %}
@@ -65,7 +65,7 @@
                   </li>
                 {% endfor %}
               </ul>
-            </li>
+            </div>
             <div class="list-group mt-3">
               <div>
                 <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
