@@ -30,14 +30,15 @@ def exons(build):
     start = datetime.now()
     # Test if there are any exons loaded
 
-    nr_exons = adapter.exons(build=build).count()
-    if nr_exons:
+    existing_exon = adapter.exon(build=build)
+    if existing_exon:
         LOG.warning("Dropping all exons ")
         adapter.drop_exons(build=build)
         LOG.info("Exons dropped")
 
     # Load the exons
-    ensembl_exons = fetch_ensembl_exons(build=build)
+    # ensembl_exons = fetch_ensembl_exons(build=build)
+    ensembl_exons = []
     load_exons(adapter, ensembl_exons, build)
 
     adapter.update_indexes()
