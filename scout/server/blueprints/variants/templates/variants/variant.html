@@ -320,7 +320,7 @@ $(document).ready(function(){
         <label class="mt-3">Variant tag</label>
         <div class="row">
           <div class="col-8">
-            <select name="manual_rank" class="form-control" class="selectpicker">
+            <select name="manual_rank" class="selectpicker">
               <option value="-1">Select a tag...</option>
               {% for rank, data in manual_rank_options.items() %}
                 <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
@@ -338,7 +338,7 @@ $(document).ready(function(){
         <label class="mt-3">Dismiss variant</label>
         <div class="row">
           <div class="col-8">
-            <select multiple name="dismiss_variant" class="form-control selectpicker">
+            <select multiple name="dismiss_variant" class="selectpicker form-control">
               {% for rank, data in dismiss_variant_options.items() %}
                 <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                   {{ data.label }}
@@ -1283,13 +1283,12 @@ $(document).ready(function(){
   {{ super() }}
   <script>
     $(function () {
+      $('select').selectpicker();
+    });
+    $(function () {
       $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
       });
-
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
-      });
-    })
+    });
   </script>
 {% endblock %}

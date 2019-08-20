@@ -72,7 +72,7 @@
                   <label class="ml-3">Variant tag</label>
                   <div class="row">
                     <div class="col-8">
-                      <select name="manual_rank" class="form-control ml-3">
+                      <select name="manual_rank" class="form-control selectpicker ml-3">
                         <option>Select a tag</option>
                         {% for rank, data in manual_rank_options.items() %}
                           <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
@@ -582,9 +582,12 @@
 
   <script>
     $(function () {
+      $('select').selectpicker();
+    });
+    $(function () {
       $('select[multiple]').multiselect({
         buttonWidth: '100%'
       });
-    })
+    });
   </script>
 {% endblock %}
