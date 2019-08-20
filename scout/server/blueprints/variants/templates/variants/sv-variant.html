@@ -345,7 +345,7 @@
     {% if variant.callers %}
       <div class="panel-footer">
         {% for name, caller in variant.callers %}
-          <span class="badge badge-default">{{ name }}: {{ caller }}</span>
+          <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
         {% endfor %}
       </div>
     {% endif %}
@@ -479,12 +479,12 @@
     {% if variant.validation in ['True positive', 'False positive']%}
       <p class="navbar-text">Validation: {{ variant.validation }}</p>
     {% else %}
-      <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#cancelVerifyModal">
+      <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#cancelVerifyModal">
         Verification pending...
       </button>
     {% endif %}
   {% else %}
-    <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#svVerifyModal">
+    <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#svVerifyModal">
       Verify
     </button>
   {% endif %}
