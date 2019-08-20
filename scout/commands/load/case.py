@@ -94,6 +94,10 @@ def case(vcf, vcf_sv, vcf_cancer, vcf_str, owner, ped, update, config,
     except SyntaxError as err:
         LOG.warning(err)
         raise click.Abort()
+    except KeyError as err:
+        LOG.error("KEYERROR {} missing when loading '{}'".format(err, config.name))
+        LOG.debug("Stack trace: {}".format( traceback.format_exc() ))
+        raise click.Abort()
 
     LOG.info("Use family %s" % config_data['family'])
 
