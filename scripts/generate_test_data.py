@@ -1,3 +1,9 @@
+"""Script for generating test data to Scout
+
+
+!!!!!!!! NOT COMPLETE !!!!!!!!
+"""
+
 import os
 import logging
 
@@ -12,7 +18,7 @@ from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.parse.exac import parse_exac_genes
 from scout.parse.ensembl import (parse_ensembl_gene_request, parse_ensembl_transcript_request)
 
-from . import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
+from scout.demo.resources import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
 genes37_reduced_path, genes38_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path,
 hpogenes_reduced_path, hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path)
 
