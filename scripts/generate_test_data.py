@@ -10,13 +10,16 @@ import logging
 from pprint import pprint as pp
 
 import click
+import coloredlogs
 
 from scout.utils.requests import (fetch_hgnc, fetch_mim_files, fetch_exac_constraint, 
-fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_hpo_files, fetch_hpo_genes, fetch_hpo_terms,)
+fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_ensembl_exons, fetch_hpo_files, 
+fetch_hpo_genes, fetch_hpo_terms,)
 from scout.parse.hgnc import parse_hgnc_line
 from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.parse.exac import parse_exac_genes
-from scout.parse.ensembl import (parse_ensembl_gene_request, parse_ensembl_transcript_request)
+from scout.parse.ensembl import (parse_ensembl_gene_request, parse_ensembl_transcript_request, 
+                                 parse_ensembl_exon_request)
 
 from scout.demo.resources import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
 genes37_reduced_path, genes38_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path,
@@ -210,7 +213,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     """Generate gene lines from a build
 
     Args:
-        genes(dict): A dictionary with hgnc_id as key and hgnc_symbol as value
+        genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         silent(bool): If genes should be written to file or not
         build(str): What build to use. Defaults to 37
     
@@ -219,6 +222,8 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     """
     build = build or '37'
 
+    # Convert genes to map from id to symbol
+    id_to_symbol = {genes[hgnc_symbol]: hgnc_symbol for hgnc_symbol in genes}
     ensembl_header = ['Chromosome/scaffold name', 'Gene start (bp)', 'Gene end (bp)',
                       'Gene stable ID', 'HGNC symbol', 'HGNC ID']
 
@@ -233,7 +238,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
         hgnc_id = gene_info.get('hgnc_id')
         if not hgnc_id:
             continue
-        if hgnc_id in genes:
+        if hgnc_id in id_to_symbol:
             print_line = [
                 gene_info['chrom'],
                 str(gene_info['gene_start']),
@@ -247,12 +252,11 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     
     LOG.info("Nr genes collected for build %s: %s", build,nr_genes)
 
-def generate_ensembl_transcripts(ensembl_genes, build):
+def generate_ensembl_transcripts(ensembl_genes, build=None):
     """Generate a file with reduced ensembl gene information
     
     Args:
         genes(dict): A dictionary with ensembl_id as key and hgnc_id as value
-        silent(bool): If genes should be written to file or not
         build(str): What build to use. Defaults to 37
     
     Yields:
@@ -285,6 +289,51 @@ def generate_ensembl_transcripts(ensembl_genes, build):
                 tx_info['refseq_ncrna'] or '',
             ]
             yield '\t'.join(print_line)
+
+def generate_ensembl_exons(ensembl_genes, build=None):
+    """Generate a file with reduced ensembl gene information
+    
+    Args:
+        genes(dict): A dictionary with ensembl_id as key and hgnc_id as value
+        build(str): What build to use. Defaults to 37
+    
+    Yields:
+        print_line(str):  Lines from the reduced file
+    
+    """
+    build = build or '37'
+    
+    ensembl_exons = fetch_ensembl_exons(build=build)
+        
+    ensembl_header = ["Chromosome/scaffold name", "Gene stable ID", 
+                      "Transcript stable ID", "Exon stable ID", 
+                      "Exon region start (bp)", "Exon region end (bp)",
+                      "5' UTR start", "5' UTR end", "3' UTR start", 
+                      "3' UTR end", "Strand", "Exon rank in transcript"]
+        
+        
+    yield '\t'.join(ensembl_header)
+        
+    for exon_info in parse_ensembl_exon_request(ensembl_exons):
+        ens_gene_id = exon_info['gene']
+        if ens_gene_id in ensembl_genes:
+            print_info = [
+                str(exon_info['chrom']),
+                exon_info['gene'],
+                exon_info['transcript'],
+                exon_info['exon_id'],
+                str(exon_info['exon_chrom_start']),
+                str(exon_info['exon_chrom_end']),
+                str(exon_info['5_utr_start']),
+                str(exon_info['5_utr_end']),
+                str(exon_info['3_utr_start']),
+                str(exon_info['3_utr_end']),
+                str(exon_info['strand']),
+                str(exon_info['rank'])
+            ]
+            # print(print_info)
+            yield '\t'.join(print_info)
+
 
 def generate_hpo_genes(genes):
     """Generate the lines from a reduced hpo genes file
@@ -342,7 +391,6 @@ def generate_hpo_terms(genes):
             nr_terms
             yield line
 
-
 def generate_hpo_files(genes):
     """Generate files with hpo reduced information"""
     hpo_files = fetch_hpo_files(hpogenes=True, hpoterms=True, phenotype_to_terms=True, hpodisease=False)
@@ -377,3 +425,51 @@ def generate_hpo_files(genes):
             if hgnc_symbol in genes:
                 outfile.write(line+'\n')
         LOG.info("File ready")
+
+def read_panel_file(lines):
+    """Read a file with gene ids and names.
+    
+    A file with genes. First column hgnc id, secon column hgnc symbol
+    """
+    genes = {}
+    for line in lines:
+        if line.startswith('#'):
+            continue
+        line = line.split('\t')
+        if len(line) < 3:
+            continue
+        hgnc_id = int(line[0])
+        hgnc_symbol = line[1]
+        genes[hgnc_symbol] = hgnc_id
+    
+    return genes
+
+@click.command()
+@click.argument('genes', type=click.File('r'))
+@click.option('-e', '--ensembl_genes', type=click.File('r'))
+@click.pass_context
+def cli(ctx, genes, ensembl_genes):
+    """Generate test data for scout"""
+    coloredlogs.install(level='INFO')
+    
+    symbol_to_id = read_panel_file(genes)
+    
+    ensembl_genes = {}
+    
+    for i,line in enumerate(generate_ensembl_genes(symbol_to_id)):
+        if i == 0:
+            continue
+        gene_info = line.split('\t')
+        ensg_id = gene_info[3]
+        hgnc_id = int(gene_info[5])
+        ensembl_genes[ensg_id] = hgnc_id
+    
+    for i, line in enumerate(generate_ensembl_exons(ensembl_genes)):
+        print(line)
+    
+    # for gene_id in ensembl_genes:
+    #     print("{}: {}".format(gene_id, ensembl_genes[gene_id]))
+
+
+if __name__ == '__main__':
+    cli()

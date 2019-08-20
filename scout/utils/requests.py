@@ -293,6 +293,8 @@ def fetch_exac_constraint():
     file_name = 'fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt'
     url = ('ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint'
            '/{0}').format(file_name)
+    
+    exac_lines = None
 
     LOG.info("Fetching ExAC genes")
 
@@ -303,8 +305,9 @@ def fetch_exac_constraint():
         LOG.info("Try to fetch from google bucket...")
         url = ("https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
                "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz")
-
-    exac_lines = fetch_resource(url)
+    
+    if not exac_lines:
+        exac_lines = fetch_resource(url)
 
     return exac_lines
 

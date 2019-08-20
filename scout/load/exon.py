@@ -25,9 +25,13 @@ def load_exons(adapter, exon_lines, build='37', ensembl_genes=None):
         ensembl_transcripts(dict): Existing ensembl transcripts
     
     """
+    print(exon_lines)
+    import sys
+    sys.exit()
     # Fetch all genes with ensemblid as keys
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
     hgnc_id_transcripts = adapter.id_transcripts_by_gene(build=build)
+    
     
     if isinstance(exon_lines, DataFrame):
         exons = parse_ensembl_exon_request(exon_lines)
