@@ -295,7 +295,6 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
         full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
         panel_names.append(full_name)
     panel_names = ' ,'.join(panel_names)
-    gene_ids =
     request_data['gene_ids'] = ','.join([str(gene_id) for gene_id in list(distinct_genes)])
     request_data['panel_name'] = panel_names
 
