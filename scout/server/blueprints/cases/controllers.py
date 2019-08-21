@@ -288,12 +288,14 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     distinct_genes = set()
     panel_names = []
     for panel_info in case_obj.get('panels', [ ]):
-        if not panel_info.get('is_default') or panel_info.get('is_default') is False:
+        if panel_info.get('is_default') is False:
             continue
         panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
         full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
         panel_names.append(full_name)
     panel_names = ' ,'.join(panel_names)
+    gene_ids = ','.join(case_obj.get('default_genes'))
+    request_data['gene_ids'] = gene_ids
     request_data['panel_name'] = panel_names
 
     # add institute-specific cutoff level to the post request object
