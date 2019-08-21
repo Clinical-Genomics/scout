@@ -297,6 +297,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     panel_names = ' ,'.join(panel_names)
     request_data['gene_ids'] = ','.join([str(gene_id) for gene_id in list(distinct_genes)])
     request_data['panel_name'] = panel_names
+    request_data['request_sent'] = datetime.datetime.now()
 
     # add institute-specific cutoff level to the post request object
     request_data['level'] = institute_obj.get('coverage_cutoff', 15)
