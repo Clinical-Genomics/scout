@@ -280,16 +280,16 @@ def parse_ensembl_transcripts(lines):
 def parse_ensembl_exons(lines):
     """Parse lines with ensembl formated exons
 
-        This is designed to take a biomart dump with exons from ensembl.
-        Check documentation for spec for download
+    This is designed to take a biomart dump with exons from ensembl.
+    Check documentation for spec for download
 
-        Args:
-            lines(iterable(str)): An iterable with ensembl formated exons
-        Yields:
-            ensembl_gene(dict): A dictionary with the relevant information
+    Args:
+        lines(iterable(str)): An iterable with ensembl formated exons
+    Yields:
+        ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    LOG.debug("Parsing ensembl exons...")
+    LOG.debug("Parsing ensembl exons from iterable")
     for index, line in enumerate(lines):
 
         # File allways start with a header line
@@ -298,9 +298,10 @@ def parse_ensembl_exons(lines):
             continue
 
         exon_info = parse_ensembl_line(line, header)
+
         chrom = exon_info['chrom']
-        start = exon_info['exon_start']
-        end = exon_info['exon_end']
+        exon_start = exon_info['exon_start']
+        exon_end = exon_info['exon_end']
         transcript = exon_info['ensembl_transcript_id']
         gene = exon_info['ensembl_gene_id']
 
@@ -311,27 +312,35 @@ def parse_ensembl_exons(lines):
         if strand == 1:
             # highest position: start of exon or end of 5' UTR
             # If no 5' UTR make sure exon_start is allways choosen
-            start = max(start, exon_info.get('utr_5_end') or -1)
+            start = max(exon_start, exon_info.get('utr_5_end') or -1)
             # lowest position: end of exon or start of 3' UTR
-            end = min(end, exon_info.get('utr_3_start') or float('inf'))
+            end = min(exon_end, exon_info.get('utr_3_start') or float('inf'))
         elif strand == -1:
             # highest position: start of exon or end of 3' UTR
-            start = max(start, exon_info.get('utr_3_end') or -1)
+            start = max(exon_start, exon_info.get('utr_3_end') or -1)
             # lowest position: end of exon or start of 5' UTR
-            end = min(end, exon_info.get('utr_5_start') or float('inf'))
+            end = min(exon_end, exon_info.get('utr_5_start') or float('inf'))
 
-        exon_id = "-".join([chrom, str(start), str(end)])
+        exon_id = "-".join([chrom, str(exon_start), str(exon_end)])
 
         if start > end:
             raise ValueError("ERROR: %s" % exon_id)
+
         data = {
-            "exon_id": exon_id,
             "chrom": chrom,
+            "gene": gene,
+            "transcript": transcript,
+            "exon_id": exon_id,
+            "exon_chrom_start": exon_start,
+            "exon_chrom_end": exon_end,
+            "5_utr_start": exon_info.get('utr_5_start'),
+            "5_utr_end": exon_info.get('utr_5_end'),
+            "3_utr_start": exon_info.get('utr_3_start'),
+            "3_utr_end": exon_info.get('utr_3_end'),
+            "strand": strand,
+            "rank": rank,
             "start": start,
             "end": end,
-            "transcript": transcript,
-            "gene": gene,
-            "rank": rank,
         }
 
         yield data
@@ -346,6 +355,7 @@ def parse_ensembl_exon_request(result):
     Yields:
         gene_info(dict)
     """
+    LOG.info("Parse exons from DataFrame")
     keys = [
         'chrom',
         'gene',

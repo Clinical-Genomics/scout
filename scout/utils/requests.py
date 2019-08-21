@@ -146,22 +146,51 @@ def fetch_hpo_phenotype_to_terms():
 
     return fetch_resource(url)
 
-def fetch_ensembl_genes(build='37'):
-    """Fetch the ensembl genes
-
+def fetch_ensembl_biomart(attributes, filters, build=None):
+    """Fetch data from ensembl biomart
+    
     Args:
-        build(str): ['37', '38']
+        attributes(list): List of selected attributes
+        filters(dict): Select what filters to use
+        build(str): '37' or '38'
+    
+    Returns:
+        result(DataFrame)
     """
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-    else:
-        url = 'http://www.ensembl.org'
-
-    LOG.info("Fetching ensembl genes from %s", url)
+    build = build or '37'
     dataset_name = 'hsapiens_gene_ensembl'
 
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
+    url = 'http://www.ensembl.org'
+    if build == '37':
+        url = 'http://grch37.ensembl.org'
 
+    dataset = pybiomart.Dataset(name=dataset_name, host=url)
+    
+    LOG.info("Fetching from ensembl biomart with url %s (Build: %s)", url, build)
+    
+    LOG.info("Selecting attributes: {0}".format(', '.join(attributes)))
+    
+    LOG.info("Use filter: {0}".format(filters))
+
+    result = dataset.query(
+        attributes = attributes,
+        filters = filters,
+        use_attr_names=True,
+    )
+
+    return result
+
+def fetch_ensembl_genes(build=None):
+    """Fetch the ensembl genes
+    
+    Args:
+        build(str): ['37', '38']
+    
+    Returns:
+        result(DataFrame): The resulting gene information
+    """
+    LOG.info("Fetching ensembl genes")
+    
     attributes = [
         'chromosome_name',
         'start_position',
@@ -174,16 +203,10 @@ def fetch_ensembl_genes(build='37'):
     filters = {
         'chromosome_name': CHROMOSOMES,
     }
-
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters,
-        use_attr_names=True,
-    )
-
-    return result
-
-def fetch_ensembl_transcripts(build='37', chromosomes=None):
+    
+    return fetch_ensembl_biomart(attributes, filters, build)
+    
+def fetch_ensembl_transcripts(build=None, chromosomes=None):
     """Fetch the ensembl genes
 
     Args:
@@ -194,16 +217,8 @@ def fetch_ensembl_transcripts(build='37', chromosomes=None):
         result(DataFrame)
     """
     chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl transcripts build %s ...", build)
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-    else:
-        url = 'http://www.ensembl.org'
-
-    dataset_name = 'hsapiens_gene_ensembl'
-
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
-
+    LOG.info("Fetching ensembl transcripts")
+    
     attributes = [
         'chromosome_name',
         'ensembl_gene_id',
@@ -218,31 +233,17 @@ def fetch_ensembl_transcripts(build='37', chromosomes=None):
     filters = {
         'chromosome_name': chromosomes,
     }
+    
+    return fetch_ensembl_biomart(attributes, filters, build)
 
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters,
-        use_attr_names=True,
-    )
-
-    return result
-
-def fetch_ensembl_exons(build='37'):
+def fetch_ensembl_exons(build=None):
     """Fetch the ensembl genes
 
     Args:
         build(str): ['37', '38']
     """
-    LOG.info("Fetching ensembl exons build %s ...", build)
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-    else:
-        url = 'http://www.ensembl.org'
-
-    dataset_name = 'hsapiens_gene_ensembl'
-
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
-
+    LOG.info("Fetching ensembl exons")
+    
     attributes = [
         'chromosome_name',
         'ensembl_gene_id',
@@ -262,12 +263,7 @@ def fetch_ensembl_exons(build='37'):
         'chromosome_name': CHROMOSOMES,
     }
 
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters
-    )
-
-    return result
+    return fetch_ensembl_biomart(attributes, filters, build)
 
 def fetch_hgnc():
     """Fetch the hgnc genes file from

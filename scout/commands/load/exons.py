@@ -15,16 +15,18 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 @click.command('exons', short_help='Load exons')
-# @click.argument('infile', type=click.Path(exists=True))
+@click.option('-e','--exons-file', 
+    type=click.Path(exists=True),
+    help="Path to file with ensembl exons"
+)
 @click.option('-b', '--build',
     type=click.Choice(['37', '38']),
     default='37',
     show_default=True,
 )
 @with_appcontext
-def exons(build):
-    """Load exons into the scout database"""
-
+def exons(build, exons_file):
+    """Load exons into the scout database. If no file, fetch exons from ensembl biomart"""
     adapter = store
 
     start = datetime.now()
@@ -37,8 +39,11 @@ def exons(build):
         LOG.info("Exons dropped")
 
     # Load the exons
-    # ensembl_exons = fetch_ensembl_exons(build=build)
-    ensembl_exons = []
+    if exons_file:
+        ensembl_exons = get_file_handle(exons_file)
+    else:
+        ensembl_exons = fetch_ensembl_exons(build=build)
+        
     load_exons(adapter, ensembl_exons, build)
 
     adapter.update_indexes()
