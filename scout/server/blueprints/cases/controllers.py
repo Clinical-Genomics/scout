@@ -295,7 +295,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
         full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
         panel_names.append(full_name)
     panel_names = ' ,'.join(panel_names)
-    request_data['gene_ids'] = 'join'.join(list(distinct_genes))
+    request_data['gene_ids'] = ','.join(list(distinct_genes))
     request_data['panel_name'] = panel_names
 
     # add institute-specific cutoff level to the post request object
