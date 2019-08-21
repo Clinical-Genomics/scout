@@ -52,7 +52,7 @@ def cases(store, case_query, limit=100):
 
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
-            
+
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
         if len(analysis_types) > 1:
@@ -287,8 +287,8 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     # extract default panel names and default genes from case_obj and add them to the post request object
     distinct_genes = set()
     panel_names = []
-    for panel_info in case_obj.get('panels', []):
-        if not panel_info.get('is_default'):
+    for panel_info in case_obj.get('panels', [ ]):
+        if not panel_info.get('is_default') or panel_info.get('is_default') is False:
             continue
         panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
         full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
