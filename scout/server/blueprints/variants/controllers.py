@@ -174,7 +174,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
                             store.overlapping(variant_obj))
 
     # parse_gene function is not called for SVs, but a link to ensembl gene is required
-    for gene_obj in variant_obj['genes']:
+    for gene_obj in variant_obj.get('genes', []):
         if gene_obj.get('common'):
             ensembl_id = gene_obj['common']['ensembl_id']
             try:
