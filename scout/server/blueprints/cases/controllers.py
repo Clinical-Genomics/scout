@@ -302,7 +302,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     request_data['level'] = institute_obj.get('coverage_cutoff', 15)
 
     #send get request to chanjo report
-    resp = requests.get(base_url+'reports/report', params=request_data)
+    resp = requests.post(base_url+'reports/report', params=request_data)
 
     #read response content
     soup = BeautifulSoup(resp.text)
