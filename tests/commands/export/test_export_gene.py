@@ -46,3 +46,20 @@ def test_export_genes(mock_app):
     # assert that gene is returned
     assert result.exit_code == 0
     assert 'hgnc_symbol": "ACP6", "ensembl_id": "ENSG00000162836"' in result.output
+
+    # Test exporting a gene in genome build GRCh38
+    # Test the export panel cli by passing build=GRCh38
+    result =  runner.invoke(cli, ['export', 'genes',
+        '-b', 'GRCh38'
+        ])
+    # assert that gene is returned
+    assert result.exit_code == 0
+    assert '1\t147629652\t147670496\t29609\tACP6\n' in result.output
+
+    # Test CLI to return json-formatted genes
+    result =  runner.invoke(cli, ['export', 'genes',
+        '-b', 'GRCh38',
+        '--json'
+        ])
+    assert result.exit_code == 0
+    assert 'hgnc_symbol": "ACP6", "ensembl_id": "ENSG00000162836"' in result.output

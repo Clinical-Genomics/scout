@@ -8,8 +8,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- Export genes and gene panels in build GRCh38
 
 ### Fixed
+- Fixed bug affecting variant observations in other cases
+- Fixed a bug that showed wrong gene coverage in general panel PDF export
 
 
 ## [4.6.1]
