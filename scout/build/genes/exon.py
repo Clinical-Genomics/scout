@@ -19,6 +19,10 @@ def build_exon(exon_info, build='37'):
         "rank": int, # Order of exon in transcript
         "build": str, # Genome build
     """
+    try:
+        ensembl_exon_id = exon_info['ens_exon_id']
+    except KeyError:
+        raise KeyError("Exons has to have a chromosome")
 
     try:
         chrom = exon_info['chrom']

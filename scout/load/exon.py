@@ -25,6 +25,12 @@ def load_exons(adapter, exon_lines, build='37', ensembl_genes=None):
         ensembl_transcripts(dict): Existing ensembl transcripts
     
     """
+    exons = parse_ensembl_exon_request(exon_lines)
+    for exon in exons:
+        pp(exon)
+    import sys
+    sys.exit()
+    
     # Fetch all genes with ensemblid as keys
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
     hgnc_id_transcripts = adapter.id_transcripts_by_gene(build=build)
@@ -35,7 +41,7 @@ def load_exons(adapter, exon_lines, build='37', ensembl_genes=None):
     else:
         exons = parse_ensembl_exons(exon_lines)
         nr_exons = 1363000
-    
+
     start_insertion = datetime.now()
     loaded_exons = 0
     nr_found = 0
@@ -59,6 +65,7 @@ def load_exons(adapter, exon_lines, build='37', ensembl_genes=None):
             exon['hgnc_id'] = hgnc_id
 
             exon_obj = build_exon(exon, build)
+            exon_bulk.append(exon_obj)
             if len(exon_bulk) > 100000:
                 adapter.load_exon_bulk(exon_bulk)
                 exon_bulk = []

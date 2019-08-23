@@ -196,6 +196,8 @@ def parse_ensembl_line(line, header):
                 ensembl_info['exon_start'] = int(value)
             elif 'end' in word:
                 ensembl_info['exon_end'] = int(value)
+            elif 'id' in word:
+                ensembl_info['ensembl_exon_id'] = value
             elif 'rank' in word:
                 ensembl_info['exon_rank'] = int(value)
 
@@ -276,6 +278,61 @@ def parse_ensembl_transcripts(lines):
         else:
             yield parse_ensembl_line(line, header)
 
+def parse_exon(chrom, gene, transcript, ens_exon_id, exon_chrom_start, exon_chrom_end,
+               five_utr_start, five_utr_end, three_utr_start, three_utr_end, strand, rank):
+    """Parse the information from a row with exon data"""
+    
+    exon = {
+        'chrom': chrom,
+        'gene': gene,
+        'transcript': transcript,
+        'ens_exon_id': ens_exon_id,
+        'exon_chrom_start': exon_chrom_start,
+        'exon_chrom_end': exon_chrom_end,
+        'strand': strand,
+        'rank': rank,
+        }
+    try:
+        exon['5_utr_start'] = int(five_utr_start)
+    except ValueError:
+        exon['5_utr_start'] = None
+
+    try:
+        exon['5_utr_end'] = int(five_utr_end)
+    except ValueError:
+        exon['5_utr_end'] = None
+
+    try:
+        exon['3_utr_start'] = int(three_utr_start)
+    except ValueError:
+        exon['3_utr_start'] = None
+
+    try:
+        exon['3_utr_end'] = int(three_utr_end)
+    except ValueError:
+        exon['3_utr_end'] = None
+    
+    # Recalculate start and stop (taking UTR regions into account for end exons)
+    if exon['strand'] == 1:
+        # highest position: start of exon or end of 5' UTR
+        # If no 5' UTR make sure exon_start is allways choosen
+        start = max(exon['exon_chrom_start'], exon['5_utr_end'] or -1)
+        # lowest position: end of exon or start of 3' UTR
+        end = min(exon['exon_chrom_end'], exon['3_utr_start'] or float('inf'))
+    elif exon['strand'] == -1:
+        # highest position: start of exon or end of 3' UTR
+        start = max(exon['exon_chrom_start'], exon['3_utr_end'] or -1)
+        # lowest position: end of exon or start of 5' UTR
+        end = min(exon['exon_chrom_end'], exon['5_utr_start'] or float('inf'))
+
+    exon['start'] = start
+    exon['end'] = end
+    exon['exon_id'] = "-".join([str(exon['chrom']), str(start), str(end)])
+    
+    if start > end:
+        raise ValueError("ERROR: %s" % exon_id)
+    
+    return exon
 
 def parse_ensembl_exons(lines):
     """Parse lines with ensembl formated exons
@@ -298,53 +355,23 @@ def parse_ensembl_exons(lines):
             continue
 
         exon_info = parse_ensembl_line(line, header)
+        
+        exon = parse_exon(
+            chrom=exon_info['chrom'], 
+            gene=exon_info['ensembl_gene_id'], 
+            transcript=exon_info['ensembl_transcript_id'], 
+            ens_exon_id=exon_info['ensembl_exon_id'], 
+            exon_chrom_start=exon_info['exon_start'],
+            exon_chrom_end=exon_info['exon_end'],
+            five_utr_start=exon_info.get('utr_5_start'), 
+            five_utr_end=exon_info.get('utr_5_start'), 
+            three_utr_start=exon_info.get('utr_3_start'),
+            three_utr_end=exon_info.get('utr_3_end'),
+            strand=exon_info['strand'],
+            rank=exon_info['exon_rank']
+        )
 
-        chrom = exon_info['chrom']
-        exon_start = exon_info['exon_start']
-        exon_end = exon_info['exon_end']
-        transcript = exon_info['ensembl_transcript_id']
-        gene = exon_info['ensembl_gene_id']
-
-        rank = exon_info['exon_rank']
-        strand = exon_info['strand']
-
-        # Recalculate start and stop (taking UTR regions into account for end exons)
-        if strand == 1:
-            # highest position: start of exon or end of 5' UTR
-            # If no 5' UTR make sure exon_start is allways choosen
-            start = max(exon_start, exon_info.get('utr_5_end') or -1)
-            # lowest position: end of exon or start of 3' UTR
-            end = min(exon_end, exon_info.get('utr_3_start') or float('inf'))
-        elif strand == -1:
-            # highest position: start of exon or end of 3' UTR
-            start = max(exon_start, exon_info.get('utr_3_end') or -1)
-            # lowest position: end of exon or start of 5' UTR
-            end = min(exon_end, exon_info.get('utr_5_start') or float('inf'))
-
-        exon_id = "-".join([chrom, str(exon_start), str(exon_end)])
-
-        if start > end:
-            raise ValueError("ERROR: %s" % exon_id)
-
-        data = {
-            "chrom": chrom,
-            "gene": gene,
-            "transcript": transcript,
-            "exon_id": exon_id,
-            "exon_chrom_start": exon_start,
-            "exon_chrom_end": exon_end,
-            "5_utr_start": exon_info.get('utr_5_start'),
-            "5_utr_end": exon_info.get('utr_5_end'),
-            "3_utr_start": exon_info.get('utr_3_start'),
-            "3_utr_end": exon_info.get('utr_3_end'),
-            "strand": strand,
-            "rank": rank,
-            "start": start,
-            "end": end,
-        }
-
-        yield data
-
+        yield exon
 
 def parse_ensembl_exon_request(result):
     """Parse a dataframe with ensembl exon information
@@ -356,63 +383,24 @@ def parse_ensembl_exon_request(result):
         gene_info(dict)
     """
     LOG.info("Parse exons from DataFrame")
-    keys = [
-        'chrom',
-        'gene',
-        'transcript',
-        'exon_id',
+    exon_columns = [
+        'chromosome_name',
+        'ensembl_gene_id',
+        'ensembl_transcript_id',
+        'ensembl_exon_id',
         'exon_chrom_start',
         'exon_chrom_end',
-        '5_utr_start',
-        '5_utr_end',
-        '3_utr_start',
-        '3_utr_end',
-        'strand',
-        'rank'
+        "5_utr_start",
+        "5_utr_end",
+        "3_utr_start",
+        "3_utr_end",
+        "strand",
+        "rank"
     ]
-
     # for res in result.itertuples():
-    for res in zip(result['Chromosome/scaffold name'],
-                   result['Gene stable ID'],
-                   result['Transcript stable ID'],
-                   result['Exon stable ID'],
-                   result['Exon region start (bp)'],
-                   result['Exon region end (bp)'],
-                   result["5' UTR start"],
-                   result["5' UTR end"],
-                   result["3' UTR start"],
-                   result["3' UTR end"],
-                   result["Strand"],
-                   result["Exon rank in transcript"]):
-        ensembl_info = dict(zip(keys, res))
+    exons = [parse_exon(row[0], row[1], row[2], row[3], row[4], row[5], row[6], 
+             row[7], row[8], row[9], row[10], row[11]) for row in result[exon_columns].values]
 
-        # Recalculate start and stop (taking UTR regions into account for end exons)
-        if ensembl_info['strand'] == 1:
-            # highest position: start of exon or end of 5' UTR
-            # If no 5' UTR make sure exon_start is allways choosen
-            start = max(ensembl_info['exon_chrom_start'], ensembl_info['5_utr_end'] or -1)
-            # lowest position: end of exon or start of 3' UTR
-            end = min(ensembl_info['exon_chrom_end'], ensembl_info['3_utr_start'] or float('inf'))
-        elif ensembl_info['strand'] == -1:
-            # highest position: start of exon or end of 3' UTR
-            start = max(ensembl_info['exon_chrom_start'], ensembl_info['3_utr_end'] or -1)
-            # lowest position: end of exon or start of 5' UTR
-            end = min(ensembl_info['exon_chrom_end'], ensembl_info['5_utr_start'] or float('inf'))
-
-        ensembl_info['start'] = start
-        ensembl_info['end'] = end
+    for ensembl_info in exons:
 
         yield ensembl_info
-
-        # if type(ensembl_info['hgnc_symbol']) is float:
-        #     # Skip genes without hgnc information
-        #     continue
-        # ensembl_info['gene_start'] = int(ensembl_info['gene_start'])
-        # ensembl_info['gene_end'] = int(ensembl_info['gene_end'])
-        #
-        # if type(ensembl_info['hgnc_id']) is float:
-        #     ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'])
-        # else:
-        #     ensembl_info['hgnc_id'] = int(ensembl_info['hgnc_id'].split(':')[-1])
-        #
-        # yield ensembl_info

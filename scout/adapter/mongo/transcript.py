@@ -53,7 +53,8 @@ class TranscriptHandler(object):
 
         """
         try:
-            result = self.exon_collection.insert_many(transcript_objs)
+            LOG.info("Loading exon bulk")
+            result = self.exon_collection.insert_many(exon_objs)
         except (DuplicateKeyError, BulkWriteError) as err:
             raise IntegrityError(err)
 

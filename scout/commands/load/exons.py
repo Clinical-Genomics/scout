@@ -41,9 +41,15 @@ def exons(build, exons_file):
     # Load the exons
     if exons_file:
         ensembl_exons = get_file_handle(exons_file)
+        start = datetime.now()
+        for i,line in enumerate(ensembl_exons):
+            pass
+        LOG.info("Nr exons in file %s", i)
+        LOG.info("Time to parse file {}".format(datetime.now()-start))
+        raise click.Abort()
     else:
         ensembl_exons = fetch_ensembl_exons(build=build)
-        
+
     load_exons(adapter, ensembl_exons, build)
 
     adapter.update_indexes()
