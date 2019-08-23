@@ -143,6 +143,45 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         assert var2_id not in str(resp.data)
 
 
+def test_case_report(app, user_obj, institute_obj, case_obj):
+    # Test the web page containing the general case report
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # When clicking on 'general' button on case page
+        resp = client.get(url_for('cases.case_report',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']),
+                                  )
+        # a successful response should be returned
+        assert resp.status_code == 200
+
+
+def test_pdf_case_report(app, user_obj, institute_obj, case_obj):
+    # Test the web page containing the general case report
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # When clicking on 'download PDF' on general report page
+        resp = client.get(url_for('cases.pdf_case_report',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']),
+                                  )
+        # a successful response should be returned
+        assert resp.status_code == 200
+        # and it should contain a pdf file, not HTML code
+        assert resp.mimetype == 'application/pdf'
+
+
+
 def test_mt_report(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
