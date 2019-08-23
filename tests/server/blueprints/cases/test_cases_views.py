@@ -162,7 +162,7 @@ def test_case_report(app, user_obj, institute_obj, case_obj):
 
 
 def test_pdf_case_report(app, user_obj, institute_obj, case_obj):
-    # Test the web page containing the general case report
+    # Test the web page containing the general case PDF report
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
