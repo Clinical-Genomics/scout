@@ -52,7 +52,7 @@ def cases(store, case_query, limit=100):
 
     case_groups = {status: [] for status in CASE_STATUSES}
     for case_obj in case_query.limit(limit):
-            
+
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
         if len(analysis_types) > 1:
@@ -287,20 +287,23 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     # extract default panel names and default genes from case_obj and add them to the post request object
     distinct_genes = set()
     panel_names = []
-    for panel_info in case_obj.get('panels', []):
-        if not panel_info.get('is_default'):
+    for panel_info in case_obj.get('panels', [ ]):
+        if panel_info.get('is_default') is False:
             continue
         panel_obj = store.gene_panel(panel_info['panel_name'], version=panel_info.get('version'))
+        distinct_genes.update([gene['hgnc_id'] for gene in panel_obj.get('genes', [])])
         full_name = "{} ({})".format(panel_obj['display_name'], panel_obj['version'])
         panel_names.append(full_name)
     panel_names = ' ,'.join(panel_names)
+    request_data['gene_ids'] = ','.join([str(gene_id) for gene_id in list(distinct_genes)])
     request_data['panel_name'] = panel_names
+    request_data['request_sent'] = datetime.datetime.now()
 
     # add institute-specific cutoff level to the post request object
     request_data['level'] = institute_obj.get('coverage_cutoff', 15)
 
     #send get request to chanjo report
-    resp = requests.get(base_url+'reports/report', params=request_data)
+    resp = requests.post(base_url+'reports/report', data=request_data)
 
     #read response content
     soup = BeautifulSoup(resp.text)
