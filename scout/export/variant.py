@@ -150,5 +150,6 @@ def export_mt_variants(variants, sample_id):
                 alt_ad = sample['allele_depths'][1]
         line.append(ref_ad)
         line.append(alt_ad)
-        document_lines.append(line)
+        if not alt_ad == 0:
+            document_lines.append(line)
     return document_lines
