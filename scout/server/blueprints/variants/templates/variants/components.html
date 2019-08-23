@@ -1,7 +1,8 @@
 {% macro gene_cell(variant) %}
-<div class="d-flex justify-content-between">
+  <div class="row">
+    <div class="col float-left">
     {% for gene in variant.genes %}
-      <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+      <a data-toggle="tooltip" data-html="true" title="
       <div>
         <div>
           <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
@@ -11,26 +12,24 @@
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
           </div>
         {% endif %}
-      </div>">
-        <span class="badge badge-primary text-white" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-          {{ gene.hgnc_symbol or gene.hgnc_id }}
-        </span>
-      </div>
-
+      </div>"
+        href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+      </a>
     {% endfor %}
-  {% if variant.panels|count > 0 %}
-    <span
-       class="badge badge-secondary"
-       data-toggle="popover"
-       data-html="true"
-       data-trigger="hover click"
-       data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-       title=""
-       >
-      {{ variant.panels|count }}
-    </span>
-  {% endif %}
-</div>
+    </div>
+    {% if variant.panels|count > 0 %}
+    <div class="col float-right">
+        <a
+          class="badge badge-secondary text-white"
+          data-toggle="popover"
+          data-html="true"
+          data-trigger="hover click"
+          data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+          title="">{{variant.panels|count}}
+         </a>
+      </div>
+    {% endif %}
+  </div>
 {% endmacro %}
 
 {% macro frequency_cell(variant) %}

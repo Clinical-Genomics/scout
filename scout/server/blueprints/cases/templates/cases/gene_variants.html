@@ -54,13 +54,13 @@
       <table class="table table-bordered table-hover">
 	<thead>
           <tr>
-            <th class="col-xs-1" title="Rank score">Case : Score</th>
-            <th class="col-xs-2" title="HGNC symbols">Gene</th>
-            <th class="col-xs-1" title="PopFreq">PopFreq</th>
-            <th class="col-xs-1" title="CADD score">CADD</th>
-            <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
-            <th class="col-xs-2" title="Functional annotation">Func. annotation</th>
-            <th class="col-xs-3" title="HGVS">HGVS</th>
+            <th scope="col">Case : Score</th>
+            <th scope="col">Gene</th>
+            <th scope="col">PopFreq</th>
+            <th scope="col">CADD</th>
+            <th scope="col">Gene annotation</th>
+            <th scope="col">Func. annotation</th>
+            <th scope="col">HGVS</th>
           </tr>
 	</thead>
 	<tbody>
@@ -70,16 +70,16 @@
 	    {% else %}
 	      <tr>
 	    {% endif %}
-              <td class="text-right">{{ cell_rank(variant) }}</td>
-              <td>{{ gene_cell(variant) }}</td>
-              <td class="text-right">{{ frequency_cell(variant) }}</td>
-              <td class="text-right">{{ cell_cadd(variant) }}</td>
-              <td>
+              <td class="align-middle">{{ cell_rank(variant) }}</td>
+              <td class="align-middle">{{ gene_cell(variant) }}</td>
+              <td class="align-middle">{{ frequency_cell(variant) }}</td>
+              <td class="align-middle">{{ cell_cadd(variant) }}</td>
+              <td class="align-middle">
                 {% for annotation in variant.region_annotations %}
                   <div>{{ annotation }}</div>
                 {% endfor %}
               </td>
-              <td>
+              <td class="align-middle">
                 {% for annotation in variant.functional_annotations %}
                   <div>{{ annotation }}</div>
                 {% endfor %}
@@ -101,16 +101,18 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
-<a class="variants-row-item flex-small layout"
-   href="{{ url_for('variants.variant', institute_id=variant.institute,
-        case_name=variant.case_display_name, variant_id=variant._id) }}">
-  {{ variant.case_display_name}} : {{ variant.rank_score|int }}
-</a>
+    <a
+       href="{{ url_for('variants.variant', institute_id=variant.institute,
+            case_name=variant.case_display_name, variant_id=variant._id) }}">
+      {{ variant.case_display_name}}
+    </a>
+    :
+    <span class="badge badge-info">{{ variant.rank_score|int }}</span>
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
   <div>
-    <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
