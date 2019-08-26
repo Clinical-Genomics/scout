@@ -380,7 +380,7 @@ def test_update_case_individuals(adapter, case_obj):
     assert len(res['individuals']) == 1
 
 
-def test_update_case_rerun_status(adapter, case_obj):
+def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     case_obj['rerun_requested'] = True
     # GIVEN an empty database (no cases)
     assert adapter.cases().count() == 0
@@ -391,11 +391,22 @@ def test_update_case_rerun_status(adapter, case_obj):
     res = adapter.case(case_obj['_id'])
     assert res['rerun_requested'] is True
 
+    # flag case as 'archived'
+    # WHEN flagging the case as active
+    adapter.update_status(institute_obj, case_obj, user_obj, 'archived', 'blank')
+
+    # case should be archived
+    res = adapter.case(case_obj['_id'])
+    assert res['status'] == 'archived'
+
     # WHEN updating a case
     res = adapter.update_case(case_obj)
 
     # THEN assert that 'rerun_requested' is set to False
     assert res['rerun_requested'] is False
+
+    # and assert that the case status is changed to 'inactive'
+    assert res['status'] == 'inactive'
 
 
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):

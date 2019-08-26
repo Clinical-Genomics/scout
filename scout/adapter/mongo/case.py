@@ -19,15 +19,15 @@ LOG = logging.getLogger(__name__)
 
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
-    
+
     def get_similar_cases(self, case_obj):
         """Take a case obj and return a iterable with the most phenotypically similar cases
-        
+
         Args:
             case_obj(models.Case)
-        
+
         Returns:
-            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most 
+            scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most
                                  similar case first
         """
         scores = {}
@@ -464,6 +464,7 @@ class CaseHandler(object):
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
                     'mme_submission': case_obj.get('mme_submission'),
+                    'status': old_case.get('status') if  old_case.get('status') != 'archived' else 'inactive'
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
