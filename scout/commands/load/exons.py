@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 def exons(build, exons_file):
     """Load exons into the scout database. If no file, fetch exons from ensembl biomart"""
     adapter = store
-
+    LOG.info("Running scout load exons")
     start = datetime.now()
     # Test if there are any exons loaded
 
@@ -39,18 +39,17 @@ def exons(build, exons_file):
         LOG.info("Exons dropped")
 
     # Load the exons
+    nr_exons = 0
     if exons_file:
         ensembl_exons = get_file_handle(exons_file)
-        start = datetime.now()
-        for i,line in enumerate(ensembl_exons):
+        for nr_exons,line in enumerate(ensembl_exons, 1):
             pass
-        LOG.info("Nr exons in file %s", i)
-        LOG.info("Time to parse file {}".format(datetime.now()-start))
-        raise click.Abort()
+        ensembl_exons = get_file_handle(exons_file)
     else:
         ensembl_exons = fetch_ensembl_exons(build=build)
+        nr_exons = ensembl_exons.shape[0]
 
-    load_exons(adapter, ensembl_exons, build)
+    load_exons(adapter, ensembl_exons, build, nr_exons=nr_exons)
 
     adapter.update_indexes()
 

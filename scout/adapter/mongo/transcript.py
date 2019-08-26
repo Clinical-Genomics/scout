@@ -89,14 +89,14 @@ class TranscriptHandler(object):
         """
         ensembl_transcripts = {}
         LOG.info("Fetching all transcripts")
-        for transcript_obj in self.transcript_collection.find({'build':build}):
+        for transcript_obj in self.transcripts(build):
             enst_id = transcript_obj['transcript_id']
             ensembl_transcripts[enst_id] = transcript_obj
         LOG.info("Ensembl transcripts fetched")
 
         return ensembl_transcripts
 
-    def get_id_transcripts(self, hgnc_id, build='37'):
+    def get_id_transcripts(self, hgnc_id=None, build='37', transcripts=None):
         """Return a set with identifier transcript(s)
 
         Choose all refseq transcripts with NM symbols, if none where found choose ONE with NR,
@@ -112,7 +112,10 @@ class TranscriptHandler(object):
 
         """
         LOG.debug("Fetching the id transcripts for gene %s", hgnc_id)
-        transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)
+        if not transcripts:
+            if not hgnc_id:
+                raise SyntaxError("Need hgnc id to fetch transcripts")
+            transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)
 
         identifier_transcripts = set()
         

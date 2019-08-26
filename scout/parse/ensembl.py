@@ -294,22 +294,22 @@ def parse_exon(chrom, gene, transcript, ens_exon_id, exon_chrom_start, exon_chro
         }
     try:
         exon['5_utr_start'] = int(five_utr_start)
-    except ValueError:
+    except (ValueError, TypeError) as e:
         exon['5_utr_start'] = None
 
     try:
         exon['5_utr_end'] = int(five_utr_end)
-    except ValueError:
+    except (ValueError, TypeError) as e:
         exon['5_utr_end'] = None
 
     try:
         exon['3_utr_start'] = int(three_utr_start)
-    except ValueError:
+    except (ValueError, TypeError) as e:
         exon['3_utr_start'] = None
 
     try:
         exon['3_utr_end'] = int(three_utr_end)
-    except ValueError:
+    except (ValueError, TypeError) as e:
         exon['3_utr_end'] = None
     
     # Recalculate start and stop (taking UTR regions into account for end exons)
@@ -346,7 +346,6 @@ def parse_ensembl_exons(lines):
         ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    LOG.debug("Parsing ensembl exons from iterable")
     for index, line in enumerate(lines):
 
         # File allways start with a header line
@@ -382,7 +381,6 @@ def parse_ensembl_exon_request(result):
     Yields:
         gene_info(dict)
     """
-    LOG.info("Parse exons from DataFrame")
     exon_columns = [
         'chromosome_name',
         'ensembl_gene_id',

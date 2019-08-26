@@ -132,32 +132,54 @@ class GeneHandler(object):
 
         return self.hgnc_collection.find({'build': build, 'aliases': hgnc_symbol})
 
-    def all_genes(self, build='37'):
+    def all_genes(self, build='37', transcripts=False):
         """Fetch all hgnc genes
 
             Returns:
-                result()
+                genes(iterable):
         """
         if build == 'GRCh38':
             build = '38'
 
         LOG.info("Fetching all genes")
-        return self.hgnc_collection.find({'build': build}).sort('chromosome', 1)
+        
+        hgnc_tx = {}
+        if transcripts:
+            LOG.info("Adding transcripts")
+            for tx in self.transcripts(build=build):
+                hgnc_id = tx['hgnc_id']
+                if not hgnc_id in hgnc_tx:
+                    hgnc_tx[hgnc_id] = []
+                hgnc_tx[hgnc_id].append(tx)
+        
+        genes = self.hgnc_collection.find({'build': build}).sort('chromosome', 1)
+        for gene in genes:
+            if transcripts:
+                hgnc_id = gene['hgnc_id']
+                transcripts = hgnc_tx.get(hgnc_id)
+                gene['ens_transcripts'] = hgnc_tx.get(hgnc_id)
+            yield gene
 
     def nr_genes(self, build=None):
         """Return the number of hgnc genes in collection
 
         If build is used, return the number of genes of a certain build
+        
+        Args:
+            build(str): geneome build. '37' or '38'
 
-            Returns:
-                result()
+        Returns:
+            result()
         """
         if build:
-            LOG.info("Fetching all genes from build %s",  build)
+            LOG.debug("Fetching all genes from build %s",  build)
         else:
-            LOG.info("Fetching all genes")
-
-        return self.hgnc_collection.find({'build':build}).count()
+            LOG.debug("Fetching all genes")
+        
+        nr=0
+        for nr, gene in enumerate(self.hgnc_collection.find({'build':build}),1):
+            pass
+        return nr
 
     def drop_genes(self, build=None):
         """Delete the genes collection"""
@@ -282,22 +304,27 @@ class GeneHandler(object):
 
         return alias_genes
 
-    def ensembl_genes(self, build='37'):
+    def ensembl_genes(self, build='37', transcripts=False, id_transcripts=False):
         """Return a dictionary with ensembl ids as keys and gene objects as value.
 
         Args:
             build(str)
+            transcripts(bool): If transcripts should be included
 
         Returns:
             genes(dict): {<ensg_id>: gene_obj, ...}
         """
-        genes = {}
 
-        LOG.info("Fetching all genes")
-        for gene_obj in self.hgnc_collection.find({'build':build}):
+        genes = {}
+        if id_transcripts:
+            transcripts = True
+
+        for gene_obj in self.all_genes(build=build, transcripts=transcripts):
             ensg_id = gene_obj['ensembl_id']
             hgnc_id = gene_obj['hgnc_id']
-
+            transcript_objs = gene_obj.get('ens_transcripts')
+            if id_transcripts and transcript_objs:
+                gene_obj['id_transcripts'] = self.get_id_transcripts(build='37', transcripts=transcript_objs)
             genes[ensg_id] = gene_obj
 
         LOG.info("Ensembl genes fetched")

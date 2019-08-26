@@ -12,58 +12,53 @@ from scout.build.genes.exon import build_exon
 LOG = logging.getLogger(__name__)
 
 
-def load_exons(adapter, exon_lines, build='37', ensembl_genes=None):
-    """Load all the exons
+def load_exons(adapter, exon_lines, build='37', nr_exons=None):
+    """Build and load all the exons of a build
     
     Transcript information is from ensembl.
-    Check that the transcript that the exon belongs to exists in the database
+    
+    First check that the gene that the transcript belongs to exist in the database.
+    If so check that the exon belongs to one of the identifier transcripts of that gene.
 
     Args:
         adapter(MongoAdapter)
         exon_lines(iterable): iterable with ensembl exon lines
         build(str)
-        ensembl_transcripts(dict): Existing ensembl transcripts
     
     """
-    exons = parse_ensembl_exon_request(exon_lines)
-    for exon in exons:
-        pp(exon)
-    import sys
-    sys.exit()
-    
+    nr_exons = nr_exons or 100000
     # Fetch all genes with ensemblid as keys
-    ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
-    hgnc_id_transcripts = adapter.id_transcripts_by_gene(build=build)
+    ensembl_genes = adapter.ensembl_genes(build=build, id_transcripts=True)
 
     if isinstance(exon_lines, DataFrame):
+        LOG.info("Parse exons from ensembl biomart")
         exons = parse_ensembl_exon_request(exon_lines)
-        nr_exons = exon_lines.shape[0]
     else:
+        LOG.debug("Parsing ensembl exons from iterable")
         exons = parse_ensembl_exons(exon_lines)
-        nr_exons = 1363000
-
+    
     start_insertion = datetime.now()
     loaded_exons = 0
-    nr_found = 0
     exon_bulk = []
     LOG.info("Loading exons...")
     with progressbar(exons, label="Loading exons", length=nr_exons) as bar:
         for exon in bar:
-            nr_found += 1
             ensg_id = exon['gene']
             enst_id = exon['transcript']
             gene_obj = ensembl_genes.get(ensg_id)
-            
+        
             if not gene_obj:
                 continue
-            
+        
             hgnc_id = gene_obj['hgnc_id']
 
-            if not enst_id in hgnc_id_transcripts[hgnc_id]:
+            if not enst_id in gene_obj.get('id_transcripts', set()):
                 continue
+        
+            exon_id = exon['exon_id']
 
             exon['hgnc_id'] = hgnc_id
-
+            
             exon_obj = build_exon(exon, build)
             exon_bulk.append(exon_obj)
             if len(exon_bulk) > 100000:
@@ -74,7 +69,7 @@ def load_exons(adapter, exon_lines, build='37', ensembl_genes=None):
     if exon_bulk:
         adapter.load_exon_bulk(exon_bulk)
 
-    LOG.info('Number of exons in build {0}: {1}'.format(build, nr_found))
+    LOG.info('Number of exons in build {0}: {1}'.format(build, nr_exons))
     LOG.info('Number loaded: {0}'.format(loaded_exons))
     LOG.info('Time to load exons: {0}'.format(datetime.now() - start_insertion))
     
