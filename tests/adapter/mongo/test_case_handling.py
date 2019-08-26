@@ -479,3 +479,18 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
     # THEN one case should be returned
     cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
     assert len(cases) == 2
+
+def test_get_cases_cohort(real_adapter, case_obj, user_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    cohort_name = 'cohort'
+
+    case_obj['cohorts'] = [ cohort_name ]
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving cases by a cohort name query
+    result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    # THEN we should get the case returned
+    assert result.count() == 1
