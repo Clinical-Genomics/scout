@@ -41,12 +41,12 @@ def load_exons(adapter, exon_lines, build='37', nr_exons=None):
     loaded_exons = 0
     exon_bulk = []
     LOG.info("Loading exons...")
+    current_chrom = None
     with progressbar(exons, label="Loading exons", length=nr_exons) as bar:
         for exon in bar:
             ensg_id = exon['gene']
             enst_id = exon['transcript']
             gene_obj = ensembl_genes.get(ensg_id)
-        
             if not gene_obj:
                 continue
         
@@ -61,7 +61,7 @@ def load_exons(adapter, exon_lines, build='37', nr_exons=None):
             
             exon_obj = build_exon(exon, build)
             exon_bulk.append(exon_obj)
-            if len(exon_bulk) > 100000:
+            if len(exon_bulk) > 10000:
                 adapter.load_exon_bulk(exon_bulk)
                 exon_bulk = []
             loaded_exons += 1

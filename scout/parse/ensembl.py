@@ -283,7 +283,7 @@ def parse_exon(chrom, gene, transcript, ens_exon_id, exon_chrom_start, exon_chro
     """Parse the information from a row with exon data"""
     
     exon = {
-        'chrom': chrom,
+        'chrom': str(chrom),
         'gene': gene,
         'transcript': transcript,
         'ens_exon_id': ens_exon_id,
