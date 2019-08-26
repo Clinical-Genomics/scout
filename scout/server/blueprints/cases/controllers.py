@@ -7,7 +7,6 @@ import datetime
 import logging
 
 from bs4 import BeautifulSoup
-import ssl
 from xlsxwriter import Workbook
 from flask import url_for, current_app
 from flask_mail import Message
@@ -305,8 +304,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     #send get request to chanjo report
     # Disable default certificate verification
-    ssl._create_default_https_context = ssl._create_unverified_context
-    resp = requests.post(base_url+'reports/report', data=request_data)
+    resp = requests.post(base_url+'reports/report', data=request_data, verify=False)
 
     #read response content
     soup = BeautifulSoup(resp.text)
