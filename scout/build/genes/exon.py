@@ -25,7 +25,7 @@ def build_exon(exon_info, build='37'):
         raise KeyError("Exons has to have a chromosome")
 
     try:
-        chrom = exon_info['chrom']
+        chrom = str(exon_info['chrom'])
     except KeyError:
         raise KeyError("Exons has to have a chromosome")
 
