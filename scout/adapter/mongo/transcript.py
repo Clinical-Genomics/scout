@@ -53,7 +53,7 @@ class TranscriptHandler(object):
 
         """
         try:
-            LOG.info("Loading exon bulk")
+            LOG.debug("Loading exon bulk")
             result = self.exon_collection.insert_many(exon_objs)
         except (DuplicateKeyError, BulkWriteError) as err:
             raise IntegrityError(err)
@@ -90,7 +90,7 @@ class TranscriptHandler(object):
         ensembl_transcripts = {}
         LOG.info("Fetching all transcripts")
         for transcript_obj in self.transcripts(build):
-            enst_id = transcript_obj['transcript_id']
+            enst_id = transcript_obj['ensembl_transcript_id']
             ensembl_transcripts[enst_id] = transcript_obj
         LOG.info("Ensembl transcripts fetched")
 

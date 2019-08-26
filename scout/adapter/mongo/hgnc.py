@@ -132,19 +132,20 @@ class GeneHandler(object):
 
         return self.hgnc_collection.find({'build': build, 'aliases': hgnc_symbol})
 
-    def all_genes(self, build='37', transcripts=False):
+    def all_genes(self, build=None, add_transcripts=False):
         """Fetch all hgnc genes
 
             Returns:
                 genes(iterable):
         """
+        build = build or '37'
         if build == 'GRCh38':
             build = '38'
 
         LOG.info("Fetching all genes")
         
         hgnc_tx = {}
-        if transcripts:
+        if add_transcripts:
             LOG.info("Adding transcripts")
             for tx in self.transcripts(build=build):
                 hgnc_id = tx['hgnc_id']
@@ -152,13 +153,12 @@ class GeneHandler(object):
                     hgnc_tx[hgnc_id] = []
                 hgnc_tx[hgnc_id].append(tx)
         
-        genes = self.hgnc_collection.find({'build': build}).sort('chromosome', 1)
-        for gene in genes:
-            if transcripts:
-                hgnc_id = gene['hgnc_id']
-                transcripts = hgnc_tx.get(hgnc_id)
-                gene['ens_transcripts'] = hgnc_tx.get(hgnc_id)
-            yield gene
+        for gene_obj in self.hgnc_collection.find({'build': build}):
+            if add_transcripts:
+                hgnc_id = gene_obj['hgnc_id']
+                tx_objs = hgnc_tx.get(hgnc_id)
+                gene_obj['ens_transcripts'] = tx_objs
+            yield gene_obj
 
     def nr_genes(self, build=None):
         """Return the number of hgnc genes in collection
@@ -304,7 +304,7 @@ class GeneHandler(object):
 
         return alias_genes
 
-    def ensembl_genes(self, build='37', transcripts=False, id_transcripts=False):
+    def ensembl_genes(self, build=None, add_transcripts=False, id_transcripts=False):
         """Return a dictionary with ensembl ids as keys and gene objects as value.
 
         Args:
@@ -314,17 +314,17 @@ class GeneHandler(object):
         Returns:
             genes(dict): {<ensg_id>: gene_obj, ...}
         """
-
+        build = build or '37'
         genes = {}
         if id_transcripts:
-            transcripts = True
+            add_transcripts = True
 
-        for gene_obj in self.all_genes(build=build, transcripts=transcripts):
+        for gene_obj in self.all_genes(build=build, add_transcripts=add_transcripts):
             ensg_id = gene_obj['ensembl_id']
             hgnc_id = gene_obj['hgnc_id']
             transcript_objs = gene_obj.get('ens_transcripts')
             if id_transcripts and transcript_objs:
-                gene_obj['id_transcripts'] = self.get_id_transcripts(build='37', transcripts=transcript_objs)
+                gene_obj['id_transcripts'] = self.get_id_transcripts(build=build, transcripts=transcript_objs)
             genes[ensg_id] = gene_obj
 
         LOG.info("Ensembl genes fetched")
