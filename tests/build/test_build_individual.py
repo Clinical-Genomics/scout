@@ -12,10 +12,10 @@ def test_build_individual():
         'display_name': '1-1',
         'sex': 'male',
         'phenotype': 'affected',
-        'bam_file': 'a.bam',
+        'bam_file': 'scout/demo/reduced_mt.bam',
         'capture_kits': ['Agilent']
     }
-    
+
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
 
@@ -26,7 +26,7 @@ def test_build_individual():
     assert ind_obj['mother'] == ind_info['mother']
     assert ind_obj['sex'] == '1'
     assert ind_obj['phenotype'] == 2
-    assert ind_obj['bam_file'] == ind_info['bam_file']
+    assert ind_obj['bam_file'].endswith(ind_info['bam_file'])
     assert ind_obj['analysis_type'] == 'unknown'
 
 def test_build_individual_no_individual_id():
@@ -170,7 +170,7 @@ def test_build_individual_tmb():
         'capture_kits': ['Agilent'],
         'tmb': '0.1',
     }
-    
+
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
 
@@ -191,7 +191,7 @@ def test_build_individual_msi():
         'tmb': '0.1',
         'msi': '13',
     }
-    
+
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
 
@@ -213,7 +213,7 @@ def test_build_individual_tumor_purity():
         'msi': '13',
         'tumor_purity': '0.013',
     }
-    
+
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
 
@@ -235,7 +235,7 @@ def test_build_individual_tumor_type():
         'msi': '13',
         'tumor_type': 'melanoma',
     }
-    
+
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
 
@@ -258,7 +258,7 @@ def test_build_individual_tissue_type():
         'msi': '13',
         'tissue_type': 'blood',
     }
-    
+
     ## WHEN parsing the information
     ind_obj = build_individual(ind_info)
 

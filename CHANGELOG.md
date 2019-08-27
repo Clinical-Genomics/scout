@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
   phenogroups and cohorts.
 
 ### Fixed
+- Fixes of and induced by build tests
 - Fixed bug affecting variant observations in other cases
 - Fixed a bug that showed wrong gene coverage in general panel PDF export
 - MT report only shows variants occurring in the specific individual of the excel sheet
