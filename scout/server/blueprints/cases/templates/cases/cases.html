@@ -81,11 +81,15 @@
     </div>
   {% endif %}
 
-  {% for group_name, case_group in cases %}
-    {% if case_group|length > 0 %}
-      <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
-    {% endif %}
+  {% set ordered_statuses = ['prioritized', 'active', 'inactive', 'archived', 'solved', ] -%}
+  {% for status in ordered_statuses %}
+    {% for group_name, case_group in cases %}
+      {% if status == group_name and case_group|length > 0 %}
+        <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+      {% endif %}    
+    {% endfor %}
   {% endfor %}
+
 {% endblock %}
 
 {% macro search_form() %}
