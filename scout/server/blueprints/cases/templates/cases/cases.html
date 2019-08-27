@@ -298,7 +298,7 @@
       searchList.push(sortItem);
       sort_link = document.getElementById(sortItem.split('=')[1]);
       const url = window.location.href.split('?')[0].concat(searchList.join('&'));
-      sort_link.href = url
+      sort_link.href = url;
       //submit link
       sort_link.submit();
     }
