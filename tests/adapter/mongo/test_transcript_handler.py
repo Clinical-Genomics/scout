@@ -8,7 +8,7 @@ from scout.exceptions import IntegrityError
 
 def test_insert_transcript(adapter):
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
+    assert sum(1 for i in adapter.transcripts()) == 0
 
     ##WHEN inserting a transcript
     transcript_obj = {
@@ -22,14 +22,14 @@ def test_insert_transcript(adapter):
     obj_id = adapter.load_hgnc_transcript(transcript_obj)
 
     ##THEN assert that the transcript is there
-    assert adapter.transcripts().count() == 1
+    assert sum(1 for i in adapter.transcripts()) == 1
     ##THEN assert that no transcripts are in the '38' build
-    assert adapter.transcripts(build='38').count() == 0
+    assert sum(1 for i in adapter.transcripts(build='38')) == 0
 
 def test_insert_many_transcripts(adapter):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
+    assert sum(1 for i in adapter.transcripts()) == 0
 
     transcript_objs = []
     ##WHEN inserting a bulk of transcripts
@@ -46,9 +46,9 @@ def test_insert_many_transcripts(adapter):
     result = adapter.load_transcript_bulk(transcript_objs)
 
     ##THEN assert that the transcripts are loaded
-    assert adapter.transcripts().count() == 300
+    assert sum(1 for i in adapter.transcripts()) == 300
     ##THEN assert that no transcripts are in the '38' build
-    assert adapter.transcripts(build='38').count() == 0
+    assert sum(1 for i in adapter.transcripts(build='38')) == 0
 
 def test_insert_many_transcripts_duplicate(adapter):
     adapter = adapter
@@ -76,23 +76,22 @@ def test_insert_many_transcripts_duplicate(adapter):
 def test_insert_transcripts(adapter, transcript_objs):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
+    assert sum(1 for i in adapter.transcripts()) == 0
 
     ##WHEN inserting a bulk of transcripts
     result = adapter.load_transcript_bulk(transcript_objs)
 
     ##THEN assert that the transcripts are loaded
-    assert adapter.transcripts().count() == len(transcript_objs)
+    assert sum(1 for i in adapter.transcripts()) == len(transcript_objs)
     ##THEN assert that no transcripts are in the '38' build
-    assert adapter.transcripts(build='38').count() == 0
-
+    assert sum(1 for i in adapter.transcripts(build='38')) == 0
 
 #################### Combined transcript/gene tests ####################
 
 def test_insert_transcript(adapter):
     ##GIVEN a empty adapter
-    assert adapter.transcripts().count() == 0
-    assert adapter.all_genes().count() == 0
+    assert sum(1 for i in adapter.transcripts()) == 0
+    assert sum(1 for i in adapter.all_genes()) == 0
 
     ##WHEN inserting a gene and some transcripts
     hgnc_id = 257
@@ -280,7 +279,7 @@ def test_insert_exon(adapter):
     ##GIVEN a empty adapter
     assert adapter.exon(build='37') is None
 
-    ##WHEN inserting a transcript
+    ##WHEN inserting an exon
     exon_obj = {
         'exon_id': '1-1-100', # str(chrom-start-end)
         'chrom': '1', 
@@ -293,7 +292,32 @@ def test_insert_exon(adapter):
     }
     obj_id = adapter.load_exon(exon_obj)
 
-    ##THEN assert that the transcript is there
+    ##THEN assert that there is an exon in build 37
     assert adapter.exon(build='37')
-    ##THEN assert that no transcripts are in the '38' build
+    ##THEN assert that there are no exons build 38
     assert adapter.exon(build='38') is None
+
+def test_insert_exon_bulk(adapter):
+    ##GIVEN a empty adapter
+    assert adapter.exon(build='37') is None
+
+    ##WHEN inserting a bulk of exons
+    exon_bulk = []
+    for i in range(1,300):
+        exon_obj = {
+            'exon_id': '1-1-'+str(i), # str(chrom-start-end)
+            'chrom': '1', 
+            'start': 1, 
+            'end': i,     
+            'transcript': 'enst1', # ENST ID
+            'hgnc_id': 1,      # HGNC_id
+            'rank': i, # Order of exon in transcript
+            'build': '37', # Genome build
+        }
+        exon_bulk.append(exon_obj)
+    adapter.load_exon_bulk(exon_bulk)
+
+    ##THEN assert that the transcript is there
+    assert sum(1 for i in adapter.exons(build='37')) == 299
+    ##THEN assert that no transcripts are in the '38' build
+    assert sum(1 for i in adapter.exons(build='38')) == 0
