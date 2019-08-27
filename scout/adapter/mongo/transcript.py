@@ -35,31 +35,6 @@ class TranscriptHandler(object):
 
         return result
 
-    def load_exon(self, exon_obj):
-        """Add a exon object to the database
-
-        Arguments:
-            exon_obj(dict)
-
-        """
-        res = self.exon_collection.insert_one(exon_obj)
-        return res
-
-    def load_exon_bulk(self, exon_objs):
-        """Load a bulk of exon objects to the database
-
-        Arguments:
-            exon_objs(iterable(scout.models.hgnc_exon))
-
-        """
-        try:
-            LOG.debug("Loading exon bulk")
-            result = self.exon_collection.insert_many(exon_objs)
-        except (DuplicateKeyError, BulkWriteError) as err:
-            raise IntegrityError(err)
-
-        return result
-
     def drop_transcripts(self, build=None):
         """Delete the transcripts collection"""
         if build:
@@ -218,19 +193,30 @@ class TranscriptHandler(object):
 
         return self.transcript_collection.find(query)
 
-    def load_exons(self, exons, genes=None, build='37'):
-        """Create exon objects and insert them into the database
+    def load_exon(self, exon_obj):
+        """Add a exon object to the database
 
-        Args:
-            exons(iterable(dict))
+        Arguments:
+            exon_obj(dict)
+
         """
-        genes = genes or self.ensembl_genes(build)
-        for exon in exons:
-            exon_obj = build_exon(exon, genes)
-            if not exon_obj:
-                continue
+        res = self.exon_collection.insert_one(exon_obj)
+        return res
 
-            res = self.exon_collection.insert_one(exon_obj)
+    def load_exon_bulk(self, exon_objs):
+        """Load a bulk of exon objects to the database
+
+        Arguments:
+            exon_objs(iterable(scout.models.hgnc_exon))
+
+        """
+        try:
+            LOG.debug("Loading exon bulk")
+            result = self.exon_collection.insert_many(exon_objs)
+        except (DuplicateKeyError, BulkWriteError) as err:
+            raise IntegrityError(err)
+
+        return result
 
     def exons(self, hgnc_id=None, transcript_id=None,  build=None):
         """Return all exons
