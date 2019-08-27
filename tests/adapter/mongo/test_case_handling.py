@@ -474,11 +474,11 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
     assert adapter.case_collection.find().count() == 2
 
     # WHEN querying for a similar case
-    name_query= "similar:{}".format(case_obj['_id'])
+    name_query= "similar:{}".format(case_obj['display_name'])
 
     # THEN one case should be returned
     cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert len(cases) == 2
+    assert len(cases) == 1
 
 def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     adapter = real_adapter
