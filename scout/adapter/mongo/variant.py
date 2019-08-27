@@ -258,6 +258,7 @@ class VariantHandler(VariantLoader):
 
     def gene_variants(self, query=None,
                    category='snv', variant_type=['clinical'],
+                   institute_id=None,
                    nr_of_variants=50, skip=0):
         """Return all variants seen in a given gene.
 
@@ -267,11 +268,18 @@ class VariantHandler(VariantLoader):
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
             category(str): 'sv', 'str', 'snv' or 'cancer'
+            institute_id: institute ID (required for similarity query)
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-        """
 
+        Query can contain:
+            phenotype_terms,
+            phenotype_groups,
+            similar_case,
+            cohorts
+        """
         mongo_variant_query = self.build_variant_query(query=query,
+                                   institute_id=institute_id,
                                    category=category, variant_type=variant_type)
 
         sorting = [('rank_score', pymongo.DESCENDING)]
