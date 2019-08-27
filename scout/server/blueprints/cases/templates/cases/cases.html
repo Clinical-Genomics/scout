@@ -81,7 +81,6 @@
     </div>
   {% endif %}
 
-
   {% for group_name, case_group in cases %}
     {% if case_group|length > 0 %}
       <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
@@ -146,11 +145,11 @@
       <tr>
         <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
         <th class="col-xs-1">Status</th>
-        <th class="col-xs-1">Analysis date</th>
+        <th class="col-xs-2">Analysis date <a href="{{ url_for('cases.cases', institute_id=institute._id) }}" onclick="updateArgs('sort=analysis_date')" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true"></i></a></th>
         <th class="col-xs-2">Link</th>
         <th class="col-xs-2">Sequencing</th>
         <th class="col-xs-2">Track</th>
-        <th class="col-xs-2">Clinvar</th>
+        <th class="col-xs-1">Clinvar</th>
       </tr>
     </thead>
     <tbody>
@@ -283,6 +282,21 @@
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
-    })
+    });
+
+    function updateArgs(sortItem) {
+      //modifying the sorting of cases
+      let searchList = window.location.search.substr(1).split('&');
+      //if case list was already sorted by sortItem
+      if(searchList.includes(sortItem)){
+        alert('found!');
+        searchList.splice(searchList.indexOf(sortItem),1);
+      } else {
+        // sort by sortItem
+        alert('nope!');
+        searchList.pop(sortItem);
+      }
+    }
+
   </script>
 {% endblock %}
