@@ -19,30 +19,28 @@ def test_cases(app, user_obj, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-        # test query passing limit and 'analysis_date' as sorting parameter
+        # test query passing parameters in seach form
         request_data = {
             'limit' : '100',
-            'sort' : 'analysis_date'
+            'skip_assigned' : 'on',
+            'is_research' : 'on',
+            'query' : 'case_id'
         }
-        # THEN it should return a page
+        resp = client.get(url_for('cases.cases',
+                                  institute_id=institute_obj['internal_id'], data = request_data))
+        # response should return a page
         assert resp.status_code == 200
 
-        # test query passing limit and 'status' as sorting parameters
-        request_data = {
-            'limit' : '100',
-            'sort' : 'status'
-        }
-        # THEN it should return a page
-        assert resp.status_code == 200
-
-        # test query passing limit and 'track' as sorting parameters
-        request_data = {
-            'limit' : '100',
-            'sort' : 'track'
-        }
-        # THEN it should return a page
-        assert resp.status_code == 200
-
+        sorting_options = ['analysis_date', 'track', 'status']
+        for option in sorting_options:
+            # test query passing the sorting option to the cases view
+            request_data = {
+                'sort' : option
+            }
+            resp = client.get(url_for('cases.cases',
+                                      institute_id=institute_obj['internal_id'], data = request_data))
+            # response should return a page
+            assert resp.status_code == 200
 
 
 def test_cases_query(app, user_obj, case_obj, institute_obj):
