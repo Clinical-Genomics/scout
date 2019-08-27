@@ -222,22 +222,27 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(query)
 
-    def variant(self, document_id, gene_panels=None, case_id=None):
+    def variant(self, document_id=None, gene_panels=None, case_id=None, simple_id=None):
         """Returns the specified variant.
 
            Arguments:
                document_id : A md5 key that represents the variant or "variant_id"
                gene_panels(List[GenePanel])
                case_id (str): case id (will search with "variant_id")
+               simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
 
            Returns:
                variant_object(Variant): A odm variant object
         """
         query = {}
-        if case_id:
-            # search for a variant in a case
+        if case_id and document_id:
+            # search for a variant in a case by variant_id
             query['case_id'] = case_id
             query['variant_id'] = document_id
+        elif case_id and simple_id:
+            # search for a variant in a case by its simple_id
+            query['case_id'] = case_id
+            query['simple_id'] = simple_id
         else:
             # search with a unique id
             query['_id'] = document_id

@@ -56,3 +56,15 @@ def test_export_panel(mock_app):
     # The CLI command shoud return gene panel formatted in the expected way
     assert result.exit_code == 0
     assert '22\t26995242\t27014052\t2397\tCRYBB1\n22\t38452318\t38471708\t9394\tPICK1\n' in result.output
+
+    # Pass a valid panel name, valid version, bed file format option and genome build GRCh38
+    result =  runner.invoke(cli, ['export', 'panel',
+        panel_obj['panel_name'],
+        '--version', 1.0,
+        '-b', 'GRCh38',
+        '--bed'
+        ])
+
+    # The CLI command shoud return gene panel formatted in the expected way
+    assert result.exit_code == 0
+    assert '##genome_build=GRCh38' in result.output
