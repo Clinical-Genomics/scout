@@ -8,7 +8,8 @@ from scout.constants import (SPIDEX_HUMAN, CLINSIG_MAP)
 
 class QueryHandler(object):
 
-    def build_variant_query(self, query=None, category='snv', variant_type=['clinical']):
+    def build_variant_query(self, query=None, institute_id=None, category='snv',
+                            variant_type=['clinical']):
         """Build a mongo query across multiple cases.
         Translate query options from a form into a complete mongo query dictionary.
 
@@ -26,6 +27,11 @@ class QueryHandler(object):
             category(str): 'snv', 'sv', 'str' or 'cancer'
             variant_type(str): 'clinical' or 'research'
 
+        Possible query dict keys:
+            phenotype_terms
+            phenotype_groups
+            cohorts
+
         Returns:
             mongo_query : A dictionary in the mongo query format.
         """
@@ -42,9 +48,42 @@ class QueryHandler(object):
 
         mongo_variant_query['category'] = category
 
-        rank_score = query.get('rank_score') or 15
+        select_cases = None
+        select_case_obj = None
+        mongo_case_query = {}
 
+        if query.get('phenotype_terms'):
+            mongo_case_query['phenotype_terms.phenotype_id'] = {'$in': query['phenotype_terms']}
+
+        if query.get('phenotype_groups'):
+            mongo_case_query['phenotype_groups.phenotype_id'] = {'$in': query['phenotype_groups']}
+
+        if query.get('cohorts'):
+            mongo_case_query['cohorts'] = {'$in': query['cohorts']}
+
+        if mongo_case_query != {}:
+            mongo_case_query['owner'] = institute_id
+            LOG.debug("Search cases for selection set, using query {0}".format(select_case_obj))
+            select_case_obj = self.case_collection.find(mongo_case_query)
+            select_cases = [case_id.get('display_name') for case_id in select_case_obj]
+
+        if query.get('similar_case'):
+            similar_case_display_name = query['similar_case'][0]
+            case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
+            if case_obj:
+                LOG.debug("Search for cases similar to %s", case_obj.get('display_name'))
+                similar_cases = self.get_similar_cases(case_obj)
+                LOG.debug("Similar cases: %s",similar_cases)
+                select_cases = [similar[0] for similar in similar_cases]
+            else:
+                LOG.debug("Case %s not found.", similar_case_display_name)
+
+        if select_cases:
+            mongo_variant_query['case_id'] = {'$in': select_cases}
+
+        rank_score = query.get('rank_score') or 15
         mongo_variant_query['rank_score'] = {'$gte': rank_score}
+
         LOG.debug("Querying %s" % mongo_variant_query)
 
         return mongo_variant_query
