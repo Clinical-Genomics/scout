@@ -410,10 +410,10 @@ def gene_variants(institute_id):
 
         LOG.debug("query {}".format(form.data))
 
-        variants_query = store.gene_variants(query=form.data, category='snv',
-                            variant_type=variant_type)
+        variants_query = store.gene_variants(query=form.data, institute_id=institute_id,
+                                             category='snv', variant_type=variant_type)
 
-        data = controllers.gene_variants(store, variants_query, page)
+        data = controllers.gene_variants(store, variants_query, institute_id, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
 
