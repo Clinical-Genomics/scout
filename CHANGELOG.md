@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export genes and gene panels in build GRCh38
 - Dearchive reruns and flad them as 'inactive' if archived
 - Sort cases by analysis_date, track or status
+- Display cases in the following order: prioritized, active, inactive, archived, solved
 
 ### Fixed
 - Fixed bug affecting variant observations in other cases
