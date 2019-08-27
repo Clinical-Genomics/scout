@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from flask import url_for, current_app
+from flask_login import current_user
 
 from scout.server.extensions import store
 
-def test_cases(app, user_obj, institute_obj):
+
+def test_cases(app, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -27,7 +29,7 @@ def test_cases(app, user_obj, institute_obj):
             'query' : 'case_id'
         }
         resp = client.get(url_for('cases.cases',
-                                  institute_id=institute_obj['internal_id'], data = request_data))
+                                  institute_id=institute_obj['internal_id'], params=request_data))
         # response should return a page
         assert resp.status_code == 200
 
@@ -38,12 +40,12 @@ def test_cases(app, user_obj, institute_obj):
                 'sort' : option
             }
             resp = client.get(url_for('cases.cases',
-                                      institute_id=institute_obj['internal_id'], data = request_data))
+                                      institute_id=institute_obj['internal_id'], params=request_data))
             # response should return a page
             assert resp.status_code == 200
 
 
-def test_cases_query(app, user_obj, case_obj, institute_obj):
+def test_cases_query(app, case_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -62,7 +64,7 @@ def test_cases_query(app, user_obj, case_obj, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-def test_cases_panel_query(app, user_obj, case_obj, parsed_panel, institute_obj):
+def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -81,7 +83,7 @@ def test_cases_panel_query(app, user_obj, case_obj, parsed_panel, institute_obj)
         # THEN it should return a page
         assert resp.status_code == 200
 
-def test_institutes(app, user_obj):
+def test_institutes(app):
     # GIVEN an initialized app
     # GIVEN a valid user
 
@@ -96,7 +98,7 @@ def test_institutes(app, user_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-def test_case(app, user_obj, case_obj, institute_obj):
+def test_case(app, case_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user, case and institute
 
@@ -167,7 +169,7 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         assert var2_id not in str(resp.data)
 
 
-def test_case_report(app, user_obj, institute_obj, case_obj):
+def test_case_report(app, institute_obj, case_obj):
     # Test the web page containing the general case report
 
     # GIVEN an initialized app and a valid user and institute
@@ -185,7 +187,24 @@ def test_case_report(app, user_obj, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_pdf_case_report(app, user_obj, institute_obj, case_obj):
+def test_clinvar_submissions(app, institute_obj):
+    # Test the web page containing the clinvar submissions for an institute
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # When visiting the clinvar submissiin page (get request)
+        resp = client.get(url_for('cases.clinvar_submissions',
+                                  institute_id=institute_obj['internal_id']))
+
+        # a successful response should be returned
+        assert resp.status_code == 200
+
+
+def test_pdf_case_report(app, institute_obj, case_obj):
     # Test the web page containing the general case PDF report
 
     # GIVEN an initialized app and a valid user and institute
@@ -206,7 +225,7 @@ def test_pdf_case_report(app, user_obj, institute_obj, case_obj):
 
 
 
-def test_mt_report(app, user_obj, institute_obj, case_obj):
+def test_mt_report(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -326,3 +345,26 @@ def test_matchmaker_delete(app, institute_obj, case_obj, mme_submission):
                                 case_name=case_obj['display_name']))
         # page redirects in the views anyway, so it will return a 302 code
         assert resp.status_code == 302
+
+
+def test_status(app, institute_obj, case_obj, user_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # make sure test case status is inactive
+        assert case_obj['status'] == 'inactive'
+
+        # use status view to update status for test case
+        request_data = {
+            'status' : 'prioritized'
+        }
+        resp = client.post(url_for('cases.status',
+                                institute_id=institute_obj['internal_id'],
+                                case_name=case_obj['display_name'], params=request_data))
+
+        assert resp.status_code == 302 # page should be redirected
