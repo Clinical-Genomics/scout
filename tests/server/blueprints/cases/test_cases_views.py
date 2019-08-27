@@ -19,6 +19,32 @@ def test_cases(app, user_obj, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
+        # test query passing limit and 'analysis_date' as sorting parameter
+        request_data = {
+            'limit' : '100',
+            'sort' : 'analysis_date'
+        }
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # test query passing limit and 'status' as sorting parameters
+        request_data = {
+            'limit' : '100',
+            'sort' : 'status'
+        }
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # test query passing limit and 'track' as sorting parameters
+        request_data = {
+            'limit' : '100',
+            'sort' : 'track'
+        }
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+
+
 def test_cases_query(app, user_obj, case_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
