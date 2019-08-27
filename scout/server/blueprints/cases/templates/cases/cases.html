@@ -144,11 +144,11 @@
     <thead>
       <tr>
         <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
-        <th class="col-xs-1">Status</th>
-        <th class="col-xs-2">Analysis date <a href="{{ url_for('cases.cases', institute_id=institute._id) }}" onclick="updateArgs('sort=analysis_date')" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true"></i></a></th>
+        <th class="col-xs-1">Status<a href="" id="status" onclick="updateArgs('sort=status');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true"></i></a></th>
+        <th class="col-xs-2">Analysis date<a href="" id="analysis_date" onclick="updateArgs('sort=analysis_date');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true"></i></a></th>
         <th class="col-xs-2">Link</th>
         <th class="col-xs-2">Sequencing</th>
-        <th class="col-xs-2">Track</th>
+        <th class="col-xs-2">Track<a href="" id="track" onclick="updateArgs('sort=track');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true"></i></a></th>
         <th class="col-xs-1">Clinvar</th>
       </tr>
     </thead>
@@ -285,17 +285,22 @@
     });
 
     function updateArgs(sortItem) {
+      sort_items = ['sort=status', 'sort=analysis_date', 'sort=track'];
       //modifying the sorting of cases
-      let searchList = window.location.search.substr(1).split('&');
-      //if case list was already sorted by sortItem
-      if(searchList.includes(sortItem)){
-        alert('found!');
-        searchList.splice(searchList.indexOf(sortItem),1);
-      } else {
-        // sort by sortItem
-        alert('nope!');
-        searchList.pop(sortItem);
+      let searchList = window.location.search.split('&');
+      if(!searchList[0]){
+        //fix url if sorting is the only param
+        searchList[0] = '?';
       }
+      //remove all sort params
+      searchList = searchList.filter(f => !sort_items.includes(f))
+      //add specific sort param
+      searchList.push(sortItem);
+      sort_link = document.getElementById(sortItem.split('=')[1]);
+      const url = window.location.href.split('?')[0].concat(searchList.join('&'));
+      sort_link.href = url
+      //submit link
+      sort_link.submit();
     }
 
   </script>
