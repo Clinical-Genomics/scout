@@ -303,8 +303,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     request_data['level'] = institute_obj.get('coverage_cutoff', 15)
 
     #send get request to chanjo report
-    #disable default certificate verification
-    resp = requests.post(base_url+'reports/report', data=request_data, verify=False)
+    resp = requests.post(base_url+'reports/report', data=request_data)
 
     #read response content
     soup = BeautifulSoup(resp.text)
