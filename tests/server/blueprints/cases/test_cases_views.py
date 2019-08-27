@@ -115,6 +115,29 @@ def test_case(app, case_obj, institute_obj):
             # THEN it should return a page
             assert resp.status_code == 200
 
+
+def test_case_synopsis(app, institute_obj, case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        req_data = {
+            'synopsis' : 'test synopsis'
+        }
+
+        # WHEN updating the synopsis of a case
+        resp = client.get(url_for('cases.case_synopsis',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name'],
+                                  data=req_data ))
+        # then it should return a redirected page
+        assert resp.status_code == 302
+
+
 def test_causatives(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -187,6 +210,47 @@ def test_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
+def test_case_diagnosis(app, institute_obj, case_obj):
+    # Test the web page containing the general case report
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        req_data = {
+            'omim_id' : 'OMIM:615349'
+        }
+
+        # When updating an OMIM diagnosis for a case
+        resp = client.get(url_for('cases.case_diagnosis',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']),
+                                  data=req_data
+                                  )
+        # Response should be redirected to case page
+        assert resp.status_code == 302
+
+
+def test_pdf_case_report(app, institute_obj, case_obj):
+    # Test the web page containing the general case report
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # When clicking on 'Download PDF' button on general report page
+        resp = client.get(url_for('cases.pdf_case_report',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']),
+                                  )
+        # a successful response should be returned
+        assert resp.status_code == 200
+
+
 def test_clinvar_submissions(app, institute_obj):
     # Test the web page containing the clinvar submissions for an institute
 
@@ -202,27 +266,6 @@ def test_clinvar_submissions(app, institute_obj):
 
         # a successful response should be returned
         assert resp.status_code == 200
-
-
-def test_pdf_case_report(app, institute_obj, case_obj):
-    # Test the web page containing the general case PDF report
-
-    # GIVEN an initialized app and a valid user and institute
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for('auto_login'))
-        assert resp.status_code == 200
-
-        # When clicking on 'download PDF' on general report page
-        resp = client.get(url_for('cases.pdf_case_report',
-                                  institute_id=institute_obj['internal_id'],
-                                  case_name=case_obj['display_name']),
-                                  )
-        # a successful response should be returned
-        assert resp.status_code == 200
-        # and it should contain a pdf file, not HTML code
-        assert resp.mimetype == 'application/pdf'
-
 
 
 def test_mt_report(app, institute_obj, case_obj):
