@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed bug affecting variant observations in other cases
 - Fixed a bug that showed wrong gene coverage in general panel PDF export
 - MT report only shows variants occurring in the specific individual of the excel sheet
+- Disable SSL certifcate verification in requests to chanjo
 
 ## [4.6.1]
 
