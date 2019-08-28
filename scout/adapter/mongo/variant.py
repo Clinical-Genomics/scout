@@ -222,22 +222,27 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(query)
 
-    def variant(self, document_id, gene_panels=None, case_id=None):
+    def variant(self, document_id=None, gene_panels=None, case_id=None, simple_id=None):
         """Returns the specified variant.
 
            Arguments:
                document_id : A md5 key that represents the variant or "variant_id"
                gene_panels(List[GenePanel])
                case_id (str): case id (will search with "variant_id")
+               simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
 
            Returns:
                variant_object(Variant): A odm variant object
         """
         query = {}
-        if case_id:
-            # search for a variant in a case
+        if case_id and document_id:
+            # search for a variant in a case by variant_id
             query['case_id'] = case_id
             query['variant_id'] = document_id
+        elif case_id and simple_id:
+            # search for a variant in a case by its simple_id
+            query['case_id'] = case_id
+            query['simple_id'] = simple_id
         else:
             # search with a unique id
             query['_id'] = document_id
@@ -253,6 +258,7 @@ class VariantHandler(VariantLoader):
 
     def gene_variants(self, query=None,
                    category='snv', variant_type=['clinical'],
+                   institute_id=None,
                    nr_of_variants=50, skip=0):
         """Return all variants seen in a given gene.
 
@@ -262,11 +268,18 @@ class VariantHandler(VariantLoader):
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
             category(str): 'sv', 'str', 'snv' or 'cancer'
+            institute_id: institute ID (required for similarity query)
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-        """
 
+        Query can contain:
+            phenotype_terms,
+            phenotype_groups,
+            similar_case,
+            cohorts
+        """
         mongo_variant_query = self.build_variant_query(query=query,
+                                   institute_id=institute_id,
                                    category=category, variant_type=variant_type)
 
         sorting = [('rank_score', pymongo.DESCENDING)]

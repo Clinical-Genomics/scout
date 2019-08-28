@@ -9,9 +9,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Picture overview of ideogram, UPDs and ROHs in case-page
+- Export genes and gene panels in build GRCh38
+- Search for cases with variants pinned or marked causative in a given gene.
+- Search for cases phenotypically similiar to a case also from WUI.
+- Case variant searches can be limited to similar cases, matching HPO-terms,
+  phenogroups and cohorts.
 
 ### Fixed
-
+- Fixed bug affecting variant observations in other cases
+- Fixed a bug that showed wrong gene coverage in general panel PDF export
+- MT report only shows variants occurring in the specific individual of the excel sheet
 
 ## [4.6.1]
 

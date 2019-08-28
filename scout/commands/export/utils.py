@@ -7,9 +7,8 @@ json_option = click.option('--json',
     help='Output result in json format'
 )
 
-build_option = click.option('-b', '--build', 
-    default='37', 
+build_option = click.option('-b', '--build',
+    default='37',
     type=click.Choice(BUILDS),
     show_default=True
 )
-

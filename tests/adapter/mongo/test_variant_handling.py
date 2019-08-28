@@ -7,6 +7,28 @@ TRAVIS = os.getenv('TRAVIS')
 
 log = logging.getLogger(__name__)
 
+def test_variant(real_variant_database, variant_objs, case_obj):
+    """"Test querying a variant"""
+    adapter = real_variant_database
+    test_variant = list(variant_objs)[0]
+
+    # try to collect the variant from database using its document_id:
+    variant_a = adapter.variant(document_id=test_variant['_id'])
+    assert variant_a
+
+    # try to collect the variant from database using its document_id and case id:
+    variant_b = adapter.variant(document_id=test_variant['variant_id'], case_id=case_obj['_id'])
+    assert variant_b
+    # it should be the same variant as before:
+    assert variant_a == variant_b
+
+    # try to collect the variant from database using its case id and simple_id:
+    variant_c = adapter.variant(simple_id=test_variant['simple_id'], case_id=case_obj['_id'])
+    assert variant_c
+    # it should be the same as the other 2 variants:
+    assert variant_c == variant_a
+
+
 def test_query_all_gene_variants(real_variant_database):
     """"Test querying gene variants using gene symbol."""
     adapter = real_variant_database
