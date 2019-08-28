@@ -52,4 +52,24 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
 
     sed_restore = "sed -i -e 's/SAMPLE_ID/sample_id/g' "    # restore config
     os.system(sed_restore + load_path)    
+
     
+def test_load_case_NoConf(mock_app, institute_obj, case_obj):
+    # GIVEN a load command missing path to config
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # remove case from real populated database using adapter
+    store.delete_case(case_id=case_obj['_id'])
+    assert store.case_collection.find().count() == 0
+    assert store.institute_collection.find({'_id':'cust000'}).count()==1
+    no_load_path = ""
+
+    # WHEN load command is run
+    result = runner.invoke(cli, ['load', 'case', no_load_path ])
+
+    # THEN error in exit status
+    assert result.exit_code != 0
+
+
+
