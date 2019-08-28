@@ -24,7 +24,7 @@ def test_view_hpo(mock_app):
         'description' : 'Round face',
         'genes' : [4392, 30832],
     }
-    store.hpo_term_collection.insert(hpo_term)
+    store.hpo_term_collection.insert_one(hpo_term)
 
     # Test CLI providing a term
     result =  runner.invoke(cli, ['view', 'hpo',
