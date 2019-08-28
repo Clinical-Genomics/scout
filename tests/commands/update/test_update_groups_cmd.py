@@ -34,7 +34,7 @@ def test_update_groups(mock_app, tmpdir):
         "description" : "Short chin",
         "genes" : [ 13890 ]
     }]
-    store.hpo_term_collection.insert_one(hpo_terms)
+    store.hpo_term_collection.insert_many(hpo_terms)
 
     # Test CLI with new phenotype group
     result =  runner.invoke(cli, ['update', 'groups',
