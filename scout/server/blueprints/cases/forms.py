@@ -28,3 +28,7 @@ class GeneVariantFiltersForm(FlaskForm):
     hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
     filter_variants = SubmitField(label='Filter variants')
     rank_score = IntegerField()
+    phenotype_terms = TagListField('HPO terms')
+    phenotype_groups = TagListField('Phenotype groups')
+    similar_case = TagListField('Phenotypically similar case')
+    cohorts = TagListField('Cohorts')

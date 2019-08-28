@@ -9,6 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Export genes and gene panels in build GRCh38
+- Search for cases with variants pinned or marked causative in a given gene.
+- Search for cases phenotypically similiar to a case also from WUI.
+- Case variant searches can be limited to similar cases, matching HPO-terms,
+  phenogroups and cohorts.
 
 ### Fixed
 - Fixed bug affecting variant observations in other cases
