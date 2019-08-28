@@ -7,9 +7,7 @@ Tests for genes that are built on the variants
 from scout.build.variant.gene import build_gene
 
 def test_build_gene():
-    ## GIVEN information about a gene and a transcripts
-
-    ## WHEN adding gene and transcript information and building variant
+    ## GIVEN information about a gene and a transcript
     transcript_info = {
         'functional_annotations': ['transcript_ablation'],
         'transcript_id': 'ENST00000249504',
@@ -28,15 +26,17 @@ def test_build_gene():
         'canonical_transcript': 'ENST00000249504'
     }
 
+    ## WHEN building the gene object
+
     gene_obj = build_gene(gene_info)
 
+    ## THEN assert that the hgnc id was added correct
     assert gene_obj['hgnc_id'] == gene_info['hgnc_id']
+    ## Then assert no hgnc symbol was found
     assert 'hgnc_symbol' not in gene_obj
 
 def test_build_gene_hgnc_info():
     ## GIVEN information about a gene and some hgnc information
-
-    ## WHEN adding gene and transcript information and building variant
     transcript_info = {
         'functional_annotations': ['transcript_ablation'],
         'transcript_id': 'ENST00000249504',
@@ -102,7 +102,13 @@ def test_build_gene_hgnc_info():
 
     hgncid_to_gene = {5134: hgnc_gene}
 
-    gene_obj = build_gene(gene_info, hgncid_to_gene=hgncid_to_gene)
+    ## WHEN adding gene and transcript information and building variant
 
+    gene_obj = build_gene(gene_info, hgncid_to_gene=hgncid_to_gene)
+    
+    ## THEN assert that the hgnc id was added correct
+    assert gene_obj['hgnc_id'] == gene_info['hgnc_id']
+    ## THEN assert that the hgnc symbol was added from the hgnc gene information
     assert gene_obj['hgnc_symbol'] == hgnc_gene['hgnc_symbol']
-    assert gene_obj['inheritance'] == ['AD']
+    ## THEN assert that the gene inheritance models was added correct
+    assert gene_obj['inheritance'] == hgnc_gene['inheritance_models']
