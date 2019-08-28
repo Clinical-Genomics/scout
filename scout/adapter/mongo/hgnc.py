@@ -563,7 +563,7 @@ class GeneHandler(object):
                 intervals[chrom].addi(start, end, i)
                 continue
 
-            res = intervals[chrom].search(start, end)
+            res = intervals[chrom].overlap(start, end)
 
             # If the interval did not overlap any other intervals we insert it and continue
             if not res:
