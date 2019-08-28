@@ -397,12 +397,12 @@ def test_update_case_rerun_status(adapter, case_obj):
     # THEN assert that 'rerun_requested' is set to False
     assert res['rerun_requested'] is False
 
-
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
 
     # Make sure database contains HPO terms
     assert adapter.hpo_terms().count()
+
 
     # update test case using test HPO terms
     case_obj['phenotype_terms'] = test_hpo_terms
@@ -413,6 +413,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     # insert case into database
     adapter.case_collection.insert_one(case_obj)
     assert adapter.case_collection.find().count() == 1
+
 
     # Add another case with slightly different phenotype
     case_2 = copy.deepcopy(case_obj)
@@ -441,3 +442,55 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
 
     # and the first element of the list has a score higher or equal than the second
     assert similar_cases[0][1] > similar_cases[1][1]
+
+def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj):
+    adapter = hpo_database
+
+    # Make sure database contains HPO terms
+    assert adapter.hpo_terms().count()
+
+    # GIVEN a real database with no cases
+#        assert adapter.cases().count() == 0
+
+    # Give the case HPO terms
+    case_obj['phenotype_terms'] = test_hpo_terms
+    adapter.case_collection.find_one_and_update(
+        { '_id' : case_obj['_id'] },
+        { '$set' : {'phenotype_terms' : test_hpo_terms }},
+        return_document=pymongo.ReturnDocument.AFTER)
+
+    # Insert a case into the db
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find().count() == 1
+
+    # Add another case with slightly different phenotype:
+
+    case_2 = copy.deepcopy(case_obj)
+    case_2['_id']='case_2'
+    case_2['phenotype_terms'] = test_hpo_terms[:-1] # exclude last term
+
+    # insert this case in database:
+    adapter.case_collection.insert_one(case_2)
+    assert adapter.case_collection.find().count() == 2
+
+    # WHEN querying for a similar case
+    name_query= "similar:{}".format(case_obj['display_name'])
+
+    # THEN one case should be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert len(cases) == 1
+
+def test_get_cases_cohort(real_adapter, case_obj, user_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    cohort_name = 'cohort'
+
+    case_obj['cohorts'] = [ cohort_name ]
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving cases by a cohort name query
+    result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    # THEN we should get the case returned
+    assert result.count() == 1

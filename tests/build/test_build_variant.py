@@ -10,7 +10,7 @@ INSTITUTE_ID = 'test'
 def test_build_empty():
     ## GIVEN a variant with no information
     variant = {}
-    
+
     ## WHEN building a variant_obj
     ## THEN a Key Error should be raised since mandatory fields are missing
     with pytest.raises(KeyError):
@@ -30,9 +30,9 @@ def test_build_minimal(case_obj):
             self.QUAL = None
             self.var_type = 'snp'
             self.INFO = {}
-    
+
     variant = Cyvcf2Variant()
-    
+
     parsed_variant = parse_variant(variant, case_obj)
     assert 'ids' in parsed_variant
     variant_obj = build_variant(parsed_variant, INSTITUTE_ID)
@@ -40,7 +40,7 @@ def test_build_minimal(case_obj):
 
 def test_build_with_gene_info(parsed_variant):
     ## GIVEN information about a variant
-    
+
     ## WHEN adding gene and transcript information and building variant
     transcript_info = {
         'functional_annotations': ['transcript_ablation'],
@@ -57,18 +57,18 @@ def test_build_with_gene_info(parsed_variant):
         'hgnc_id': 5134,
         'region_annotation': 'exonic',
     }
-    
+
     parsed_variant['genes'].append(gene_info)
 
     variant_obj = build_variant(parsed_variant, INSTITUTE_ID)
-    
+
     ## THEN assert the information is added
     assert variant_obj['institute'] == INSTITUTE_ID
     assert len(variant_obj['genes']) == 1
 
 def test_build_with_hgnc_info(parsed_variant):
     ## GIVEN information about a variant
-    
+
     ## WHEN adding gene and transcript information and building variant
     transcript_info = {
         'functional_annotations': ['transcript_ablation'],
@@ -85,16 +85,16 @@ def test_build_with_hgnc_info(parsed_variant):
         'hgnc_id': 5134,
         'region_annotation': 'exonic',
     }
-    
+
     parsed_variant['genes'].append(gene_info)
-    
+
     transcript_1 = {
             'ensembl_transcript_id': 'ENST00000498438',
             'is_primary': False,
             'start': 176968944,
             'end': 176974482
         }
-    
+
     transcript_2 = {
             'ensembl_transcript_id': 'ENST00000249504',
             'is_primary': True,
@@ -104,12 +104,12 @@ def test_build_with_hgnc_info(parsed_variant):
         }
 
 
-    
+
     hgnc_transcripts = [
         transcript_1,
         transcript_2
     ]
-    
+
     hgnc_gene = {
         'hgnc_id': 5134,
         'hgnc_symbol': 'HOXD11',
@@ -129,22 +129,17 @@ def test_build_with_hgnc_info(parsed_variant):
         'vega_id': 'OTTHUMG00000132510',
         'transcripts': hgnc_transcripts,
         'incomplete_penetrance': False,
-        'ad': True,
-        'ar': False,
-        'xd': False,
-        'xr': False,
-        'x': False,
-        'y': False,
+        'inheritance_models': ['AD'],
         'transcripts_dict': {
             'ENST00000498438': transcript_1,
             'ENST00000249504': transcript_2,
             }
     }
-    
+
     hgncid_to_gene = {5134: hgnc_gene}
 
     variant_obj = build_variant(parsed_variant, INSTITUTE_ID, hgncid_to_gene=hgncid_to_gene)
-    
+
     ## THEN assert the information is added
     assert variant_obj['institute'] == INSTITUTE_ID
     assert variant_obj['genes'][0]['hgnc_id'] == 5134
@@ -154,7 +149,7 @@ def test_build_with_hgnc_info(parsed_variant):
 
 def test_build_variant(parsed_variant):
     variant_obj = build_variant(parsed_variant, INSTITUTE_ID)
-        
+
     assert variant_obj['chromosome'] == parsed_variant['chromosome']
     assert variant_obj['category'] == 'snv'
     assert variant_obj['institute'] == INSTITUTE_ID
@@ -168,7 +163,7 @@ def test_build_variants(parsed_variants, institute_obj):
 
 def test_build_sv_variant(parsed_sv_variant, institute_obj):
     variant_obj = build_variant(parsed_sv_variant, institute_obj)
-        
+
     assert variant_obj['chromosome'] == parsed_sv_variant['chromosome']
     assert variant_obj['category'] == 'sv'
 
@@ -183,8 +178,7 @@ def test_build_cadd_score(parsed_variants, institute_obj):
     for index,variant in enumerate(parsed_variants):
         if variant.get('cadd_score'):
             variant_obj = build_variant(variant, institute_obj)
-            
-            assert variant_obj['cadd_score'] == variant['cadd_score']
-            
-    assert index > 0
 
+            assert variant_obj['cadd_score'] == variant['cadd_score']
+
+    assert index > 0
