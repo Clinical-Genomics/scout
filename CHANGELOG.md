@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- Picture overview of ideogram, UPDs and ROHs in case-page
 
 ### Fixed
 
