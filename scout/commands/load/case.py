@@ -6,6 +6,7 @@ from pprint import pprint as pp
 from flask.cli import with_appcontext
 import click
 import yaml
+import traceback
 
 from cyvcf2 import VCF
 
