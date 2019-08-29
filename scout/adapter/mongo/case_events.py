@@ -86,6 +86,11 @@ class CaseEventHandler(object):
             {'$pull': {'assignees': user['_id']}},
             return_document=pymongo.ReturnDocument.AFTER
         )
+        # if no user is assigned to case
+        if updated_case['status']!= 'prioritized' and updated_case['assignees'] == []:
+            # flag case as inactive
+            self.update_status(institute, updated_case, user, 'inactive', link)
+
         LOG.debug("Case updated")
         return updated_case
 

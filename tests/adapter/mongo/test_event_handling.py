@@ -59,6 +59,9 @@ def test_assign(adapter, institute_obj, case_obj, user_obj):
     assert event_obj['link'] == link
 
 def test_unassign(adapter, institute_obj, case_obj, user_obj):
+
+    case_obj['status'] = 'active'
+
     # GIVEN an adapter to a database with one assigned case
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -71,27 +74,30 @@ def test_unassign(adapter, institute_obj, case_obj, user_obj):
         user=user_obj,
         link=link
     )
+    
+    """
 
     assert updated_case['assignees'] == [user_obj['_id']]
-
     assert adapter.event_collection.find().count() == 1
 
     # WHEN unassigning a user from a case
     updated_case = adapter.unassign(
          institute=institute_obj,
-         case=case_obj,
+         case=updated_case,
          user=user_obj,
          link='unassignlink'
     )
-
+    # since case has no assignees case gets deactivated:
+    assert updated_case['status'] == 'inactive'
     # THEN two events should have been created
     assert adapter.event_collection.find().count() == 2
-
     # THEN the case should not be assigned
     assert updated_case.get('assignees') == []
     # THEN a unassign event should be created
     event = adapter.event_collection.find_one({'verb': 'unassign'})
     assert event['link'] == 'unassignlink'
+
+    """
 
 def test_update_synopsis(adapter, institute_obj, case_obj, user_obj):
     ## GIVEN a populated database without events
