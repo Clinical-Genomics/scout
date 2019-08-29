@@ -10,10 +10,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Export genes and gene panels in build GRCh38
 - Search for cases with variants pinned or marked causative in a given gene.
-- Search for cases phenotypically similiar to a case also from WUI.
+- Search for cases phenotypically similar to a case also from WUI.
 - Case variant searches can be limited to similar cases, matching HPO-terms,
   phenogroups and cohorts.
-- Dearchive reruns and flad them as 'inactive' if archived
+- Dearchive reruns and flag them as 'inactive' if archived
 - Sort cases by analysis_date, track or status
 - Display cases in the following order: prioritized, active, inactive, archived, solved
 - Assign case to user when user activates it or asks for rerun
