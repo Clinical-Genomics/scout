@@ -120,10 +120,10 @@ class CaseEventHandler(object):
             LOG.warning("Status {0} is invalid".format(status))
             return None
 
-        LOG.info("Creating event for updating status of {0} to {1} -- {2}".format(
-            case['display_name'], status, case['status']))
+        LOG.info("Creating event for updating status of {0} to {1}".format(
+            case['display_name'], status))
 
-        # assign case to user if case is going to be unarchived
+        # assign case to user if user unarchives it
         if case.get('status') == 'archived' and status == 'active':
             LOG.info('assign case to user {}'.format(user['email']))
             self.assign(institute, case, user, link)
@@ -277,7 +277,6 @@ class CaseEventHandler(object):
 
         if case.get('status') == 'archived':
             # assign case to user requesting rerun
-
             self.assign(institute, case, user, link)
 
         self.create_event(
