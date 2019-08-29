@@ -290,10 +290,7 @@
     Ideogram, UPD, ROH
   </div>
   <div class="panel-body">
-    <svg id="roh_svg" width="1900" height="850"></canvas> 
-  </div>
-  <div class="panel-footer">
-    <button class="btn btn-default form-control" data-toggle="modal" data-target="#edit-synopsis">Edit</button>
+    <svg id="roh_svg" width="1900" height="850"></svg> 
   </div>
 </div>
 {% endmacro %}
@@ -991,25 +988,17 @@
                         'upd_chr19.png', 'upd_chr20.png', 'upd_chr21.png',
                         'upd_chr22.png', 'upd_chrX.png', 'upd_chrY.png'];
 
-
     // TODO: Handle trisomy
     const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
                          '11', '12', '13', '14', '15', '16', '17', '18',
                          '19', '20', '21', '22', 'X',' Y'];
 
-
-
-
     const NUMBER_OF_COLUMNS = 3        
     const OFFSET_X = 60;
     const OFFSET_Y = 30;
 
-    // skära ut kromosom
-    // "M 300 150 L 300 500 L 500 500 A 50 50 0 1 1 500 150 L 300 150"
 
-    
-
-    // Draw ROH call pictures -coverage- and UPOD pictures -color coded
+    // Draw ROH call pictures -coverage- and UPD pictures -color coded
     // genome regions- onto the dashboard.
     //
     //
