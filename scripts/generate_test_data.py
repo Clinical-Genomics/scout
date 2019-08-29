@@ -336,10 +336,10 @@ def generate_ensembl_exons(ensembl_genes, build=None, ensembl_exons=None):
                 exon_info['exon_id'],
                 str(exon_info['exon_chrom_start']),
                 str(exon_info['exon_chrom_end']),
-                str(exon_info['5_utr_start']),
-                str(exon_info['5_utr_end']),
-                str(exon_info['3_utr_start']),
-                str(exon_info['3_utr_end']),
+                str(exon_info['5_utr_start']) if exon_info['5_utr_start'] else '',
+                str(exon_info['5_utr_end']) if exon_info['5_utr_end'] else '',
+                str(exon_info['3_utr_start']) if exon_info['3_utr_start'] else '',
+                str(exon_info['3_utr_end']) if exon_info['3_utr_end'] else '',
                 str(exon_info['strand']),
                 str(exon_info['rank'])
             ]

@@ -26,7 +26,7 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts)
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts, parse_ensembl_exons)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases)
 
@@ -46,7 +46,7 @@ from scout.server.app import create_app
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
 exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path,
-transcripts38_reduced_path, genes38_reduced_path,)
+transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_reduced_path)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
@@ -90,6 +90,25 @@ def transcript_info(request):
     )
 
     return transcript
+
+@pytest.fixture
+def exon_info(request):
+    exon = dict(
+        chrom = '1',
+        ens_gene_id = 'ENSG00000176022',
+        ens_exon_id = 'ENSE00001480062',
+        ens_transcript_id = 'ENST00000379198',
+        start = 1167629,
+        end = 1170421,
+        utr_5_start=1167629,
+        utr_5_end=1167658,
+        utr_3_start=1168649,
+        utr_3_end=1170421,
+        strand=1,
+        exon_rank=1,
+    )
+
+    return exon
 
 
 @pytest.fixture
@@ -179,8 +198,45 @@ def transcript_objs(request, parsed_transcripts):
     return _transcripts
 
 @pytest.fixture
+def exons_df(request, exons):
+    """Return a data frame with exon information"""
+    print('')
+    df_info = {
+        'chromosome_name': [],
+        'ensembl_gene_id': [],
+        'ensembl_transcript_id': [],
+        'ensembl_exon_id': [],
+        'exon_chrom_start': [],
+        'exon_chrom_end': [],
+        '5_utr_start': [],
+        '5_utr_end': [],
+        '3_utr_start': [],
+        '3_utr_end': [],
+        'strand': [],
+        'rank': [],
+    }
+
+    for exon_info in exons:
+        df_info['chromosome_name'].append(exon_info['chrom'])
+        df_info['ensembl_gene_id'].append(exon_info['gene'])
+        df_info['ensembl_transcript_id'].append(exon_info['transcript'])
+        df_info['ensembl_exon_id'].append(exon_info['ens_exon_id'])
+        df_info['exon_chrom_start'].append(exon_info['exon_chrom_start'])
+        df_info['exon_chrom_end'].append(exon_info['exon_chrom_end'])
+        df_info['5_utr_start'].append(exon_info.get('5_utr_start', ''))
+        df_info['5_utr_end'].append(exon_info.get('5_utr_end', ''))
+        df_info['3_utr_start'].append(exon_info.get('3_utr_start', ''))
+        df_info['3_utr_end'].append(exon_info.get('3_utr_end', ''))
+        df_info['strand'].append(exon_info.get('strand', ''))
+        df_info['rank'].append(exon_info.get('rank', ''))
+
+    df = DataFrame(df_info)
+
+    return df
+
+@pytest.fixture
 def transcripts_df(request, transcripts):
-    """Return a list with transcript objs"""
+    """Return a data frame with transcripts information"""
     print('')
     df_info = dict(
         chromosome_name = [],
@@ -409,7 +465,7 @@ def user_obj(request, parsed_user):
 ##################### Adapter fixtures #####################
 #############################################################
 
-# We need to mokeypatch 'connect' function so the tests use a mongomock database
+# We need to monkeypatch 'connect' function so the tests use a mongomock database
 # @pytest.fixture(autouse=True)
 # def no_connect(monkeypatch):
 #     # from scout.adapter.client import get_connection
@@ -1043,6 +1099,12 @@ def transcripts_file(request):
     print('')
     return transcripts37_reduced_path
 
+@pytest.fixture
+def exons_file(request):
+    """Get the path to a ensembl exons file"""
+    print('')
+    return exons37_reduced_path
+
 
 @pytest.fixture
 def genes37_file(request):
@@ -1192,6 +1254,18 @@ def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def exons_handle(request, exons_file):
+    """Get a file handle to a ensembl exons file"""
+    print('')
+    return get_file_handle(exons_file)
+
+@pytest.fixture
+def exons(request, exons_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_exons(exons_handle)
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):
