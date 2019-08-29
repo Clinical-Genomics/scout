@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search for cases phenotypically similiar to a case also from WUI.
 - Case variant searches can be limited to similar cases, matching HPO-terms,
   phenogroups and cohorts.
+- Fetch refseq version from entrez and use it in clinvar form
 
 ### Fixed
 - Fixes of and induced by build tests
