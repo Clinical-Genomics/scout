@@ -17,7 +17,7 @@ def test_view_witelist(mock_app):
     assert 'INFO Running scout view users' in result.output
 
     # insert mock obj in whitelist collection
-    store.whitelist_collection.insert({'_id' : 'fake_whitelist_id'})
+    store.whitelist_collection.insert_one({'_id' : 'fake_whitelist_id'})
 
     # Test CLI
     result =  runner.invoke(cli, ['view', 'whitelist'])

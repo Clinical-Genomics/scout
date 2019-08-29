@@ -61,14 +61,14 @@ def export_panels(adapter, panels, versions=None, build='37'):
     for hgnc_id in panel_geneids:
         hgnc_geneobj = gene_objs.get(hgnc_id)
         if hgnc_geneobj is None:
-            LOG.warn("missing HGNC gene: %s", hgnc_id)
+            LOG.warning("missing HGNC gene: %s", hgnc_id)
             continue
         chrom = hgnc_geneobj['chromosome']
         start = hgnc_geneobj['start']
         chrom_int = CHROMOSOME_INTEGERS.get(chrom)
 
         if not chrom_int:
-            LOG.warn("Chromosome %s out of scope", chrom)
+            LOG.warning("Chromosome %s out of scope", chrom)
             continue
 
         hgnc_geneobjs.append((chrom_int, start, hgnc_geneobj))

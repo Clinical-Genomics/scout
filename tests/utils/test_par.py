@@ -8,7 +8,7 @@ def test_par_coordinates():
     build = '37'
         
     ## WHEN checking the coordinates for a variant
-    res = PAR_COORDINATES[build][chromosome].search(position)
+    res = PAR_COORDINATES[build][chromosome].at(position)
     
     ## THEN assert that there way a hit
     assert res
@@ -19,7 +19,7 @@ def test_par_coordinates():
     build = '37'
         
     ## WHEN checking the coordinates for a variant
-    res = PAR_COORDINATES[build][chromosome].search(position)
+    res = PAR_COORDINATES[build][chromosome].at(position)
     
     ## THEN assert that there way a hit
     assert not res
