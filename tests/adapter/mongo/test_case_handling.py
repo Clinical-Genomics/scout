@@ -431,7 +431,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
 
     assert res['rerun_requested'] == True
 
-    # Make sure case is not inactive and not archived
+    # Make sure case is not archived
     assert res['status'] == 'inactive'
 
     # Make sure user becomes assignee of the case
@@ -440,10 +440,6 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     # And that a new rerun request triggers an error:
     with pytest.raises(ValueError):
         adapter.request_rerun(institute_obj, res, user_obj, 'blank')
-
-
-
-
 
 
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
