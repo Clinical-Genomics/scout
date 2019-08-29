@@ -2,6 +2,8 @@
 
 import os
 import pytest
+import shutil
+import tempfile
 from scout.demo import load_path
 
 from scout.commands import cli
@@ -27,8 +29,6 @@ def test_load_case(mock_app, institute_obj, case_obj):
     assert store.case_collection.find().count() == 1
 
 
-
-
 def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     # GIVEN a config setup with 'sample_id' missing
     runner = mock_app.test_cli_runner()
@@ -41,17 +41,16 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
 
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
+    temp_conf = os.path.join(tempfile.gettempdir(), 'temp.conf')
+    shutil.copy2(load_path, temp_conf)
     sed_change = "sed -i -e 's/sample_id/SAMPLE_ID/g' "
-    os.system(sed_change + load_path)    
+    os.system(sed_change + temp_conf)
 
-    # Test command to upload case using demo resources:
     # WHEN: config is loaded
-    result = runner.invoke(cli, ['load', 'case', load_path ])
+    result = runner.invoke(cli, ['load', 'case', temp_conf ])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code != 0
-
-    sed_restore = "sed -i -e 's/SAMPLE_ID/sample_id/g' "    # restore config
-    os.system(sed_restore + load_path)    
+    os.remove(temp_conf)        # clean up
 
     
 def test_load_case_NoConf(mock_app, institute_obj, case_obj):
