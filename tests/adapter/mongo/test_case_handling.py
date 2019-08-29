@@ -59,6 +59,7 @@ def test_get_cases(adapter, case_obj):
     # THEN we should get the correct case
     assert result.count() == 1
 
+
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     adapter = real_adapter
 
@@ -299,6 +300,7 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     # THEN we should not find any cases
     assert result.count() == 0
 
+
 def test_get_cases_non_existing_individual(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
@@ -380,33 +382,68 @@ def test_update_case_individuals(adapter, case_obj):
     assert len(res['individuals']) == 1
 
 
-def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
-    case_obj['rerun_requested'] = True
-    # GIVEN an empty database (no cases)
+def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
+
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.institute_collection.insert_one(institute_obj)
     assert adapter.cases().count() == 1
-    logger.info("Testing to update case")
 
-    res = adapter.case(case_obj['_id'])
-    assert res['rerun_requested'] is True
-
+    # Test that when case is unarchived the users gets assigned to it:
     # flag case as 'archived'
-    # WHEN flagging the case as archived
     adapter.update_status(institute_obj, case_obj, user_obj, 'archived', 'blank')
-
-    # case should be archived
     res = adapter.case(case_obj['_id'])
     assert res['status'] == 'archived'
 
-    # WHEN updating a case
-    res = adapter.update_case(case_obj)
+    # if user decides to unarchive it
+    case_obj['assignees'] = []
+    adapter.update_status(institute_obj, res, user_obj, 'active', 'blank')
+    res = adapter.case(case_obj['_id'])
+    # case becomes active
+    assert res['status'] == 'active'
+    # and user becomes assignee
+    assert user_obj['email'] in res['assignees']
 
-    # THEN assert that 'rerun_requested' is set to False
-    assert res['rerun_requested'] is False
 
-    # and assert that the case status is changed to 'inactive'
+
+def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
+
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    # insert test case
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.cases().count() == 1
+
+    res = adapter.case(case_obj['_id'])
     assert res['status'] == 'inactive'
+
+    # archive case
+    adapter.archive_case(institute_obj, res, user_obj, 'blank')
+    res = adapter.case(case_obj['_id'])
+    # and make sure it's archived
+    assert res['status'] == 'archived'
+
+    # request rerun for test case
+    adapter.request_rerun(institute_obj, res, user_obj, 'blank')
+    res = adapter.case(case_obj['_id'])
+
+    assert res['rerun_requested'] == True
+
+    # Make sure case is not inactive and not archived
+    assert res['status'] == 'inactive'
+
+    # Make sure user becomes assignee of the case
+    assert user_obj['email'] in res['assignees']
+
+    # And that a new rerun request triggers an error:
+    with pytest.raises(ValueError):
+        adapter.request_rerun(institute_obj, res, user_obj, 'blank')
+
+
+
+
 
 
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):

@@ -112,8 +112,13 @@ class CaseEventHandler(object):
             LOG.warning("Status {0} is invalid".format(status))
             return None
 
-        LOG.info("Creating event for updating status of {0} to {1}".format(
-            case['display_name'], status))
+        LOG.info("Creating event for updating status of {0} to {1} -- {2}".format(
+            case['display_name'], status, case['status']))
+
+        # assign case to user if case is going to be unarchived
+        if case.get('status') == 'archived' and status == 'active':
+            LOG.info('assign case to user {}'.format(user['email']))
+            self.assign(institute, case, user, link)
 
         self.create_event(
             institute=institute,
@@ -132,6 +137,7 @@ class CaseEventHandler(object):
             return_document=pymongo.ReturnDocument.AFTER
         )
         LOG.debug("Case updated")
+
         return updated_case
 
     def update_synopsis(self, institute, case, user, link, content=""):
@@ -261,6 +267,11 @@ class CaseEventHandler(object):
         if case.get('rerun_requested'):
             raise ValueError('rerun already pending')
 
+        if case.get('status') == 'archived':
+            # assign case to user requesting rerun
+
+            self.assign(institute, case, user, link)
+
         self.create_event(
             institute=institute,
             case=case,
@@ -274,7 +285,10 @@ class CaseEventHandler(object):
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
             {
-                '$set': {'rerun_requested': True}
+                '$set': {
+                    'rerun_requested': True,
+                    'status': case.get('status') if case.get('status') != 'archived' else 'inactive'
+                    }
             },
             return_document=pymongo.ReturnDocument.AFTER
         )
@@ -478,7 +492,7 @@ class CaseEventHandler(object):
         )
         LOG.debug("Case updated")
         return updated_case
-    
+
     def mark_checked(self, institute, case, user, link,
                      unmark=False):
         """Mark a case as checked from an analysis point of view.
@@ -520,7 +534,7 @@ class CaseEventHandler(object):
         )
         LOG.debug("Case updated")
         return updated_case
-    
+
 
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.
