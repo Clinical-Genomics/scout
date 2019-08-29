@@ -392,7 +392,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     assert res['rerun_requested'] is True
 
     # flag case as 'archived'
-    # WHEN flagging the case as active
+    # WHEN flagging the case as archived
     adapter.update_status(institute_obj, case_obj, user_obj, 'archived', 'blank')
 
     # case should be archived
