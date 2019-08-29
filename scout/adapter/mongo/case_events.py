@@ -81,16 +81,19 @@ class CaseEventHandler(object):
         LOG.info("Updating {0} to be unassigned with {1}".format(
             case['display_name'], user['name']))
 
+        # if no other user is assigned to the case and case is not prioritized
+        if case['status'] != 'prioritized' and case.get('assignees') == [user['email']]:
+            # flag case as inactive:
+            case['status'] = 'inactive'
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
-            {'$pull': {'assignees': user['_id']}},
+            {
+                '$pull': {'assignees': user['_id']},
+                '$set': { 'status': case['status']}
+            },
             return_document=pymongo.ReturnDocument.AFTER
         )
-        # if no user is assigned to case
-        if updated_case['status']!= 'prioritized' and updated_case['assignees'] == []:
-            # flag case as inactive
-            self.update_status(institute, updated_case, user, 'inactive', link)
-
         LOG.debug("Case updated")
         return updated_case
 

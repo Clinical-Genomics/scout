@@ -16,6 +16,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dearchive reruns and flad them as 'inactive' if archived
 - Sort cases by analysis_date, track or status
 - Display cases in the following order: prioritized, active, inactive, archived, solved
+- Assign case to user when user activates it or asks for rerun
+- Case becomes inactive when it has no assignees
 
 ### Fixed
 - Fixes of and induced by build tests
