@@ -12,6 +12,10 @@ from scout.utils.handle import get_file_handle
 from scout.utils.requests import (fetch_ensembl_exons)
 from scout.server.extensions import store
 
+from scout.constants import CHROMOSOMES
+
+from requests.exceptions import ChunkedEncodingError
+
 LOG = logging.getLogger(__name__)
 
 @click.command('exons', short_help='Load exons')
@@ -49,7 +53,13 @@ def exons(build, exons_file):
         ensembl_exons = fetch_ensembl_exons(build=build)
         nr_exons = ensembl_exons.shape[0]
 
-    load_exons(adapter, ensembl_exons, build, nr_exons=nr_exons)
+    try:
+        load_exons(adapter, ensembl_exons, build, nr_exons=nr_exons)
+    except Exception as err:
+        LOG.warning("Something went wrong with ensembl biomart")
+        # LOG.info("Try to fetch one chromosome at the time")
+        LOG.info("Please download a mart dump manually, see instructions in user guide for admins")
+        
 
     adapter.update_indexes()
 

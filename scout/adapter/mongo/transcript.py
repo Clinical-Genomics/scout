@@ -86,8 +86,8 @@ class TranscriptHandler(object):
             identifier_transcripts(set)
 
         """
-        LOG.debug("Fetching the id transcripts for gene %s", hgnc_id)
         if not transcripts:
+            LOG.debug("Fetching the id transcripts for gene %s", hgnc_id)
             if not hgnc_id:
                 raise SyntaxError("Need hgnc id to fetch transcripts")
             transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)

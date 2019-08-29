@@ -236,12 +236,14 @@ def fetch_ensembl_transcripts(build=None, chromosomes=None):
     
     return fetch_ensembl_biomart(attributes, filters, build)
 
-def fetch_ensembl_exons(build=None):
+def fetch_ensembl_exons(build=None, chromosomes=None):
     """Fetch the ensembl genes
 
     Args:
         build(str): ['37', '38']
+        chromosomes(iterable(str))
     """
+    chromosomes = chromosomes or CHROMOSOMES
     LOG.info("Fetching ensembl exons")
     
     attributes = [
@@ -260,7 +262,7 @@ def fetch_ensembl_exons(build=None):
     ]
 
     filters = {
-        'chromosome_name': CHROMOSOMES,
+        'chromosome_name': chromosomes,
     }
 
     return fetch_ensembl_biomart(attributes, filters, build)
