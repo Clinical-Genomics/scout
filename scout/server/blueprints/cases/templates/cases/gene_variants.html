@@ -115,7 +115,7 @@
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
       <strong>PolyPhen</strong>
-      {{ (variant.polyphen_predictions or ['-'])|join(',') }}		
+      {{ (variant.polyphen_predictions or ['-'])|join(',') }}
     </div>
     ">
     {{ variant.cadd_score }}
@@ -160,7 +160,24 @@
           {{ form.variant_type(class="form-control") }}
         </div>
       </div>
-    </div>
+      <div class="row">
+        <div class="col-xs-3">
+          {{ form.phenotype_terms.label(class="control-label") }}
+          {{ form.phenotype_terms(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.phenotype_groups.label(class="control-label") }}
+          {{ form.phenotype_groups(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.cohorts.label(class="control-label") }}
+          {{ form.cohorts(class="form-control") }}
+        </div>
+        <div class="col-xs-3">
+          {{ form.similar_case.label(class="control-label") }}
+          {{ form.similar_case(class="form-control") }}
+        </div>
+      </div>
     <div class="form-group">
       <div class="row">
         <div class="col-xs-6">
