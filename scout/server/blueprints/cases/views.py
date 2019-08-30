@@ -819,7 +819,7 @@ def teststs(image):
 @cases_bp.route('/<institute_id>/<case_name>/roh_images/<image>')
 def host_roh_image(institute_id, case_name, image):
     """Generate ROH image file paths"""
-    return hostupd_image_aux(institute_id, case_name, image, 'roh_images')
+    return host_image_aux(institute_id, case_name, image, 'roh_images')
 
 @cases_bp.route('/<institute_id>/<case_name>/upd_images/<image>')
 def host_upd_image(institute_id, case_name, image):
