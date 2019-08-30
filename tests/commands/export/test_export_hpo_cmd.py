@@ -26,7 +26,7 @@ def test_export_hpo(mock_app):
         "description" : "Multicystic kidney dysplasia",
         "genes" : [ 17582, 1151 ]
     }
-    store.hpo_term_collection.insert(hpo_term)
+    store.hpo_term_collection.insert_one(hpo_term)
     assert store.hpo_term_collection.find().count() == 1
 
 

@@ -59,6 +59,7 @@ def test_get_cases(adapter, case_obj):
     # THEN we should get the correct case
     assert result.count() == 1
 
+
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     adapter = real_adapter
 
@@ -299,6 +300,7 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     # THEN we should not find any cases
     assert result.count() == 0
 
+
 def test_get_cases_non_existing_individual(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
@@ -380,22 +382,64 @@ def test_update_case_individuals(adapter, case_obj):
     assert len(res['individuals']) == 1
 
 
-def test_update_case_rerun_status(adapter, case_obj):
-    case_obj['rerun_requested'] = True
-    # GIVEN an empty database (no cases)
+def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
+
     assert adapter.cases().count() == 0
     adapter.case_collection.insert_one(case_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.institute_collection.insert_one(institute_obj)
     assert adapter.cases().count() == 1
-    logger.info("Testing to update case")
+
+    # Test that when case is unarchived the users gets assigned to it:
+    # flag case as 'archived'
+    adapter.update_status(institute_obj, case_obj, user_obj, 'archived', 'blank')
+    res = adapter.case(case_obj['_id'])
+    assert res['status'] == 'archived'
+
+    # if user decides to unarchive it
+    case_obj['assignees'] = []
+    adapter.update_status(institute_obj, res, user_obj, 'active', 'blank')
+    res = adapter.case(case_obj['_id'])
+    # case becomes active
+    assert res['status'] == 'active'
+    # and user becomes assignee
+    assert user_obj['email'] in res['assignees']
+
+
+
+def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
+
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    # insert test case
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.cases().count() == 1
 
     res = adapter.case(case_obj['_id'])
-    assert res['rerun_requested'] is True
+    assert res['status'] == 'inactive'
 
-    # WHEN updating a case
-    res = adapter.update_case(case_obj)
+    # archive case
+    adapter.archive_case(institute_obj, res, user_obj, 'blank')
+    res = adapter.case(case_obj['_id'])
+    # and make sure it's archived
+    assert res['status'] == 'archived'
 
-    # THEN assert that 'rerun_requested' is set to False
-    assert res['rerun_requested'] is False
+    # request rerun for test case
+    adapter.request_rerun(institute_obj, res, user_obj, 'blank')
+    res = adapter.case(case_obj['_id'])
+
+    assert res['rerun_requested'] == True
+
+    # Make sure case is not archived
+    assert res['status'] == 'inactive'
+
+    # Make sure user becomes assignee of the case
+    assert user_obj['email'] in res['assignees']
+
+    # And that a new rerun request triggers an error:
+    with pytest.raises(ValueError):
+        adapter.request_rerun(institute_obj, res, user_obj, 'blank')
 
 
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
@@ -403,6 +447,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
 
     # Make sure database contains HPO terms
     assert adapter.hpo_terms().count()
+
 
     # update test case using test HPO terms
     case_obj['phenotype_terms'] = test_hpo_terms
@@ -413,6 +458,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     # insert case into database
     adapter.case_collection.insert_one(case_obj)
     assert adapter.case_collection.find().count() == 1
+
 
     # Add another case with slightly different phenotype
     case_2 = copy.deepcopy(case_obj)
@@ -441,3 +487,55 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
 
     # and the first element of the list has a score higher or equal than the second
     assert similar_cases[0][1] > similar_cases[1][1]
+
+def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj):
+    adapter = hpo_database
+
+    # Make sure database contains HPO terms
+    assert adapter.hpo_terms().count()
+
+    # GIVEN a real database with no cases
+#        assert adapter.cases().count() == 0
+
+    # Give the case HPO terms
+    case_obj['phenotype_terms'] = test_hpo_terms
+    adapter.case_collection.find_one_and_update(
+        { '_id' : case_obj['_id'] },
+        { '$set' : {'phenotype_terms' : test_hpo_terms }},
+        return_document=pymongo.ReturnDocument.AFTER)
+
+    # Insert a case into the db
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find().count() == 1
+
+    # Add another case with slightly different phenotype:
+
+    case_2 = copy.deepcopy(case_obj)
+    case_2['_id']='case_2'
+    case_2['phenotype_terms'] = test_hpo_terms[:-1] # exclude last term
+
+    # insert this case in database:
+    adapter.case_collection.insert_one(case_2)
+    assert adapter.case_collection.find().count() == 2
+
+    # WHEN querying for a similar case
+    name_query= "similar:{}".format(case_obj['display_name'])
+
+    # THEN one case should be returned
+    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
+    assert len(cases) == 1
+
+def test_get_cases_cohort(real_adapter, case_obj, user_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    assert adapter.cases().count() == 0
+
+    cohort_name = 'cohort'
+
+    case_obj['cohorts'] = [ cohort_name ]
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving cases by a cohort name query
+    result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    # THEN we should get the case returned
+    assert result.count() == 1

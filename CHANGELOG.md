@@ -9,11 +9,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Export genes and gene panels in build GRCh38
+- Search for cases with variants pinned or marked causative in a given gene.
+- Search for cases phenotypically similar to a case also from WUI.
+- Case variant searches can be limited to similar cases, matching HPO-terms,
+  phenogroups and cohorts.
+- Dearchive reruns and flag them as 'inactive' if archived
+- Sort cases by analysis_date, track or status
+- Display cases in the following order: prioritized, active, inactive, archived, solved
+- Assign case to user when user activates it or asks for rerun
+- Case becomes inactive when it has no assignees
 
 ### Fixed
+- Fixes of and induced by build tests
 - Fixed bug affecting variant observations in other cases
 - Fixed a bug that showed wrong gene coverage in general panel PDF export
 - MT report only shows variants occurring in the specific individual of the excel sheet
+- Disable SSL certifcate verification in requests to chanjo
+- Updates how intervaltree and pymongo is used to void deprecated functions
+
 
 ## [4.6.1]
 

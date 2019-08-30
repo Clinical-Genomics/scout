@@ -303,7 +303,8 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     request_data['level'] = institute_obj.get('coverage_cutoff', 15)
 
     #send get request to chanjo report
-    resp = requests.post(base_url+'reports/report', data=request_data)
+    #disable default certificate verification
+    resp = requests.post(base_url+'reports/report', data=request_data, verify=False)
 
     #read response content
     soup = BeautifulSoup(resp.text)
@@ -466,7 +467,7 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
 
     return (individual_obj['display_name'], individual_obj['vcf2cytosure'])
 
-def gene_variants(store, variants_query, page=1, per_page=50):
+def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)

@@ -1,0 +1,80 @@
+{% extends "bootstrap/base.html" %}
+{% from "utils.html" import flash_messages %}
+
+{% block title %}
+  Scout
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+
+{% block navbar %}
+  <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-menu-hamburger"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="{{ url_for('public.index') }}">Home</a></li>
+              <li><a href="{{ url_for('genes.genes') }}">Genes</a></li>
+              <li><a href="{{ url_for('panels.panels') }}">Gene Panels</a></li>
+              <li><a href="{{ url_for('phenotypes.hpo_terms') }}">Phenotypes</a></li>
+              <li><a href="{{ url_for('login.users') }}">Users</a></li>
+              <li><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+              <li><a href="{{ url_for('overview.institutes') }}">Institutes</a></li>
+              <li>
+                <a href="http://www.clinicalgenomics.se/scout/" target='_blank'>User guide</a>
+              </li>
+              <li>
+                <a href="https://github.com/Clinical-Genomics/scout/issues" target='_blank'>Open issues</a>
+              </li>
+            </ul>
+          </li>
+          {% block top_nav %}{% endblock %}
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          {% block top_nav_right %}
+            {% if current_user.is_authenticated %}
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="{{ url_for('login.logout') }}">Logout</a>
+                  </li>
+                </ul>
+              </li>
+            {% endif %}
+          {% endblock %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid main">
+    {{ flash_messages() }}
+    {% block content_main %}{% endblock %}
+  </div>
+{% endblock %}

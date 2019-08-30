@@ -76,7 +76,7 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
             i += 1
             if variant_type == 'research':
                 if not (force or case_obj['research_requested']):
-                    LOG.warn("research not requested, use '--force'")
+                    LOG.warning("research not requested, use '--force'")
                     raise click.Abort()
 
             LOG.info("Delete {0} {1} variants for case {2}".format(

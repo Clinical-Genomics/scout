@@ -44,6 +44,7 @@ def index():
 @templated('cases/cases.html')
 def cases(institute_id):
     """Display a list of cases for an institute."""
+
     institute_obj = institute_and_case(store, institute_id)
     query = request.args.get('query')
 
@@ -55,6 +56,17 @@ def cases(institute_id):
     is_research = request.args.get('is_research')
     all_cases = store.cases(collaborator=institute_id, name_query=query,
                         skip_assigned=skip_assigned, is_research=is_research)
+
+    LOG.info(type(all_cases))
+    sort_by = request.args.get('sort')
+    if sort_by:
+        if sort_by == 'analysis_date':
+            all_cases.sort('analysis_date', pymongo.DESCENDING)
+        elif sort_by == 'track':
+            all_cases.sort('track', pymongo.ASCENDING)
+        elif sort_by == 'status':
+            all_cases.sort('status', pymongo.ASCENDING)
+
     LOG.debug("Prepare all cases")
     data = controllers.cases(store, all_cases, limit)
 
@@ -398,10 +410,10 @@ def gene_variants(institute_id):
 
         LOG.debug("query {}".format(form.data))
 
-        variants_query = store.gene_variants(query=form.data, category='snv',
-                            variant_type=variant_type)
+        variants_query = store.gene_variants(query=form.data, institute_id=institute_id,
+                                             category='snv', variant_type=variant_type)
 
-        data = controllers.gene_variants(store, variants_query, page)
+        data = controllers.gene_variants(store, variants_query, institute_id, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
 

@@ -80,15 +80,18 @@
       </div>
     </div>
   {% endif %}
-
   <div>
-  {% for group_name, case_group in cases %}
-    {% if case_group|length > 0 %}
-      <div class="card mt-3">{{ cases_table(group_name, case_group) }}</div>
-    {% endif %}
-  {% endfor %}
+    {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
+    {% for status in ordered_statuses %}
+      {% for group_name, case_group in cases %}
+        {% if status == group_name and case_group|length > 0 %}
+          <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
   </div>
 </div>
+
 {% endblock %}
 
 {% macro search_form() %}
@@ -108,7 +111,11 @@
               panel=<strong>panel:NMD</strong>,
               status=<strong>status:active</strong>,
               phenotype&nbsp;group=<strong>PG:0100022</strong>,
-              cohort=<strong>cohort:pedhep</strong>.<br><br>
+              cohort=<strong>cohort:pedhep</strong>,
+              similar&nbsp;case=<strong>similar:18201</strong>,
+              gene_pinned=<strong>pinned:POT1</strong>,
+              gene_causative=<strong>causative:POT1</strong>,
+              assigned_user=<strong>Kent</strong>.<br><br>
               Use key without value to search for cases with missing info (<strong>HP:</strong>, <strong>PG:</strong>, <strong>synopsis:</strong>).
             </div>
           "></input>
@@ -286,6 +293,26 @@
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
-    })
+    });
+
+    function updateArgs(caseGroup, sortItem) {
+      sort_items = ['sort=status', 'sort=analysis_date', 'sort=track'];
+      //modifying the sorting of cases
+      let searchList = window.location.search.split('&');
+      if(!searchList[0]){
+        //fix url if sorting is the only param
+        searchList[0] = '?';
+      }
+      //remove all sort params
+      searchList = searchList.filter(f => !sort_items.includes(f))
+      //add specific sort param
+      searchList.push(sortItem);
+      sort_link = document.getElementById( caseGroup.concat('_',sortItem.split('=')[1]));
+      const url = window.location.href.split('?')[0].concat(searchList.join('&'));
+      sort_link.href = url;
+      //submit link
+      sort_link.submit();
+    }
+
   </script>
 {% endblock %}
