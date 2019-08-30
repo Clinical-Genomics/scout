@@ -7,7 +7,7 @@ def test_get_request():
     """Test functions that accepts an url and returns decoded data from it"""
 
     # test function with a url that is not valid
-    url = 'fakeyurl.se'
+    url = 'fakeyurl'
     with pytest.raises(ValueError) as err:
         # function should raise error
         assert get_request(url)
