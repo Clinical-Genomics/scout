@@ -26,7 +26,7 @@ def test_view_diseases(mock_app):
         'inheritance' : None,
         'hpo_terms' : None
     }
-    store.disease_term_collection.insert(omim_term)
+    store.disease_term_collection.insert_one(omim_term)
 
     # Test CLI
     result =  runner.invoke(cli, ['view', 'diseases'])
