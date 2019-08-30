@@ -1005,15 +1005,18 @@
     function draw_tracks(){
         const CYT_HEIGHT = 50 ;
         const CYT_WIDTH = 500 ;
-        const ROH_IMGPATH = '/public/static/roh_images/'
+        const ROH_IMGPATH = '/{{institute._id}}/{{case.display_name}}/roh_images/'
+        var upd_imgPath   = '/{{institute._id}}/{{case.display_name}}/upd_images/'
         const IDEO_IMGPATH = '/public/static/chr_images/'
         
-        console.log("draw roh") 
+        console.log("draw roh")
+        console.log(ROH_IMGPATH)
+
         var roh_svg = document.getElementById("roh_svg");
 
         var roh_imgObj = new Image();
         
-        var upd_imgPath = '/public/static/upd_images/'
+
         var upd_imgObj = new Image();
         // Loop through to add ROH and UPD images
 

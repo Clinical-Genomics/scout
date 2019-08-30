@@ -293,7 +293,6 @@ def parse_case(config):
 
     if 'family' not in config:
         raise ConfigError("A case has to have a 'family'")
-
     individuals = parse_individuals(config['samples'])
     case_data = {
         'owner': config['owner'],
@@ -324,6 +323,7 @@ def parse_case(config):
         'delivery_report': config.get('delivery_report'),
         'multiqc': config.get('multiqc'),
         'track': config.get('track', 'rare'),
+        'chromograph_image_files': config.get('chromograph_image_files'),
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db

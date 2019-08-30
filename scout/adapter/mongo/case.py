@@ -457,6 +457,7 @@ class CaseHandler(object):
                     'rank_model_version': case_obj.get('rank_model_version'),
                     'sv_rank_model_version': case_obj.get('sv_rank_model_version'),
                     'madeline_info': case_obj.get('madeline_info'),
+                    'chromograph_image_files': case_obj.get('chromograph_image_files'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
                     'has_strvariants': case_obj.get('has_strvariants'),
@@ -469,7 +470,7 @@ class CaseHandler(object):
             return_document=pymongo.ReturnDocument.AFTER
         )
 
-        LOG.info("Case updated")
+        LOG.info("Case updated: {}".format(updated_case))
         return updated_case
 
     def replace_case(self, case_obj):
