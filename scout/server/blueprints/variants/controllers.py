@@ -9,6 +9,7 @@ from xlsxwriter import Workbook
 
 from datetime import date
 import datetime
+from flask_login import current_user
 from flask import url_for, flash, request
 from flask_mail import Message
 
@@ -19,7 +20,7 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.utils import institute_and_case
+from scout.server.utils import institute_and_case, user_institutes
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
@@ -173,7 +174,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
                             store.overlapping(variant_obj))
 
     # parse_gene function is not called for SVs, but a link to ensembl gene is required
-    for gene_obj in variant_obj['genes']:
+    for gene_obj in variant_obj.get('genes', []):
         if gene_obj.get('common'):
             ensembl_id = gene_obj['common']['ensembl_id']
             try:
@@ -636,10 +637,16 @@ def observations(store, loqusdb, case_obj, variant_obj):
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
     for case_id in obs_data.get('families', []):
-        if case_id != variant_obj['case_id'] and case_id.startswith(institute_id):
-            other_variant = store.variant(variant_obj['variant_id'], case_id=case_id)
+        if case_id != variant_obj['case_id']:
+            # other case might belong to same institute, collaborators or other institutes
             other_case = store.case(case_id)
-            obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+            institute_objs = user_institutes(store, current_user)
+            user_institutes_ids = [inst['_id'] for inst in institute_objs]
+            if other_case and (other_case.get('owner') == institute_id # observation variant has same institute as first variant
+                or institute_id in other_case.get('collaborators', []) # or is in other case collaborators
+                or other_case.get('owner') in user_institutes_ids): # or observation's institute belongs to users institutes
+                other_variant = store.variant(case_id=case_id, simple_id=composite_id)
+                obs_data['cases'].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
 

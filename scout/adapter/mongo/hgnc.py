@@ -188,6 +188,9 @@ class GeneHandler(object):
             Returns:
                 result()
         """
+        if build == 'GRCh38':
+            build = '38'
+
         LOG.info("Fetching all genes")
         return self.hgnc_collection.find({'build': build}).sort('chromosome', 1)
 
@@ -560,7 +563,7 @@ class GeneHandler(object):
                 intervals[chrom].addi(start, end, i)
                 continue
 
-            res = intervals[chrom].search(start, end)
+            res = intervals[chrom].overlap(start, end)
 
             # If the interval did not overlap any other intervals we insert it and continue
             if not res:

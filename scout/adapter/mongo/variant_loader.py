@@ -253,7 +253,7 @@ class VariantLoader(object):
                         new_region = None
 
                         # Check if the variant is in a coding region
-                        genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).search(var_start, var_end)
+                        genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).overlap(var_start, var_end)
 
 
                         # If the variant is in a coding region
@@ -426,7 +426,8 @@ class VariantLoader(object):
                 load = True
                 new_region = None
 
-                genomic_regions = genomic_intervals.get(var_chrom, IntervalTree()).search(var_start, var_end)
+                intervals = genomic_intervals.get(var_chrom, IntervalTree())
+                genomic_regions = intervals.overlap(var_start, var_end)
 
                 # If the variant is in a coding region
                 if genomic_regions:

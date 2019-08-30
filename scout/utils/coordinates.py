@@ -18,7 +18,7 @@ def is_par(chromosome, position, build='37'):
     if not chrom in ['X','Y']:
         return False
     # Check if variant is in first PAR region
-    if PAR_COORDINATES[build][chrom].search(position):
+    if PAR_COORDINATES[build][chrom].at(position):
         return True
     
     return False
