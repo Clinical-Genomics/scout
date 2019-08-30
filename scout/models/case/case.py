@@ -73,7 +73,8 @@ case = dict(
     phenotype_groups=list,  # List of dictionaries with phenotype information
 
     madeline_info=str,  # madeline info is a full xml file
-    chromograph_image_files=str,  # path to dir
+    chromograph_image_files=str,  # path to dirw
+    chromograph_prefixes=list,  # path to dirw
 
     delivery_report=str,  # delivery report is a path to html file
 

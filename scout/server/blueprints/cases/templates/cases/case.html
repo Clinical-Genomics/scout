@@ -998,6 +998,16 @@
     const OFFSET_Y = 30;
 
 
+    function make_names(prefix){
+        var names = [];
+        for (var i = 0; i < CHROMOSOMES.length; i++){
+            j = i+1  // off by one
+            console.log(prefix+j+".png");
+            names[i] = prefix+j+".png";
+        }
+        return names;
+    }
+    
     // Draw ROH call pictures -coverage- and UPD pictures -color coded
     // genome regions- onto the dashboard.
     //
@@ -1012,14 +1022,18 @@
         console.log("draw roh")
         console.log(ROH_IMGPATH)
 
+       console.log( "{{case.chromograph_prefixes.roh}} ")
         var roh_svg = document.getElementById("roh_svg");
-
         var roh_imgObj = new Image();
-        
-
         var upd_imgObj = new Image();
-        // Loop through to add ROH and UPD images
 
+
+        var roh_images = make_names("{{case.chromograph_prefixes.roh}}");
+        var upd_images = make_names("{{case.chromograph_prefixes.upd}}");
+        var ideo_images = make_names("{{case.chromograph_prefixes.chr}}");
+        console.log(roh_images);
+
+        // Chromosome details used for cropping to a nice picture
         var chrom1 = {name: '1', length: 482, cent_start: 245, cent_length: 13 }
         var chrom2 = {name: '2', length: 470, cent_start: 185, cent_length: 13 }
         var chrom3 = {name: '3', length: 387, cent_start: 180, cent_length: 13 }
@@ -1066,17 +1080,17 @@
             
             // console.log("x: %s y: %s", x_pos, y_pos);
             var g = document.createElementNS('http://www.w3.org/2000/svg','g');
-            var ideo_image = make_svgimage(IDEO_IMGPATH + IDEOGRAM_IMAGES[i],
+            var ideo_image = make_svgimage(IDEO_IMGPATH + ideo_images[i],
                                           x_pos,
                                           y_pos,
                                           "25px", "500px", );
 
-            var upd_image = make_svgimage(upd_imgPath + UPD_IMAGES[i],
+            var upd_image = make_svgimage(upd_imgPath + upd_images[i],
                                           x_pos,
                                           y_pos + 30,
                                           "25px", "500px", );
 
-            var roh_image = make_svgimage(ROH_IMGPATH + ROH_IMAGES[i],
+            var roh_image = make_svgimage(ROH_IMGPATH + roh_images[i],
                                           x_pos + 17,  // compensate for image pixel start
                                           y_pos + 55 , // place below UPD
                                           "25px", "500px", );
