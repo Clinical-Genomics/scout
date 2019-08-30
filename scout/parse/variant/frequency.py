@@ -113,10 +113,10 @@ def parse_frequency(variant, info_key):
 
 def parse_sv_frequencies(variant):
     """Parsing of some custom sv frequencies
-    
+
     These are very specific at the moment, this will hopefully get better over time when the
     field of structural variants are more developed.
-    
+
     The more general SV frequencies like 1000G and gnomADsv are parsed in parse_frequencies.
 
     Args:
@@ -173,21 +173,21 @@ def parse_sv_frequencies(variant):
             continue
         sv_frequencies['clingen_cgh_pathogenic'] = value
         break
-    
+
     for key in clingen_ngi_keys:
         value = parse_sv_frequency(variant, key)
         if value is None:
             continue
         sv_frequencies['clingen_ngi'] = value
         break
-    
+
     for key in swegen_keys:
         value = parse_sv_frequency(variant, key)
         if value is None:
             continue
         sv_frequencies['swegen'] = value
         break
-    
+
     for key in decipher_keys:
         value = parse_sv_frequency(variant, key)
         if value is None:
@@ -206,8 +206,8 @@ def parse_sv_frequencies(variant):
 
 def parse_sv_frequency(variant, info_key):
     """Parse a SV frequency.
-    
-    These has to be treated separately since some of them are not actually frequencies(float) but 
+
+    These has to be treated separately since some of them are not actually frequencies(float) but
     occurances(int)
     """
     value = variant.INFO.get(info_key, 0)
