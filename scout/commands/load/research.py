@@ -101,4 +101,4 @@ def research(case_id, institute, force):
             case_obj['research_requested'] = False
             adapter.update_case(case_obj)
         else:
-            LOG.warn("research not requested, use '--force'")
+            LOG.warning("research not requested, use '--force'")
