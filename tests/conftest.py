@@ -329,6 +329,7 @@ def case_obj(request, parsed_case):
     case['status'] = 'inactive'
     case['synopsis'] = ''
     case['updated_at'] = parsed_case['analysis_date']
+    case['assignees'] = []
 
     return case
 
