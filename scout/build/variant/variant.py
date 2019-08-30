@@ -258,7 +258,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
         if gene_obj:
             hgnc_symbols.append(gene_obj['hgnc_symbol'])
         # else:
-            # LOG.warn("missing HGNC symbol for: %s", hgnc_id)
+            # LOG.warning("missing HGNC symbol for: %s", hgnc_id)
 
     if hgnc_symbols:
         variant_obj['hgnc_symbols'] = hgnc_symbols
