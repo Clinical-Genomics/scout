@@ -522,6 +522,7 @@ class CaseHandler(object):
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
                     'mme_submission': case_obj.get('mme_submission'),
+                    'status': old_case.get('status') if  old_case.get('status') != 'archived' else 'inactive'
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
