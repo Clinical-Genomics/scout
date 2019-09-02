@@ -26,19 +26,19 @@ def test_parse_transcripts(cyvcf2_variant):
     "ly_domains:SSF50978&SMART_domains:SM00320&Gene3D:2.130.10.10&"\
     "Pfam_domain:PF00400&hmmpanther:PTHR22847:SF319&hmmpanther:"\
     "PTHR22847&PROSITE_profiles:PS50294&PROSITE_profiles:PS50082|||||"
-    
+
     csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|"\
     "Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|"\
     "Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|"\
     "STRAND|SYMBOL_SOURCE|HGNC_ID|TSL|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|"\
     "SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|"\
     "MOTIF_SCORE_CHANGE"
-    
+
     header = [word.upper() for word in csq_header.split('|')]
-    
+
     raw_transcripts = [dict(zip(header, entry.split('|'))) for entry in csq_entry.split(',')]
-    
-    
+
+
     ## WHEN parsing the transcript
     transcripts = parse_transcripts(raw_transcripts)
     for transcript in transcripts:
@@ -51,11 +51,11 @@ def test_parse_functional_annotation():
     csq_header = "Allele|Consequence"
     csq_entry = "C|missense_variant"
     header = [word.upper() for word in csq_header.split('|')]
-    
+
     raw_transcripts = [dict(zip(header, entry.split('|'))) for entry in csq_entry.split(',')]
 
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     for transcript in transcripts:
         assert transcript['functional_annotations'] == ['missense_variant']
 
@@ -63,14 +63,14 @@ def test_parse_optional_hgnc_annotation():
     ## GIVEN a transcript with the optional hgnc annotation
     csq_header = "Allele|Consequence|HGNC_ID"
     csq_entry = "C|missense_variant|HGNC:10001"
-    
+
     header = [word.upper() for word in csq_header.split('|')]
-    
+
     raw_transcripts = [dict(zip(header, entry.split('|'))) for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['functional_annotations'] == ['missense_variant']
@@ -80,15 +80,15 @@ def test_parse_regular_hgnc_annotation():
     ## GIVEN a transcript with the regular hgnc annotation
     csq_header = "Allele|Consequence|HGNC_ID"
     csq_entry = "C|missense_variant|10001"
-    
+
     header = [word.upper() for word in csq_header.split('|')]
-    
-    raw_transcripts = [dict(zip(header, entry.split('|'))) 
+
+    raw_transcripts = [dict(zip(header, entry.split('|')))
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['functional_annotations'] == ['missense_variant']
@@ -101,13 +101,13 @@ def test_parse_vep_freq_thousand_g():
     csq_entry = "C|missense_variant|{0}".format(freq)
 
     header = [word.upper() for word in csq_header.split('|')]
-    
-    raw_transcripts = [dict(zip(header, entry.split('|'))) 
+
+    raw_transcripts = [dict(zip(header, entry.split('|')))
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['thousand_g_maf'] == freq
@@ -118,13 +118,13 @@ def test_parse_vep_freq_thousand_g_alt():
     csq_header = "Allele|Consequence|AF"
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split('|')]
-    
-    raw_transcripts = [dict(zip(header, entry.split('|'))) 
+
+    raw_transcripts = [dict(zip(header, entry.split('|')))
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['thousand_g_maf'] == freq
@@ -135,13 +135,13 @@ def test_parse_vep_freq_gnomad():
     csq_header = "Allele|Consequence|gnomAD_AF"
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split('|')]
-    
-    raw_transcripts = [dict(zip(header, entry.split('|'))) 
+
+    raw_transcripts = [dict(zip(header, entry.split('|')))
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['gnomad_maf'] == freq
@@ -152,13 +152,13 @@ def test_parse_vep_freq_exac():
     csq_header = "Allele|Consequence|EXAC_MAX_AF"
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split('|')]
-    
-    raw_transcripts = [dict(zip(header, entry.split('|'))) 
+
+    raw_transcripts = [dict(zip(header, entry.split('|')))
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['exac_max'] == freq
@@ -169,14 +169,30 @@ def test_parse_vep_freq_thousand_g_max():
     csq_header = "Allele|Consequence|AFR_AF|AMR_AF"
     csq_entry = "C|missense_variant|{0}|{1}".format(freqs[0], freqs[1])
     header = [word.upper() for word in csq_header.split('|')]
-    
-    raw_transcripts = [dict(zip(header, entry.split('|'))) 
+
+    raw_transcripts = [dict(zip(header, entry.split('|')))
                             for entry in csq_entry.split(',')]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
-    
+
     ## THEN assert that the hgnc annotation is parsed correct
     for transcript in transcripts:
         assert transcript['thousandg_max'] == max(freqs)
 
+def test_parse_superdups_fractmatch():
+    # GIVEN a transcript with the UCSC superdups fracMatch
+    fract_match = [0.992904, 0.98967]
+    csq_header = "Allele|Consequence|genomic_superdups_frac_match"
+    csq_entry = "C|missense_variant|{0}&{1}".format(fract_match[0],fract_match[1])
+
+    header = [word.upper() for word in csq_header.split('|')]
+    raw_transcripts = [dict(zip(header, entry.split('|')))
+                            for entry in csq_entry.split(',')]
+
+    assert raw_transcripts[0]['GENOMIC_SUPERDUPS_FRAC_MATCH'] == '0.992904&0.98967'
+
+    ## WHEN parsing the transcripts
+    transcripts = parse_transcripts(raw_transcripts)
+    for transcript in transcripts:
+        assert transcript['superdups_fracmatch'] == fract_match
