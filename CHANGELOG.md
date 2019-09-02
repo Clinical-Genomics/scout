@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display cases in the following order: prioritized, active, inactive, archived, solved
 - Assign case to user when user activates it or asks for rerun
 - Case becomes inactive when it has no assignees
+- Fetch refseq version from entrez and use it in clinvar formr
 
 ### Fixed
 - Fixes of and induced by build tests
