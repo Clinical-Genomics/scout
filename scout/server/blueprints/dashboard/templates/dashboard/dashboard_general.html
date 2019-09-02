@@ -129,7 +129,6 @@
 <div class="mt-3">
   <div class="row">
     <div class="col-md-8">
-        <h1>Cases with...</h1>
         <canvas id="cases-bar-horiz" height="100"></canvas>
     </div>
     <div class="col-md-4">
@@ -147,10 +146,11 @@
 {% macro variants_stats_panels() %}
 <div class="container-float mt-3 text-center">
   <div class="row">
-    <div class="col-md-8">
-        <canvas id="var-validations" height="120"></canvas>
+    <div class="col-md-2"></div>
+    <div class="col-md-4 d-flex justify-content-right align-items-center">
+        <canvas id="var-validations" width="600" height="300"></canvas>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 d-flex justify-content-left align-items-center">
       <ul class="list-group">
         {% for topic in variants %}
           <li class="list-group-item">{{ topic.title }} Cases: : {{ topic.count }} <span class="text-muted">({{ (topic.percent * 100)|round(1) }}%)</span></li>
@@ -163,6 +163,7 @@
         </div>
       </ul>
     </div>
+    <div class="col-md-2"></div>
   </div>
 
 </div>

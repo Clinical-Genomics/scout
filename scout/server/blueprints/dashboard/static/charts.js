@@ -123,9 +123,15 @@ function casesDetailed(overview, all_cases){
              },
              scaleLabel: {
                  display: true,
-                 labelString: "Percentage"
-             }
+                 labelString: "Case percentage",
+                 fontSize: 20
+             },
          }],
+         yAxes: [{
+                   ticks: {
+                   fontSize: 20
+               }
+            }]
       },
       legend: {display: false}
     }
@@ -153,23 +159,34 @@ function varValidations(variants){
   var myChart = {
     type: 'bar',
     data: {
-      labels: ["Verifications"],
       datasets: [
         { //true positives
-          label: 'Validated True Positive',
+          label: 'True Positive',
           data: [dataSets[0]],
           backgroundColor: '#46bfbd',
         },
         { //false positives
-          label: 'Validated False Positive',
+          label: 'False Positive',
           data: [dataSets[1]],
           backgroundColor: '#f7464a',
         }
       ]
     },
     options: {
+      legend: {
+        labels: {
+            fontSize: 20
+        }
+      },
       scales: {
-        xAxes: [{ stacked: true }],
+        xAxes: [{
+          stacked: true,
+          scaleLabel: {
+              display: true,
+              labelString: "Verifications",
+              fontSize: 20
+          },
+        }],
         yAxes: [
           {
             stacked: true ,
@@ -179,8 +196,10 @@ function varValidations(variants){
               callback: function(value) {
                   return value + "%"
               },
+              fontSize: 20
           }},
-        ]
+        ],
+
       },
       tooltips: {
         callbacks: {
