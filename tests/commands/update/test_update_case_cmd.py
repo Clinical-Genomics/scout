@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from scout.demo import clinical_snv_path, clinical_sv_path
 
 from scout.commands import cli
 from scout.server.extensions import store
