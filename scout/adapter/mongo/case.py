@@ -138,7 +138,8 @@ class CaseHandler(object):
         if name_query:
             name_value = name_query.split(':')[-1] # capture ant value provided after query descriptor
             users = self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}})
-            if users.count() > 0:
+            nr_users = sum(1 for i in self.user_collection.find({'name': {'$regex': name_query, '$options': 'i'}}))
+            if nr_users > 0:
                 query['assignees'] = {'$in': [user['email'] for user in users]}
             elif name_query.startswith('HP:'):
                 LOG.debug("HPO case query")

@@ -72,7 +72,8 @@ class GeneHandler(object):
         # Add the transcripts:
         transcripts = []
         tx_objs = self.transcripts(build=build, hgnc_id=gene_obj['hgnc_id'])
-        if tx_objs.count() > 0:
+        nr_tx = sum(1 for i in self.transcripts(build=build, hgnc_id=gene_obj['hgnc_id']))
+        if nr_tx > 0:
             for tx in tx_objs:
                 transcripts.append(tx)
         gene_obj['transcripts'] = transcripts
