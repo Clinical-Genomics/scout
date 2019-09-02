@@ -94,11 +94,10 @@ class GeneHandler(object):
         query = {'hgnc_symbol':hgnc_symbol, 'build':build}
         projection = {'hgnc_id':1, '_id':0}
         res = self.hgnc_collection.find(query, projection)
+        for gene in res:
+            return gene['hgnc_id']
 
-        if res.count() > 0:
-            return res[0]['hgnc_id']
-        else:
-            return None
+        return None
 
     def hgnc_genes(self, hgnc_symbol, build='37', search=False):
         """Fetch all hgnc genes that match a hgnc symbol
@@ -116,15 +115,16 @@ class GeneHandler(object):
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
             # first search for a full match
-            full_query = self.hgnc_collection.find({
+            query = {
                 '$or': [
                     {'aliases': hgnc_symbol},
                     {'hgnc_id': int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
                 ],
                 'build': build
-            })
-            if full_query.count() != 0:
-                return full_query
+            }
+            nr_genes = self.nr_genes(query=query)
+            if nr_genes != 0:
+                return self.hgnc_collection.find(query)
 
             return self.hgnc_collection.find({
                 'aliases': {'$regex': hgnc_symbol, '$options': 'i'},
@@ -161,7 +161,7 @@ class GeneHandler(object):
                 gene_obj['ens_transcripts'] = tx_objs
             yield gene_obj
 
-    def nr_genes(self, build=None):
+    def nr_genes(self, build=None, query=None):
         """Return the number of hgnc genes in collection
 
         If build is used, return the number of genes of a certain build
@@ -172,13 +172,16 @@ class GeneHandler(object):
         Returns:
             result()
         """
+        query = query or {}
         if build:
             LOG.debug("Fetching all genes from build %s",  build)
+            query['build'] = build
         else:
             LOG.debug("Fetching all genes")
+            
         
         nr=0
-        for nr, gene in enumerate(self.hgnc_collection.find({'build':build}),1):
+        for nr, gene in enumerate(self.hgnc_collection.find(query),1):
             pass
         return nr
 

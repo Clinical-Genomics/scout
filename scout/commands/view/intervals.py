@@ -19,10 +19,10 @@ def intervals(build):
     LOG.info("Running scout view index")
     adapter = store
 
-    if adapter.hgnc_collection.find().count() == 0:
+    if adapter.nr_genes() == 0:
         LOG.error('There are no genes in database to calculate intervals')
         return
-    elif adapter.hgnc_collection.find({'build':build}).count() == 0:
+    elif adapter.nr_genes(build=build) == 0:
         LOG.error('No genes in database with build {}'.format(build))
         return
     intervals = adapter.get_coding_intervals(build)

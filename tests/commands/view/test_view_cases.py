@@ -11,7 +11,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
 
     adapter = store
     # Given a real populated database with a case
-    assert sum)1 for i in adapter.case_collection.find()) == 1
+    assert sum(1 for i in adapter.case_collection.find()) == 1
 
     # Create a test CLI runner
     runner = mock_app.test_cli_runner()
