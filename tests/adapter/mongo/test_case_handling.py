@@ -96,7 +96,8 @@ def test_get_research_case(real_adapter, case_obj, institute_obj):
 
     # AND WHEN inserting such case
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 1
+    ## THEN assert that the case was inserted
+    assert adapter.case_collection.find_one()
 
     # THEN searching for reasearch cases should return one case
     research_cases = list(adapter.cases(owner=case_obj['owner'], is_research=True))
@@ -383,12 +384,15 @@ def test_update_case_individuals(adapter, case_obj):
 
 
 def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
-
-    assert adapter.cases().count() == 0
+    ## GIVEN an empty adapter
+    assert sum(1 for i in adapter.cases()) == 0
+    
+    ## WHEN inserting case, user and institute
     adapter.case_collection.insert_one(case_obj)
     adapter.user_collection.insert_one(user_obj)
     adapter.institute_collection.insert_one(institute_obj)
-    assert adapter.cases().count() == 1
+    ## THEN assert that a case was inserted
+    assert sum(1 for i in adapter.cases()) == 1
 
     # Test that when case is unarchived the users gets assigned to it:
     # flag case as 'archived'

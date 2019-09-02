@@ -33,7 +33,7 @@ def test_view_institutes(mock_app, institute_obj):
 
     #remove institute from database
     store.institute_collection.find_one_and_delete({'_id':institute_obj['internal_id']})
-    assert store.institute_collection.find().count() == 0
+    assert sum(1 for i in store.institute_collection.find()) == 0
 
     # Test cli again with no institutes in database
     result =  runner.invoke(cli, ['view', 'institutes'])
