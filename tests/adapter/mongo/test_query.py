@@ -48,10 +48,10 @@ def test_panel_query(real_populated_database, case_obj, variant_objs):
         genes = [ 17284 ] # POT1 gene
     )
     adapter.load_hpo_term(hpo_term)
-    assert adapter.hpo_term_collection.find().count() == 1
+    assert sum(1 for i in adapter.hpo_term_collection.find()) == 1
 
     # no variants in database
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
     # add snv variants to database
     for variant_obj in variant_objs:
         adapter.load_variant(variant_obj)
@@ -229,7 +229,8 @@ def test_build_clinsig(adapter):
                             }
                         }
 
-def test_build_clinsig_filter(adapter, real_variant_database):
+def test_build_clinsig_filter(real_variant_database):
+    adapter = real_variant_database
     case_id = 'cust000'
     clinsig_items = [ 4, 5 ]
     clinsig_mapped_items = []
@@ -241,8 +242,7 @@ def test_build_clinsig_filter(adapter, real_variant_database):
 
     region_annotation = ['exonic', 'splicing']
 
-    query = {'region_annotations': region_annotation,
-                 'clinsig': clinsig_items }
+    query = {'region_annotations': region_annotation, 'clinsig': clinsig_items}
 
     mongo_query = adapter.build_query(case_id, query=query)
 
@@ -261,61 +261,67 @@ def test_build_clinsig_filter(adapter, real_variant_database):
         ]
 
 
-    assert real_variant_database.variant_collection.find_one()
+    assert adapter.variant_collection.find_one()
 
     # Test that the query works with real data:
 
-    case_obj = real_variant_database.case_collection.find_one()
+    case_obj = adapter.case_collection.find_one()
     case_id = case_obj['_id']
 
     # Execute a raw query to collect variants that should pass the filter
-    n_results_raw_query = real_variant_database.variant_collection.find({
+    res = adapter.variant_collection.find({
         '$and' : [
             {'genes.region_annotation' : {'$in' : region_annotation}},
             {'clnsig.value' : {'$in' : [4, 'Likely pathogenic', 5, 'Pathogenic']}},
             {'case_id' : case_id},
             {'category' : 'snv'},
             {'variant_type' : 'clinical'}
-        ]}).count()
+        ]})
+    n_results_raw_query = sum(1 for i in res)
     assert n_results_raw_query
 
-    adapter = real_variant_database
-
     # filter real variants using query:
-    filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
+    filtered_variants = [var for var in adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)]
 
     # number of variants returned by raw query and filtered variants should be the same:
-    assert filtered_variants.count() == n_results_raw_query
+    assert len(filtered_variants) == n_results_raw_query
 
     # Check if query works on clnsig.value that comma separated values:
     a_variant = list(filtered_variants)[0]
     assert a_variant['_id']
 
     # there should be no variant with clnsig.value=='Pathogenic, Likely pathogenic'
-    assert real_variant_database.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'}).count() == 0
+    res = adapter.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'})
+    assert sum(1 for i in res) == 0
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
-    real_variant_database.variant_collection.update_one({'_id' : a_variant['_id']}, {'$set' : {'clnsig.0.value': 'Pathogenic, Likely pathogenic'}})
+    adapter.variant_collection.update_one(
+        {'_id' : a_variant['_id']}, 
+        {'$set' : {'clnsig.0.value': 'Pathogenic, Likely pathogenic'}}
+    )
 
     # One variant has multiple clssig now:
-    real_variant_database.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'}).count() == 1
+    res = adapter.variant_collection.find({'clnsig.value' : 'Pathogenic, Likely pathogenic'})
+    assert sum(1 for i in res) == 1
 
     # Update raw query to find this variant as well
-    n_results_raw_query = real_variant_database.variant_collection.find({
+    res = adapter.variant_collection.find({
         '$and' : [
             {'genes.region_annotation' : {'$in' : region_annotation}},
             {'clnsig.value' : {'$in' : [4, 'Likely pathogenic', 5, 'Pathogenic', 'Pathogenic, Likely pathogenic']}},
             {'case_id' : case_id},
             {'category' : 'snv'},
             {'variant_type' : 'clinical'}
-        ]}).count()
+        ]})
+    n_results_raw_query = sum(1 for i in res)
 
     # Makes sure that the variant is found anyway by the query:
-    n_filtered_variants = adapter.variants(case_id=case_id, nr_of_variants=-1, query=query).count()
+    n_filtered_variants = sum(1 for i in adapter.variants(case_id=case_id, nr_of_variants=-1, query=query))
     assert n_results_raw_query == n_filtered_variants
 
 
-def test_build_clinsig_always(adapter, real_variant_database):
+def test_build_clinsig_always(real_variant_database):
+    adapter = real_variant_database
     case_id = 'cust000'
     clinsig_confident_always_returned = True
     trusted_revstat_lev = ['mult', 'single', 'exp', 'guideline']
@@ -374,15 +380,15 @@ def test_build_clinsig_always(adapter, real_variant_database):
 
     # Test that the query works with real data
 
-    case_obj = real_variant_database.case_collection.find_one()
+    case_obj = adapter.case_collection.find_one()
     case_id = case_obj['_id']
 
-    adapter = real_variant_database
-    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count()
+    res = adapter.variants(case_id=case_id, nr_of_variants=-1)
+    assert sum(1 for i in res)
 
     # filter variants using query:
     filtered_variants = list(adapter.variants(case_id=case_id, nr_of_variants=-1, query=query))
-    assert filtered_variants
+    assert len(filtered_variants) > 0
 
     # Make sure that variants are filtered as they should:
     for var in filtered_variants:
@@ -540,9 +546,11 @@ def test_get_overlapping_variant(populated_database, parsed_case):
 
     case_id = parsed_case['case_id']
 
-    assert populated_database.variants(case_id, category='snv').count() == 0
+    snvs = populated_database.variants(case_id, category='snv')
+    assert sum(1 for i in snvs) == 0
 
-    assert populated_database.variants(case_id, category='sv').count() == 0
+    svs = populated_database.variants(case_id, category='sv')
+    assert sum(1 for i in svs) == 0
 
     ## WHEN inserting a couple of variants
 
@@ -641,11 +649,11 @@ def test_get_overlapping_variant(populated_database, parsed_case):
     ## THEN make sure that the variants where inserted
     result = populated_database.variants(case_id, category='snv')
     # Thow snvs where loaded
-    assert result.count() == 2
+    assert sum(1 for i in result) == 2
 
     #Two SV where added
     result = populated_database.variants(case_id, category='sv')
-    assert result.count() == 2
+    assert sum(1 for i in result) == 2
 
     # test functions to collect all overlapping variants
     result = populated_database.overlapping(snv_one)

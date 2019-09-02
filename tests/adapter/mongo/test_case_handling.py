@@ -410,18 +410,10 @@ def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
 def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
 
     # GIVEN an empty database (no cases)
-<<<<<<< HEAD
-    assert adapter.cases().count() == 0
-
-    # insert test case
-    adapter.case_collection.insert_one(case_obj)
-    assert adapter.cases().count() == 1
-=======
     assert sum(1 for i in adapter.cases()) == 0
     adapter.case_collection.insert_one(case_obj)
     assert sum(1 for i in adapter.cases()) == 1
     logger.info("Testing to update case")
->>>>>>> Removes .count from more tests
 
     res = adapter.case(case_obj['_id'])
     assert res['status'] == 'inactive'
