@@ -110,6 +110,22 @@ def exon_info(request):
 
     return exon
 
+@pytest.fixture
+def parsed_exon(request):
+    exon = dict(
+        chrom = '1',
+        hgnc_id = 234,
+        exon_id = '1-1167629-1170421',
+        transcript = 'ENST00000379198',
+        ens_exon_id = 'ENSE00001480062',
+        start = 1167629,
+        end = 1170421,
+        strand=1,
+        rank=1,
+    )
+
+    return exon
+
 
 @pytest.fixture
 def test_gene(request):
