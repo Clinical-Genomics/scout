@@ -13,7 +13,7 @@ def test_view_hpo(mock_app):
     result =  runner.invoke(cli, ['view', 'hpo'])
     assert result.exit_code == 0
     # no term shold be returned
-    assert "No matching terms found" in result.output
+    assert "Found 0 terms" in result.output
 
     # no HPO terms in database, so insert one
     assert store.hpo_term_collection.find_one() is None
