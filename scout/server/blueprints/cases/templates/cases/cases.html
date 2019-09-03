@@ -152,14 +152,14 @@
 {% macro cases_table(group_name, cases) %}
 <table class="table table-hover">
   <thead>
-    <tr>
-      <th class="w-20">{{ group_name|capitalize }} cases</th>
-      <th class="w-10">Status</th>
-      <th class="w-10">Analysis date</th>
-      <th class="w-20">Link</th>
-      <th class="w-20">Sequencing</th>
-      <th class="w-10">Track</th>
-      <th class="w-10">Clinvar</th>
+    <tr class="d-flex">
+      <th class="col-3">{{ group_name|capitalize }} cases</th>
+      <th class="col-1">Status</th>
+      <th class="col-1">Analysis date</th>
+      <th class="col-2">Link</th>
+      <th class="col-1">Sequencing</th>
+      <th class="col-2">Track</th>
+      <th class="col-2">Clinvar</th>
     </tr>
   </thead>
   <tbody>
@@ -176,8 +176,8 @@
 
 
 {% macro case_row(case) %}
-  <tr {% if case.status == 'solved' %} class="bg-success" {% endif %}>
-    <td class="w-20">
+  <tr class="d-flex{% if case.status == 'solved' %} bg-success{% endif %}">
+    <td class="col-3">
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
@@ -195,19 +195,19 @@
         <span class="badge badge-warning">decipher</span>
       {% endif %}
     </td>
-    <td class="w-10">
+    <td class="col-1">
       <span class="badge badge-primary">{{ case.status }}</span>
       {% if case.is_migrated %}
         <span class="badge badge-primary">migrated</span>
       {% endif %}
     </td>
-    <td class="w-10">
+    <td class="col-1">
       {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
         <span class="badge pull-right">rerun</span>
       {% endif %}
     </td>
-    <td class="w-20">
+    <td class="col-2">
       {% if case.is_research %}
         {% if case.vcf_files.vcf_snv %}
           <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
@@ -222,7 +222,7 @@
         {% endif %}
       {% endif %}
     </td>
-    <td class="w-20">
+    <td class="col-1">
       {% for analysis_type in case.analysis_types %}
         {% if analysis_type == 'wgs' %}
           {% set badge_class = 'primary' %}
@@ -245,10 +245,10 @@
         </span>
       {% endfor %}
     </td>
-    <td class="w-10">
+    <td class="col-1">
       {{ case.display_track }}
     </td>
-    <td class="w-10">
+    <td class="col-2">
       {% if case.clinvar_variants %}
         <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
 
