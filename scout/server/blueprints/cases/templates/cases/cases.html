@@ -153,13 +153,13 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>{{ group_name|capitalize }} cases</th>
-      <th>Status</th>
-      <th>Analysis date</th>
-      <th>Link</th>
-      <th>Sequencing</th>
-      <th>Track</th>
-      <th>Clinvar</th>
+      <th class="w-20">{{ group_name|capitalize }} cases</th>
+      <th class="w-10">Status</th>
+      <th class="w-10">Analysis date</th>
+      <th class="w-20">Link</th>
+      <th class="w-20">Sequencing</th>
+      <th class="w-10">Track</th>
+      <th class="w-10">Clinvar</th>
     </tr>
   </thead>
   <tbody>
@@ -240,7 +240,7 @@
           {% set badge_class = 'default' %}
         {% endif %}
 
-        <span class="badge badge-{{ label_class }}">
+        <span class="badge badge-{{ badge_class }}">
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
