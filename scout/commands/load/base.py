@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 
 @click.group()
 def load():
-    """Load the Scout database."""
+    """Load items into the scout database."""
     pass
 
 
