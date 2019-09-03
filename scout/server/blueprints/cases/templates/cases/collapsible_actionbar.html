@@ -172,7 +172,7 @@
 {% endmacro %}
 
 {% macro research(case) %}
-<a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-graduation-cap fa-fw mr-3"></span>
     <span class="menu-collapsed">Research list</span>
@@ -180,7 +180,7 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu3' class="collapse sidebar-submenu">
+<div id='submenu2' class="collapse sidebar-submenu">
   {% if case.research_requested %}
     <i>Research pending</i>
   {% else %}
@@ -190,7 +190,7 @@
 {% endmacro %}
 
 {% macro rerun(case) %}
-<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-retweet fa-fw mr-3"></span>
     <span class="menu-collapsed">Reruns</span>
@@ -198,7 +198,7 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu4' class="collapse sidebar-submenu">
+<div id='submenu3' class="collapse sidebar-submenu">
   {% if case.rerun_requested %}
     <i>Rerun pending</i>
   {% else %}
@@ -208,7 +208,7 @@
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}
-<a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-handshake-o fa-fw mr-3"></span>
     <span class="menu-collapsed">Share case</span>
@@ -216,7 +216,7 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu5' class="collapse sidebar-submenu">
+<div id='submenu4' class="collapse sidebar-submenu">
   {% if collaborators %}
     <div class="form-group">
       <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
@@ -254,7 +254,7 @@
 {% endmacro %}
 
 {% macro check_decipher(case, institute) %}
-<a href="#submenu6" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+<a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-check fa-fw mr-3"></span>
     <span class="menu-collapsed">Decipher check</span>
@@ -262,7 +262,7 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu6' class="collapse sidebar-submenu">
+<div id='submenu5' class="collapse sidebar-submenu">
   <form method="POST"
             action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
         <button name="action" value="DELETE" class="btn btn-success form-control">

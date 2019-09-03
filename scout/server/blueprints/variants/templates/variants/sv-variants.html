@@ -265,7 +265,7 @@
       {% endif %}
     </td>
     <td>
-      <div class="flex">
+      <div class="d-flex justify-content-between">
         <div>
           {% if variant.hgnc_symbols|length >= 5 %}
             {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
@@ -275,7 +275,6 @@
             {% endfor %}
           {% endif %}
         </div>
-
         {% if variant.hgnc_symbols %}
           <span class="badge badge-secondary">{{ variant.hgnc_symbols|length }}</span>
         {% endif %}
