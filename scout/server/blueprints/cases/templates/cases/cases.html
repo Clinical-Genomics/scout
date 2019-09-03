@@ -153,13 +153,13 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
-      <th class="col-xs-1">Status</th>
-      <th class="col-xs-1">Analysis date</th>
-      <th class="col-xs-2">Link</th>
-      <th class="col-xs-2">Sequencing</th>
-      <th class="col-xs-2">Track</th>
-      <th class="col-xs-2">Clinvar</th>
+      <th>{{ group_name|capitalize }} cases</th>
+      <th>Status</th>
+      <th>Analysis date</th>
+      <th>Link</th>
+      <th>Sequencing</th>
+      <th>Track</th>
+      <th>Clinvar</th>
     </tr>
   </thead>
   <tbody>
@@ -225,22 +225,22 @@
     <td>
       {% for analysis_type in case.analysis_types %}
         {% if analysis_type == 'wgs' %}
-          {% set label_class = 'primary' %}
+          {% set badge_class = 'primary' %}
         {% elif analysis_type == 'wes' %}
-          {% set label_class = 'warning' %}
+          {% set badge_class = 'warning' %}
         {% elif analysis_type == 'tga' %}
-          {% set label_class = 'info' %}
+          {% set badge_class = 'info' %}
         {% elif analysis_type == 'panel' %}
-          {% set label_class = 'info' %}
+          {% set badge_class = 'info' %}
         {% elif analysis_type == 'mixed' %}
-          {% set label_class = 'mixed' %}
+          {% set badge_class = 'mixed' %}
         {% elif analysis_type == 'external' %}
-          {% set label_class = 'danger' %}
+          {% set badge_class = 'danger' %}
         {% else %}
-          {% set label_class = 'default' %}
+          {% set badge_class = 'default' %}
         {% endif %}
 
-        <span class="label label-{{ label_class }}">
+        <span class="badge badge-{{ label_class }}">
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
@@ -250,7 +250,7 @@
     </td>
     <td>
       {% if case.clinvar_variants %}
-        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} variants</a>
+        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
 
         <!-- Modal -->
         <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
