@@ -150,28 +150,29 @@
 {% endmacro %}
 
 {% macro cases_table(group_name, cases) %}
-<table class="table table-hover">
-  <thead>
-    <tr class="d-flex">
-      <th class="col-3">{{ group_name|capitalize }} cases</th>
-      <th class="col-1">Status</th>
-      <th class="col-1">Analysis date</th>
-      <th class="col-2">Link</th>
-      <th class="col-1">Sequencing</th>
-      <th class="col-2">Track</th>
-      <th class="col-2">Clinvar</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for case in cases %}
-    {{ case_row(case) }}
-  {% else %}
-      <tr>
-        <td colspan="5">No cases found.</td>
+<div class="card mt-3">
+  <table class="table table-hover">
+    <thead>
+      <tr class="d-flex">
+        <th class="col-3">{{ group_name|capitalize }} cases</th>
+        <th class="col-1">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i></a></th>
+        <th class="col-2">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
+        <th class="col-2">Link</th>
+        <th class="col-1">Sequencing</th>
+        <th class="col-2">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i></a></th>
+        <th class="col-1">Clinvar</th>
       </tr>
-  {% endfor %}
-  </tbody>
-
+    </thead>
+    <tbody>
+    {% for case in cases %}
+      {{ case_row(case) }}
+    {% else %}
+        <tr>
+          <td colspan="5">No cases found.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</div>
 {% endmacro %}
 
 
@@ -201,7 +202,7 @@
         <span class="badge badge-primary">migrated</span>
       {% endif %}
     </td>
-    <td class="col-1">
+    <td class="col-2">
       {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
         <span class="badge badge-secondary pull-right">rerun</span>
@@ -248,7 +249,7 @@
     <td class="col-2">
       {{ case.display_track }}
     </td>
-    <td class="col-2">
+    <td class="col-1">
       {% if case.clinvar_variants %}
         <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
 
