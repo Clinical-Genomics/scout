@@ -149,45 +149,45 @@ $(document).ready(function(){
 
 {% macro sanger_form() %}
   <ul class="list-group">
-    <li class="list-group-item">
+    <div class="list-group-item">
       <strong>Case {{ case.display_name }}</strong><br>
       <a href="{{ url_for('variants.variant', institute_id=institute._id,
                           case_name=case.display_name, variant_id=variant._id) }}">
         {{ variant.display_name }}
       </a>
-    </li>
-    <li class="list-group-item">
+    </div>
+    <div class="list-group-item">
       <strong>HGNC symbols</strong>:
       {{ variant.hgnc_symbols|join(', ') }}
-    </li>
-    <li class="list-group-item">
+    </div>
+    <div class="list-group-item">
       <strong>Gene panels</strong>:
       {{ variant.panels|join(', ') }}
-    </li>
-    <li class="list-group-item disabled"><strong>Amino acid changes</strong></li>
+    </div>
+    <div class="list-group-item disabled"><strong>Amino acid changes</strong></div>
     {% for gene in variant.genes %}
         {% for transcript in gene.primary_transcripts %}
           {% for refseq_id in transcript.refseq_identifiers %}
               {% if transcript.protein_sequence_name%}
-                <li class="list-group-item">
+                <div class="list-group-item">
                   {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
                   {{ (transcript.protein_sequence_name or '')|url_decode }}
-                </li>
+                </div>
               {% endif %}
             {% endfor %}
           {% endfor %}
     {% endfor %}
-    <li class="list-group-item disabled"><strong>GT call</strong></li>
+    <div class="list-group-item disabled"><strong>GT call</strong></div>
     {% for individual in variant.samples %}
-      <li class="list-group-item">
+      <div class="list-group-item">
         {{ individual.display_name }}: {{ individual.genotype_call }}
-      </li>b
+      </div>
     {% endfor %}
-    <li class="list-group-item">
+    <div class="list-group-item">
       <strong>Ordered by</strong>:
       {{ current_user.name }}
-    </li>
-    <li class="list-group-item">Comment: <input type="text" size=50 name="verification_comment"></li>
+    </div>
+    <div class="list-group-item">Comment: <input type="text" size=45 name="verification_comment"></div>
   </ul>
 {% endmacro %}
 
@@ -1149,22 +1149,46 @@ $(document).ready(function(){
   </div>
 {% endmacro %}
 
+<!--
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+-->
+
 {% macro modal_sanger() %}
   <form action="{{ url_for('variants.verify', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
         method="POST">
     <div class="modal fade" id="sangerModal">
-      <div class="modal-dialog">
+      <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Order Sanger sequencing</h4>
+            <h5 class="modal-title">Order Sanger sequencing</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
           <div class="modal-body">
             {{ sanger_form() }}
           </div>
           <div class="modal-footer">
-            <button class="btn btn-default" data-dismiss="modal">Close</button>
+            <button class="btn btn-danger" data-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Send sanger order request</button>
           </div>
         </div>

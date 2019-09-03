@@ -498,14 +498,16 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Order verification</h4>
+          <h5 class="modal-title">Order verification</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           {{ verify_form() }}
         </div>
         <div class="modal-footer">
-          <button class="btn btn-default" data-dismiss="modal">Close</button>
+          <button class="btn btn-danger" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Send verification order request</button>
         </div>
       </div>
@@ -540,7 +542,7 @@
 
 {% macro verify_form() %}
 <ul class="list-group">
-  <li class="list-group-item">
+  <div class="list-group-item">
     <strong>Case {{ case.display_name }}</strong><br>
     <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
                         case_name=case.display_name, variant_id=variant._id) }}">
@@ -551,29 +553,29 @@
       {% endif %}
       {{ variant.sub_category|upper }}
     </a>
-  <li class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</li>
-  <li class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</li>
-  <li class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</li>
-  <li class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</li>
-  </li>
-  <li class="list-group-item">
+  <div class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</div>
+  <div class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</div>
+  <div class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</div>
+  <div class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</div>
+  </div>
+  <div class="list-group-item">
     <strong>Encompassing genes</strong>:
     {{ variant.hgnc_symbols|join(', ') }}
-  </li>
-  <li class="list-group-item">
+  </div>
+  <div class="list-group-item">
     <strong>Gene panels</strong>:
     {{ variant.panels|join(', ') }}
-  </li>
-  <li class="list-group-item disabled"><strong>GT call</strong></li>
+  </div>
+  <div class="list-group-item disabled"><strong>GT call</strong></div>
   {% for individual in variant.samples %}
-    <li class="list-group-item">
+    <div class="list-group-item">
       {{ individual.display_name }}: {{ individual.genotype_call }}
-    </li>
+    </div>
   {% endfor %}
-  <li class="list-group-item">
+  <div class="list-group-item">
     <strong>Ordered by</strong>:
     {{ current_user.name }}
-  </li>
+  </div>
 </ul>
 {% endmacro %}
 

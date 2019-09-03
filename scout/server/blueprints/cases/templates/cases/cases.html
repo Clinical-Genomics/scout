@@ -204,7 +204,7 @@
     <td class="col-1">
       {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
-        <span class="badge pull-right">rerun</span>
+        <span class="badge badge-secondary pull-right">rerun</span>
       {% endif %}
     </td>
     <td class="col-2">
@@ -245,7 +245,7 @@
         </span>
       {% endfor %}
     </td>
-    <td class="col-1">
+    <td class="col-2">
       {{ case.display_track }}
     </td>
     <td class="col-2">
