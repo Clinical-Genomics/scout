@@ -140,7 +140,7 @@ class VariantHandler(VariantLoader):
                 if not hgnc_transcript.get('refseq_id'):
                     continue
 
-                refseq_id = fetch_refseq_version(hgnc_transcript['refseq_id'])
+                refseq_id = hgnc_transcript['refseq_id']
                 transcript['refseq_id'] = refseq_id
                 variant_obj['has_refseq'] = True
                 # Check if the refseq id are disease associated

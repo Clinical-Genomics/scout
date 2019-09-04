@@ -24,6 +24,7 @@ from scout.server.utils import institute_and_case, user_institutes
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
+from scout.utils.requests import fetch_refseq_version
 
 LOG = logging.getLogger(__name__)
 
@@ -1102,6 +1103,14 @@ def clinvar_export(store, institute_id, case_name, variant_id):
     pinned = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('suspects', [])]
     variant_obj = store.variant(variant_id)
+
+    # gather missing transcript info from entrez (refseq id version)
+    for pinned_var in pinned:
+        for gene in pinned_var.get('genes'):
+            for transcript in gene.get('transcripts'):
+                if transcript.get('refseq_id'):
+                    transcript['refseq_id'] = fetch_refseq_version(transcript['refseq_id'])
+
     return dict(
         today = str(date.today()),
         institute=institute_obj,
