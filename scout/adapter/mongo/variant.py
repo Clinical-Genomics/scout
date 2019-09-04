@@ -4,7 +4,6 @@ import logging
 import re
 import pathlib
 import tempfile
-from scout.utils.requests import fetch_refseq_version
 
 from datetime import datetime
 from pprint import pprint as pp
