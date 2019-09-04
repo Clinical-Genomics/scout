@@ -16,7 +16,7 @@ def users():
     adapter = store
 
     user_objs = [user for user in adapter.users()]
-    if user_objs.count() == 0:
+    if len(user_objs) == 0:
         LOG.info("No users found")
         return
 
