@@ -741,12 +741,12 @@ $(document).ready(function(){
         {% endif %}
       {% endfor %}
     {% endfor %}
-    {{ superdups_fracmatches }}
+    {% do superdups_fracmatches|sort %}
     <ul class="list-group">
       <li class="list-group-item">
         <a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">UCSC superdups fracMatch</a>
         {% if superdups_fracmatches %}
-          <span class="pull-right">mapping to {{superdups_fracmatches|length}} segm. dups. (min score:{{superdups_fracmatches|min}}, max score:{{superdups_fracmatches|max}})</span>
+          <span class="pull-right">mapping to {{superdups_fracmatches|length}} segm. dups. (min score:{{superdups_fracmatches|first }}, max score:{{superdups_fracmatches|last }})</span>
         {% else %}
           <span class="pull-right"> - </span>
         {% endif %}
