@@ -75,6 +75,7 @@ def test_build_with_hgnc_info(parsed_variant):
         'transcript_id': 'ENST00000249504',
         'hgnc_id': 5134,
         'sift_prediction': 'deleterious'
+        'superdups_fracmatch' : [0.9761, 0.9866]
     }
     gene_info = {
         'transcripts': [transcript_info],

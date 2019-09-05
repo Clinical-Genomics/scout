@@ -26,10 +26,9 @@ def test_fetch_refseq_version():
     refseq_version = fetch_refseq_version(refseq_acc)
 
     # entrez eutils might be down the very moment of the test
-    if '.' in refseq_version:
-        version_n = refseq_version.split('.')[1]
-        # make sure that contains version number
-        assert version_n.isdigit()
+    version_n = refseq_version.split('.')[1]
+    # make sure that contains version number
+    assert version_n.isdigit()
 
     # fetch complete refseq version for accession without version
     refseq_acc = 'NM_000000'
