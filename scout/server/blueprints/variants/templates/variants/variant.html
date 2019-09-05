@@ -744,7 +744,7 @@ $(document).ready(function(){
     {% set superdups_fracmatches = superdups_fracmatches|sort %}
     <div class="panel-body">
         {% if superdups_fracmatches %}
-          <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min score:{{superdups_fracmatches|first }}, max score:{{superdups_fracmatches|last }})</span>
+          <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
         {% else %}
           <span> - </span>
         {% endif %}
