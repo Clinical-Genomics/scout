@@ -730,7 +730,7 @@ $(document).ready(function(){
         <span class="pull-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
-    <div class="panel-heading"><a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">Mappability</a></div>
+    <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
     {% set superdups_fracmatches = [] %}
     {% for gene in variant.genes %}
       {% for transcript in gene.transcripts %}
