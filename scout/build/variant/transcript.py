@@ -71,7 +71,7 @@ def build_transcript(transcript, build='37'):
         transcript_obj['protein_sequence_name'] = transcript['protein_sequence_name']
 
     if transcript.get('superdups_fracmatch'):
-        transcript_obj['protein_sequence_name'] = transcript['superdups_fracmatch']
+        transcript_obj['superdups_fracmatch'] = transcript['superdups_fracmatch']
 
     transcript_obj['is_canonical'] = transcript.get('is_canonical', False)
 
