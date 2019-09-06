@@ -10,7 +10,7 @@ def parse_transcripts(raw_transcripts, allele=None):
     """Parse transcript information from VCF variants
 
     Args:
-        raw_transcripts(iterable(dict)): An iterable with raw transcript 
+        raw_transcripts(iterable(dict)): An iterable with raw transcript
                                          information
 
     Yields:
@@ -46,7 +46,7 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         ## Protein ID ##
         transcript['protein_id'] = entry.get('ENSP')
-        
+
         ## Polyphen prediction ##
         polyphen_prediction = entry.get('POLYPHEN')
         # Default is 'unknown'
@@ -60,15 +60,15 @@ def parse_transcripts(raw_transcripts, allele=None):
         sift_prediction = entry.get('SIFT')
         # Default is 'unknown'
         prediction_term = 'unknown'
-        
+
         if not sift_prediction:
             sift_prediction = entry.get('SIFT_PRED')
-            
+
         if sift_prediction:
             prediction_term = sift_prediction.split('(')[0]
 
         transcript['sift_prediction'] = prediction_term
-        
+
         transcript['swiss_prot'] = entry.get('SWISSPROT') or 'unknown'
 
         if entry.get('DOMAINS', None):
@@ -124,11 +124,17 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         # Check if the transcript is marked cannonical by vep
         transcript['is_canonical'] = (entry.get('CANONICAL') == 'YES')
-        
+
         # Check if the CADD score is available on transcript level
         cadd_phred = entry.get('CADD_PHRED')
         if cadd_phred:
             transcript['cadd'] = float(cadd_phred)
+
+        # check if mappability is available on transcript level
+        # description: http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups
+        superdups_fractmatch = entry.get('GENOMIC_SUPERDUPS_FRAC_MATCH')
+        if superdups_fractmatch:
+            transcript['superdups_fracmatch'] = [float(fractmatch) for fractmatch in superdups_fractmatch.split('&')]
 
         # Check frequencies
         # There are different keys for different versions of VEP
@@ -143,22 +149,22 @@ def parse_transcripts(raw_transcripts, allele=None):
             # 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
             # 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
             # https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
-            
+
             # Loop over all keys to find frequency entries
             for key in entry:
                 #All frequencies endswith AF
                 if not key.endswith('AF'):
                     continue
-                
+
                 value = entry[key]
                 if not value:
                     continue
-                
+
                 # This is the 1000G max af information
                 if (key == 'AF' or key == '1000GAF'):
                     transcript['thousand_g_maf'] = float(value)
                     continue
-                
+
                 if key == 'GNOMAD_AF':
                     transcript['gnomad_maf'] = float(value)
                     continue
@@ -167,19 +173,19 @@ def parse_transcripts(raw_transcripts, allele=None):
                     transcript['exac_max'] = float(value)
                     transcript['exac_maf'] = float(value)
                     continue
-                
+
                 if 'GNOMAD' in key:
                     gnomad_freqs.append(float(value))
-                
+
                 else:
                     thousandg_freqs.append(float(value))
-                
+
             if thousandg_freqs:
                 transcript['thousandg_max'] = max(thousandg_freqs)
 
             if gnomad_freqs:
                 transcript['gnomad_max'] = max(gnomad_freqs)
-            
+
         except Exception as err:
             LOG.debug("Something went wrong when parsing frequencies")
             LOG.debug("Only splitted and normalised VEP v90+ is supported")
@@ -199,4 +205,3 @@ def parse_transcripts(raw_transcripts, allele=None):
                     transcript['cosmic'].append(int(variant_id[4:]))
 
         yield transcript
-

@@ -24,6 +24,7 @@ from scout.server.utils import institute_and_case, user_institutes
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
+from scout.utils.requests import fetch_refseq_version
 
 LOG = logging.getLogger(__name__)
 
@@ -159,12 +160,21 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         ('1000G', variant_obj.get('thousand_genomes_frequency')),
         ('1000G (left)', variant_obj.get('thousand_genomes_frequency_left')),
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
-        ('ClinGen CGH (benign)', variant_obj.get('clingen_cgh_benign')),
-        ('ClinGen CGH (pathogenic)', variant_obj.get('clingen_cgh_pathogenic')),
-        ('ClinGen NGI', variant_obj.get('clingen_ngi')),
-        ('SweGen', variant_obj.get('swegen')),
-        ('Decipher', variant_obj.get('decipher')),
+        ('GnomAD', variant_obj.get('gnomad_frequency')),
     ]
+
+    if 'clingen_cgh_benign' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen CGH (benign)', variant_obj['clingen_cgh_benign']))
+    if 'clingen_cgh_pathogenic' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen CGH (pathogenic)', variant_obj['clingen_cgh_pathogenic']))
+    if 'clingen_ngi' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen NGI', variant_obj['clingen_ngi']))
+    if 'clingen_mip' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen MIP', variant_obj['clingen_mip']))
+    if 'swegen' in variant_obj:
+        variant_obj['frequencies'].append(('SweGen', variant_obj['swegen']))
+    if 'decipher' in variant_obj:
+        variant_obj['frequencies'].append(('Decipher', variant_obj['decipher']))
 
     variant_obj['callers'] = callers(variant_obj, category='sv')
 
@@ -1093,6 +1103,14 @@ def clinvar_export(store, institute_id, case_name, variant_id):
     pinned = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('suspects', [])]
     variant_obj = store.variant(variant_id)
+
+    # gather missing transcript info from entrez (refseq id version)
+    for pinned_var in pinned:
+        for gene in pinned_var.get('genes'):
+            for transcript in gene.get('transcripts'):
+                if transcript.get('refseq_id'):
+                    transcript['refseq_id'] = fetch_refseq_version(transcript['refseq_id'])
+
     return dict(
         today = str(date.today()),
         institute=institute_obj,

@@ -25,6 +25,7 @@ def test_fetch_refseq_version():
     refseq_acc = 'NM_020533'
     refseq_version = fetch_refseq_version(refseq_acc)
 
+    # entrez eutils might be down the very moment of the test
     version_n = refseq_version.split('.')[1]
     # make sure that contains version number
     assert version_n.isdigit()

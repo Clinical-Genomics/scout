@@ -2,7 +2,7 @@
 def parse_frequencies(variant, transcripts):
     """Add the frequencies to a variant
 
-    Frequencies are parsed either directly from keys in info fieds or from the
+    Frequencies are parsed either directly from keys in info fields or from the
     transcripts is they are annotated there.
 
     Args:
@@ -20,7 +20,8 @@ def parse_frequencies(variant, transcripts):
     exac_keys = ['EXACAF']
     exac_max_keys = ['ExAC_MAX_AF', 'EXAC_MAX_AF']
 
-    gnomad_keys = ['GNOMADAF', 'GNOMAD_AF']
+    # Gnomad have both snv and sv frequencies
+    gnomad_keys = ['GNOMADAF', 'GNOMAD_AF', 'gnomad_svAF']
     gnomad_max_keys = ['GNOMADAF_POPMAX', 'GNOMADAF_MAX']
 
     for test_key in thousand_genomes_keys:
@@ -112,9 +113,11 @@ def parse_frequency(variant, info_key):
 
 def parse_sv_frequencies(variant):
     """Parsing of some custom sv frequencies
-    
+
     These are very specific at the moment, this will hopefully get better over time when the
-    field of structural variants is more developed.
+    field of structural variants are more developed.
+
+    The more general SV frequencies like 1000G and gnomADsv are parsed in parse_frequencies.
 
     Args:
         variant(cyvcf2.Variant)
@@ -122,26 +125,96 @@ def parse_sv_frequencies(variant):
     Returns:
         sv_frequencies(dict)
     """
-    frequency_keys = [
+    sv_frequencies = {}
+
+    clingen_benign_keys = [
         'clingen_cgh_benignAF',
         'clingen_cgh_benign',
+        'clingen_cgh_benignOCC',
+    ]
+
+    clingen_pathogenic_keys = [
         'clingen_cgh_pathogenicAF',
         'clingen_cgh_pathogenic',
+        'clingen_cgh_pathogenicOCC',
+    ]
+
+    clingen_ngi_keys = [
         'clingen_ngi',
         'clingen_ngiAF',
+        'clingen_ngiOCC',
+    ]
+
+    swegen_keys = [
         'swegen',
         'swegenAF',
+    ]
+
+    decipher_keys = [
         'decipherAF',
         'decipher'
     ]
-    sv_frequencies = {}
 
-    for key in frequency_keys:
-        value = variant.INFO.get(key, 0)
-        if 'AF' in key:
-            value = float(value)
-        else:
-            value = int(value)
-        if value > 0:
-            sv_frequencies[key] = value
+    cg_keys = [
+        'clinical_genomics_mipAF',
+        'clinical_genomics_mipOCC'
+    ]
+
+    for key in clingen_benign_keys:
+        value = parse_sv_frequency(variant, key)
+        if value is None:
+            continue
+        sv_frequencies['clingen_cgh_benign'] = value
+        break
+
+    for key in clingen_pathogenic_keys:
+        value = parse_sv_frequency(variant, key)
+        if value is None:
+            continue
+        sv_frequencies['clingen_cgh_pathogenic'] = value
+        break
+
+    for key in clingen_ngi_keys:
+        value = parse_sv_frequency(variant, key)
+        if value is None:
+            continue
+        sv_frequencies['clingen_ngi'] = value
+        break
+
+    for key in swegen_keys:
+        value = parse_sv_frequency(variant, key)
+        if value is None:
+            continue
+        sv_frequencies['swegen'] = value
+        break
+
+    for key in decipher_keys:
+        value = parse_sv_frequency(variant, key)
+        if value is None:
+            continue
+        sv_frequencies['decipher'] = value
+        break
+
+    for key in cg_keys:
+        value = parse_sv_frequency(variant, key)
+        if value is None:
+            continue
+        sv_frequencies['clingen_mip'] = value
+        break
+
     return sv_frequencies
+
+def parse_sv_frequency(variant, info_key):
+    """Parse a SV frequency.
+
+    These has to be treated separately since some of them are not actually frequencies(float) but
+    occurances(int)
+    """
+    value = variant.INFO.get(info_key, 0)
+    if 'AF' in info_key:
+        value = float(value)
+    else:
+        value = int(value)
+    if value > 0:
+        return value
+    return None
