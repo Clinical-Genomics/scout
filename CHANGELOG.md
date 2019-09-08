@@ -21,6 +21,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fetch refseq version from entrez and use it in clinvar form
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
+- Handle requests to Ensembl Rest API  
+- Handle requests to Ensembl Rest Biomart
 
 ### Fixed
 - Fixes of and induced by build tests
