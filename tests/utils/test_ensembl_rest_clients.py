@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-import json
 import tempfile
 from urllib.error import HTTPError
 from urllib.parse import urlencode
