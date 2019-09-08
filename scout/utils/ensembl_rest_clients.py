@@ -124,7 +124,7 @@ class EnsemblBiomartClient:
         """Convert biomart query params into biomart xml query
 
         Accepts:
-            filters(list): a list of tuples with filter name and values, ex: ('chromosome_name' , [1,2,'X'])
+            filters(dict): keys are filter names and values are filter values
             attributes(list): a list of attributes
 
         Returns:
@@ -165,7 +165,7 @@ class EnsemblBiomartClient:
         """Creates an attribute line for the biomart xml document
 
         Accepts:
-            attributes(list): attribute name
+            attributes(list): attribute names
 
         Returns:
             formatted_lines(str): formatted xml line
