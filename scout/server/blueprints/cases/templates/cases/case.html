@@ -161,13 +161,13 @@
              title="Display name of sample">Sample</th>
             <th class="col-xs-1" title="Sample sex">Sex</th>
             <th class="col-xs-1" title="Phenotype of sample">Phenotype</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Type of sequencing (e.g wes, wgs)">Sequencing</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Ancestry prediction from peddy">Ancestry (pred.)</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="If parenthood is confirmed by peddy">Parenthood</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Downloadable CytoSure file ">CGH</th>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Tissue origin for the sample">Tissue</th>
@@ -220,11 +220,11 @@
       <table class="table">
         <thead>
           <tr>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Sample display name">Sample</th>
             <th class="col-xs-1" title="Tumor type">Tumor Type</th>
             <th class="col-xs-1" title="Phenotype">Phenotype</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1" 
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Type of sequencing (e.g panel, wes)">Sequencing</th>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Measure of the tumor mutational burden">TMB</th>
@@ -719,7 +719,7 @@
                                case_name=case.display_name) }}">
         <div class="row">
           <div class="col-xs-7">
-            <input name="hpo_term" class="typeahead form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
+            <input name="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
           </div>
           <div class="col-xs-5">
             <button class="btn btn-default form-control">Add</button>
@@ -777,6 +777,15 @@
             <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
         </div>
+          <div class="panel-heading">Add genes to HPO panel</div>
+          <div class="row">
+            <div class="col-xs-9">
+              <input name="genes" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
+            </div>
+            <div class="col-xs-3">
+              <button class="btn btn-default form-control" type="submit" name="action" value="GENES">Add gene</button>
+            </div>
+          </div>
       </div>
     </div>
   </form>
@@ -914,8 +923,21 @@
         });
       }
 
-      $(".typeahead").typeahead({
+      function getNameTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead_hpo").typeahead({
+        name: 'hpo_term',
         source: getTerms,
+        minLength: 3,
+      });
+
+      $(".typeahead_gene").typeahead({
+        name: 'dynamic_gene_add',
+        source: getNameTerms,
         minLength: 3,
       });
 
