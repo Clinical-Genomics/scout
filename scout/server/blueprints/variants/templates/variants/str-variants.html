@@ -41,13 +41,14 @@
       <thead>
         <tr>
           <th class="col-xs-1" title="Rank position">Rank</th>
-          <th class="col-xs-1" title="Rank score">Score</th>
-          <th class="col-xs-1" title="Chromosome">Chr.</th>
           <th class="col-xs-2" title="Repeat ID">Repeat ID</th>
           <th class="col-xs-1" title="Repeat unit">Repeat unit</th>
           <th class="col-xs-1" title="ALT">Estimated size</th>
           <th class="col-xs-1" title="Reference">Reference</th>
           <th class="col-xs-2" title="Status">Status</th>
+          <th class="col-xs-1" title="Chromosome">Chr.</th>
+          <th class="col-xs-2" title="Position">Position</th>
+
         </tr>
       </thead>
       <tbody>
@@ -64,13 +65,19 @@
 	            <tr>
 	        {% endif %}
             <td>{{ cell_rank(variant) }}</td>
-            <td class="text-right">{{ variant.rank_score|int }}</td>
-            <td>{{ variant.chromosome }}</td>
             <td>{{ variant.str_repid }}</td>
 	          <td class="text-right">{{ variant.str_ru }}</td>
-            <td>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+            <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ variant.str_status }}</td>
+            <td>{{ variant.chromosome }}</td>
+            <td>
+                {% if case.bam_files %}
+                  <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">{{ variant.position}}</a>
+                {% else %}
+                  {{ variant.position }}
+                {% endif %}
+            </td>
         </tr>
         {% else %}
           <tr>
@@ -89,7 +96,7 @@
 
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variants.str-variant', institute_id=institute._id, case_name=case.display_name,
+     href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
