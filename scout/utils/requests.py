@@ -6,6 +6,7 @@ from urllib.error import (HTTPError, URLError)
 
 import pybiomart
 from scout.constants import CHROMOSOMES
+from socket import timeout
 
 LOG = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(url, timeout=10)
         if url.endswith('.gz'):
             LOG.info("Decompress zipped file")
             data = gzip.decompress(response.read())      # a `bytes` object
@@ -37,6 +38,9 @@ def get_request(url):
     except URLError as err:
         LOG.warning("Something went wrong, are you connected to internet?")
         raise err
+    except timeout:
+        LOG.error("socket timed out - URL %s", url)
+        raise ValueError
 
     if 'Error' in decoded_data:
         raise URLError("Seems like url {} does not exist".format(url))
