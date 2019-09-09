@@ -13,9 +13,9 @@ def test_get_request():
         assert get_request(url)
 
     # test function with url that exists
-    url = 'http://www.ensembl.org'
-    decoded_resp = get_request(url)
-    assert '<!DOCTYPE html>' in decoded_resp
+    #url = 'http://www.ensembl.org'
+    #decoded_resp = get_request(url)
+    #assert '<!DOCTYPE html>' in decoded_resp
 
 
 def test_fetch_refseq_version():
