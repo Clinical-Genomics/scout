@@ -3,8 +3,6 @@
 import pytest
 from scout.utils.requests import fetch_refseq_version, get_request
 
-# @pytest.mark.skipif(TRAVIS,
-#                     reason="Requests seems to be problematic on travis")
 def test_get_request_bad_url():
     """Test functions that accepts an url and returns decoded data from it"""
 
@@ -14,6 +12,8 @@ def test_get_request_bad_url():
         # function should raise error
         assert get_request(url)
 
+@pytest.mark.skipif(TRAVIS,
+                    reason="Requests seems to be problematic on travis")
 def test_get_request():
     """Test functions that accepts an url and returns decoded data from it"""
 
