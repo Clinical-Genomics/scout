@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import pytest
 from scout.utils.requests import fetch_refseq_version, get_request
 
