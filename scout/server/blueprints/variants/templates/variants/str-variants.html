@@ -42,12 +42,12 @@
         <tr>
           <th class="col-xs-1" title="Rank position">Rank</th>
           <th class="col-xs-1" title="Rank score">Score</th>
-          <th title="Chromosome">Chr.</th>
-          <th title="Repeat ID" class="col-xs-2">Repeat ID</th>
+          <th class="col-xs-1" title="Chromosome">Chr.</th>
+          <th class="col-xs-2" title="Repeat ID">Repeat ID</th>
           <th class="col-xs-1" title="Repeat unit">Repeat unit</th>
-          <th title="ALT">Estimated size</th>
+          <th class="col-xs-1" title="ALT">Estimated size</th>
           <th class="col-xs-1" title="Reference">Reference</th>
-          <th class="col-xs-1" title="Status">Status</th>
+          <th class="col-xs-2" title="Status">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -68,7 +68,7 @@
             <td>{{ variant.chromosome }}</td>
             <td>{{ variant.str_repid }}</td>
 	          <td class="text-right">{{ variant.str_ru }}</td>
-            <td>{{ variant.alternative }}</td>
+            <td>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ variant.str_status }}</td>
         </tr>
@@ -89,7 +89,7 @@
 
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
+     href="{{ url_for('variants.str-variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
