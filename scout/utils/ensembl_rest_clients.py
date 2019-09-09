@@ -91,14 +91,20 @@ class EnsemblRestApiClient:
 
 class EnsemblBiomartClient:
 
-    def __init__(self, build='37'):
+    def __init__(self, build='37', xml=None, filters=None, attributes=None):
         if build == '38':
             self.server = BIOMART_38
         else:
             self.server = BIOMART_37
+        self.filters = filters or {}
+        self.attributes = attributes or []
+        self.xml = xml or self._create_biomart_xml(filters, attributes)
+            
         LOG.info("Setting up ensembl biomart client with server %s", self.server)
+        
+        self.query = self._query_service(xml=self.xml)
 
-    def query_service(self, xml=None, filters=None, attributes=None):
+    def _query_service(self, xml=None, filters=None, attributes=None):
         """Query the Ensembl biomart service and yield the resulting lines
 
         Accepts:
@@ -110,8 +116,6 @@ class EnsemblBiomartClient:
         Yields:
             biomartline 
         """
-        if not xml:
-            xml = self.create_biomart_xml(filters, attributes)
 
         url = ''.join([self.server, xml])
         try:
@@ -122,7 +126,7 @@ class EnsemblBiomartClient:
             LOG.info('Error downloading data from biomart: {}'.format(ex))
             raise ex
 
-    def create_biomart_xml(self, filters=None, attributes=None):
+    def _create_biomart_xml(self, filters=None, attributes=None):
         """Convert biomart query params into biomart xml query
 
         Accepts:
@@ -135,8 +139,8 @@ class EnsemblBiomartClient:
         """
         filters = filters or {}
         attributes = attributes or []
-        filter_lines = self.xml_filters(filters)
-        attribute_lines = self.xml_attributes(attributes)
+        filter_lines = self._xml_filters(filters)
+        attribute_lines = self._xml_attributes(attributes)
         xml_lines = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<!DOCTYPE Query>',
@@ -156,7 +160,7 @@ class EnsemblBiomartClient:
 
         return '\n'.join(xml_lines)
 
-    def xml_filters(self, filters):
+    def _xml_filters(self, filters):
         """Creates a filter line for the biomart xml document
 
         Accepts:
@@ -177,7 +181,7 @@ class EnsemblBiomartClient:
                 
         return formatted_lines
 
-    def xml_attributes(self, attributes):
+    def _xml_attributes(self, attributes):
         """Creates an attribute line for the biomart xml document
 
         Accepts:
@@ -190,4 +194,16 @@ class EnsemblBiomartClient:
         for attr in attributes:
             formatted_lines.append('<Attribute name = "{}" />'.format(attr))
         return formatted_lines
+
+    def __iter__(self):
+        success = False
+        for line in self.query:
+            if line.startswith('['):
+                if 'success' in line:
+                    success = True
+                if not success:
+                    raise SyntaxError("ensembl request is incomplete")
+                LOG.info("successfully retrieved all data from ensembl")
+                continue
+            yield line
 

@@ -3,16 +3,16 @@ import logging
 import gzip
 import urllib.request
 from urllib.error import (HTTPError, URLError)
+from socket import timeout
 
 import pybiomart
 from scout.constants import CHROMOSOMES
-from socket import timeout
+from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
 HPO_URL = ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
            "lastStableBuild/artifact/annotation/{0}")
-
 
 def get_request(url):
     """Return a requests response from url
@@ -155,30 +155,15 @@ def fetch_ensembl_biomart(attributes, filters, build=None):
         build(str): '37' or '38'
     
     Returns:
-        result(DataFrame)
+        client(EnsemblBiomartClient)
     """
     build = build or '37'
-    dataset_name = 'hsapiens_gene_ensembl'
 
-    url = 'http://www.ensembl.org'
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
-    
-    LOG.info("Fetching from ensembl biomart with url %s (Build: %s)", url, build)
-    
+    client = EnsemblBiomartClient(build=build, filters=filters, attributes=attributes)
     LOG.info("Selecting attributes: {0}".format(', '.join(attributes)))
-    
     LOG.info("Use filter: {0}".format(filters))
 
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters,
-        use_attr_names=True,
-    )
-
-    return result
+    return client
 
 def fetch_ensembl_genes(build=None):
     """Fetch the ensembl genes
@@ -226,8 +211,8 @@ def fetch_ensembl_transcripts(build=None, chromosomes=None):
         'transcript_start',
         'transcript_end',
         'refseq_mrna',
-		'refseq_mrna_predicted',
-		'refseq_ncrna',
+        'refseq_mrna_predicted',
+        'refseq_ncrna',
     ]
 
     filters = {
