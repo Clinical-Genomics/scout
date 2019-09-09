@@ -96,29 +96,31 @@ class EnsemblBiomartClient:
             self.server = BIOMART_38
         else:
             self.server = BIOMART_37
+        LOG.info("Setting up ensembl biomart client with server %s", self.server)
 
-    def query_service(self, xml, temp_file):
-        """Query the Ensembl biomart service
+    def query_service(self, xml=None, filters=None, attributes=None):
+        """Query the Ensembl biomart service and yield the resulting lines
 
         Accepts:
             xml(str): an xml formatted query, as described here:
                 https://grch37.ensembl.org/info/data/biomart/biomart_perl_api.html
-
-            temp_file(NamedTemporaryFile)
+            filters(dict): A dictionary with the filters to use and their value
+            attributes(list): A list with attributes to use
+        
+        Yields:
+            biomartline 
         """
+        if not xml:
+            xml = self.create_biomart_xml(filters, attributes)
+
         url = ''.join([self.server, xml])
         try:
             with requests.get(url, stream=True) as r:
-                with open(temp_file.name, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192):
-                        if chunk:
-                            f.write(chunk)
+                for line in r.iter_lines():
+                    yield line.decode('utf-8')
         except Exception as ex:
             LOG.info('Error downloading data from biomart: {}'.format(ex))
-            return ex
-
-        return
-
+            raise ex
 
     def create_biomart_xml(self, filters=None, attributes=None):
         """Convert biomart query params into biomart xml query
@@ -131,18 +133,28 @@ class EnsemblBiomartClient:
             xml: a query xml file
 
         """
+        filters = filters or {}
+        attributes = attributes or []
         filter_lines = self.xml_filters(filters)
         attribute_lines = self.xml_attributes(attributes)
-        xml = """<?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE Query>
-        <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" completionStamp = "1">
-        	<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
-                {0}
-                {1}
-        	</Dataset>
-        </Query>""".format( filter_lines,attribute_lines)
+        xml_lines = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<!DOCTYPE Query>',
+            '<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows'\
+            ' = "0" count = "" datasetConfigVersion = "0.6" completionStamp = "1">',
+            '',
+            '\t<Dataset name = "hsapiens_gene_ensembl" interface = "default" >',
+        ]
+        for line in filter_lines:
+            xml_lines.append('\t\t'+line)
+        for line in attribute_lines:
+            xml_lines.append('\t\t'+line)
+        xml_lines += [
+            '\t</Dataset>',
+            '</Query>'
+        ]
 
-        return xml
+        return '\n'.join(xml_lines)
 
     def xml_filters(self, filters):
         """Creates a filter line for the biomart xml document
@@ -151,14 +163,18 @@ class EnsemblBiomartClient:
             filters(dict): keys are filter names and values are filter values
 
         Returns:
-            formatted_lines(str): formatted xml line
+            formatted_lines(list[str]): List of formatted xml filter lines
         """
-        formatted_lines = ""
-        for key, value in filters.items():
-            if type(value) == list:
-                formatted_lines += '<Filter name = "{0}" value = "{1}"/>'.format(key, ','.join(value))
+        formatted_lines = []
+        for filter_name in filters:
+            value = filters[filter_name]
+            if isinstance(value, str):
+                formatted_lines.append('<Filter name = "{0}" value = "{1}"/>'.format(
+                                    filter_name, value))
             else:
-                formatted_lines += '<Filter name = "{0}" value = "{1}"/>'.format(key, value)
+                formatted_lines.append('<Filter name = "{0}" value = "{1}"/>'.format(
+                                    filter_name, ','.join(value)))
+                
         return formatted_lines
 
     def xml_attributes(self, attributes):
@@ -168,9 +184,10 @@ class EnsemblBiomartClient:
             attributes(list): attribute names
 
         Returns:
-            formatted_lines(str): formatted xml line
+            formatted_lines(list(str)): list of formatted xml attribute lines
         """
-        formatted_lines = ""
+        formatted_lines = []
         for attr in attributes:
-            formatted_lines += '<Attribute name = "{}" />'.format(attr)
+            formatted_lines.append('<Attribute name = "{}" />'.format(attr))
         return formatted_lines
+
