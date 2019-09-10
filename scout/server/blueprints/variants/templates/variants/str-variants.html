@@ -45,9 +45,10 @@
           <th class="col-xs-1" title="Repeat unit">Repeat unit</th>
           <th class="col-xs-1" title="ALT">Estimated size</th>
           <th class="col-xs-1" title="Reference">Reference</th>
-          <th class="col-xs-2" title="Status">Status</th>
+          <th class="col-xs-1" title="Status">Status</th>
+          <th class="col-xs-2" title="GT">GT</th>
           <th class="col-xs-1" title="Chromosome">Chr.</th>
-          <th class="col-xs-3" title="Position">Position</th>
+          <th class="col-xs-2" title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -69,11 +70,18 @@
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ variant.str_status }}</td>
+            <td>{% for sample in variant.samples %}
+                  {% if sample.genotype_call != "./." %}
+                    <div class="pull-left">{{ sample.display_name }}</div>
+                    <div class="pull-right">{{ sample.genotype_call }}</div><br>
+                  {% endif %}
+                {% endfor %}
+            </td>
             <td>{{ variant.chromosome }}</td>
             <td>
               {{ variant.position }}
               {% if case.bam_files %}
-                <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-default btn-sm pull-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% endif %}
             </td>
         </tr>
