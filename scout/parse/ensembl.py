@@ -269,7 +269,6 @@ def parse_ensembl_exons(lines):
 
         exon_info = parse_ensembl_line(line, header)
         
-        pp(exon_info)
         exon = parse_exon(
             chrom=exon_info['chrom'], 
             gene=exon_info['ensembl_gene_id'], 

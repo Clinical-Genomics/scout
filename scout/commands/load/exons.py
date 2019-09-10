@@ -47,7 +47,7 @@ def exons(build, exons_file):
         ensembl_exons = get_file_handle(exons_file)
     else:
         ensembl_exons = fetch_ensembl_exons(build=build)
-        nr_exons = ensembl_exons.shape[0]
+        nr_exons = 1360000
 
     try:
         load_exons(adapter, ensembl_exons, build, nr_exons=nr_exons)
