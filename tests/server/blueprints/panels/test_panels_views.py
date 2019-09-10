@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
-
+from urllib.parse import urlencode
 
 # def test_panels(client, real_database, user_info):
 #     # GIVEN a user connected to one institute in the database
@@ -14,7 +14,7 @@ from flask import url_for
 #     for panel_obj in real_database.panels(institute_id=institute_obj['_id']):
 #         assert panel_obj['display_name'] in resp.data
 
-def test_panel(client, real_panel_database, panel_info):
+def test_panel_get(client, real_panel_database, panel_info):
     adapter = real_panel_database
 
     # GIVEN a panel in the database
@@ -26,6 +26,27 @@ def test_panel(client, real_panel_database, panel_info):
     assert panel_obj['panel_name'].encode() in resp.data
     # assert panel_obj['version'] in resp.data
     assert resp.data.count('href="/genes/'.encode()) == len(panel_obj['genes'])
+
+
+def test_panel_update_description(client, real_panel_database, panel_info):
+    adapter = real_panel_database
+
+    # GIVEN a panel in the database
+    panel_obj = adapter.gene_panels()[0]
+    assert panel_obj.get('description') is None
+
+    data = urlencode({
+        'update_description' : True, # This is the submit button of the form
+        'panel_description': 'Test description' # This is the text field
+    })
+    # WHEN posting an update request to panel page
+    resp = client.post(url_for('panels.panel', panel_id=panel_obj['_id']),
+        data=data,
+        content_type="application/x-www-form-urlencoded"
+    )
+    # THEN the panel object should be updated with the new description:
+    panel_obj = adapter.gene_panels()[0]
+    assert panel_obj['description'] == 'Test description'
 
 
 def test_panels(app, institute_obj):
