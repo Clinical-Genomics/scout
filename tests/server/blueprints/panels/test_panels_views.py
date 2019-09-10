@@ -14,7 +14,7 @@ from urllib.parse import urlencode
 #     for panel_obj in real_database.panels(institute_id=institute_obj['_id']):
 #         assert panel_obj['display_name'] in resp.data
 
-def test_panel_get(client, real_panel_database, panel_info):
+def test_panel_get(client, real_panel_database):
     adapter = real_panel_database
 
     # GIVEN a panel in the database
@@ -28,7 +28,7 @@ def test_panel_get(client, real_panel_database, panel_info):
     assert resp.data.count('href="/genes/'.encode()) == len(panel_obj['genes'])
 
 
-def test_panel_update_description(client, real_panel_database, panel_info):
+def test_panel_update_description(client, real_panel_database):
     adapter = real_panel_database
 
     # GIVEN a panel in the database
@@ -65,7 +65,7 @@ def test_panels(app, institute_obj):
         assert resp.status_code == 200
 
 
-def test_panel_export(client, real_panel_database, panel_info):
+def test_panel_export(client, real_panel_database):
     adapter = real_panel_database
 
     # GIVEN a panel in the database
