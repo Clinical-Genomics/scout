@@ -14,12 +14,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search for cases phenotypically similar to a case also from WUI.
 - Case variant searches can be limited to similar cases, matching HPO-terms,
   phenogroups and cohorts.
-- Dearchive reruns and flag them as 'inactive' if archived
+- De-archive reruns and flag them as 'inactive' if archived
 - Sort cases by analysis_date, track or status
 - Display cases in the following order: prioritized, active, inactive, archived, solved
 - Assign case to user when user activates it or asks for rerun
 - Case becomes inactive when it has no assignees
-- Fetch refseq version from entrez and use it in clinvar formr
+- Fetch refseq version from entrez and use it in clinvar form
+- Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
+- Showing transcripts mapping score in segmental duplications
+- Handle requests to Ensembl Rest API  
+- Handle requests to Ensembl Rest Biomart
+- STR variants view now displays GT and IGV link.
 
 ### Fixed
 - Fixes of and induced by build tests

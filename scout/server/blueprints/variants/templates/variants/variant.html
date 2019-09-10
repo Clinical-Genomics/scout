@@ -730,6 +730,25 @@ $(document).ready(function(){
         <span class="pull-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
+    <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
+    {% set superdups_fracmatches = [] %}
+    {% for gene in variant.genes %}
+      {% for transcript in gene.transcripts %}
+        {% if transcript.superdups_fracmatch %}
+          {% for superdup in transcript.superdups_fracmatch %}
+            {% do superdups_fracmatches.append(superdup) %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {% set superdups_fracmatches = superdups_fracmatches|sort %}
+    <div class="panel-body">
+        {% if superdups_fracmatches %}
+          <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
+        {% else %}
+          <span> - </span>
+        {% endif %}
+    </div>
   </div>
 {% endmacro %}
 

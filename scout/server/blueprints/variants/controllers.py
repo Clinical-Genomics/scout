@@ -24,6 +24,7 @@ from scout.server.utils import institute_and_case, user_institutes
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
+from scout.utils.requests import fetch_refseq_version
 
 LOG = logging.getLogger(__name__)
 
@@ -72,7 +73,12 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
 def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
-    # Nothing unique to STRs on this level. Inheritance?
+
+    # Nothing unique to STRs on this level. Inheritance? yep, you will want it.
+
+    # case bam_files for quick access to alignment view.
+    case_append_bam(store, case_obj)
+
     return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
 def str_variant(store, institute_id, case_name, variant_id):
@@ -159,12 +165,21 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         ('1000G', variant_obj.get('thousand_genomes_frequency')),
         ('1000G (left)', variant_obj.get('thousand_genomes_frequency_left')),
         ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
-        ('ClinGen CGH (benign)', variant_obj.get('clingen_cgh_benign')),
-        ('ClinGen CGH (pathogenic)', variant_obj.get('clingen_cgh_pathogenic')),
-        ('ClinGen NGI', variant_obj.get('clingen_ngi')),
-        ('SweGen', variant_obj.get('swegen')),
-        ('Decipher', variant_obj.get('decipher')),
+        ('GnomAD', variant_obj.get('gnomad_frequency')),
     ]
+
+    if 'clingen_cgh_benign' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen CGH (benign)', variant_obj['clingen_cgh_benign']))
+    if 'clingen_cgh_pathogenic' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen CGH (pathogenic)', variant_obj['clingen_cgh_pathogenic']))
+    if 'clingen_ngi' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen NGI', variant_obj['clingen_ngi']))
+    if 'clingen_mip' in variant_obj:
+        variant_obj['frequencies'].append(('ClinGen MIP', variant_obj['clingen_mip']))
+    if 'swegen' in variant_obj:
+        variant_obj['frequencies'].append(('SweGen', variant_obj['swegen']))
+    if 'decipher' in variant_obj:
+        variant_obj['frequencies'].append(('Decipher', variant_obj['decipher']))
 
     variant_obj['callers'] = callers(variant_obj, category='sv')
 
@@ -429,22 +444,8 @@ def variant_case(store, case_obj, variant_obj):
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
     """
-    case_obj['bam_files'] = []
-    case_obj['mt_bams'] = []
-    case_obj['bai_files'] = []
-    case_obj['mt_bais'] = []
-    case_obj['sample_names'] = []
 
-    bam_files = [('bam_file','bam_files', 'bai_files'), ('mt_bam', 'mt_bams', 'mt_bais')]
-    for individual in case_obj['individuals']:
-        case_obj['sample_names'].append(individual.get('display_name'))
-        for bam in bam_files:
-            bam_path = individual.get(bam[0])
-            if bam_path and os.path.exists(bam_path):
-                case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
-                case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
-            else:
-                LOG.debug("%s: no bam file found", individual['individual_id'])
+    case_append_bam(store, case_obj)
 
     try:
         genes = variant_obj.get('genes', [])
@@ -464,6 +465,31 @@ def variant_case(store, case_obj, variant_obj):
             case_obj['region_vcf_file'] = vcf_path
     except (SyntaxError, Exception):
         LOG.warning("skip VCF region for alignment view")
+
+def case_append_bam(store, case_obj):
+    """Deconvolute information about files to case_obj.
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+    """
+
+    case_obj['bam_files'] = []
+    case_obj['mt_bams'] = []
+    case_obj['bai_files'] = []
+    case_obj['mt_bais'] = []
+    case_obj['sample_names'] = []
+
+    bam_files = [('bam_file','bam_files', 'bai_files'), ('mt_bam', 'mt_bams', 'mt_bais')]
+    for individual in case_obj['individuals']:
+        case_obj['sample_names'].append(individual.get('display_name'))
+        for bam in bam_files:
+            bam_path = individual.get(bam[0])
+            if bam_path and os.path.exists(bam_path):
+                case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
+                case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
+            else:
+                LOG.debug("%s: no bam file found", individual['individual_id'])
 
 
 def find_bai_file(bam_file):
@@ -1093,6 +1119,14 @@ def clinvar_export(store, institute_id, case_name, variant_id):
     pinned = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('suspects', [])]
     variant_obj = store.variant(variant_id)
+
+    # gather missing transcript info from entrez (refseq id version)
+    for pinned_var in pinned:
+        for gene in pinned_var.get('genes'):
+            for transcript in gene.get('transcripts'):
+                if transcript.get('refseq_id'):
+                    transcript['refseq_id'] = fetch_refseq_version(transcript['refseq_id'])
+
     return dict(
         today = str(date.today()),
         institute=institute_obj,
