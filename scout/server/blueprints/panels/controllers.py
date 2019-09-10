@@ -86,7 +86,7 @@ def update_panel(store, panel_name, csv_lines, option):
     return panel_obj
 
 
-def new_panel(store, institute_id, panel_name, display_name, csv_lines):
+def new_panel(store, institute_id, panel_name, display_name, description, csv_lines):
     """Create a new gene panel.
 
     Args:
@@ -128,6 +128,7 @@ def new_panel(store, institute_id, panel_name, display_name, csv_lines):
             version=1.0,
             date=dt.datetime.now(),
             display_name=display_name,
+            description=description,
             genes=new_genes,
         ), store)
         panel_id= store.add_gene_panel(panel_data)
