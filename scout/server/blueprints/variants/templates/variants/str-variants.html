@@ -71,11 +71,10 @@
             <td>{{ variant.str_status }}</td>
             <td>{{ variant.chromosome }}</td>
             <td>
-                {% if case.bam_files %}
-                  <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">{{ variant.position }}</a>
-                {% else %}
-                  {{ variant.position }}
-                {% endif %}
+              {{ variant.position }}
+              {% if case.bam_files %}
+                <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+              {% endif %}
             </td>
         </tr>
         {% else %}
