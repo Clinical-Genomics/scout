@@ -13,7 +13,6 @@ from cyvcf2 import VCF
 import yaml
 import pymongo
 
-from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
 
@@ -212,73 +211,6 @@ def transcript_objs(request, parsed_transcripts):
         _transcripts.append(build_transcript(tx_info))
 
     return _transcripts
-
-@pytest.fixture
-def exons_df(request, exons):
-    """Return a data frame with exon information"""
-    print('')
-    df_info = {
-        'chromosome_name': [],
-        'ensembl_gene_id': [],
-        'ensembl_transcript_id': [],
-        'ensembl_exon_id': [],
-        'exon_chrom_start': [],
-        'exon_chrom_end': [],
-        '5_utr_start': [],
-        '5_utr_end': [],
-        '3_utr_start': [],
-        '3_utr_end': [],
-        'strand': [],
-        'rank': [],
-    }
-
-    for exon_info in exons:
-        df_info['chromosome_name'].append(exon_info['chrom'])
-        df_info['ensembl_gene_id'].append(exon_info['gene'])
-        df_info['ensembl_transcript_id'].append(exon_info['transcript'])
-        df_info['ensembl_exon_id'].append(exon_info['ens_exon_id'])
-        df_info['exon_chrom_start'].append(exon_info['exon_chrom_start'])
-        df_info['exon_chrom_end'].append(exon_info['exon_chrom_end'])
-        df_info['5_utr_start'].append(exon_info.get('5_utr_start', ''))
-        df_info['5_utr_end'].append(exon_info.get('5_utr_end', ''))
-        df_info['3_utr_start'].append(exon_info.get('3_utr_start', ''))
-        df_info['3_utr_end'].append(exon_info.get('3_utr_end', ''))
-        df_info['strand'].append(exon_info.get('strand', ''))
-        df_info['rank'].append(exon_info.get('rank', ''))
-
-    df = DataFrame(df_info)
-
-    return df
-
-@pytest.fixture
-def transcripts_df(request, transcripts):
-    """Return a data frame with transcripts information"""
-    print('')
-    df_info = dict(
-        chromosome_name = [],
-        ensembl_gene_id = [],
-        ensembl_transcript_id = [],
-        transcript_start = [],
-        transcript_end = [],
-        refseq_mrna = [],
-        refseq_mrna_predicted = [],
-        refseq_ncrna = [],
-    )
-
-    for tx_info in transcripts:
-        df_info['chromosome_name'].append(tx_info['chrom'])
-        df_info['ensembl_gene_id'].append(tx_info['ensembl_gene_id'])
-        df_info['ensembl_transcript_id'].append(tx_info['ensembl_transcript_id'])
-        df_info['transcript_start'].append(tx_info['transcript_start'])
-        df_info['transcript_end'].append(tx_info['transcript_end'])
-        df_info['refseq_mrna'].append(tx_info.get('refseq_mrna', ''))
-        df_info['refseq_mrna_predicted'].append(tx_info.get('refseq_mrna_predicted', ''))
-        df_info['refseq_ncrna'].append(tx_info.get('refseq_ncrna', ''))
-
-    df = DataFrame(df_info)
-
-    return df
-
 
 #############################################################
 ################# Hpo terms fixtures ########################

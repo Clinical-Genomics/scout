@@ -6,7 +6,7 @@ from pprint import pprint as pp
 from click import progressbar
 from pandas import DataFrame
 
-from scout.parse.ensembl import (parse_ensembl_exons, parse_ensembl_exon_request)
+from scout.parse.ensembl import (parse_ensembl_exons)
 from scout.build.genes.exon import build_exon
 
 LOG = logging.getLogger(__name__)
@@ -30,12 +30,8 @@ def load_exons(adapter, exon_lines, build='37', nr_exons=None):
     # Fetch all genes with ensemblid as keys
     ensembl_genes = adapter.ensembl_genes(build=build, id_transcripts=True)
 
-    if isinstance(exon_lines, DataFrame):
-        LOG.info("Parse exons from ensembl biomart")
-        exons = parse_ensembl_exon_request(exon_lines)
-    else:
-        LOG.debug("Parsing ensembl exons from iterable")
-        exons = parse_ensembl_exons(exon_lines)
+    LOG.debug("Parsing ensembl exons from iterable")
+    exons = parse_ensembl_exons(exon_lines)
     
     start_insertion = datetime.now()
     loaded_exons = 0

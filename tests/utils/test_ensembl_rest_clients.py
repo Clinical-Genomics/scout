@@ -77,12 +77,13 @@ def test_xml_filters():
 def test_xml_attributes():
     """test method that creates attribute lines for the biomart xml file"""
 
-    # Having a list of  biomart attributes
+    ## Given a list of  biomart attributes
     name = ["test_name"]
     client = eracs.EnsemblBiomartClient()
+    ## WHEN creating the xml attribute lines
     attribute_lines = client._xml_attributes(name)
 
-    # Make sure that attributes lines are formatted as they should
+    ## THEN make sure that attributes lines are formatted as they should
     assert attribute_lines == ['<Attribute name = "test_name" />']
 
 def test_test_query_biomart_38_xml():
@@ -102,7 +103,7 @@ def test_test_query_biomart_38_xml():
     """
 
     ## WHEN querying ensembl
-    client = eracs.EnsemblBiomartClient(build='38', xml=xml)
+    client = eracs.EnsemblBiomartClient(build='38', xml=xml, header=False)
 
     ## THEN assert that the result is correct
     i = 0
@@ -119,7 +120,7 @@ def test_test_query_biomart_37_no_xml():
 
 
     ## WHEN querying ensembl
-    client = eracs.EnsemblBiomartClient(build='38', filters=filters, attributes=attributes)
+    client = eracs.EnsemblBiomartClient(build='38', filters=filters, attributes=attributes, header=False)
 
     i = 0
     for i,line in enumerate(client):
@@ -127,4 +128,3 @@ def test_test_query_biomart_37_no_xml():
         assert 'ACTR3' in line
     ## THEN assert there was a result
     assert i > 0
-        

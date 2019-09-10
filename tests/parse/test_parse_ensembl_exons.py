@@ -1,61 +1,46 @@
-from pprint import pprint as pp
+from scout.parse.ensembl import (parse_ensembl_exons)
 
-from scout.parse.ensembl import (parse_ensembl_exons, parse_ensembl_exon_request)
-
-from pandas import DataFrame
-
-def test_parse_ensembl_request(exon_info):
+def test_parse_ensembl_exons(exons_handle):
     """Test to parse a small dataframe line of ensembl transcript"""
-    ## GIVEN a small transcript data framse
-    
-    exon_data = {
-        'chromosome_name': exon_info['chrom'],
-        'ensembl_gene_id': [exon_info['ens_gene_id']],
-        'ensembl_transcript_id': [exon_info['ens_transcript_id']],
-        'ensembl_exon_id': [exon_info['ens_exon_id']],
-        'exon_chrom_start': [exon_info['start']],
-        'exon_chrom_end': [exon_info['end']],
-        '5_utr_start': [exon_info['utr_5_start']],
-        '5_utr_end': [exon_info['utr_5_end']],
-        '3_utr_start': [exon_info['utr_3_start']],
-        '3_utr_end': [exon_info['utr_3_end']],
-        'strand': [exon_info['strand']],
-        'rank': [exon_info['exon_rank']],
-    }
-    df = DataFrame(exon_data)
-    
-    parsed_exons = parse_ensembl_exon_request(df)
-    
-    parsed_exon = next(parsed_exons)
-    
-    ## THEN assert the parsed transcript is as expected
-    assert parsed_exon['chrom'] == exon_info['chrom']
-    assert parsed_exon['gene'] == exon_info['ens_gene_id']
-    assert parsed_exon['transcript'] == exon_info['ens_transcript_id']
-
-def test_parse_ensembl_transcripts(exons_handle):
-    """Test to parse all ensembl exons"""
-    ## GIVEN an iterable with exon lines
-    ## WHEN parsing the exons in that file
-    exons = parse_ensembl_exons(exons_handle)
-
-    ## THEN assert that these exons have some keys
-    for exon in exons:
-        assert exon['ens_exon_id']
-        assert exon['transcript']
-        assert exon['gene']
-
-
-def test_parse_exons_data_frame(exons_df):
-    """Test to parse all ensembl exons from data frame"""
-    ## GIVEN a data frame with exon information
-    exons = parse_ensembl_exon_request(exons_df)
+    ## GIVEN a iterable with exon information from ensembl
 
     ## WHEN parsing the exons
-    i = 0
-    for i,exon_info in enumerate(exons):
-        ## THEN assert they all got the mandatory ids
-        assert exon_info['ens_exon_id']
-        assert exon_info['transcript']
-        assert exon_info['gene']
-    assert i > 0
+    parsed_exons = parse_ensembl_exons(exons_handle)
+    parsed_exon = next(parsed_exons)
+
+    ## THEN assert the parsed transcript is as expected
+    assert parsed_exon['chrom']
+    assert parsed_exon['gene']
+    assert parsed_exon['transcript']
+
+def test_parse_ensembl_exons_iterable():
+    """Test to parse all ensembl exons"""
+    ## GIVEN an iterable with ensembl exon data
+    exons_handle = [
+        "Chromosome/scaffold name\tGene stable ID\tTranscript stable ID\tExon stable ID\tExon"\
+        " region start (bp)\tExon region end (bp)\t5' UTR start\t5' UTR end\t3' UTR start\t3'"\
+        " UTR end\tStrand\tExon rank in transcript",
+        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t1167629\t1"\
+        "167658\t1168649\t1170421\t1\t1"
+    ]
+    ## WHEN parsing the exons in that file
+    exons = parse_ensembl_exons(exons_handle)
+    parsed_exon = next(exons)
+
+    ## THEN assert that the exon is correctly parsed
+    assert parsed_exon['chrom'] == '1'
+    assert parsed_exon['ens_exon_id'] == 'ENSE00001439793'
+    assert parsed_exon['transcript'] == 'ENST00000379198'
+    assert parsed_exon['gene'] == 'ENSG00000176022'
+    assert parsed_exon['exon_chrom_start'] == 1167629
+    assert parsed_exon['exon_chrom_end'] == 1170421
+    assert parsed_exon['5_utr_start'] == 1167629
+    assert parsed_exon['5_utr_end'] == 1167658
+    assert parsed_exon['3_utr_start'] == 1168649
+    assert parsed_exon['3_utr_end'] == 1170421
+    assert parsed_exon['rank'] == 1
+    assert parsed_exon['strand'] == 1
+    ## THEN assert start is max(5_utr_end, exon_chrom_start) since strand is 1
+    assert parsed_exon['start'] == 1167658
+    ## THEN assert end is min(3_utr_start, exon_chrom_end) since strand is 1
+    assert parsed_exon['end'] == 1168649

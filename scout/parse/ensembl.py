@@ -2,148 +2,13 @@ import logging
 
 from pprint import pprint as pp
 
-from pandas import DataFrame
-
 LOG = logging.getLogger(__name__)
-
-
-def parse_transcripts(transcript_lines):
-    """Parse and massage the transcript information
-
-    There could be multiple lines with information about the same transcript.
-    This is why it is necessary to parse the transcripts first and then return a dictionary
-    where all information has been merged.
-
-    Args:
-        transcript_lines(): This could be an iterable with strings or a pandas.DataFrame
-
-    Returns:
-        parsed_transcripts(dict): Map from enstid -> transcript info
-    """
-    LOG.info("Parsing transcripts")
-    # Parse the transcripts, we need to check if it is a request or a file handle
-    if isinstance(transcript_lines, DataFrame):
-        transcripts = parse_ensembl_transcript_request(transcript_lines)
-    else:
-        transcripts = parse_ensembl_transcripts(transcript_lines)
-
-    # Since there can be multiple lines with information about the same transcript
-    # we store transcript information in a dictionary for now
-    parsed_transcripts = {}
-    # Loop over the parsed transcripts
-    for tx in transcripts:
-        tx_id = tx['ensembl_transcript_id']
-        ens_gene_id = tx['ensembl_gene_id']
-
-        # Check if the transcript has been added
-        # If not, create a new transcript
-        if not tx_id in parsed_transcripts:
-            tx_info = {
-                'chrom': tx['chrom'],
-                'transcript_start': tx['transcript_start'],
-                'transcript_end': tx['transcript_end'],
-                'mrna': set(),
-                'mrna_predicted': set(),
-                'nc_rna': set(),
-                'ensembl_gene_id': ens_gene_id,
-                'ensembl_transcript_id': tx_id,
-            }
-            parsed_transcripts[tx_id] = tx_info
-        
-        tx_info = parsed_transcripts[tx_id]
-        # Add the ref seq information
-        if tx.get('refseq_mrna_predicted'):
-            tx_info['mrna_predicted'].add(tx['refseq_mrna_predicted'])
-        if tx.get('refseq_mrna'):
-            tx_info['mrna'].add(tx['refseq_mrna'])
-        if tx.get('refseq_ncrna'):
-            tx_info['nc_rna'].add(tx['refseq_ncrna'])
-
-    return parsed_transcripts
-
-
-def parse_ensembl_gene_request(result):
-    """Parse a dataframe with ensembl gene information
-
-    Args:
-        res(pandas.DataFrame)
-
-    Yields:
-        gene_info(dict)
-    """
-    LOG.info("Parsing genes from request")
-
-    for index, row in result.iterrows():
-        # print(index, row)
-        ensembl_info = {}
-
-        # Pandas represents missing data with nan which is a float
-        if type(row['hgnc_symbol']) is float:
-            # Skip genes without hgnc information
-            continue
-
-        ensembl_info['chrom'] = row['chromosome_name']
-        ensembl_info['gene_start'] = int(row['start_position'])
-        ensembl_info['gene_end'] = int(row['end_position'])
-        ensembl_info['ensembl_gene_id'] = row['ensembl_gene_id']
-        ensembl_info['hgnc_symbol'] = row['hgnc_symbol']
-
-        hgnc_id = row['hgnc_id']
-
-        if type(hgnc_id) is float:
-            hgnc_id = int(hgnc_id)
-        else:
-            hgnc_id = int(hgnc_id.split(':')[-1])
-
-        ensembl_info['hgnc_id'] = hgnc_id
-
-        yield ensembl_info
-
-
-def parse_ensembl_transcript_request(result):
-    """Parse a dataframe with ensembl transcript information
-
-    Args:
-        res(pandas.DataFrame)
-
-    Yields:
-        transcript_info(dict)
-    """
-    LOG.info("Parsing transcripts from request")
-
-    keys = [
-        'chrom',
-        'ensembl_gene_id',
-        'ensembl_transcript_id',
-        'transcript_start',
-        'transcript_end',
-        'refseq_mrna',
-        'refseq_mrna_predicted',
-        'refseq_ncrna',
-    ]
-    # for res in result.itertuples():
-    for index, row in result.iterrows():
-        ensembl_info = {}
-
-        ensembl_info['chrom'] = str(row['chromosome_name'])
-        ensembl_info['ensembl_gene_id'] = row['ensembl_gene_id']
-        ensembl_info['ensembl_transcript_id'] = row['ensembl_transcript_id']
-
-        ensembl_info['transcript_start'] = int(row['transcript_start'])
-        ensembl_info['transcript_end'] = int(row['transcript_end'])
-
-        # Check if refseq data is annotated
-        # Pandas represent missing data with nan
-        for key in keys[-3:]:
-            if type(row[key]) is float:
-                ensembl_info[key] = None
-            else:
-                ensembl_info[key] = row[key]
-        yield ensembl_info
-
 
 def parse_ensembl_line(line, header):
     """Parse an ensembl formated line
+    
+    This parser should be able to handle any ensembl formated line in tsv format, regardless if
+    it is exons, transcripts or genes.
 
         Args:
             line(list): A list with ensembl gene info
@@ -229,13 +94,62 @@ def parse_ensembl_line(line, header):
 
     return ensembl_info
 
+def parse_transcripts(transcript_lines):
+    """Parse and massage the transcript information
+
+    There could be multiple lines with information about the same transcript.
+    This is why it is necessary to parse the transcripts first and then return a dictionary
+    where all information has been merged.
+
+    Args:
+        transcript_lines(): Iterable with strings
+
+    Returns:
+        parsed_transcripts(dict): Map from enstid -> transcript info
+    """
+    LOG.info("Parsing transcripts")
+    transcripts = parse_ensembl_transcripts(transcript_lines)
+
+    # Since there can be multiple lines with information about the same transcript
+    # we store transcript information in a dictionary for now
+    parsed_transcripts = {}
+    # Loop over the parsed transcripts
+    for tx in transcripts:
+        tx_id = tx['ensembl_transcript_id']
+        ens_gene_id = tx['ensembl_gene_id']
+
+        # Check if the transcript has been added
+        # If not, create a new transcript
+        if not tx_id in parsed_transcripts:
+            tx_info = {
+                'chrom': tx['chrom'],
+                'transcript_start': tx['transcript_start'],
+                'transcript_end': tx['transcript_end'],
+                'mrna': set(),
+                'mrna_predicted': set(),
+                'nc_rna': set(),
+                'ensembl_gene_id': ens_gene_id,
+                'ensembl_transcript_id': tx_id,
+            }
+            parsed_transcripts[tx_id] = tx_info
+        
+        tx_info = parsed_transcripts[tx_id]
+        # Add the ref seq information
+        if tx.get('refseq_mrna_predicted'):
+            tx_info['mrna_predicted'].add(tx['refseq_mrna_predicted'])
+        if tx.get('refseq_mrna'):
+            tx_info['mrna'].add(tx['refseq_mrna'])
+        if tx.get('refseq_ncrna'):
+            tx_info['nc_rna'].add(tx['refseq_ncrna'])
+
+    return parsed_transcripts
 
 def parse_ensembl_genes(lines):
     """Parse lines with ensembl formated genes
 
         This is designed to take a biomart dump with genes from ensembl.
         Mandatory columns are:
-        'Gene ID' 'Chromosome' 'Gene Start' 'Gene End' 'HGNC symbol
+        'Gene ID' 'Chromosome' 'Gene Start' 'Gene End' 'HGNC symbol'
 
         Args:
             lines(iterable(str)): An iterable with ensembl formated genes
@@ -355,6 +269,7 @@ def parse_ensembl_exons(lines):
 
         exon_info = parse_ensembl_line(line, header)
         
+        pp(exon_info)
         exon = parse_exon(
             chrom=exon_info['chrom'], 
             gene=exon_info['ensembl_gene_id'], 
@@ -363,7 +278,7 @@ def parse_ensembl_exons(lines):
             exon_chrom_start=exon_info['exon_start'],
             exon_chrom_end=exon_info['exon_end'],
             five_utr_start=exon_info.get('utr_5_start'), 
-            five_utr_end=exon_info.get('utr_5_start'), 
+            five_utr_end=exon_info.get('utr_5_end'), 
             three_utr_start=exon_info.get('utr_3_start'),
             three_utr_end=exon_info.get('utr_3_end'),
             strand=exon_info['strand'],
@@ -371,34 +286,3 @@ def parse_ensembl_exons(lines):
         )
 
         yield exon
-
-def parse_ensembl_exon_request(result):
-    """Parse a dataframe with ensembl exon information
-
-    Args:
-        res(pandas.DataFrame)
-
-    Yields:
-        gene_info(dict)
-    """
-    exon_columns = [
-        'chromosome_name',
-        'ensembl_gene_id',
-        'ensembl_transcript_id',
-        'ensembl_exon_id',
-        'exon_chrom_start',
-        'exon_chrom_end',
-        "5_utr_start",
-        "5_utr_end",
-        "3_utr_start",
-        "3_utr_end",
-        "strand",
-        "rank"
-    ]
-    # for res in result.itertuples():
-    exons = [parse_exon(row[0], row[1], row[2], row[3], row[4], row[5], row[6], 
-             row[7], row[8], row[9], row[10], row[11]) for row in result[exon_columns].values]
-
-    for ensembl_info in exons:
-
-        yield ensembl_info

@@ -5,7 +5,6 @@ import urllib.request
 from urllib.error import (HTTPError, URLError)
 from socket import timeout
 
-import pybiomart
 from scout.constants import CHROMOSOMES
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
