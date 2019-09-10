@@ -3,8 +3,6 @@ import logging
 
 from pprint import pprint as pp
 
-from pandas import DataFrame
-
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_exons, 
                                  parse_ensembl_genes)

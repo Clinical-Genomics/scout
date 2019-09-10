@@ -171,7 +171,7 @@ def fetch_ensembl_genes(build=None):
         build(str): ['37', '38']
     
     Returns:
-        result(DataFrame): The resulting gene information
+        result(iterable): Ensembl formated gene lines
     """
     LOG.info("Fetching ensembl genes")
     
@@ -198,7 +198,7 @@ def fetch_ensembl_transcripts(build=None, chromosomes=None):
         chromosomes(iterable(str))
 
     Returns:
-        result(DataFrame)
+        result(iterable): Ensembl formated transcript lines
     """
     chromosomes = chromosomes or CHROMOSOMES
     LOG.info("Fetching ensembl transcripts")
