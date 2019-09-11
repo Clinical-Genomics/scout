@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Showing transcripts mapping score in segmental duplications
 - Handle requests to Ensembl Rest API  
 - Handle requests to Ensembl Rest Biomart
+- STR variants view now displays GT and IGV link.
 
 ### Fixed
 - Fixes of and induced by build tests
