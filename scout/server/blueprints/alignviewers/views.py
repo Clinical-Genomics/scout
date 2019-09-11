@@ -136,8 +136,9 @@ def igv():
                                    'indexURL' : bai_files[counter],
                                    'height' : 700,
                                    'minHeight' : 700,
-                                   'maxHeight' : 1500}
-                                   )
+                                   'maxHeight' : 1500,
+                                   'autoHeight': False
+                                   })
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
