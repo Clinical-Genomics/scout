@@ -62,8 +62,7 @@
                             indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
                             displayMode: "{{ genes_track.displayMode }}",
                             order: Number.MAX_VALUE,
-                            visibilityWindow: 300000000,
-                            height: 700
+                            visibilityWindow: 300000000
                       },
                       {% for track in sample_tracks %}
                       {
@@ -71,7 +70,8 @@
                         url: '{{ url_for("alignviewers.remote_static", file=track.url) }}',
                         indexURL: '{{ url_for("alignviewers.remote_static", file=track.indexURL) }}',
                         sourceType: 'file',
-                        type: "alignment"
+                        type: "alignment",
+                        height: 700
                       },
                       {% endfor %}
                     ]
