@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% from "utils.html" import flash_messages %}
 
 {% block title %}
   {{ super() }} - {{ current_user.name }} - Gene Panels
@@ -52,14 +51,18 @@
         </div>
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">CSV file</label>
-            <div class="col-sm-6">
+            <div class="col-sm-5">
               <input type="file" name="csv_file" class="form-control" required>
               <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
             </div>
-            <div class="col-sm-4">
-              <button type="submit" class="btn btn-default">Upload</button>
+            <div class="col-sm-5">
+              <textarea class="form-control" id="description" name="description" rows="2" placeholder="Description (optional)"></textarea>
             </div>
         </div>
+        <div class="row text-center">
+          <button type="submit" class="btn btn-default">Upload</button>
+        </div>
+
       </form>
     </div>
   </div>
@@ -147,8 +150,7 @@
 
 
 {% block scripts %}
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{{ super() }}
 <script type="text/javascript">
 
 $('.history_btn').on('click', function(){

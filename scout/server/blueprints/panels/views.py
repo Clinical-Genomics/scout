@@ -40,6 +40,7 @@ def panels():
                 institute_id=request.form['institute'],
                 panel_name=new_panel_name,
                 display_name=request.form['display_name'],
+                description=request.form['description'],
                 csv_lines=lines,
             )
             if new_panel_id is None:
@@ -86,7 +87,13 @@ def panels():
 def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
+
     if request.method == 'POST':
+        if request.form.get('update_description'):
+            panel_obj['description'] = request.form['panel_description']
+            store.update_panel(panel_obj=panel_obj)
+            return redirect( url_for('panels.panel', panel_id=panel_obj['_id']) )
+
         raw_hgnc_id = request.form['hgnc_id']
         if '|' in raw_hgnc_id:
             raw_hgnc_id = raw_hgnc_id.split(' | ', 1)[0]

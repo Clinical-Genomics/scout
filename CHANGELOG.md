@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle requests to Ensembl Rest API  
 - Handle requests to Ensembl Rest Biomart
 - STR variants view now displays GT and IGV link.
+- Description field for gene panels
 
 ### Fixed
 - Fixes of and induced by build tests

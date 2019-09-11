@@ -114,6 +114,22 @@ def test_update_panel_panel_name(panel_database):
     ## THEN assert that the last version is fetched
     assert res['panel_name'] == new_name
 
+def test_update_panel_panel_description(panel_database):
+    adapter = panel_database
+    panel_obj = adapter.panel_collection.find_one()
+
+    ## GIVEN an adapter with a gene panel withou description
+    panel_obj = adapter.panel_collection.find_one()
+    assert panel_obj.get('description') is None
+
+    # Update its description
+    panel_obj['description'] = 'Test description'
+    res = adapter.update_panel(panel_obj)
+
+    ## THEN assert that description was updated
+    assert res['description'] == 'Test description'
+
+
 def test_apply_pending_delete_gene(panel_database):
     ## GIVEN an adapter with a gene panel
     adapter = panel_database
