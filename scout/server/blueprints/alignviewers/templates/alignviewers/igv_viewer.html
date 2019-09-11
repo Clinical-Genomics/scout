@@ -28,7 +28,7 @@
             src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
     <!-- IGV JS-->
-     <script type="text/javascript" src="https://igv.org/web/release/2.2.11/dist/igv.min.js"></script>    
+     <script type="text/javascript" src="https://igv.org/web/release/2.2.11/dist/igv.min.js"></script>
 </head>
 <body>
 <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
@@ -62,8 +62,8 @@
                             indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
                             displayMode: "{{ genes_track.displayMode }}",
                             order: Number.MAX_VALUE,
-                            visibilityWindow: 300000000
-
+                            visibilityWindow: 300000000,
+                            height: 700
                       },
                       {% for track in sample_tracks %}
                       {
