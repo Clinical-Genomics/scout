@@ -751,13 +751,13 @@
   <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
     <div class="panel panel-default">
       <div class="panel-heading">Added phenotypes</div>
-      <ul class="list-group">
+        <ul class="list-group">
         {% for hpo_term in case.phenotype_terms %}
           {{ hpo_item(hpo_term) }}
         {% else %}
           <li class="list-group-item">No phenotypes added yet</li>
         {% endfor %}
-      </ul>
+        </ul>
       <div class="panel-footer">
         <div class="row">
           <div class="col-xs-5">
@@ -777,15 +777,19 @@
             <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
         </div>
-          <div class="panel-heading">Add genes to HPO panel</div>
-          <div class="row">
-            <div class="col-xs-9">
-              <input name="genes" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
-            </div>
-            <div class="col-xs-3">
-              <button class="btn btn-default form-control" type="submit" name="action" value="GENES">Add gene</button>
-            </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">Add genes to the dynamic panel</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-9">
+            <input name="genes" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
           </div>
+          <div class="col-xs-3">
+            <button class="btn btn-default form-control" type="submit" name="action" value="ADDGENE">Add gene</button>
+          </div>
+        </div>
       </div>
     </div>
   </form>

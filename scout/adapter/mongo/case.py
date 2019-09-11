@@ -258,7 +258,7 @@ class CaseHandler(object):
 
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
-                                 phenotype_ids=None, build='37'):
+                                 phenotype_ids=None, build='37', add_only=False):
         """Update the dynamic gene list for a case
 
         Adds a list of dictionaries to case['dynamic_gene_list'] that looks like
@@ -278,9 +278,15 @@ class CaseHandler(object):
             updated_case(dict)
         """
         dynamic_gene_list = []
+        if add_only:
+            dynamic_gene_list_cursor = self.case_collection.find({ '_id': case['_id'] },
+                { 'dynamic_gene_list': 1, '_id': 0 })
+            dynamic_gene_list = dynamic_gene_list_cursor[0]['dynamic_gene_list']
+            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
+
         res = []
         if hgnc_ids:
-            LOG.info("Fetching genes by hgnc id")
+            LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
             res = self.hgnc_collection.find({'hgnc_id': {'$in': hgnc_ids}, 'build': build})
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
@@ -290,8 +296,9 @@ class CaseHandler(object):
                 for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
                     res.append(gene_obj)
 
+
         for gene_obj in res:
-            LOG.debug("Appending gene {}".fomat(gene_obj['hgnc_symbol']))
+            LOG.debug("Appending gene {}".format(gene_obj['hgnc_symbol']))
             dynamic_gene_list.append(
                 {
                     'hgnc_symbol': gene_obj['hgnc_symbol'],

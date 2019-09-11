@@ -561,6 +561,18 @@ def phenotypes_actions(institute_id, case_name):
         return render_template('cases/diseases.html', diseases=diseases,
                                institute=institute_obj, case=case_obj)
 
+    elif action == 'ADDGENE':
+        hgnc_symbol = None
+        for raw_symbol in request.form.getlist('genes'):
+            LOG.debug("raw gene: {}".format(raw_symbol))
+            # avoid empty lists
+            if raw_symbol:
+                # take the first nubmer before |, and remove any space.
+                hgnc_symbol_split = raw_symbol.split('|', 1)[0]
+                hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+            LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
+            store.update_dynamic_gene_list(case_obj, hgnc_ids=[hgnc_symbol], add_only=True)
+
     elif action == 'GENES':
         hgnc_symbols = set()
         for raw_symbols in request.form.getlist('genes'):
