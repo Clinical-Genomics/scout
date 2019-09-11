@@ -86,7 +86,7 @@ def update_panel(store, panel_name, csv_lines, option):
     return panel_obj
 
 
-def new_panel(store, institute_id, panel_name, display_name, description, csv_lines):
+def new_panel(store, institute_id, panel_name, display_name, csv_lines, description=None):
     """Create a new gene panel.
 
     Args:
