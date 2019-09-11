@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
-from scout.server.blueprints.panels.controllers import existing_gene
 from urllib.parse import urlencode
 
 # def test_panels(client, real_database, user_info):
