@@ -278,6 +278,7 @@ def case_obj(request, parsed_case):
     case['status'] = 'inactive'
     case['synopsis'] = ''
     case['updated_at'] = parsed_case['analysis_date']
+    case['delivery_report'] = parsed_case['delivery_report']
     case['assignees'] = []
 
     return case
@@ -420,7 +421,6 @@ def real_pymongo_client(request):
 @pytest.fixture(scope='function')
 def real_adapter(request, real_pymongo_client):
     """Get an adapter connected to mongo database"""
-    LOG.info("Connecting to database...")
     mongo_client = real_pymongo_client
 
     LOG.info("Connecting to database %s", REAL_DATABASE)
@@ -443,6 +443,7 @@ def adapter(request, pymongo_client):
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
+    mongo_adapter.setup(database)
 
     LOG.info("Connected to database")
 

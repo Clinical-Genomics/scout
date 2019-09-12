@@ -102,12 +102,12 @@ def test_panels(app, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-
+# This test is slow since pdf rendering is slow
 def test_panel_export(client, real_panel_database):
     adapter = real_panel_database
-
     # GIVEN a panel in the database
-    panel_obj = adapter.gene_panels()[0]
+    panel_obj = adapter.panel_collection.find_one()
+    assert True
     # WHEN accessing the panel view
     resp = client.get(url_for('panels.panel_export', panel_id=panel_obj['_id']))
     # THEN it should display the panel with all the genes
