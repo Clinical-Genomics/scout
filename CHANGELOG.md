@@ -4,8 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [4.x.x]
+
+### Added
+
+### Fixed
+
+
+## [4.7.0]
 
 ### Added
 - Export genes and gene panels in build GRCh38
@@ -25,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle requests to Ensembl Rest Biomart
 - STR variants view now displays GT and IGV link.
 - Description field for gene panels
+- Export exons in build 37 and 38 using the command line
 
 ### Fixed
 - Fixes of and induced by build tests
