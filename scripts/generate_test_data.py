@@ -19,9 +19,7 @@ fetch_hpo_genes, fetch_hpo_terms,)
 from scout.parse.hgnc import parse_hgnc_line
 from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.parse.exac import parse_exac_genes
-from scout.parse.ensembl import (parse_ensembl_gene_request, parse_ensembl_genes,
-                                 parse_ensembl_transcript_request, parse_ensembl_exon_request,
-                                 parse_ensembl_exons)
+from scout.parse.ensembl import (parse_ensembl_genes,parse_ensembl_exons,parse_ensembl_transcripts)
 
 from scout.demo.resources import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
 genes37_reduced_path, genes38_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path,
@@ -236,7 +234,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     nr_genes = 0
 
     # This function will yield dictionaries with ensemble info
-    for gene_info in parse_ensembl_gene_request(ensembl_genes):
+    for gene_info in parse_ensembl_gene(ensembl_genes):
         hgnc_id = gene_info.get('hgnc_id')
         if not hgnc_id:
             continue
@@ -277,7 +275,7 @@ def generate_ensembl_transcripts(ensembl_genes, build=None):
         
     yield '\t'.join(ensembl_header)
         
-    for tx_info in parse_ensembl_transcript_request(ensembl_transcripts):
+    for tx_info in parse_ensembl_transcripts(ensembl_transcripts):
         ens_gene_id = tx_info['ensembl_gene_id']
         if ens_gene_id in ensembl_genes:
             print_line = [
@@ -291,61 +289,6 @@ def generate_ensembl_transcripts(ensembl_genes, build=None):
                 tx_info['refseq_ncrna'] or '',
             ]
             yield '\t'.join(print_line)
-
-def generate_ensembl_exons(ensembl_genes, build=None, ensembl_exons=None):
-    """Generate a file with reduced ensembl gene information
-    
-    Args:
-        genes(dict): A dictionary with ensembl_id as key and hgnc_id as value
-        build(str): What build to use. Defaults to 37
-        ensembl_exons(iterable): If exons already exists
-
-    Yields:
-        print_line(str):  Lines from the reduced file
-
-    """
-    build = build or '37'
-    request = False
-    
-    LOG.info("Generating ensembl exons")
-    
-    if not ensembl_exons:
-        request = True
-        ensembl_exons = fetch_ensembl_exons(build=build)
-        
-    ensembl_header = ["Chromosome/scaffold name", "Gene stable ID", 
-                      "Transcript stable ID", "Exon stable ID", 
-                      "Exon region start (bp)", "Exon region end (bp)",
-                      "5' UTR start", "5' UTR end", "3' UTR start", 
-                      "3' UTR end", "Strand", "Exon rank in transcript"]
-
-    yield '\t'.join(ensembl_header)
-
-    if request:
-        parsed_exons = parse_ensembl_exon_request(ensembl_exons)
-    else:
-        parsed_exons = parse_ensembl_exons(ensembl_exons)
-
-    for exon_info in parsed_exons:
-        ens_gene_id = exon_info['gene']
-        if ens_gene_id in ensembl_genes:
-            print_info = [
-                str(exon_info['chrom']),
-                exon_info['gene'],
-                exon_info['transcript'],
-                exon_info['exon_id'],
-                str(exon_info['exon_chrom_start']),
-                str(exon_info['exon_chrom_end']),
-                str(exon_info['5_utr_start']) if exon_info['5_utr_start'] else '',
-                str(exon_info['5_utr_end']) if exon_info['5_utr_end'] else '',
-                str(exon_info['3_utr_start']) if exon_info['3_utr_start'] else '',
-                str(exon_info['3_utr_end']) if exon_info['3_utr_end'] else '',
-                str(exon_info['strand']),
-                str(exon_info['rank'])
-            ]
-            # print(print_info)
-            yield '\t'.join(print_info)
-
 
 def generate_hpo_genes(genes):
     """Generate the lines from a reduced hpo genes file
@@ -469,13 +412,16 @@ def cli(ctx):
     default='37',
     show_default=True,
 )
+@click.option('-c', '--chromosome')
 @click.option('-e', '--exons',
     type=click.File('r'),
     help='If exon information is in a file',
 )
 @click.pass_context
-def exons(ctx, genes, build, exons):
+def exons(ctx, genes, build, exons, chromosome):
     """Generate exons scout. Need to have a ensemble gene file generated from above"""
+    if chromosome:
+        chromosome = [chromosome]
     ensg_to_hgncid = {}
     
     for gene_info in parse_ensembl_genes(genes):
@@ -484,8 +430,20 @@ def exons(ctx, genes, build, exons):
 
         ensg_to_hgncid[ensgid] = hgncid
     
-    for i, line in enumerate(generate_ensembl_exons(ensg_to_hgncid, build=build, ensembl_exons=exons)):
+    for i, line in enumerate(fetch_ensembl_exons(build=build, chromosomes=chromosome)):
+        if i == 0:
+            header = line.rstrip().split('\t')
+            click.echo(line)
+            continue
+        exon_line = line.rstrip().split('\t')
+        exon_info = dict(zip(header,exon_line))
+        gene_id = exon_info['Gene stable ID']
+        if not gene_id in ensg_to_hgncid:
+            continue
         click.echo(line)
+        
+        
+        
 
 
 

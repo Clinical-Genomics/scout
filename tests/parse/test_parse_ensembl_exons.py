@@ -1,5 +1,46 @@
 from scout.parse.ensembl import (parse_ensembl_exons)
 
+from scout.constants import CHROMOSOMES
+
+def test_exons_file_37(exons_handle):
+    """This test exists to make sure that the demo exons file is on correct format"""
+    # GIVEN the path to an ensembl formated exons file
+    
+    # WHEN parsing the lines
+    header = next(exons_handle).rstrip().split('\t')
+    
+    ## THEN assert that the information is on correct format
+    for exon_line in exons_handle:
+        exon_line = exon_line.rstrip().split('\t')
+        exon_info = dict(zip(header,exon_line))
+        assert exon_info['Chromosome/scaffold name'] in CHROMOSOMES
+        assert exon_info['Exon stable ID'].startswith('ENSE')
+        assert exon_info['Gene stable ID'].startswith('ENSG')
+        assert exon_info['Transcript stable ID'].startswith('ENST')
+
+        assert int(exon_info['Exon region start (bp)'])
+        assert int(exon_info['Exon region end (bp)'])
+
+def test_exons_file_38(exons_38_handle):
+    """This test exists to make sure that the demo exons file is on correct format"""
+    # GIVEN the path to an ensembl formated exons file
+    
+    # WHEN parsing the lines
+    header = next(exons_38_handle).rstrip().split('\t')
+    
+    ## THEN assert that the information is on correct format
+    for exon_line in exons_38_handle:
+        exon_line = exon_line.rstrip().split('\t')
+        exon_info = dict(zip(header,exon_line))
+        assert exon_info['Chromosome/scaffold name'] in CHROMOSOMES
+        assert exon_info['Exon stable ID'].startswith('ENSE')
+        assert exon_info['Gene stable ID'].startswith('ENSG')
+        assert exon_info['Transcript stable ID'].startswith('ENST')
+
+        assert int(exon_info['Exon region start (bp)'])
+        assert int(exon_info['Exon region end (bp)'])
+    
+
 def test_parse_ensembl_exons(exons_handle):
     """Test to parse a small dataframe line of ensembl transcript"""
     ## GIVEN a iterable with exon information from ensembl

@@ -45,7 +45,8 @@ from scout.server.app import create_app
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
 exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path,
-transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_reduced_path)
+transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_reduced_path,
+ exons38_reduced_path)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
@@ -1053,6 +1054,12 @@ def exons_file(request):
     print('')
     return exons37_reduced_path
 
+@pytest.fixture
+def exons_38_file(request):
+    """Get the path to a ensembl exons file build 38"""
+    print('')
+    return exons38_reduced_path
+
 
 @pytest.fixture
 def genes37_file(request):
@@ -1210,10 +1217,22 @@ def exons_handle(request, exons_file):
     return get_file_handle(exons_file)
 
 @pytest.fixture
+def exons_38_handle(request, exons_38_file):
+    """Get a file handle to a ensembl exons file"""
+    print('')
+    return get_file_handle(exons_38_file)
+
+@pytest.fixture
 def exons(request, exons_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_exons(exons_handle)
+
+@pytest.fixture
+def exons_38(request, exons_38_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_exons(exons_38_handle)
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):
