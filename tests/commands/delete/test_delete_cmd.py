@@ -31,7 +31,7 @@ def test_delete_panel(mock_app):
     assert 'WARNING Deleting panel {}'.format(db_panel['panel_name']) in result.output
 
     # And no panels ahould be available in database
-    assert store.panel_collection.find().count() == 0
+    assert sum(1 for i in store.panel_collection.find()) == 0
 
 
 def test_delete_index(mock_app):
@@ -62,7 +62,7 @@ def test_delete_user(mock_app, user_obj):
     assert runner
 
     # There is one user in populated database
-    assert store.user_collection.find().count() == 1
+    assert sum(1 for i in store.user_collection.find()) == 1
 
     # Test the CLI command to remove users with a random email
     result =  runner.invoke(cli, ['delete', 'user', '-m', 'unknown_email@email.com'])
@@ -75,7 +75,7 @@ def test_delete_user(mock_app, user_obj):
 
     # And the user should be gone
     assert result.exit_code == 0
-    assert store.user_collection.find().count() == 0
+    assert sum(1 for i in store.user_collection.find()) == 0
 
 
 def test_delete_genes(mock_app):
@@ -85,7 +85,7 @@ def test_delete_genes(mock_app):
     assert runner
 
     # There are genes in genes collection in populated database
-    assert store.hgnc_collection.find().count() > 0
+    assert sum(1 for i in store.hgnc_collection.find()) > 0
 
     # Test the CLI command to remove them with build option
     result =  runner.invoke(cli, ['delete', 'genes', '-b', '37'])
@@ -93,14 +93,14 @@ def test_delete_genes(mock_app):
     # It should print "Dropping genes" message without actually dropping them (why??)
     assert result.exit_code == 0
     assert 'ropping genes collection for build: 37' in result.output
-    assert store.hgnc_collection.find().count() > 0
+    assert sum(1 for i in store.hgnc_collection.find()) > 0
 
     # Test the CLI command to remove them without genome build
     result =  runner.invoke(cli, ['delete', 'genes'])
 
     # And it should actually drop them
     assert result.exit_code == 0
-    assert store.hgnc_collection.find().count() == 0
+    assert sum(1 for i in store.hgnc_collection.find()) == 0
 
 
 def test_delete_exons(mock_app):
@@ -126,7 +126,7 @@ def test_delete_exons(mock_app):
         }
     ]
     store.exon_collection.insert_many(exon_objs)
-    assert store.exon_collection.find().count() == 3
+    assert sum(1 for i in store.exon_collection.find()) == 3
 
     # Then use CLI to remove all exons with build == 38
     result =  runner.invoke(cli, ['delete', 'exons',
@@ -136,14 +136,14 @@ def test_delete_exons(mock_app):
     # the command should not exit with error
     # and one exon should be removed
     assert result.exit_code == 0
-    assert store.exon_collection.find().count() == 2
+    assert sum(1 for i in store.exon_collection.find()) == 2
 
     # Use the CLI to remove all exons regardless:
     result =  runner.invoke(cli, ['delete', 'exons'])
 
     # and all exons should be removed
     assert result.exit_code == 0
-    assert store.exon_collection.find().count() == 0
+    assert sum(1 for i in store.exon_collection.find()) == 0
 
 
 def test_delete_case(mock_app, case_obj):
@@ -166,7 +166,7 @@ def test_delete_case(mock_app, case_obj):
     assert 'Case does not exist in database' in result.output
 
     # One case is available in database
-    assert store.case_collection.find().count() == 1
+    assert sum(1 for i in store.case_collection.find()) == 1
 
     # Provide right right case_id and institute
     result =  runner.invoke(cli, ['delete', 'case',
@@ -175,11 +175,11 @@ def test_delete_case(mock_app, case_obj):
     assert result.exit_code == 0
 
     # and the case should be gone
-    assert store.case_collection.find().count() == 0
+    assert sum(1 for i in store.case_collection.find()) == 0
 
     # Re-insert case into database
     store.case_collection.insert_one(case_obj)
-    assert store.case_collection.find().count() == 1
+    assert sum(1 for i in store.case_collection.find()) == 1
 
     # Provide right display_name but not institute
     result =  runner.invoke(cli, ['delete', 'case',
@@ -196,4 +196,4 @@ def test_delete_case(mock_app, case_obj):
 
     # and the case should have been removed again
     assert result.exit_code == 0
-    assert store.case_collection.find().count() == 0
+    assert sum(1 for i in store.case_collection.find()) == 0

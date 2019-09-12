@@ -37,10 +37,6 @@ def hpo(term, description, json):
     if hpo_terms is None:
         hpo_terms = adapter.hpo_terms()
 
-    if hpo_terms.count() == 0:
-        LOG.warning("No matching terms found")
-        return
-
     click.echo("hpo_id\tdescription\tnr_genes")
     if json:
         click.echo(dumps(hpo_terms))

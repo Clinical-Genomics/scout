@@ -10,11 +10,11 @@ def test_load_institute(mock_app, institute_obj):
     assert runner
 
     # One institute is preloaded into populated database
-    assert store.institute_collection.find().count() == 1
+    assert sum(1 for i in store.institute_collection.find()) == 1
 
     # remove it
     store.institute_collection.find_one_and_delete({'_id':institute_obj['_id']})
-    assert store.institute_collection.find().count() == 0
+    assert store.institute_collection.find_one() is None
 
     # and re-load it using the CLI command:
     result =  runner.invoke(cli, ['load', 'institute',
@@ -25,4 +25,4 @@ def test_load_institute(mock_app, institute_obj):
     assert result.exit_code == 0
 
     # and institute should be in database
-    assert store.institute_collection.find().count() == 1
+    assert sum(1 for i in store.institute_collection.find()) == 1

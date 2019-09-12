@@ -25,6 +25,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Assign case to user when user activates it or asks for rerun
 - Case becomes inactive when it has no assignees
 - Fetch refseq version from entrez and use it in clinvar form
+- Load and export of exons for all genes, independent on refseq
+- Documentation for loading/updating exons
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
 - Handle requests to Ensembl Rest API  

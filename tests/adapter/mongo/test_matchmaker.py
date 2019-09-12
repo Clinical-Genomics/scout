@@ -6,14 +6,17 @@ def test_case_mme_update(populated_database, case_obj, user_obj, mme_patient, mm
     mme_submission['server_responses'] = [ {'patient': mme_patient }]
     
     # Make sure no case has MME submission:
-    assert adapter.case_collection.find({'mme_submission' : { '$exists' : True}}).count() == 0
+    res = adapter.case_collection.find({'mme_submission' : { '$exists' : True}})
+    assert sum(1 for i in res) == 0
 
 
     updated_case = adapter.case_mme_update(case_obj, user_obj, mme_submission)
 
     # One case has MME submission now
     assert updated_case['mme_submission']
-    assert adapter.case_collection.find({'mme_submission' : { '$exists' : True}}).count()
+    res = adapter.case_collection.find({'mme_submission' : { '$exists' : True}})
+    assert sum(1 for i in res)
+    
 
 
 def test_case_mme_delete(populated_database, case_obj, user_obj, mme_patient):

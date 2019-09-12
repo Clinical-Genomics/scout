@@ -321,7 +321,8 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
                 'mme_submission' : mme_submission
             }}
         )
-        assert store.case_collection.find({'mme_submission':{'$exists' : True}}).count() == 1
+        res = store.case_collection.find({'mme_submission':{'$exists' : True}})
+        assert sum(1 for i in res) == 1
 
         # Given mock MME connection parameters
         current_app.config['MME_URL'] = 'http://fakey_mme_url:fakey_port'
@@ -353,7 +354,8 @@ def test_matchmaker_match(app, institute_obj, case_obj, mme_submission):
                 'mme_submission' : mme_submission
             }}
         )
-        assert store.case_collection.find({'mme_submission':{'$exists' : True}}).count() == 1
+        res = store.case_collection.find({'mme_submission':{'$exists' : True}})
+        assert sum(1 for i in res) == 1
 
         # WHEN accessing the case page
         resp = client.post(url_for('cases.matchmaker_match',
@@ -380,7 +382,8 @@ def test_matchmaker_delete(app, institute_obj, case_obj, mme_submission):
                 'mme_submission' : mme_submission
             }}
         )
-        assert store.case_collection.find({'mme_submission':{'$exists' : True}}).count() == 1
+        res = store.case_collection.find({'mme_submission':{'$exists' : True}})
+        assert sum(1 for i in res) == 1
 
         # WHEN accessing the case page
         resp = client.post(url_for('cases.matchmaker_delete',
