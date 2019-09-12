@@ -31,9 +31,9 @@ def genes():
 def gene(hgnc_id=None, hgnc_symbol=None):
     """Render information about a gene."""
     if hgnc_symbol:
-        query = store.hgnc_genes(hgnc_symbol)
-        if query.count() == 1:
-            hgnc_id = query.first()['hgnc_id']
+        res = [gene for gene in store.hgnc_genes(hgnc_symbol)]
+        if len(res) == 1:
+            hgnc_id = res[0]['hgnc_id']
         else:
             return redirect(url_for('.genes', query=hgnc_symbol))
     try:

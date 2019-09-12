@@ -10,7 +10,7 @@ def test_load_variant(real_populated_database, variant_obj):
     """Test to load a variant into a real mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert adapter.variant_collection.find_one() is None
 
     # WHEN loading a variant into the database
     adapter.load_variant(variant_obj=variant_obj)
@@ -22,7 +22,7 @@ def test_load_variant_twice(real_populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database twice
     adapter.load_variant(variant_obj=variant_obj)
@@ -35,7 +35,7 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
     rank_threshold = 0
@@ -50,7 +50,7 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
     )
     # THEN assert the variant is loaded
 
-    assert adapter.variant_collection.find().count() > 0
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
         if variant['chromosome'] != 'MT':
@@ -62,7 +62,7 @@ def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
     rank_threshold = 0
@@ -74,7 +74,7 @@ def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     )
     # THEN assert the variant is loaded
 
-    assert adapter.variant_collection.find().count() > 0
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
         assert variant['rank_score'] >= rank_threshold
@@ -85,7 +85,7 @@ def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     """Test to load variants from a region into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
     chrom = '1'
@@ -101,7 +101,7 @@ def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     )
     # THEN assert all variants loaded are in the given region
 
-    assert adapter.variant_collection.find().count() > 0
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
         assert variant['chromosome'] == chrom
@@ -124,7 +124,7 @@ def test_load_mitochondrie(real_populated_database, case_obj, variant_clinical_f
     assert mt_variants
     
     # GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
 
@@ -156,7 +156,7 @@ def test_compounds_region(real_populated_database, case_obj):
     variant_type = 'clinical'
     category = 'snv'
     ## GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
     
     ## WHEN loading a variant into the database
     adapter.load_variants(

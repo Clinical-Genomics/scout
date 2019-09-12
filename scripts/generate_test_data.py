@@ -1,18 +1,27 @@
+"""Script for generating test data to Scout
+
+
+!!!!!!!! NOT COMPLETE !!!!!!!!
+"""
+
 import os
 import logging
 
 from pprint import pprint as pp
 
 import click
+import coloredlogs
 
 from scout.utils.requests import (fetch_hgnc, fetch_mim_files, fetch_exac_constraint, 
-fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_hpo_files, fetch_hpo_genes, fetch_hpo_terms,)
+fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_ensembl_exons, fetch_hpo_files, 
+fetch_hpo_genes, fetch_hpo_terms,)
+
 from scout.parse.hgnc import parse_hgnc_line
 from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.parse.exac import parse_exac_genes
-from scout.parse.ensembl import (parse_ensembl_gene_request, parse_ensembl_transcript_request)
+from scout.parse.ensembl import (parse_ensembl_genes,parse_ensembl_exons,parse_ensembl_transcripts)
 
-from . import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
+from scout.demo.resources import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
 genes37_reduced_path, genes38_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path,
 hpogenes_reduced_path, hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path)
 
@@ -204,7 +213,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     """Generate gene lines from a build
 
     Args:
-        genes(dict): A dictionary with hgnc_id as key and hgnc_symbol as value
+        genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         silent(bool): If genes should be written to file or not
         build(str): What build to use. Defaults to 37
     
@@ -213,6 +222,8 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     """
     build = build or '37'
 
+    # Convert genes to map from id to symbol
+    id_to_symbol = {genes[hgnc_symbol]: hgnc_symbol for hgnc_symbol in genes}
     ensembl_header = ['Chromosome/scaffold name', 'Gene start (bp)', 'Gene end (bp)',
                       'Gene stable ID', 'HGNC symbol', 'HGNC ID']
 
@@ -223,11 +234,11 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     nr_genes = 0
 
     # This function will yield dictionaries with ensemble info
-    for gene_info in parse_ensembl_gene_request(ensembl_genes):
+    for gene_info in parse_ensembl_gene(ensembl_genes):
         hgnc_id = gene_info.get('hgnc_id')
         if not hgnc_id:
             continue
-        if hgnc_id in genes:
+        if hgnc_id in id_to_symbol:
             print_line = [
                 gene_info['chrom'],
                 str(gene_info['gene_start']),
@@ -241,12 +252,11 @@ def generate_ensembl_genes(genes, silent=False, build=None):
     
     LOG.info("Nr genes collected for build %s: %s", build,nr_genes)
 
-def generate_ensembl_transcripts(ensembl_genes, build):
+def generate_ensembl_transcripts(ensembl_genes, build=None):
     """Generate a file with reduced ensembl gene information
     
     Args:
         genes(dict): A dictionary with ensembl_id as key and hgnc_id as value
-        silent(bool): If genes should be written to file or not
         build(str): What build to use. Defaults to 37
     
     Yields:
@@ -265,7 +275,7 @@ def generate_ensembl_transcripts(ensembl_genes, build):
         
     yield '\t'.join(ensembl_header)
         
-    for tx_info in parse_ensembl_transcript_request(ensembl_transcripts):
+    for tx_info in parse_ensembl_transcripts(ensembl_transcripts):
         ens_gene_id = tx_info['ensembl_gene_id']
         if ens_gene_id in ensembl_genes:
             print_line = [
@@ -336,7 +346,6 @@ def generate_hpo_terms(genes):
             nr_terms
             yield line
 
-
 def generate_hpo_files(genes):
     """Generate files with hpo reduced information"""
     hpo_files = fetch_hpo_files(hpogenes=True, hpoterms=True, phenotype_to_terms=True, hpodisease=False)
@@ -371,3 +380,72 @@ def generate_hpo_files(genes):
             if hgnc_symbol in genes:
                 outfile.write(line+'\n')
         LOG.info("File ready")
+
+def read_panel_file(lines):
+    """Read a file with gene ids and names.
+    
+    A file with genes. First column hgnc id, secon column hgnc symbol
+    """
+    genes = {}
+    for line in lines:
+        if line.startswith('#'):
+            continue
+        line = line.split('\t')
+        if len(line) < 3:
+            continue
+        hgnc_id = int(line[0])
+        hgnc_symbol = line[1]
+        genes[hgnc_symbol] = hgnc_id
+    
+    return genes
+
+@click.group()
+@click.pass_context
+def cli(ctx):
+    """Generate test data for scout"""
+    coloredlogs.install(level='INFO')
+
+@cli.command()
+@click.argument('genes', type=click.File('r'))
+@click.option('-b', '--build',
+    type=click.Choice(['37', '38']),
+    default='37',
+    show_default=True,
+)
+@click.option('-c', '--chromosome')
+@click.option('-e', '--exons',
+    type=click.File('r'),
+    help='If exon information is in a file',
+)
+@click.pass_context
+def exons(ctx, genes, build, exons, chromosome):
+    """Generate exons scout. Need to have a ensemble gene file generated from above"""
+    if chromosome:
+        chromosome = [chromosome]
+    ensg_to_hgncid = {}
+    
+    for gene_info in parse_ensembl_genes(genes):
+        ensgid = gene_info['ensembl_gene_id']
+        hgncid = gene_info['hgnc_id']
+
+        ensg_to_hgncid[ensgid] = hgncid
+    
+    for i, line in enumerate(fetch_ensembl_exons(build=build, chromosomes=chromosome)):
+        if i == 0:
+            header = line.rstrip().split('\t')
+            click.echo(line)
+            continue
+        exon_line = line.rstrip().split('\t')
+        exon_info = dict(zip(header,exon_line))
+        gene_id = exon_info['Gene stable ID']
+        if not gene_id in ensg_to_hgncid:
+            continue
+        click.echo(line)
+        
+        
+        
+
+
+
+if __name__ == '__main__':
+    cli()

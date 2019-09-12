@@ -68,7 +68,7 @@ def test_xml_filters():
     }
 
     client = eracs.EnsemblBiomartClient()
-    xml_lines = client.xml_filters(filters)
+    xml_lines = client._xml_filters(filters)
 
     # make sure lines are formatted as they should
     assert '<Filter name = "{0}" value = "{1}"/>'.format('string_filter', 'string_value') in xml_lines
@@ -77,53 +77,54 @@ def test_xml_filters():
 def test_xml_attributes():
     """test method that creates attribute lines for the biomart xml file"""
 
-    # Having a list of  biomart attributes
+    ## Given a list of  biomart attributes
     name = ["test_name"]
     client = eracs.EnsemblBiomartClient()
-    attribute_lines = client.xml_attributes(name)
+    ## WHEN creating the xml attribute lines
+    attribute_lines = client._xml_attributes(name)
 
-    # Make sure that attributes lines are formatted as they should
+    ## THEN make sure that attributes lines are formatted as they should
     assert attribute_lines == ['<Attribute name = "test_name" />']
 
 def test_test_query_biomart_38_xml():
     """Prepare a test xml document for the biomart service build 38 and query the service using it"""
-    client = eracs.EnsemblBiomartClient(build='38')
+    ## GIVEN a xml file in biomart format
+    build = '38'
+    xml = """<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE Query>
+    <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" completionStamp = "1">
+			
+    	<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
+    		<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>
+    		<Attribute name = "hgnc_symbol" />
+    		<Attribute name = "ensembl_transcript_id" />
+    	</Dataset>
+    </Query>
+    """
 
-    # having defined biomart filters and attributes
-    filters = { 'ensembl_gene_id' : 'ENSG00000115091' }
-    attributes = ['hgnc_symbol', 'ensembl_transcript_id']
+    ## WHEN querying ensembl
+    client = eracs.EnsemblBiomartClient(build='38', xml=xml, header=False)
 
-    # use client method to create a formatted xml query file
-    formatted_xml = client.create_biomart_xml(filters, attributes)
-
-    # and download data to file
-    res = client.query_service(formatted_xml)
-
+    ## THEN assert that the result is correct
     i = 0
-    for i,line in enumerate(res,1):
-        print(line)
-        if line.startswith('['):
-            continue
+    for i,line in enumerate(client,1):
         assert 'ACTR3' in line
     assert i > 0
 
 def test_test_query_biomart_37_no_xml():
     """Prepare a test xml document for the biomart service build 37 and query the service using it"""
-    client = eracs.EnsemblBiomartClient(build='37')
-
     ## GIVEN defined biomart filters and attributes
+    build = '37'
     filters = { 'ensembl_gene_id' : 'ENSG00000115091' }
     attributes = ['hgnc_symbol', 'ensembl_transcript_id']
 
-    ## WHEN fetching data from ensembl biomart
-    res = client.query_service(filters=filters, attributes=attributes)
+
+    ## WHEN querying ensembl
+    client = eracs.EnsemblBiomartClient(build='38', filters=filters, attributes=attributes, header=False)
 
     i = 0
-    for i,line in enumerate(res):
-        if line.startswith('['):
-            continue
+    for i,line in enumerate(client):
         ## THEN assert the correct gene is fetched
         assert 'ACTR3' in line
     ## THEN assert there was a result
     assert i > 0
-        
