@@ -63,6 +63,22 @@ LOG = logging.getLogger(__name__)
 ##################### Gene fixtures #####################
 
 @pytest.fixture
+def gene_obj():
+    """Get a dictionary with with gene obj information"""
+    gene = HgncGene(
+        hgnc_symbol = 'B3GALT6',
+        hgnc_id = 17978,
+        ensembl_id = 'ENSG00000176022',
+        chrom = '1',
+        start = 1232237,
+        end = 1235041,
+        build='38',
+    )
+
+    return gene
+
+
+@pytest.fixture
 def transcript_info(request):
     """Get a dictionary with parsed transcript information"""
     transcript = dict(
@@ -706,6 +722,8 @@ def dummypanel_geneobj():
     
     gene_obj['symbol'] = 'AAA'
     gene_obj['hgnc_id'] = 100
+    
+    return gene_obj
 
 @pytest.fixture(scope='function')
 def dummypanel_obj(parsed_panel, dummypanel_geneobj):
@@ -718,7 +736,9 @@ def dummypanel_obj(parsed_panel, dummypanel_geneobj):
     dummy_panel['date'] = parsed_panel['date']
     dummy_panel['display_name'] = parsed_panel['display_name']
     dummy_panel['description'] = 'A panel description'
-    dummy_panel['genes'] = [dummypanel_geneobj]
+    dummy_panel['genes'] = [
+        {'symbol': 'AAA', 'hgnc_id': 100}, {'symbol': 'BBB', 'hgnc_id': 222}
+    ]
 
     return dummy_panel
 
