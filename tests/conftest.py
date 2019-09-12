@@ -39,7 +39,6 @@ from scout.build.user import build_user
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
-from scout.server.app import create_app
 
 # These are the reduced data files
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
@@ -61,23 +60,11 @@ root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
 
-
-#############################################################
-###################### App fixtures #########################
-#############################################################
- # use this app object to test CLI commands which use a test database
-
-@pytest.fixture
-def mock_app(real_populated_database):
-
-    mock_app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=REAL_DATABASE,
-                                 DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
-    return mock_app
-
 ##################### Gene fixtures #####################
 
 @pytest.fixture
 def transcript_info(request):
+    """Get a dictionary with parsed transcript information"""
     transcript = dict(
         chrom = '1',
         ens_gene_id = 'ENSG00000176022',
@@ -90,82 +77,6 @@ def transcript_info(request):
     )
 
     return transcript
-
-@pytest.fixture
-def exon_info(request):
-    exon = dict(
-        chrom = '1',
-        ens_gene_id = 'ENSG00000176022',
-        ens_exon_id = 'ENSE00001480062',
-        ens_transcript_id = 'ENST00000379198',
-        start = 1167629,
-        end = 1170421,
-        utr_5_start=1167629,
-        utr_5_end=1167658,
-        utr_3_start=1168649,
-        utr_3_end=1170421,
-        strand=1,
-        exon_rank=1,
-    )
-
-    return exon
-
-@pytest.fixture
-def parsed_exon(request):
-    exon = dict(
-        chrom = '1',
-        hgnc_id = 234,
-        exon_id = '1-1167629-1170421',
-        transcript = 'ENST00000379198',
-        ens_exon_id = 'ENSE00001480062',
-        start = 1167629,
-        end = 1170421,
-        strand=1,
-        rank=1,
-    )
-
-    return exon
-
-
-@pytest.fixture
-def test_gene(request):
-    gene = {
-        # This is the hgnc id, required:
-        'hgnc_id': 1,
-        # The primary symbol, required
-        'hgnc_symbol': 'test',
-        'ensembl_id': 'ensembl1',  # required
-        'build': '37',  # '37' or '38', defaults to '37', required
-
-        'chromosome': 1,  # required
-        'start': 10,  # required
-        'end': 100,  # required
-
-        'description': 'A gene',  # Gene description
-        'aliases': ['test'],  # Gene symbol aliases, includes hgnc_symbol, str
-        'entrez_id': 1,
-        'omim_id': 1,
-        'pli_score': 1.0,
-        'primary_transcripts': ['NM1'],  # List of refseq transcripts (str)
-        'ucsc_id': '1',
-        'uniprot_ids': ['1'],  # List of str
-        'vega_id': '1',
-    }
-    return gene
-
-@pytest.fixture
-def parsed_gene(request):
-    gene_info = {
-        'hgnc_id': 1,
-        'hgnc_symbol': 'AAA',
-        'ensembl_id': 'ENSG1',
-        'chrom': '1',
-        'start': 10,
-        'end': 100,
-        'build': '37'
-    }
-    return gene_info
-
 
 @pytest.fixture
 def genes(request, genes37_handle, hgnc_handle, exac_handle,
@@ -192,7 +103,7 @@ def ensembl_genes(request, gene_bulk):
         _ensembl_genes[gene_obj['ensembl_id']] = gene_obj
     return _ensembl_genes
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def gene_bulk(genes):
     """Return a list with HgncGene objects"""
     bulk = []
@@ -200,6 +111,23 @@ def gene_bulk(genes):
         bulk.append(build_hgnc_gene(genes[gene_key]))
 
     return bulk
+
+@pytest.fixture(scope='function')
+def gene_bulk_38(genes):
+    """Return a list with HgncGene objects"""
+    bulk = []
+    for gene_key in genes:
+        gene_obj = build_hgnc_gene(genes[gene_key])
+        gene_obj['build'] = '38'
+        bulk.append(gene_obj)
+
+    return bulk
+
+@pytest.fixture(scope='function')
+def gene_bulk_all(gene_bulk, gene_bulk_38):
+    """Return a list with HgncGene objects"""
+
+    return gene_bulk + gene_bulk_38
 
 @pytest.fixture
 def transcript_objs(request, parsed_transcripts):
@@ -771,10 +699,33 @@ def parsed_panel(request, panel_info):
 
     return panel
 
+@pytest.fixture(scope='function')
+def dummypanel_geneobj():
+    """A panel gene object"""
+    gene_obj = {}
+    
+    gene_obj['symbol'] = 'AAA'
+    gene_obj['hgnc_id'] = 100
+
+@pytest.fixture(scope='function')
+def dummypanel_obj(parsed_panel, dummypanel_geneobj):
+    """Return a dummy panel object"""
+    dummy_panel = {}
+    
+    dummy_panel['panel_name'] = parsed_panel['panel_id']
+    dummy_panel['institute'] = parsed_panel['institute']
+    dummy_panel['version'] = float(parsed_panel['version'])
+    dummy_panel['date'] = parsed_panel['date']
+    dummy_panel['display_name'] = parsed_panel['display_name']
+    dummy_panel['description'] = 'A panel description'
+    dummy_panel['genes'] = [dummypanel_geneobj]
+
+    return dummy_panel
+
 
 @pytest.fixture(scope='function')
 def panel_obj(request, parsed_panel, gene_database):
-    """docstring for parsed_panels"""
+    """Return a panel object"""
     panel = build_panel(parsed_panel, gene_database)
 
     return panel
