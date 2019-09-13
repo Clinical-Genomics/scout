@@ -133,14 +133,14 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     name_query='synopsis:'
     # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
-    assert sum(1 for i in research_cases) == 0
+    assert sum(1 for i in cases) == 0
 
     # but if a term contained in case synopsis is provided in name query:
     name_query='synopsis:seizures'
 
     # Then updated case should be returned
     cases = adapter.cases(collaborator=updated_case['owner'], name_query=name_query)
-    assert sum(1 for i in research_cases) == 1
+    assert sum(1 for i in cases) == 1
 
 
 def test_get_cases_no_HPO(adapter, case_obj):
