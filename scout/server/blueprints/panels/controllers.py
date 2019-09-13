@@ -142,7 +142,6 @@ def new_panel(store, institute_id, panel_name, display_name, csv_lines, descript
 
 def panel_export(store, panel_obj):
     """Preprocess a panel of genes."""
-    print('panel_obj',panel_obj)
     panel_obj['institute'] = store.institute(panel_obj['institute'])
     full_name = "{}({})".format(panel_obj['display_name'], panel_obj['version'])
     panel_obj['name_and_version'] = full_name
