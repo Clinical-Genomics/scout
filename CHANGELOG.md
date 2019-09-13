@@ -43,6 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Disable SSL certifcate verification in requests to chanjo
 - Updates how intervaltree and pymongo is used to void deprecated functions
 - Increased size of IGV sample tracks
+- Optimized tests
 
 
 ## [4.6.1]
