@@ -87,8 +87,8 @@ def genes(build):
     if build:
         LOG.info("Dropping genes collection for build: %s", build)
     else:
-        LOG.info("Dropping genes collection")
-        adapter.drop_genes()
+        LOG.info("Dropping all genes")
+    adapter.drop_genes(build=build)
 
 @click.command('exons', short_help='Delete exons')
 @click.option('-b', 'build', type=click.Choice(['37', '38']))
