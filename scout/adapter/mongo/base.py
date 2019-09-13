@@ -31,6 +31,7 @@ import logging
 from datetime import datetime
 
 from .hgnc import GeneHandler
+from .transcript import TranscriptHandler
 from .case import CaseHandler
 from .institute import InstituteHandler
 from .event import EventHandler
@@ -49,7 +50,7 @@ log = logging.getLogger(__name__)
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
                    HpoHandler, PanelHandler, QueryHandler, VariantHandler,
                    UserHandler, ACMGHandler, IndexHandler, ClinVarHandler,
-                   MMEHandler):
+                   MMEHandler, TranscriptHandler):
 
     """Adapter for cummunication with a mongo database."""
 

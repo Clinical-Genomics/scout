@@ -1,7 +1,4 @@
-from scout.parse.ensembl import (parse_ensembl_line, parse_ensembl_transcripts, 
-                                 parse_ensembl_transcript_request, parse_transcripts)
-
-from pandas import DataFrame
+from scout.parse.ensembl import (parse_ensembl_line, parse_ensembl_transcripts, parse_transcripts)
 
 def test_parse_ensembl_line(transcript_info):
     """Test to parse a line of ensembl transcript"""
@@ -29,37 +26,6 @@ def test_parse_ensembl_line(transcript_info):
     assert parsed_transcript['refseq_mrna'] == transcript_info['refseq_mrna']
     assert 'refseq_mrna_predicted' not in parsed_transcript
     assert 'refseq_ncrna' not in parsed_transcript
-    
-def test_parse_ensembl_request(transcript_info):
-    """Test to parse a small dataframe line of ensembl transcript"""
-    ## GIVEN a small transcript data framse
-    
-    tx_data = {
-        'chromosome_name': transcript_info['chrom'],
-        'ensembl_gene_id': [transcript_info['ens_gene_id']],
-        'ensembl_transcript_id': [transcript_info['ens_transcript_id']],
-        'transcript_start': [transcript_info['start']],
-        'transcript_end': [transcript_info['end']],
-        'refseq_mrna': [transcript_info['refseq_mrna']],
-        'refseq_mrna_predicted': [transcript_info['refseq_mrna_pred']],
-        'refseq_ncrna': [transcript_info['refseq_ncrna']],
-    }
-    df = DataFrame(tx_data)
-    
-    parsed_transcripts = parse_ensembl_transcript_request(df)
-    
-    parsed_tx = next(parsed_transcripts)
-    
-    ## THEN assert the parsed transcript is as expected
-    assert parsed_tx['chrom'] == transcript_info['chrom']
-    assert parsed_tx['ensembl_gene_id'] == transcript_info['ens_gene_id']
-    assert parsed_tx['ensembl_transcript_id'] == transcript_info['ens_transcript_id']
-    assert parsed_tx['transcript_start'] == transcript_info['start']
-    assert parsed_tx['transcript_end'] == transcript_info['end']
-    assert parsed_tx['refseq_mrna'] == transcript_info['refseq_mrna']
-    assert parsed_tx['refseq_mrna_predicted'] == transcript_info['refseq_mrna_pred']
-    assert parsed_tx['refseq_ncrna'] == transcript_info['refseq_ncrna']
-
 
 def test_parse_ensembl_transcripts(transcripts_handle):
     """Test to parse all ensembl transcripts"""
@@ -78,17 +44,3 @@ def test_parse_transcripts_file(transcripts_handle):
         transcript = transcripts[transcript_id]
         assert transcript['ensembl_transcript_id']
         assert transcript['ensembl_gene_id']
-
-def test_parse_transcripts_data_frame(transcripts_df):
-    """Test to parse all ensembl transcripts from data frame"""
-    ## GIVEN a data frame with transcript information
-    transcripts = parse_transcripts(transcripts_df)
-    
-    ## WHEN parsing the transcripts
-    i = 0
-    for i,transcript_id in enumerate(transcripts):
-        transcript = transcripts[transcript_id]
-    ## THEN assert they all got the mandatory ids
-        assert transcript['ensembl_transcript_id']
-        assert transcript['ensembl_gene_id']
-    assert i > 0

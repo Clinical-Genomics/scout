@@ -141,18 +141,22 @@
   {% endif %}
 
   {% if comment_count > 0 %}
+    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
        class="badge badge-secondary"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
        data-trigger="hover click"
-       data-content="{{ comments_table(institute, case, variant.comments, variant._id) }}"
+       data-content="{{ comments_content }}"
        title=""
        style="color:white;"
        >
       {{ comment_count }}
       <i class="fa fa-comment"></i>
+      {% if 'GLOBAL' in comments_content %}
+        <i class="fa fa-globe" aria-hidden="true"></i>
+      {% endif %}
     </a>
   {% endif %}
 
@@ -192,13 +196,12 @@
 
 {% macro overlapping_cell(variant) %}
   {% if variant.overlapping %}
-    <a href="#" class="badge badge-warning" data-toggle="popover" data-placement="left"
+  <a href="#" class="badge badge-warning" data-toggle="popover" data-placement="left"
     data-html="true" data-trigger="hover click"
     data-content="{{ svs_table(institute, case, variant.overlapping[:20]) }}">Overlapping SVs</a>
   {% else %}
     -
   {% endif %}
-
 {% endmacro %}
 
 {% macro footer() %}

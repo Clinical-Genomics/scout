@@ -13,7 +13,6 @@ from cyvcf2 import VCF
 import yaml
 import pymongo
 
-from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
 
@@ -26,7 +25,7 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts)
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts, parse_ensembl_exons)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases)
 
@@ -46,7 +45,8 @@ from scout.server.app import create_app
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
 exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path,
-transcripts38_reduced_path, genes38_reduced_path,)
+transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_reduced_path,
+ exons38_reduced_path)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
@@ -90,6 +90,41 @@ def transcript_info(request):
     )
 
     return transcript
+
+@pytest.fixture
+def exon_info(request):
+    exon = dict(
+        chrom = '1',
+        ens_gene_id = 'ENSG00000176022',
+        ens_exon_id = 'ENSE00001480062',
+        ens_transcript_id = 'ENST00000379198',
+        start = 1167629,
+        end = 1170421,
+        utr_5_start=1167629,
+        utr_5_end=1167658,
+        utr_3_start=1168649,
+        utr_3_end=1170421,
+        strand=1,
+        exon_rank=1,
+    )
+
+    return exon
+
+@pytest.fixture
+def parsed_exon(request):
+    exon = dict(
+        chrom = '1',
+        hgnc_id = 234,
+        exon_id = '1-1167629-1170421',
+        transcript = 'ENST00000379198',
+        ens_exon_id = 'ENSE00001480062',
+        start = 1167629,
+        end = 1170421,
+        strand=1,
+        rank=1,
+    )
+
+    return exon
 
 
 @pytest.fixture
@@ -177,36 +212,6 @@ def transcript_objs(request, parsed_transcripts):
         _transcripts.append(build_transcript(tx_info))
 
     return _transcripts
-
-@pytest.fixture
-def transcripts_df(request, transcripts):
-    """Return a list with transcript objs"""
-    print('')
-    df_info = dict(
-        chromosome_name = [],
-        ensembl_gene_id = [],
-        ensembl_transcript_id = [],
-        transcript_start = [],
-        transcript_end = [],
-        refseq_mrna = [],
-        refseq_mrna_predicted = [],
-        refseq_ncrna = [],
-    )
-
-    for tx_info in transcripts:
-        df_info['chromosome_name'].append(tx_info['chrom'])
-        df_info['ensembl_gene_id'].append(tx_info['ensembl_gene_id'])
-        df_info['ensembl_transcript_id'].append(tx_info['ensembl_transcript_id'])
-        df_info['transcript_start'].append(tx_info['transcript_start'])
-        df_info['transcript_end'].append(tx_info['transcript_end'])
-        df_info['refseq_mrna'].append(tx_info.get('refseq_mrna', ''))
-        df_info['refseq_mrna_predicted'].append(tx_info.get('refseq_mrna_predicted', ''))
-        df_info['refseq_ncrna'].append(tx_info.get('refseq_ncrna', ''))
-
-    df = DataFrame(df_info)
-
-    return df
-
 
 #############################################################
 ################# Hpo terms fixtures ########################
@@ -409,7 +414,7 @@ def user_obj(request, parsed_user):
 ##################### Adapter fixtures #####################
 #############################################################
 
-# We need to mokeypatch 'connect' function so the tests use a mongomock database
+# We need to monkeypatch 'connect' function so the tests use a mongomock database
 # @pytest.fixture(autouse=True)
 # def no_connect(monkeypatch):
 #     # from scout.adapter.client import get_connection
@@ -1043,6 +1048,18 @@ def transcripts_file(request):
     print('')
     return transcripts37_reduced_path
 
+@pytest.fixture
+def exons_file(request):
+    """Get the path to a ensembl exons file"""
+    print('')
+    return exons37_reduced_path
+
+@pytest.fixture
+def exons_38_file(request):
+    """Get the path to a ensembl exons file build 38"""
+    print('')
+    return exons38_reduced_path
+
 
 @pytest.fixture
 def genes37_file(request):
@@ -1192,6 +1209,30 @@ def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def exons_handle(request, exons_file):
+    """Get a file handle to a ensembl exons file"""
+    print('')
+    return get_file_handle(exons_file)
+
+@pytest.fixture
+def exons_38_handle(request, exons_38_file):
+    """Get a file handle to a ensembl exons file"""
+    print('')
+    return get_file_handle(exons_38_file)
+
+@pytest.fixture
+def exons(request, exons_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_exons(exons_handle)
+
+@pytest.fixture
+def exons_38(request, exons_38_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_exons(exons_38_handle)
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):

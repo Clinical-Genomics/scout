@@ -28,7 +28,7 @@ def test_export_genes(mock_app):
         'build': '38'
     }
     store.hgnc_collection.insert_one(gene_info_38)
-    assert store.hgnc_collection.find({'build':'38'}).count() == 1
+    assert sum(1 for i in store.hgnc_collection.find({'build':'38'})) == 1
 
     # Test the export panel cli by passing build=38
     result =  runner.invoke(cli, ['export', 'genes',

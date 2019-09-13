@@ -1,141 +1,214 @@
 # -*- coding: utf-8 -*-
-from scout.demo import clinical_snv_path, clinical_sv_path
 
 from scout.commands import cli
 from scout.server.extensions import store
 
-def test_update_case(mock_app, case_obj):
+def test_update_case_no_args(mock_app):
     """Tests the CLI that updates a case"""
 
+    ## GIVEN a CLI object
     runner = mock_app.test_cli_runner()
-    assert runner
 
-    # Test CLI base, no arguments provided
+    ## WHEN updating a case without any args
     result =  runner.invoke(cli, ['update', 'case'])
 
-    # it should return error message
+    ## THEN it should return an error message
     assert 'Please specify which case to update' in result.output
 
-    # provide a case id
-    result =  runner.invoke(cli, ['update', 'case',
-        case_obj['_id'],
-        ])
-    assert 'INFO Fetching case {}'.format(case_obj['_id']) in result.output
+def test_update_case_wrong_collaborator(mock_app, case_obj):
+    """Tests the CLI that updates a case"""
 
-    # provide a case id and a collaborator whis is not valid
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN providing a case id and a collaborator whis is NOT valid
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
         '-c', 'cust666'
         ])
+    
+    ## THEN assert that there is a warning in the output
     assert 'Institute cust666 could not be found' in result.output
 
-    # provide a case id and a valid collaborator
+def test_update_case_existing_collaborator(mock_app, case_obj):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN providing a case id and a valid collaborator
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
         '-c', 'cust000'
         ])
+    
+    ## THEN assert that the case is fetched
     assert 'INFO Fetching case {}'.format(case_obj['_id']) in result.output
 
-    # try first to remove collaborator from case object and to add it via the CLI
+def test_update_case_change_collaborator(mock_app, case_obj):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN removing collaborator from case object
     store.case_collection.find_one_and_update(
         {'_id': case_obj['_id']},
         {'$set' : {'collaborators' : [] }}
     )
-    assert store.case_collection.find({
-        '_id': case_obj['_id'], 'collaborators' : []
-    }).count() == 1
-    # provide a case id and a valid collaborator and see that collaborator is added to case
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    assert res['collaborators'] == []
+
+    ## WHEN a collaborator is added via the CLI
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
         '-c', 'cust000'
         ])
-    assert 'INFO Fetching case {}'.format(case_obj['_id']) in result.output
+    
+    ## THEN assert that the operation was succesful
     assert result.exit_code == 0
+    ## THEN assert that the CLI communicates relevant information
     assert 'Adding collaborator' in result.output
-    assert store.case_collection.find({
-        '_id': case_obj['_id'], 'collaborators' : ['cust000']
-    }).count() == 1
+    ## THEN assert that the collaborator was added
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    assert res['collaborators'] == ['cust000']
 
+def test_update_case_change_vcf_path(mock_app, case_obj, variant_clinical_file):
+    """Tests the CLI that updates a case"""
 
-    # Test cli to update vcf
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+    ## WHEN updating the VCF path 
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf', clinical_snv_path
+        '--vcf', variant_clinical_file
         ])
-    result.exit_code == 0
+    
+    ## THEN assert it exits wothout problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
     assert 'INFO Case updated' in result.output
-    assert store.case_collection.find({
-        'vcf_files.vcf_snv' : clinical_snv_path
-    }).count() == 1
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    ## THEN assert that the file is set correct
+    assert res['vcf_files']['vcf_snv'] == variant_clinical_file
 
 
-    # Test cli to update vcf-sv
+def test_update_case_change_vcf_sv_path(mock_app, case_obj, variant_clinical_file):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN updating the sv vcf path
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf-sv', clinical_snv_path
+        '--vcf-sv', variant_clinical_file
         ])
-    result.exit_code == 0
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
     assert 'INFO Case updated' in result.output
-    assert store.case_collection.find({
-        'vcf_files.vcf_sv' : clinical_snv_path
-    }).count() == 1
 
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    ## THEN assert that the file is set correct
+    assert res['vcf_files']['vcf_sv'] == variant_clinical_file
 
-    # Test cli to update vcf-cancer
+def test_update_case_change_vcf_cancer_path(mock_app, case_obj, variant_clinical_file):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN updating the cancer vcf path    
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf-cancer', clinical_snv_path
+        '--vcf-cancer', variant_clinical_file
         ])
-    result.exit_code == 0
+    
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
     assert 'INFO Case updated' in result.output
-    assert store.case_collection.find({
-        'vcf_files.vcf_cancer' : clinical_snv_path
-    }).count() == 1
 
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    ## THEN assert that the file is set correct
+    assert res['vcf_files']['vcf_cancer'] == variant_clinical_file
 
-    # Test cli to update vcf-research
+def test_update_case_change_vcf_research_path(mock_app, case_obj, variant_clinical_file):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN updating the research vcf path    
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf-research', clinical_snv_path
+        '--vcf-research', variant_clinical_file
         ])
-    result.exit_code == 0
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
     assert 'INFO Case updated' in result.output
-    assert store.case_collection.find({
-        'vcf_files.vcf_research' : clinical_snv_path
-    }).count() == 1
 
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    ## THEN assert that the file is set correct
+    assert res['vcf_files']['vcf_research'] == variant_clinical_file
 
-    # Test cli to update vcf-sv-research
+def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_clinical_file):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN updating the sv research vcf path    
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf-sv-research', clinical_snv_path
+        '--vcf-sv-research', variant_clinical_file
         ])
-    result.exit_code == 0
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
     assert 'INFO Case updated' in result.output
-    assert store.case_collection.find({
-        'vcf_files.vcf_sv_research' : clinical_snv_path
-    }).count() == 1
 
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    ## THEN assert that the file is set correct
+    assert res['vcf_files']['vcf_sv_research'] == variant_clinical_file
 
-    # Test cli to update vcf-cancer-research
+def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_clinical_file):
+    """Tests the CLI that updates a case"""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN updating the sv research vcf path    
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf-cancer-research', clinical_snv_path
+        '--vcf-cancer-research', variant_clinical_file
         ])
-    result.exit_code == 0
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
     assert 'INFO Case updated' in result.output
-    assert store.case_collection.find({
-        'vcf_files.vcf_cancer_research' : clinical_snv_path
-    }).count() == 1
 
+    res = store.case_collection.find_one({'_id': case_obj['_id']})
+    ## THEN assert that the file is set correct
+    assert res['vcf_files']['vcf_cancer_research'] == variant_clinical_file
+    
+    
+def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, sv_clinical_file):
+    """Tests the CLI that updates a case"""
 
-    # Test cli to reupload SVs with rank threshold
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+
+    ## WHEN reuploading SVs with rank threshold
+    
     # First save right file to upload SV variants from
     result =  runner.invoke(cli, ['update', 'case',
         case_obj['_id'],
-        '--vcf-sv', clinical_sv_path
+        '--vcf-sv', sv_clinical_file
         ])
-    result.exit_code == 0
+    assert result.exit_code == 0
     assert 'INFO Case updated' in result.output
 
     # then lauch the --reupload-sv command
@@ -145,11 +218,17 @@ def test_update_case(mock_app, case_obj):
         '--rankscore-treshold', 10,
         '--sv-rankmodel-version', 1.5
         ])
-    result.exit_code == 0
+    
+    assert result.exit_code == 0
     assert '0 variants deleted' in result.output # there were no variants in variant collection
-    assert store.variant_collection.find({'category':'sv'}).count() >0
-    assert store.variant_collection.find({
-        'category':'sv',
-        'variant_rank' : {'$gt' : 10}
-        }).count() == 0
-    assert store.case_collection.find({'sv_rank_model_version' : 1.5}).count() >0
+    
+    assert sum(1 for i in store.variant_collection.find({'category':'sv'})) > 0
+    res = store.variant_collection.find(
+        {
+            'category':'sv',
+            'variant_rank' : {'$gt' : 10}
+        })
+    assert sum(1 for i in res) == 0
+    res = store.case_collection.find({'sv_rank_model_version' : 1.5})
+    assert sum(1 for i in res) > 0
+

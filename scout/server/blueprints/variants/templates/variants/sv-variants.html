@@ -213,6 +213,7 @@
   {% endif %}
 
   {% if comment_count > 0 %}
+    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
       class="badge badge-secondary"
       style="color:white;"
@@ -220,9 +221,12 @@
       data-placement="right"
       data-html="true"
       data-trigger="hover click"
-      data-content="<small>{{ comments_table(institute, case, variant.comments, variant._id) }}</small>">
+      data-content="<small>{{ comments_content }}</small>">
       {{ comment_count }}
       <i class="fa fa-comment"></i>
+      {% if 'GLOBAL' in comments_content %}
+        <i class="fa fa-globe" aria-hidden="true"></i>
+      {% endif %}
     </a>
   {% endif %}
   {% if variant._id in case.suspects %}

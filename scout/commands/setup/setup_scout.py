@@ -87,8 +87,8 @@ def demo(context):
         demo=True
     )
 
-from scout.demo.resources.generate_test_data import (generate_hgnc, generate_genemap2, generate_mim2genes,
-generate_exac_genes, generate_ensembl_genes, generate_ensembl_transcripts, generate_hpo_files)
+# from scout.demo.resources.generate_test_data import (generate_hgnc, generate_genemap2, generate_mim2genes,
+# generate_exac_genes, generate_ensembl_genes, generate_ensembl_transcripts, generate_hpo_files)
 from scout.demo import panel_path
 
 from scout.parse.panel import parse_gene_panel
