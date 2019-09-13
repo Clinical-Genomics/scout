@@ -21,7 +21,7 @@ def genes():
             flash('Provided gene info could not be parsed!', 'warning')
     if hgnc_id:
         return redirect(url_for('.gene', hgnc_id=hgnc_id))
-    gene_q = store.all_genes().limit(20)
+    gene_q = store.all_genes(limit=20)
     return dict(genes=gene_q)
 
 

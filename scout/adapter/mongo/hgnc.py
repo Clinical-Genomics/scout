@@ -133,11 +133,18 @@ class GeneHandler(object):
 
         return self.hgnc_collection.find({'build': build, 'aliases': hgnc_symbol})
 
-    def all_genes(self, build=None, add_transcripts=False):
+    def all_genes(self, build=None, add_transcripts=False, limit=100000):
         """Fetch all hgnc genes
-
+        
+        Args:
+            build(str)
+            add_transcripts(bool): If tx information should be added
+            limit(int): If only a part of the genes should be added
+            
+        
             Returns:
                 genes(iterable):
+                limit(int): Maximum number of returned
         """
         build = build or '37'
         if build == 'GRCh38':
@@ -154,7 +161,9 @@ class GeneHandler(object):
                     hgnc_tx[hgnc_id] = []
                 hgnc_tx[hgnc_id].append(tx)
         
-        for gene_obj in self.hgnc_collection.find({'build': build}):
+        for i,gene_obj in enumerate(self.hgnc_collection.find({'build': build})):
+            if i > limit:
+                break
             if add_transcripts:
                 hgnc_id = gene_obj['hgnc_id']
                 tx_objs = hgnc_tx.get(hgnc_id)
