@@ -532,12 +532,12 @@ $(document).ready(function(){
           {% if not variant.has_refseq %}
             {% for transcript in gene.transcripts %}
               <tr>
-                <td>
+                <td class="d-flex justify-content-around align-items-center">
                   <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                     {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                   </a>
                   {% if transcript.is_canonical %}
-                    <span class="badge pull-right" title="vep canonical">C</span>
+                    <span class="badge badge-info" title="vep canonical">C</span>
                   {% endif %}
                 </td>
                 <td>
@@ -558,12 +558,12 @@ $(document).ready(function(){
             {% for transcript in gene.primary_transcripts %}
               {% for refseq_id in transcript.refseq_identifiers %}
                 <tr {% if transcript.is_primary %} class="bg-info-light" {% endif %}>
-                  <td>
+                  <td class="d-flex justify-content-around align-items-center">
                     <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                       {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                     </a>
                     {% if transcript.is_canonical %}
-                      <span class="badge pull-right" title="vep canonical">C</span>
+                      <span class="badge badge-info" title="vep canonical">C</span>
                     {% endif %}
                   </td>
                   <td>
@@ -1082,12 +1082,12 @@ $(document).ready(function(){
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               </td>
-              <td>
+              <td class="d-flex justify-content-around align-items-center">
                 <a target="_blank" href="{{ transcript.ensembl_link }}">
                   {{ transcript.transcript_id }}
                 </a>
                 {% if transcript.is_canonical %}
-                  <span class="badge badge-secondary pull-right">C</span>
+                  <span class="badge badge-info">C</span>
                 {% endif %}
               </td>
               <td>
