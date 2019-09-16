@@ -486,16 +486,17 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert sum(1 for i in adapter.event_collection.find()) == 2
 
-def test_update_default_panels(case_database, institute_obj, case_obj, user_obj):
-    adapter = case_database
-    print('')
+def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.panel_collection.insert_one(dummypanel_obj)
     # GIVEN a case with one gene panel
-    assert len(case_obj['panels']) == 1
-
-    for panel in case_obj['panels']:
-        if panel['panel_name'] == 'panel1':
-            assert panel['is_default'] == True
-            print(panel)
+    case_panels = case_obj['panels']
+    assert len(case_panels) == 1
+    panel = case_panels[0]
+    assert panel['panel_name'] == 'panel1'
+    assert panel['is_default'] == True
 
     new_panel = {
         '_id': 'an_id',

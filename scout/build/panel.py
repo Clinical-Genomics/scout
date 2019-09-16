@@ -41,13 +41,14 @@ def build_gene(gene_info, adapter):
         hgnc_id = gene_info['hgnc_id']
         if not hgnc_id:
             raise KeyError()
-        gene_obj = dict(hgnc_id=hgnc_id)
     except KeyError as err:
         raise KeyError("Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(symbol))
 
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
     if hgnc_gene is None:
         raise IntegrityError("hgnc_id {0} is not in the gene database!".format(hgnc_id))
+
+    gene_obj = dict(hgnc_id=hgnc_id)
 
     gene_obj['symbol'] = hgnc_gene['hgnc_symbol']
     if symbol != gene_obj['symbol']:
