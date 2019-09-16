@@ -184,24 +184,5 @@
       });
     })
 
-    function add_export(){
-      var the_form = document.forms['filters_form'];
-      var hidden_export = document.createElement('input');
-
-      hidden_export.type = 'hidden';
-      hidden_export.name = 'export';
-      hidden_export.value = 'True';
-      hidden_export.id = 'export';
-      the_form.appendChild(hidden_export);
-      the_form.submit();
-    }
-
-    function remove_export(){
-      var the_form = document.forms['filters_form'];
-      var hidden_export = document.getElementById('export');
-      the_form.removeChild(hidden_export);
-      the_form.submit();
-    }
-
   </script>
 {% endblock %}

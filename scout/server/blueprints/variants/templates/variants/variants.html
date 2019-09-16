@@ -9,6 +9,7 @@
 
 {% block css %}
 {{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -228,8 +229,7 @@
     <div class="form-group">
       <div class="row">
         <div class="col-3">
-          {{ form.gene_panels.label(class="control-label") }}
-          {{ form.gene_panels(class="form-control selectpicker") }}
+          {{ form.gene_panels.label}}{{form.gene_panels(class="selectpicker")}}
         </div>
 	<div class="col-3">
 	  {{ form.symbol_file.label(class="control-label") }}
@@ -237,15 +237,15 @@
 	</div>
         <div class="col-2">
           {{ form.region_annotations.label(class="control-label") }}
-          {{ form.region_annotations(class="form-control selectpicker") }}
+          {{ form.region_annotations(class="selectpicker") }}
         </div>
         <div class="col-2">
           {{ form.functional_annotations.label(class="control-label") }}
-          {{ form.functional_annotations(class="form-control selectpicker") }}
+          {{ form.functional_annotations(class="selectpicker") }}
         </div>
         <div class="col-2">
           {{ form.genetic_models.label(class="control-label") }}
-          {{ form.genetic_models(class="form-control selectpicker") }}
+          {{ form.genetic_models(class="selectpicker") }}
         </div>
       </div>
     </div>
@@ -265,7 +265,7 @@
         </div>
         <div class="col-2">
           {{ form.clinsig.label(class="control-label") }}
-          {{ form.clinsig(class="form-control selectpicker") }}
+          {{ form.clinsig(class="selectpicker") }}
         </div>
 	<div class="col-2">
 	  {{ form.clinsig_confident_always_returned.label(class="control-label") }}
@@ -273,7 +273,7 @@
 	</div>
 	<div class="col-2">
 	  {{ form.spidex_human.label(class="control-label") }}
-	  {{ form.spidex_human(class="form-control selectpicker") }}
+	  {{ form.spidex_human(class="selectpicker") }}
 	</div>
       </div>
     </div>
@@ -313,6 +313,7 @@
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
   <script>
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
