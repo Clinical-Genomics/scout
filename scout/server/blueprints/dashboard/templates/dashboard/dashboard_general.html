@@ -55,7 +55,7 @@
 <form id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
     <input type="hidden" value={{pane}} name="pane_id" id="pane_id">
     <div class="row text-center">
-      <div class="col-md-4 col-xs-4">
+      <div class="col-md-4 col-sm-4">
         {% if pane in (1,2) %}
           <div class="input-group">
             <span class="input-group-addon">
@@ -65,7 +65,7 @@
           </div>
         {% endif %}
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
       <select name="institute" id="institute" onchange="this.form.submit()">
         {% for inst in institutes %}
           {% if inst.display_name == 'All institutes' and query and not current_user.is_admin %}
@@ -76,7 +76,7 @@
         {% endfor %}
       </select>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <button type="submit" class="form-control">Search</input>
       </div>
     </div>
@@ -113,10 +113,15 @@
     <div class="col-md-4">
       <h1>Pedigree info</h1>
       <div>
-        <canvas id="pedigreeTypes" height="150"></canvas>
-        {% for topic in pedigree %}
-          {{ topic.title }} Cases: {{ (topic.percent * 100)|round(1) }}%<br>
-        {% endfor %}
+        <canvas id="pedigreeTypes" height="150"></canvas><br>
+        <table class="table table-sm text-left">
+          {% for topic in pedigree %}
+            <tr>
+              <td>{{ topic.title }} Cases</td>
+              <td>{{ (topic.percent * 100)|round(1) }}%</td>
+            </tr>
+          {% endfor %}
+        </table>
       </div>
     </div> <!--  end of pedigree info div -->
 
@@ -132,11 +137,14 @@
         <canvas id="cases-bar-horiz" height="100"></canvas>
     </div>
     <div class="col-md-4">
-      <ul class="list-group">
-      {% for topic in overview %}
-        <li class="list-group-item">{{ topic.title }} Cases: {{ topic.count }} - {{ (topic.percent * 100)|round(1) }}%</li>
-      {% endfor %}
-      </ul>
+      <table class="table table-sm text-left">
+        {% for topic in overview %}
+          <tr>
+            <td>{{ topic.title }} Cases: {{ topic.count }}</td>
+            <td>{{ (topic.percent * 100)|round(1) }}%</td>
+          </tr>
+        {% endfor %}
+      </table>
     </div>
   </div>
 </div>
@@ -150,18 +158,21 @@
     <div class="col-md-4 d-flex justify-content-right align-items-center">
         <canvas id="var-validations" width="600" height="300"></canvas>
     </div>
-    <div class="col-md-4 d-flex justify-content-left align-items-center">
-      <ul class="list-group">
+    <div class="col-md-4">
+      <table class="table text-left">
         {% for topic in variants %}
-          <li class="list-group-item">{{ topic.title }} Cases: : {{ topic.count }} <span class="text-muted">({{ (topic.percent * 100)|round(1) }}%)</span></li>
+        <tr>
+          <td>{{ topic.title }} Cases: : {{ topic.count }}</td>
+          <td>{{ (topic.percent * 100)|round(1) }}%</td>
+        </tr>
         {% endfor %}
+      </table>
         <br>
-        <div id="card mt-3">
+        <div id="card mt-3" >
           <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
             <button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-md">Download all verified variants for your cases</button>
           </form>
         </div>
-      </ul>
     </div>
     <div class="col-md-2"></div>
   </div>
