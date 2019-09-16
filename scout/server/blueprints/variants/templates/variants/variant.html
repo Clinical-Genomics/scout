@@ -343,7 +343,7 @@ $(document).ready(function(){
         <label class="mt-3">Dismiss variant</label>
         <div class="row">
           <div class="col-8">
-            <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker" >
+            <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker">
               {% for rank, data in dismiss_variant_options.items() %}
                 <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                   {{ data.label }}
