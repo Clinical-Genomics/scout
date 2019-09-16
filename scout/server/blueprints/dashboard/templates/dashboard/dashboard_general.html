@@ -95,19 +95,29 @@
     <div class="col-md-4">
       <h1>Samples</h1>
       <div>
-        <canvas id="ngsType" height="150"></canvas>
-        {% for group in analysis_types %}
-          Total {{ group.name|upper }} samples (not cases): {{ group.count }}<br>
-        {% endfor %}
+        <canvas id="ngsType" height="150"></canvas><br>
+        <table class="table table-sm text-left">
+          {% for group in analysis_types %}
+            <tr>
+              <td>Total {{ group.name|upper }} samples (not cases)</td>
+              <td>{{ group.count }}</td>
+            </tr>
+          {% endfor %}
+        </table>
       </div>
     </div> <!--  end of sample statistics div -->
     <div class="col-md-4">
       <h1>Cases</h1>
       <div>
-          <canvas id="casesType" height="150"></canvas>
-          {% for group in cases %}
-            Cases {{ group.status|capitalize }}: {{ group.count }} <span class="text-muted">({{(group.percent * 100)|round(1)}}%)</span><br>
-          {% endfor %}
+          <canvas id="casesType" height="150"></canvas><br>
+          <table class="table table-sm text-left">
+            {% for group in cases %}
+              <tr>
+                <td>Cases {{ group.status|capitalize }}: {{ group.count }}</td>
+                <td>{{(group.percent * 100)|round(1)}}%</td>
+              </tr>
+            {% endfor %}
+          </table>
       </div>
     </div> <!--  end of case statistics div -->
     <div class="col-md-4">
