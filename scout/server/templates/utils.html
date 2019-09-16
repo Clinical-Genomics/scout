@@ -27,10 +27,10 @@
       	    <strong> {{ comment.user_name }} </strong>
       	    on {{ comment.created_at.date() }}
       	    {% if comment.level == 'global' %}
-                    <span class='label label-info'>GLOBAL</span>
+                    <span class='badge badge-info'>GLOBAL</span>
                   {% endif %}
       	    {% if comment.created_at < case.updated_at %}
-                    <span class='label label-warning'>OLD</span>
+                    <span class='badge badge-warning'>OLD</span>
                   {% endif %}
       	  </small>
       	</td>

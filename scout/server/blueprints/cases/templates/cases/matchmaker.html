@@ -64,12 +64,12 @@
 <div>
   <p>Features (HPO terms):
     {% for hpo in case.mme_submission.features %}
-      <span class="label label-primary">{{hpo.id}}</span>
+      <span class="badge badge-primary">{{hpo.id}}</span>
     {% endfor %}
   </p>
   <p>Disorders (OMIM terms):
     {% for omim in case.mme_submission.disorders %}
-      <span class="label label-info">{{omim.id}}</span>
+      <span class="badge badge-info">{{omim.id}}</span>
     {% endfor %}
   </p>
   <p>Submitted patients:
@@ -87,7 +87,7 @@
                   <div class="panel-body">
                     {% for key, value in g_feat.items() %}
                       {% if key == 'gene' %}
-                        {{key}}:&nbsp;<span class="label label-default">{{value.id}}</span>
+                        {{key}}:&nbsp;<span class="badge badge-default">{{value.id}}</span>
                         <hr>
                       {% elif key == 'variant' %}
                         {% for ikey, item in value.items() %}
@@ -173,12 +173,12 @@
                           <tr>
                             <td class="col-md-1">
                               {% for omim in match_result.patient.disorders %}
-                                <span data-toggle="tooltip" title="{{omim.label or 'description not available'}}" class="label label-info">{{omim.id}}</span>
+                                <span data-toggle="tooltip" title="{{omim.label or 'description not available'}}" class="badge badge-info">{{omim.id}}</span>
                               {% endfor %}
                             </td>
                             <td class="col-md-3">
                               {% for feature in match_result.patient.features %}
-                                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="label label-primary">{{feature.label}}({{feature.id}})</span>
+                                <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge badge-primary">{{feature.label}}({{feature.id}})</span>
                               {% endfor %}
                             </td>
                             <td class="col-md-6">
@@ -190,7 +190,7 @@
                                       <div class="panel-body">
                                         {% for key, value in g_feat.items() %}
                                           {% if key == 'gene' %} <!-- genomic feature gene-->
-                                            {{key}}:&nbsp;<span class="label label-default">{{value.id}}</span>
+                                            {{key}}:&nbsp;<span class="badge badge-default">{{value.id}}</span>
                                             <hr>
                                           {% elif key == 'variant' %} <!-- genomic feature variant-->
                                             {% for ikey, item in value.items() %}

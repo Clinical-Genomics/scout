@@ -32,7 +32,7 @@
         {% endfor %}
 
         </a>
-        
+
       </td>
       <td>{{ tier_cell(variant) }}</td>
       <td>{{ gene_cell(variant) }}</td>
@@ -71,7 +71,7 @@
     {% elif variant.manual_rank == 5 %}
       {% set label_class = 'danger' %}
     {% endif %}
-    <div class="label label-{{ label_class }}">{{ variant.manual_rank }}</div>
+    <div class="badge badge-{{ label_class }}">{{ variant.manual_rank }}</div>
   {% endif %}
 {% endmacro %}
 

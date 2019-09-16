@@ -894,7 +894,7 @@ $(document).ready(function(){
     <div class="panel-heading">
       GT call
       {% if variant.is_par %}
-        <span class="label label-info">PAR</span>
+        <span class="badge badge-info">PAR</span>
       {% endif %}
     </div>
     <div class="table-responsive">
@@ -1303,7 +1303,7 @@ $(document).ready(function(){
         <a href="{{ url_for('variants.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
         </a>
-        <span class="label label-info">{{ data.classification.short }}</span>
+        <span class="badge badge-info">{{ data.classification.short }}</span>
       </span>
       <span>
         {% if not current_variant %}
