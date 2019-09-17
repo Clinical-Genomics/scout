@@ -54,26 +54,6 @@
       <tbody>
         {% for variant in variants %}
           {% if variant.dismiss_variant %}
-<<<<<<< HEAD
-            <tr class="dismiss">
-        {% elif variant.str_status == 'normal' %}
-            <tr class="bg-success">
-        {% elif variant.str_status == 'full_mutation' %}
-            <tr class="bg-warning">
-        {% elif variant.str_status == 'pre_mutation' %}
-            <tr class="medium">
-        {% else %}
-            <tr>
-        {% endif %}
-          <td>{{ cell_rank(variant) }}</td>
-          <td class="text-right">{{ variant.rank_score|int }}</td>
-          <td>{{ variant.chromosome }}</td>
-          <td>{{ variant.str_repid }}</td>
-          <td class="text-right">{{ variant.str_ru }}</td>
-          <td>{{ variant.alternative }}</td>
-          <td class="text-right">{{ variant.str_ref }}</td>
-          <td>{{ variant.str_status }}</td>
-=======
               <tr class="dismiss">
           {% elif variant.str_status == 'normal' %}
               <tr class="bg-success">
@@ -104,7 +84,6 @@
                 <a class="btn btn-default btn-sm pull-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% endif %}
             </td>
->>>>>>> fcac83c593a0dc168f6756338df19c8df74cf479
         </tr>
         {% else %}
           <tr>
