@@ -249,7 +249,7 @@
       {% endif %}
     </td>
     <td>
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-around align-items-center">
         <div>
           {% if variant.hgnc_symbols|length >= 5 %}
             {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
