@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- Show earlier ACMG classification in the variant list
 
 ### Fixed
 
