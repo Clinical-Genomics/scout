@@ -4,7 +4,7 @@ from scout.load.panel import load_panel
 def test_load_panel(gene_database, panel_info):
     # GIVEN an database with genes but no panels
     adapter = gene_database
-    assert adapter.gene_panels().count() == 0
+    assert sum(1 for i in adapter.gene_panels()) == 0
     
     # WHEN loading a gene panel
     load_panel(

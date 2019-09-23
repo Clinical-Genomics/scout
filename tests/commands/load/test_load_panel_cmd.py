@@ -9,7 +9,7 @@ def test_load_panel(mock_app, institute_obj):
     runner = mock_app.test_cli_runner()
     assert runner
 
-    assert store.panel_collection.find().count() == 1
+    assert sum(1 for i in store.panel_collection.find()) == 1
 
     # Modify existing panel ID into OMIM-AUTO, so cli runner will not add it again
     store.panel_collection.find_one_and_update({'panel_name':'panel1'},{'$set': {'panel_name':'OMIM-AUTO'}})

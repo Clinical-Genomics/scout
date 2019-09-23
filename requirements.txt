@@ -40,7 +40,6 @@ intervaltree==3.0.2
 python-dateutil
 
 # Requesting resources
-pybiomart
 
 # Required by scripts
 tabulate

@@ -12,63 +12,59 @@ from scout.exceptions import (IntegrityError)
 logger = logging.getLogger(__name__)
 
 def test_add_cases(adapter, case_obj):
-    # GIVEN an empty database (no cases)
-    assert adapter.case_collection.find().count() == 0
+    ## GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
 
-    # WHEN adding a new case to the database
+    ## WHEN adding a new case to the database
     adapter._add_case(case_obj)
 
-    # THEN it should be populated with the new case
+    ## THEN it should be populated with the new case
     result = adapter.cases()
-    assert result.count() == 1
+    assert sum(1 for i in result) == 1
     for case in result:
         assert case['owner'] == case_obj['owner']
 
-    logger.info("All cases checked")
-
-
-def test_add_existing_case(adapter,case_obj):
-    # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+def test_add_existing_case(adapter, case_obj):
+    ## GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
 
     adapter._add_case(case_obj)
-    # WHEN adding a existing case to the database
+    ## WHEN adding a existing case to the database
     with pytest.raises(IntegrityError):
-        # THEN it should raise integrity error
+        ## THEN it should raise integrity error
         adapter._add_case(case_obj)
 
-
 def test_get_case(adapter, case_obj):
-    # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    ## GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     logger.info("Testing to get case")
 
-    # WHEN retreiving an existing case from the database
+    ## WHEN retreiving an existing case from the database
     result = adapter.case(case_id=case_obj['_id'])
-    # THEN we should get the correct case
+    ## THEN we should get the correct case
     assert result['owner'] == case_obj['owner']
 
 
 def test_get_cases(adapter, case_obj):
-    # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    ## GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    # WHEN retreiving an existing case from the database
+    ## WHEN retreiving an existing case from the database
     result = adapter.cases()
-    # THEN we should get the correct case
-    assert result.count() == 1
+    ## THEN we should get the correct case
+    assert sum(1 for i in result) == 1
 
 
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     adapter = real_adapter
 
-    # GIVEN a real database with no cases
-    assert real_adapter.cases().count() == 0
+    ## GIVEN a real database with no cases
+    assert adapter.case_collection.find_one() is None
 
-    # Insert a case
+    ## When inserting a case
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 1
+    assert adapter.case_collection.find_one()
 
     # WHEN flagging the case as active
     adapter.update_status(institute_obj, case_obj, user_obj, 'active', 'blank')
@@ -76,49 +72,50 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     # WHEN querying for active cases,
     name_query='status:active'
     # THEN a case should be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert len(cases) == 1
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 1
 
     # BUT WHEN querying for inactive cases
     name_query='status:inactive'
     # THEN no case should be returned.
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert len(cases) == 0
+    inactive_cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in inactive_cases) == 0
 
 def test_get_research_case(real_adapter, case_obj, institute_obj):
     adapter = real_adapter
 
     # GIVEN a real database with no cases
-    assert real_adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     # WHEN flagging case_obj as research
     case_obj['is_research'] = True
 
     # AND WHEN inserting such case
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 1
+    ## THEN assert that the case was inserted
+    assert adapter.case_collection.find_one()
 
     # THEN searching for reasearch cases should return one case
-    research_cases = list(adapter.cases(owner=case_obj['owner'], is_research=True))
-    assert len(research_cases) == 1
+    research_cases = adapter.cases(owner=case_obj['owner'], is_research=True)
+    assert sum(1 for i in research_cases) == 1
 
 
 def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 
     adapter = real_adapter
     # GIVEN a real database with no cases
-    assert real_adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     # Insert a case
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 1
+    assert sum(1 for i in adapter.case_collection.find()) == 1
 
     # WHEN providing an empty value for synopsis:
     assert case_obj['synopsis'] == ''
     name_query='synopsis:'
     # Then case should be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert len(cases) == 1
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 1
 
     # After adding synopsis to case
     link = 'synopsislink'
@@ -135,33 +132,33 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     assert case_obj['synopsis'] == ''
     name_query='synopsis:'
     # Then case should NOT be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert len(cases) == 0
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 0
 
     # but if a term contained in case synopsis is provided in name query:
     name_query='synopsis:seizures'
 
     # Then updated case should be returned
-    cases = list(adapter.cases(collaborator=updated_case['owner'], name_query=name_query))
-    assert len(cases) == 1
+    cases = adapter.cases(collaborator=updated_case['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 1
 
 
 def test_get_cases_no_HPO(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing an empty value for term HP:
     name_query='HP:'
     # Then case should be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert cases == [case_obj]
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 1
 
     # WHEN providing an empty value for phenotype group:
     name_query='PG:'
     # Then case should be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert cases == [case_obj]
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 1
 
     # Add phenotype group and HPO term to case object:
     adapter.case_collection.find_one_and_update({
@@ -177,31 +174,31 @@ def test_get_cases_no_HPO(adapter, case_obj):
     # WHEN providing an empty value for term HP:
     name_query='HP:'
     # Then case should NOT be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert cases == []
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 0
 
     # WHEN providing an empty value for phenotype group:
     name_query='PG:'
     # Then case should NOT be returned
-    cases = list(adapter.cases(collaborator=case_obj['owner'], name_query=name_query))
-    assert cases == []
+    cases = adapter.cases(collaborator=case_obj['owner'], name_query=name_query)
+    assert sum(1 for i in cases) == 0
 
 
 def test_get_cases_no_assignees(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving an existing case from the database
     result = adapter.cases(name_query='john')
     # THEN we should get the correct case
-    assert result.count() == 0
+    assert sum(1 for i in result) == 0
 
 
 def test_get_cases_display_name(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
 
     other_case = case_obj
@@ -212,24 +209,24 @@ def test_get_cases_display_name(real_adapter, case_obj):
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query='643')
     # THEN we should get the correct case
-    assert result.count() == 1
+    assert sum(1 for i in result) == 1
 
 
 def test_get_cases_existing_individual(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query='NA1288')
     # THEN we should get the correct case
-    assert result.count() == 1
+    assert sum(1 for i in result) == 1
 
 
 def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     adapter.user_collection.insert_one(user_obj)
 
@@ -240,13 +237,13 @@ def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     # WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query='john')
     # THEN we should get the correct case
-    assert result.count() == 1
+    assert sum(1 for i in result) == 1
 
 
 def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     adapter.user_collection.insert_one(user_obj)
 
@@ -257,11 +254,11 @@ def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
     # WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query='damien')
     # THEN we should get the correct case
-    assert result.count() == 0
+    assert sum(1 for i in result) == 0
 
 def test_get_cases_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     # Add a causative
     case_obj['causatives'] = ['a variant']
@@ -271,12 +268,12 @@ def test_get_cases_causatives(adapter, case_obj):
     # WHEN retreiving cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should find one case
-    assert result.count() == 1
+    assert sum(1 for i in result) == 1
 
 
 def test_get_cases_causatives_no_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     # Insert a case without causatives
     adapter.case_collection.insert_one(case_obj)
@@ -284,11 +281,11 @@ def test_get_cases_causatives_no_causatives(adapter, case_obj):
     # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should get the correct case
-    assert result.count() == 0
+    assert sum(1 for i in result) == 0
 
 def test_get_cases_empty_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
 
     # Add a empty list as causatives
     case_obj['causatives'] = []
@@ -298,23 +295,23 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should not find any cases
-    assert result.count() == 0
+    assert sum(1 for i in result) == 0
 
 
 def test_get_cases_non_existing_individual(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query='hello')
     # THEN we should get the correct case
-    assert result.count() == 0
+    assert sum(1 for i in result) == 0
 
 
 def test_get_non_existing_case(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter._add_case(case_obj)
     logger.info("Testing to get case")
 
@@ -326,22 +323,22 @@ def test_get_non_existing_case(adapter, case_obj):
 
 def test_delete_case(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.cases().count() == 1
+    assert adapter.case_collection.find_one()
     logger.info("Testing to delete case")
 
     # WHEN deleting a case from the database
     result = adapter.delete_case(case_id=case_obj['_id'])
     # THEN there should be no cases left in the database
-    assert adapter.cases().count() == 0
+    assert sum(1 for i in adapter.cases()) == 0
 
 
 def test_update_case_collaborators(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.cases().count() == 1
+    assert adapter.case_collection.find_one()
     assert len(adapter.case(case_obj['_id'])['collaborators']) == 1
     logger.info("Testing to update case")
 
@@ -362,9 +359,9 @@ def test_update_case_collaborators(adapter, case_obj):
 
 def test_update_case_individuals(adapter, case_obj):
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.cases().count() == 1
+    assert adapter.case_collection.find_one()
     logger.info("Testing to update case")
 
     res = adapter.case(case_obj['_id'])
@@ -383,12 +380,15 @@ def test_update_case_individuals(adapter, case_obj):
 
 
 def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
-
-    assert adapter.cases().count() == 0
+    ## GIVEN an empty adapter
+    assert adapter.case_collection.find_one() is None
+    
+    ## WHEN inserting case, user and institute
     adapter.case_collection.insert_one(case_obj)
     adapter.user_collection.insert_one(user_obj)
     adapter.institute_collection.insert_one(institute_obj)
-    assert adapter.cases().count() == 1
+    ## THEN assert that a case was inserted
+    assert adapter.case_collection.find_one()
 
     # Test that when case is unarchived the users gets assigned to it:
     # flag case as 'archived'
@@ -410,11 +410,10 @@ def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
 def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
 
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
-
-    # insert test case
+    assert sum(1 for i in adapter.cases()) == 0
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.cases().count() == 1
+    assert sum(1 for i in adapter.cases()) == 1
+    logger.info("Testing to update case")
 
     res = adapter.case(case_obj['_id'])
     assert res['status'] == 'inactive'
@@ -446,7 +445,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
 
     # Make sure database contains HPO terms
-    assert adapter.hpo_terms().count()
+    assert sum(1 for i in adapter.hpo_terms())
 
 
     # update test case using test HPO terms
@@ -457,7 +456,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
         return_document=pymongo.ReturnDocument.AFTER)
     # insert case into database
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 1
+    assert sum(1 for i in adapter.case_collection.find()) == 1
 
 
     # Add another case with slightly different phenotype
@@ -467,7 +466,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
 
     # insert this case in database:
     adapter.case_collection.insert_one(case_2)
-    assert adapter.case_collection.find().count() == 2
+    assert sum(1 for i in adapter.case_collection.find()) == 2
 
     # Add another case with phenotype very different from case_obj
     case_3 = copy.deepcopy(case_obj)
@@ -477,7 +476,7 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
 
     # insert this case in database:
     adapter.case_collection.insert_one(case_3)
-    assert adapter.case_collection.find().count() == 3
+    assert sum(1 for i in adapter.case_collection.find()) == 3
 
 
     similar_cases = adapter.get_similar_cases(case_obj)
@@ -492,10 +491,7 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
     adapter = hpo_database
 
     # Make sure database contains HPO terms
-    assert adapter.hpo_terms().count()
-
-    # GIVEN a real database with no cases
-#        assert adapter.cases().count() == 0
+    assert sum(1 for i in adapter.hpo_terms())
 
     # Give the case HPO terms
     case_obj['phenotype_terms'] = test_hpo_terms
@@ -506,7 +502,7 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
 
     # Insert a case into the db
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 1
+    assert sum(1 for i in adapter.case_collection.find()) == 1
 
     # Add another case with slightly different phenotype:
 
@@ -516,7 +512,7 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
 
     # insert this case in database:
     adapter.case_collection.insert_one(case_2)
-    assert adapter.case_collection.find().count() == 2
+    assert sum(1 for i in adapter.case_collection.find()) == 2
 
     # WHEN querying for a similar case
     name_query= "similar:{}".format(case_obj['display_name'])
@@ -528,7 +524,7 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
 def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
-    assert adapter.cases().count() == 0
+    assert sum(1 for i in adapter.cases()) == 0
 
     cohort_name = 'cohort'
 
@@ -538,4 +534,4 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     # WHEN retreiving cases by a cohort name query
     result = adapter.cases(name_query="cohort:{}".format(cohort_name))
     # THEN we should get the case returned
-    assert result.count() == 1
+    assert sum(1 for i in result) == 1

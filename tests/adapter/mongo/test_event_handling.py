@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def test_create_event(adapter, institute_obj, case_obj, user_obj):
     ## GIVEN a database without any events
 
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     ## WHEN inserting a event
     verb = "status"
@@ -28,7 +28,7 @@ def test_create_event(adapter, institute_obj, case_obj, user_obj):
 
     # THEN assert that the event was added to the database
 
-    adapter.event_collection.find().count() == 1
+    sum(1 for i in adapter.event_collection.find()) == 1
     res = adapter.event_collection.find_one()
 
     assert res['verb'] == verb
@@ -40,7 +40,7 @@ def test_assign(adapter, institute_obj, case_obj, user_obj):
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
 
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     ## WHEN assigning a user to a case
     link = 'assignlink'
@@ -53,7 +53,7 @@ def test_assign(adapter, institute_obj, case_obj, user_obj):
     # THEN the case should have the user assigned
     assert updated_case['assignees'] == [user_obj['_id']]
     # THEN an event should have been created
-    assert adapter.event_collection.find().count() == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 1
 
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
@@ -79,7 +79,8 @@ def test_unassign(adapter, institute_obj, case_obj, user_obj):
     # Make sure that case is active
     assert updated_case['status'] == 'active'
     assert updated_case['assignees'] == [user_obj['_id']]
-    assert adapter.event_collection.find().count() == 1
+
+    assert sum(1 for i in adapter.event_collection.find()) == 1
 
     # WHEN unassigning the only user assigned to case
     updated_case = adapter.unassign(
@@ -92,7 +93,7 @@ def test_unassign(adapter, institute_obj, case_obj, user_obj):
     assert updated_case['status'] == 'inactive'
 
     # THEN two events should have been created
-    assert adapter.event_collection.find().count() == 2
+    assert sum(1 for i in adapter.event_collection.find()) == 2
 
     # THEN the case should not be assigned
     assert updated_case.get('assignees') == []
@@ -107,7 +108,7 @@ def test_update_synopsis(adapter, institute_obj, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # WHEN updating synopsis for a case
     link = 'synopsislink'
@@ -133,7 +134,7 @@ def test_archive_case(adapter, institute_obj, case_obj, user_obj):
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
 
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     ## WHEN setting a case in archive status
     link = 'archivelink'
@@ -155,7 +156,7 @@ def test_open_research(adapter, institute_obj, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     case = adapter.case_collection.find_one({'_id': case_obj['_id']})
     assert case.get('research_requested', False) == False
@@ -251,9 +252,9 @@ def test_add_phenotype_group(adapter, institute_obj, case_obj, user_obj):
     hpo_term = hpo_obj['hpo_id']
 
     # GIVEN a populated database with no events
-    assert adapter.hpo_term_collection.find().count() > 0
+    assert sum(1 for i in adapter.hpo_term_collection.find()) > 0
     assert adapter.hpo_term_collection.find({'_id':hpo_term})
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     ## WHEN adding a phenotype group
     updated_case = adapter.add_phenotype(
@@ -269,7 +270,7 @@ def test_add_phenotype_group(adapter, institute_obj, case_obj, user_obj):
     assert len(updated_case['phenotype_groups']) > 0
 
     # THEN there should be phenotype events
-    assert adapter.event_collection.find().count() > 0
+    assert sum(1 for i in adapter.event_collection.find()) > 0
 
 def test_add_wrong_hpo(adapter, institute_obj, case_obj, user_obj):
     ## GIVEN a populated database
@@ -325,7 +326,7 @@ def test_add_non_existing_mim(adapter, institute_obj, case_obj, user_obj):
     assert len(updated_case.get('phenotype_terms', [])) == 0
 
     # THEN there should not exist any events
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
 def test_add_mim(adapter, institute_obj, case_obj, user_obj):
     ## GIVEN a populated adapter with a disease term
@@ -369,9 +370,9 @@ def test_add_mim(adapter, institute_obj, case_obj, user_obj):
     mim_obj = adapter.disease_term_collection.find_one()
     mim_term = mim_obj['_id']
 
-    assert adapter.hpo_term_collection.find().count() > 0
+    assert sum(1 for i in adapter.hpo_term_collection.find()) > 0
     # GIVEN a populated database
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # WHEN adding a existing phenotype term
     updated_case = adapter.add_phenotype(
@@ -385,7 +386,7 @@ def test_add_mim(adapter, institute_obj, case_obj, user_obj):
     assert len(updated_case['phenotype_terms']) > 0
 
     # THEN there should be phenotype events
-    assert adapter.event_collection.find().count() > 0
+    assert sum(1 for i in adapter.event_collection.find()) > 0
 
 def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
@@ -393,7 +394,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     adapter._add_case(case_obj)
 
     # GIVEN a populated database
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     hpo_term = 'HP:0000878'
 
@@ -409,7 +410,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     assert len(updated_case['phenotype_terms']) == 1
 
     #Check that the event exists
-    assert adapter.event_collection.find().count() == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 1
 
     # WHEN removing the phenotype term
     updated_case = adapter.remove_phenotype(
@@ -423,14 +424,14 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     assert len(updated_case['phenotype_terms']) == 0
 
     # THEN an event should have been created
-    assert adapter.event_collection.find().count() == 2
+    assert sum(1 for i in adapter.event_collection.find()) == 2
 
 def test_add_cohort(adapter, institute_obj, case_obj, user_obj):
     ## GIVEN a populated database
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     cohort_name = 'cohort'
 
@@ -446,7 +447,7 @@ def test_add_cohort(adapter, institute_obj, case_obj, user_obj):
     # THEN the case should have the cohort saved
     assert set(updated_case['cohorts']) == set([cohort_name])
     # THEN an event should have been created
-    assert adapter.event_collection.find().count() == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 1
 
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
@@ -456,7 +457,7 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     cohort_name = 'cohort'
 
@@ -469,7 +470,7 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
         link=link,
         tag=cohort_name
     )
-    assert adapter.event_collection.find().count() == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 1
 
     remove_cohort_link = 'removeCohortlink'
     ## WHEN removing a cohort from a case
@@ -483,18 +484,19 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
     # THEN the case should have the cohort saved
     assert updated_case['cohorts'] == []
     # THEN an event should have been created
-    assert adapter.event_collection.find().count() == 2
+    assert sum(1 for i in adapter.event_collection.find()) == 2
 
-def test_update_default_panels(case_database, institute_obj, case_obj, user_obj):
-    adapter = case_database
-    print('')
+def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.panel_collection.insert_one(dummypanel_obj)
     # GIVEN a case with one gene panel
-    assert len(case_obj['panels']) == 1
-
-    for panel in case_obj['panels']:
-        if panel['panel_name'] == 'panel1':
-            assert panel['is_default'] == True
-            print(panel)
+    case_panels = case_obj['panels']
+    assert len(case_panels) == 1
+    panel = case_panels[0]
+    assert panel['panel_name'] == 'panel1'
+    assert panel['is_default'] == True
 
     new_panel = {
         '_id': 'an_id',
@@ -534,7 +536,7 @@ def test_update_default_panels(case_database, institute_obj, case_obj, user_obj)
         elif panel['panel_name'] == 'panel2':
             assert panel['is_default'] == True
 
-    # assert adapter.event_collection.find().count() == 2
+    # assert sum(1 for i in adapter.event_collection.find()) == 2
     #
     # # THEN the case should not be assigned
     # assert updated_case.get('assignees') == []

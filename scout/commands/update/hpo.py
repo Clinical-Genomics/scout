@@ -1,12 +1,10 @@
 import logging
 import click
-import urllib.request
 
 from pprint import pprint as pp
 from flask.cli import with_appcontext
 
 from scout.load.hpo import load_hpo_terms
-from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes)
 
 from scout.commands.utils import abort_if_false
 from scout.server.extensions import store

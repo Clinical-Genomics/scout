@@ -17,8 +17,9 @@ def test_load_case(mock_app, institute_obj, case_obj):
 
     # remove case from real populated database using adapter
     store.delete_case(case_id=case_obj['_id'])
-    assert store.case_collection.find().count() == 0
-    assert store.institute_collection.find({'_id':'cust000'}).count()==1
+    assert store.case_collection.find_one() is None
+    res = store.institute_collection.find({'_id':'cust000'})
+    assert sum(1 for i in res) == 1
 
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
@@ -26,7 +27,7 @@ def test_load_case(mock_app, institute_obj, case_obj):
     # Test command to upload case using demo resources:
     result = runner.invoke(cli, ['load', 'case', load_path ])
     assert result.exit_code == 0
-    assert store.case_collection.find().count() == 1
+    assert sum(1 for i in store.case_collection.find()) == 1
 
 
 def test_load_case_KeyError(mock_app, institute_obj, case_obj):
@@ -36,8 +37,9 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
 
     # remove case from real populated database using adapter
     store.delete_case(case_id=case_obj['_id'])
-    assert store.case_collection.find().count() == 0
-    assert store.institute_collection.find({'_id':'cust000'}).count()==1
+    assert store.case_collection.find_one() is None
+    res = store.institute_collection.find({'_id':'cust000'})
+    assert sum(1 for i in res) == 1
 
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
@@ -60,8 +62,9 @@ def test_load_case_NoConf(mock_app, institute_obj, case_obj):
 
     # remove case from real populated database using adapter
     store.delete_case(case_id=case_obj['_id'])
-    assert store.case_collection.find().count() == 0
-    assert store.institute_collection.find({'_id':'cust000'}).count()==1
+    assert store.case_collection.find_one() is None
+    res = store.institute_collection.find({'_id':'cust000'})
+    assert sum(1 for i in res) == 1
     no_load_path = ""
 
     # WHEN load command is run

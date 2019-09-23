@@ -111,17 +111,21 @@
     <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
   {% if comment_count > 0 %}
+    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
        class="badge pull-right"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
        data-trigger="hover click"
-       data-content="{{ comments_table(institute, case, variant.comments, variant._id) }}"
+       data-content="{{ comments_content }}"
        title=""
        >
       {{ comment_count }}
-      <span class="glyphicon glyphicon-comment"></span>
+      <i class="fa fa-comment"></i>
+      {% if 'GLOBAL' in comments_content %}
+        <i class="fa fa-globe" aria-hidden="true"></i>
+      {% endif %}
     </a>
   {% endif %}
 {% endmacro %}

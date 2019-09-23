@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
-
+from urllib.parse import urlencode
 
 # def test_panels(client, real_database, user_info):
 #     # GIVEN a user connected to one institute in the database
@@ -14,7 +14,7 @@ from flask import url_for
 #     for panel_obj in real_database.panels(institute_id=institute_obj['_id']):
 #         assert panel_obj['display_name'] in resp.data
 
-def test_panel(client, real_panel_database, panel_info):
+def test_panel_get(client, real_panel_database):
     adapter = real_panel_database
 
     # GIVEN a panel in the database
@@ -26,6 +26,65 @@ def test_panel(client, real_panel_database, panel_info):
     assert panel_obj['panel_name'].encode() in resp.data
     # assert panel_obj['version'] in resp.data
     assert resp.data.count('href="/genes/'.encode()) == len(panel_obj['genes'])
+
+
+def test_panel_update_description(client, real_panel_database):
+    adapter = real_panel_database
+
+    # GIVEN a panel in the database
+    panel_obj = adapter.gene_panels()[0]
+    assert panel_obj.get('description') is None
+
+    data = urlencode({
+        'update_description' : True, # This is the submit button of the form
+        'panel_description': 'Test description' # This is the text field
+    })
+    # WHEN posting an update description request to panel page
+    resp = client.post(url_for('panels.panel', panel_id=panel_obj['_id']),
+        data=data,
+        content_type="application/x-www-form-urlencoded"
+    )
+    # THEN the panel object should be updated with the new description:
+    panel_obj = adapter.gene_panels()[0]
+    assert panel_obj['description'] == 'Test description'
+
+
+def test_panel_modify_genes(client, real_panel_database):
+    adapter = real_panel_database
+
+    # GIVEN a panel in the database
+    panel_obj = adapter.gene_panels()[0]
+
+    # WHEN posting a delete gene request to panel page
+    a_gene = panel_obj['genes'][0] # first gene of the panel
+    data = urlencode({
+        'action' : 'delete',
+        'hgnc_id': a_gene['hgnc_id']
+    })
+    resp = client.post(url_for('panels.panel', panel_id=panel_obj['_id']),
+        data=data,
+        content_type="application/x-www-form-urlencoded"
+    )
+    # THEN the pending actions of panel should be updated:
+    panel_obj = adapter.gene_panels()[0]
+    assert panel_obj['pending'][0]['action'] == 'delete'
+    assert panel_obj['pending'][0]['hgnc_id'] == a_gene['hgnc_id']
+
+    # remove gene from panel object using adapter:
+    panel_obj['genes'] = panel_obj['genes'][1:]
+    updated_panel = adapter.update_panel(panel_obj)
+
+    # WHEN posting an add gene request to panel page
+    data = urlencode({
+        'action' : 'add',
+        'hgnc_id': a_gene['hgnc_id']
+    })
+    resp = client.post(url_for('panels.panel', panel_id=updated_panel['_id']),
+        data=data,
+        content_type="application/x-www-form-urlencoded"
+    )
+    # Then response should redirect to gene edit page
+    assert resp.status_code == 302
 
 
 def test_panels(app, institute_obj):
@@ -43,12 +102,12 @@ def test_panels(app, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-
-def test_panel_export(client, real_panel_database, panel_info):
+# This test is slow since pdf rendering is slow
+def test_panel_export(client, real_panel_database):
     adapter = real_panel_database
-
     # GIVEN a panel in the database
-    panel_obj = adapter.gene_panels()[0]
+    panel_obj = adapter.panel_collection.find_one()
+    assert True
     # WHEN accessing the panel view
     resp = client.get(url_for('panels.panel_export', panel_id=panel_obj['_id']))
     # THEN it should display the panel with all the genes
