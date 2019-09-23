@@ -133,12 +133,22 @@
     {{ variant.variant_rank }}&nbsp;
   </a>
   {% set comment_count = variant.comments.count() %}
+
   {% if variant.acmg_classification %}
     <span class="badge badge-secondary pull-right" title="{{ variant.acmg_classification.label }}">
       {{ variant.acmg_classification.short }}
     </span>
+
   {% elif variant.manual_rank %}
+
     <span class="badge badge-secondary pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+  {% endif %}
+  {% if variant.evaluations %}
+    {% for evaluation in (variant.evaluations or []) %}
+      <span class="badge badge-primary pull-right" style="margin-left:1px" title="Previously classified as {{ evaluation.classification.label }}">
+      {{ evaluation.classification.short }}
+      </span>
+    {% endfor %}
   {% endif %}
 
   {% if comment_count > 0 %}
