@@ -445,7 +445,6 @@ def clinvar(institute_id, case_name, variant_id):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     form = CancerFiltersForm(request.args)
-    flash(form.data)
     data = controllers.cancer_variants(store, request.args, institute_id, case_name, form)
     return data
 
