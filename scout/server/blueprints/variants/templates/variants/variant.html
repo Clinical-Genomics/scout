@@ -680,9 +680,9 @@ $(document).ready(function(){
               <div class="col-9 d-flex justify-content-between">
                 {% for data in observations['cases'] %}
                   {% if data.variant %}
-                    <a href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                    <a class="ml-3" href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                   {% else %}
-                    <span class="text-muted">{{ data.case.display_name }}</span>
+                    <span class="text-muted ml-3">{{ data.case.display_name }}</span>
                   {% endif %}
                 {% endfor %}
               </div>
