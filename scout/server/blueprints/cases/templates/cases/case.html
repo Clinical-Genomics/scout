@@ -725,7 +725,7 @@
     </div>
     {% set url = 'http://compbio.charite.de/hpoweb/showterm?id=HP:0000018' %}
     <div class="panel-heading panel-heading-secondary">
-      Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)
+      Phenotype terms (<a target="_blank" href="{{ url }}" class="text-white">HPO web</a>)
     </div>
     <div class="card-body">
       <form method="POST"
@@ -746,11 +746,11 @@
 
 {% macro hpo_group_item(hpo_term) %}
   <li class="list-group-item">
-    <div class="flex">
+    <div class="row d-flex justify-content-between">
       <div class="flex-fill">
         {{ hpo_term.feature }}
         <span class="badge badge-info">
-          <a href="{{ hpo_term.hpo_link }}" target="_blank">
+          <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
             {{ hpo_term.phenotype_id }}
           </a>
         </span>
@@ -802,7 +802,7 @@
            {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
     {{ hpo_term.feature }}
     <span class="badge badge-info">
-      <a href="{{ hpo_term.hpo_link }}" target="_blank">
+      <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
         {{ hpo_term.phenotype_id }}
       </a>
     </span>

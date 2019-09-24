@@ -53,7 +53,7 @@
             <div class="col-xs-12">{{ comment.content }}</div>
           </div>
           <div class="row">
-            <div class="col-xs-12">
+            <div class="d-flex justify-content-between align-items-center">
               <form method="POST"
                     action="{{ url_for('cases.events', institute_id=institute._id,
                                        case_name=case.display_name,
@@ -68,14 +68,10 @@
                   {% if comment.created_at < case.updated_at %}
                     <span class="badge badge-warning">OLD</span>
                   {% endif %}
+                  {% if comment.user_id == current_user.email %}
+                    <button class="btn btn-link btn-sm" type="submit"><i class="fa fa-remove"></i></button>
+                  {% endif %}
                 </small>
-                {% if comment.user_id == current_user.email %}
-                  <div class="pull-right">
-                    <button class="btn btn-link btn-sm no-padding" type="submit">
-                      <i class="fa fa-remove"></i>
-                    </button>
-                  </div>
-                {% endif %}
               </form>
             </div>
           </div>

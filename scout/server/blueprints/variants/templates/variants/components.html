@@ -1,6 +1,5 @@
 {% macro gene_cell(variant) %}
-  <div class="row">
-    <div class="col float-left">
+  <div class="d-flex justify-content-between align-items-center">
     {% for gene in variant.genes %}
       <a data-toggle="tooltip" data-html="true" title="
       <div>
@@ -16,9 +15,7 @@
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
       </a>
     {% endfor %}
-    </div>
     {% if variant.panels|count > 0 %}
-    <div class="col float-right">
         <a
           class="badge badge-secondary text-white"
           data-toggle="popover"
@@ -27,7 +24,6 @@
           data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
           title="">{{variant.panels|count}}
          </a>
-      </div>
     {% endif %}
   </div>
 {% endmacro %}

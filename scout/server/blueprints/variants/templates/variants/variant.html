@@ -242,24 +242,26 @@ $(document).ready(function(){
 
 {% macro matching_variants() %}
   <div class="card mt-3">
-    <div class="card-body"
+    <div class="card-body mt-1 ml-1" style="padding: 0;">
+    {% if causatives %}
       <h6>Matching causatives from other cases</h6>
-      <ul class="list-group list-group-flush">
-        {% for other_variant in causatives %}
-          <li class="list-group-item">
-            <a href="{{ url_for('variants.variant',
-                                institute_id=institute._id,
-                                case_name=other_variant.case_display_name,
-                                variant_id=other_variant._id) }}">
-              {{ other_variant.case_display_name }}
-            </a>
-          </li>
-        {% else %}
-          <li class="list-group-item">No matching causative variants.</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
+        <ul class="list-group list-group-flush">
+          {% for other_variant in causatives %}
+            <li class="list-group-item">
+              <a href="{{ url_for('variants.variant',
+                                  institute_id=institute._id,
+                                  case_name=other_variant.case_display_name,
+                                  variant_id=other_variant._id) }}">
+                {{ other_variant.case_display_name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+    {% else %}
+      <h6>No matching causative variants</h6>
+    {% endif%}
+    </div> <!--end of card body-->
+  </div><!--end of card-->
 {% endmacro %}
 
 {% macro panel_basics() %}
@@ -310,7 +312,7 @@ $(document).ready(function(){
         </table>
       </div>
       <ul class="list-group">
-        <li class="list-group-item">
+        <div class="list-group-item">
           <strong>Gene panels</strong>
           <ul class="list-inline pull-right">
             {% for panel_id in variant.panels %}
@@ -319,7 +321,7 @@ $(document).ready(function(){
               </li>
             {% endfor %}
           </ul>
-        </li>
+        </div>
       </ul>
       <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label class="mt-3">Variant tag</label>
@@ -512,8 +514,12 @@ $(document).ready(function(){
 {% macro transcript_overview() %}
   <div class="card mt-3 panel-default">
     <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
-        {{ variant.disease_associated_transcripts|join(', ')
-          if variant.disease_associated_transcripts else '-' }}
+      <table class="table table-bordered table-hover table-sm">
+        <tr>
+          <td>{{ variant.disease_associated_transcripts|join(', ')
+            if variant.disease_associated_transcripts else '-' }}</td>
+        </tr>
+      </table>
     <div data-toggle='tooltip' class="panel-heading mt-3" title="Displays all transcripts with refseq ids.
       One ensembl transcript can have multiple refseq ids. Blue color indicates that the ensembl transcript is mapped
       to a transcript that is canonical according to HGNC">
@@ -532,7 +538,7 @@ $(document).ready(function(){
           {% if not variant.has_refseq %}
             {% for transcript in gene.transcripts %}
               <tr>
-                <td class="d-flex justify-content-around align-items-center">
+                <td class="d-flex justify-content-between align-items-center">
                   <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                     {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                   </a>
@@ -558,7 +564,7 @@ $(document).ready(function(){
             {% for transcript in gene.primary_transcripts %}
               {% for refseq_id in transcript.refseq_identifiers %}
                 <tr {% if transcript.is_primary %} class="bg-info-light" {% endif %}>
-                  <td class="d-flex justify-content-around align-items-center">
+                  <td class="d-flex justify-content-between align-items-center">
                     <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                       {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                     </a>
@@ -670,8 +676,8 @@ $(document).ready(function(){
         {% if observations['cases'] %}
           <li class="list-group-item">
             <div class="row">
-              <div class="col-xs-3"><strong>Cases</strong></div>
-              <div class="col-xs-9">
+              <div class="col-3"><strong>Cases</strong></div>
+              <div class="col-9">
                 {% for data in observations['cases'] %}
                   {% if data.variant %}
                     <a href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
@@ -688,13 +694,13 @@ $(document).ready(function(){
       <ul class="list-group">
         <li class="list-group-item">
           <div class="row">
-            <div class="col-xs-4">
+            <div class="col-4">
               {{ variant.local_obs_old or 'N/A' }} <small>obs.</small>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
               {{ variant.local_obs_hom_old or 'N/A' }} <small>homo.</small>
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
               {{ variant.local_obs_total_old or 638 }} <small>tot.</small>
             </div>
           </div>

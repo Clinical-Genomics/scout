@@ -55,7 +55,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
             evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
             evaluations.append(evaluation_obj)
         variant_obj['evaluations'] = evaluations
-            
+
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj,
                         update=True, genome_build=genome_build))
 
