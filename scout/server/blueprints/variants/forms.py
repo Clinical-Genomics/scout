@@ -73,12 +73,22 @@ class FiltersForm(FlaskForm):
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
 
-class CancerFiltersForm(FiltersForm):
-    """docstring for CancerFiltersForm"""
+class CancerFiltersForm(FlaskForm):
+    """Base filters for CancerFiltersForm"""
+    variant_type = HiddenField(default='clinical')
+    gene_panels = SelectMultipleField(choices=[])
+    region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
+    functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
+    genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
+    hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
+    cadd_score = BetterDecimalField('CADD', places=2)
+    cadd_inclusive = BooleanField('CADD inclusive')
+    clinsig = SelectMultipleField('CLINSIG', choices=CLINSIG_OPTIONS)
     depth = IntegerField('Depth >')
     alt_count = IntegerField('Min alt count >')
     control_frequency = BetterDecimalField('Control freq. <', places=2)
     mvl_tag = BooleanField('In Managed Variant List')
+    gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
 
 class StrFiltersForm(FlaskForm):
     """docstring for CancerFiltersForm"""
