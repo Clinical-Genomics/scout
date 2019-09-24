@@ -674,10 +674,10 @@ $(document).ready(function(){
           </div>
         </li>
         {% if observations['cases'] %}
-          <li class="list-group-item">
+          <div class="list-group-item">
             <div class="row">
               <div class="col-3"><strong>Cases</strong></div>
-              <div class="col-9">
+              <div class="col-9 d-flex justify-content-between">
                 {% for data in observations['cases'] %}
                   {% if data.variant %}
                     <a href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
@@ -687,7 +687,7 @@ $(document).ready(function(){
                 {% endfor %}
               </div>
             </div>
-          </li>
+          </div>
         {% endif %}
       </ul>
       <div class="panel-heading">Local observations (archive 2017-05-31)</div>
