@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content_main %}
-<div class="container">
+<div class="container-float">
   <div class="card-columns">
     {% for institute in institutes %}
       <div class="card mt-3">
@@ -26,10 +26,10 @@
               Coverage Cutoff
               <span class="pull-right">{{ institute.coverage_cutoff }}</span>
             </li>
-            <li class="list-group-item">
+            <div class="list-group-item">
               Sanger Recipients
               <span class="pull-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
-            </li>
+            </div>
             <li class="list-group-item">
               Frequency Cutoff
               <span class="pull-right">{{ institute.frequency_cutoff }}</span>
