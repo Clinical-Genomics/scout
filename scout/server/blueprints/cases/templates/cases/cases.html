@@ -97,11 +97,8 @@
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
     <div class="row">
-      <div class="col-md-4 col-xs-4">
+      <div class="col-md-4 col-sm-4">
         <div class="input-group">
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-search"></span>
-          </span>
           <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"
           data-toggle="tooltip" data-placement="right" data-html="true" title="
             <div class='text-left'>
@@ -118,27 +115,27 @@
               assigned_user=<strong>Kent</strong>.<br><br>
               Use key without value to search for cases with missing info (<strong>HP:</strong>, <strong>PG:</strong>, <strong>synopsis:</strong>).
             </div>
-          "></input>
+          "/>
         </div>
       </div>
-      <div class="col-md-2 col-xs-2">
-        <button type="submit" class="form-control">Search</input>
+      <div class="col-md-2 col-sm-2">
+        <button type="submit" class="form-control">Search</button>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <div class="number">
           <label>
               <input name="limit" type="number" step="100" class="form-control" placeholder="Limit" value={{limit}}>
           </label>
         </div>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
           </label>
         </div>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="is_research" {% if is_research %}checked{% endif %}> Hide non-research
@@ -180,7 +177,7 @@
 
 
 {% macro case_row(case) %}
-  <tr class="d-flex{% if case.status == 'solved' %} bg-success{% endif %}">
+  <tr class="d-flex {% if case.status == 'solved' %} bg-success{% endif %}">
     <td class="col-3">
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
