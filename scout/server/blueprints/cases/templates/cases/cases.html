@@ -99,6 +99,9 @@
     <div class="row">
       <div class="col-md-4 col-sm-4">
         <div class="input-group">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-search"></span>
+          </span>
           <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"
           data-toggle="tooltip" data-placement="right" data-html="true" title="
             <div class='text-left'>
@@ -115,11 +118,11 @@
               assigned_user=<strong>Kent</strong>.<br><br>
               Use key without value to search for cases with missing info (<strong>HP:</strong>, <strong>PG:</strong>, <strong>synopsis:</strong>).
             </div>
-          "/>
+          "></input>
         </div>
       </div>
       <div class="col-md-2 col-sm-2">
-        <button type="submit" class="form-control">Search</button>
+        <button type="submit" class="form-control">Search</input>
       </div>
       <div class="col-md-2 col-sm-2">
         <div class="number">
@@ -149,16 +152,16 @@
 {% macro cases_table(group_name, cases) %}
 <div class="card mt-3">
   <div class="card-body" style="padding: 0;">
-    <table class="table table-hover">
+    <table class="table table-hover table-bordered">
       <thead>
-        <tr class="d-flex">
-          <th class="col-3">{{ group_name|capitalize }} cases</th>
-          <th class="col-1">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i></a></th>
-          <th class="col-2">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
-          <th class="col-2">Link</th>
-          <th class="col-1">Sequencing</th>
-          <th class="col-2">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i></a></th>
-          <th class="col-1">Clinvar</th>
+        <tr>
+          <th style="width: 25%">{{ group_name|capitalize }} cases</th>
+          <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i></a></th>
+          <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
+          <th style="width: 20%">Link</th>
+          <th style="width: 5%">Sequencing</th>
+          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i></a></th>
+          <th style="width: 10%">Clinvar</th>
         </tr>
       </thead>
       <tbody>
@@ -166,7 +169,7 @@
         {{ case_row(case) }}
       {% else %}
           <tr>
-            <td colspan="5">No cases found.</td>
+            <td colspan="">No cases found.</td>
           </tr>
       {% endfor %}
       </tbody>
@@ -177,8 +180,8 @@
 
 
 {% macro case_row(case) %}
-  <tr class="d-flex {% if case.status == 'solved' %} bg-success{% endif %}">
-    <td class="col-3">
+  <tr class="{% if case.status == 'solved' %} bg-success{% endif %}">
+    <td>
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
@@ -196,19 +199,19 @@
         <span class="badge badge-warning">decipher</span>
       {% endif %}
     </td>
-    <td class="col-1">
+    <td>
       <span class="badge badge-primary">{{ case.status }}</span>
       {% if case.is_migrated %}
         <span class="badge badge-primary">migrated</span>
       {% endif %}
     </td>
-    <td class="col-2">
+    <td>
       {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
         <span class="badge badge-secondary pull-right">rerun</span>
       {% endif %}
     </td>
-    <td class="col-2">
+    <td>
       {% if case.is_research %}
         {% if case.vcf_files.vcf_snv %}
           <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
@@ -223,7 +226,7 @@
         {% endif %}
       {% endif %}
     </td>
-    <td class="col-1">
+    <td>
       {% for analysis_type in case.analysis_types %}
         {% if analysis_type == 'wgs' %}
           {% set badge_class = 'primary' %}
@@ -246,13 +249,12 @@
         </span>
       {% endfor %}
     </td>
-    <td class="col-2">
+    <td>
       {{ case.display_track }}
     </td>
-    <td class="col-1">
+    <td>
       {% if case.clinvar_variants %}
         <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
-
         <!-- Modal -->
         <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
