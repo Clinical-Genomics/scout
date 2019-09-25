@@ -845,13 +845,25 @@
     </ul>
     {% if case.dynamic_gene_list %}
       <div class="panel-footer">
-         <a class="btn btn-default form-control"
-            href="{{ url_for('variants.variants', institute_id=institute._id,
-                             case_name=case.display_name, variant_type='clinical',
-                             gene_panels=['hpo']) }}">
-             Clinical HPO variants
-           </a>
-       </div>
+        <div class="d-flex mt-1">
+          <div class="mr-1">
+            <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+              <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
+              <label for="hpo_clinical_filter"></label>
+            </form>
+          </div>
+          <div data-placement="top" title="hpo_clinical_filter">Use HPO list for clinical filter</div>
+        </div>
+        <div class="row mt-1">
+          <form method="POST" action="{{ url_for('variants.variants', institute_id=institute._id,
+                           case_name=case.display_name, variant_type='clinical',
+                           gene_panels=['hpo']) }}">
+             <button class="btn btn-default form-control" name="clinical_filter" type="submit" value="Clinical_filter">
+               Clinical HPO SNV variants
+             </button>
+          </form>
+         </div>
+        </div>
     {% endif %}
   </div>
 {% endmacro %}

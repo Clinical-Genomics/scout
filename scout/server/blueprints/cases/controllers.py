@@ -456,6 +456,12 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
+def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter):
+    """Update HPO clinical filter use for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
+    store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
 
 def vcf2cytosure(store, institute_id, case_name, individual_id):
     """vcf2cytosure CGH file for inidividual."""

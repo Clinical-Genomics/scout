@@ -808,6 +808,13 @@ def default_panels(institute_id, case_name):
     controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
     return redirect(request.referrer)
 
+@cases_bp.route('/<institute_id>/<case_name>/update-clinical-filter-hpo', methods=['POST'])
+def update_clinical_filter_hpo(institute_id, case_name):
+    """Update default panels for a case."""
+    hpo_clinical_filter = request.form.get('hpo_clinical_filter')
+    controllers.update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter)
+    return redirect(request.referrer)
+
 @cases_bp.route('/<institute_id>/<case_name>/<individual_id>/cgh')
 def vcf2cytosure(institute_id, case_name, individual_id):
     """Download vcf2cytosure file for individual."""

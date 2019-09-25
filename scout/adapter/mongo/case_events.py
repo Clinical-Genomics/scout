@@ -542,6 +542,39 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
+    def update_clinical_filter_hpo(self, institute_obj, case_obj, user_obj, link, hpo_clinical_filter):
+        """Update HPO clinical filter setting for a case.
+
+        Arguments:
+            institute_obj (dict): A Institute object
+            case_obj (dict): Case object
+            user_obj (dict): A User object
+            link (str): The url to be used in the event
+            hpo_clinical_filter (bool): Toggle for use of dynamic gene panel in clinical filter.
+        Return:
+            updated_case(dict)
+        """
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category='case',
+            verb='update_default_panels',
+            subject=case_obj['display_name'],
+        )
+
+        LOG.info("Update HPO clinical filter status for {}".format(case_obj['display_name']))
+
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case_obj['_id']},
+            {
+                '$set': {'hpo_clinical_filter': hpo_clinical_filter}
+            },
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        LOG.debug("Case updated")
+        return updated_case
 
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.
