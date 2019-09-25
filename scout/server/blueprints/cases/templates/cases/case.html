@@ -588,67 +588,65 @@
         <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
       {% endif %}
       <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
-          <div id="mme_form" class="collapse">
-            <div class="d-flex justify-content-between">
-              <div class="flex-1">
-                <ul class="list-group">
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="hpo">
-                        Include patient gender
-                      </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
-                        <label for="sex"></label>
-                      </div>
+          <div id="mme_form" class="collapse w-75">
+            <div class="d-flex justify-content-center">
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div data-placement="top" title="hpo">
+                      Include patient gender
                     </div>
-                  </li>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="hpo">
-                        Include HPO terms
-                      </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
-                        <label for="features"></label>
-                      </div>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
+                      <label for="sex"></label>
                     </div>
-                  </li>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="disorders">
-                        Include OMIM diagnoses
-                      </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
-                        <label for="disorders"></label>
-                      </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div data-placement="top" title="hpo">
+                      Include HPO terms
                     </div>
-                  </li>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="genomicfeatures">
-                        Share variants
-                      </div>
-                      <div>
-                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
-                        <label for="genomicfeatures"></label>
-                      </div>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
+                      <label for="features"></label>
                     </div>
-                  </li>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="genomicfeatures">
-                        Gene names only
-                      </div>
-                      <div>
-                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
-                        <label for="genomicfeatures"></label>
-                      </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div data-placement="top" title="disorders">
+                      Include OMIM diagnoses
                     </div>
-                  </li>
-                </ul>
-              </div>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
+                      <label for="disorders"></label>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div data-placement="top" title="genomicfeatures">
+                      Share variants
+                    </div>
+                    <div>
+                      <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
+                      <label for="genomicfeatures"></label>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div data-placement="top" title="genomicfeatures">
+                      Gene names only
+                    </div>
+                    <div>
+                      <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
+                      <label for="genomicfeatures"></label>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
             <div>
               <button class="btn btn-outline-secondary form-control" data-toggle="modal" type="submit">
