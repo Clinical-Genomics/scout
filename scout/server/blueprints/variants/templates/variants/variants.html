@@ -15,15 +15,15 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block top_nav_right %}
-  <li class="nav-item"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Actions <span class="caret"></span></a>
     <ul class="dropdown-menu">
