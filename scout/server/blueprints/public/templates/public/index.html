@@ -2,7 +2,7 @@
 
 {% block content_main %}
 <div class="container">
-  <div class="jumbotron">
+  <div class="jumbotron mt-3 bg-white">
     <h1 class="display-4">Scout</h1>
     <p class="lead">Analyze VCFs quicker and easier</p>
     <hr class="my-4">
@@ -11,7 +11,7 @@
       compound pairs, and solve cases as a team.
     </p>
 
-    <p><small>Version <strong>{{ version }}</strong></small></p>
+    <p>Version <strong>{{ version }}</strong></p>
 
     {% if current_user.is_authenticated %}
       <p>
@@ -27,10 +27,10 @@
       {% else %}
         <form action="{{ url_for('login.login') }}">
           <div class="row">
-            <div class="col-xs-8">
+            <div class="col-8">
               <input type="text" placeholder="email" class="form-control" name="email">
             </div>
-            <div class="col-xs-4">
+            <div class="col-4">
               <button type="submit" class="btn btn-primary form-control text-white">Login</button>
             </div>
           </div>
