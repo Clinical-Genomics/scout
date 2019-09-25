@@ -293,5 +293,8 @@ def parse_variant(variant, case, variant_type='clinical',
     mvl_tag = variant.INFO.get('MSK_MVL')
     if mvl_tag:
         parsed_variant['mvl_tag'] = True
+    cancer_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
+    parsed_variant['rank_score'] = cancer_score or 0
+    print('Somatic variant score {} for {}'.format(cancer_score,genmod_key))
 
     return parsed_variant
