@@ -50,7 +50,7 @@
                         indexURL: "{{ reference_track.indexURL }}",
                         cytobandURL: "{{ reference_track.cytobandURL }}"
                     },
-                    search: 'https://igv.org/services/locus.php',
+                    search: "https://igv.org/services/locus.php",
                     locus: "{{locus}}",
                     tracks: [
                       {
@@ -77,7 +77,7 @@
                     ]
                 };
 
-        igv.createBrowser(div, options, url="");
+        igv.createBrowser(div, options);
 
     });
 
