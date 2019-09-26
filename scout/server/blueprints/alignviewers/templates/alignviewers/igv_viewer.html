@@ -56,7 +56,7 @@
                             url: "{{ genes_track.url|replace('%2F','/') }}",
                             indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
                             displayMode: "{{ genes_track.displayMode }}",
-                            order: Number.MAX_VALUE,
+                            order: Number.MIN_VALUE,
                             visibilityWindow: 300000000
                       },
                       {% for track in sample_tracks %}
