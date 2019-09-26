@@ -257,7 +257,6 @@ class VariantEventHandler(object):
             variant=variant,
             subject=variant['display_name'],
         )
-        LOG.debug('----->1-4-7')
         return updated_variant
 
     def mark_causative(self, institute, case, user, link, variant):

@@ -82,9 +82,6 @@ def test_update_case_sanger_variants(adapter, institute_obj, case_obj, user_obj,
     # and variants with Sanger ordered
     assert updated_variants['updated_ordered'] == [variant_obj['_id']]
 
-
-
-
 def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute_obj, case_obj, user_obj):
     """Test get all sanger ordered but not evaluated for an institute"""
 
