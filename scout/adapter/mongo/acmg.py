@@ -6,13 +6,15 @@ import pymongo
 
 from scout.utils.acmg import get_acmg
 from scout.build.acmg import build_evaluation
+from scout.constants import ACMG_MAP
 
 log = logging.getLogger(__name__)
 
 
 class ACMGHandler(object):
 
-    def submit_evaluation(self, variant_obj, user_obj, institute_obj, case_obj, link, criteria):
+    def submit_evaluation(self, variant_obj, user_obj, institute_obj, case_obj, link, 
+                          criteria=None, classification=None):
         """Submit an evaluation to the database
 
         Get all the relevant information, build a evaluation_obj
@@ -24,17 +26,19 @@ class ACMGHandler(object):
             case_obj(dict)
             link(str): variant url
             criteria(list(dict)):
-
-                [
-            {
-            'term': str,
-            'comment': str,
-            'links': list(str)
-            },
-            .
-            .
-        ]
+                                            [
+                                        {
+                                        'term': str,
+                                        'comment': str,
+                                        'links': list(str)
+                                        },
+                                        .
+                                        .
+                                    ]
+            classification(int)
         """
+        criteria = criteria or []
+
         variant_specific = variant_obj['_id']
         variant_id = variant_obj['variant_id']
         user_id = user_obj['_id']
@@ -44,7 +48,12 @@ class ACMGHandler(object):
 
         evaluation_terms = [evluation_info['term'] for evluation_info in criteria]
 
-        classification = get_acmg(evaluation_terms)
+        if classification is None:
+            if evaluation_terms:
+                classification = get_acmg(evaluation_terms)
+        
+        print("Found classification", classification)
+        print("Found criterias", evaluation_terms)
 
         evaluation_obj = build_evaluation(
             variant_specific=variant_specific,
