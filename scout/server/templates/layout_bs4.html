@@ -1,5 +1,4 @@
 {% extends "bootstrap4.html" %}
-{% from "utils.html" import flash_messages %}
 
 {% block title %}
   {% if title %}
@@ -69,10 +68,12 @@
 
 {% block content %}
   <div class="container-fluid">
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-info" role="alert">{{ message }}</div>
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category or 'primary' }} alert-dismissible fade show mt-3" role="alert">
+            {{ message }}
+          </div>
         {% endfor %}
       {% endif %}
     {% endwith %}

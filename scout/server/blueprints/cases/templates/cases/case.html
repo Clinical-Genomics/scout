@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
-{% from "utils.html" import flash_messages, comments_panel, activity_panel %}
+{% from "utils.html" import comments_panel, activity_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -36,11 +36,6 @@
   <div class="card col-md-12">
     <h4 class="mt-3">Case: {{case.display_name}}</h4><p class="text-muted {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">status: <strong>{{case.status}}</strong></p>
     <div class="card-body">
-      <div class="row"> <!--flash messages -->
-        <div class="col-sm-12">
-          {{ flash_messages() }}
-        </div>
-      </div> <!-- end of flask messages div -->
       <div class="row text-center"> <!-- variants buttons -->
         <div class="col-sm-12">{{ variants_buttons() }}</div>
       </div>

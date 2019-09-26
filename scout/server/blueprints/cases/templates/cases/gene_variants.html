@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "utils.html" import flash_messages, comments_table %}
+{% from "utils.html" import comments_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -47,7 +47,6 @@
           </div>
 	       </div>
       </div>
-      {{ flash_messages() }}
     </div>
 
     <div class="table-responsive" style="padding-top: 25px;">
