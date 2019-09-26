@@ -7,8 +7,10 @@ hgnc_file = 'demo/resources/hgnc_reduced_set.txt'
 exac_file = 'demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt'
 transcripts37_file = 'demo/resources/ensembl_transcripts_37_reduced.txt'
 genes37_file = 'demo/resources/ensembl_genes_37_reduced.txt'
+exons37_file = 'demo/resources/ensembl_exons_37_reduced.txt'
 transcripts38_file = 'demo/resources/ensembl_transcripts_38_reduced.txt'
 genes38_file = 'demo/resources/ensembl_genes_38_reduced.txt'
+exons38_file = 'demo/resources/ensembl_exons_38_reduced.txt'
 
 # OMIM resources:
 mim2gene_file = 'demo/resources/mim2gene_reduced.txt'
@@ -34,6 +36,8 @@ transcripts37_reduced_path = pkg_resources.resource_filename('scout', transcript
 transcripts38_reduced_path = pkg_resources.resource_filename('scout', transcripts38_file)
 genes37_reduced_path = pkg_resources.resource_filename('scout', genes37_file)
 genes38_reduced_path = pkg_resources.resource_filename('scout', genes38_file)
+exons37_reduced_path = pkg_resources.resource_filename('scout', exons37_file)
+exons38_reduced_path = pkg_resources.resource_filename('scout', exons38_file)
 
 # OMIM paths
 mim2gene_reduced_path = pkg_resources.resource_filename('scout', mim2gene_file)

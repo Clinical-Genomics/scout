@@ -26,7 +26,7 @@ def test_compounds_region(real_populated_database, case_obj, variant_clinical_fi
     variant_type = 'clinical'
     category = 'snv'
     ## GIVEN a database without any variants
-    assert adapter.variant_collection.find().count() == 0
+    assert adapter.variant_collection.find_one() is None
     
     institute_obj = adapter.institute_collection.find_one()
     institute_id = institute_obj['_id']

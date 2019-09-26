@@ -19,10 +19,12 @@ def intervals(build):
     LOG.info("Running scout view index")
     adapter = store
 
-    if adapter.hgnc_collection.find().count() == 0:
+    nr_genes = adapter.nr_genes()
+    if nr_genes == 0:
         LOG.error('There are no genes in database to calculate intervals')
         return
-    elif adapter.hgnc_collection.find({'build':build}).count() == 0:
+    nr_genes = adapter.nr_genes(build=build)
+    if nr_genes == 0:
         LOG.error('No genes in database with build {}'.format(build))
         return
     intervals = adapter.get_coding_intervals(build)
@@ -38,5 +40,5 @@ def intervals(build):
         nr_intervals += int_nr
 
     LOG.info("Total nr intervals:%s", nr_intervals)
-    LOG.info("Total nr genes:%s", adapter.all_genes(build).count())
+    LOG.info("Total nr genes:%s", nr_genes)
     LOG.info("Longest interval:%s", longest)

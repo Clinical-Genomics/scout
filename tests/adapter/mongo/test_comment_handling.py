@@ -11,8 +11,8 @@ def test_specific_comment(adapter, institute_obj, case_obj, user_obj, variant_ob
     # GIVEN a populated database with a variant and no events
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert adapter.variant_collection.find().count() == 1
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # WHEN commenting a specific comment on a variant
     updated_variant = adapter.comment(
@@ -37,7 +37,7 @@ def test_specific_comment(adapter, institute_obj, case_obj, user_obj, variant_ob
 
     comments = adapter.events(institute_obj, case=other_case, variant_id=variant_obj['variant_id'], 
                               comments=True)
-    assert comments.count() == 0
+    assert sum(1 for i in comments) == 0
 
 def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj):
     content = 'global comment for a variant'
@@ -45,8 +45,8 @@ def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj)
     adapter.variant_collection.insert_one(variant_obj)
     
     
-    assert adapter.variant_collection.find().count() == 1
-    assert adapter.event_collection.find().count() == 0
+    assert sum(1 for i in adapter.variant_collection.find()) == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # WHEN commenting a global comment on a variant
     updated_variant = adapter.comment(
@@ -71,7 +71,7 @@ def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj)
 
     comments = adapter.events(institute_obj, case=other_case, variant_id=variant_obj['variant_id'], 
                               comments=True)
-    assert comments.count() == 1
+    assert sum(1 for i in comments) == 1
 
 def test_global_and_specific_comments_one_case(adapter, institute_obj, case_obj, user_obj, variant_obj):
     ## GIVEN an adapter with a variant and no events
@@ -104,7 +104,7 @@ def test_global_and_specific_comments_one_case(adapter, institute_obj, case_obj,
     ## THEN assert that when fetching comments for a variant two events are returned
     comments = adapter.events(institute=institute_obj, case=case_obj, 
                               variant_id=variant_obj['variant_id'], comments=True)
-    assert comments.count() == 2
+    assert sum(1 for i in comments) == 2
 
 def test_global_and_specific_comments_two_cases_same_institute(adapter, institute_obj, case_obj, user_obj, variant_obj):
     ## GIVEN an adapter with a variant and no events
@@ -146,7 +146,7 @@ def test_global_and_specific_comments_two_cases_same_institute(adapter, institut
     comments = adapter.events(institute=institute_obj, case=other_case, 
                               variant_id=other_variant['variant_id'], comments=True)
     
-    assert comments.count() == 1
+    assert sum(1 for i in comments) == 1
 
 def test_global_and_specific_comments_two_cases_different_institutes(adapter, institute_obj, 
     case_obj, user_obj, variant_obj):
@@ -192,4 +192,4 @@ def test_global_and_specific_comments_two_cases_different_institutes(adapter, in
     comments = adapter.events(institute=other_institute, case=other_case, 
                               variant_id=other_variant['variant_id'], comments=True)
     
-    assert comments.count() == 1
+    assert sum(1 for i in comments) == 1

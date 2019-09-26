@@ -91,14 +91,45 @@ class EnsemblRestApiClient:
 
 class EnsemblBiomartClient:
 
-    def __init__(self, build='37'):
+    def __init__(self, build='37', xml=None, filters=None, attributes=None, header=True):
         if build == '38':
             self.server = BIOMART_38
         else:
             self.server = BIOMART_37
+        self.filters = filters or {}
+        self.attributes = attributes or []
+        self.xml = xml or self._create_biomart_xml(filters, attributes)
+        self.header = header
+            
         LOG.info("Setting up ensembl biomart client with server %s", self.server)
+        
+        self.query = self._query_service(xml=self.xml)
+        
+        self.attribute_to_header = {
+            'chromosome_name':'Chromosome/scaffold name',
+            'ensembl_gene_id': 'Gene stable ID',
+            'ensembl_transcript_id': 'Transcript stable ID',
+            'ensembl_exon_id': 'Exon stable ID',
+            'exon_chrom_start': 'Exon region start (bp)',
+            'exon_chrom_end': 'Exon region end (bp)',
+            '5_utr_start': "5' UTR start",
+            '5_utr_end': "5' UTR end",
+            '3_utr_start': "3' UTR start",
+            '3_utr_end': "3' UTR end",
+            'strand': "Strand",
+            'rank': "Exon rank in transcript",
+            'transcript_start': "Transcript start (bp)",
+            'transcript_end': "Transcript end (bp)",
+            'refseq_mrna': "RefSeq mRNA ID",
+            'refseq_mrna_predicted': "RefSeq mRNA predicted ID",
+            'refseq_ncrna': "RefSeq ncRNA ID",
+            'start_position': 'Gene start (bp)',
+            'end_position': 'Gene end (bp)',
+            'hgnc_symbol': 'HGNC symbol',
+            'hgnc_id': 'HGNC ID',
+        }
 
-    def query_service(self, xml=None, filters=None, attributes=None):
+    def _query_service(self, xml=None, filters=None, attributes=None):
         """Query the Ensembl biomart service and yield the resulting lines
 
         Accepts:
@@ -110,8 +141,6 @@ class EnsemblBiomartClient:
         Yields:
             biomartline 
         """
-        if not xml:
-            xml = self.create_biomart_xml(filters, attributes)
 
         url = ''.join([self.server, xml])
         try:
@@ -122,7 +151,7 @@ class EnsemblBiomartClient:
             LOG.info('Error downloading data from biomart: {}'.format(ex))
             raise ex
 
-    def create_biomart_xml(self, filters=None, attributes=None):
+    def _create_biomart_xml(self, filters=None, attributes=None):
         """Convert biomart query params into biomart xml query
 
         Accepts:
@@ -135,8 +164,8 @@ class EnsemblBiomartClient:
         """
         filters = filters or {}
         attributes = attributes or []
-        filter_lines = self.xml_filters(filters)
-        attribute_lines = self.xml_attributes(attributes)
+        filter_lines = self._xml_filters(filters)
+        attribute_lines = self._xml_attributes(attributes)
         xml_lines = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<!DOCTYPE Query>',
@@ -156,7 +185,7 @@ class EnsemblBiomartClient:
 
         return '\n'.join(xml_lines)
 
-    def xml_filters(self, filters):
+    def _xml_filters(self, filters):
         """Creates a filter line for the biomart xml document
 
         Accepts:
@@ -177,7 +206,7 @@ class EnsemblBiomartClient:
                 
         return formatted_lines
 
-    def xml_attributes(self, attributes):
+    def _xml_attributes(self, attributes):
         """Creates an attribute line for the biomart xml document
 
         Accepts:
@@ -190,4 +219,35 @@ class EnsemblBiomartClient:
         for attr in attributes:
             formatted_lines.append('<Attribute name = "{}" />'.format(attr))
         return formatted_lines
+    
+    def _create_header(self, attributes):
+        """Create a header line based on the attributes
+        
+        Args:
+            attributes(list(str))
+        
+        Returns:
+            header(str)
+        """
+        headers = []
+        for attr in attributes:
+            headers.append(self.attribute_to_header[attr])
+        
+        return '\t'.join(headers)
+    
+
+    def __iter__(self):
+        success = False
+        if self.header:
+            yield self._create_header(self.attributes)
+
+        for line in self.query:
+            if line.startswith('['):
+                if 'success' in line:
+                    success = True
+                if not success:
+                    raise SyntaxError("ensembl request is incomplete")
+                LOG.info("successfully retrieved all data from ensembl")
+                continue
+            yield line
 

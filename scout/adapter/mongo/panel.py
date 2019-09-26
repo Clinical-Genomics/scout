@@ -221,11 +221,13 @@ class PanelHandler(object):
         else:
             LOG.info("Fetching gene panels %s from database", panel_id)
             res = self.panel_collection.find(query).sort('version', -1)
-            if res.count() > 0:
-                return res[0]
-            else:
-                LOG.info("No gene panel found")
-                return None
+            
+            for panel in res:
+                return panel
+            
+            LOG.info("No gene panel found")
+            
+            return None
 
     def gene_panels(self, panel_id=None, institute_id=None, version=None):
         """Return all gene panels

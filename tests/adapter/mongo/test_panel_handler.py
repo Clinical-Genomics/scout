@@ -1,78 +1,82 @@
 import pytest
 
+from pprint import pprint as pp
 from scout.exceptions import IntegrityError
 
-def test_add_panel(gene_database, panel_obj):
-    adapter = gene_database
-    ## GIVEN a adapter with genes but no panels
-    assert adapter.all_genes().count() > 0
-    assert adapter.gene_panels().count() == 0
+def test_add_panel(adapter, dummypanel_obj):
+    ## GIVEN a adapter with without panels
+    assert adapter.panel_collection.find_one() is None
     ## WHEN inserting a panel
-    adapter.add_gene_panel(panel_obj)
+    adapter.add_gene_panel(dummypanel_obj)
     ## THEN assert that the panel was loaded
-    assert adapter.panel_collection.find().count() == 1
+    assert adapter.panel_collection.find_one()
 
-def test_add_same_panel_twice(gene_database, panel_obj):
-    adapter = gene_database
-    ## GIVEN a adapter with genes but no panels
-    assert adapter.gene_panels().count() == 0
+def test_add_same_panel_twice(adapter, dummypanel_obj):
+    panel_obj = dummypanel_obj
+    ## GIVEN a adapter without gene panels
+    assert adapter.panel_collection.find_one() is None
     ## WHEN inserting a panel twice
     adapter.add_gene_panel(panel_obj)
     ## THEN assert that IntegrityError is raised
     with pytest.raises(IntegrityError):
         adapter.add_gene_panel(panel_obj)
 
-def test_get_panel_by_version(panel_database, panel_info):
-    adapter = panel_database
+def test_get_panel_by_version(adapter, dummypanel_obj):
+    panel_obj = dummypanel_obj
+    adapter.panel_collection.insert_one(panel_obj)
     ## GIVEN a adapter with one gene panel
-    res = adapter.gene_panels()
-    assert res.count() == 1
+    assert adapter.panel_collection.find_one()
     ## WHEN getting a panel
-    res = adapter.gene_panel(
-        panel_id=panel_info['panel_name'],
-        version=float(panel_info['version']))
+    res = adapter.gene_panel(panel_id=panel_obj['panel_name'], version=panel_obj['version'])
     ## THEN assert that the panel was loaded
-    assert res['panel_name'] == panel_info['panel_name']
+    assert res['panel_name'] == panel_obj['panel_name']
 
-def test_get_panel_by_name(panel_database, panel_info):
-    adapter = panel_database
+def test_get_panel_by_name(adapter, panel_info, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
     ## GIVEN a adapter with one gene panel
-    res = adapter.gene_panels()
-    assert res.count() == 1
-    ## WHEN getting a panel
+    assert adapter.panel_collection.find_one()
+    ## WHEN getting a panel without version
     res = adapter.gene_panel(panel_id=panel_info['panel_name'])
     ## THEN assert that the panel was loaded
     assert res['panel_name'] == panel_info['panel_name']
 
-def test_get_non_existing_panel(panel_database, panel_info):
-    adapter = panel_database
+def test_get_non_existing_panel(adapter, dummypanel_obj):
+    panel_obj = dummypanel_obj
+    adapter.panel_collection.insert_one(panel_obj)
     ## GIVEN a adapter with one gene panel
-    res = adapter.gene_panels()
-    assert res.count() == 1
+    assert adapter.panel_collection.find_one()
     ## WHEN getting a panel
     res = adapter.gene_panel(panel_id='non existing')
     ## THEN assert that the panel was loaded
     assert res is None
 
-def test_get_panel_multiple_versions(panel_database, panel_obj):
-    adapter = panel_database
-    panel_obj['version'] = 2.0
-    adapter.add_gene_panel(panel_obj)
-    ## GIVEN a adapter with two gene panel
+def test_get_panel_multiple_versions(adapter, dummypanel_obj):
+    
+    ## GIVEN an adapter with multiple versions of same gene panel
+    dummypanel_obj['_id'] = 1
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    dummypanel_obj['_id'] = 2
+    dummypanel_obj['version'] = 2.0
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    
     res = adapter.gene_panels()
-    assert res.count() == 2
+    assert sum(1 for i in res) == 2
     ## WHEN getting a panel
-    res = adapter.gene_panel(panel_id=panel_obj['panel_name'])
+    res = adapter.gene_panel(panel_id=dummypanel_obj['panel_name'])
     ## THEN assert that the last version is fetched
     assert res['version'] == 2.0
 
-def test_add_pending(panel_database):
-    adapter = panel_database
+def test_add_pending(adapter, dummypanel_obj, gene_obj):
+    
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.hgnc_collection.insert_one(gene_obj)
+    ## GIVEN a adapter with one gene panel and a gene    
     panel_obj = adapter.panel_collection.find_one()
     hgnc_obj = adapter.hgnc_collection.find_one()
-    ## GIVEN an adapter with a gene panel
-    res = adapter.gene_panels()
-    assert res.count() == 1
+
+    assert panel_obj
+    assert hgnc_obj
+
     ## WHEN adding a pending action
     res = adapter.add_pending(
         panel_obj=panel_obj,
@@ -82,13 +86,15 @@ def test_add_pending(panel_database):
     ## THEN assert that the last version is fetched
     assert len(res['pending']) == 1
 
-def test_add_pending_wrong_action(panel_database):
-    adapter = panel_database
+def test_add_pending_wrong_action(adapter, dummypanel_obj, gene_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.hgnc_collection.insert_one(gene_obj)
+    ## GIVEN a adapter with one gene panel and a gene    
     panel_obj = adapter.panel_collection.find_one()
     hgnc_obj = adapter.hgnc_collection.find_one()
-    ## GIVEN an adapter with a gene panel
-    res = adapter.gene_panels()
-    assert res.count() == 1
+    assert panel_obj
+    assert hgnc_obj
+    
     ## WHEN adding a pending action with invalid action
     with pytest.raises(ValueError):
     ## THEN assert that an error is raised
@@ -98,14 +104,14 @@ def test_add_pending_wrong_action(panel_database):
             action='hello'
         )
 
-def test_update_panel_panel_name(panel_database):
-    adapter = panel_database
+def test_update_panel_panel_name(adapter, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    ## GIVEN a adapter with a gene panel    
     panel_obj = adapter.panel_collection.find_one()
+    assert panel_obj
+    
     old_name = panel_obj['panel_name']
     new_name = 'new name'
-    ## GIVEN an adapter with a gene panel
-    res = adapter.gene_panels()
-    assert res.count() == 1
     ## WHEN updating the panel name
     panel_obj['panel_name'] = new_name
 
@@ -114,12 +120,30 @@ def test_update_panel_panel_name(panel_database):
     ## THEN assert that the last version is fetched
     assert res['panel_name'] == new_name
 
-def test_apply_pending_delete_gene(panel_database):
-    ## GIVEN an adapter with a gene panel
-    adapter = panel_database
+def test_update_panel_panel_description(adapter, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    ## GIVEN a adapter with a gene panel    
     panel_obj = adapter.panel_collection.find_one()
+    
+    assert panel_obj
+    assert panel_obj['description']
+
+    # Update its description
+    panel_obj['description'] = 'Test description'
+    res = adapter.update_panel(panel_obj)
+
+    ## THEN assert that description was updated
+    assert res['description'] == 'Test description'
+
+def test_apply_pending_delete_gene(adapter, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    ## GIVEN a adapter with a gene panel    
+    panel_obj = adapter.panel_collection.find_one()
+    
+    assert panel_obj
 
     gene = panel_obj['genes'][0]
+    
     hgnc_id = gene['hgnc_id']
     hgnc_symbol = gene['symbol']
 
@@ -143,9 +167,12 @@ def test_apply_pending_delete_gene(panel_database):
     for gene in updated_panel['genes']:
         assert gene['hgnc_id'] != hgnc_id
 
-def test_apply_pending_delete_two_genes(real_panel_database):
-    adapter = real_panel_database
+def test_apply_pending_delete_two_genes(adapter, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    ## GIVEN a adapter with a gene panel    
     panel_obj = adapter.panel_collection.find_one()
+    
+    assert panel_obj
 
     gene = panel_obj['genes'][0]
     gene2 = panel_obj['genes'][1]
@@ -174,9 +201,12 @@ def test_apply_pending_delete_two_genes(real_panel_database):
     for gene in updated_panel['genes']:
         assert gene['hgnc_id'] not in hgnc_ids
 
-def test_apply_pending_add_gene(real_panel_database):
-    adapter = real_panel_database
+def test_apply_pending_add_gene(adapter, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    ## GIVEN a adapter with a gene panel    
     panel_obj = adapter.panel_collection.find_one()
+    
+    assert panel_obj
 
     gene = panel_obj['genes'][0]
     hgnc_id = gene['hgnc_id']
@@ -206,9 +236,12 @@ def test_apply_pending_add_gene(real_panel_database):
 
     assert len(updated_panel['genes']) == 1
 
-def test_apply_pending_add_two_genes(real_panel_database):
-    adapter = real_panel_database
+def test_apply_pending_add_two_genes(adapter, dummypanel_obj):
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    ## GIVEN a adapter with a gene panel    
     panel_obj = adapter.panel_collection.find_one()
+    
+    assert panel_obj
 
     gene = panel_obj['genes'][0]
     gene2 = panel_obj['genes'][1]

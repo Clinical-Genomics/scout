@@ -10,13 +10,13 @@ def test_export_variants(mock_app, case_obj):
     assert runner
 
     # There are no variants in mock app database
-    assert store.variant_collection.find().count() == 0
+    assert store.variant_collection.find_one() is None
 
     # Load snv variants using the cli
     result =  runner.invoke(cli, ['load', 'variants', case_obj['_id'],
         '--snv',
         ])
-    assert store.variant_collection.find().count() > 0
+    assert sum(1 for i in store.variant_collection.find()) > 0
 
     # update case registering a causative variant
     variant_obj = store.variant_collection.find_one()
@@ -24,7 +24,8 @@ def test_export_variants(mock_app, case_obj):
         {'_id' : case_obj['_id'] },
         {'$set' : {'causatives' : [variant_obj['_id']]} }
     )
-    assert store.case_collection.find({'causatives':{'$exists': True}}).count() == 1
+    res = store.case_collection.find({'causatives':{'$exists': True}})
+    assert sum(1 for i in res) == 1
 
     # Test the cli by not providing any options or arguments
     result =  runner.invoke(cli, ['export', 'variants'])
@@ -96,7 +97,8 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     result =  runner.invoke(cli, ['load', 'variants', case_obj['_id'],
         '--snv',
         ])
-    assert store.variant_collection.find().count() > 0
+
+    assert store.variant_collection.find_one() is not None
 
     # Test the cli without verified variants available
     result =  runner.invoke(cli, ['export', 'verified'])
@@ -109,8 +111,10 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     # Validate the above variant:
     store.validate(institute=institute_obj, case=case_obj, user=user_obj,
         link='link_to_var', variant=variant_obj, validate_type='True positive')
-    assert store.variant_collection.find({'validation':'True positive'}).count() == 1
-    assert store.event_collection.find({'verb':'validate'}).count() == 1
+    var_res = store.variant_collection.find({'validation':'True positive'})
+    assert sum(1 for i in var_res) == 1
+    event_res = store.event_collection.find({'verb':'validate'})
+    assert sum(1 for i in event_res) == 1
 
 
     # Test the cli without parameters

@@ -17,7 +17,7 @@ def test_export_hpo(mock_app):
     assert 'Please use at least one hpo term' in result.output
 
     # There are no HPO terms in database
-    assert store.hpo_term_collection.find().count() == 0
+    assert store.hpo_term_collection.find_one() is None
     # insert an HPO term in database:
     hpo_term = {
         "_id" : "HP:0000003",
@@ -27,7 +27,7 @@ def test_export_hpo(mock_app):
         "genes" : [ 17582, 1151 ]
     }
     store.hpo_term_collection.insert_one(hpo_term)
-    assert store.hpo_term_collection.find().count() == 1
+    assert sum(1 for i in store.hpo_term_collection.find()) == 1
 
 
     # Test CLI with a non-valid HPO term

@@ -13,7 +13,6 @@ from cyvcf2 import VCF
 import yaml
 import pymongo
 
-from pandas import DataFrame
 # Adapter stuff
 from mongomock import MongoClient
 
@@ -26,7 +25,7 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts)
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_transcripts, parse_ensembl_exons)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases)
 
@@ -40,13 +39,13 @@ from scout.build.user import build_user
 from scout.load import (load_hgnc_genes)
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
-from scout.server.app import create_app
 
 # These are the reduced data files
 from scout.demo.resources import (hgnc_reduced_path, transcripts37_reduced_path, genes37_reduced_path,
 exac_reduced_path, hpogenes_reduced_path, hpoterms_reduced_path, hpo_to_genes_reduced_path,
 hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_path,
-transcripts38_reduced_path, genes38_reduced_path,)
+transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_reduced_path,
+ exons38_reduced_path)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
@@ -61,23 +60,27 @@ root_logger = logging.getLogger()
 init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
 
-
-#############################################################
-###################### App fixtures #########################
-#############################################################
- # use this app object to test CLI commands which use a test database
-
-@pytest.fixture
-def mock_app(real_populated_database):
-
-    mock_app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=REAL_DATABASE,
-                                 DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
-    return mock_app
-
 ##################### Gene fixtures #####################
 
 @pytest.fixture
+def gene_obj():
+    """Get a dictionary with with gene obj information"""
+    gene = HgncGene(
+        hgnc_symbol = 'B3GALT6',
+        hgnc_id = 17978,
+        ensembl_id = 'ENSG00000176022',
+        chrom = '1',
+        start = 1232237,
+        end = 1235041,
+        build='38',
+    )
+
+    return gene
+
+
+@pytest.fixture
 def transcript_info(request):
+    """Get a dictionary with parsed transcript information"""
     transcript = dict(
         chrom = '1',
         ens_gene_id = 'ENSG00000176022',
@@ -90,47 +93,6 @@ def transcript_info(request):
     )
 
     return transcript
-
-
-@pytest.fixture
-def test_gene(request):
-    gene = {
-        # This is the hgnc id, required:
-        'hgnc_id': 1,
-        # The primary symbol, required
-        'hgnc_symbol': 'test',
-        'ensembl_id': 'ensembl1',  # required
-        'build': '37',  # '37' or '38', defaults to '37', required
-
-        'chromosome': 1,  # required
-        'start': 10,  # required
-        'end': 100,  # required
-
-        'description': 'A gene',  # Gene description
-        'aliases': ['test'],  # Gene symbol aliases, includes hgnc_symbol, str
-        'entrez_id': 1,
-        'omim_id': 1,
-        'pli_score': 1.0,
-        'primary_transcripts': ['NM1'],  # List of refseq transcripts (str)
-        'ucsc_id': '1',
-        'uniprot_ids': ['1'],  # List of str
-        'vega_id': '1',
-    }
-    return gene
-
-@pytest.fixture
-def parsed_gene(request):
-    gene_info = {
-        'hgnc_id': 1,
-        'hgnc_symbol': 'AAA',
-        'ensembl_id': 'ENSG1',
-        'chrom': '1',
-        'start': 10,
-        'end': 100,
-        'build': '37'
-    }
-    return gene_info
-
 
 @pytest.fixture
 def genes(request, genes37_handle, hgnc_handle, exac_handle,
@@ -157,7 +119,7 @@ def ensembl_genes(request, gene_bulk):
         _ensembl_genes[gene_obj['ensembl_id']] = gene_obj
     return _ensembl_genes
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def gene_bulk(genes):
     """Return a list with HgncGene objects"""
     bulk = []
@@ -165,6 +127,23 @@ def gene_bulk(genes):
         bulk.append(build_hgnc_gene(genes[gene_key]))
 
     return bulk
+
+@pytest.fixture(scope='function')
+def gene_bulk_38(genes):
+    """Return a list with HgncGene objects"""
+    bulk = []
+    for gene_key in genes:
+        gene_obj = build_hgnc_gene(genes[gene_key])
+        gene_obj['build'] = '38'
+        bulk.append(gene_obj)
+
+    return bulk
+
+@pytest.fixture(scope='function')
+def gene_bulk_all(gene_bulk, gene_bulk_38):
+    """Return a list with HgncGene objects"""
+
+    return gene_bulk + gene_bulk_38
 
 @pytest.fixture
 def transcript_objs(request, parsed_transcripts):
@@ -177,36 +156,6 @@ def transcript_objs(request, parsed_transcripts):
         _transcripts.append(build_transcript(tx_info))
 
     return _transcripts
-
-@pytest.fixture
-def transcripts_df(request, transcripts):
-    """Return a list with transcript objs"""
-    print('')
-    df_info = dict(
-        chromosome_name = [],
-        ensembl_gene_id = [],
-        ensembl_transcript_id = [],
-        transcript_start = [],
-        transcript_end = [],
-        refseq_mrna = [],
-        refseq_mrna_predicted = [],
-        refseq_ncrna = [],
-    )
-
-    for tx_info in transcripts:
-        df_info['chromosome_name'].append(tx_info['chrom'])
-        df_info['ensembl_gene_id'].append(tx_info['ensembl_gene_id'])
-        df_info['ensembl_transcript_id'].append(tx_info['ensembl_transcript_id'])
-        df_info['transcript_start'].append(tx_info['transcript_start'])
-        df_info['transcript_end'].append(tx_info['transcript_end'])
-        df_info['refseq_mrna'].append(tx_info.get('refseq_mrna', ''))
-        df_info['refseq_mrna_predicted'].append(tx_info.get('refseq_mrna_predicted', ''))
-        df_info['refseq_ncrna'].append(tx_info.get('refseq_ncrna', ''))
-
-    df = DataFrame(df_info)
-
-    return df
-
 
 #############################################################
 ################# Hpo terms fixtures ########################
@@ -329,6 +278,7 @@ def case_obj(request, parsed_case):
     case['status'] = 'inactive'
     case['synopsis'] = ''
     case['updated_at'] = parsed_case['analysis_date']
+    case['delivery_report'] = parsed_case['delivery_report']
     case['assignees'] = []
 
     return case
@@ -409,7 +359,7 @@ def user_obj(request, parsed_user):
 ##################### Adapter fixtures #####################
 #############################################################
 
-# We need to mokeypatch 'connect' function so the tests use a mongomock database
+# We need to monkeypatch 'connect' function so the tests use a mongomock database
 # @pytest.fixture(autouse=True)
 # def no_connect(monkeypatch):
 #     # from scout.adapter.client import get_connection
@@ -471,7 +421,6 @@ def real_pymongo_client(request):
 @pytest.fixture(scope='function')
 def real_adapter(request, real_pymongo_client):
     """Get an adapter connected to mongo database"""
-    LOG.info("Connecting to database...")
     mongo_client = real_pymongo_client
 
     LOG.info("Connecting to database %s", REAL_DATABASE)
@@ -494,6 +443,7 @@ def adapter(request, pymongo_client):
 
     database = mongo_client[DATABASE]
     mongo_adapter = PymongoAdapter(database)
+    mongo_adapter.setup(database)
 
     LOG.info("Connected to database")
 
@@ -766,10 +716,37 @@ def parsed_panel(request, panel_info):
 
     return panel
 
+@pytest.fixture(scope='function')
+def dummypanel_geneobj():
+    """A panel gene object"""
+    gene_obj = {}
+    
+    gene_obj['symbol'] = 'AAA'
+    gene_obj['hgnc_id'] = 100
+    
+    return gene_obj
+
+@pytest.fixture(scope='function')
+def dummypanel_obj(parsed_panel, dummypanel_geneobj):
+    """Return a dummy panel object"""
+    dummy_panel = {}
+    
+    dummy_panel['panel_name'] = parsed_panel['panel_id']
+    dummy_panel['institute'] = parsed_panel['institute']
+    dummy_panel['version'] = float(parsed_panel['version'])
+    dummy_panel['date'] = parsed_panel['date']
+    dummy_panel['display_name'] = parsed_panel['display_name']
+    dummy_panel['description'] = 'A panel description'
+    dummy_panel['genes'] = [
+        {'symbol': 'AAA', 'hgnc_id': 100}, {'symbol': 'BBB', 'hgnc_id': 222}
+    ]
+
+    return dummy_panel
+
 
 @pytest.fixture(scope='function')
 def panel_obj(request, parsed_panel, gene_database):
-    """docstring for parsed_panels"""
+    """Return a panel object"""
     panel = build_panel(parsed_panel, gene_database)
 
     return panel
@@ -1043,6 +1020,18 @@ def transcripts_file(request):
     print('')
     return transcripts37_reduced_path
 
+@pytest.fixture
+def exons_file(request):
+    """Get the path to a ensembl exons file"""
+    print('')
+    return exons37_reduced_path
+
+@pytest.fixture
+def exons_38_file(request):
+    """Get the path to a ensembl exons file build 38"""
+    print('')
+    return exons38_reduced_path
+
 
 @pytest.fixture
 def genes37_file(request):
@@ -1192,6 +1181,30 @@ def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
     print('')
     return parse_ensembl_transcripts(transcripts_handle)
+
+@pytest.fixture
+def exons_handle(request, exons_file):
+    """Get a file handle to a ensembl exons file"""
+    print('')
+    return get_file_handle(exons_file)
+
+@pytest.fixture
+def exons_38_handle(request, exons_38_file):
+    """Get a file handle to a ensembl exons file"""
+    print('')
+    return get_file_handle(exons_38_file)
+
+@pytest.fixture
+def exons(request, exons_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_exons(exons_handle)
+
+@pytest.fixture
+def exons_38(request, exons_38_handle):
+    """Get the parsed ensembl transcripts"""
+    print('')
+    return parse_ensembl_exons(exons_38_handle)
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):

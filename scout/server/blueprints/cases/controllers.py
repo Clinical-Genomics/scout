@@ -51,7 +51,8 @@ def cases(store, case_query, limit=100):
     """
 
     case_groups = {status: [] for status in CASE_STATUSES}
-    for case_obj in case_query.limit(limit):
+    nr_cases = 0
+    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
 
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
@@ -69,7 +70,7 @@ def cases(store, case_query, limit=100):
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
-        'found_cases': case_query.count(),
+        'found_cases': nr_cases,
         'limit': limit,
     }
     return data
@@ -475,6 +476,7 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
 
 def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
+    # We need to call variants_collection.count_documents here
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False

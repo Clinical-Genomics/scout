@@ -21,7 +21,8 @@ def transcripts(build, hgnc_id, json):
 
     if not json:
         click.echo("Chromosome\tstart\tend\ttranscript_id\thgnc_id\trefseq\tis_primary")
-    for tx_obj in adapter.transcripts(build=build, hgnc_id=hgnc_id):
+    i = 0
+    for i,tx_obj in enumerate(adapter.transcripts(build=build, hgnc_id=hgnc_id),1):
         if json:
             pp(tx_obj)
             continue
@@ -34,3 +35,5 @@ def transcripts(build, hgnc_id, json):
             tx_obj.get('refseq_id', ''),
             tx_obj.get('is_primary') or '',
         ))
+    if i == 0:
+        LOG.info("Could not find gene %s", hgnc_id)

@@ -3,16 +3,15 @@ import logging
 import gzip
 import urllib.request
 from urllib.error import (HTTPError, URLError)
-
-import pybiomart
-from scout.constants import CHROMOSOMES
 from socket import timeout
+
+from scout.constants import CHROMOSOMES
+from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
 HPO_URL = ("http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
            "lastStableBuild/artifact/annotation/{0}")
-
 
 def get_request(url):
     """Return a requests response from url
@@ -146,22 +145,36 @@ def fetch_hpo_phenotype_to_terms():
 
     return fetch_resource(url)
 
-def fetch_ensembl_genes(build='37'):
-    """Fetch the ensembl genes
+def fetch_ensembl_biomart(attributes, filters, build=None):
+    """Fetch data from ensembl biomart
+    
+    Args:
+        attributes(list): List of selected attributes
+        filters(dict): Select what filters to use
+        build(str): '37' or '38'
+    
+    Returns:
+        client(EnsemblBiomartClient)
+    """
+    build = build or '37'
 
+    client = EnsemblBiomartClient(build=build, filters=filters, attributes=attributes)
+    LOG.info("Selecting attributes: {0}".format(', '.join(attributes)))
+    LOG.info("Use filter: {0}".format(filters))
+
+    return client
+
+def fetch_ensembl_genes(build=None):
+    """Fetch the ensembl genes
+    
     Args:
         build(str): ['37', '38']
+    
+    Returns:
+        result(iterable): Ensembl formated gene lines
     """
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-    else:
-        url = 'http://www.ensembl.org'
-
-    LOG.info("Fetching ensembl genes from %s", url)
-    dataset_name = 'hsapiens_gene_ensembl'
-
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
-
+    LOG.info("Fetching ensembl genes")
+    
     attributes = [
         'chromosome_name',
         'start_position',
@@ -174,16 +187,10 @@ def fetch_ensembl_genes(build='37'):
     filters = {
         'chromosome_name': CHROMOSOMES,
     }
-
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters,
-        use_attr_names=True,
-    )
-
-    return result
-
-def fetch_ensembl_transcripts(build='37', chromosomes=None):
+    
+    return fetch_ensembl_biomart(attributes, filters, build)
+    
+def fetch_ensembl_transcripts(build=None, chromosomes=None):
     """Fetch the ensembl genes
 
     Args:
@@ -191,19 +198,11 @@ def fetch_ensembl_transcripts(build='37', chromosomes=None):
         chromosomes(iterable(str))
 
     Returns:
-        result(DataFrame)
+        result(iterable): Ensembl formated transcript lines
     """
     chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl transcripts build %s ...", build)
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-    else:
-        url = 'http://www.ensembl.org'
-
-    dataset_name = 'hsapiens_gene_ensembl'
-
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
-
+    LOG.info("Fetching ensembl transcripts")
+    
     attributes = [
         'chromosome_name',
         'ensembl_gene_id',
@@ -211,38 +210,26 @@ def fetch_ensembl_transcripts(build='37', chromosomes=None):
         'transcript_start',
         'transcript_end',
         'refseq_mrna',
-		'refseq_mrna_predicted',
-		'refseq_ncrna',
+        'refseq_mrna_predicted',
+        'refseq_ncrna',
     ]
 
     filters = {
         'chromosome_name': chromosomes,
     }
+    
+    return fetch_ensembl_biomart(attributes, filters, build)
 
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters,
-        use_attr_names=True,
-    )
-
-    return result
-
-def fetch_ensembl_exons(build='37'):
+def fetch_ensembl_exons(build=None, chromosomes=None):
     """Fetch the ensembl genes
 
     Args:
         build(str): ['37', '38']
+        chromosomes(iterable(str))
     """
-    LOG.info("Fetching ensembl exons build %s ...", build)
-    if build == '37':
-        url = 'http://grch37.ensembl.org'
-    else:
-        url = 'http://www.ensembl.org'
-
-    dataset_name = 'hsapiens_gene_ensembl'
-
-    dataset = pybiomart.Dataset(name=dataset_name, host=url)
-
+    chromosomes = chromosomes or CHROMOSOMES
+    LOG.info("Fetching ensembl exons")
+    
     attributes = [
         'chromosome_name',
         'ensembl_gene_id',
@@ -259,15 +246,10 @@ def fetch_ensembl_exons(build='37'):
     ]
 
     filters = {
-        'chromosome_name': CHROMOSOMES,
+        'chromosome_name': chromosomes,
     }
 
-    result = dataset.query(
-        attributes = attributes,
-        filters = filters
-    )
-
-    return result
+    return fetch_ensembl_biomart(attributes, filters, build)
 
 def fetch_hgnc():
     """Fetch the hgnc genes file from
@@ -293,6 +275,8 @@ def fetch_exac_constraint():
     file_name = 'fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt'
     url = ('ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint'
            '/{0}').format(file_name)
+    
+    exac_lines = None
 
     LOG.info("Fetching ExAC genes")
 
@@ -303,8 +287,9 @@ def fetch_exac_constraint():
         LOG.info("Try to fetch from google bucket...")
         url = ("https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
                "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz")
-
-    exac_lines = fetch_resource(url)
+    
+    if not exac_lines:
+        exac_lines = fetch_resource(url)
 
     return exac_lines
 

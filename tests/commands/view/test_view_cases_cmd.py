@@ -53,7 +53,7 @@ def test_view_cases(mock_app):
         '--snv',
         ])
     assert result.exit_code == 0
-    n_vars = store.variant_collection.find().count()
+    n_vars = sum(1 for i in store.variant_collection.find())
     assert n_vars > 0
 
     # Test CLI with --nr-variants flag

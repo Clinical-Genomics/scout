@@ -12,10 +12,11 @@ class Exon(dict):
         "transcript": str, # ENST ID
         "hgnc_id": int,      # HGNC_id
         "rank": int, # Order of exon in transcript
+        "strand": int, # 1 or -1
         "build": str, # Genome build
     
     """
-    def __init__(self, exon_id, chrom, start, end, transcript, hgnc_id, rank, build='37'):
+    def __init__(self, exon_id, chrom, start, end, transcript, hgnc_id, rank, strand, build='37'):
         super(Exon, self).__init__()
         self['exon_id'] = exon_id
         self['chrom'] = chrom
@@ -24,6 +25,7 @@ class Exon(dict):
         self['transcript'] = transcript
         self['hgnc_id'] = hgnc_id
         self['rank'] = int(rank)
+        self['strand'] = int(strand)
         self['build'] = build
 
 class HgncTranscript(dict):

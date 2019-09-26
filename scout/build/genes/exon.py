@@ -17,11 +17,16 @@ def build_exon(exon_info, build='37'):
         "transcript": str, # ENST ID
         "hgnc_id": int,      # HGNC_id
         "rank": int, # Order of exon in transcript
+        "strand": int, # 1 or -1
         "build": str, # Genome build
     """
+    try:
+        ensembl_exon_id = exon_info['ens_exon_id']
+    except KeyError:
+        raise KeyError("Exons has to have a ensembl_exon_id")
 
     try:
-        chrom = exon_info['chrom']
+        chrom = str(exon_info['chrom'])
     except KeyError:
         raise KeyError("Exons has to have a chromosome")
 
@@ -47,6 +52,13 @@ def build_exon(exon_info, build='37'):
         raise TypeError("Exon rank has to be integer")
 
     try:
+        strand = int(exon_info['strand'])
+    except KeyError:
+        raise KeyError("Exon has to have a strand")
+    except TypeError:
+        raise TypeError("Exon strand has to be integer")
+
+    try:
         exon_id = exon_info['exon_id']
     except KeyError:
         raise KeyError("Exons has to have a id")
@@ -68,6 +80,7 @@ def build_exon(exon_info, build='37'):
         chrom = chrom,
         start = start,
         end = end,
+        strand = strand,
         rank = rank,
         transcript = transcript,
         hgnc_id = hgnc_id,

@@ -35,29 +35,48 @@
     <div class="panel-heading">Overview</div>
     <ul class="list-group">
       <li class="list-group-item">
-        Full name
-        <span class="pull-right">{{ panel.display_name }}</span>
+        <label for="display_name">Full name</label>
+        <span class="pull-right" id="display_name">{{ panel.display_name }}</span>
       </li>
       <li class="list-group-item">
-        Panel ID
-        <span class="pull-right">{{ panel.panel_name }}</span>
+        <label for="panel_name">Panel ID</label>
+        <span class="pull-right" id="panel_name">{{ panel.panel_name }}</span>
+      </li>
+
+      <div class="list-group-item">
+        <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+
+          <div class="form-group">
+              <label for="panel_description">Description</label>
+              <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
+          </div>
+          <div class="btn-group">
+            <button type="button" name="edit" value="edit" class="btn btn-sm btn-default" onclick="editDescription()">
+              Edit
+            </button>
+            <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+      <li class="list-group-item">
+        <label for="version">Version</label>
+        <span class="pull-right" id="version">{{ panel.version }}</span>
       </li>
       <li class="list-group-item">
-        Version
-        <span class="pull-right">{{ panel.version }}</span>
+        <label for="n_genes">Number of genes</label>
+        <span class="pull-right" id="n_genes">{{ panel.genes|length }}</span>
       </li>
       <li class="list-group-item">
-        Number of genes
-        <span class="pull-right">{{ panel.genes|length }}</span>
-      </li>
-      <li class="list-group-item">
-        Date
-        <span class="pull-right">{{ panel.date.date() }}</span>
+        <label for="date">Date</label>
+        <span class="pull-right" id="date">{{ panel.date.date() }}</span>
       </li>
       {% if config.SQLALCHEMY_DATABASE_URI and case %}
         <li class="list-group-item">
+          <label for="coverage_report">Coverage report</label>
           Coverage report
-          <a class="pull-right" href="#" onclick="document.getElementById('report-form').submit();">
+          <a class="pull-right" id="coverage_report" href="#" onclick="document.getElementById('report-form').submit();">
             {{ case.display_name }}
           </a>
           <form id="report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name=panel.name_and_version, level=institute.coverage_cutoff) }}" method="POST" target="_blank">
@@ -208,6 +227,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 
   <script>
+    function editDescription() {
+      document.getElementById("panel_description").readOnly = false
+    }
+
     $(function () {
       function getTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {

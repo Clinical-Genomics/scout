@@ -86,7 +86,7 @@ class TestMockMatchMakerServer(object):
         # Add variant containing a gene to database and pin it for this case
         a_gene = adapter.hgnc_collection.find_one()
         assert a_gene['hgnc_id']
-        assert adapter.variant_collection.find().count() == 0
+        assert adapter.variant_collection.find_one() is None
         parsed_variant['hgnc_ids'] = [a_gene['hgnc_id']]
         parsed_variant['samples'] = [{ # pretend the affected subject has the allele
             'sample_id' : 'ADM1059A2',
@@ -94,7 +94,7 @@ class TestMockMatchMakerServer(object):
             'genotype_call' : '0/1'
         }]
         adapter.variant_collection.insert_one(parsed_variant)
-        assert adapter.variant_collection.find().count() == 1
+        assert adapter.variant_collection.find_one()
 
         # pin it
         updated_case = adapter.case_collection.find_one_and_update({ '_id' : case_obj['_id'] }, { '$set' : {'suspects' : [parsed_variant['_id']] }}, return_document=pymongo.ReturnDocument.AFTER)

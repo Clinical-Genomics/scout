@@ -126,7 +126,7 @@ def variants(institute_id, case_name):
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
                   not_found_symbols.append(hgnc_symbol)
             elif is_clinical and (hgnc_symbol not in clinical_symbols):
                  non_clinical_symbols.append(hgnc_symbol)
@@ -283,7 +283,7 @@ def sv_variants(institute_id, case_name):
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
                   not_found_symbols.append(hgnc_symbol)
             elif is_clinical and (hgnc_symbol not in clinical_symbols):
                  non_clinical_symbols.append(hgnc_symbol)

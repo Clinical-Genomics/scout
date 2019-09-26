@@ -48,6 +48,14 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     for variant_obj in variant_res:
         overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
         variant_obj['overlapping'] = overlapping_svs or None
+
+        # Get all previous ACMG evalautions of the variant
+        evaluations = []
+        for evaluation_obj in store.get_evaluations(variant_obj):
+            evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+            evaluations.append(evaluation_obj)
+        variant_obj['evaluations'] = evaluations
+            
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj,
                         update=True, genome_build=genome_build))
 
@@ -73,7 +81,12 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
 def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
-    # Nothing unique to STRs on this level. Inheritance?
+
+    # Nothing unique to STRs on this level. Inheritance? yep, you will want it.
+
+    # case bam_files for quick access to alignment view.
+    case_append_bam(store, case_obj)
+
     return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
 def str_variant(store, institute_id, case_name, variant_id):
@@ -439,22 +452,8 @@ def variant_case(store, case_obj, variant_obj):
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
     """
-    case_obj['bam_files'] = []
-    case_obj['mt_bams'] = []
-    case_obj['bai_files'] = []
-    case_obj['mt_bais'] = []
-    case_obj['sample_names'] = []
 
-    bam_files = [('bam_file','bam_files', 'bai_files'), ('mt_bam', 'mt_bams', 'mt_bais')]
-    for individual in case_obj['individuals']:
-        case_obj['sample_names'].append(individual.get('display_name'))
-        for bam in bam_files:
-            bam_path = individual.get(bam[0])
-            if bam_path and os.path.exists(bam_path):
-                case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
-                case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
-            else:
-                LOG.debug("%s: no bam file found", individual['individual_id'])
+    case_append_bam(store, case_obj)
 
     try:
         genes = variant_obj.get('genes', [])
@@ -474,6 +473,31 @@ def variant_case(store, case_obj, variant_obj):
             case_obj['region_vcf_file'] = vcf_path
     except (SyntaxError, Exception):
         LOG.warning("skip VCF region for alignment view")
+
+def case_append_bam(store, case_obj):
+    """Deconvolute information about files to case_obj.
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+    """
+
+    case_obj['bam_files'] = []
+    case_obj['mt_bams'] = []
+    case_obj['bai_files'] = []
+    case_obj['mt_bais'] = []
+    case_obj['sample_names'] = []
+
+    bam_files = [('bam_file','bam_files', 'bai_files'), ('mt_bam', 'mt_bams', 'mt_bais')]
+    for individual in case_obj['individuals']:
+        case_obj['sample_names'].append(individual.get('display_name'))
+        for bam in bam_files:
+            bam_path = individual.get(bam[0])
+            if bam_path and os.path.exists(bam_path):
+                case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
+                case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
+            else:
+                LOG.debug("%s: no bam file found", individual['individual_id'])
 
 
 def find_bai_file(bam_file):

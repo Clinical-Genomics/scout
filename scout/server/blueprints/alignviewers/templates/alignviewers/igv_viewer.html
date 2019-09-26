@@ -19,24 +19,19 @@
     <link rel="stylesheet" type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
 
-    <!-- IGV CSS -->
-    <link rel="stylesheet" type="text/css" href="https://igv.org/web/release/1.0.9/igv-1.0.9.css">
-
     <!-- jQuery JS -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript"
             src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
     <!-- IGV JS-->
-     <script type="text/javascript" src="https://igv.org/web/release/2.2.11/dist/igv.min.js"></script>    
+     <script type="text/javascript" src="https://igv.org/web/release/2.3.0-rc1/dist/igv.min.js"></script>
 </head>
 <body>
 <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
 
 <script type="text/javascript">
-
     $(document).ready(function () {
-
         var div = $("#igvDiv")[0],
                 options = {
                     showNavigation: true,
@@ -61,9 +56,8 @@
                             url: "{{ genes_track.url|replace('%2F','/') }}",
                             indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
                             displayMode: "{{ genes_track.displayMode }}",
-                            order: Number.MAX_VALUE,
+                            order: Number.MIN_VALUE,
                             visibilityWindow: 300000000
-
                       },
                       {% for track in sample_tracks %}
                       {
@@ -71,7 +65,8 @@
                         url: '{{ url_for("alignviewers.remote_static", file=track.url) }}',
                         indexURL: '{{ url_for("alignviewers.remote_static", file=track.indexURL) }}',
                         sourceType: 'file',
-                        type: "alignment"
+                        type: "alignment",
+                        height: "{{track.height}}"
                       },
                       {% endfor %}
                     ]

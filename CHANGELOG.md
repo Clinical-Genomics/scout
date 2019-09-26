@@ -4,8 +4,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [4.x.x]
+
+### Added
+- Show earlier ACMG classification in the variant list
+
+### Fixed
+- Fixed igv search not working due to igv.js dist 2.2.17
+
+
+
+## [4.7.1]
+
+### Added
+
+### Fixed
+- Fixed bug on genes page
+
+
+## [4.7.0]
 
 ### Added
 - Export genes and gene panels in build GRCh38
@@ -19,10 +36,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Assign case to user when user activates it or asks for rerun
 - Case becomes inactive when it has no assignees
 - Fetch refseq version from entrez and use it in clinvar form
+- Load and export of exons for all genes, independent on refseq
+- Documentation for loading/updating exons
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
 - Handle requests to Ensembl Rest API  
 - Handle requests to Ensembl Rest Biomart
+- STR variants view now displays GT and IGV link.
+- Description field for gene panels
+- Export exons in build 37 and 38 using the command line
 
 ### Fixed
 - Fixes of and induced by build tests
@@ -31,6 +53,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MT report only shows variants occurring in the specific individual of the excel sheet
 - Disable SSL certifcate verification in requests to chanjo
 - Updates how intervaltree and pymongo is used to void deprecated functions
+- Increased size of IGV sample tracks
+- Optimized tests
 
 
 ## [4.6.1]

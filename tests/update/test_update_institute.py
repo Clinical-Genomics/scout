@@ -3,7 +3,7 @@ from scout.load.institute import load_institute
 
 def test_load_institute(adapter, parsed_institute):
     # GIVEN a empty database
-    assert adapter.institutes().count() == 0
+    assert sum(1 for i in adapter.institutes()) == 0
 
     # WHEN adding a institute
     load_institute(

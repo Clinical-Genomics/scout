@@ -11,7 +11,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
 
     adapter = store
     # Given a real populated database with a case
-    assert adapter.case_collection.find().count() == 1
+    assert sum(1 for i in adapter.case_collection.find()) == 1
 
     # Create a test CLI runner
     runner = mock_app.test_cli_runner()
@@ -63,7 +63,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
         ])
     assert result.exit_code == 0
     # variants should have been loaded to database
-    n_vars = adapter.variant_collection.find().count()
+    n_vars = sum(1 for i in adapter.variant_collection.find())
     assert n_vars > 0
 
     # Test CLI with --nr-variants flag
@@ -114,7 +114,7 @@ def test_view_cases(mock_app, case_obj, test_hpo_terms):
 
     # insert this case in database:
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find().count() == 2
+    assert sum(1 for i in adapter.case_collection.find()) == 2
 
     # Test CLI to get similar cases to test patient
     result =  runner.invoke(cli, ['view', 'cases',

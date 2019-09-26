@@ -4,7 +4,7 @@ from scout.load.hgnc_gene import load_hgnc_genes
 def test_load_hgnc_genes(adapter, genes37_handle, hgnc_handle, exac_handle,
           mim2gene_handle, genemap_handle, hpo_genes_handle):
     # GIVEN a empty database
-    assert adapter.all_genes().count() == 0
+    assert sum(1 for i in adapter.all_genes()) == 0
     
     # WHEN inserting a number of genes
     gene_objects = load_hgnc_genes(adapter, 
@@ -23,7 +23,7 @@ def test_load_hgnc_genes(adapter, genes37_handle, hgnc_handle, exac_handle,
             nr_genes += 1
     
     # THEN assert all genes have been added to the database
-    assert adapter.all_genes().count() == nr_genes
+    assert sum(1 for i in adapter.all_genes()) == nr_genes
     
     # THEN assert that the last gene was loaded
     assert adapter.hgnc_gene(gene_info['hgnc_id'])

@@ -20,8 +20,9 @@ def panel(panel_id, version):
     LOG.info("Running scout delete panel")
     adapter = store
 
-    panel_objs = adapter.gene_panels(panel_id=panel_id, version=version)
-    if panel_objs.count() == 0:
+    res = adapter.gene_panels(panel_id=panel_id, version=version)
+    panel_objs = [panel_obj for panel_obj in res]
+    if len(panel_objs) == 0:
         LOG.info("No panels found")
 
     for panel_obj in panel_objs:
@@ -86,8 +87,8 @@ def genes(build):
     if build:
         LOG.info("Dropping genes collection for build: %s", build)
     else:
-        LOG.info("Dropping genes collection")
-        adapter.drop_genes()
+        LOG.info("Dropping all genes")
+    adapter.drop_genes(build=build)
 
 @click.command('exons', short_help='Delete exons')
 @click.option('-b', 'build', type=click.Choice(['37', '38']))

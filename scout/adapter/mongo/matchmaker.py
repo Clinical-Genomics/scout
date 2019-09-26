@@ -19,10 +19,12 @@ class MMEHandler(object):
         created = None
         patient_ids = []
         updated = datetime.now()
-        if 'mme_submission' in case_obj and case_obj['mme_submission']:
-            created = case_obj['mme_submission']['created_at']
-        else:
-            created = updated
+        created = updated
+
+        existing_mm_submission = case_obj.get('mme_submission')
+        if existing_mm_submission:
+            created = existing_mm_submission['created_at']
+        
         patients = [ resp['patient'] for resp in mme_subm_obj.get('server_responses')]
 
         subm_obj = {

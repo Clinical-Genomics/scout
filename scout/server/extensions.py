@@ -36,7 +36,7 @@ class LoqusDB(LoqusDBMongoAdapter):
         self.connect(**app.config['LOQUSDB_SETTINGS'])
 
     def case_count(self):
-        return self.db.case.find({}).count()
+        return sum(1 for i in self.db.case.find({}))
 
 class MongoDB(object):
     

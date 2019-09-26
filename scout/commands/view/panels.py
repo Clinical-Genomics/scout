@@ -18,8 +18,8 @@ def panels(institute):
     LOG.info("Running scout view panels")
     adapter = store
 
-    panel_objs = adapter.gene_panels(institute_id=institute)
-    if panel_objs.count() == 0:
+    panel_objs = [panel for panel in adapter.gene_panels(institute_id=institute)]
+    if len(panel_objs) == 0:
         LOG.info("No panels found")
         raise click.Abort()
     click.echo("#panel_name\tversion\tnr_genes\tdate")

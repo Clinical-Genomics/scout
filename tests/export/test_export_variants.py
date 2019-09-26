@@ -38,7 +38,7 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
     case_id = case_obj['_id']
 
     # load variants to populated_database
-    assert adapter.variants(case_id=case_id, nr_of_variants=-1).count() == 0
+    assert sum(1 for i in adapter.variants(case_id=case_id, nr_of_variants=-1)) == 0
     nr_loaded = adapter.load_variants(case_obj=case_obj)
     assert nr_loaded > 0
 
@@ -48,7 +48,7 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
     assert len(test_vars) == 3
 
     # Make sure that no variant is set as validated:
-    assert adapter.variant_collection.find({'validation':{'$exists':True}}).count()==0
+    assert sum(1 for i in adapter.variant_collection.find({'validation':{'$exists':True}})) == 0
 
     # Set test variant as validated
     for i in range(3):
@@ -67,7 +67,7 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
          })
 
     # There should be 3 validated variants now
-    assert adapter.variant_collection.find({'validation':{'$exists':True}}).count()==3
+    assert sum(1 for i in adapter.variant_collection.find({'validation':{'$exists':True}})) == 3
 
     # Call function to get aggregated data (variant + case data):
     cust = case_obj['owner']

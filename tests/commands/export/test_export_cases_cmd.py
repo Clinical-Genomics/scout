@@ -15,7 +15,7 @@ def test_export_cases(mock_app, case_obj):
     assert 'scout/demo/643594' in result.output
 
     # Test the command with --case-id option
-    assert store.case_collection.find().count() > 0
+    assert sum(1 for i in store.case_collection.find()) > 0
     result =  runner.invoke(cli, ['export', 'cases',
         '--case-id', case_obj['_id']
         ])
@@ -26,7 +26,7 @@ def test_export_cases(mock_app, case_obj):
 
 
     # Test the command with -institute option
-    assert store.case_collection.find().count() > 0
+    assert sum(1 for i in store.case_collection.find()) > 0
     result =  runner.invoke(cli, ['export', 'cases',
         '-i', case_obj['owner']
         ])
@@ -37,7 +37,7 @@ def test_export_cases(mock_app, case_obj):
 
 
     # Test the command with -reruns option
-    assert store.case_collection.find().count() > 0
+    assert sum(1 for i in store.case_collection.find()) > 0
     result =  runner.invoke(cli, ['export', 'cases',
         '-r'
         ])
@@ -60,7 +60,7 @@ def test_export_cases(mock_app, case_obj):
 
 
     # Test the command with -finished option
-    assert store.case_collection.find().count() > 0
+    assert sum(1 for i in store.case_collection.find()) > 0
     result =  runner.invoke(cli, ['export', 'cases',
         '-f'
         ])

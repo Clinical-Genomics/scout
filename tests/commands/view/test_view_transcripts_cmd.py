@@ -27,7 +27,7 @@ def test_view_transcripts(mock_app):
         'length' : 223992
     }
     assert store.transcript_collection.insert_one(transcript_obj)
-    assert store.transcript_collection.find().count() == 1
+    assert sum(1 for i in store.transcript_collection.find()) == 1
 
     # Test again the CLI
     result =  runner.invoke(cli, ['view', 'transcripts'])

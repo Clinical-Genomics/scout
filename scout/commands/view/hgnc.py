@@ -40,14 +40,14 @@ def hgnc(hgnc_symbol, hgnc_id, build):
 
     result = adapter.hgnc_genes(hgnc_symbol, build=build)
 
-    if result.count() == 0:
-        LOG.info("No results found")
-        return
-
+    i = 0
     click.echo("#hgnc_id\thgnc_symbol\taliases")
-    for gene in result:
+    for i,gene in enumerate(result,1):
         click.echo("{0}\t{1}\t{2}".format(
             gene['hgnc_id'],
             gene['hgnc_symbol'],
             ', '.join(gene['aliases']),
         ))
+
+    if i == 0:
+        LOG.info("No results found")

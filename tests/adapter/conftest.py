@@ -51,3 +51,16 @@ def real_oldcase_database(real_panel_database, scout_config):
         'variant': variant_obj,
         'case': real_panel_database.case(case_obj['_id']),
     }
+
+@pytest.fixture
+def parsed_gene():
+    gene_info = {
+        'hgnc_id': 1,
+        'hgnc_symbol': 'AAA',
+        'ensembl_id': 'ENSG1',
+        'chrom': '1',
+        'start': 10,
+        'end': 100,
+        'build': '37'
+    }
+    return gene_info

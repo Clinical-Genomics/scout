@@ -6,9 +6,9 @@ from scout.exceptions import (PedigreeError, ConfigError, IntegrityError)
 from scout.build import build_case
 
 
-def test_build_case(parsed_case, panel_database):
-    adapter = panel_database
-
+def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.panel_collection.insert_one(dummypanel_obj)
     # GIVEN a parsed case
     # WHEN bulding a case model
     case_obj = build_case(parsed_case, adapter)
@@ -52,14 +52,15 @@ def test_build_case(parsed_case, panel_database):
         assert case_obj['has_svvariants'] == False
 
 
-def test_build_minimal_case(institute_database):
+def test_build_minimal_case(adapter, institute_obj):
+    adapter.institute_collection.insert_one(institute_obj)
     # GIVEN a case without case id
     case_info = {
         'case_id': 'test-case',
         'owner': 'cust000'
     }
     # WHEN case is built
-    case_obj = build_case(case_info, institute_database)
+    case_obj = build_case(case_info, adapter)
     # THEN assert that it worked
     assert case_obj['_id'] == case_info['case_id']
 
@@ -74,19 +75,21 @@ def test_build_case_no_case_id(adapter):
         build_case(case_info, adapter)
 
 
-def test_build_case_no_display_name(institute_database):
+def test_build_case_no_display_name(adapter, institute_obj):
+    adapter.institute_collection.insert_one(institute_obj)
     # GIVEN a case without case id
     case_info = {
         'case_id': 'test-case',
         'owner': 'cust000'
     }
     # WHEN case is built
-    case_obj = build_case(case_info, institute_database)
+    case_obj = build_case(case_info, adapter)
     # THEN assert that display_name was set to case_id
     assert case_obj['display_name'] == case_info['case_id']
 
 
-def test_build_case_no_owner(institute_database):
+def test_build_case_no_owner(adapter, institute_obj):
+    adapter.institute_collection.insert_one(institute_obj)
     # GIVEN a case where owner does not exist in the database
     case_info = {
         'case_id': 'test-case',
@@ -95,19 +98,19 @@ def test_build_case_no_owner(institute_database):
     # WHEN case is built
     # THEN a IntegrityError should be raised since the owner has to exist in the database
     with pytest.raises(IntegrityError):
-        case_obj = build_case(case_info, institute_database)
+        case_obj = build_case(case_info, adapter)
 
 
-def test_build_case_non_existing_owner(institute_database):
+def test_build_case_non_existing_owner(adapter, institute_obj):
+    adapter.institute_collection.insert_one(institute_obj)
     # GIVEN a case without owner
-    # GIVEN a case where owner does not exist in the database
     case_info = {
         'case_id': 'test-case',
     }
     # WHEN case is built
-    # THEN a ConfigError should be raised since a case has to have a owner
     with pytest.raises(ConfigError):
-        case_obj = build_case(case_info, institute_database)
+        # THEN a ConfigError should be raised since a case has to have a owner
+        case_obj = build_case(case_info, adapter)
 
 # def test_build_case_config(parsed_case):
 #     case_obj = build_case(parsed_case)

@@ -10,7 +10,7 @@ def test_export_transcripts(mock_app):
     assert runner
 
     # Database should have an empty transcript collection
-    assert store.transcript_collection.find().count() == 0
+    assert store.transcript_collection.find_one() is None
 
     # insert one transcript into database
     transcript_obj = {
@@ -24,7 +24,7 @@ def test_export_transcripts(mock_app):
         'length' : 223992
     }
     assert store.transcript_collection.insert_one(transcript_obj)
-    assert store.transcript_collection.find().count() == 1
+    assert sum(1 for i in store.transcript_collection.find()) == 1
 
 
     # Test the export panel cli without passing any data (default will be build 38)
