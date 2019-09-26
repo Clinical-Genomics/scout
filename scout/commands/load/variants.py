@@ -79,6 +79,9 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
                     LOG.warning("research not requested, use '--force'")
                     raise click.Abort()
 
+            # collect variants with verification ordered or already validated for this case
+            old_sanger_variants = adapter.case_sanger_variants(case_obj['_id'])
+
             LOG.info("Delete {0} {1} variants for case {2}".format(
                          variant_type, category, case_id))
             adapter.delete_variants(case_id=case_obj['_id'],
@@ -99,8 +102,21 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
                     end=end,
                     gene_obj=gene_obj
                 )
+
             except Exception as e:
                 LOG.warning(e)
                 raise click.Abort()
+
+            # update Sanger status for the new inserted variants
+            institute_obj = adapter.institute(case_obj['owner'])
+            case_obj = adapter.case(case_id=case_obj['_id'])
+
+            if institute_obj and case_obj:
+                sanger_updated = adapter.update_case_sanger_variants(
+                    institute_obj,
+                    case_obj,
+                    old_sanger_variants
+                )
+
     if i == 0:
         LOG.info("No files where specified to upload variants from")

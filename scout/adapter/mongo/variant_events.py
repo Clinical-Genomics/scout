@@ -185,15 +185,17 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def sanger_ordered(self, institute_id=None, user_id=None):
+    def sanger_ordered(self, institute_id=None, user_id=None, case_id=None):
         """Get all variants with validations ever ordered.
 
         Args:
             institute_id(str) : The id of an institute
             user_id(str) : The id of an user
+            case_id(str) : Id of a case
 
         Returns:
-            sanger_ordered(list) : a list of dictionaries, each with "case_id" as keys and list of variant ids as values
+            sanger_ordered(list) : a list of dictionaries, each with "case_id" as keys
+                and list of variant ids (variant_id, not _id) as values
         """
         query = {'$match': {
                 '$and': [
@@ -205,6 +207,8 @@ class VariantEventHandler(object):
             query['$match']['$and'].append({'institute': institute_id})
         if user_id:
             query['$match']['$and'].append({'user_id': user_id})
+        if case_id:
+            query['$match']['$and'].append({'case': case_id})
 
         # Get all sanger ordered variants grouped by case_id
         results = self.event_collection.aggregate([
@@ -237,7 +241,6 @@ class VariantEventHandler(object):
             LOG.warning("Invalid validation string: %s", validate_type)
             LOG.info("Validation options: %s", ', '.join(SANGER_OPTIONS))
             return
-
         updated_variant = self.variant_collection.find_one_and_update(
             {'_id': variant['_id']},
             {'$set': {'validation': validate_type}},
@@ -254,6 +257,7 @@ class VariantEventHandler(object):
             variant=variant,
             subject=variant['display_name'],
         )
+        LOG.debug('----->1-4-7')
         return updated_variant
 
     def mark_causative(self, institute, case, user, link, variant):
