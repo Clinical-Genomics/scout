@@ -49,24 +49,21 @@ class ACMGHandler(object):
         evaluation_terms = [evluation_info['term'] for evluation_info in criteria]
 
         if classification is None:
-            if evaluation_terms:
-                classification = get_acmg(evaluation_terms)
+            classification = get_acmg(evaluation_terms)
         
-        print("Found classification", classification)
-        print("Found criterias", evaluation_terms)
+        if classification:
+            evaluation_obj = build_evaluation(
+                variant_specific=variant_specific,
+                variant_id=variant_id,
+                user_id=user_id,
+                user_name=user_name,
+                institute_id=institute_id,
+                case_id=case_id,
+                classification=classification,
+                criteria=criteria
+            )
 
-        evaluation_obj = build_evaluation(
-            variant_specific=variant_specific,
-            variant_id=variant_id,
-            user_id=user_id,
-            user_name=user_name,
-            institute_id=institute_id,
-            case_id=case_id,
-            classification=classification,
-            criteria=criteria
-        )
-
-        self._load_evaluation(evaluation_obj)
+            self._load_evaluation(evaluation_obj)
 
         # Update the acmg classification for the variant:
         self.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, classification)

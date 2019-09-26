@@ -155,18 +155,19 @@ def is_likely_benign(bs_terms, bp_terms):
 
 def get_acmg(acmg_terms):
     """Use the algorithm described in ACMG paper to get a ACMG calssification
+    
+    If no terms return None
 
     Args:
         acmg_terms(set(str)): A collection of prediction terms
 
     Returns:
-        prediction(int):
-                0 - Uncertain Significanse
-                1 - Benign
-                2 - Likely Benign
-                3 - Likely Pathogenic
-                4 - Pathogenic
+        prediction(str): in ['uncertain_significance','benign','likely_benign',
+                             'likely_pathogenic','pathogenic']
+        
     """
+    if not acmg_terms:
+        return None
     prediction = 'uncertain_significance'
     # This variable indicates if Pathogenecity Very Strong exists
     pvs = False
