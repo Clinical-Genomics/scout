@@ -64,6 +64,53 @@ def pileup():
                            genome=genome, exons=exons)
 
 
+@alignviewers_bp.route('/igvtest')
+def igv_test():
+    """Test shit"""
+    LOG.info('------------->')
+    LOG.info(str(request.args))
+    LOG.info('<-------------')
+
+    chrom = '6'
+    start = '5670'
+    stop = '5680'
+
+    locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
+    LOG.debug('Displaying locus %s', locus)
+
+    genome = 'hg19'
+    fastaURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta'
+    indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai'
+    cytobandURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt'
+    gene_track_format = 'bed'
+    gene_track_URL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz'
+    gene_track_indexURL = 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
+
+
+    display_obj = {}
+
+    display_obj['reference_track'] = {
+        'genome' : genome,
+        'fastaURL' : fastaURL,
+        'indexURL' : indexURL,
+        'cytobandURL' : cytobandURL
+    }
+
+    display_obj['genes_track'] = {
+        'name' : 'Genes',
+        'type' : 'annotation',
+        'format': gene_track_format,
+        'sourceType': 'file',
+        'url' : gene_track_URL,
+        'indexURL' : gene_track_indexURL,
+        'displayMode' : 'EXPANDED'
+    }
+    display_obj['sample_tracks'] = []
+    locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
+    LOG.debug('Displaying locus %s', locus)
+    return render_template('alignviewers/igv_viewer.html', locus=locus, **display_obj )
+
+
 @alignviewers_bp.route('/igv')
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
@@ -128,6 +175,8 @@ def igv():
     }
 
     sample_tracks = []
+
+    """
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
@@ -137,6 +186,7 @@ def igv():
                                    'height' : 700
                                    })
         counter += 1
+    """
 
     display_obj['sample_tracks'] = sample_tracks
 
