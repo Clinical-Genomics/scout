@@ -34,7 +34,6 @@
 <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
 
 <script type="text/javascript">
-
     $(document).ready(function () {
         var div = $("#igvDiv")[0],
                 options = {
@@ -50,7 +49,6 @@
                         indexURL: "{{ reference_track.indexURL }}",
                         cytobandURL: "{{ reference_track.cytobandURL }}"
                     },
-                    search: "https://igv.org/services/locus.php",
                     locus: "{{locus}}",
                     tracks: [
                       {
