@@ -53,9 +53,10 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         evaluations = []
         for evaluation_obj in store.get_evaluations(variant_obj):
             classification = evaluation_obj['classification']
-            # Only show pathogenic/likely pathigenic on variants page
-            if not classification in [3,4]:
-                continue
+            # Only show pathogenic/likely pathogenic from other cases on variants page
+            if evaluation_obj['case_id'] != case_obj['_id']:
+                if not classification in ['pathogenic', 'likely_pathogenic']:
+                    continue
             # Convert the classification int to readable string
             evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(classification)
             evaluations.append(evaluation_obj)
@@ -294,9 +295,8 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
 
     classification = variant_obj.get('acmg_classification')
     if isinstance(classification, int):
-        if classification in [3,4]:
-            acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
-            variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
 
     # convert length for SV variants
