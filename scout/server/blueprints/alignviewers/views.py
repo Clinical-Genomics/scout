@@ -63,7 +63,6 @@ def pileup():
                            position=position, vcf_file=vcf_file,
                            genome=genome, exons=exons)
 
-
 @alignviewers_bp.route('/igv')
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
@@ -128,6 +127,7 @@ def igv():
     }
 
     sample_tracks = []
+
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
