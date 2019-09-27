@@ -60,19 +60,20 @@
 
 {% macro tier_cell(variant) %}
   {% if variant.rank_score %}
-    {% if variant.rank_score == 1 %}
+    {% if variant.rank_score < 3 %}
       {% set label_class = 'default' %}
-    {% elif variant.rank_score == 2 %}
-      {% set label_class = 'info' %}
     {% elif variant.rank_score == 3 %}
-      {% set label_class = 'primary' %}
+      {% set label_class = 'info' %}
     {% elif variant.rank_score == 4 %}
-      {% set label_class = 'warning' %}
+      {% set label_class = 'primary' %}
     {% elif variant.rank_score == 5 %}
+      {% set label_class = 'mixed' %}
+    {% elif variant.rank_score == 6 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.rank_score > 6 %}
       {% set label_class = 'danger' %}
     {% endif %}
   {% endif %}
-  <!--div class="label label-{{ label_class }}">{{ variant.manual_rank }} </div-->
   <div class="label label-{{ label_class }}">{{ variant.rank_score }} </div>
 {% endmacro %}
 
