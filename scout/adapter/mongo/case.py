@@ -405,6 +405,8 @@ class CaseHandler(object):
         # Check if case exists with old case id
         old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
         old_case = self.case(old_caseid)
+        old_sanger_variants = None
+
         if old_case:
             LOG.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
             self.update_caseid(old_case, case_obj['_id'])
@@ -422,6 +424,9 @@ class CaseHandler(object):
             {'file_name': 'vcf_str', 'variant_type': 'clinical', 'category': 'str'}
         ]
 
+        if update:
+            # collect variants with verification ordered or already validated for this case
+            old_sanger_variants = self.case_sanger_variants(case_obj['_id'])
         try:
             for vcf_file in files:
                 # Check if file exists
@@ -449,6 +454,14 @@ class CaseHandler(object):
 
         if existing_case and update:
             self.update_case(case_obj)
+
+            # update Sanger status for the new inserted variants
+            self.update_case_sanger_variants(
+                institute_obj,
+                case_obj,
+                old_sanger_variants
+            )
+
         else:
             LOG.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)
