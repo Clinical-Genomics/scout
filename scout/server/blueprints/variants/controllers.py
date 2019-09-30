@@ -700,7 +700,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     b = datetime.datetime.now()
     c = b - a
     a = b
-    Lflash('---------------------->microsecs:{}'.format(c.microseconds))
+    flash('---------------------->microsecs:{}'.format(c.microseconds))
 
 
     case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
