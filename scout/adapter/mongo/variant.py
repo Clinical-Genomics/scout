@@ -435,14 +435,11 @@ class VariantHandler(VariantLoader):
 
             other_case_causatives = other_case.get('causatives')
 
-            if other_case_causatives:
-            #and (clinical_variant in other_case_causatives or
-            #    research_variant in other_case_causatives):
+            other_link = var_event['link']
+            # link contains other variant ID
+            other_causative_id = other_link.split('/')[-1:]
 
-                other_link = var_event['link']
-                # link contains other variant ID
-                other_causative_id = other_link.split('/')[-1:]
-
+            if other_case_causatives and other_causative_id in other_case_causatives:
                 other_causative = {
                     '_id' : other_causative_id,
                     'case_id' : other_case['_id'],
