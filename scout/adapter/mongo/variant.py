@@ -401,7 +401,7 @@ class VariantHandler(VariantLoader):
         return self.variant_collection.find(filters)
 
 
-    def other_causatives_2(self, case_obj, variant_obj):
+    def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
 
         Args:
@@ -428,23 +428,22 @@ class VariantHandler(VariantLoader):
                 # This is the variant the search started from, do not collect it
                 continue
             other_case = self.case(var_event['case'])
-
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
                 continue
 
             other_case_causatives = other_case.get('causatives')
-
             other_link = var_event['link']
             # link contains other variant ID
-            other_causative_id = other_link.split('/')[-1:]
+            other_causative_id = other_link.split('/')[-1]
 
-            if other_case_causatives and other_causative_id in other_case_causatives:
+            if other_case_causatives:
+                # and other_causative_id in other_case_causatives:
+                LOG.info('looking for {} in {}'.format(other_causative_id, other_case_causatives))
                 other_causative = {
                     '_id' : other_causative_id,
                     'case_id' : other_case['_id'],
                     'case_display_name' : other_case['display_name']
-
                 }
                 yield other_causative
 
