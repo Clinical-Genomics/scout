@@ -181,11 +181,12 @@ class CaseHandler(object):
                     hgnc_id=self.hgnc_id(hgnc_symbol=name_value)
                     if hgnc_id:
                         cases_with_gene_doc=self.case_collection.aggregate([
+                            { '$unwind': "$causatives" },
                             { '$lookup':
                                 {'from': 'variant',
                                 'localField': 'causatives',
                                 'foreignField': '_id',
-                                'as': 'causative_variant'}
+                                'as': 'causative_variant'
                             },
                             {'$match': {
                                 'causative_variant.hgnc_ids': hgnc_id
@@ -200,6 +201,7 @@ class CaseHandler(object):
                     hgnc_id=self.hgnc_id(hgnc_symbol=name_value)
                     if hgnc_id:
                         cases_with_gene_doc=self.case_collection.aggregate([
+                            { '$unwind': "$suspects"}
                             { '$lookup':
                                 {'from': 'variant',
                                 'localField': 'suspects',
