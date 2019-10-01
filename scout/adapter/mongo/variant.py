@@ -347,7 +347,7 @@ class VariantHandler(VariantLoader):
         elif institute_id:
 
             query = self.case_collection.aggregate([
-                {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True}}},
+                {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True, '$not' : {'$size': 0}}}},
                 {'$unwind': '$causatives'},
                 {'$group': {'_id': '$causatives'}}
             ])
